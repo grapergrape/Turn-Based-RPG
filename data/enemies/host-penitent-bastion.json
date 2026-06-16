@@ -1,0 +1,17 @@
+{
+  "id": "host-penitent-bastion",
+  "name": "Penitent Bastion",
+  "type": "enemy",
+  "faction": "the-host",
+  "description": "A Host-transformed former protector forced by the Vale Imprint into an armored, kneeling damnation-role. It cannot flee. It only guards.",
+  "stats": {
+    "hp": 18,
+    "maxHp": 18,
+    "actionPoints": 4
+  },
+  "tags": [
+    "host",
+    "vale-imprint",
+    "tank"
+  ]
+}

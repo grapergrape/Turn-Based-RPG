@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Host RPG</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #0d0d0f;
+        color: #e8e1d4;
+        font-family: system-ui, sans-serif;
+      }
+
+      main {
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        gap: 12px;
+      }
+
+      canvas {
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+        border: 2px solid #3c3630;
+        background: #111;
+        width: 960px;
+        height: 640px;
+        max-width: calc(100vw - 24px);
+        max-height: calc(100vh - 96px);
+      }
+
+      .hud {
+        max-width: 960px;
+        width: calc(100vw - 24px);
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <canvas id="game" width="480" height="320" aria-label="The Host RPG canvas"></canvas>
+      <div class="hud">
+        <span>Move: Arrow keys / WASD</span>
+        <span id="status">Loading...</span>
+      </div>
+    </main>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
