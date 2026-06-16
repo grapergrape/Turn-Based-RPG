@@ -1,0 +1,138 @@
+{
+  "id": "ash-chapel-breach",
+  "name": "Ash Chapel Breach",
+  "intro": "A ruined quarantine chapel on the old road to Veyr's Gate. Dust lies thick enough to remember footfalls.",
+  "width": 24,
+  "height": 18,
+  "tileSize": 64,
+  "tiles": [
+    "########################",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "##########....##########"
+  ],
+  "legend": {
+    "#": { "kind": "wall", "walkable": false },
+    ".": { "kind": "floor", "walkable": true }
+  },
+  "spawns": {
+    "player": { "actor": "mara-vey", "x": 11, "y": 15 },
+    "enemies": [
+      { "id": "red-tithe-cutthroat", "x": 6, "y": 5 },
+      { "id": "host-touched-penitent", "x": 15, "y": 4 }
+    ]
+  },
+  "combatTrigger": { "x": 12, "y": 5, "radius": 3 },
+  "objects": [
+    { "kind": "damaged-altar", "x": 12, "y": 2, "blocking": true, "interact": {
+      "type": "altar",
+      "triggersCombat": true,
+      "log": [
+        "The altar is split open. Black-gold tissue pulses beneath the stone.",
+        "Something inside the chapel answers your breath."
+      ]
+    } },
+    { "kind": "host-growth", "x": 11, "y": 3 },
+    { "kind": "host-growth", "x": 13, "y": 3 },
+    { "kind": "host-growth", "x": 12, "y": 4 },
+    { "kind": "host-growth", "x": 10, "y": 2 },
+    { "kind": "host-growth", "x": 14, "y": 2 },
+    { "kind": "candle-cluster", "x": 9, "y": 2 },
+    { "kind": "candle-cluster", "x": 15, "y": 2 },
+    { "kind": "candle-cluster", "x": 10, "y": 5 },
+    { "kind": "candle-cluster", "x": 14, "y": 5 },
+
+    { "kind": "cracked-column", "x": 3, "y": 3, "blocking": true },
+    { "kind": "cracked-column", "x": 20, "y": 3, "blocking": true },
+    { "kind": "cracked-column", "x": 3, "y": 14, "blocking": true },
+    { "kind": "cracked-column", "x": 20, "y": 14, "blocking": true },
+
+    { "kind": "rusted-reliquary", "x": 4, "y": 5, "blocking": true, "interact": {
+      "type": "container",
+      "log": "The reliquary opens with a dry metal cough.",
+      "loot": [
+        { "item": "relic-rounds", "count": 2 },
+        { "item": "tarnished-saint-token", "count": 1 }
+      ]
+    } },
+
+    { "kind": "broken-pew", "x": 6, "y": 7, "blocking": true },
+    { "kind": "broken-pew", "x": 8, "y": 7, "blocking": true },
+    { "kind": "broken-pew", "x": 15, "y": 7, "blocking": true },
+    { "kind": "broken-pew", "x": 17, "y": 7, "blocking": true },
+    { "kind": "broken-pew", "x": 6, "y": 10, "blocking": true },
+    { "kind": "broken-pew", "x": 8, "y": 10, "blocking": true },
+    { "kind": "broken-pew", "x": 15, "y": 10, "blocking": true },
+    { "kind": "broken-pew", "x": 17, "y": 10, "blocking": true },
+    { "kind": "broken-pew", "x": 5, "y": 12, "blocking": true },
+    { "kind": "broken-pew", "x": 18, "y": 12, "blocking": true },
+
+    { "kind": "rusted-crate", "x": 2, "y": 8, "blocking": true },
+    { "kind": "rusted-crate", "x": 21, "y": 9, "blocking": true },
+    { "kind": "rusted-crate", "x": 19, "y": 5, "blocking": true },
+    { "kind": "rusted-crate", "x": 4, "y": 15, "blocking": true },
+    { "kind": "quarantine-barricade", "x": 8, "y": 14, "blocking": true },
+    { "kind": "quarantine-barricade", "x": 16, "y": 14, "blocking": true },
+
+    { "kind": "field-satchel", "x": 13, "y": 16, "interact": {
+      "type": "container",
+      "log": "Inside the satchel: a sealed field dressing and old road dust.",
+      "loot": [
+        { "item": "field-dressing", "count": 1 }
+      ]
+    } },
+    { "kind": "corpse", "x": 14, "y": 15 },
+    { "kind": "corpse", "x": 7, "y": 13 },
+    { "kind": "quarantine-sign", "x": 10, "y": 16 },
+
+    { "kind": "rubble-pile", "x": 2, "y": 2 },
+    { "kind": "rubble-pile", "x": 21, "y": 2 },
+    { "kind": "rubble-pile", "x": 2, "y": 15 },
+    { "kind": "rubble-pile", "x": 21, "y": 15 },
+    { "kind": "rubble-pile", "x": 5, "y": 4 },
+    { "kind": "rubble-pile", "x": 18, "y": 4 },
+    { "kind": "rubble-pile", "x": 19, "y": 13 },
+
+    { "kind": "blood-stain", "x": 14, "y": 15 },
+    { "kind": "blood-stain", "x": 12, "y": 4 },
+    { "kind": "blood-stain", "x": 6, "y": 5 },
+    { "kind": "floor-crack", "x": 11, "y": 6 },
+    { "kind": "floor-crack", "x": 7, "y": 9 },
+    { "kind": "floor-crack", "x": 16, "y": 9 },
+    { "kind": "floor-crack", "x": 10, "y": 13 },
+    { "kind": "floor-crack", "x": 13, "y": 12 },
+    { "kind": "rubble-decal", "x": 5, "y": 6 },
+    { "kind": "rubble-decal", "x": 18, "y": 6 },
+    { "kind": "rubble-decal", "x": 4, "y": 13 },
+    { "kind": "rubble-decal", "x": 19, "y": 11 },
+    { "kind": "glass-debris", "x": 17, "y": 3 },
+    { "kind": "glass-debris", "x": 6, "y": 14 },
+    { "kind": "dust", "x": 3, "y": 6 },
+    { "kind": "dust", "x": 20, "y": 6 },
+    { "kind": "dust", "x": 11, "y": 11 },
+    { "kind": "scorch-mark", "x": 11, "y": 3 },
+    { "kind": "scorch-mark", "x": 15, "y": 5 },
+    { "kind": "wax-stain", "x": 9, "y": 2 },
+    { "kind": "wax-stain", "x": 15, "y": 2 },
+    { "kind": "wax-stain", "x": 10, "y": 5 },
+    { "kind": "wax-stain", "x": 14, "y": 5 },
+    { "kind": "road-dust", "x": 10, "y": 17 },
+    { "kind": "road-dust", "x": 11, "y": 17 },
+    { "kind": "road-dust", "x": 12, "y": 17 },
+    { "kind": "road-dust", "x": 13, "y": 17 }
+  ]
+}

@@ -1,27 +1,40 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const root = process.cwd();
 const dataRoot = join(root, 'data');
 const errors = [];
 
+// Content this slice (Ash Chapel Breach) must contain.
+const REQUIRED_ENEMY_IDS = ['red-tithe-cutthroat', 'host-touched-penitent'];
+const REQUIRED_INTERACTABLE_KINDS = ['rusted-reliquary', 'field-satchel', 'damaged-altar'];
+const REQUIRED_ITEM_IDS = ['relic-rounds', 'field-dressing', 'tarnished-saint-token'];
+const DECAL_KINDS = new Set([
+  'rubble-pile', 'rubble-decal', 'floor-crack', 'blood-stain', 'glass-debris', 'dust', 'road-dust'
+]);
+
+const seenItemIds = new Set();
+
 async function main() {
+  await checkRenderConfig();
+
   const jsonFiles = await findJsonFiles(dataRoot);
 
   for (const filePath of jsonFiles) {
     const data = await readJson(filePath);
     if (!data) continue;
 
-    if (filePath.includes('/maps/') || filePath.includes('\\maps\\')) {
-      validateMap(filePath, data);
-    }
+    if (matchDir(filePath, 'maps')) validateMap(filePath, data);
+    if (matchDir(filePath, 'levels')) validateLevel(filePath, data);
+    if (matchDir(filePath, 'actors')) validateActor(filePath, data);
+    if (matchDir(filePath, 'enemies')) validateEnemy(filePath, data);
+    if (matchDir(filePath, 'items')) validateItem(filePath, data);
+  }
 
-    if (filePath.includes('/actors/') || filePath.includes('\\actors\\')) {
-      validateActor(filePath, data);
-    }
-
-    if (filePath.includes('/enemies/') || filePath.includes('\\enemies\\')) {
-      validateEnemy(filePath, data);
+  for (const id of REQUIRED_ITEM_IDS) {
+    if (!seenItemIds.has(id)) {
+      errors.push(`data/items: required item "${id}" is missing.`);
     }
   }
 
@@ -35,6 +48,32 @@ async function main() {
   }
 
   console.log(`Content check passed. Parsed ${jsonFiles.length} JSON file(s).`);
+}
+
+function matchDir(filePath, dir) {
+  return filePath.includes(`/${dir}/`) || filePath.includes(`\\${dir}\\`);
+}
+
+// Assert the renderer is configured for the fixed low-resolution presentation.
+async function checkRenderConfig() {
+  const configUrl = pathToFileURL(join(root, 'src', 'render', 'renderConfig.js'));
+  try {
+    const { RENDER_CONFIG } = await import(configUrl.href);
+    const expect = (key, value) => {
+      if (RENDER_CONFIG[key] !== value) {
+        errors.push(`renderConfig: ${key} must be ${JSON.stringify(value)} (got ${JSON.stringify(RENDER_CONFIG[key])}).`);
+      }
+    };
+    expect('INTERNAL_WIDTH', 640);
+    expect('INTERNAL_HEIGHT', 480);
+    expect('VIEWPORT_HEIGHT', 384);
+    expect('TILE_WIDTH', 64);
+    expect('TILE_HEIGHT', 32);
+    expect('WALL_HEIGHT', 64);
+    expect('DEBUG_GRID_DEFAULT', false);
+  } catch (error) {
+    errors.push(`renderConfig could not be loaded: ${error.message}`);
+  }
 }
 
 async function findJsonFiles(directory) {
@@ -67,15 +106,8 @@ async function readJson(filePath) {
   }
 }
 
-function validateMap(filePath, data) {
-  const name = relative(filePath);
-
-  requireString(name, data.id, 'id');
-  requireString(name, data.name, 'name');
-  requireNumber(name, data.width, 'width');
-  requireNumber(name, data.height, 'height');
-  requireNumber(name, data.tileSize, 'tileSize');
-
+// Shared tile-grid validation for maps and levels.
+function validateTiles(name, data) {
   if (!Array.isArray(data.tiles)) {
     errors.push(`${name}: tiles must be an array of strings.`);
     return;
@@ -103,9 +135,82 @@ function validateMap(filePath, data) {
       }
     }
   }
+}
+
+function inBounds(data, point) {
+  return point && point.x >= 0 && point.y >= 0 && point.x < data.width && point.y < data.height;
+}
+
+function validateMap(filePath, data) {
+  const name = relative(filePath);
+  requireString(name, data.id, 'id');
+  requireString(name, data.name, 'name');
+  requireNumber(name, data.width, 'width');
+  requireNumber(name, data.height, 'height');
+  requireNumber(name, data.tileSize, 'tileSize');
+  validateTiles(name, data);
 
   if (!data.spawns?.player) {
     errors.push(`${name}: missing spawns.player.`);
+  }
+}
+
+function validateLevel(filePath, data) {
+  const name = relative(filePath);
+  requireString(name, data.id, 'id');
+  requireString(name, data.name, 'name');
+  requireString(name, data.intro, 'intro');
+  requireNumber(name, data.width, 'width');
+  requireNumber(name, data.height, 'height');
+  requireNumber(name, data.tileSize, 'tileSize');
+  validateTiles(name, data);
+
+  const player = data.spawns?.player;
+  if (!player) {
+    errors.push(`${name}: missing spawns.player.`);
+  } else if (!inBounds(data, player)) {
+    errors.push(`${name}: player start (${player.x}, ${player.y}) is out of bounds.`);
+  }
+
+  const enemies = data.spawns?.enemies ?? [];
+  if (enemies.length !== 2) {
+    errors.push(`${name}: expected exactly 2 enemies, found ${enemies.length}.`);
+  }
+  for (const point of enemies) {
+    if (!inBounds(data, point)) {
+      errors.push(`${name}: enemy spawn (${point.x}, ${point.y}) is out of bounds.`);
+    }
+  }
+  const enemyIds = enemies.map((spawn) => spawn.id);
+  for (const id of REQUIRED_ENEMY_IDS) {
+    if (!enemyIds.includes(id)) {
+      errors.push(`${name}: required enemy "${id}" is missing from spawns.`);
+    }
+  }
+
+  const objects = Array.isArray(data.objects) ? data.objects : [];
+  const kinds = objects.map((object) => object.kind);
+  for (const kind of REQUIRED_INTERACTABLE_KINDS) {
+    if (!kinds.includes(kind)) {
+      errors.push(`${name}: required interactable "${kind}" is missing.`);
+    }
+  }
+
+  const pews = kinds.filter((kind) => kind === 'broken-pew').length;
+  if (pews < 6) {
+    errors.push(`${name}: expected at least 6 broken pews, found ${pews}.`);
+  }
+
+  const decals = kinds.filter((kind) => DECAL_KINDS.has(kind)).length;
+  if (decals < 8) {
+    errors.push(`${name}: expected at least 8 rubble/decal objects, found ${decals}.`);
+  }
+
+  // The three required interactables must carry an interact descriptor.
+  for (const object of objects) {
+    if (REQUIRED_INTERACTABLE_KINDS.includes(object.kind) && !object.interact) {
+      errors.push(`${name}: "${object.kind}" must define an interact descriptor.`);
+    }
   }
 }
 
@@ -131,6 +236,14 @@ function validateEnemy(filePath, data) {
       errors.push(`${name}: Host enemies must include tags "host" and "vale-imprint".`);
     }
   }
+}
+
+function validateItem(filePath, data) {
+  const name = relative(filePath);
+  requireString(name, data.id, 'id');
+  requireString(name, data.name, 'name');
+  requireString(name, data.type, 'type');
+  if (typeof data.id === 'string') seenItemIds.add(data.id);
 }
 
 function validateStats(name, stats) {

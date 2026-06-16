@@ -1,51 +1,88 @@
+// Keyboard + mouse input.
+//
+// Translates raw key events into mode-independent semantic tokens that the game
+// interprets per mode (the same physical key can mean different things in
+// explore vs combat). Tokens are queued and drained once per update so no input
+// is lost between frames. Mouse position is tracked in internal-canvas pixels
+// for the hover marker.
+
+const KEY_TOKENS = {
+  arrowup: 'up',
+  w: 'up',
+  arrowdown: 'down',
+  s: 'down',
+  arrowleft: 'left',
+  a: 'left',
+  arrowright: 'right',
+  d: 'right',
+  enter: 'confirm',
+  ' ': 'confirm',
+  escape: 'cancel',
+  e: 'interact',
+  i: 'inventory',
+  h: 'dressing',
+  r: 'restart',
+  1: 'melee',
+  2: 'sidearm',
+  tab: 'cycle',
+  g: 'debug'
+};
+
 export class Input {
-  constructor() {
-    this.pendingDirection = null;
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.actions = [];
     this.keys = new Set();
-    this.enabled = true;
+    this.mouse = null;
+    this.pendingClick = null;
 
     window.addEventListener('keydown', (event) => this.#onKeyDown(event));
-    window.addEventListener('keyup', (event) => this.#onKeyUp(event));
-  }
-
-  consumeDirection() {
-    const direction = this.pendingDirection;
-    this.pendingDirection = null;
-    return direction;
-  }
-
-  #onKeyDown(event) {
-    if (!this.enabled) return;
-
-    this.keys.add(event.key.toLowerCase());
-
-    const direction = keyToDirection(event.key);
-    if (direction) {
-      event.preventDefault();
-      this.pendingDirection = direction;
+    window.addEventListener('keyup', (event) => this.keys.delete(event.key.toLowerCase()));
+    if (canvas) {
+      canvas.style.cursor = 'none';
+      canvas.addEventListener('mousemove', (event) => this.#onMouseMove(event));
+      canvas.addEventListener('mouseleave', () => { this.mouse = null; });
+      canvas.addEventListener('mousedown', (event) => this.#onMouseDown(event));
+      canvas.addEventListener('contextmenu', (event) => event.preventDefault());
     }
   }
 
-  #onKeyUp(event) {
-    this.keys.delete(event.key.toLowerCase());
+  consume() {
+    const actions = this.actions;
+    this.actions = [];
+    return actions;
   }
-}
 
-function keyToDirection(key) {
-  switch (key.toLowerCase()) {
-    case 'arrowup':
-    case 'w':
-      return { x: 0, y: -1 };
-    case 'arrowdown':
-    case 's':
-      return { x: 0, y: 1 };
-    case 'arrowleft':
-    case 'a':
-      return { x: -1, y: 0 };
-    case 'arrowright':
-    case 'd':
-      return { x: 1, y: 0 };
-    default:
-      return null;
+  consumeClick() {
+    const click = this.pendingClick;
+    this.pendingClick = null;
+    return click;
+  }
+
+  #onKeyDown(event) {
+    const token = KEY_TOKENS[event.key.toLowerCase()];
+    if (!token) return;
+    event.preventDefault();
+    this.keys.add(event.key.toLowerCase());
+    this.actions.push(token);
+  }
+
+  #onMouseMove(event) {
+    this.mouse = this.#toInternal(event);
+  }
+
+  #onMouseDown(event) {
+    event.preventDefault();
+    const point = this.#toInternal(event);
+    if (point) this.pendingClick = { ...point, button: event.button };
+  }
+
+  #toInternal(event) {
+    const rect = this.canvas.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return null;
+    return {
+      x: Math.round((event.clientX - rect.left) * (this.canvas.width / rect.width)),
+      y: Math.round((event.clientY - rect.top) * (this.canvas.height / rect.height))
+    };
   }
 }

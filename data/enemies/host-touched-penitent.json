@@ -1,0 +1,17 @@
+{
+  "id": "host-touched-penitent",
+  "name": "Host-Touched Penitent",
+  "type": "enemy",
+  "faction": "the-host",
+  "description": "An early-stage Host victim, a worshipper bent by the Vale Imprint into a broken kneeling penitent: elongated arms, bone-thorn growths, a shattered halo, and black-gold tissue weeping from a single glowing wound. Slow, but heavier than any raider.",
+  "stats": {
+    "hp": 11,
+    "maxHp": 11,
+    "actionPoints": 4,
+    "moveCost": 1
+  },
+  "attacks": [
+    { "id": "rake", "name": "Thorned Hands", "apCost": 3, "damage": 3, "range": 1 }
+  ],
+  "tags": ["host", "vale-imprint", "penitent", "bloomborn"]
+}

@@ -124,3 +124,26 @@ Any new package must be justified in this file with:
 - Hot reload would save significant time.
 - Asset processing is needed.
 - TypeScript/bundling is adopted.
+
+## Decision 007: Runtime-baked isometric pixel art
+
+**Choice:** Keep the current slice's art as Canvas 2D runtime-baked sprites and props, drawn at native 640x480 scale.
+
+**Why:**
+
+- The playable slice can establish scale, camera distance, animation timing, and palette before external asset production begins.
+- Runtime-baked frames keep all current assets original and inspectable in source.
+- Eight-facing actors and hard-banded lighting can be tested without adding a build step.
+
+**Current constraints:**
+
+- Use 64x32 isometric floor diamonds and a 384 px world viewport.
+- Draw actor frames at native pixel resolution. Do not smooth-scale sprite sheets.
+- Keep movement frame-quantized so walking reads as low-fps isometric CRPG animation.
+- If the project later imports PNG sprite sheets, they must match the same pivot, frame count, facing names, and nearest-neighbor render rules.
+
+**Review later when:**
+
+- A real asset pipeline exports PNG sheets from an art tool.
+- Sprite memory or startup bake time becomes a measurable problem.
+- Animation authoring needs per-frame metadata that is too awkward to keep in code.
