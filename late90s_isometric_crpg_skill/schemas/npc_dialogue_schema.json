@@ -1,0 +1,29 @@
+{
+  "npc_id": "npc_example",
+  "name": "Original NPC Name",
+  "role": "gate_guard",
+  "faction": "road_wardens",
+  "visual_silhouette": "rigid posture, mask, baton, dull armband",
+  "wants": "keep the chapel sealed",
+  "fears": "being blamed for a second outbreak",
+  "knows": ["who sealed the lockbox", "where the spare key went"],
+  "hides": ["accepted a bribe", "lost a prisoner"],
+  "dialogue_style": "short, bureaucratic, dry threats",
+  "branches": [
+    {
+      "player_option": "Ask who ordered the seal.",
+      "npc_response": "The order has a stamp. Stamps outrank names."
+    },
+    {
+      "player_option": "[Speech] Convince him the order expired.",
+      "skill": "speech",
+      "success": "He opens a side route but warns the player.",
+      "failure": "He calls another guard."
+    }
+  ],
+  "consequences": [
+    "opens_side_door",
+    "warden_reputation_changes",
+    "future_patrol_state_changes"
+  ]
+}

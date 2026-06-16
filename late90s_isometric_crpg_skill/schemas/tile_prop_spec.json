@@ -1,0 +1,37 @@
+{
+  "asset_id": "prop_example_crate",
+  "type": "prop",
+  "location_set": "ash_chapel",
+  "native_pixel_size": {
+    "width": 64,
+    "height": 64
+  },
+  "isometric_requirements": {
+    "top_plane": true,
+    "side_plane": true,
+    "front_plane": true,
+    "contact_shadow": true,
+    "depth_sort_pivot": "front_bottom_ground_contact"
+  },
+  "materials": ["aged_wood", "rusted_metal"],
+  "texture_details": [
+    "chipped_edges",
+    "nail_heads",
+    "dust_at_base",
+    "old_label",
+    "dark_underside"
+  ],
+  "variants_required": ["closed", "open", "looted", "broken"],
+  "rendering": {
+    "filtering": "nearest_or_point",
+    "palette": "muted_low_saturation",
+    "lighting": "baked_upper_left_key"
+  },
+  "qc": [
+    "not_simple_cube",
+    "believable_scale_vs_human",
+    "readable_at_gameplay_zoom",
+    "shadow_integrated",
+    "not_copied_from_existing_IP"
+  ]
+}

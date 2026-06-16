@@ -1,0 +1,46 @@
+{
+  "character_id": "char_example",
+  "role": "wasteland_explorer",
+  "faction": "none",
+  "native_pixel_size": {
+    "canvas_width": 64,
+    "canvas_height": 72,
+    "standing_height_min": 50,
+    "standing_height_max": 64
+  },
+  "pivot": {
+    "type": "bottom_center_between_feet",
+    "x": 32,
+    "y": 64
+  },
+  "directions": ["n", "ne", "e", "se", "s", "sw", "w", "nw"],
+  "animations": {
+    "idle": {"frames": "4-8", "fps": "6-10", "loop": true},
+    "walk": {"frames": "8-12 per direction", "fps": "10-12", "loop": true},
+    "interact": {"frames": "6-10", "fps": "8-12", "loop": false},
+    "hurt": {"frames": "3-6", "fps": "8-12", "loop": false},
+    "death": {"frames": "10-18", "fps": "8-10", "loop": false}
+  },
+  "palette": {
+    "fabric_tones": 5,
+    "leather_tones": 4,
+    "metal_tones": 4,
+    "skin_tones": 3,
+    "accent_colors_max": 1
+  },
+  "rendering": {
+    "camera": "orthographic_isometric",
+    "filtering": "nearest_or_point",
+    "shadow": "ground_contact_shadow",
+    "background": "transparent_png"
+  },
+  "qc": [
+    "small realistic head",
+    "readable silhouette",
+    "consistent pivot",
+    "no foot sliding",
+    "no outline jitter",
+    "grounded shadow",
+    "not copied from existing IP"
+  ]
+}
