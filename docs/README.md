@@ -5,6 +5,7 @@ This directory contains design and production documentation for the turn-based R
 ## Sections
 
 - `story/` — worldbuilding, characters, quests, factions, and narrative direction.
+- `lore/` — canon bible and high-authority setting references.
 - `enemies/` — enemy families, encounter roles, bosses, and combat behaviors.
 - `items/` — weapons, armor, consumables, key items, loot, and economy notes.
 - `systems/` — combat, progression, inventory, dialogue, exploration, and other mechanics.
