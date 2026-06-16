@@ -18,9 +18,11 @@ This keeps the project editable and prevents every new enemy, map, or item from 
 
 ```text
 data/
+├── levels/
 ├── maps/
 ├── actors/
-└── enemies/
+├── enemies/
+└── items/
 ```
 
 Future folders can include:
@@ -77,6 +79,78 @@ Rules:
 - Every tile character must exist in `legend`.
 - Coordinates are grid coordinates, not pixels.
 - Do not put rendering colors in map files long term. The current demo may use simple colors until art exists.
+
+## Level data
+
+Levels live in `data/levels/`. A level extends the minimal map shape with the
+scene objects, spawns, and the combat trigger used by the playable slice
+(`ash_chapel_breach.json`).
+
+Shape:
+
+```json
+{
+  "id": "ash-chapel-breach",
+  "name": "Ash Chapel Breach",
+  "intro": "Short flavour line shown on load.",
+  "width": 18,
+  "height": 14,
+  "tileSize": 64,
+  "tiles": ["##################", "..."],
+  "legend": { "#": { "kind": "wall", "walkable": false }, ".": { "kind": "floor", "walkable": true } },
+  "spawns": {
+    "player": { "actor": "mara-vey", "x": 8, "y": 12 },
+    "enemies": [
+      { "id": "red-tithe-cutthroat", "x": 4, "y": 4 },
+      { "id": "host-touched-penitent", "x": 10, "y": 2 }
+    ]
+  },
+  "combatTrigger": { "x": 8, "y": 3, "radius": 2 },
+  "objects": [
+    { "kind": "broken-pew", "x": 6, "y": 5, "blocking": true },
+    { "kind": "rusted-reliquary", "x": 2, "y": 4, "blocking": true,
+      "interact": { "type": "container", "log": "...", "loot": [ { "item": "relic-rounds", "count": 2 } ] } },
+    { "kind": "damaged-altar", "x": 8, "y": 1, "blocking": true,
+      "interact": { "type": "altar", "triggersCombat": true, "log": ["line one", "line two"] } },
+    { "kind": "blood-stain", "x": 3, "y": 6 }
+  ]
+}
+```
+
+Rules:
+
+- `objects[].kind` selects a renderer prop (wall, broken-pew, rusted-reliquary,
+  field-satchel, corpse, quarantine-sign, damaged-altar, host-growth,
+  candle-cluster, rubble-pile, rusted-crate, cracked-column,
+  quarantine-barricade, and flat decals: blood-stain, floor-crack,
+  rubble-decal, glass-debris, dust, road-dust, scorch-mark, wax-stain).
+- `blocking: true` makes the object's tile impassable (collision uses the same
+  rule in explore and combat).
+- `interact` (optional) marks a loot container (`type: "container"` with `loot`)
+  or the altar (`type: "altar"` with `triggersCombat`).
+- The validator (`npm run check`) requires: a valid tile grid, an in-bounds
+  player start, exactly two enemies including the required ids, the three
+  required interactables (`rusted-reliquary`, `field-satchel`, `damaged-altar`),
+  at least 6 broken pews, and at least 8 rubble/decal objects.
+
+## Item data
+
+Items live in `data/items/`, one file per id.
+
+```json
+{
+  "id": "field-dressing",
+  "name": "Field Dressing",
+  "type": "consumable",
+  "description": "Restores 4 HP. Consumed on use.",
+  "use": { "effect": "heal", "amount": 4 }
+}
+```
+
+Rules:
+
+- `id`, `name`, and `type` are required.
+- Loot in level objects references items by `id`.
 
 ## Actor data
 

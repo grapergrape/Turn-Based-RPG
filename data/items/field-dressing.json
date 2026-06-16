@@ -1,0 +1,7 @@
+{
+  "id": "field-dressing",
+  "name": "Field Dressing",
+  "type": "consumable",
+  "description": "A sealed sterile dressing. Press H to bind a wound and restore 4 HP. Consumed on use.",
+  "use": { "effect": "heal", "amount": 4 }
+}

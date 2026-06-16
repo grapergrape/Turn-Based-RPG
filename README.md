@@ -56,15 +56,89 @@ npm run check
 └── tests/                    # Future tests
 ```
 
-## Current demo
+## Current demo: Ash Chapel Breach
 
-The starter demo loads:
+The demo loads `data/levels/ash_chapel_breach.json` and its referenced actors,
+enemies, and items. It is a small, complete vertical slice rendered as a
+**grimy isometric pixel-art CRPG scene** rather than a flat tile board.
 
-- `data/maps/demo-map.json`
-- `data/actors/player.json`
-- `data/enemies/host-penitent-bastion.json`
+You play **Mara Vey**, a Free City scout, exploring a ruined quarantine chapel
+on the road to Veyr's Gate. The slice contains:
 
-It draws a simple tile grid on Canvas and lets the player move with arrow keys or WASD. This is intentionally minimal. The point is to establish a clean project shape before adding combat, dialogue, inventory, quests, art, and save files.
+- An isometric, low-resolution scene: a ruined chapel with volumetric walls,
+  broken pews, rubble, dead candles, a corpse and a cracked quarantine sign, and
+  a corrupted altar with pulsing Host growth.
+- Two enemies: a **Red Tithe Cutthroat** (Ash Cartel raider) and a
+  **Host-Touched Penitent** (an early-stage Host victim bent by the Vale Imprint
+  into a broken kneeling penitent, per the religious body horror canon).
+- Three lootable / interactable objects and a small inventory.
+- An Explore mode and an AP-based turn combat mode with win / lose / restart.
+
+### Controls
+
+Explore mode:
+
+- **Left-click** a tile: walk there (path-finds around obstacles, turning to face
+  each step); or `WASD` / Arrow keys: single step (no AP cost)
+- `E` / `Enter`: interact with the object you are on or beside
+- `I`: open or close the field pack inventory screen
+- `H`: use a Field Dressing (restores 4 HP)
+- `Esc` / `Enter`: close an open inventory or readout panel
+- `R`: restart
+- `G`: toggle the debug grid (off by default)
+
+Combat mode:
+
+- **Left-click** a tile to walk there (1 AP per tile, stops when AP runs out), or
+  `WASD` / Arrow keys for single steps
+- `1`: ready melee, `2`: ready sidearm
+- `Tab`: cycle target, or **left-click an enemy** to target it
+- `Space` / `Enter`: attack the selected target
+- `E`: end turn
+- `I`: open or close the field pack inventory screen
+- `H`: use a Field Dressing
+- `Esc` / `Enter`: close an open inventory or readout panel
+- `R`: restart
+
+### How exploration and combat work
+
+You start in **Explore mode**; combat does not begin on load. Walk through the
+chapel, open the Rusted Reliquary and the Field Satchel for loot, and read the
+scene. Combat begins when you **interact with the corrupted altar / Host
+growth**, or when you **approach the altar area or an enemy**. On the first
+turn-based round, initiative is fixed: Mara, then the Cutthroat, then the
+Penitent. Win by defeating both enemies; you lose if Mara reaches 0 HP. Press
+`R` at any time to restart.
+
+### About the art
+
+All art is **original, procedurally drawn / hand-authored pixel art** generated
+at runtime on Canvas 2D (no external image assets, no copied material). The
+target is the general presentation of late-1990s isometric post-apocalyptic
+CRPGs: a fixed 640x480 internal buffer upscaled with crisp nearest-neighbor
+scaling, 64x32 isometric floor tiles, a player-centered scrolling camera, a
+muted desaturated palette, hard-banded lighting, volumetric props, grounded
+human-proportioned sprites, and a heavy brown/brass UI layer with a message log,
+status panel, command panel, field pack screen, readout panel, hover labels, and
+drawn cursor states. UI text is rendered with a small bitmap font on the same
+low-resolution canvas as the game view. None of it copies any existing game's
+assets, names, maps, palette, UI, or designs.
+
+Actors are drawn as directional animated models. Each baked sprite has **eight
+isometric facings**, four-frame idles, eight-frame walk cycles, six-frame
+attacks, four-frame hit reactions, interact frames, and a ten-frame death
+collapse. Mara is 42x62 px, the cutthroat is 44x64 px, and the Host-touched
+penitent is 52x68 px.
+
+Sprites are drawn directly at native resolution with clustered pixels, small
+ramps, hard rim pixels, and dithered fabric or flesh texture. The renderer does
+not smooth-scale sprites. Movement is quantized to the eight walk frames so the
+screen cadence stays low-fps and old-school. Combat shows a move path with an
+AP cost under the cursor rather than flooding every reachable tile.
+
+The older `data/maps/demo-map.json`, `data/actors/player.json`, and
+`data/enemies/host-penitent-bastion.json` remain in the repo as reference
+content but are no longer loaded by the game.
 
 ## Development philosophy
 

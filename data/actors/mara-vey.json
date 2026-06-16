@@ -1,0 +1,18 @@
+{
+  "id": "mara-vey",
+  "name": "Mara Vey",
+  "type": "player",
+  "faction": "free-cities",
+  "role": "Free City Scout",
+  "stats": {
+    "hp": 14,
+    "maxHp": 14,
+    "actionPoints": 6,
+    "moveCost": 1
+  },
+  "attacks": [
+    { "id": "melee", "name": "Scout Knife", "apCost": 3, "damage": 3, "range": 1 },
+    { "id": "sidearm", "name": "Sidearm", "apCost": 4, "damage": 5, "range": 5 }
+  ],
+  "tags": ["party", "human", "scout"]
+}

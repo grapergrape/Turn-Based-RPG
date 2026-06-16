@@ -1,20 +1,51 @@
+// Fixed-initiative turn order for the encounter.
+//
+// Initiative is the order the actors are handed in (Mara, then the Cutthroat,
+// then the Penitent). Dead actors are skipped. Each actor's AP refreshes when
+// its turn begins.
+
 export class TurnManager {
   constructor() {
-    this.turnNumber = 1;
-    this.activeSide = 'player';
+    this.order = [];
+    this.index = 0;
+    this.round = 1;
+    this.active = false;
   }
 
-  endTurn() {
-    if (this.activeSide === 'player') {
-      this.activeSide = 'enemy';
-      return;
-    }
+  begin(actors) {
+    this.order = actors;
+    this.index = 0;
+    this.round = 1;
+    this.active = true;
+    this.current()?.resetAp();
+  }
 
-    this.activeSide = 'player';
-    this.turnNumber += 1;
+  current() {
+    return this.order[this.index] ?? null;
   }
 
   isPlayerTurn() {
-    return this.activeSide === 'player';
+    return this.current()?.type === 'player';
+  }
+
+  // Advance to the next living actor, refreshing its AP. Returns it, or null
+  // if no living actor remains.
+  endTurn() {
+    const living = this.order.filter((actor) => !actor.isDead);
+    if (living.length === 0) {
+      this.active = false;
+      return null;
+    }
+
+    for (let step = 0; step < this.order.length; step += 1) {
+      this.index = (this.index + 1) % this.order.length;
+      if (this.index === 0) this.round += 1;
+      const actor = this.current();
+      if (actor && !actor.isDead) {
+        actor.resetAp();
+        return actor;
+      }
+    }
+    return null;
   }
 }
