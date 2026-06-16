@@ -1,0 +1,15 @@
+{
+  "id": "player",
+  "name": "Unnamed Militia Scout",
+  "type": "player",
+  "faction": "free-cities",
+  "stats": {
+    "hp": 24,
+    "maxHp": 24,
+    "actionPoints": 6
+  },
+  "tags": [
+    "party",
+    "human"
+  ]
+}
