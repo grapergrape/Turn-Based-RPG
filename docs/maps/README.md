@@ -2,4 +2,129 @@
 
 Use this folder for regions, towns, dungeons, encounter areas, traversal routes, and level-design notes.
 
-No canonical locations have been defined yet.
+The full canon lives in `docs/lore/the_host_story_bible.md`. The game-facing world structure lives in `docs/story/world.md`. This file is the map-design index for canonical locations and their expected gameplay purpose.
+
+## Location Design Rules
+
+- Every location should have a practical survival purpose: water, food, roads, medicine, archives, shelter, fuel, quarantine, trade, or worship.
+- Host-contaminated spaces should show the Vale Imprint through layout and props, not just enemies.
+- Human spaces should include ordinary life before horror: kitchens, ledgers, repairs, markets, schools, shrines, workspaces, and signs of compromise.
+- Faction-controlled maps should show what the faction does well and what it hides.
+- Do not make Woundfall a simple final dungeon. It is a region.
+
+## Campaign Regions
+
+### Hallowfen
+
+**Campaign role:** Prologue settlement.
+**Map type:** Small Free City border settlement, later outbreak site.
+**Key spaces:** Homes, water pump, local market, repair shop, chapel, council basement, survivor hiding places, smuggler marks.
+**Gameplay purpose:** Investigation, survivor triage, first major Host reveal, data-core discovery.
+
+Hallowfen should begin quiet and human. The player should understand what was lost before seeing the tribunal beneath the chapel.
+
+### Ash Roads
+
+**Campaign role:** Act I travel region.
+**Map type:** Road network between Free City territory, quarantine ruins, small settlements, and Veyr's Gate.
+**Key spaces:** Checkpoints, road shrines, abandoned suburbs, convoy camps, quarantine chapels, broken bridges, safe wells, toll gates.
+**Gameplay purpose:** Faction introductions, early combat, route choices, road reputation, signs of renewed Host activity.
+
+The current playable level `data/levels/ash_chapel_breach.json` fits here as a roadside quarantine chapel encounter.
+
+### Veyr's Gate
+
+**Campaign role:** Early hub and information market.
+**Map type:** Vertical trade city built around the anchor ruins of a destroyed space elevator.
+**Key spaces:** Gatehouse, water ledgers, roof markets, slums, militia towers, guild halls, shrines, black clinics, salvage elevators, faction embassies.
+**Gameplay purpose:** Hub quests, black market, companion recruitment, faction negotiations, data-core decision fallout.
+
+Every faction should have a presence here, but no faction should fully control it.
+
+### Sanctum Aurelian
+
+**Campaign role:** Holy Remnant capital and Confessor's Key location.
+**Map type:** Fortress-city around an old planetary defense complex.
+**Key spaces:** Pilgrim camps, decontamination gates, public kitchens, confession courts, basilica weapon, Mercy Courts, Quiet Cardinal vaults, hidden priest-surgeon cells.
+**Gameplay purpose:** Stealth, trial, infiltration, doctrine pressure, Remnant alliance or hostility.
+
+Sanctum should be beautiful, ordered, useful, and terrifying.
+
+### Meridian Vault
+
+**Campaign role:** Lumen Compact capital and Surgeon's Gospel location.
+**Map type:** Underground accelerator tunnels and military bunkers.
+**Key spaces:** Clean transit tubes, surgical theaters, school halls, machine libraries, archive stacks, sealed labs, Project Lazarus Bloom chambers.
+**Gameplay purpose:** Research choices, sealed-lab exploration, medical systems, Compact politics, test-subject consequences.
+
+Meridian should feel safer than the surface until the player sees what safety costs.
+
+### Low Harrow
+
+**Campaign role:** Free City witness quest and Bell in the Water location.
+**Map type:** Flooded city of rooftops, bridges, boats, upper-floor markets, and contaminated lower districts.
+**Key spaces:** Roof farms, boat docks, family towers, submerged streets, black-water wreckage, offering sites, hidden air pockets.
+**Gameplay purpose:** Traversal variation, flood timing, pact revelation, submerged _Eschaton's Mercy_ fragment.
+
+The lower city should imply a long negotiation between human survival and something beneath the water.
+
+### Cinder Parish
+
+**Campaign role:** Free City faith counterpoint.
+**Map type:** Religious farming city outside Remnant authority.
+**Key spaces:** Fields, irrigation shrines, militia barns, open-air chapel, burn-scar memorial, family quarantine rooms.
+**Gameplay purpose:** Faith without Pontifex control, food politics, sheltering infected families, Free City league decisions.
+
+### Glassmarket
+
+**Campaign role:** Food-power and refugee-crisis location.
+**Map type:** Wealthy settlement inside a cracked climate-control dome.
+**Key spaces:** Artificial-sky fields, grain stores, labor gates, ration offices, dome control rooms, luxury upper platforms.
+**Gameplay purpose:** Negotiation, class conflict, refugee ration choices, sabotage or protection of food supply.
+
+### The Pale Orchard
+
+**Campaign role:** Act III awakening site.
+**Map type:** Dormant Bloom zone of rooted transformed bodies.
+**Key spaces:** Pale fruit groves, face-bark trees, wind-whisper lanes, local harvest paths, Remnant burn lines, Compact sample tents, Choir pilgrimage marks.
+**Gameplay purpose:** Environmental boss, moral harvesting choices, proof that Europa is pulling the lock.
+
+The Orchard should be beautiful enough that burning it is not emotionally simple.
+
+### The Black Reliquary
+
+**Campaign role:** Penitent Engine mobile fortress.
+**Map type:** Walking fortress with chapels, armories, repair bays, prison cells, relic vaults, and machine organs.
+**Key spaces:** Leg engine rooms, vow chapel, armor surgery bay, prison hold, command pulpit, exterior siege decks.
+**Gameplay purpose:** Penitent politics, Brother Tarn quest, moving safe zone or hostile war machine.
+
+### Woundfall
+
+**Campaign role:** Act IV region and endgame approach.
+**Map type:** Largest crash scar of _Eschaton's Mercy_.
+**Key spaces:** Dead highways, black-glass fields, half-buried corridors, upside-down chapels, pressure doors, bone forests, malfunctioning gravity rooms, preserved command decks, the Nave.
+**Gameplay purpose:** Large explorable region, faction war, truth of the Stilling, Sorell encounter, First Icon approach.
+
+Woundfall should shift between outdoor wasteland, starship interior, living Host architecture, and preserved old-world spaces.
+
+### Saint Origen Deep Bore
+
+**Campaign role:** Origin site, mostly archive/myth until late game.
+**Map type:** Europan vertical monastery-drill under ice.
+**Key spaces:** Bore shaft, Containment Chapel Three, Chapel of Saint Origen, pressure locks, sample labs, crew quarters, AI broadcast nodes.
+**Gameplay purpose:** Flashbacks, archive playback, hallucination sequences, possible late-game Europa arc.
+
+### Europa
+
+**Campaign role:** Optional/direct endgame escalation or remote contact.
+**Map type:** Ice moon, ocean beneath ice, old Ecclesiate ruins, source-organism interface.
+**Key spaces:** Abandoned landing fields, Saint Origen ruins, ice tunnels, pressure ocean interface, relay systems.
+**Gameplay purpose:** Europa Ending, first contact without Vale's fear as first language.
+
+## Open Map Questions
+
+- Which locations need playable maps for the first vertical slice after Ash Chapel Breach?
+- Is Hallowfen a full explorable settlement or a sequence of smaller maps?
+- Does Veyr's Gate use one hub map or district maps?
+- Is Woundfall open-region traversal, act-based linear approach, or a hybrid?
+- Does the Europa Ending require a playable Europa map or can it resolve through Woundfall's relay?
