@@ -19,6 +19,11 @@ Use `docs/story/` as the game-facing story layer:
 - `docs/story/world.md` - current era, timeline, regions, factions, tone, and open story questions.
 - `docs/story/characters.md` - player premise, companions, faction leaders, recurring antagonists, and old-world figures.
 - `docs/story/quests.md` - five-act campaign structure, witness quests, faction questlines, companion hooks, and endings.
+- `docs/story/story-dialogue-workflow.md` - story/dialogue authoring workflow, scene packet format, and rules for keeping dialogue tied to quest beats.
+
+Story and dialogue should be written together as scene packets. Each packet names the quest, location, speakers, player state, purpose, pressure, choices, sample lines, consequences, dependencies, and open questions. Do not write final dialogue only in `docs/story/quests.md`, and do not write isolated dialogue with no quest beat or consequence.
+
+Runtime dialogue belongs in future `data/dialogue/` files only after a conversation needs to run in-game. Until then, keep authoring in `docs/story/` and keep system requirements in `docs/systems/dialogue.md`.
 
 Use `docs/enemies/` for hostile faction and boss design:
 

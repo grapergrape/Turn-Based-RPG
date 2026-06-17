@@ -209,6 +209,8 @@ Rules:
 
 When dialogue is added, use a separate folder such as `data/dialogue/`.
 
+Author dialogue first as scene packets in `docs/story/story-dialogue-workflow.md`.
+Move dialogue to `data/dialogue/` only when one scene needs to run in-game.
 Do not hardcode conversations into JavaScript. A simple future shape could be:
 
 ```json
