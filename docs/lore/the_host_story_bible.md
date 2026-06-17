@@ -90,13 +90,13 @@ The lead scientific staff believed they were being trusted with the most importa
 
 His name was **Father Marius Vale**.
 
-Vale was not a fool. He was educated, disciplined, and politically gifted. He had written theological treatises on extraterrestrial life and argued that if alien organisms existed, they too were part of creation. He believed that humanity’s fear of the unknown could be overcome by doctrine, ritual, and humility.
+Vale was not a fool, and he was not a powerful man. He never had been. He was a mission priest — mid-list, easy to overlook, the kind the Ecclesiate sends where the important people will not go. He was thoughtful: he had written quiet theological notes on extraterrestrial life, arguing that if alien organisms existed they too were part of creation, and he believed humanity's fear of the unknown could be met with doctrine, ritual, and humility.
 
 But Vale was also haunted.
 
-He had risen through the Ecclesiate during purges he later claimed to oppose. He had signed orders that sent dissident scientists to prison-monasteries. He had betrayed colleagues to protect his career. He had comforted grieving families while knowing the state had caused their grief. He believed in mercy, but he feared justice. He preached salvation, but he dreamed of damnation.
+His sins were small and human, which is exactly why he could never forgive them: a friend he failed to speak up for, families he comforted with words he knew were lies, a lifetime of going quiet because quiet was safer. He never signed a purge or climbed over anyone; he simply lacked the courage to refuse the people who did. He believed in mercy but feared justice. He preached salvation but dreamed, every night, of damnation — a terror of Hell drilled so deep in childhood that he could no longer tell devotion from dread.
 
-He carried Hell inside him long before Europa opened.
+He carried Hell inside him long before Europa opened. That is the quiet horror of it: it did not take a monster, or a tyrant, or a true believer. An ordinary, frightened, decent-enough man was enough.
 
 ---
 
@@ -1003,6 +1003,22 @@ His original transformed body, **the First Icon**, may still exist inside the de
 Finding the First Icon should be one of the game’s most disturbing sequences.
 
 Vale is not a final boss in the simple sense. He is a ruined person, an alien relay, a saint, a victim, a monster, a weapon, and a prison. He may speak lucidly for moments. He may beg the player to kill him. He may insist that Hell is real. He may admit he no longer knows which thoughts are his.
+
+#### One hundred and thirty years in his own nightmare
+
+This is the heart of what makes Vale unbearable, and it should be written that way.
+
+The Vale Imprint is not an abstraction. It is **his** Hell — the specific terror of damnation drilled into one frightened priest — and when the organism froze into the Stilling, it froze around him with the lights still on. Vale did not die at Saint Origen and he did not get to stop being Vale. He has spent **one hundred and thirty years awake, or half-awake, fused into the wreck at Woundfall, living inside the exact nightmare he feared most** — eternal punishment, endless judgment, a Hell with no door — except it is real now, it is made of his own body, and it never, ever ends. No mind survives that intact. His did not.
+
+Worse: he is the **relay**. For over a century, every confession whispered into a contaminated reliquary, every prayer of the dying, every transformation across Earth has passed *through him*. He has heard it all. So when the player finally reaches him, Vale is not an innocent who slept through history — he has been a helpless, horrified **witness** to the world his nightmare built. He has felt the Holy Remnant burn frightened families in his name. He has heard them teach that he is the Devil, and heard them teach that he is a saint, and known both are lies told to keep people kneeling. He learned the cruelty of the Church the slow way: one screamed confession at a time, for a hundred and thirty years, unable to answer or refuse.
+
+Talking to him should oscillate, sometimes mid-sentence, between three registers:
+
+- **The man.** Lucid, exhausted flashes of who he was: ordinary, ashamed, gentle, apologetic. He blames himself for all of it ("it came out of *me*"), begs to be killed, and — having heard everything through the network — quietly warns the player about the Remnant and the lie of the Mercy of the Last Dawn. This is the version that earns pity.
+- **The demon.** The raving Hell-saint: grandiose, hostile, speaking in the voices of the dead and of people the player knows, blessing and damning in the same breath, insisting Hell is literal and he is its first opened saint. This is the version that is a genuine boss and will kill you.
+- **The blur.** The true horror — he can no longer tell which one he is. The gentle man dissolves into the monster and back again, and he knows it is happening, and cannot stop it. He is not possessed by the Host so much as *no longer separable from it*.
+
+He should never be a clean villain or a clean victim. The player should want to free him and fear him at once — and the choice of whether to kill him, preserve him as the lock's keystone, free him, or speak with him long enough to learn the truth is exactly what branches the ending.
 
 The player must decide what to do with the Host, the Vale Imprint, and the failing lock.
 

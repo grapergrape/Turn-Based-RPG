@@ -184,8 +184,12 @@ interior walls never hide the figure.
 Actors are drawn as directional animated models. Each baked sprite has **eight
 isometric facings**, four-frame idles, eight-frame walk cycles, six-frame
 attacks, four-frame hit reactions, interact frames, and a ten-frame death
-collapse. Mara is 42x62 px, the Choir cultists use a 44x64 px hooded ritual
-sprite, and the Host-touched penitent is 52x68 px.
+collapse. Mara is 42x62 px and the Choir cultists use a 44x64 px hooded ritual
+sprite (bloodied stole, a bone rite-knife, a held strip of pale sacrament-flesh).
+The Host-Touched Penitent is a hulking 64x92 px body-horror sprite: a broken bone
+halo, a screaming horned skull, a ribcage splayed open like chapel doors over a
+glowing black-gold wound, shoulder thorns, and elongated bone prayer-arms. Cleared
+actors leave type-specific corpses on the ground.
 
 Sprites are drawn directly at native resolution with clustered pixels, small
 ramps, hard rim pixels, and dithered fabric or flesh texture. The renderer does
