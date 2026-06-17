@@ -353,11 +353,17 @@ Cessa harvests pale fruit from the Orchard and knows which trees were once her n
 ### Father Marius Vale
 
 **Faction:** Solar Ecclesiate, The Host
-**Role:** First infected priest, possible First Icon
+**Role:** First infected priest, the First Icon, possible final encounter
 
 Vale is the accidental author of the apocalypse. He did not create the organism, but his mind gave the Earthborn Host its inherited grammar of sin, punishment, martyrdom, judgment, saints, devils, and Hell.
 
-If his transformed body still exists, he is not a simple final boss. He is victim, relay, monster, saint, weapon, and prison.
+He was never important. That is the point. He was an ordinary, frightened mission priest — not a Curia climber, not a tyrant, not even a true believer in the cruelty around him; just a decent-enough, overlooked man with small unforgivable sins (the friend he didn't defend, the lies he told the grieving) and a childhood terror of damnation he never outgrew. It did not take a monster to break the world. An ordinary scared man was enough — which is far worse.
+
+**130 years in his own nightmare.** When the organism took him it built Hell out of *his* fear, and when the Stilling froze the Host it froze around him with him still inside it. He has spent over a century awake in the exact eternal punishment he most dreaded — now real, now made of his own body, now without end. It has driven him irreparably insane. And because he is the **relay** at the center of the Vale Imprint, every confession breathed into a contaminated reliquary and every prayer of the dying has passed through him for 130 years: he has been a helpless witness to the authoritarian Church that grew in his name, has felt it burn the frightened "for God's war," and knows the comforting story of the Mercy of the Last Dawn is a lie.
+
+**Talking to him** flickers, often mid-sentence, between three registers: **the man** (lucid, ashamed, gentle, begging to die, quietly warning you about the Remnant), **the demon** (a raving Hell-saint in the voices of the dead, blessing and damning, a genuine and lethal boss), and **the blur** — the true horror, where he can no longer tell which he is and knows it. Not possessed by the Host so much as no longer separable from it.
+
+He is victim, relay, monster, saint, weapon, and prison at once. The player should pity and fear him in the same breath. What you do with him — kill, preserve as the lock's keystone, free, or hear out — is the hinge the ending turns on (see the story bible, Act V).
 
 ### Canticle
 

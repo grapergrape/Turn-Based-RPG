@@ -153,12 +153,28 @@ function drawSmallHead(ctx, x, y, meta, pose, style) {
 
   if (style.hostHead) {
     const cx = x + hit;
-    px(ctx, cx - 3, y, PALETTE.hostBlack, 7, 9);
-    px(ctx, cx - 2, y + 1, PALETTE.hostBone, 5, 6);
-    px(ctx, cx - 1, y + 3, PALETTE.void, 3, 1);
-    px(ctx, cx, y + 5, PALETTE.hostGold, 1, 2);
-    px(ctx, cx - 3, y + 7, PALETTE.hostBlack, 7, 2);
-    px(ctx, cx - 2, y - 1, PALETTE.hostGold, 5, 1);
+    // A stretched, screaming skull: cracked bone dome, hollow gold-pinned eye
+    // sockets, a third eye, a too-wide mouth full of bone teeth, weeping gold,
+    // and a pair of bone horns. Bold and high-contrast so it reads in-game.
+    px(ctx, cx - 5, y - 1, PALETTE.hostBlack, 11, 13); // dark backing
+    px(ctx, cx - 4, y, PALETTE.hostBone, 9, 11); // bone skull
+    px(ctx, cx - 4, y, PALETTE.hostGold, 9, 1); // cracked crown seam
+    px(ctx, cx - 1, y + 1, PALETTE.hostBlack, 1, 4); // split down the brow
+    // hollow eye sockets + gold pinpoints, and a third eye opening
+    px(ctx, cx - 3, y + 3, PALETTE.void, 2, 3);
+    px(ctx, cx + 2, y + 3, PALETTE.void, 2, 3);
+    px(ctx, cx - 3, y + 4, PALETTE.hostGold, 1, 1);
+    px(ctx, cx + 3, y + 4, PALETTE.hostGold, 1, 1);
+    px(ctx, cx, y, PALETTE.void, 1, 1);
+    px(ctx, cx, y, PALETTE.hostGlow, 1, 1);
+    // a too-wide screaming mouth with bone teeth
+    px(ctx, cx - 4, y + 7, PALETTE.void, 9, 4);
+    for (let t = 0; t < 5; t += 1) px(ctx, cx - 3 + t * 2, y + 7, PALETTE.hostBone, 1, 4);
+    // black-gold weeping from the sockets, horns from the skull
+    px(ctx, cx - 2, y + 6, PALETTE.hostGold, 1, 5);
+    px(ctx, cx + 3, y + 6, PALETTE.hostGold, 1, 4);
+    px(ctx, cx - 5, y - 3, PALETTE.hostBone, 1, 3);
+    px(ctx, cx + 5, y - 3, PALETTE.hostBone, 1, 3);
     return;
   }
 
@@ -456,39 +472,109 @@ function drawCutthroatDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, he
 
 function drawHostDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
   const c = torso.bodyCx;
-  const side = directionSide(meta);
   const pulse = pose.bob ? 1 : 0;
+  const half = Math.max(6, Math.floor(torso.shoulderW / 2));
 
-  // Broken bone halo, offset behind the tiny head.
-  for (let n = 0; n < 13; n += 1) {
-    if (n === 4 || n === 8) continue;
-    const angle = Math.PI * (0.06 + n * 0.074);
-    const hx = c + Math.round(Math.cos(angle) * 10);
-    const hy = headY + 5 - Math.round(Math.sin(angle) * 8);
-    px(ctx, hx, hy, PALETTE.hostBone, n % 4 === 0 ? 2 : 1, 1);
+  // Big, broken bone halo wheeling above and behind the head.
+  for (let n = 0; n < 18; n += 1) {
+    if (n === 5 || n === 9 || n === 13) continue; // gaps in the ring
+    const a = Math.PI * (0.02 + n * 0.057);
+    const hx = c + Math.round(Math.cos(a) * 15);
+    const hy = headY + 4 - Math.round(Math.sin(a) * 13);
+    px(ctx, hx, hy, PALETTE.hostBone, n % 3 === 0 ? 2 : 1, 1);
   }
 
-  // Rib cage and black-gold wound under torn robe/flesh.
-  px(ctx, c - 5, shoulderY + 7, PALETTE.hostBone, 10, 1);
-  px(ctx, c - 4, shoulderY + 11, PALETTE.hostBone, 9, 1);
-  px(ctx, c - 3, shoulderY + 15, PALETTE.hostBone, 8, 1);
-  px(ctx, c - 2, shoulderY + 11, PALETTE.hostRed, 5, 7);
-  px(ctx, c, shoulderY + 13, pulse ? PALETTE.hostGlow : PALETTE.hostGold, 2, 2);
-  if (pulse) px(ctx, c + 1, shoulderY + 12, PALETTE.flash, 1, 1);
+  if (meta.back) {
+    // From behind: a ridge of bone-thorns erupting up the spine.
+    for (let i = 0; i < 7; i += 1) {
+      const ty = shoulderY + 2 + i * 3;
+      linePx(ctx, c, ty, c, ty - (4 + (i % 2) * 3), PALETTE.hostBone, 1);
+      px(ctx, c - 1, ty, PALETTE.hostBone, 3, 1);
+    }
+    px(ctx, c - half, shoulderY + 5, PALETTE.hostGold, half * 2, 1);
+  } else {
+    // The chest splayed open like chapel doors over a glowing black-gold wound.
+    const cavTop = shoulderY + 5;
+    const cavH = Math.max(8, hipY - cavTop - 1);
+    px(ctx, c - 3, cavTop, PALETTE.void, 7, cavH);
+    px(ctx, c - 2, cavTop + 1, PALETTE.hostBlack, 5, cavH - 1);
+    for (let r = 0; r < 5; r += 1) {
+      const ry = cavTop + 1 + r * 3;
+      const sp = 4 + r;
+      px(ctx, c - 3 - sp, ry, PALETTE.hostBone, sp, 1); // left rib door
+      px(ctx, c + 3, ry, PALETTE.hostBone, sp, 1); // right rib door
+      px(ctx, c - 3 - sp, ry + 1, PALETTE.hostGold, 1, 1);
+      px(ctx, c + 2 + sp, ry + 1, PALETTE.hostGold, 1, 1);
+    }
+    const wy = cavTop + 3;
+    px(ctx, c - 2, wy, PALETTE.hostRed, 5, 6);
+    px(ctx, c - 1, wy + 1, pulse ? PALETTE.hostGlow : PALETTE.hostGold, 3, 4);
+    px(ctx, c, wy + 2, PALETTE.flash, 1, 2);
+    // a second screaming mouth low in the ribs, bone teeth
+    const my = cavTop + cavH - 3;
+    px(ctx, c - 4, my, PALETTE.void, 9, 3);
+    for (let t = 0; t < 5; t += 1) px(ctx, c - 4 + t * 2, my, PALETTE.hostBone, 1, 3);
+    // black-gold veins radiating from the wound
+    linePx(ctx, c, wy + 2, c - half - 1, shoulderY + 2, PALETTE.hostGold);
+    linePx(ctx, c, wy + 2, c + half + 1, shoulderY + 3, PALETTE.hostGold);
+    linePx(ctx, c, wy + 4, c - 5, hipY + 2, PALETTE.hostGold);
+    linePx(ctx, c, wy + 4, c + 5, hipY + 1, PALETTE.hostGold);
+    // hanging viscera dripping from the cavity
+    px(ctx, c - 2, hipY, PALETTE.hostRed, 2, 5);
+    px(ctx, c + 2, hipY, PALETTE.hostRed, 1, 4);
+  }
 
-  // Elongated prayer-limb shapes. They keep a human shoulder and elbow, but the
-  // hands hang too low.
-  linePx(ctx, c - 8, shoulderY + 5, c - 12, hipY + 7, PALETTE.hostBone, 1);
-  linePx(ctx, c + 8, shoulderY + 5, c + 12, hipY + 7, PALETTE.hostBone, 1);
-  px(ctx, c - 14, hipY + 7, PALETTE.hostBone, 3, 4);
-  px(ctx, c + 12, hipY + 7, PALETTE.hostBone, 3, 4);
+  // Bone-thorns bursting from both shoulders.
+  linePx(ctx, c - half, shoulderY + 1, c - half - 6, shoulderY - 6, PALETTE.hostBone, 1);
+  linePx(ctx, c - half + 1, shoulderY, c - half - 3, shoulderY - 8, PALETTE.hostBone, 1);
+  linePx(ctx, c + half, shoulderY + 1, c + half + 6, shoulderY - 5, PALETTE.hostBone, 1);
+  linePx(ctx, c + half - 1, shoulderY, c + half + 3, shoulderY - 8, PALETTE.hostBone, 1);
 
-  // Thorn splinters and robe pool.
-  linePx(ctx, c - 10, shoulderY + 2, c - 15, shoulderY - 4, PALETTE.hostBone);
-  linePx(ctx, c + 10, shoulderY + 3, c + 15, shoulderY - 2, PALETTE.hostBone);
-  px(ctx, c - 10, hipY + 4, PALETTE.hostBlack, 20, 10);
-  px(ctx, c - 7, hipY + 12, PALETTE.hostRed, 14, 2);
-  linePx(ctx, c - side * 4, shoulderY + 3, c + side * 7, hipY + 5, PALETTE.hostGold);
+  // Elongated bone prayer-arms hanging too low, ending in too many fingers.
+  for (const s of [-1, 1]) {
+    const sx = c + s * (half - 1);
+    const handY = hipY + 9;
+    linePx(ctx, sx, shoulderY + 4, c + s * (half + 2), handY, PALETTE.hostBone, 2);
+    for (let f = 0; f < 5; f += 1) {
+      px(ctx, c + s * (half + 1) + (f - 2), handY, PALETTE.hostBone, 1, 3 + (f % 2));
+    }
+  }
+
+  // Wet robe pool + black-gold sheen at the base.
+  px(ctx, c - half, hipY + 6, PALETTE.hostBlack, half * 2, 8);
+  px(ctx, c - half + 2, hipY + 13, PALETTE.hostRed, half * 2 - 4, 2);
+}
+
+function drawChoirDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
+  const side = directionSide(meta);
+  const c = torso.bodyCx;
+  const redSide = meta.back ? -1 : 1;
+
+  // Stained clerical stole down the front of the robe.
+  linePx(ctx, c - redSide * 5, shoulderY + 2, c + redSide * 4, hipY + 2 + (pose.cloth ?? 0), PALETTE.clothRed);
+  linePx(ctx, c - redSide * 4, shoulderY + 3, c + redSide * 5, hipY, PALETTE.hostRed);
+
+  if (!meta.back) {
+    // A blood-blackened mouth and chin below the cowl: they eat the opened flesh.
+    px(ctx, c - 2, headY + 6, PALETTE.hostRed, 5, 2);
+    px(ctx, c - 1, headY + 8, PALETTE.hostRed, 3, 1);
+    // First black-gold creeping at the throat — they are slowly opening too.
+    px(ctx, c, headY + 9, PALETTE.hostGold, 1, 3);
+    // A held strip of pale sacrament-flesh, dripping.
+    const hx = c + side * 6;
+    px(ctx, hx - 1, hipY - 6, PALETTE.hostBone, 3, 5);
+    px(ctx, hx, hipY - 1, PALETTE.hostRed, 1, 3);
+    // Blood-soaked hands.
+    px(ctx, c - side * 7, hipY - 3, PALETTE.hostRed, 3, 2);
+    px(ctx, hx - 1, hipY - 2, PALETTE.hostRed, 3, 1);
+  }
+
+  // A hooked bone rite-knife at the hip and a small censer on the belt.
+  const knifeX = c + side * 8;
+  linePx(ctx, knifeX, shoulderY + 9, knifeX + side * 2, hipY - 3, PALETTE.hostBone);
+  px(ctx, knifeX + side * 2, hipY - 3, PALETTE.hostBone, 2, 2);
+  px(ctx, c - 9, shoulderY + 5, PALETTE.rustMid, 4, 5);
+  px(ctx, c - 9, shoulderY + 5, PALETTE.hostGold, 4, 1);
 }
 
 const MARA_STYLE = {
@@ -574,18 +660,19 @@ const CHOIR_STYLE = {
   skin: PALETTE.skinMid,
   skinLo: PALETTE.skinDark,
   weapon: PALETTE.hostBone,
-  hunch: 3
+  hunch: 3,
+  decorate: drawChoirDetails
 };
 
 const PEN_STYLE = {
-  shoulders: 16,
-  waist: 8,
-  torsoLength: 18,
-  legLength: 24,
-  headHeight: 9,
-  legSize: 2,
-  armSize: 2,
-  coatTail: 9,
+  shoulders: 22,
+  waist: 12,
+  torsoLength: 24,
+  legLength: 28,
+  headHeight: 11,
+  legSize: 3,
+  armSize: 3,
+  coatTail: 11,
   coatHi: PALETTE.hostGold,
   coat: PALETTE.hostBlack,
   coatLo: PALETTE.void,
@@ -642,7 +729,7 @@ export function buildSpriteAtlas() {
     'mara-vey': bakeActor(42, 62, MARA_STYLE),
     'choir-cultist': bakeActor(44, 64, CHOIR_STYLE),
     'red-tithe-cutthroat': bakeActor(44, 64, CUT_STYLE),
-    'host-touched-penitent': bakeActor(52, 68, PEN_STYLE)
+    'host-touched-penitent': bakeActor(64, 92, PEN_STYLE)
   };
 }
 
