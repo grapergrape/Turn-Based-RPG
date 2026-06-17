@@ -54,7 +54,7 @@ The campaign asks what the player will do with truth when every faction can use 
 - See evidence of renewed Host activity: a Choir Tree speaking mission-log language, a child drawing Saint Origen from memory, a relic becoming dangerous again, and Penitent Engines marching toward Woundfall.
 - Decode enough of the data core to reveal three archive coordinates.
 
-**Early playable slice connection:** `data/levels/ash_chapel_breach.json` can function as an Ash Roads side encounter or tutorial combat space. It should foreshadow Hallowfen's themes without replacing the Hallowfen prologue.
+**Early playable slice connection:** `data/levels/ash_chapel_breach.json` functions as an Ash Roads side encounter and tutorial combat space. It foreshadows Hallowfen through a Choir cell, overheard teachings, a private altar rite, and a ledger that says Hallowfen has stopped answering signal bells. The slice should not name Father Vale, reveal Sorell, explain the data core, or confirm why anyone is changing.
 
 ### Act II: The Three Witnesses
 

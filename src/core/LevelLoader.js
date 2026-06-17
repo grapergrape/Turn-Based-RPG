@@ -1,7 +1,8 @@
 // Loads a level and all the content it references, then assembles the runtime
 // objects the game needs: a Grid, the renderer prop list (walls derived from
 // tiles + authored objects), the interactable subset, the player and enemy
-// entities, item definitions, and the combat trigger zone.
+// entities, item definitions, dialogue definitions, quest definitions, and
+// encounter trigger zones.
 
 import { Grid } from '../world/Grid.js';
 import { createActor } from '../entities/ActorFactory.js';
@@ -12,6 +13,14 @@ async function loadJson(path) {
     throw new Error(`Failed to load ${path}: ${response.status} ${response.statusText}`);
   }
   return response.json();
+}
+
+async function loadContentById(ids, folder) {
+  const entries = {};
+  for (const id of ids ?? []) {
+    entries[id] = await loadJson(`./data/${folder}/${id}.json`);
+  }
+  return entries;
 }
 
 // Map a non-walkable legend entry to a renderer prop kind.
@@ -56,9 +65,16 @@ export async function loadLevel(levelPath) {
       enemyDataById.set(spawn.id, await loadJson(`./data/enemies/${spawn.id}.json`));
     }
   }
-  const enemies = enemySpawns.map((spawn) =>
-    createActor(enemyDataById.get(spawn.id), { x: spawn.x, y: spawn.y })
-  );
+  const enemies = enemySpawns.map((spawn, index) => {
+    const enemy = createActor(enemyDataById.get(spawn.id), { x: spawn.x, y: spawn.y });
+    enemy.spawnId = spawn.spawnId ?? `${spawn.id}-${index}`;
+    enemy.encounter = spawn.encounter ?? enemy.spawnId;
+    enemy.aggroRadius = spawn.aggroRadius ?? level.enemyAggroRadius ?? null;
+    enemy.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
+    enemy.ambientIndex = 0;
+    enemy.ambientTimer = 1.2 + (index % 3) * 1.4;
+    return enemy;
+  });
 
   // Item definitions referenced by loot.
   const itemIds = new Set();
@@ -70,16 +86,27 @@ export async function loadLevel(levelPath) {
     itemDefs[id] = await loadJson(`./data/items/${id}.json`);
   }
 
+  const dialogueDefs = await loadContentById(level.dialogue ?? [], 'dialogue');
+  const questDefs = await loadContentById(level.quests ?? [], 'quests');
+
   return {
     id: level.id,
     name: level.name,
     intro: level.intro ?? '',
+    briefing: Array.isArray(level.briefing) ? level.briefing : null,
+    briefingTitle: level.briefingTitle ?? 'FIELD WRIT',
+    mood: level.mood ?? null,
     grid,
     props,
     interactables,
     player,
     enemies,
     itemDefs,
+    dialogueDefs,
+    questDefs,
+    combatIntro: level.combatIntro ?? [],
+    combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
+    onVictory: level.onVictory ?? null,
     triggerZone: level.combatTrigger ?? null
   };
 }

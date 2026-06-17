@@ -12,7 +12,7 @@ const LOG_BOX = { x: 8, y: UI_PANEL.y + 7, w: 328, h: UI_PANEL.height - 14 };
 const STATUS_BOX = { x: 342, y: UI_PANEL.y + 7, w: 138, h: UI_PANEL.height - 14 };
 const COMMAND_BOX = { x: 486, y: UI_PANEL.y + 7, w: 146, h: UI_PANEL.height - 14 };
 const INVENTORY_BOX = { x: 54, y: 42, w: 532, h: 296 };
-const DIALOGUE_BOX = { x: 42, y: 248, w: 556, h: 124 };
+const DIALOGUE_BOX = { x: 36, y: 188, w: 568, h: 184 };
 
 const FONT = {
   A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
@@ -89,6 +89,39 @@ export class UIRenderer {
     ctx.restore();
   }
 
+  // The opening writ: a full-screen wall of grim amber text, paged.
+  drawBriefing(ctx, data) {
+    const W = ctx.canvas.width;
+    const H = ctx.canvas.height;
+    for (let y = 0; y < H; y += 3) this.#rect(ctx, 0, y, W, 1, PALETTE.uiDark);
+    this.#rect(ctx, 10, 10, W - 20, 1, PALETTE.uiBorderDark);
+    this.#rect(ctx, 10, H - 11, W - 20, 1, PALETTE.uiBorderDark);
+    this.#rect(ctx, 10, 10, 1, H - 20, PALETTE.uiBorderDark);
+    this.#rect(ctx, W - 11, 10, 1, H - 20, PALETTE.uiBorderDark);
+
+    const left = 64;
+    const right = W - 64;
+    const maxChars = Math.floor((right - left) / 6);
+
+    this.#text(ctx, data.title ?? 'FIELD WRIT', left, 40, PALETTE.uiWarn);
+    const pageStr = `${(data.pageIndex ?? 0) + 1} / ${data.pageCount ?? 1}`;
+    this.#text(ctx, pageStr, right - this.#textWidth(pageStr), 40, PALETTE.uiDim);
+    this.#rect(ctx, left, 54, right - left, 1, PALETTE.uiBorderDark);
+
+    let y = 92;
+    for (const para of data.page ?? []) {
+      for (const line of this.#wrap(para, maxChars)) {
+        this.#text(ctx, line, left, y, PALETTE.uiText);
+        y += 12;
+      }
+      y += 12;
+    }
+
+    const last = (data.pageIndex ?? 0) >= (data.pageCount ?? 1) - 1;
+    this.#text(ctx, last ? 'ENTER: ENTER THE CHAPEL' : 'ENTER: CONTINUE', left, H - 44, PALETTE.uiGood);
+    this.#text(ctx, 'ESC: SKIP', right - this.#textWidth('ESC: SKIP'), H - 44, PALETTE.uiDim);
+  }
+
   #drawHud(ctx, ui) {
     this.#panelTexture(ctx, UI_PANEL);
     this.#window(ctx, LOG_BOX, 'MESSAGE LOG');
@@ -142,8 +175,15 @@ export class UIRenderer {
   #drawStatus(ctx, ui) {
     let y = STATUS_BOX.y + 19;
     const x = STATUS_BOX.x + 9;
-    this.#text(ctx, this.#clip(ui.actorName ?? 'MARA VEY', 19), x, y, PALETTE.uiText);
-    y += 11;
+    this.#text(ctx, this.#clip(ui.actorName ?? 'MARA VEY', 21), x, y, PALETTE.uiText);
+    y += 9;
+    if (ui.role) {
+      // Show the short title; the full office name lives in the opening writ.
+      this.#text(ctx, this.#clip(ui.role.split(',')[0], 21), x, y, PALETTE.uiDim);
+      y += 11;
+    } else {
+      y += 2;
+    }
 
     const hpRatio = ui.maxHp > 0 ? ui.hp / ui.maxHp : 0;
     const hpColor = hpRatio <= 0.34 ? PALETTE.uiBad : PALETTE.uiText;
@@ -217,16 +257,48 @@ export class UIRenderer {
     this.#window(ctx, DIALOGUE_BOX, dialogue.title ?? 'INSPECT');
     const body = { x: DIALOGUE_BOX.x + 14, y: DIALOGUE_BOX.y + 26, w: DIALOGUE_BOX.w - 28, h: DIALOGUE_BOX.h - 58 };
     this.#inset(ctx, body);
-    let y = body.y + 8;
-    for (const line of this.#wrap((dialogue.lines ?? []).join(' '), 82).slice(0, 5)) {
-      this.#text(ctx, line, body.x + 8, y, PALETTE.uiText);
-      y += 10;
+
+    // Wrap every paragraph (keeping blank-line breaks between them) so the whole
+    // script is available, then show a scrollable window of it.
+    const maxChars = Math.floor((body.w - 16) / 6);
+    const all = [];
+    for (const para of dialogue.lines ?? []) {
+      if (all.length) all.push('');
+      all.push(...this.#wrap(para, maxChars));
     }
+    const lineH = 10;
+    const visible = Math.max(1, Math.floor((body.h - 14) / lineH));
+    const maxScroll = Math.max(0, all.length - visible);
+    const scroll = Math.max(0, Math.min(dialogue.scroll ?? 0, maxScroll));
+    // Write the clamped values back so Game's input handler knows the bounds.
+    dialogue.scroll = scroll;
+    dialogue.maxScroll = maxScroll;
+
+    let y = body.y + 8;
+    for (const line of all.slice(scroll, scroll + visible)) {
+      this.#text(ctx, line, body.x + 8, y, PALETTE.uiText);
+      y += lineH;
+    }
+    if (scroll > 0) this.#scrollArrow(ctx, body.x + body.w - 12, body.y + 7, -1, PALETTE.uiBorderLight);
+    if (scroll < maxScroll) this.#scrollArrow(ctx, body.x + body.w - 12, body.y + body.h - 11, 1, PALETTE.uiWarn);
+
     const options = dialogue.options ?? ['ENTER CLOSE'];
     let ox = DIALOGUE_BOX.x + 14;
     for (const option of options) {
       this.#text(ctx, `[${option}]`, ox, DIALOGUE_BOX.y + DIALOGUE_BOX.h - 20, PALETTE.uiGood);
       ox += this.#textWidth(`[${option}]`) + 14;
+    }
+    if (maxScroll > 0) {
+      const hint = 'UP/DN SCROLL';
+      this.#text(ctx, hint, DIALOGUE_BOX.x + DIALOGUE_BOX.w - this.#textWidth(hint) - 14, DIALOGUE_BOX.y + DIALOGUE_BOX.h - 20, PALETTE.uiDim);
+    }
+  }
+
+  // A small solid scroll triangle (dir -1 = up, 1 = down).
+  #scrollArrow(ctx, x, y, dir, color) {
+    for (let i = 0; i < 4; i += 1) {
+      const w = dir < 0 ? i * 2 + 1 : 7 - i * 2;
+      this.#rect(ctx, x - Math.floor(w / 2), y + i, w, 1, color);
     }
   }
 

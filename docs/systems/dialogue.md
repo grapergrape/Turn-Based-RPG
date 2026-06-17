@@ -1,6 +1,11 @@
 # Dialogue System
 
-The runtime dialogue system has not been implemented yet. Story and dialogue authoring should follow `docs/story/story-dialogue-workflow.md` until the game has a data-driven dialogue loader.
+The first runtime dialogue pass exists for the Ash Chapel slice. It supports
+short readout scenes, one or two numbered choices, log effects, quest-stage
+updates, simple same-level teleport effects, and `loadLevel` effects for secret
+entrances that move to a separate JSON level. Story and dialogue authoring
+should still start in `docs/story/story-dialogue-workflow.md` before moving
+playable lines into `data/dialogue/`.
 
 ## Current Authoring Rule
 
@@ -31,39 +36,45 @@ A dialogue scene should define:
 - dependencies,
 - open questions.
 
-## Future Runtime Shape
+## Runtime Shape
 
-When the first playable conversation is needed, add `data/dialogue/` and keep one JSON file per dialogue or scene group.
+Keep one JSON file per dialogue or scene group.
 
-A future dialogue file should contain:
+Current dialogue files contain:
 
 ```json
 {
-  "id": "hallowfen-kess-cellar",
-  "quest": "hallowfen-silence",
-  "location": "hallowfen-chapel",
-  "speakers": ["marshal-confessor-odran-kess", "player"],
-  "conditions": {
-    "requires": ["hallowfen-council-found"]
-  },
+  "id": "ash-chapel-barrel-ladder",
+  "title": "Split Barrel",
   "nodes": {
     "start": {
-      "speaker": "marshal-confessor-odran-kess",
-      "text": "There are six children in that cellar. There are three thousand people behind this gate. Choose your mercy carefully.",
+      "lines": ["The barrel is nailed to the floor."],
       "choices": [
-        { "text": "Open the cellar.", "next": "open-cellar" },
-        { "text": "Hold the seal.", "next": "hold-seal" }
+        {
+          "label": "Descend",
+          "effects": {
+            "log": "You descend through the barrel into the cellar.",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_cellar.json",
+              "player": { "x": 12, "y": 13 }
+            },
+            "questUpdate": { "quest": "investigate-ash-chapel-cult", "stage": "cellar-found" }
+          },
+          "close": true
+        }
       ]
     }
-  },
-  "consequences": {
-    "open-cellar": ["remnant-trust-down", "lio-approval-up"],
-    "hold-seal": ["remnant-trust-up", "survivors-lost"]
   }
 }
 ```
 
-This shape is a starting point. Update `docs/CONTENT_PIPELINE.md` and the validator before treating it as a required schema.
+This shape is intentionally narrow. Add conditions, speakers, reputation,
+companion reactions, or skill checks only when a playable scene needs them.
+
+Ambient NPC lines are authored on enemy spawns as `ambient` arrays, not as full
+dialogue nodes. Use them for short overheard teachings, warnings, or routines
+before combat. They should not explain the plot or reveal information the player
+has not earned.
 
 ## Dialogue Tone
 
@@ -91,8 +102,6 @@ Avoid:
 
 ## Open Questions
 
-- What runtime dialogue schema should the first playable conversation use?
-- How are consequences applied: quest flags, faction reputation, companion approval, world state, or all four?
 - Does the player character speak as a defined voice, selected intent, or silent protagonist?
-- How are combat barks stored?
+- How are later consequences applied: faction reputation, companion approval, world state, or all three?
 - Can dialogue choices test Keeps, Virtues, Trace, faction clearances, or companion presence?

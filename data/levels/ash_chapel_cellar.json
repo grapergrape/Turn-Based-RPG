@@ -1,0 +1,287 @@
+{
+  "id": "ash-chapel-cellar",
+  "name": "Ash Chapel Cellar",
+  "intro": "The service cellar under the chapel is colder than the nave. Water ticks somewhere behind the stone, and something in the dark is trying to learn a word. The barrel-ladder you climbed down is the only way back up -- use it (E) when you are ready to leave.",
+  "width": 24,
+  "height": 16,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "ash-chapel-cellar-corpse",
+    "ash-chapel-cellar-ladder",
+    "ash-chapel-cellar-victim"
+  ],
+  "mood": {
+    "floorShade": "#10161e",
+    "floorShadeAlpha": 0.55,
+    "ambient": "#0c1a24",
+    "ambientAlpha": 0.16,
+    "vignette": 1.8
+  },
+  "tiles": [
+    "########################",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#bbb.bbbb..............#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "#......................#",
+    "########################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    "b": {
+      "kind": "wall-broken",
+      "walkable": false,
+      "height": 30
+    },
+    ".": {
+      "kind": "floor",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 12,
+      "y": 13
+    },
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "cross-martyr",
+      "x": 4,
+      "y": 2,
+      "blocking": true,
+      "id": "cellar-cross-martyr",
+      "dim": true,
+      "name": "The Next Confession",
+      "ambient": [
+        "The bound thing wets its lips and tries the word: \"...speak... no evil...\""
+      ],
+      "interact": {
+        "type": "shrine",
+        "dialogue": "ash-chapel-cellar-victim",
+        "log": "They have hammered the next one up already, down here in the cold, waiting its turn."
+      }
+    },
+    {
+      "kind": "bone-pile",
+      "x": 7,
+      "y": 2
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 12,
+      "y": 14,
+      "blocking": true,
+      "name": "Cellar Ladder",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "ash-chapel-cellar-ladder",
+        "log": "The ladder climbs back toward the split barrel in the service room."
+      }
+    },
+    {
+      "kind": "corpse",
+      "x": 15,
+      "y": 9,
+      "name": "Dead Road Warden",
+      "interact": {
+        "type": "container",
+        "dialogue": "ash-chapel-cellar-corpse",
+        "log": "A dead road warden lies beside a sealed tin note case.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 2
+          },
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "road-warden-chit",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "rusted-reliquary",
+      "x": 17,
+      "y": 6,
+      "blocking": true,
+      "name": "Buried Reliquary",
+      "interact": {
+        "type": "container",
+        "log": "The reliquary has been hidden under fallen chapel stone.",
+        "loot": [
+          {
+            "item": "choir-hymnal-fragment",
+            "count": 1
+          },
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          },
+          {
+            "item": "relic-rounds",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "field-satchel",
+      "x": 8,
+      "y": 10,
+      "name": "Warden Cache",
+      "interact": {
+        "type": "container",
+        "log": "A road warden's cache is tucked under a dry stair.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "choir-hymnal-fragment",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "cracked-column",
+      "x": 10,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 18,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 6,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 9,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 13,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 6,
+      "y": 3
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 14,
+      "y": 7
+    },
+    {
+      "kind": "host-growth",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "kind": "host-growth",
+      "x": 16,
+      "y": 5
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 20,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 20,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 2,
+      "y": 13
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 21,
+      "y": 13
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 21,
+      "y": 2
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 12,
+      "y": 9
+    },
+    {
+      "kind": "floor-crack",
+      "x": 14,
+      "y": 11
+    },
+    {
+      "kind": "blood-stain",
+      "x": 15,
+      "y": 9
+    },
+    {
+      "kind": "blood-stain",
+      "x": 5,
+      "y": 4
+    },
+    {
+      "kind": "glass-debris",
+      "x": 9,
+      "y": 7
+    },
+    {
+      "kind": "dust",
+      "x": 12,
+      "y": 13
+    },
+    {
+      "kind": "wax-stain",
+      "x": 6,
+      "y": 4
+    },
+    {
+      "kind": "scorch-mark",
+      "x": 14,
+      "y": 6
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-medicine-crate",
+  "title": "Compact Medicine Crate",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A Lumen Compact medicine crate, lid stamped with the clean-hands sigil and a batch code. Field doctrine, not scripture.",
+        "Inside: sealed dressings and one suppressant vial the Choir somehow did not take. The manifest slip is annotated in a fast Compact hand.",
+        "\"Sample yield from this site exceeds model. Recommend the chapel not be reported to the Remnant until a team can recover the cross subject. Do not let the censors burn it first.\""
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "ash-chapel-cellar-ladder",
+  "title": "Cellar Ladder",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The ladder climbs back to the split barrel in the chapel's east service room."
+      ],
+      "choices": [
+        {
+          "label": "Climb Up",
+          "effects": {
+            "log": "You climb back into the chapel.",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_breach.json",
+              "player": { "x": 36, "y": 13 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay",
+          "effects": {
+            "log": "You stay in the cellar."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

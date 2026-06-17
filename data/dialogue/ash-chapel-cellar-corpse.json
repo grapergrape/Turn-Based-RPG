@@ -1,0 +1,14 @@
+{
+  "id": "ash-chapel-cellar-corpse",
+  "title": "Road Warden's Note",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The dead man carried a road warden's tin note case.",
+        "His note is old field advice: ship ash can stay warm for decades; do not pray over unknown relic metal in a crowd; leave clean water at quarantine posts; never let children collect bright fragments after a fall.",
+        "His last entry is dated three days back, in a worse hand: 'They keep something alive past the low wall down here. Hammered up like the one upstairs. I am not going to look at it again. Neither should you.'",
+        "And, practical to the end: if a chapel bell rings with no hand on the rope, sleep somewhere else."
+      ]
+    }
+  }
+}

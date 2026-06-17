@@ -25,6 +25,7 @@ const EFFECT_LIFE = 0.45;
 const ATTACK_ANIM = 0.5;
 const HIT_ANIM = 0.24;
 const TRIGGER_RADIUS = 2;
+const AMBIENT_SPEECH_LIFE = 2.7;
 const MAX_LOG = 8;
 const WALK_FRAMES = 8;
 const ATTACK_FRAMES = 6;
@@ -41,14 +42,21 @@ const DIRS = {
 const OBJECT_NAMES = {
   'broken-pew': 'Broken Pew',
   'rusted-reliquary': 'Rusted Reliquary',
+  'rusted-barrel': 'Rusted Barrel',
   'field-satchel': 'Field Satchel',
   corpse: 'Corpse',
+  'paper-scraps': 'Paper Scraps',
   'quarantine-sign': 'Quarantine Sign',
   'damaged-altar': 'Damaged Altar',
   'host-growth': 'Host Growth',
   'candle-cluster': 'Candle Cluster',
   'rubble-pile': 'Rubble',
   'rusted-crate': 'Rusted Crate',
+  campfire: 'Campfire',
+  'chapel-banner': 'Torn Chapel Banner',
+  'broken-bell': 'Broken Bell',
+  'prayer-lectern': 'Prayer Lectern',
+  'ritual-bowl': 'Ritual Bowl',
   'cracked-column': 'Cracked Column',
   'quarantine-barricade': 'Quarantine Barricade',
   'blood-stain': 'Blood Stain',
@@ -59,7 +67,15 @@ const OBJECT_NAMES = {
   'road-dust': 'Road Dust',
   'scorch-mark': 'Scorch Mark',
   'wax-stain': 'Wax Stain',
-  wall: 'Chapel Wall'
+  'loose-flagstone': 'Loose Flagstone',
+  'bone-pile': 'Ossuary Heap',
+  'chalk-drawing': "Child's Drawing",
+  'machine-oil': 'Oil Smear',
+  'blood-sigil': 'Blood Sigil',
+  'ritual-circle': 'Rite Circle',
+  'cross-martyr': 'The Opened Saint',
+  wall: 'Chapel Wall',
+  'wall-broken': 'Broken Wall'
 };
 
 export class Game {
@@ -75,6 +91,8 @@ export class Game {
     this.turnManager = new TurnManager();
 
     this.debugGrid = DEBUG_GRID_DEFAULT;
+    this.introSeen = false; // the opening writ shows once per session, not on R
+    this.levelStateByPath = new Map();
     this.loop = new GameLoop({
       update: (dt) => this.update(dt),
       render: () => this.render()
@@ -82,16 +100,53 @@ export class Game {
     this.ready = false;
   }
 
-  // (Re)load the level and reset all runtime state.
-  async boot() {
+  // (Re)load the level and reset runtime state. Level transitions preserve the
+  // run state; restarts intentionally start clean.
+  async boot(options = {}) {
     this.ready = false;
+    if (!options.preserveRun) this.levelStateByPath = new Map();
+
+    const previousInventory = options.preserveRun ? this.inventory : null;
+    const previousQuestStages = options.preserveRun && this.questStages
+      ? new Map(this.questStages)
+      : null;
+    const previousPlayer = options.preserveRun && this.player
+      ? { hp: this.player.hp, maxHp: this.player.maxHp }
+      : null;
+
     const level = await loadLevel(this.levelPath);
     this.level = level;
     this.grid = level.grid;
     this.player = level.player;
     this.enemies = level.enemies;
-    this.inventory = new Inventory(level.itemDefs);
+    if (previousPlayer) {
+      const hpRatio = previousPlayer.maxHp > 0 ? previousPlayer.hp / previousPlayer.maxHp : 1;
+      this.player.hp = Math.max(1, Math.min(this.player.maxHp, Math.round(this.player.maxHp * hpRatio)));
+    }
+
+    this.inventory = new Inventory({ ...(previousInventory?.itemDefs ?? {}), ...level.itemDefs });
+    if (previousInventory) {
+      for (const [itemId, count] of previousInventory.counts) {
+        this.inventory.add(itemId, count);
+      }
+    }
     this.interactions = new InteractionSystem(level.interactables);
+    // Props that murmur on their own (e.g. the crucified Opened Saint) get the
+    // same ambient-speech treatment as enemies, on a staggered timer.
+    this.speakingProps = (level.props ?? []).filter(
+      (prop) => Array.isArray(prop.ambient) && prop.ambient.length > 0
+    );
+    for (const prop of this.speakingProps) {
+      prop.ambientIndex = 0;
+      prop.ambientTimer = 2 + ((prop.x + prop.y) % 4) * 1.1;
+      prop.speech = null;
+    }
+    this.dialogueDefs = level.dialogueDefs ?? {};
+    this.questDefs = level.questDefs ?? {};
+    this.questStages = new Map();
+    this.appliedLevelEvents = new Set();
+    this.activeEncounter = null;
+    this.clearedEncounters = new Set();
 
     this.mode = 'explore';
     this.log = [];
@@ -100,6 +155,8 @@ export class Game {
     this.pathQueue = [];
     this.uiScreen = null;
     this.dialogue = null;
+    this.briefing = null;
+    this.briefingPage = 0;
     this.anim = { tick: 0, bob: 0, flicker: 0, pulse: 0 };
 
     this.selectedAttackId = this.player.attacks[0]?.id ?? null;
@@ -108,10 +165,22 @@ export class Game {
     this.enemyActor = null;
     this.actionTimer = 0;
 
-    this.renderer.rebuildStaticScene({ grid: this.grid, props: this.level.props });
+    this.#restoreLevelState();
+    if (options.player) this.#teleportPlayer(options.player);
+    this.renderer.rebuildStaticScene({ grid: this.grid, props: this.level.props, mood: this.level.mood });
 
     this.#log(level.intro || level.name);
+    this.#startQuests(previousQuestStages);
     this.#log('Explore the chapel. E inspect, I pack, H bind wounds.');
+
+    // The opening writ plays once, on a fresh start (not on level transitions
+    // or R restarts), before the player is dropped into the chapel.
+    if (!this.introSeen && !options.preserveRun && Array.isArray(level.briefing) && level.briefing.length) {
+      this.mode = 'intro';
+      this.briefing = level.briefing;
+      this.briefingTitle = level.briefingTitle ?? 'FIELD WRIT';
+      this.briefingPage = 0;
+    }
     this.ready = true;
   }
 
@@ -130,6 +199,7 @@ export class Game {
 
     this.#advanceAnim(dt);
     this.#ageEffects(dt);
+    this.#advanceAmbientSpeech(dt);
     for (const actor of this.actors) this.#advanceActorAnim(actor, dt);
 
     if (this.#advanceMovement(dt)) {
@@ -140,6 +210,11 @@ export class Game {
 
     const actions = this.input.consume();
     const click = this.input.consumeClick();
+
+    if (this.mode === 'intro') {
+      this.#handleIntro(actions, click);
+      return;
+    }
 
     if (this.uiScreen) {
       this.#handleUiScreen(actions, click);
@@ -156,6 +231,39 @@ export class Game {
 
     // Continue walking a queued click-to-move path when otherwise idle.
     if (!this.moving) this.#stepAlongPath();
+  }
+
+  // ---- Opening writ (intro) ----------------------------------------------
+
+  #handleIntro(actions, click) {
+    const advance = () => {
+      this.briefingPage += 1;
+      if (this.briefingPage >= (this.briefing?.length ?? 0)) this.#finishIntro();
+    };
+    if (click) {
+      advance();
+      return;
+    }
+    for (const action of actions) {
+      if (action === 'cancel') {
+        this.#finishIntro();
+        return;
+      }
+      if (action === 'confirm' || action === 'interact' || action === 'down') {
+        advance();
+        return;
+      }
+      if (action === 'up') {
+        this.briefingPage = Math.max(0, this.briefingPage - 1);
+        return;
+      }
+    }
+  }
+
+  #finishIntro() {
+    this.introSeen = true;
+    this.briefing = null;
+    this.mode = 'explore';
   }
 
   #drainBlockingInput() {
@@ -207,9 +315,14 @@ export class Game {
     }
     const result = this.interactions.interact(object, this.inventory);
     for (const line of result.logs) this.#log(line);
-    this.#openDialogue(this.#objectName(object), result.logs, object.interact?.type ?? 'inspect');
+    this.#applyQuestUpdate(result.questUpdate);
+    if (result.dialogueId) {
+      this.#openDialogueById(result.dialogueId);
+    } else {
+      this.#openDialogue(this.#objectName(object), result.logs, object.interact?.type ?? 'inspect');
+    }
     if (result.triggersCombat && this.mode !== 'combat') {
-      this.#startCombat(true);
+      this.#startCombat(result.combatEncounter ?? true, { fromAltar: true });
     }
   }
 
@@ -217,6 +330,10 @@ export class Game {
 
   #handleUiScreen(actions, click) {
     if (click) return;
+    if (this.uiScreen === 'dialogue') {
+      this.#handleDialogueScreen(actions);
+      return;
+    }
     for (const action of actions) {
       if (action === 'cancel' || action === 'confirm' || action === 'interact') {
         this.#closeUiScreen();
@@ -255,8 +372,146 @@ export class Game {
       title,
       kind,
       lines: cleanLines,
+      choices: [],
+      scroll: 0,
       options: ['ENTER CLOSE', 'ESC CLOSE']
     };
+  }
+
+  #openDialogueById(dialogueId, nodeId = 'start') {
+    const definition = this.dialogueDefs[dialogueId];
+    if (!definition) {
+      this.#log(`Missing dialogue: ${dialogueId}.`);
+      return;
+    }
+    this.#setDialogueNode(definition, nodeId);
+  }
+
+  #setDialogueNode(definition, nodeId) {
+    const node = definition.nodes?.[nodeId];
+    if (!node) {
+      this.#log(`Missing dialogue node: ${definition.id}.${nodeId}.`);
+      return;
+    }
+    const lines = [].concat(node.lines ?? node.text ?? []).filter(Boolean);
+    const choices = (node.choices ?? []).slice(0, 2);
+    this.uiScreen = 'dialogue';
+    this.dialogue = {
+      id: definition.id,
+      nodeId,
+      title: node.title ?? definition.title ?? 'Inspect',
+      kind: 'dialogue',
+      lines,
+      choices,
+      scroll: 0,
+      options: choices.length > 0
+        ? choices.map((choice, index) => `${index + 1} ${choice.label}`)
+        : ['ENTER CLOSE', 'ESC CLOSE']
+    };
+  }
+
+  #handleDialogueScreen(actions) {
+    const choices = this.dialogue?.choices ?? [];
+    for (const action of actions) {
+      if (action === 'up') {
+        this.dialogue.scroll = Math.max(0, (this.dialogue.scroll ?? 0) - 1);
+        continue;
+      }
+      if (action === 'down') {
+        this.dialogue.scroll = Math.min(this.dialogue.maxScroll ?? 0, (this.dialogue.scroll ?? 0) + 1);
+        continue;
+      }
+      if (choices.length > 0) {
+        // 1 / melee, or Enter / Space / E, all take the first (default) option;
+        // 2 / sidearm takes the second. Destructive choices are authored second
+        // so the forgiving default key never triggers them by accident.
+        if (action === 'melee' || action === 'confirm' || action === 'interact') {
+          this.#chooseDialogueOption(0);
+          return;
+        }
+        if (action === 'sidearm') {
+          this.#chooseDialogueOption(1);
+          return;
+        }
+        if (action === 'cancel') {
+          this.#closeUiScreen();
+          return;
+        }
+      } else if (action === 'cancel' || action === 'confirm' || action === 'interact') {
+        this.#closeUiScreen();
+        return;
+      }
+
+      if (action === 'inventory') {
+        this.#toggleInventory();
+        return;
+      }
+      if (action === 'dressing') {
+        this.#log(this.inventory.useFieldDressing(this.player));
+        return;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') this.debugGrid = !this.debugGrid;
+    }
+  }
+
+  #chooseDialogueOption(index) {
+    const choice = this.dialogue?.choices?.[index];
+    if (!choice) return;
+    const didTransition = this.#applyEffects(choice.effects);
+    if (didTransition) return;
+    const definition = this.dialogueDefs[this.dialogue.id];
+    if (choice.next && definition) {
+      this.#setDialogueNode(definition, choice.next);
+      return;
+    }
+    if (choice.close !== false) this.#closeUiScreen();
+  }
+
+  #applyEffects(effects) {
+    if (!effects) return false;
+    for (const line of [].concat(effects.log ?? [])) this.#log(line);
+    this.#applyQuestUpdate(effects.questUpdate);
+    if (effects.kill) this.#silenceProp(effects.kill);
+    if (effects.teleport) this.#teleportPlayer(effects.teleport);
+    if (effects.loadLevel) {
+      void this.#transitionLevel(effects.loadLevel);
+      return true;
+    }
+    return false;
+  }
+
+  // End a still-living staged victim (the crucified Opened Saint, or its cellar
+  // successor): it stops whispering, its backlight gutters out, and it will not
+  // offer the choice again. `consumed` keeps the prop killed across re-entry.
+  #silenceProp(propId) {
+    const prop = (this.level.props ?? []).find((object) => object.id === propId);
+    if (!prop) return;
+    prop.killed = true;
+    prop.consumed = true;
+    prop.speech = null;
+    prop.ambient = [];
+  }
+
+  async #transitionLevel(effect) {
+    this.#closeUiScreen();
+    this.#snapshotLevelState();
+    this.ready = false;
+    this.levelPath = effect.path ?? this.levelPath;
+    await this.boot({ preserveRun: true, player: effect.player ?? null });
+  }
+
+  #teleportPlayer(point) {
+    if (!point || !this.grid.isWalkable(point.x, point.y)) return;
+    this.player.moveTo(point.x, point.y);
+    this.player.pxOffset = { x: 0, y: 0 };
+    this.player.render.state = 'idle';
+    this.player.render.frameIndex = 0;
+    this.moving = null;
+    this.pathQueue = [];
   }
 
   #closeUiScreen() {
@@ -427,11 +682,27 @@ export class Game {
   }
 
   #checkOutcome() {
-    const outcome = this.combat.outcome(this.player, this.enemies);
+    const activeEnemies = this.#activeEncounterEnemies();
+    const outcome = this.combat.outcome(this.player, activeEnemies);
     if (outcome === 'victory') {
-      this.mode = 'victory';
       this.turnManager.active = false;
-      this.#log('The chapel falls quiet. Both threats are down.');
+      if (this.activeEncounter) this.clearedEncounters.add(this.activeEncounter);
+      this.activeEncounter = null;
+      this.enemyActions = null;
+      this.enemyActor = null;
+
+      if (this.enemies.some((enemy) => !enemy.isDead)) {
+        this.mode = 'explore';
+        this.#log('The immediate fight breaks. Other voices still move in the ruins.');
+        return;
+      }
+
+      this.mode = 'victory';
+      this.#log('The chapel falls quiet. No cultist answers the bells now.');
+      if (this.level.onVictory?.questUpdate && !this.appliedLevelEvents.has('victory')) {
+        this.appliedLevelEvents.add('victory');
+        this.#applyQuestUpdate(this.level.onVictory?.questUpdate);
+      }
       this.#log('Explore on, or press R to begin again.');
     } else if (outcome === 'defeat') {
       this.mode = 'defeat';
@@ -455,11 +726,17 @@ export class Game {
 
   // ---- Combat start ------------------------------------------------------
 
-  #startCombat(fromAltar) {
+  #startCombat(encounterId = null, { fromAltar = false } = {}) {
     if (this.mode === 'combat') return;
+    const resolvedEncounter = this.#resolveEncounterId(encounterId);
+    const combatants = this.#livingEnemiesForEncounter(resolvedEncounter);
+    if (combatants.length === 0) return;
+
     this.mode = 'combat';
+    this.activeEncounter = resolvedEncounter;
     this.pathQueue = [];
-    this.turnManager.begin([this.player, ...this.enemies]);
+    for (const enemy of combatants) enemy.speech = null;
+    this.turnManager.begin([this.player, ...combatants]);
     this.targetIndex = 0;
     this.selectedAttackId = this.player.attacks[0]?.id ?? null;
 
@@ -467,8 +744,10 @@ export class Game {
       this.#log('The Host tissue beneath the altar pulses once, like a heart remembering worship.');
     }
     this.#log('Combat begins.');
-    this.#log('The cutthroat reaches for his blade.');
-    this.#log('The Penitent rasps a broken prayer.');
+    const introLines = this.#encounterIntro(resolvedEncounter).length
+      ? this.#encounterIntro(resolvedEncounter)
+      : this.#livingEnemies().map((enemy) => `${enemy.name} advances.`);
+    for (const line of introLines) this.#log(line);
   }
 
   // ---- Movement ----------------------------------------------------------
@@ -589,20 +868,68 @@ export class Game {
   }
 
   #checkCombatProximity() {
-    const zone = this.level.triggerZone;
-    if (zone && manhattan(this.player.position, zone) <= (zone.radius ?? TRIGGER_RADIUS)) {
-      this.#startCombat(false);
-      return;
+    for (const trigger of this.level.combatTriggers ?? []) {
+      const encounterId = this.#resolveEncounterId(trigger.encounter ?? trigger.id);
+      if (this.clearedEncounters.has(encounterId)) continue;
+      if (this.#livingEnemiesForEncounter(encounterId).length === 0) continue;
+      if (manhattan(this.player.position, trigger) <= (trigger.radius ?? TRIGGER_RADIUS)) {
+        this.#startCombat(encounterId);
+        return;
+      }
     }
     for (const enemy of this.enemies) {
-      if (!enemy.isDead && manhattan(this.player.position, enemy.position) <= TRIGGER_RADIUS) {
-        this.#startCombat(false);
+      const encounterId = this.#resolveEncounterId(enemy.encounter);
+      if (enemy.isDead || this.clearedEncounters.has(encounterId)) continue;
+      const radius = enemy.aggroRadius ?? TRIGGER_RADIUS;
+      if (manhattan(this.player.position, enemy.position) <= radius) {
+        this.#startCombat(encounterId);
         return;
       }
     }
   }
 
   // ---- Animation & effects ----------------------------------------------
+
+  #advanceAmbientSpeech(dt) {
+    for (const enemy of this.enemies) {
+      if (enemy.speech) {
+        enemy.speech.ttl -= dt;
+        if (enemy.speech.ttl <= 0) enemy.speech = null;
+      }
+    }
+    for (const prop of this.speakingProps ?? []) {
+      if (prop.speech) {
+        prop.speech.ttl -= dt;
+        if (prop.speech.ttl <= 0) prop.speech = null;
+      }
+    }
+
+    if (this.mode !== 'explore' || this.uiScreen) return;
+
+    for (const enemy of this.enemies) {
+      if (enemy.isDead || !Array.isArray(enemy.ambient) || enemy.ambient.length === 0) continue;
+      if (manhattan(this.player.position, enemy.position) > 10) continue;
+
+      enemy.ambientTimer = (enemy.ambientTimer ?? 1) - dt;
+      if (enemy.ambientTimer > 0) continue;
+
+      const index = enemy.ambientIndex ?? 0;
+      enemy.speech = { text: enemy.ambient[index % enemy.ambient.length], ttl: AMBIENT_SPEECH_LIFE };
+      enemy.ambientIndex = index + 1;
+      enemy.ambientTimer = 5.5 + ((index + enemy.x + enemy.y) % 3) * 1.2;
+    }
+
+    for (const prop of this.speakingProps ?? []) {
+      if (prop.killed || prop.speech) continue;
+      if (manhattan(this.player.position, prop) > 11) continue;
+      prop.ambientTimer = (prop.ambientTimer ?? 1) - dt;
+      if (prop.ambientTimer > 0) continue;
+      const index = prop.ambientIndex ?? 0;
+      prop.speech = { text: prop.ambient[index % prop.ambient.length], ttl: AMBIENT_SPEECH_LIFE + 1.4 };
+      prop.ambientIndex = index + 1;
+      prop.ambientTimer = 6.5 + ((index + prop.x + prop.y) % 3) * 1.3;
+    }
+  }
 
   #advanceAnim(dt) {
     this.anim.tick += dt;
@@ -672,7 +999,39 @@ export class Game {
   }
 
   #livingEnemies() {
+    if (this.mode === 'combat' && this.activeEncounter) {
+      return this.#livingEnemiesForEncounter(this.activeEncounter);
+    }
     return this.enemies.filter((enemy) => !enemy.isDead);
+  }
+
+  #livingEnemiesForEncounter(encounterId) {
+    const resolved = this.#resolveEncounterId(encounterId);
+    return this.enemies.filter((enemy) =>
+      !enemy.isDead && this.#resolveEncounterId(enemy.encounter) === resolved
+    );
+  }
+
+  #activeEncounterEnemies() {
+    if (!this.activeEncounter) return this.#livingEnemies();
+    return this.#livingEnemiesForEncounter(this.activeEncounter);
+  }
+
+  #resolveEncounterId(encounterId) {
+    if (encounterId === true || encounterId == null) {
+      const nearest = this.enemies
+        .filter((enemy) => !enemy.isDead)
+        .sort((a, b) => manhattan(this.player.position, a.position) - manhattan(this.player.position, b.position))[0];
+      return nearest?.encounter ?? nearest?.spawnId ?? null;
+    }
+    return encounterId;
+  }
+
+  #encounterIntro(encounterId) {
+    const trigger = (this.level.combatTriggers ?? []).find((entry) =>
+      this.#resolveEncounterId(entry.encounter ?? entry.id) === encounterId
+    );
+    return trigger?.intro ?? this.level.combatIntro ?? [];
   }
 
   // Turn an actor to face a tile (one of eight isometric facings).
@@ -692,13 +1051,107 @@ export class Game {
     if (this.log.length > MAX_LOG) this.log = this.log.slice(-MAX_LOG);
   }
 
+  #startQuests(previousStages = null) {
+    for (const quest of Object.values(this.questDefs)) {
+      const stage = previousStages?.get(quest.id) ?? quest.initialStage ?? quest.stages?.[0]?.id ?? 'active';
+      this.questStages.set(quest.id, stage);
+      this.#log(`Quest: ${quest.title}.`);
+      const description = this.#questStageDescription(quest.id, stage);
+      if (description) this.#log(description);
+    }
+  }
+
+  #applyQuestUpdate(update) {
+    if (!update?.quest || !update.stage) return;
+    const quest = this.questDefs[update.quest];
+    const current = this.questStages.get(update.quest);
+    if (!quest || current === update.stage) return;
+    this.questStages.set(update.quest, update.stage);
+    if (update.log) this.#log(update.log);
+    if (update.stage === 'complete') {
+      this.#log(`Quest complete: ${quest.title}.`);
+      return;
+    }
+    const description = this.#questStageDescription(update.quest, update.stage);
+    if (description) this.#log(description);
+  }
+
+  #questStageDescription(questId, stageId) {
+    const quest = this.questDefs[questId];
+    return quest?.stages?.find((stage) => stage.id === stageId)?.description ?? '';
+  }
+
+  #snapshotLevelState() {
+    if (!this.levelPath || !this.level) return;
+    const consumedObjects = new Set(
+      (this.level.interactables ?? [])
+        .filter((object) => object.consumed)
+        .map((object) => this.#objectStateKey(object))
+    );
+    const deadEnemies = new Set(
+      this.enemies
+        .filter((enemy) => enemy.isDead)
+        .map((enemy) => enemy.spawnId ?? enemy.id)
+    );
+    const killedObjects = new Set(
+      (this.level.interactables ?? [])
+        .filter((object) => object.killed)
+        .map((object) => this.#objectStateKey(object))
+    );
+    this.levelStateByPath.set(this.levelPath, {
+      consumedObjects,
+      killedObjects,
+      deadEnemies,
+      clearedEncounters: new Set(this.clearedEncounters ?? [])
+    });
+  }
+
+  #restoreLevelState() {
+    const state = this.levelStateByPath.get(this.levelPath);
+    if (!state) return;
+
+    for (const object of this.level.interactables ?? []) {
+      const key = this.#objectStateKey(object);
+      if (state.killedObjects?.has(key)) {
+        object.killed = true;
+        object.consumed = true;
+        object.ambient = [];
+      }
+      if (!state.consumedObjects?.has(key)) continue;
+      object.consumed = true;
+      object.opened = true;
+    }
+    for (const enemy of this.enemies) {
+      if (!state.deadEnemies?.has(enemy.spawnId ?? enemy.id)) continue;
+      enemy.hp = 0;
+      enemy.isDead = true;
+      enemy.render.state = 'dead';
+      enemy.render.frameIndex = DEATH_FRAMES - 1;
+    }
+    this.clearedEncounters = new Set(state.clearedEncounters ?? []);
+  }
+
+  #objectStateKey(object) {
+    return `${object.kind}:${object.name ?? ''}:${object.x}:${object.y}`;
+  }
+
   // ---- Render ------------------------------------------------------------
 
   render() {
     if (!this.ready) return;
+    if (this.mode === 'intro') {
+      this.renderer.renderBriefing({
+        title: this.briefingTitle,
+        page: this.briefing?.[this.briefingPage] ?? [],
+        pageIndex: this.briefingPage,
+        pageCount: this.briefing?.length ?? 0
+      });
+      return;
+    }
     this.renderer.renderFrame({
       focus: { x: this.player.x, y: this.player.y, pxOffset: this.player.pxOffset },
       actors: this.actors,
+      ambientSpeakers: this.speakingProps ?? [],
       effects: this.effects,
       anim: this.anim,
       overlay: this.#buildOverlay(),
@@ -771,6 +1224,7 @@ export class Game {
 
   #objectName(object) {
     if (!object) return 'Unknown';
+    if (object.name) return object.name;
     return OBJECT_NAMES[object.kind] ?? String(object.kind ?? 'Object').replaceAll('-', ' ');
   }
 
@@ -803,6 +1257,12 @@ export class Game {
       if (object.interact?.type === 'altar') {
         return { x: mouse.x, y: mouse.y, state: 'use', text: `USE: ${name}` };
       }
+      if (object.interact?.type === 'secret-entrance' || object.interact?.type === 'secret-exit') {
+        return { x: mouse.x, y: mouse.y, state: 'use', text: `USE: ${name}` };
+      }
+      if (object.kind === 'cross-martyr' && !object.consumed) {
+        return { x: mouse.x, y: mouse.y, state: 'use', text: `APPROACH: ${name}` };
+      }
       if (object.kind !== 'wall') {
         return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${name}` };
       }
@@ -829,6 +1289,8 @@ export class Game {
     let controls;
     if (this.uiScreen === 'inventory') {
       controls = ['I/ESC Close', 'H Use Dressing', 'R Restart'];
+    } else if (this.uiScreen === 'dialogue' && this.dialogue?.choices?.length) {
+      controls = ['1/2 or Enter Choose', 'Esc Close', 'I Pack'];
     } else if (this.uiScreen === 'dialogue') {
       controls = ['Enter Close', 'Esc Close', 'I Pack'];
     } else if (this.mode === 'combat') {
@@ -842,6 +1304,7 @@ export class Game {
     return {
       levelName: this.level.name,
       actorName: this.player.name,
+      role: this.player.role ?? null,
       mode: modeLabel,
       hp: this.player.hp,
       maxHp: this.player.maxHp,

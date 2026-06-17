@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-altar-rite",
+  "title": "Opened Altar",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A cracked bowl sits on the altar, holding gray strips of flesh cut thin and dried hard. They were sliced from the man hammered to the cross behind it.",
+        "The copied lesson around the bowl is instruction, not history: take the opened flesh in, wait for the door, answer only when the bell sounds inside the teeth.",
+        "No name signs the page. Nothing here explains whether the rite works, only that the Choir believes it does, and has been patient enough to let the saint grow back between meals."
+      ]
+    }
+  }
+}

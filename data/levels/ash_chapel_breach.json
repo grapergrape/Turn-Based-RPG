@@ -1,138 +1,932 @@
 {
   "id": "ash-chapel-breach",
   "name": "Ash Chapel Breach",
-  "intro": "A ruined quarantine chapel on the old road to Veyr's Gate. Dust lies thick enough to remember footfalls.",
-  "width": 24,
-  "height": 18,
+  "intro": "A ruined quarantine chapel on the old road to Hallowfen. The bells hang still, but someone has kept a fire inside, and the altar is not empty.",
+  "briefingTitle": "FIELD WRIT OF THE ASHEN CENSURE",
+  "briefing": [
+    [
+      "A hundred and thirty years ago the sky broke open and the damned came down with the wreckage.",
+      "What the fires touched did not stay dead. It rose in the shape of Hell the way the old paintings always promised -- halos of bone, ribs like chapel doors, mouths full of borrowed scripture. The Remnant names it the Infernal Host. Most people just call it the Host, and bar their doors.",
+      "The Bloom that followed should have ended the world. Then, for reasons no priest will explain and no scholar is permitted to, it stopped. The walls held. The bells still ring.",
+      "No one is supposed to ask why it stopped. You learned not to a long time ago."
+    ],
+    [
+      "The Holy Remnant feeds the cities, mans the walls, and rings the hours -- and in return it owns your faith, your confession, and your silence. It teaches that this is God's war, that the Host is Hell itself come to test the faithful, and that obedience is the only armor that holds.",
+      "It also keeps a quieter office, the one the sermons never mention. You serve the Ashen Censure. You are a cult-breaker.",
+      "When a chapel goes dark, when a town stops answering its bells, when someone starts teaching that the rot is holy, they send you to end it -- before it spreads, and before anyone starts asking the wrong kind of question."
+    ],
+    [
+      "It is not holy work, and it has never once felt like saving anyone.",
+      "You walk the ash roads. You find the cell. You put it down. You bury whoever the Censure sent with you last time, and you move on.",
+      "You have done this for years. You are good at it. It has cost you more than you will ever say out loud."
+    ],
+    [
+      "Lately there are more of them than there should be.",
+      "The Choir of the Open Wound and a dozen smaller blasphemies are spreading faster than the Censure can burn them, in places quiet for generations. No one in the Office will say why. You have started to wonder if anyone knows -- or if they simply will not say.",
+      "Your latest writ: a quarantine chapel on the old road to Hallowfen has gone silent. A Choir cell has nested inside. Clear it.",
+      "You did not expect this one to be where the question finally started asking back."
+    ]
+  ],
+  "width": 40,
+  "height": 30,
   "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "ash-chapel-altar-rite",
+    "ash-chapel-barrel-ladder",
+    "ash-chapel-cult-ledger",
+    "ash-chapel-cross-martyr",
+    "ash-chapel-loose-flagstone",
+    "ash-chapel-confession-scratch",
+    "ash-chapel-child-drawing",
+    "ash-chapel-medicine-crate",
+    "ash-chapel-engine-rut"
+  ],
+  "enemyAggroRadius": 2,
+  "combatTriggers": [
+    {
+      "id": "nave-rite-trigger",
+      "encounter": "nave-rite",
+      "x": 20,
+      "y": 8,
+      "radius": 2,
+      "intro": [
+        "The Choir turns from the cross, knives still wet with sacrament.",
+        "One keeps cutting even as the others rise to meet you."
+      ]
+    },
+    {
+      "id": "west-camp-trigger",
+      "encounter": "west-camp",
+      "x": 5,
+      "y": 15,
+      "radius": 2,
+      "intro": [
+        "The campfire Choir scatter their bowls and reach for blades.",
+        "One keeps whispering the lesson even as the fight begins."
+      ]
+    },
+    {
+      "id": "east-watch-trigger",
+      "encounter": "east-watch",
+      "x": 34,
+      "y": 12,
+      "radius": 2,
+      "intro": [
+        "A throat-singer drags his voice into a wet hymn.",
+        "The bent penitent beside him answers with bone-thorn hands."
+      ]
+    }
+  ],
+  "combatIntro": [
+    "The Choir breaks from prayer into violence."
+  ],
+  "onVictory": {
+    "questUpdate": {
+      "quest": "investigate-ash-chapel-cult",
+      "stage": "complete",
+      "log": "Quest complete: the Ash Chapel cell is broken. Their teachings point down the road to Hallowfen."
+    }
+  },
   "tiles": [
-    "########################",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "#......................#",
-    "##########....##########"
+    "########################################",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############rrrrrrr..rrrrrrr############",
+    "#########......................#########",
+    "#########......................b......##",
+    "#########......................b......##",
+    "#########.............................##",
+    "#########.............................##",
+    "##......b......................b......##",
+    "##......b......................b......##",
+    "##.............................b......##",
+    "##.............................#########",
+    "##......b......................#########",
+    "##......b......................#########",
+    "#########......................#########",
+    "#########......................#########",
+    "#########bbbbbbbbbb..bbbbbbbbbb#########",
+    "#########......................#########",
+    "#########......................#########",
+    "#########......................#########",
+    "#########......................#########",
+    "#########......................#########",
+    "#########......................#########",
+    "########################################",
+    "########################################"
   ],
   "legend": {
-    "#": { "kind": "wall", "walkable": false },
-    ".": { "kind": "floor", "walkable": true }
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    "b": {
+      "kind": "wall-broken",
+      "walkable": false,
+      "height": 34
+    },
+    "r": {
+      "kind": "wall-broken",
+      "walkable": false,
+      "height": 18
+    },
+    ".": {
+      "kind": "floor",
+      "walkable": true
+    }
   },
   "spawns": {
-    "player": { "actor": "mara-vey", "x": 11, "y": 15 },
+    "player": {
+      "actor": "mara-vey",
+      "x": 20,
+      "y": 26
+    },
     "enemies": [
-      { "id": "red-tithe-cutthroat", "x": 6, "y": 5 },
-      { "id": "host-touched-penitent", "x": 15, "y": 4 }
+      {
+        "id": "choir-flesh-eater",
+        "x": 18,
+        "y": 5,
+        "encounter": "nave-rite",
+        "ambient": [
+          "Chew slow. Let the lesson find the throat.",
+          "A closed body is only a locked chapel.",
+          "Not this one yet. He still has hymns in him."
+        ]
+      },
+      {
+        "id": "choir-candle-bearer",
+        "x": 22,
+        "y": 5,
+        "encounter": "nave-rite",
+        "ambient": [
+          "Wonder how the one in the cellar tastes.",
+          "The wax remembers every hand that prayed here.",
+          "Hush. The Opened Saint is listening."
+        ]
+      },
+      {
+        "id": "choir-throat-singer",
+        "x": 4,
+        "y": 14,
+        "encounter": "west-camp",
+        "ambient": [
+          "Hallowfen has gone quiet. Quiet places hear better.",
+          "Sing low, or the road wardens hear us.",
+          "Smoke goes up. The hunger goes down."
+        ]
+      },
+      {
+        "id": "choir-candle-bearer",
+        "x": 5,
+        "y": 17,
+        "encounter": "west-camp",
+        "ambient": [
+          "Hold the bowl with both hands.",
+          "The fire is never warm enough down here.",
+          "When the lesson moves, do not flinch."
+        ]
+      },
+      {
+        "id": "choir-throat-singer",
+        "x": 33,
+        "y": 10,
+        "encounter": "east-watch",
+        "ambient": [
+          "The old saints kept their mouths shut. We will not.",
+          "No bells from Hallowfen. That is its own answer.",
+          "Listen past the chapel stone."
+        ]
+      },
+      {
+        "id": "host-touched-penitent",
+        "x": 35,
+        "y": 12,
+        "encounter": "east-watch",
+        "aggroRadius": 1
+      }
     ]
   },
-  "combatTrigger": { "x": 12, "y": 5, "radius": 3 },
   "objects": [
-    { "kind": "damaged-altar", "x": 12, "y": 2, "blocking": true, "interact": {
-      "type": "altar",
-      "triggersCombat": true,
-      "log": [
-        "The altar is split open. Black-gold tissue pulses beneath the stone.",
-        "Something inside the chapel answers your breath."
-      ]
-    } },
-    { "kind": "host-growth", "x": 11, "y": 3 },
-    { "kind": "host-growth", "x": 13, "y": 3 },
-    { "kind": "host-growth", "x": 12, "y": 4 },
-    { "kind": "host-growth", "x": 10, "y": 2 },
-    { "kind": "host-growth", "x": 14, "y": 2 },
-    { "kind": "candle-cluster", "x": 9, "y": 2 },
-    { "kind": "candle-cluster", "x": 15, "y": 2 },
-    { "kind": "candle-cluster", "x": 10, "y": 5 },
-    { "kind": "candle-cluster", "x": 14, "y": 5 },
-
-    { "kind": "cracked-column", "x": 3, "y": 3, "blocking": true },
-    { "kind": "cracked-column", "x": 20, "y": 3, "blocking": true },
-    { "kind": "cracked-column", "x": 3, "y": 14, "blocking": true },
-    { "kind": "cracked-column", "x": 20, "y": 14, "blocking": true },
-
-    { "kind": "rusted-reliquary", "x": 4, "y": 5, "blocking": true, "interact": {
-      "type": "container",
-      "log": "The reliquary opens with a dry metal cough.",
-      "loot": [
-        { "item": "relic-rounds", "count": 2 },
-        { "item": "tarnished-saint-token", "count": 1 }
-      ]
-    } },
-
-    { "kind": "broken-pew", "x": 6, "y": 7, "blocking": true },
-    { "kind": "broken-pew", "x": 8, "y": 7, "blocking": true },
-    { "kind": "broken-pew", "x": 15, "y": 7, "blocking": true },
-    { "kind": "broken-pew", "x": 17, "y": 7, "blocking": true },
-    { "kind": "broken-pew", "x": 6, "y": 10, "blocking": true },
-    { "kind": "broken-pew", "x": 8, "y": 10, "blocking": true },
-    { "kind": "broken-pew", "x": 15, "y": 10, "blocking": true },
-    { "kind": "broken-pew", "x": 17, "y": 10, "blocking": true },
-    { "kind": "broken-pew", "x": 5, "y": 12, "blocking": true },
-    { "kind": "broken-pew", "x": 18, "y": 12, "blocking": true },
-
-    { "kind": "rusted-crate", "x": 2, "y": 8, "blocking": true },
-    { "kind": "rusted-crate", "x": 21, "y": 9, "blocking": true },
-    { "kind": "rusted-crate", "x": 19, "y": 5, "blocking": true },
-    { "kind": "rusted-crate", "x": 4, "y": 15, "blocking": true },
-    { "kind": "quarantine-barricade", "x": 8, "y": 14, "blocking": true },
-    { "kind": "quarantine-barricade", "x": 16, "y": 14, "blocking": true },
-
-    { "kind": "field-satchel", "x": 13, "y": 16, "interact": {
-      "type": "container",
-      "log": "Inside the satchel: a sealed field dressing and old road dust.",
-      "loot": [
-        { "item": "field-dressing", "count": 1 }
-      ]
-    } },
-    { "kind": "corpse", "x": 14, "y": 15 },
-    { "kind": "corpse", "x": 7, "y": 13 },
-    { "kind": "quarantine-sign", "x": 10, "y": 16 },
-
-    { "kind": "rubble-pile", "x": 2, "y": 2 },
-    { "kind": "rubble-pile", "x": 21, "y": 2 },
-    { "kind": "rubble-pile", "x": 2, "y": 15 },
-    { "kind": "rubble-pile", "x": 21, "y": 15 },
-    { "kind": "rubble-pile", "x": 5, "y": 4 },
-    { "kind": "rubble-pile", "x": 18, "y": 4 },
-    { "kind": "rubble-pile", "x": 19, "y": 13 },
-
-    { "kind": "blood-stain", "x": 14, "y": 15 },
-    { "kind": "blood-stain", "x": 12, "y": 4 },
-    { "kind": "blood-stain", "x": 6, "y": 5 },
-    { "kind": "floor-crack", "x": 11, "y": 6 },
-    { "kind": "floor-crack", "x": 7, "y": 9 },
-    { "kind": "floor-crack", "x": 16, "y": 9 },
-    { "kind": "floor-crack", "x": 10, "y": 13 },
-    { "kind": "floor-crack", "x": 13, "y": 12 },
-    { "kind": "rubble-decal", "x": 5, "y": 6 },
-    { "kind": "rubble-decal", "x": 18, "y": 6 },
-    { "kind": "rubble-decal", "x": 4, "y": 13 },
-    { "kind": "rubble-decal", "x": 19, "y": 11 },
-    { "kind": "glass-debris", "x": 17, "y": 3 },
-    { "kind": "glass-debris", "x": 6, "y": 14 },
-    { "kind": "dust", "x": 3, "y": 6 },
-    { "kind": "dust", "x": 20, "y": 6 },
-    { "kind": "dust", "x": 11, "y": 11 },
-    { "kind": "scorch-mark", "x": 11, "y": 3 },
-    { "kind": "scorch-mark", "x": 15, "y": 5 },
-    { "kind": "wax-stain", "x": 9, "y": 2 },
-    { "kind": "wax-stain", "x": 15, "y": 2 },
-    { "kind": "wax-stain", "x": 10, "y": 5 },
-    { "kind": "wax-stain", "x": 14, "y": 5 },
-    { "kind": "road-dust", "x": 10, "y": 17 },
-    { "kind": "road-dust", "x": 11, "y": 17 },
-    { "kind": "road-dust", "x": 12, "y": 17 },
-    { "kind": "road-dust", "x": 13, "y": 17 }
+    {
+      "kind": "cross-martyr",
+      "x": 20,
+      "y": 1,
+      "blocking": true,
+      "id": "nave-cross-martyr",
+      "name": "The Opened Saint",
+      "ambient": [
+        "Looking down the cross, speak no evil..."
+      ],
+      "interact": {
+        "type": "shrine",
+        "dialogue": "ash-chapel-cross-martyr",
+        "log": "He is hammered to the cross and still half-alive. The Choir has been cutting from him."
+      }
+    },
+    {
+      "kind": "damaged-altar",
+      "x": 20,
+      "y": 3,
+      "blocking": true,
+      "name": "Opened Altar",
+      "interact": {
+        "type": "altar",
+        "triggersCombat": true,
+        "encounter": "nave-rite",
+        "dialogue": "ash-chapel-altar-rite",
+        "questUpdate": {
+          "quest": "investigate-ash-chapel-cult",
+          "stage": "rite-found",
+          "log": "Quest updated: the altar was prepared to carve sacrament from the body on the cross."
+        },
+        "log": [
+          "The altar is set for a meal, not a sermon.",
+          "Strips of pale flesh lie drying in the bowls. They were cut from the man on the cross."
+        ]
+      }
+    },
+    {
+      "kind": "host-growth",
+      "x": 19,
+      "y": 2
+    },
+    {
+      "kind": "host-growth",
+      "x": 21,
+      "y": 2
+    },
+    {
+      "kind": "host-growth",
+      "x": 19,
+      "y": 4
+    },
+    {
+      "kind": "host-growth",
+      "x": 21,
+      "y": 4
+    },
+    {
+      "kind": "host-growth",
+      "x": 20,
+      "y": 5
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 14,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 25,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "chapel-banner",
+      "x": 12,
+      "y": 1,
+      "blocking": true
+    },
+    {
+      "kind": "chapel-banner",
+      "x": 27,
+      "y": 1,
+      "blocking": true
+    },
+    {
+      "kind": "ritual-bowl",
+      "x": 18,
+      "y": 3
+    },
+    {
+      "kind": "ritual-bowl",
+      "x": 22,
+      "y": 3
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 16,
+      "y": 2
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 24,
+      "y": 2
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 17,
+      "y": 5
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 23,
+      "y": 5
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 24,
+      "y": 4,
+      "name": "Cult Ledger",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-cult-ledger",
+        "questUpdate": {
+          "quest": "investigate-ash-chapel-cult",
+          "stage": "evidence-found",
+          "log": "Quest updated: the ledger points toward Hallowfen without explaining why."
+        },
+        "log": "A grease-dark ledger lies open beside a cracked bowl."
+      }
+    },
+    {
+      "kind": "wax-stain",
+      "x": 16,
+      "y": 3
+    },
+    {
+      "kind": "wax-stain",
+      "x": 24,
+      "y": 3
+    },
+    {
+      "kind": "blood-stain",
+      "x": 20,
+      "y": 6
+    },
+    {
+      "kind": "blood-stain",
+      "x": 18,
+      "y": 5
+    },
+    {
+      "kind": "scorch-mark",
+      "x": 20,
+      "y": 5
+    },
+    {
+      "kind": "cracked-column",
+      "x": 13,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 13,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 26,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 26,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 26,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 13,
+      "y": 14,
+      "blocking": true,
+      "name": "Scratched Confession",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-confession-scratch",
+        "log": "Someone has scratched words into the column, under the old whitewash."
+      }
+    },
+    {
+      "kind": "broken-bell",
+      "x": 11,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 10,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 11,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 10,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 11,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 10,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 11,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 29,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 28,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 29,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 28,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 29,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 28,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "loose-flagstone",
+      "x": 29,
+      "y": 16,
+      "id": "nave-loose-flagstone",
+      "name": "Loose Flagstone",
+      "interact": {
+        "type": "container",
+        "dialogue": "ash-chapel-loose-flagstone",
+        "log": "One floor flag sits proud of the rest. It lifts on a finger.",
+        "loot": [
+          {
+            "item": "bright-fragment",
+            "count": 1
+          },
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "campfire",
+      "x": 4,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 3,
+      "y": 16
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 5,
+      "y": 16
+    },
+    {
+      "kind": "rusted-reliquary",
+      "x": 3,
+      "y": 13,
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The reliquary opens with a dry metal cough.",
+        "loot": [
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 6,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 6,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "field-satchel",
+      "x": 5,
+      "y": 13,
+      "interact": {
+        "type": "container",
+        "log": "The satchel smells of ash, old wool, and field antiseptic.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "scorch-mark",
+      "x": 4,
+      "y": 15
+    },
+    {
+      "kind": "wax-stain",
+      "x": 4,
+      "y": 17
+    },
+    {
+      "kind": "blood-stain",
+      "x": 5,
+      "y": 15
+    },
+    {
+      "kind": "glass-debris",
+      "x": 6,
+      "y": 17
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 2,
+      "y": 13
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 36,
+      "y": 14,
+      "blocking": true,
+      "name": "Split Barrel",
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "ash-chapel-barrel-ladder",
+        "log": "The barrel is nailed to the floor. The boards beneath it sound hollow."
+      }
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 33,
+      "y": 15,
+      "blocking": true
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 36,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 37,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "host-growth",
+      "x": 34,
+      "y": 9
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 32,
+      "y": 10
+    },
+    {
+      "kind": "blood-stain",
+      "x": 33,
+      "y": 11
+    },
+    {
+      "kind": "glass-debris",
+      "x": 35,
+      "y": 15
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 33,
+      "y": 9
+    },
+    {
+      "kind": "quarantine-sign",
+      "x": 16,
+      "y": 27
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 13,
+      "y": 23,
+      "blocking": true
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 26,
+      "y": 23,
+      "blocking": true
+    },
+    {
+      "kind": "corpse",
+      "x": 22,
+      "y": 26
+    },
+    {
+      "kind": "corpse",
+      "x": 15,
+      "y": 24
+    },
+    {
+      "kind": "field-satchel",
+      "x": 17,
+      "y": 26,
+      "interact": {
+        "type": "container",
+        "log": "Inside the satchel: a sealed field dressing and old road dust.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 12,
+      "y": 24,
+      "blocking": true,
+      "name": "Compact Medicine Crate",
+      "interact": {
+        "type": "container",
+        "dialogue": "ash-chapel-medicine-crate",
+        "log": "A Lumen Compact medicine crate, lid stamped with a clean-hands sigil.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "compact-suppressant",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 24,
+      "y": 25,
+      "name": "Child's Drawing",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-child-drawing",
+        "log": "A child drew here in chalk, long before the Choir came."
+      }
+    },
+    {
+      "kind": "machine-oil",
+      "x": 27,
+      "y": 26,
+      "name": "Oil and Tread",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-engine-rut",
+        "log": "Black oil, a heavy tread, and a single shed rivet."
+      }
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 27
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 27
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 26
+    },
+    {
+      "kind": "dust",
+      "x": 11,
+      "y": 26
+    },
+    {
+      "kind": "dust",
+      "x": 28,
+      "y": 26
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 10,
+      "y": 27
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 29,
+      "y": 22
+    },
+    {
+      "kind": "ritual-circle",
+      "x": 20,
+      "y": 5
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 18,
+      "y": 6
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 22,
+      "y": 6
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 15,
+      "y": 4
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 25,
+      "y": 4
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 16,
+      "y": 4
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 24,
+      "y": 5
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 15,
+      "y": 12
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 25,
+      "y": 15
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 20,
+      "y": 17
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 5,
+      "y": 15
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 12,
+      "y": 25
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 24,
+      "y": 24
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 34,
+      "y": 11
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 10,
+      "y": 13
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 9,
+      "y": 8
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 30,
+      "y": 8
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 9,
+      "y": 20
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 30,
+      "y": 20
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 16,
+      "y": 11
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 24,
+      "y": 17
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 12,
+      "y": 20
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 28,
+      "y": 9
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 20,
+      "y": 13
+    },
+    {
+      "kind": "floor-crack",
+      "x": 20,
+      "y": 12
+    },
+    {
+      "kind": "floor-crack",
+      "x": 15,
+      "y": 18
+    },
+    {
+      "kind": "floor-crack",
+      "x": 34,
+      "y": 13
+    },
+    {
+      "kind": "blood-stain",
+      "x": 20,
+      "y": 21
+    },
+    {
+      "kind": "glass-debris",
+      "x": 24,
+      "y": 8
+    },
+    {
+      "kind": "dust",
+      "x": 35,
+      "y": 12
+    }
   ]
 }

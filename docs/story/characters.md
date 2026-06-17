@@ -12,8 +12,17 @@ The player's exact origin remains open:
 - Salvage-company field lead.
 - Neutral quarantine inspector.
 - Mixed expedition captain funded by several factions.
+- **Cult-breaker of the Ashen Censure** (the framing used by the current playable slice): a field agent of the Holy Remnant's cult-purgation office, sent down the ash roads on written writs to find and destroy blasphemous Host-cults before they open a gate.
 
 The player should not begin as a world-famous hero. Their authority should be local, practical, and fragile. Hallowfen makes them important because they find the data core, not because destiny chose them.
+
+### Player Premise — Demo Vertical Slice (Ash Chapel)
+
+In the playable slice, the protagonist (the actor `mara-vey`) is reframed as a cult-breaker of the **Ashen Censure** rather than a Free City scout. The job is dark, grim, and hopeless: years of walking into silent chapels and stopped towns, ending whatever has begun teaching that the rot is holy, and burying whoever the office sent along last time. No one thanks a cult-breaker, and the cults never stop coming.
+
+Crucially, the protagonist has *noticed* something the Church will not explain: blasphemous, devil-facing Host-cults are multiplying far faster than they should, in places dormant for generations. This rising tide is — unknown to the protagonist — an early symptom of the planetary lock weakening (see the story bible: the Stilling, and the failing lock). The Ash Chapel writ is where a routine purge first cracks open that larger mystery. The opening "Field Writ of the Ashen Censure" briefing in-game delivers this premise before the player is dropped into the chapel.
+
+> Note: companion **Mara of the Morrow Chain** (below) remains separate canon. The demo reuses the actor name `mara-vey` as the stand-in protagonist; the cult-breaker framing is the player premise, not a retcon of the companion.
 
 ## Core Companions
 

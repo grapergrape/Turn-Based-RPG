@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-loose-flagstone",
+  "title": "Loose Flagstone",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Under the lifted flag is a child's hidden hoard: a chalk stub, three milk teeth, a saint token rubbed faceless, and one bright sliver of ship-metal wrapped in a scrap of wool.",
+        "Every road warden's note says the same thing about the bright ones: never let children collect fragments after a fall. This one kept theirs anyway, and hid it where the grown ones pray.",
+        "The metal is cold and beautiful and almost certainly still carries the Host. You pocket it carefully, the way you would a coal."
+      ]
+    }
+  }
+}

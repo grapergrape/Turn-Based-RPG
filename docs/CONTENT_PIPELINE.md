@@ -22,7 +22,9 @@ data/
 ├── maps/
 ├── actors/
 ├── enemies/
-└── items/
+├── items/
+├── dialogue/
+└── quests/
 ```
 
 Future folders can include:
@@ -30,11 +32,8 @@ Future folders can include:
 ```text
 data/
 ├── abilities/
-├── dialogue/
 ├── encounters/
 ├── factions/
-├── items/
-├── quests/
 └── status-effects/
 ```
 
@@ -82,9 +81,10 @@ Rules:
 
 ## Level data
 
-Levels live in `data/levels/`. A level extends the minimal map shape with the
-scene objects, spawns, and the combat trigger used by the playable slice
-(`ash_chapel_breach.json`).
+Levels live in `data/levels/`. A level extends the minimal map shape with scene
+objects, spawns, dialogue, quests, and optional encounter trigger zones. The
+current playable slice uses `ash_chapel_breach.json` for the chapel and
+`ash_chapel_cellar.json` for the hidden cellar below it.
 
 Shape:
 
@@ -96,22 +96,36 @@ Shape:
   "width": 18,
   "height": 14,
   "tileSize": 64,
+  "quests": ["investigate-ash-chapel-cult"],
+  "dialogue": ["ash-chapel-cult-ledger"],
   "tiles": ["##################", "..."],
   "legend": { "#": { "kind": "wall", "walkable": false }, ".": { "kind": "floor", "walkable": true } },
   "spawns": {
     "player": { "actor": "mara-vey", "x": 8, "y": 12 },
     "enemies": [
-      { "id": "red-tithe-cutthroat", "x": 4, "y": 4 },
-      { "id": "host-touched-penitent", "x": 10, "y": 2 }
+      {
+        "id": "choir-flesh-eater",
+        "x": 4,
+        "y": 4,
+        "encounter": "nave-rite",
+        "ambient": ["Chew slow. Let the lesson find the throat."]
+      },
+      { "id": "host-touched-penitent", "x": 10, "y": 2, "encounter": "east-watch" }
     ]
   },
-  "combatTrigger": { "x": 8, "y": 3, "radius": 2 },
+  "combatTriggers": [
+    { "id": "nave-trigger", "encounter": "nave-rite", "x": 8, "y": 3, "radius": 2, "intro": ["A line shown when this encounter starts."] }
+  ],
+  "combatIntro": ["A line shown when combat starts."],
+  "onVictory": { "questUpdate": { "quest": "investigate-ash-chapel-cult", "stage": "complete" } },
   "objects": [
     { "kind": "broken-pew", "x": 6, "y": 5, "blocking": true },
     { "kind": "rusted-reliquary", "x": 2, "y": 4, "blocking": true,
       "interact": { "type": "container", "log": "...", "loot": [ { "item": "relic-rounds", "count": 2 } ] } },
     { "kind": "damaged-altar", "x": 8, "y": 1, "blocking": true,
-      "interact": { "type": "altar", "triggersCombat": true, "log": ["line one", "line two"] } },
+      "interact": { "type": "altar", "triggersCombat": true, "dialogue": "ash-chapel-altar-rite", "log": ["line one", "line two"] } },
+    { "kind": "rusted-barrel", "x": 12, "y": 8, "blocking": true,
+      "interact": { "type": "secret-entrance", "dialogue": "ash-chapel-barrel-ladder", "log": "..." } },
     { "kind": "blood-stain", "x": 3, "y": 6 }
   ]
 }
@@ -121,17 +135,50 @@ Rules:
 
 - `objects[].kind` selects a renderer prop (wall, broken-pew, rusted-reliquary,
   field-satchel, corpse, quarantine-sign, damaged-altar, host-growth,
-  candle-cluster, rubble-pile, rusted-crate, cracked-column,
+  candle-cluster, campfire, chapel-banner, broken-bell, prayer-lectern,
+  ritual-bowl, rubble-pile, rusted-crate, rusted-barrel, cracked-column,
   quarantine-barricade, and flat decals: blood-stain, floor-crack,
-  rubble-decal, glass-debris, dust, road-dust, scorch-mark, wax-stain).
+  rubble-decal, glass-debris, dust, road-dust, scorch-mark, wax-stain,
+  paper-scraps).
 - `blocking: true` makes the object's tile impassable (collision uses the same
   rule in explore and combat).
-- `interact` (optional) marks a loot container (`type: "container"` with `loot`)
-  or the altar (`type: "altar"` with `triggersCombat`).
-- The validator (`npm run check`) requires: a valid tile grid, an in-bounds
-  player start, exactly two enemies including the required ids, the three
-  required interactables (`rusted-reliquary`, `field-satchel`, `damaged-altar`),
-  at least 6 broken pews, and at least 8 rubble/decal objects.
+- `interact` (optional) can mark a loot container (`type: "container"` with
+  `loot`), the altar (`type: "altar"` with `triggersCombat`), a readable note
+  (`type: "note"`), or a hidden ladder (`type: "secret-entrance"` /
+  `type: "secret-exit"`). Interactions can reference `dialogue` by id and apply
+  a `questUpdate`.
+- `quests` lists runtime quest ids loaded from `data/quests/`.
+- `dialogue` lists runtime dialogue ids loaded from `data/dialogue/`.
+- Enemy spawns can define `encounter` to group nearby enemies into one combat
+  pull. If omitted, the spawn gets its own encounter.
+- Enemy spawns can define `ambient` as short overheard lines. These draw as
+  subtitles above the NPC during exploration when the player is nearby.
+- `combatTriggers` defines authored trigger zones. Each trigger should name an
+  `encounter`, use grid coordinates, set a `radius`, and include short `intro`
+  lines. Combat only activates living enemies in that encounter.
+- `combatIntro` is a fallback list of log lines shown when an encounter has no
+  trigger-specific intro.
+- `onVictory.questUpdate` updates the active quest after all enemies in the
+  level are defeated.
+- Dialogue choice effects can use `loadLevel` to move to another level while
+  preserving the run state:
+
+```json
+{
+  "effects": {
+    "loadLevel": {
+      "path": "./data/levels/ash_chapel_cellar.json",
+      "player": { "x": 12, "y": 13 }
+    }
+  }
+}
+```
+
+- The validator (`npm run check`) requires: valid tile grids, in-bounds player
+  starts, main chapel encounter groups with spread trigger zones, required
+  slice enemy ids, required interactables, a Cult Ledger note, a separate cellar
+  secret exit, a Dead Road Warden corpse with loot, enough chapel props/decals,
+  and richer secret-area loot.
 
 ## Item data
 
@@ -205,54 +252,75 @@ Rules:
 - Lore-heavy descriptions can be added as `description`, but keep them concise.
 - Host enemies must follow the Vale Imprint rules in `docs/LORE_INTEGRATION.md`.
 
-## Dialogue data later
+## Dialogue data
 
-When dialogue is added, use a separate folder such as `data/dialogue/`.
+Runtime dialogue lives in `data/dialogue/`, one file per scene or readout.
 
 Author dialogue first as scene packets in `docs/story/story-dialogue-workflow.md`.
 Move dialogue to `data/dialogue/` only when one scene needs to run in-game.
-Do not hardcode conversations into JavaScript. A simple future shape could be:
+Do not hardcode conversations into JavaScript. Current shape:
 
 ```json
 {
-  "id": "veyres-gate-guard-intro",
-  "speaker": "gate-guard",
+  "id": "ash-chapel-barrel-ladder",
+  "title": "Split Barrel",
   "nodes": {
     "start": {
-      "text": "State your business before the bells change.",
+      "lines": ["The barrel is nailed to the floor."],
       "choices": [
-        { "text": "We need entry.", "next": "entry" },
-        { "text": "We are leaving.", "next": "end" }
+        {
+          "label": "Descend",
+          "effects": {
+            "log": "You descend through the barrel into the cellar.",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_cellar.json",
+              "player": { "x": 12, "y": 13 }
+            },
+            "questUpdate": { "quest": "investigate-ash-chapel-cult", "stage": "cellar-found" }
+          },
+          "close": true
+        }
       ]
     }
   }
 }
 ```
 
-## Quest data later
+Rules:
 
-When quests are added, keep them data-driven and simple.
+- `id`, `title`, `nodes`, and `nodes.start` are required.
+- Each node needs a non-empty `lines` array.
+- A node may have one or two choices. Number keys `1` and `2` choose them.
+- Choice `effects` can log text, teleport the player within a level, load
+  another level, and update a quest.
 
-A future shape could be:
+## Quest data
+
+Runtime quests live in `data/quests/`, one file per quest.
+
+Current shape:
 
 ```json
 {
-  "id": "pale-orchard-sample",
-  "title": "Fruit of the Pale Orchard",
+  "id": "investigate-ash-chapel-cult",
+  "title": "Investigate the Ash Chapel Cult",
+  "initialStage": "active",
   "stages": [
     {
-      "id": "accepted",
-      "description": "Recover a fruit sample from the Pale Orchard."
-    },
-    {
-      "id": "returned",
-      "description": "Return the sample to the buyer."
+      "id": "active",
+      "description": "Search the quarantine chapel."
     }
   ]
 }
 ```
 
-Do not build a huge quest engine until there is one complete quest that needs it.
+Rules:
+
+- `id`, `title`, `initialStage`, and `stages` are required.
+- Every stage needs `id` and `description`.
+- The current quest runtime tracks one active stage per quest.
+- Keep quest consequences simple until a second quest needs reputation,
+  companion, or world-state changes.
 
 ## Asset organization
 
@@ -292,4 +360,6 @@ Run:
 npm run check
 ```
 
-The current validator parses JSON files and checks basic map/actor/enemy shape. Expand it whenever new required data formats are added.
+The current validator parses JSON files and checks map, level, actor, enemy,
+item, dialogue, and quest shape. Expand it whenever new required data formats
+are added.

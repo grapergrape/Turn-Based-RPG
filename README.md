@@ -62,16 +62,60 @@ The demo loads `data/levels/ash_chapel_breach.json` and its referenced actors,
 enemies, and items. It is a small, complete vertical slice rendered as a
 **grimy isometric pixel-art CRPG scene** rather than a flat tile board.
 
-You play **Mara Vey**, a Free City scout, exploring a ruined quarantine chapel
-on the road to Veyr's Gate. The slice contains:
+You play **Mara Vey**, a **cult-breaker of the Ashen Censure** — the Holy
+Remnant's quiet office for hunting and burning blasphemous Host-cults. After a
+grim opening writ that sets up the job (years of clearing cults along the ash
+roads, and a rising tide of them that no one will explain), you are dropped into
+a ruined quarantine chapel on the old road toward **Hallowfen**. The area works
+as a first-area sample: multiple small combats, looting, an investigation quest,
+in-lore secrets, a hidden cellar, a moral choice with foreshadowed consequences,
+and background lore that points at the Hallowfen outbreak and the unexplained
+surge of cults without explaining the larger cause. (The state teaches that this
+is Hell invading and that it fights God's war; almost no one knows otherwise.
+What is really happening is dev canon in `docs/lore/`, not something in-game
+text reveals.)
 
-- An isometric, low-resolution scene: a ruined chapel with volumetric walls,
-  broken pews, rubble, dead candles, a corpse and a cracked quarantine sign, and
-  a corrupted altar with pulsing Host growth.
-- Two enemies: a **Red Tithe Cutthroat** (Ash Cartel raider) and a
-  **Host-Touched Penitent** (an early-stage Host victim bent by the Vale Imprint
-  into a broken kneeling penitent, per the religious body horror canon).
-- Three lootable / interactable objects and a small inventory.
+The chapel is laid out as a real ruined basilica — a **narthex** entrance, a
+columned **nave** with broken pews, a railed **sanctuary**, a west **side-chapel**
+where the Choir keep their camp, and an east **service room** — so it reads as
+architecture rather than an open field.
+
+The slice contains:
+
+- A grim, paged **opening writ** (the Field Writ of the Ashen Censure) that
+  establishes the cult-breaker premise before the chapel loads.
+- Type-specific **corpses**: cleared enemies fall as readable bodies on the
+  ground (a Choir cultist crumples into bloodied red robes by a dropped knife; a
+  Host penitent collapses into a black-gold icon with scattered halo-bone), so a
+  cleared room reads at a glance and looting is easy to find.
+- Long readouts (the cross, the ledger, the notes) are fully **scrollable**, so
+  no script is ever truncated.
+- An isometric, low-resolution scene: volumetric walls and broken interior
+  walls, a colonnade, broken pews, rubble, guttering candles, campfire debris,
+  chapel relics, corpses, a cracked quarantine sign, and a corrupted altar.
+- The **Choir of the Open Wound** worship the Host as divine. Their devotion is
+  written across the chapel as overt infernal iconography: a ground rite-circle,
+  blood-daubed inverted-cross sigils, banners stitched with inverted crosses, and
+  rings of ritual candles.
+- The centerpiece: **The Opened Saint**, a Host-victim hammered to a cross behind
+  the altar and backlit by a tall window of sourceless light, his ribs splayed
+  and his flesh sliced for sacrament. He still half-lives and whispers. When the
+  Choir are dead you may **cut him down or leave him** — a choice the game tells
+  you will have consequences.
+- Multiple spread encounters: Choir cultists at the altar rite, a campfire group
+  in the side-chapel, and an east-side watcher with a **Host-Touched Penitent**.
+  Trigger zones are separated so one fight does not pull the whole chapel.
+- Ambient cultist and prop subtitles, written as overheard teaching and ritual
+  rather than lore summaries.
+- A quest, **Investigate the Ash Chapel Cult**, with ledger evidence pointing
+  toward Hallowfen while keeping the deeper cause mysterious.
+- In-lore secrets to find: a child's hidden bright-metal fragment under a loose
+  flagstone, a scratched confession on a column, a child's chalk drawing of
+  Europa, a Lumen Compact medicine crate, and a Penitent Engine's wheel-rut.
+- Lootable reliquary and field-satchel containers.
+- A separate secret cellar level, rendered colder and darker than the nave, where
+  the Choir keep the **next victim** hammered up for after the first is eaten,
+  plus a dead road warden, a buried reliquary, and an ossuary heap.
 - An Explore mode and an AP-based turn combat mode with win / lose / restart.
 
 ### Controls
@@ -81,6 +125,10 @@ Explore mode:
 - **Left-click** a tile: walk there (path-finds around obstacles, turning to face
   each step); or `WASD` / Arrow keys: single step (no AP cost)
 - `E` / `Enter`: interact with the object you are on or beside
+- `1` / `2`: choose dialogue options when a readout offers choices
+- Arrow keys / `W` `S`: scroll a long readout that does not fit (a `▼` and an
+  `UP/DN SCROLL` hint appear when there is more to read)
+- `Enter` / click: advance the opening writ; `Esc`: skip it
 - `I`: open or close the field pack inventory screen
 - `H`: use a Field Dressing (restores 4 HP)
 - `Esc` / `Enter`: close an open inventory or readout panel
@@ -103,12 +151,12 @@ Combat mode:
 ### How exploration and combat work
 
 You start in **Explore mode**; combat does not begin on load. Walk through the
-chapel, open the Rusted Reliquary and the Field Satchel for loot, and read the
-scene. Combat begins when you **interact with the corrupted altar / Host
-growth**, or when you **approach the altar area or an enemy**. On the first
-turn-based round, initiative is fixed: Mara, then the Cutthroat, then the
-Penitent. Win by defeating both enemies; you lose if Mara reaches 0 HP. Press
-`R` at any time to restart.
+chapel, open the Rusted Reliquary and the Field Satchel for loot, read the Cult
+Ledger, and inspect the split barrel near the south wall. Combat begins when
+you **interact with the corrupted altar / Host growth**, or when you
+**approach a local encounter group**. Only that group joins the current fight.
+Win by clearing the chapel encounters; you lose if Mara reaches 0 HP. Press `R`
+at any time to restart.
 
 ### About the art
 
@@ -124,11 +172,20 @@ drawn cursor states. UI text is rendered with a small bitmap font on the same
 low-resolution canvas as the game view. None of it copies any existing game's
 assets, names, maps, palette, UI, or designs.
 
+The floor is drawn as broad worn-stone wear zones rather than a contrasting
+checkerboard, and each level can carry a **mood** (a multiplied floor tint, a
+flat ambient wash, and a vignette strength) so the cellar reads colder and
+darker than the nave above it. The horror set-pieces — the backlit crucified
+Opened Saint and his window, the ground rite-circle, the blood sigils, the
+guttering candle clusters — are all built from the same seeded pixel
+primitives drawn at runtime; props in front of the player fade to a cutaway so
+interior walls never hide the figure.
+
 Actors are drawn as directional animated models. Each baked sprite has **eight
 isometric facings**, four-frame idles, eight-frame walk cycles, six-frame
 attacks, four-frame hit reactions, interact frames, and a ten-frame death
-collapse. Mara is 42x62 px, the cutthroat is 44x64 px, and the Host-touched
-penitent is 52x68 px.
+collapse. Mara is 42x62 px, the Choir cultists use a 44x64 px hooded ritual
+sprite, and the Host-touched penitent is 52x68 px.
 
 Sprites are drawn directly at native resolution with clustered pixels, small
 ramps, hard rim pixels, and dithered fabric or flesh texture. The renderer does

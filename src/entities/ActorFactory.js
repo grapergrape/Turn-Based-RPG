@@ -12,6 +12,8 @@ export function createActor(data, position) {
     name: data.name,
     type: data.type,
     faction: data.faction ?? null,
+    role: data.role ?? null,
+    background: data.background ?? null,
     stats: data.stats ?? {},
     tags: data.tags ?? [],
     spriteId: data.spriteId ?? data.id,

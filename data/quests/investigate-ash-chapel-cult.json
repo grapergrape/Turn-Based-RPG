@@ -1,0 +1,27 @@
+{
+  "id": "investigate-ash-chapel-cult",
+  "title": "Investigate the Ash Chapel Cult",
+  "initialStage": "active",
+  "stages": [
+    {
+      "id": "active",
+      "description": "Search the quarantine chapel and learn why a Choir cell gathered here."
+    },
+    {
+      "id": "evidence-found",
+      "description": "The cult ledger records strange lessons and names Hallowfen as the next place to witness."
+    },
+    {
+      "id": "rite-found",
+      "description": "The altar was prepared for a private Choir meal. The notes do not prove what the rite was meant to do."
+    },
+    {
+      "id": "cellar-found",
+      "description": "A hidden service cellar lies below the split barrel."
+    },
+    {
+      "id": "complete",
+      "description": "The chapel cell is broken. The evidence points down the road toward Hallowfen."
+    }
+  ]
+}

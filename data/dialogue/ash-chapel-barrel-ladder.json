@@ -1,0 +1,37 @@
+{
+  "id": "ash-chapel-barrel-ladder",
+  "title": "Split Barrel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The barrel is nailed to the floor. Its lid lifts on a hidden hinge.",
+        "A ladder drops through the barrel into a dark service cellar below the chapel."
+      ],
+      "choices": [
+        {
+          "label": "Descend",
+          "effects": {
+            "log": "You descend through the barrel into the cellar.",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_cellar.json",
+              "player": { "x": 12, "y": 13 }
+            },
+            "questUpdate": {
+              "quest": "investigate-ash-chapel-cult",
+              "stage": "cellar-found",
+              "log": "Quest updated: the chapel has a hidden service cellar."
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Leave",
+          "effects": {
+            "log": "You leave the hidden ladder untouched."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}
