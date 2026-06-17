@@ -10,6 +10,8 @@ export class Entity {
     name,
     type,
     faction = null,
+    role = null,
+    background = null,
     stats = {},
     position = { x: 0, y: 0 },
     tags = [],
@@ -20,6 +22,8 @@ export class Entity {
     this.name = name;
     this.type = type;
     this.faction = faction;
+    this.role = role;
+    this.background = background;
     this.tags = [...tags];
     this.position = { ...position };
     this.spriteId = spriteId ?? id;

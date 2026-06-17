@@ -22,7 +22,12 @@ const FLAT_KINDS = new Set([
   'dust',
   'floor-crack',
   'scorch-mark',
-  'wax-stain'
+  'wax-stain',
+  'paper-scraps',
+  'chalk-drawing',
+  'machine-oil',
+  'blood-sigil',
+  'ritual-circle'
 ]);
 
 export class IsometricRenderer {
@@ -46,10 +51,11 @@ export class IsometricRenderer {
     this.volumeProps = [];
   }
 
-  // Bake the static background for a level. `level` = { grid, props }.
+  // Bake the static background for a level. `level` = { grid, props, mood }.
   rebuildStaticScene(level) {
     this.grid = level.grid;
     this.props = level.props ?? [];
+    this.mood = level.mood ?? null;
     this.flatProps = this.props.filter((p) => FLAT_KINDS.has(p.kind));
     this.volumeProps = this.props.filter((p) => !FLAT_KINDS.has(p.kind));
 
@@ -64,14 +70,13 @@ export class IsometricRenderer {
     ctx.fillStyle = PALETTE.void;
     ctx.fillRect(0, 0, this.scene.width, this.scene.height);
 
-    // Floor cells (skip under walls — wall blocks cover them).
+    // Floor cells (skip under walls; wall blocks cover them).
     for (let y = 0; y < this.grid.height; y += 1) {
       for (let x = 0; x < this.grid.width; x += 1) {
         const def = this.grid.getTileDef(x, y);
         if (!def || def.kind === 'wall') continue;
         const s = gridToScreen(x, y, 0, this.sceneOrigin);
-        const variant = P.hash2D(x, y) % 6;
-        P.drawRuinedStoneFloorCell(ctx, s.x, s.y, variant, P.hash2D(x, y));
+        P.drawRuinedStoneFloorCell(ctx, s.x, s.y, x, y);
         const wallPressure = this.#wallPressure(x, y);
         if (wallPressure > 0) {
           P.drawFloorGrime(ctx, s.x, s.y, P.hash2D(x + 33, y + 41), Math.min(1.35, 0.55 + wallPressure * 0.22));
@@ -83,6 +88,17 @@ export class IsometricRenderer {
     for (const prop of this.flatProps) {
       const s = gridToScreen(prop.x, prop.y, 0, this.sceneOrigin);
       this.#drawFlatDecal(ctx, prop, s);
+    }
+
+    // Per-level mood: multiply a cold/warm shade over the whole baked floor so
+    // a place like the cellar reads as a different, colder space than the nave.
+    if (this.mood?.floorShade) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.globalAlpha = this.mood.floorShadeAlpha ?? 0.5;
+      ctx.fillStyle = this.mood.floorShade;
+      ctx.fillRect(0, 0, this.scene.width, this.scene.height);
+      ctx.restore();
     }
   }
 
@@ -109,6 +125,14 @@ export class IsometricRenderer {
     };
   }
 
+  // Full-screen opening writ shown before the player is dropped into the level.
+  renderBriefing(data) {
+    const ctx = this.ctx;
+    ctx.fillStyle = PALETTE.void;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ui.drawBriefing(ctx, data);
+  }
+
   renderFrame(state) {
     const ctx = this.ctx;
     this.#updateCamera(state.focus ?? { x: 0, y: 0 });
@@ -125,8 +149,12 @@ export class IsometricRenderer {
 
     if (state.overlay?.debugGrid) this.#drawDebugGrid(ctx);
     this.#drawDepthSorted(ctx, state);
+    this.#drawPlayerVisibilityHalo(ctx, state);
+    // Actors and ambient props (e.g. the whispering cross) share one speech pass.
+    this.#drawActorSpeech(ctx, [...(state.actors ?? []), ...(state.ambientSpeakers ?? [])]);
     this.#drawOverlays(ctx, state.overlay ?? {});
     this.#drawEffects(ctx, state.effects ?? []);
+    this.#drawAmbientTint(ctx);
     this.#drawVignette(ctx);
 
     ctx.restore();
@@ -137,10 +165,11 @@ export class IsometricRenderer {
   #drawDepthSorted(ctx, state) {
     const anim = state.anim ?? {};
     const queue = [];
+    const player = (state.actors ?? []).find((actor) => actor.type === 'player') ?? null;
 
     for (const prop of this.volumeProps) {
       const zLayer = prop.kind === 'wall' ? 0 : 2;
-      queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim) });
+      queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
     }
     for (const actor of state.actors ?? []) {
       const zLayer = actor.isDead ? 1 : 3;
@@ -151,12 +180,18 @@ export class IsometricRenderer {
     for (const item of queue) item.draw();
   }
 
-  #drawProp(ctx, prop, anim) {
+  #drawProp(ctx, prop, anim, player = null) {
     const s = gridToScreen(prop.x, prop.y, 0, this.worldOrigin);
     if (!this.#onScreen(s, 120)) return;
     const seed = prop.seed ?? P.hash2D(prop.x + 1, prop.y + 1);
     const pulse = anim.pulse ?? 0;
     const flicker = anim.flicker ?? 0;
+    const alpha = this.#occludingPropAlpha(prop, player);
+
+    if (alpha < 1) {
+      ctx.save();
+      ctx.globalAlpha *= alpha;
+    }
 
     switch (prop.kind) {
       case 'wall':
@@ -197,15 +232,64 @@ export class IsometricRenderer {
       case 'rusted-crate':
         P.drawRustedCrate(ctx, s.x, s.y, seed);
         break;
+      case 'campfire':
+        P.drawCampfire(ctx, s.x, s.y, seed, flicker);
+        break;
+      case 'chapel-banner':
+        P.drawChapelBanner(ctx, s.x, s.y, seed);
+        break;
+      case 'broken-bell':
+        P.drawBrokenBell(ctx, s.x, s.y, seed);
+        break;
+      case 'prayer-lectern':
+        P.drawPrayerLectern(ctx, s.x, s.y, seed);
+        break;
+      case 'ritual-bowl':
+        P.drawRitualBowl(ctx, s.x, s.y, seed);
+        break;
+      case 'rusted-barrel':
+        P.drawRustedBarrel(ctx, s.x, s.y, seed, {
+          ladder: prop.interact?.type === 'secret-exit' || prop.interact?.type === 'secret-entrance'
+        });
+        break;
       case 'cracked-column':
         P.drawCrackedColumn(ctx, s.x, s.y, seed);
         break;
       case 'quarantine-barricade':
         P.drawQuarantineBarricade(ctx, s.x, s.y, seed);
         break;
+      case 'loose-flagstone':
+        P.drawLooseFlagstone(ctx, s.x, s.y, seed);
+        break;
+      case 'bone-pile':
+        P.drawBonePile(ctx, s.x, s.y, seed);
+        break;
+      case 'cross-martyr':
+        P.drawCrossMartyr(ctx, s.x, s.y, seed, {
+          pulse,
+          flicker,
+          killed: prop.killed,
+          dim: prop.dim
+        });
+        break;
       default:
         break;
     }
+
+    if (alpha < 1) ctx.restore();
+  }
+
+  // Fade anything solid (wall, broken wall, or volumetric prop) that sits within
+  // one tile of the player AND in front of them (closer to the camera, i.e. a
+  // larger x+y), so interior walls and columns cut away instead of hiding the
+  // figure. Tall full walls fade a little harder than low props.
+  #occludingPropAlpha(prop, player) {
+    if (!player || player.isDead) return 1;
+    const dx = Math.abs(prop.x - player.x);
+    const dy = Math.abs(prop.y - player.y);
+    if (Math.max(dx, dy) > 1) return 1;
+    if (prop.x + prop.y < player.x + player.y) return 1; // behind the player
+    return prop.kind === 'wall' ? 0.4 : 0.5;
   }
 
   #drawFlatDecal(ctx, prop, s) {
@@ -231,6 +315,21 @@ export class IsometricRenderer {
         break;
       case 'wax-stain':
         P.drawWaxStain(ctx, s.x, s.y, seed);
+        break;
+      case 'paper-scraps':
+        P.drawPaperScraps(ctx, s.x, s.y, seed);
+        break;
+      case 'chalk-drawing':
+        P.drawChalkDrawing(ctx, s.x, s.y, seed);
+        break;
+      case 'machine-oil':
+        P.drawMachineOil(ctx, s.x, s.y, seed);
+        break;
+      case 'blood-sigil':
+        P.drawBloodSigil(ctx, s.x, s.y, seed);
+        break;
+      case 'ritual-circle':
+        P.drawRitualCircle(ctx, s.x, s.y, seed);
         break;
       case 'dust':
       default:
@@ -286,6 +385,84 @@ export class IsometricRenderer {
     } else {
       ctx.drawImage(frame, Math.round(fx - sprite.anchorX), Math.round(fy - sprite.anchorY));
     }
+  }
+
+  #drawActorSpeech(ctx, actors) {
+    ctx.save();
+    ctx.font = '9px "Courier New", monospace';
+    ctx.textBaseline = 'top';
+
+    for (const actor of actors) {
+      if (!actor.speech?.text || actor.isDead) continue;
+      const base = gridToScreen(actor.x, actor.y, 0, this.worldOrigin);
+      const x = base.x + (actor.pxOffset?.x ?? 0);
+      const y = base.y + (actor.pxOffset?.y ?? 0) - 78;
+      if (!this.#onScreen({ x, y }, 180)) continue;
+
+      const lines = this.#wrapSpeech(ctx, actor.speech.text, 168);
+      const width = Math.min(180, Math.max(...lines.map((line) => ctx.measureText(line).width)) + 12);
+      const height = lines.length * 11 + 8;
+      const left = Math.round(x - width / 2);
+      const top = Math.round(y - height);
+      const fade = Math.min(1, Math.max(0.25, actor.speech.ttl / 0.35));
+
+      ctx.globalAlpha = 0.84 * fade;
+      ctx.fillStyle = PALETTE.void;
+      ctx.fillRect(left, top, width, height);
+      ctx.globalAlpha = 0.96 * fade;
+      ctx.strokeStyle = PALETTE.uiBorderLight;
+      ctx.strokeRect(left + 0.5, top + 0.5, width - 1, height - 1);
+      ctx.fillStyle = PALETTE.uiText;
+      for (let i = 0; i < lines.length; i += 1) {
+        ctx.fillText(lines[i], left + 6, top + 4 + i * 11);
+      }
+    }
+
+    ctx.restore();
+  }
+
+  #wrapSpeech(ctx, text, maxWidth) {
+    const words = String(text).split(/\s+/).filter(Boolean);
+    const lines = [];
+    let line = '';
+    for (const word of words) {
+      const next = line ? `${line} ${word}` : word;
+      if (line && ctx.measureText(next).width > maxWidth) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = next;
+      }
+    }
+    if (line) lines.push(line);
+    return lines.slice(0, 2);
+  }
+
+  #drawPlayerVisibilityHalo(ctx, state) {
+    const player = (state.actors ?? []).find((actor) => actor.type === 'player');
+    if (!player || player.isDead) return;
+
+    const base = gridToScreen(player.x, player.y, 0, this.worldOrigin);
+    const x = base.x + (player.pxOffset?.x ?? 0);
+    const y = base.y + (player.pxOffset?.y ?? 0);
+    if (!this.#onScreen({ x, y }, 80)) return;
+
+    ctx.save();
+    ctx.globalAlpha = 0.38;
+    ctx.strokeStyle = PALETTE.hostBone;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, y - 9);
+    ctx.lineTo(x + 16, y);
+    ctx.lineTo(x, y + 9);
+    ctx.lineTo(x - 16, y);
+    ctx.closePath();
+    ctx.stroke();
+
+    ctx.globalAlpha = 0.52;
+    ctx.fillStyle = PALETTE.hostBone;
+    ctx.fillRect(Math.round(x - 1), Math.round(y - 1), 3, 3);
+    ctx.restore();
   }
 
   #onScreen(s, margin) {
@@ -447,15 +624,27 @@ export class IsometricRenderer {
 
   // ----- Vignette ---------------------------------------------------------
 
+  // A faint, flat colour wash over the whole viewport — used by mood-tinted
+  // levels (e.g. the cold cellar) to shift the temperature of the air itself.
+  #drawAmbientTint(ctx) {
+    if (!this.mood?.ambient) return;
+    ctx.save();
+    ctx.globalAlpha = this.mood.ambientAlpha ?? 0.15;
+    ctx.fillStyle = this.mood.ambient;
+    ctx.fillRect(VIEWPORT.x, VIEWPORT.y, VIEWPORT.width, VIEWPORT.height);
+    ctx.restore();
+  }
+
   #drawVignette(ctx) {
     // Stepped translucent void bands at the viewport edges dim the scene like
     // baked old CRPG lighting: no smooth gradient, just a few hard bands.
     const w = VIEWPORT.width;
     const h = VIEWPORT.height;
+    const strength = this.mood?.vignette ?? 1;
     for (let i = 0; i < 6; i += 1) {
       const inset = i * 8;
       ctx.save();
-      ctx.globalAlpha = 0.1;
+      ctx.globalAlpha = 0.1 * strength;
       ctx.fillStyle = PALETTE.void;
       ctx.fillRect(0, inset, w, 5);
       ctx.fillRect(0, h - inset - 5, w, 5);

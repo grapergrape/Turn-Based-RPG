@@ -332,28 +332,73 @@ function drawActorBase(ctx, w, h, facing, pose, style) {
   if (pose.hit) px(ctx, torso.bodyCx - 8, shoulderY + 8, PALETTE.flash, 16, 2);
 }
 
+// A clear, flat corpse on the ground, distinct per creature so a cleared room
+// reads at a glance: a Host form collapses into a black-gold icon with scattered
+// halo bone; a hooded cultist crumples into robes beside a dropped knife; a
+// human (Mara) falls in her coat. The body drops into place over the first few
+// frames, then blood / black-gold seep settles.
 function drawDeath(ctx, w, h, style, frame) {
-  const t = frame / 9;
   const cx = Math.floor(w / 2);
-  const footY = h - 4;
+  const groundY = h - 6;
+  const fall = Math.min(1, frame / 4);
+  const settle = Math.min(1, Math.max(0, (frame - 3) / 6));
   const coat = ramp(style, 'coat');
-  const pants = ramp(style, 'pants');
   const skin = ramp(style, 'skin');
-  const bodyW = Math.round(11 + t * 25);
-  const bodyH = Math.round(36 - t * 25);
-  const x = Math.round(cx - bodyW / 2 - t * 4);
-  const y = Math.round(footY - bodyH - 3 + t * 20);
+  const host = Boolean(style.hostHead);
+  const cult = Boolean(style.maskedHead);
 
-  px(ctx, x - 1, y + 1, coat.dk, bodyW + 3, bodyH + 3);
-  taperedSpan(ctx, x + Math.floor(bodyW / 2), y, Math.max(7, bodyW - 3), Math.max(8, bodyW), bodyH, coat, 0, frame);
-  px(ctx, x + 2, footY - 2, pants.mid, Math.max(8, bodyW - 4), 3);
-  px(ctx, x - 3, footY, style.bootLo, Math.max(12, bodyW - 1), 2);
+  const lift = Math.round((1 - fall) * 20); // body drops to the floor
+  const bodyTop = groundY - 8 - lift;
+  const half = 17;
 
-  const hx = Math.round(cx + t * 13);
-  const hy = Math.round(y - 7 + t * 23);
-  px(ctx, hx, hy, skin.mid, 7, 6);
-  px(ctx, hx, hy, style.hair, 7, 2);
-  if (frame >= 5) px(ctx, x + Math.floor(bodyW * 0.45), footY - 1, PALETTE.hostRed, Math.max(7, Math.floor(bodyW * 0.45)), 2);
+  // Ground seep / blood pool, settling under the body.
+  if (settle > 0) {
+    const seep = host ? PALETTE.hostBlack : PALETTE.hostRed;
+    const seep2 = host ? PALETTE.hostGold : PALETTE.rustDark;
+    const sw = Math.round(22 + settle * 16);
+    for (let r = 0; r < 6; r += 1) {
+      const ww = Math.max(2, Math.round(sw * (1 - Math.abs(r - 2.5) / 4)));
+      px(ctx, cx - Math.floor(ww / 2) + 3, groundY - 2 + r, r % 2 ? seep2 : seep, ww, 1);
+    }
+  }
+
+  // Coat / robe mass lying flat.
+  for (let row = 0; row < 9; row += 1) {
+    const ww = half * 2 - Math.abs(row - 4) * 2;
+    const tone = row < 3 ? coat.hi : row < 6 ? coat.mid : coat.lo;
+    px(ctx, cx - Math.floor(ww / 2) - 2, bodyTop + row, tone, ww, 1);
+  }
+  px(ctx, cx - half - 4, bodyTop, PALETTE.void, 2, 9);
+  px(ctx, cx + half - 2, bodyTop, PALETTE.void, 2, 9);
+
+  if (host) {
+    // Collapsed Host icon: veins, scattered halo bone, thorns, a dim wound.
+    px(ctx, cx - 11, bodyTop + 3, PALETTE.hostGold, 22, 1);
+    px(ctx, cx - 6, bodyTop + 6, PALETTE.hostGold, 14, 1);
+    for (const [dx, dy] of [[-16, -1], [-20, 2], [-14, 5], [-21, 5], [-12, -3]]) {
+      px(ctx, cx + dx, bodyTop + dy, PALETTE.hostBone, 2, 1);
+    }
+    linePx(ctx, cx + 7, bodyTop + 2, cx + 13, bodyTop - 3, PALETTE.hostBone, 1);
+    px(ctx, cx, bodyTop + 4, frame % 2 ? PALETTE.hostGlow : PALETTE.hostGold, 2, 2);
+    px(ctx, cx - 20, bodyTop + 1, PALETTE.hostBone, 5, 5); // skull at head end
+    px(ctx, cx - 19, bodyTop + 2, PALETTE.void, 1, 1);
+  } else {
+    // Human corpse: head + boots at the ends, a slack outflung arm, belt.
+    const hx = cx + 13;
+    px(ctx, hx, bodyTop + 1, skin.mid, 6, 6);
+    px(ctx, hx, bodyTop, style.hair, 6, 2);
+    if (cult) px(ctx, hx - 1, bodyTop, style.hood, 7, 3); // cowl over the face
+    else px(ctx, hx + 1, bodyTop + 4, skin.dk, 3, 1); // slack jaw
+    px(ctx, cx - half - 1, bodyTop + 5, style.bootLo, 8, 3);
+    px(ctx, cx - half, bodyTop + 5, style.boot, 4, 2);
+    px(ctx, cx - 6, bodyTop + 4, style.belt, 13, 1);
+    linePx(ctx, cx + 2, bodyTop + 7, cx + 9, bodyTop + 11, coat.lo, 2);
+    px(ctx, cx + 9, bodyTop + 11, skin.mid, 2, 2);
+    if (cult) {
+      px(ctx, cx - 3, bodyTop + 2, PALETTE.clothRed, 9, 1); // stained stole
+      linePx(ctx, cx - 7, bodyTop + 11, cx - 1, bodyTop + 13, style.weapon, 1); // dropped knife
+    }
+  }
 }
 
 function compose(w, h, drawBody) {
@@ -515,6 +560,23 @@ const CUT_STYLE = {
   decorate: drawCutthroatDetails
 };
 
+const CHOIR_STYLE = {
+  ...CUT_STYLE,
+  coatHi: PALETTE.hostBone,
+  coat: PALETTE.clothRed,
+  coatLo: PALETTE.rustDark,
+  pantsHi: PALETTE.stoneDust,
+  pants: PALETTE.clothDark,
+  hood: PALETTE.clothDark,
+  hoodHi: PALETTE.hostBone,
+  belt: PALETTE.hostGold,
+  skinHi: PALETTE.skinLight,
+  skin: PALETTE.skinMid,
+  skinLo: PALETTE.skinDark,
+  weapon: PALETTE.hostBone,
+  hunch: 3
+};
+
 const PEN_STYLE = {
   shoulders: 16,
   waist: 8,
@@ -578,6 +640,7 @@ function bakeActor(w, h, style) {
 export function buildSpriteAtlas() {
   return {
     'mara-vey': bakeActor(42, 62, MARA_STYLE),
+    'choir-cultist': bakeActor(44, 64, CHOIR_STYLE),
     'red-tithe-cutthroat': bakeActor(44, 64, CUT_STYLE),
     'host-touched-penitent': bakeActor(52, 68, PEN_STYLE)
   };

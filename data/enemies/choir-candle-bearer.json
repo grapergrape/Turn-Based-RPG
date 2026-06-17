@@ -1,0 +1,18 @@
+{
+  "id": "choir-candle-bearer",
+  "name": "Choir Candle-Bearer",
+  "type": "enemy",
+  "faction": "choir-open-wound",
+  "spriteId": "choir-cultist",
+  "description": "A hooded cultist with chapel wax on both sleeves and a hooked rite knife hidden under the candle tray.",
+  "stats": {
+    "hp": 5,
+    "maxHp": 5,
+    "actionPoints": 5,
+    "moveCost": 1
+  },
+  "attacks": [
+    { "id": "rite-knife", "name": "Rite Knife", "apCost": 3, "damage": 2, "range": 1 }
+  ],
+  "tags": ["choir", "cultist", "human"]
+}

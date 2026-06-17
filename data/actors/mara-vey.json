@@ -2,8 +2,9 @@
   "id": "mara-vey",
   "name": "Mara Vey",
   "type": "player",
-  "faction": "free-cities",
-  "role": "Free City Scout",
+  "faction": "holy-remnant",
+  "role": "Cult-Breaker, Ashen Censure",
+  "background": "A field agent of the Ashen Censure, the Holy Remnant's quiet office for hunting and burning blasphemous Host-cults along the ash roads. Years of it now: find the cell, end it, bury whoever the Censure sent with you last time, move on. No one thanks a cult-breaker, and the cults never stop coming. Lately there are more of them than there should be, and no one in the Office will say why.",
   "stats": {
     "hp": 14,
     "maxHp": 14,
@@ -11,8 +12,8 @@
     "moveCost": 1
   },
   "attacks": [
-    { "id": "melee", "name": "Scout Knife", "apCost": 3, "damage": 3, "range": 1 },
+    { "id": "melee", "name": "Censure Knife", "apCost": 3, "damage": 3, "range": 1 },
     { "id": "sidearm", "name": "Sidearm", "apCost": 4, "damage": 5, "range": 5 }
   ],
-  "tags": ["party", "human", "scout"]
+  "tags": ["party", "human", "cult-breaker", "ashen-censure"]
 }

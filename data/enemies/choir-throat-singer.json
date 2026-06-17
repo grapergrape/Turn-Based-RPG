@@ -1,0 +1,18 @@
+{
+  "id": "choir-throat-singer",
+  "name": "Choir Throat-Singer",
+  "type": "enemy",
+  "faction": "choir-open-wound",
+  "spriteId": "choir-cultist",
+  "description": "A thin-voiced Choir scout who fights at reach with thrown relic glass and half-sung catechism.",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 5,
+    "moveCost": 1
+  },
+  "attacks": [
+    { "id": "relic-glass", "name": "Relic Glass", "apCost": 3, "damage": 1, "range": 3 }
+  ],
+  "tags": ["choir", "cultist", "human", "ranged"]
+}

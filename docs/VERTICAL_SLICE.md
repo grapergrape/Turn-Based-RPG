@@ -132,17 +132,17 @@ Goal: combine exploration, combat, dialogue, and quest into one coherent playabl
 
 Must have:
 
-- One small settlement or ruin.
+- One small settlement or ruin with a bounded secondary area.
 - One faction presence.
 - One Host threat.
-- One dialogue.
-- One combat.
+- One dialogue chain or readable investigation packet.
+- Multiple small combat pulls that do not all aggro at once.
 - One quest.
-- One lore reveal tied to The Host or Vale Imprint.
+- One lore clue tied to The Host or Vale Imprint, without explaining the full mystery.
 
 Suggested demo area:
 
-- A quarantined chapel outside Veyr's Gate where a dormant Host growth has started tolling like a bell.
+- A quarantined chapel on the road to Hallowfen where a Choir cell has left teachings, a camp, separated cultist groups, and a hidden service cellar.
 
 ## Scope traps to avoid
 

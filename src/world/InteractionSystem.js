@@ -1,5 +1,5 @@
 // Exploration interactions: looting containers and touching the corrupted
-// altar. The system is intentionally small — it resolves which interactable is
+// altar. The system is intentionally small; it resolves which interactable is
 // in reach, applies its data-defined effect to the inventory, and reports log
 // lines plus whether the action should start combat. It does not know what a
 // "reliquary" means beyond the data attached to the object.
@@ -32,11 +32,16 @@ export class InteractionSystem {
     return best;
   }
 
-  // Apply an interaction. Returns { logs, triggersCombat }.
+  // Apply an interaction. Returns data effects for Game to present and apply.
   interact(object, inventory) {
     const descriptor = object.interact ?? {};
     const logs = [];
     let triggersCombat = false;
+    const pushLog = (value) => {
+      for (const line of [].concat(value ?? [])) {
+        if (line) logs.push(line);
+      }
+    };
 
     if (descriptor.type === 'container') {
       for (const entry of descriptor.loot ?? []) {
@@ -44,19 +49,25 @@ export class InteractionSystem {
       }
       object.consumed = true;
       object.opened = true;
-      if (descriptor.log) logs.push(descriptor.log);
+      pushLog(descriptor.log);
       const summary = (descriptor.loot ?? [])
         .map((entry) => `${entry.count ?? 1}x ${inventory.displayName(entry.item)}`)
         .join(', ');
       if (summary) logs.push(`Recovered: ${summary}.`);
     } else if (descriptor.type === 'altar') {
-      for (const line of [].concat(descriptor.log ?? [])) logs.push(line);
+      pushLog(descriptor.log);
       object.touched = true;
       triggersCombat = Boolean(descriptor.triggersCombat);
-    } else if (descriptor.log) {
-      logs.push(descriptor.log);
+    } else {
+      pushLog(descriptor.log);
     }
 
-    return { logs, triggersCombat };
+    return {
+      logs,
+      triggersCombat,
+      combatEncounter: descriptor.encounter ?? null,
+      dialogueId: descriptor.dialogue ?? null,
+      questUpdate: descriptor.questUpdate ?? null
+    };
   }
 }

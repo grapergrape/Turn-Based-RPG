@@ -422,7 +422,7 @@ Life continues because people are stubborn.
 
 But the old stability is failing.
 
-Dormant Host tissue has begun to pulse in places that have been quiet for generations. Choir Trees are speaking new phrases. Infections from minor contact are becoming more severe. Host creatures are leaving Bloom zones in coordinated groups. Children are being born with dreams of Europa. Priests report hearing confession through sealed reliquaries. Compact instruments detect low-frequency signals moving through dead tissue beneath several cities.
+Dormant Host tissue has begun to pulse in places that have been quiet for generations. Choir Trees are speaking new phrases. Infections from minor contact are becoming more severe. Host creatures are leaving Bloom zones in coordinated groups. Children are being born with dreams of Europa. Priests report hearing confession through sealed reliquaries. Compact instruments detect low-frequency signals moving through dead tissue beneath several cities. And blasphemous Host-cults — the Choir of the Open Wound and a hundred smaller imitations — are multiplying faster than anyone can burn them, springing up in regions that should have been long dead. Most who notice the surge treat it as a policing problem. It is a symptom.
 
 Every faction knows something is changing.
 
@@ -463,6 +463,14 @@ Priests, doctors, and field confessors who believe infected people may retain so
 ### The Iron Penitents
 
 Militant hardliners who want total war against Host creatures, Bloomborn, Lumen scientists, cultists, and any city that refuses doctrinal submission. Their sermons are popular among frightened border towns.
+
+### The Ashen Censure
+
+A field office of the Holy Remnant tasked with the quiet, unglamorous work of finding and destroying blasphemous Host-cults before they can open a gate. Where the Iron Penitents wage open war on whole contaminated towns, the Censure works smaller and darker: a handful of field agents — **cult-breakers** — sent down the ash roads on written writs to walk into a silent chapel, a stopped farm, a settlement that has quit answering its bells, and end whatever has begun teaching that the rot is holy.
+
+It is thankless, grinding work. Cult-breakers are not celebrated; many of the faithful find them distasteful, a living reminder that the enemy is not only out in the Blooms but inside the Church's own flocks. They burn what they find, bury whoever the Censure sent with them last time, and ride to the next writ. The cults never stop coming.
+
+In recent years the Censure's writs have multiplied. Cells of the Choir of the Open Wound and a dozen smaller blasphemies are appearing faster than the office can burn them, in regions that have been dormant for generations. Without understanding it, the Censure's field agents are among the first people on Earth to feel the planetary lock failing — they simply experience it as *more cults than there should be*, and no one above them will say why. A cult-breaker who survives long enough and pays attention may be the one who first connects the rising tide of blasphemy to the weakening of the Stilling.
 
 ### The Quiet Cardinals
 
@@ -820,7 +828,7 @@ Perhaps Saint Origen was not humanity’s first contact with it.
 
 ## Player Setup
 
-The player begins as the leader of a small field squad working along the borderlands between Free City territory and old Bloom zones. The squad may be affiliated with a Free City militia, a salvage company, a neutral quarantine office, or a mixed expedition funded by several factions.
+The player begins as the leader of a small field squad working along the borderlands between Free City territory and old Bloom zones. The squad may be affiliated with a Free City militia, a salvage company, a neutral quarantine office, a mixed expedition funded by several factions, or — as in the current playable vertical slice — the Holy Remnant's **Ashen Censure**, the cult-purgation office whose field agents (cult-breakers) ride writs into silent chapels and stopped towns to put down blasphemous Host-cults. Framed this way, the protagonist has spent years breaking cults for the Church and has privately noted that there are far more of them lately than there used to be; the Ash Chapel on the road to Hallowfen is simply the latest writ, and the one where the larger mystery begins to surface.
 
 Their first mission is ordinary by the standards of the world: investigate a silent settlement, identify whether the outbreak is active, recover survivors if possible, and prevent contaminated material from reaching trade roads.
 
@@ -1102,9 +1110,21 @@ Do not make every religious character cruel. Do not make every scientist wise. D
 
 The best stories in this world should leave the player asking not only, “What is the right choice?” but also, “Who gets to decide what counts as human?”
 
+## Public Knowledge vs. Hidden Truth (hard writing rule)
+
+This is a binding rule for all **player-facing** text — in-game dialogue, notes, item descriptions, the opening writ, barks, UI.
+
+The general population, and the overwhelming majority of the Holy Remnant itself, **does not know the Host is alien.** They believe what the state teaches: that the Descent opened a wound in creation, that **Hell itself is invading the world**, and that the Remnant wages **God's war** against the damned. The hyper-religious authoritarian state enforces this narrative on purpose, because "we are holding back Hell, so obey us" is the most powerful instrument it has for controlling a terrified population. Doubt is heresy; heresy burns.
+
+The real truth — that the Host is an **alien organism** from beneath Europa's ice, shaped into Hell's image by **Father Vale's** mind (the Vale Imprint), and that the Stilling is a **failing containment lock** rather than a divine mercy — is known only to a select few: the Quiet Cardinals, senior Lumen Compact leadership, the Choir's inner circle, and figures like Sorell. To say aloud that Vale shaped the Host, or that it is biology rather than damnation, is heresy punishable by fire.
+
+Therefore, player-facing text must **never casually reveal** alien origin, Europa, first contact, the starship, or the Vale Imprint by name. Describe the horror the way a believer or a weary Censure agent would: Hell, damnation, false saints, the rot, the Host. The deeper truth is reached only by **mystery and investigation** — a child drawing a cold ringed moon no one taught them, a Compact note that treats demons like lab samples, a cult that calls damnation "confession," a lock that is quietly failing. Let players *feel* the official story cracking long before anyone hands them the answer. The "fell from the sky / a cold moon" imagery is permitted precisely because, to an in-world mind, it is inexplicable and frightening, not proof of anything.
+
 ---
 
 # Opening Crawl
+
+> NOTE: This crawl states the hidden truth plainly. It is the THEMATIC / late-reveal framing and dev canon — it is **not** what the protagonist or the public knows at the start of the game. The in-game opening (see the Ash Chapel "Field Writ of the Ashen Censure") deliberately tells only the doctrinal version. Hold this crawl for a late reveal, not the cold open.
 
 Humanity did not abandon faith when it reached the stars.
 

@@ -7,14 +7,37 @@ const dataRoot = join(root, 'data');
 const errors = [];
 
 // Content this slice (Ash Chapel Breach) must contain.
-const REQUIRED_ENEMY_IDS = ['red-tithe-cutthroat', 'host-touched-penitent'];
-const REQUIRED_INTERACTABLE_KINDS = ['rusted-reliquary', 'field-satchel', 'damaged-altar'];
-const REQUIRED_ITEM_IDS = ['relic-rounds', 'field-dressing', 'tarnished-saint-token'];
+const MAIN_LEVEL_ID = 'ash-chapel-breach';
+const CELLAR_LEVEL_ID = 'ash-chapel-cellar';
+const REQUIRED_MAIN_ENEMY_IDS = [
+  'choir-flesh-eater',
+  'choir-candle-bearer',
+  'choir-throat-singer',
+  'host-touched-penitent'
+];
+const REQUIRED_INTERACTABLE_KINDS = ['rusted-reliquary', 'field-satchel', 'damaged-altar', 'rusted-barrel'];
+const REQUIRED_ITEM_IDS = [
+  'relic-rounds',
+  'field-dressing',
+  'tarnished-saint-token',
+  'road-warden-chit',
+  'choir-hymnal-fragment'
+];
+const REQUIRED_QUEST_IDS = ['investigate-ash-chapel-cult'];
+const REQUIRED_DIALOGUE_IDS = [
+  'ash-chapel-altar-rite',
+  'ash-chapel-barrel-ladder',
+  'ash-chapel-cellar-corpse',
+  'ash-chapel-cellar-ladder',
+  'ash-chapel-cult-ledger'
+];
 const DECAL_KINDS = new Set([
   'rubble-pile', 'rubble-decal', 'floor-crack', 'blood-stain', 'glass-debris', 'dust', 'road-dust'
 ]);
 
 const seenItemIds = new Set();
+const seenQuestIds = new Set();
+const seenDialogueIds = new Set();
 
 async function main() {
   await checkRenderConfig();
@@ -30,11 +53,23 @@ async function main() {
     if (matchDir(filePath, 'actors')) validateActor(filePath, data);
     if (matchDir(filePath, 'enemies')) validateEnemy(filePath, data);
     if (matchDir(filePath, 'items')) validateItem(filePath, data);
+    if (matchDir(filePath, 'quests')) validateQuest(filePath, data);
+    if (matchDir(filePath, 'dialogue')) validateDialogue(filePath, data);
   }
 
   for (const id of REQUIRED_ITEM_IDS) {
     if (!seenItemIds.has(id)) {
       errors.push(`data/items: required item "${id}" is missing.`);
+    }
+  }
+  for (const id of REQUIRED_QUEST_IDS) {
+    if (!seenQuestIds.has(id)) {
+      errors.push(`data/quests: required quest "${id}" is missing.`);
+    }
+  }
+  for (const id of REQUIRED_DIALOGUE_IDS) {
+    if (!seenDialogueIds.has(id)) {
+      errors.push(`data/dialogue: required dialogue "${id}" is missing.`);
     }
   }
 
@@ -173,44 +208,155 @@ function validateLevel(filePath, data) {
   }
 
   const enemies = data.spawns?.enemies ?? [];
-  if (enemies.length !== 2) {
-    errors.push(`${name}: expected exactly 2 enemies, found ${enemies.length}.`);
-  }
   for (const point of enemies) {
     if (!inBounds(data, point)) {
       errors.push(`${name}: enemy spawn (${point.x}, ${point.y}) is out of bounds.`);
     }
   }
+
+  for (const id of REQUIRED_QUEST_IDS) {
+    if (!Array.isArray(data.quests) || !data.quests.includes(id)) {
+      errors.push(`${name}: required quest "${id}" is missing from quests.`);
+    }
+  }
+  const objects = Array.isArray(data.objects) ? data.objects : [];
+  for (const object of objects) {
+    if (object.x !== undefined || object.y !== undefined) {
+      if (!inBounds(data, object)) {
+        errors.push(`${name}: object ${object.kind ?? 'unknown'} at (${object.x}, ${object.y}) is out of bounds.`);
+      }
+    }
+  }
+
+  if (data.id === MAIN_LEVEL_ID) validateAshChapelMain(name, data, enemies, objects);
+  if (data.id === CELLAR_LEVEL_ID) validateAshChapelCellar(name, data, objects);
+}
+
+function validateAshChapelMain(name, data, enemies, objects) {
   const enemyIds = enemies.map((spawn) => spawn.id);
-  for (const id of REQUIRED_ENEMY_IDS) {
+  if (enemies.length < 6) {
+    errors.push(`${name}: expected at least 6 spread enemies, found ${enemies.length}.`);
+  }
+  for (const id of REQUIRED_MAIN_ENEMY_IDS) {
     if (!enemyIds.includes(id)) {
       errors.push(`${name}: required enemy "${id}" is missing from spawns.`);
     }
   }
 
-  const objects = Array.isArray(data.objects) ? data.objects : [];
+  const encounterIds = new Set(enemies.map((spawn) => spawn.encounter).filter(Boolean));
+  if (encounterIds.size < 3) {
+    errors.push(`${name}: expected at least 3 enemy encounter groups, found ${encounterIds.size}.`);
+  }
+  for (const spawn of enemies) {
+    if (!spawn.encounter) {
+      errors.push(`${name}: enemy "${spawn.id}" must define an encounter id.`);
+    }
+  }
+
+  if (!Array.isArray(data.combatTriggers) || data.combatTriggers.length < 3) {
+    errors.push(`${name}: combatTriggers must define at least 3 spread trigger zones.`);
+  } else {
+    for (const trigger of data.combatTriggers) {
+      if (!trigger.encounter) errors.push(`${name}: combat trigger at (${trigger.x}, ${trigger.y}) must define encounter.`);
+      if (!Array.isArray(trigger.intro) || trigger.intro.length === 0) {
+        errors.push(`${name}: combat trigger "${trigger.id ?? trigger.encounter}" must define intro lines.`);
+      }
+    }
+  }
+
+  const requiredMainDialogue = [
+    'ash-chapel-altar-rite',
+    'ash-chapel-barrel-ladder',
+    'ash-chapel-cult-ledger'
+  ];
+  for (const id of requiredMainDialogue) {
+    if (!Array.isArray(data.dialogue) || !data.dialogue.includes(id)) {
+      errors.push(`${name}: required main dialogue "${id}" is missing from dialogue.`);
+    }
+  }
+
   const kinds = objects.map((object) => object.kind);
   for (const kind of REQUIRED_INTERACTABLE_KINDS) {
     if (!kinds.includes(kind)) {
       errors.push(`${name}: required interactable "${kind}" is missing.`);
     }
   }
+  for (const object of objects) {
+    if (object.kind !== 'rusted-barrel' && REQUIRED_INTERACTABLE_KINDS.includes(object.kind) && !object.interact) {
+      errors.push(`${name}: "${object.kind}" must define an interact descriptor.`);
+    }
+  }
 
   const pews = kinds.filter((kind) => kind === 'broken-pew').length;
-  if (pews < 6) {
-    errors.push(`${name}: expected at least 6 broken pews, found ${pews}.`);
+  if (pews < 10) {
+    errors.push(`${name}: expected at least 10 broken pews, found ${pews}.`);
   }
 
   const decals = kinds.filter((kind) => DECAL_KINDS.has(kind)).length;
-  if (decals < 8) {
-    errors.push(`${name}: expected at least 8 rubble/decal objects, found ${decals}.`);
+  if (decals < 12) {
+    errors.push(`${name}: expected at least 12 rubble/decal objects, found ${decals}.`);
   }
 
-  // The three required interactables must carry an interact descriptor.
-  for (const object of objects) {
-    if (REQUIRED_INTERACTABLE_KINDS.includes(object.kind) && !object.interact) {
-      errors.push(`${name}: "${object.kind}" must define an interact descriptor.`);
+  const hasCampfire = objects.some((object) => object.kind === 'campfire');
+  if (!hasCampfire) {
+    errors.push(`${name}: expected a campfire prop for the cultist camp.`);
+  }
+
+  const hasAmbient = enemies.some((spawn) => Array.isArray(spawn.ambient) && spawn.ambient.length > 0);
+  if (!hasAmbient) {
+    errors.push(`${name}: expected at least one enemy spawn with ambient lines.`);
+  }
+
+  const hasSecretEntrance = objects.some((object) =>
+    object.kind === 'rusted-barrel' && object.interact?.type === 'secret-entrance' && object.interact?.dialogue
+  );
+  if (!hasSecretEntrance) {
+    errors.push(`${name}: expected a rusted-barrel secret entrance with dialogue.`);
+  }
+
+  const hasCultLedger = objects.some((object) =>
+    object.kind === 'paper-scraps' && object.name === 'Cult Ledger' && object.interact?.dialogue === 'ash-chapel-cult-ledger'
+  );
+  if (!hasCultLedger) {
+    errors.push(`${name}: expected a Cult Ledger paper-scraps object with dialogue.`);
+  }
+
+  if (!Array.isArray(data.combatIntro) || data.combatIntro.length === 0) {
+    errors.push(`${name}: combatIntro must contain at least one fallback line.`);
+  }
+  if (!data.onVictory?.questUpdate) {
+    errors.push(`${name}: onVictory.questUpdate is required for this slice.`);
+  }
+}
+
+function validateAshChapelCellar(name, data, objects) {
+  const requiredCellarDialogue = [
+    'ash-chapel-cellar-corpse',
+    'ash-chapel-cellar-ladder'
+  ];
+  for (const id of requiredCellarDialogue) {
+    if (!Array.isArray(data.dialogue) || !data.dialogue.includes(id)) {
+      errors.push(`${name}: required cellar dialogue "${id}" is missing from dialogue.`);
     }
+  }
+
+  const hasSecretExit = objects.some((object) =>
+    object.kind === 'rusted-barrel' && object.interact?.type === 'secret-exit' && object.interact?.dialogue
+  );
+  if (!hasSecretExit) {
+    errors.push(`${name}: expected a secret-exit ladder with dialogue.`);
+  }
+
+  const hasSecretCorpseLoot = objects.some((object) =>
+    object.kind === 'corpse' && object.name === 'Dead Road Warden' && Array.isArray(object.interact?.loot)
+  );
+  if (!hasSecretCorpseLoot) {
+    errors.push(`${name}: expected the secret area Dead Road Warden corpse to contain loot.`);
+  }
+
+  const lootEntries = objects.flatMap((object) => object.interact?.loot ?? []);
+  if (lootEntries.length < 6) {
+    errors.push(`${name}: expected richer secret-area loot, found ${lootEntries.length} loot entries.`);
   }
 }
 
@@ -244,6 +390,57 @@ function validateItem(filePath, data) {
   requireString(name, data.name, 'name');
   requireString(name, data.type, 'type');
   if (typeof data.id === 'string') seenItemIds.add(data.id);
+}
+
+function validateQuest(filePath, data) {
+  const name = relative(filePath);
+  requireString(name, data.id, 'id');
+  requireString(name, data.title, 'title');
+  requireString(name, data.initialStage, 'initialStage');
+  if (typeof data.id === 'string') seenQuestIds.add(data.id);
+  if (!Array.isArray(data.stages) || data.stages.length === 0) {
+    errors.push(`${name}: stages must be a non-empty array.`);
+    return;
+  }
+  let hasInitial = false;
+  for (const stage of data.stages) {
+    requireString(name, stage.id, 'stages[].id');
+    requireString(name, stage.description, 'stages[].description');
+    if (stage.id === data.initialStage) hasInitial = true;
+  }
+  if (!hasInitial) {
+    errors.push(`${name}: initialStage "${data.initialStage}" is not listed in stages.`);
+  }
+}
+
+function validateDialogue(filePath, data) {
+  const name = relative(filePath);
+  requireString(name, data.id, 'id');
+  requireString(name, data.title, 'title');
+  if (typeof data.id === 'string') seenDialogueIds.add(data.id);
+  if (!data.nodes || typeof data.nodes !== 'object') {
+    errors.push(`${name}: nodes must be an object.`);
+    return;
+  }
+  if (!data.nodes.start) {
+    errors.push(`${name}: nodes.start is required.`);
+  }
+  for (const [nodeId, node] of Object.entries(data.nodes)) {
+    if (!Array.isArray(node.lines) || node.lines.length === 0) {
+      errors.push(`${name}: node "${nodeId}" must define a non-empty lines array.`);
+    } else {
+      for (const line of node.lines) requireString(name, line, `nodes.${nodeId}.lines[]`);
+    }
+    if (node.choices !== undefined) {
+      if (!Array.isArray(node.choices) || node.choices.length === 0 || node.choices.length > 2) {
+        errors.push(`${name}: node "${nodeId}" choices must contain 1 or 2 choices.`);
+      } else {
+        for (const choice of node.choices) {
+          requireString(name, choice.label, `nodes.${nodeId}.choices[].label`);
+        }
+      }
+    }
+  }
 }
 
 function validateStats(name, stats) {
