@@ -1,0 +1,8 @@
+{
+  "id": "mourning-ring",
+  "name": "Mourning Ring",
+  "type": "ring",
+  "weight": 0.1,
+  "equipment": { "slot": "ring" },
+  "description": "A narrow black ring for the dead not returned to their families. Mara wears it anyway."
+}

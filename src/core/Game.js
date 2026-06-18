@@ -74,6 +74,7 @@ const OBJECT_NAMES = {
   'blood-sigil': 'Blood Sigil',
   'ritual-circle': 'Rite Circle',
   'cross-martyr': 'The Opened Saint',
+  'bound-victim': 'Bound Captive',
   wall: 'Chapel Wall',
   'wall-broken': 'Broken Wall'
 };
@@ -124,11 +125,17 @@ export class Game {
       this.player.hp = Math.max(1, Math.min(this.player.maxHp, Math.round(this.player.maxHp * hpRatio)));
     }
 
-    this.inventory = new Inventory({ ...(previousInventory?.itemDefs ?? {}), ...level.itemDefs });
+    this.inventory = new Inventory(
+      { ...(previousInventory?.itemDefs ?? {}), ...level.itemDefs },
+      { maxCarryWeight: previousInventory?.maxCarryWeight ?? level.playerLoadout?.maxCarryWeight }
+    );
     if (previousInventory) {
       for (const [itemId, count] of previousInventory.counts) {
-        this.inventory.add(itemId, count);
+        this.inventory.add(itemId, count, { ignoreCapacity: true });
       }
+      this.inventory.loadEquipment(previousInventory.equipmentSnapshot());
+    } else {
+      this.#loadStartingInventory(level.playerLoadout);
     }
     this.interactions = new InteractionSystem(level.interactables);
     // Props that murmur on their own (e.g. the crucified Opened Saint) get the
@@ -154,6 +161,9 @@ export class Game {
     this.moving = null;
     this.pathQueue = [];
     this.uiScreen = null;
+    this.inventoryFocus = 'items';
+    this.inventoryIndex = 0;
+    this.equipmentIndex = 0;
     this.dialogue = null;
     this.briefing = null;
     this.briefingPage = 0;
@@ -334,6 +344,10 @@ export class Game {
       this.#handleDialogueScreen(actions);
       return;
     }
+    if (this.uiScreen === 'inventory') {
+      this.#handleInventoryScreen(actions);
+      return;
+    }
     for (const action of actions) {
       if (action === 'cancel' || action === 'confirm' || action === 'interact') {
         this.#closeUiScreen();
@@ -362,6 +376,89 @@ export class Game {
     }
     this.uiScreen = 'inventory';
     this.dialogue = null;
+    this.#clampInventorySelection();
+  }
+
+  #handleInventoryScreen(actions) {
+    this.#clampInventorySelection();
+    for (const action of actions) {
+      if (action === 'cancel' || action === 'inventory') {
+        this.#closeUiScreen();
+        return;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') {
+        this.debugGrid = !this.debugGrid;
+        continue;
+      }
+      if (action === 'dressing') {
+        this.#log(this.inventory.useFieldDressing(this.player));
+        continue;
+      }
+      if (action === 'left' || action === 'right' || action === 'cycle') {
+        this.inventoryFocus = this.inventoryFocus === 'gear' ? 'items' : 'gear';
+        this.#clampInventorySelection();
+        continue;
+      }
+      if (action === 'up' || action === 'down') {
+        this.#moveInventorySelection(action === 'down' ? 1 : -1);
+        continue;
+      }
+      if (action === 'melee' || action === 'confirm' || action === 'interact') {
+        if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
+        else this.#equipSelectedInventoryItem();
+        this.#clampInventorySelection();
+        continue;
+      }
+      if (action === 'sidearm') {
+        if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
+        else this.#unequipSelectedInventoryItem();
+        this.#clampInventorySelection();
+      }
+    }
+  }
+
+  #moveInventorySelection(delta) {
+    if (this.inventoryFocus === 'gear') {
+      const slots = this.inventory.equipmentEntries();
+      this.equipmentIndex = Math.max(0, Math.min(slots.length - 1, this.equipmentIndex + delta));
+      return;
+    }
+    const items = this.inventory.entries();
+    this.inventoryIndex = Math.max(0, Math.min(items.length - 1, this.inventoryIndex + delta));
+  }
+
+  #equipSelectedInventoryItem() {
+    const item = this.inventory.entries()[this.inventoryIndex];
+    if (!item) {
+      this.#log('Pack is empty.');
+      return;
+    }
+    const result = this.inventory.equip(item.id);
+    this.#log(result.message);
+  }
+
+  #unequipSelectedInventoryItem() {
+    const item = this.inventory.entries()[this.inventoryIndex];
+    if (!item) {
+      this.#log('Pack is empty.');
+      return;
+    }
+    const slot = this.inventory.equipmentEntries().find((entry) => entry.itemId === item.id);
+    if (!slot) {
+      this.#log('That item is not worn.');
+      return;
+    }
+    this.#log(this.inventory.unequip(slot.slot).message);
+  }
+
+  #unequipSelectedGear() {
+    const slot = this.inventory.equipmentEntries()[this.equipmentIndex];
+    if (!slot) return;
+    this.#log(this.inventory.unequip(slot.slot).message);
   }
 
   #openDialogue(title, lines, kind = 'inspect') {
@@ -1051,6 +1148,21 @@ export class Game {
     if (this.log.length > MAX_LOG) this.log = this.log.slice(-MAX_LOG);
   }
 
+  #loadStartingInventory(loadout) {
+    for (const entry of loadout?.items ?? []) {
+      this.inventory.add(entry.item, entry.count ?? 1, { ignoreCapacity: true });
+    }
+    this.inventory.loadEquipment(loadout?.equipment ?? {});
+  }
+
+  #clampInventorySelection() {
+    this.inventoryFocus = this.inventoryFocus === 'gear' ? 'gear' : 'items';
+    const itemCount = this.inventory?.entries().length ?? 0;
+    const slotCount = this.inventory?.equipmentEntries().length ?? 0;
+    this.inventoryIndex = Math.max(0, Math.min(Math.max(0, itemCount - 1), this.inventoryIndex ?? 0));
+    this.equipmentIndex = Math.max(0, Math.min(Math.max(0, slotCount - 1), this.equipmentIndex ?? 0));
+  }
+
   #startQuests(previousStages = null) {
     for (const quest of Object.values(this.questDefs)) {
       const stage = previousStages?.get(quest.id) ?? quest.initialStage ?? quest.stages?.[0]?.id ?? 'active';
@@ -1288,7 +1400,7 @@ export class Game {
 
     let controls;
     if (this.uiScreen === 'inventory') {
-      controls = ['I/ESC Close', 'H Use Dressing', 'R Restart'];
+      controls = ['Up/Dn Select', 'Left/Right Panel', '1/Enter Equip', '2 Remove', 'H Dress', 'Esc Close'];
     } else if (this.uiScreen === 'dialogue' && this.dialogue?.choices?.length) {
       controls = ['1/2 or Enter Choose', 'Esc Close', 'I Pack'];
     } else if (this.uiScreen === 'dialogue') {
@@ -1314,6 +1426,12 @@ export class Game {
       target: target ? `${this.#shortName(target.name)} ${target.hp}/${target.maxHp}` : '-',
       inventory: this.inventory.summary(),
       inventoryItems: this.inventory.entries(),
+      inventoryIndex: this.inventoryIndex ?? 0,
+      inventoryFocus: this.inventoryFocus ?? 'items',
+      equipmentSlots: this.inventory.equipmentEntries(),
+      equipmentIndex: this.equipmentIndex ?? 0,
+      carryWeight: this.inventory.currentWeight(),
+      maxCarryWeight: this.inventory.maxCarryWeight,
       screen: this.uiScreen,
       dialogue: this.dialogue,
       hoverText: cursor?.text ?? null,

@@ -1,5 +1,10 @@
 # Content Pipeline
 
+> Writing rule: any player-facing text you add to `data/` (dialogue, descriptions,
+> level intros/briefings/logs, UI strings) must follow
+> `anti_ai_slop_writing_skill/SKILL.md`. Hard ban on em-dashes / `--` / `—`;
+> rewrite instead. See also `AGENTS.md` -> "Player-facing writing".
+
 The RPG should be content-driven. Systems live in `src/`; game content lives in `data/`; art and audio live in `assets/`.
 
 This keeps the project editable and prevents every new enemy, map, or item from requiring source-code changes.
@@ -189,6 +194,7 @@ Items live in `data/items/`, one file per id.
   "id": "field-dressing",
   "name": "Field Dressing",
   "type": "consumable",
+  "weight": 0.2,
   "description": "Restores 4 HP. Consumed on use.",
   "use": { "effect": "heal", "amount": 4 }
 }
@@ -197,6 +203,10 @@ Items live in `data/items/`, one file per id.
 Rules:
 
 - `id`, `name`, and `type` are required.
+- `weight` is required and uses kilograms. It must be zero or greater.
+- Equippable items define `equipment.slot`. Valid item slots are `clothes`,
+  `armor`, `boots`, `helmet`, `trinket`, and `ring`.
+- Ring items can be worn in either actor slot, `ring1` or `ring2`.
 - Loot in level objects references items by `id`.
 
 ## Actor data
@@ -214,6 +224,16 @@ Minimal actor shape:
     "hp": 24,
     "maxHp": 24,
     "actionPoints": 6
+  },
+  "inventory": {
+    "maxCarryWeight": 10,
+    "items": [
+      { "item": "field-dressing", "count": 1 }
+    ],
+    "equipment": {
+      "clothes": "censure-field-coat",
+      "ring1": "iron-vow-ring"
+    }
   }
 }
 ```
@@ -223,6 +243,10 @@ Rules:
 - `id` is stable.
 - `name` is display text.
 - `type` tells systems how to treat the actor.
+- `inventory` is optional. Player actors can define a starting pack with
+  `maxCarryWeight`, item stacks, and equipped item ids.
+- Actor equipment slots are `clothes`, `armor`, `boots`, `helmet`, `trinket`,
+  `ring1`, and `ring2`.
 - Avoid putting long dialogue or lore paragraphs inside actor stat files. Use dialogue/lore files later.
 
 ## Enemy data

@@ -1,0 +1,8 @@
+{
+  "id": "iron-vow-ring",
+  "name": "Iron Vow Ring",
+  "type": "ring",
+  "weight": 0.1,
+  "equipment": { "slot": "ring" },
+  "description": "A plain iron ring worn by Censure agents who swear to burn a cell before they ask why it gathered."
+}

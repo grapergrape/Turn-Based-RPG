@@ -16,6 +16,19 @@ Before making changes that touch story, game systems, data formats, quests, enem
 
 When making code changes, also inspect the exact files you plan to modify before editing them.
 
+## Player-facing writing — MANDATORY (anti-AI-slop)
+
+Before you write or edit **any text a player can read** (dialogue, item/enemy/actor
+descriptions, level `intro`/`briefing`/`combatIntro`/trigger intros/object `log`,
+UI strings, barks, readouts), you **must** apply the rules in
+**`anti_ai_slop_writing_skill/SKILL.md`**. This is not optional and not a slash
+command; it binds every agent (Codex especially) directly.
+
+Headline rule, because it is the worst tell: **NO em-dashes, NO `--`, NO `—`** in
+player-facing text. Rewrite with periods, commas, colons, or restructured
+sentences (see the dash-rewrite guide in the skill). Do not ship player-facing
+text until it passes the skill's self-check.
+
 ## Non-negotiable project rules
 
 1. **Keep the repo boring and maintainable.** Do not create clever, over-engineered structures. Prefer clear folders, clear names, and small modules.
@@ -28,6 +41,7 @@ When making code changes, also inspect the exact files you plan to modify before
 8. **No asset dumping.** Sprites, tilesets, audio, and UI art belong under `assets/`, not `src/`. Generated, temporary, or huge raw files should not be committed unless intentionally documented.
 9. **No TODO graveyard.** Use short TODOs only when attached to a specific nearby issue. Prefer `docs/VERTICAL_SLICE.md` for planned work.
 10. **Run checks before finishing.** At minimum run `npm run check` after editing data or source files.
+11. **Player-facing text follows the anti-AI-slop skill.** Apply `anti_ai_slop_writing_skill/SKILL.md` to all player-readable text. Hard ban on em-dashes / `--` / `—`. Rewrite, do not dash.
 
 ## Canon and tone rules
 

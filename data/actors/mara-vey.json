@@ -15,5 +15,27 @@
     { "id": "melee", "name": "Censure Knife", "apCost": 3, "damage": 3, "range": 1 },
     { "id": "sidearm", "name": "Sidearm", "apCost": 4, "damage": 5, "range": 5 }
   ],
-  "tags": ["party", "human", "cult-breaker", "ashen-censure"]
+  "tags": ["party", "human", "cult-breaker", "ashen-censure"],
+  "inventory": {
+    "maxCarryWeight": 10,
+    "items": [
+      { "item": "censure-field-coat", "count": 1 },
+      { "item": "scarred-leather-vest", "count": 1 },
+      { "item": "ash-road-boots", "count": 1 },
+      { "item": "censure-hood", "count": 1 },
+      { "item": "tarnished-saint-token", "count": 1 },
+      { "item": "iron-vow-ring", "count": 1 },
+      { "item": "mourning-ring", "count": 1 },
+      { "item": "field-dressing", "count": 1 }
+    ],
+    "equipment": {
+      "clothes": "censure-field-coat",
+      "armor": "scarred-leather-vest",
+      "boots": "ash-road-boots",
+      "helmet": "censure-hood",
+      "trinket": "tarnished-saint-token",
+      "ring1": "iron-vow-ring",
+      "ring2": "mourning-ring"
+    }
+  }
 }

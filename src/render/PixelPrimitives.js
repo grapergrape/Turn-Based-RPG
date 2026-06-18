@@ -1027,25 +1027,26 @@ function drawMartyrLight(ctx, cx, headCy, armY, cy, dim, flicker) {
   ctx.save();
 
   if (!dim) {
-    const wTop = headCy - 26;   // arch apex
-    const wSpring = headCy - 8; // where the straight jambs begin
-    const wSill = armY + 18;    // base of the window
-    const wHalf = 17;
+    const wTop = headCy - 30;   // arch apex
+    const wSpring = headCy - 10; // where the straight jambs begin
+    const wSill = armY + 24;    // base of the window
+    const wHalf = 22;
     // Stone reveal around the opening.
     for (let y = wTop - 2; y <= wSill + 2; y += 1) {
       const t = (y - (wTop - 2)) / (wSpring - (wTop - 2));
       const half = y < wSpring ? Math.round(Math.min(1, t) * (wHalf + 2)) : wHalf + 2;
       px(ctx, cx - half, y, PALETTE.stoneDark, half * 2, 1);
     }
-    // Bright panes (the source).
+    // Bright panes (the source). Kept a touch dimmer than before so the figure
+    // in front reads as a monster, not a pure black cut-out.
     for (let y = wTop; y <= wSill; y += 1) {
       const t = (y - wTop) / (wSpring - wTop);
       const half = y < wSpring ? Math.max(0, Math.round(t * wHalf)) : wHalf;
       if (half <= 0) continue;
-      ctx.globalAlpha = 0.82 + (flicker ? 0.06 : 0);
+      ctx.globalAlpha = 0.64 + (flicker ? 0.05 : 0);
       ctx.fillStyle = bright;
       ctx.fillRect(cx - half, y, half * 2, 1);
-      ctx.globalAlpha = 0.5;
+      ctx.globalAlpha = 0.42;
       ctx.fillStyle = warm;
       px(ctx, cx - half, y, 2, 1);
       px(ctx, cx + half - 1, y, 2, 1);
@@ -1053,7 +1054,7 @@ function drawMartyrLight(ctx, cx, headCy, armY, cy, dim, flicker) {
     ctx.globalAlpha = 1;
     // Inverted-cross tracery: long upright, crossbar set LOW.
     px(ctx, cx - 1, wTop + 2, PALETTE.stoneDark, 2, wSill - wTop - 2);
-    px(ctx, cx - wHalf, wSpring + 4, PALETTE.stoneDark, wHalf * 2, 1);
+    px(ctx, cx - wHalf, wSpring + 5, PALETTE.stoneDark, wHalf * 2, 1);
     const hy = wSpring + Math.round((wSill - wSpring) * 0.66);
     px(ctx, cx - wHalf, hy, PALETTE.stoneDark, wHalf * 2, 2);
   } else {
@@ -1099,118 +1100,216 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
 
   const flesh = PALETTE.hostBlack;
   const rim = dim ? PALETTE.hostGold : PALETTE.hostBone;
-  const topY = cy - 88;
-  const armY = cy - 58;            // crossbeam
-  const headCy = armY - 11;        // head centre, above the beam
-  const footY = cy - 6;
-  const beamHalf = 27;
+  const topY = cy - 112;
+  const armY = cy - 76; // crossbeam
+  const headCy = armY - 14; // head centre, above the beam
+  const footY = cy - 4;
+  const beamHalf = 33;
 
-  drawShadowBlob(ctx, cx, cy + 3, 38, 15);
+  drawShadowBlob(ctx, cx, cy + 3, 46, 18);
 
   if (!killed) drawMartyrLight(ctx, cx, headCy, armY, cy, dim, flicker);
 
   // --- Cross timber (in front of the window) ------------------------------
-  px(ctx, cx - 4, topY, PALETTE.outline, 9, footY - topY + 2);
-  px(ctx, cx - 3, topY, PALETTE.woodDark, 7, footY - topY);
-  px(ctx, cx - 3, topY, PALETTE.woodMid, 3, footY - topY);
-  px(ctx, cx - beamHalf, armY - 2, PALETTE.outline, beamHalf * 2 + 2, 8);
-  px(ctx, cx - beamHalf + 1, armY - 1, PALETTE.woodDark, beamHalf * 2 - 1, 6);
-  px(ctx, cx - beamHalf + 1, armY - 1, PALETTE.woodMid, beamHalf * 2 - 1, 2);
+  px(ctx, cx - 5, topY, PALETTE.outline, 11, footY - topY + 2);
+  px(ctx, cx - 4, topY, PALETTE.woodDark, 9, footY - topY);
+  px(ctx, cx - 4, topY, PALETTE.woodMid, 3, footY - topY);
+  px(ctx, cx - beamHalf, armY - 3, PALETTE.outline, beamHalf * 2 + 2, 9);
+  px(ctx, cx - beamHalf + 1, armY - 2, PALETTE.woodDark, beamHalf * 2 - 1, 7);
+  px(ctx, cx - beamHalf + 1, armY - 2, PALETTE.woodMid, beamHalf * 2 - 1, 2);
+  px(ctx, cx - beamHalf + 7, armY + 6, PALETTE.hostRed, 9, 1);
+  px(ctx, cx + beamHalf - 16, armY + 6, PALETTE.hostRed, 7, 1);
 
-  // --- Arms nailed along the beam; splayed, too-many-fingered hands --------
-  px(ctx, cx - 23, armY + 1, flesh, 22, 4);
-  px(ctx, cx + 1, armY + 1, flesh, 22, 4);
-  px(ctx, cx - 22, armY + 1, rim, 22, 1);
-  px(ctx, cx + 1, armY + 1, rim, 22, 1);
-  px(ctx, cx - 21, armY + 2, PALETTE.hostGold, 17, 1);
-  px(ctx, cx + 5, armY + 2, PALETTE.hostGold, 17, 1);
-  for (const side of [-1, 1]) {
-    const hx = cx + side * 23;
-    px(ctx, hx - (side < 0 ? 2 : 0), armY, PALETTE.stoneLight, 3, 2); // nail spike
-    px(ctx, hx, armY + 1, PALETTE.hostRed, 2, 2);
-    for (let f = 0; f < 4; f += 1) px(ctx, hx + side * f, armY + 4 + f, rim, 1, 3);
+  // --- Arms wrenched out along the beam, bone-rimmed, too many fingers -----
+  const leftArmY = armY + 2 + (pulse ? 1 : 0);
+  const rightArmY = armY;
+  px(ctx, cx - beamHalf + 2, leftArmY, flesh, beamHalf - 3, 5); // left arm
+  px(ctx, cx + 2, rightArmY + 1, flesh, beamHalf - 3, 5); // right arm
+  px(ctx, cx - beamHalf + 2, leftArmY, rim, beamHalf - 3, 1); // lit bone edge
+  px(ctx, cx + 2, rightArmY + 1, rim, beamHalf - 3, 1);
+  px(ctx, cx - beamHalf + 4, leftArmY + 3, PALETTE.hostGold, beamHalf - 7, 1); // gold vein
+  px(ctx, cx + 4, rightArmY + 3, PALETTE.hostGold, beamHalf - 7, 1);
+  for (const s of [-1, 1]) {
+    const hx = cx + s * (beamHalf - 1);
+    const wristY = s < 0 ? leftArmY : rightArmY + 1;
+    px(ctx, hx - 1, wristY - 2, PALETTE.stoneLight, 3, 4); // nail spike
+    px(ctx, hx - 1, wristY + 1, PALETTE.hostRed, 3, 2); // wrist wound
+    for (let f = 0; f < 6; f += 1) px(ctx, hx + s * (f - 2), wristY + 5, rim, 1, 3 + ((f + s) & 1));
   }
 
-  // --- Broken bone halo behind the head -----------------------------------
+  // --- Big broken bone halo (clearly a Host icon, not a man) --------------
   if (!killed) {
-    for (let n = 0; n < 16; n += 1) {
-      if (n === 6 || n === 12) continue;
-      const a = Math.PI * (0.03 + n * 0.062);
-      px(ctx, cx + Math.round(Math.cos(a) * 15), headCy - 1 - Math.round(Math.sin(a) * 13), rim, n % 4 === 0 ? 2 : 1, 1);
+    for (let n = 0; n < 22; n += 1) {
+      if (n === 6 || n === 7 || n === 15 || n === 16) continue;
+      const a = Math.PI * (0.02 + n * 0.046);
+      const hx = cx + Math.round(Math.cos(a) * 19);
+      const hy = headCy - 1 - Math.round(Math.sin(a) * 16);
+      px(ctx, hx, hy, rim, n % 3 === 0 ? 2 : 1, 1);
+      if (n === 2 || n === 11 || n === 19) px(ctx, hx, hy + 1, PALETTE.hostGold, 1, 2);
     }
+    px(ctx, cx - 24, headCy + 5, PALETTE.hostBone, 2, 1);
+    px(ctx, cx - 27, headCy + 8, PALETTE.hostGold, 2, 1);
+    px(ctx, cx - 30, headCy + 11, PALETTE.hostBone, 2, 1);
   }
 
-  // --- Torso: ribcage splayed open over a glowing wound -------------------
-  const tTop = armY + 4;
-  const tBot = armY + 34;
+  // --- Torso: a big ribcage splayed open over a glowing black-gold wound ---
+  const tTop = armY + 5;
+  const tBot = armY + 47;
   for (let row = 0; row <= tBot - tTop; row += 1) {
-    const w = 14 - Math.floor(row / 5);
+    const w = 20 - Math.floor(row / 5);
     px(ctx, cx - Math.floor(w / 2), tTop + row, flesh, w, 1);
   }
-  px(ctx, cx - Math.floor(14 / 2), tTop, rim, 1, 20); // lit edge
-  // Open chest cavity.
-  px(ctx, cx - 3, tTop + 3, PALETTE.void, 6, 12);
+  px(ctx, cx - 10, tTop, rim, 1, 30); // lit bone edges, both sides
+  px(ctx, cx + 9, tTop, PALETTE.hostGold, 1, 28);
+  px(ctx, cx - 13, tTop + 7, rim, 1, 19);
+  px(ctx, cx + 12, tTop + 12, PALETTE.hostGold, 1, 16);
+  px(ctx, cx - 5, tTop + 4, PALETTE.void, 10, 18); // open chest cavity
+  for (let r = 0; r < 7; r += 1) {
+    const ry = tTop + 3 + r * 3;
+    const sp = 5 + r;
+    px(ctx, cx - 5 - sp, ry + (r > 3 ? 1 : 0), rim, sp, 1); // left rib door
+    px(ctx, cx + 5, ry - (r % 2), rim, sp, 1); // right rib door
+    px(ctx, cx - 5 - sp, ry, PALETTE.hostGold, 1, 1);
+    px(ctx, cx + 4 + sp, ry, PALETTE.hostGold, 1, 1);
+  }
   if (!killed) {
     const glow = pulse ? PALETTE.hostGlow : PALETTE.hostGold;
-    px(ctx, cx - 1, tTop + 5, PALETTE.hostRed, 2, 9);
-    px(ctx, cx - 2, tTop + 6, glow, 4, 5);
-    px(ctx, cx - 1, tTop + 7, PALETTE.flash, 2, 2);
+    px(ctx, cx - 3, tTop + 7, PALETTE.hostRed, 7, 11);
+    px(ctx, cx - 2, tTop + 9, glow, 5, 7);
+    px(ctx, cx - 1, tTop + 11, PALETTE.flash, 3, 3);
   } else {
-    px(ctx, cx - 2, tTop + 6, PALETTE.rustDark, 4, 5);
+    px(ctx, cx - 3, tTop + 9, PALETTE.rustDark, 7, 6);
   }
-  // Ribs splaying outward like two opened doors.
-  for (let r = 0; r < 6; r += 1) {
-    const ry = tTop + 2 + r * 3 - Math.floor(r / 2);
-    const sp = 4 + r;
-    px(ctx, cx - 4 - sp, ry, rim, sp, 1);
-    px(ctx, cx + 4, ry, rim, sp, 1);
-  }
-  // Black-gold veins + carved sacrament (peeled, hanging strips).
-  px(ctx, cx - 6, tTop + 18, PALETTE.hostGold, 1, 9);
-  px(ctx, cx + 5, tTop + 16, PALETTE.hostGold, 1, 10);
-  px(ctx, cx + 6, tTop + 10, PALETTE.hostRed, 2, 8);
-  px(ctx, cx - 7, tTop + 14, PALETTE.hostRed, 2, 6);
-  px(ctx, cx + 7, tTop + 20, PALETTE.hostRed, 1, 6);
+  // a second screaming mouth low in the ribs, bone teeth
+  const my = tBot - 6;
+  px(ctx, cx - 5, my, PALETTE.void, 11, 4);
+  for (let t = 0; t < 6; t += 1) px(ctx, cx - 5 + t * 2, my, rim, 1, 4);
+  // black-gold veins + hanging carved sacrament + exposed bone
+  px(ctx, cx - 9, tTop + 22, PALETTE.hostGold, 1, 12);
+  px(ctx, cx + 8, tTop + 20, PALETTE.hostGold, 1, 14);
+  px(ctx, cx + 9, tTop + 12, PALETTE.hostRed, 2, 10); // hanging strip
+  px(ctx, cx - 10, tTop + 16, PALETTE.hostRed, 2, 8);
+  px(ctx, cx + 6, tTop + 26, PALETTE.hostBone, 2, 5);
 
   // --- Nailed legs to the foot-spike --------------------------------------
   const lTop = tBot + 1;
-  for (let row = 0; row < 16; row += 1) {
-    const w = 8 - Math.floor(row / 4);
+  for (let row = 0; row < footY - lTop; row += 1) {
+    const w = 11 - Math.floor(row / 5);
     px(ctx, cx - Math.floor(w / 2), lTop + row, flesh, w, 1);
   }
-  px(ctx, cx, lTop + 2, PALETTE.hostGold, 1, 11);
-  px(ctx, cx - 1, footY - 2, PALETTE.stoneLight, 3, 2);
-  px(ctx, cx - 1, footY - 1, PALETTE.hostRed, 2, 2);
+  px(ctx, cx - 5, lTop, rim, 1, footY - lTop); // lit edge
+  px(ctx, cx + 1, lTop + 2, PALETTE.hostGold, 1, 14); // vein
+  px(ctx, cx - 2, footY - 2, PALETTE.stoneLight, 4, 2); // foot spike
+  px(ctx, cx - 2, footY - 1, PALETTE.hostRed, 3, 2);
 
-  // --- Head (skull) with a thorn-crown driven in --------------------------
-  const hx = cx - 4;
-  const hy = headCy - 6 + (killed ? 3 : 0);
-  px(ctx, hx - 1, hy - 1, PALETTE.outline, 11, 13);
-  px(ctx, hx, hy, flesh, 9, 11);
-  px(ctx, hx, hy, rim, 1, 11);
-  px(ctx, hx + 2, hy + 3, PALETTE.void, 2, 2);
-  px(ctx, hx + 5, hy + 3, PALETTE.void, 2, 2);
+  // --- Monstrous Host head: a bright bone skull, hollow eyes, maw, horns ---
+  const hy = headCy - 7 + (killed ? 4 : 0);
+  const skullLean = killed ? 2 : pulse;
+  px(ctx, cx - 7 + skullLean, hy - 1, PALETTE.outline, 14, 15);
+  px(ctx, cx - 6 + skullLean, hy, PALETTE.hostBone, 11, 13);
+  px(ctx, cx - 6 + skullLean, hy, PALETTE.hostGold, 10, 1); // cracked crown
+  px(ctx, cx - 2 + skullLean, hy + 1, PALETTE.hostBlack, 1, 5); // brow split
+  px(ctx, cx - 5 + skullLean, hy + 4, PALETTE.void, 3, 4); // eye sockets
+  px(ctx, cx + 2 + skullLean, hy + 5, PALETTE.void, 3, 2);
+  px(ctx, cx - 8 + skullLean, hy - 5, PALETTE.hostBone, 2, 5); // long horn
+  px(ctx, cx + 5 + skullLean, hy - 3, PALETTE.hostBone, 2, 3); // broken horn
   if (!killed) {
-    px(ctx, hx + 2, hy + 4, PALETTE.hostGold, 1, 1);
-    px(ctx, hx + 5, hy + 4, PALETTE.hostGold, 1, 1);
-    px(ctx, hx + 3, hy + 8, PALETTE.hostRed, 3, 2); // open, whispering mouth
-    // Thorn crown: bone spikes biting inward, blood where they pierce.
-    const tn = 12;
-    for (let n = 0; n < tn; n += 1) {
-      const a = (Math.PI * 2 * n) / tn;
-      const ox = Math.cos(a);
-      const oy = Math.sin(a) * 0.85;
-      px(ctx, cx + Math.round(ox * 7), hy + 5 + Math.round(oy * 7), PALETTE.hostBone, 2, 1);
-      if (n % 3 === 0) px(ctx, cx + Math.round(ox * 4), hy + 5 + Math.round(oy * 4), PALETTE.hostRed, 1, 1);
-    }
+    px(ctx, cx - 4 + skullLean, hy + 5, PALETTE.hostGold, 1, 1);
+    px(ctx, cx + 3 + skullLean, hy + 6, PALETTE.hostGold, 1, 1);
+    px(ctx, cx + skullLean, hy, pulse ? PALETTE.flash : PALETTE.hostGlow, 1, 1); // third eye
+    px(ctx, cx - 6 + skullLean, hy + 9, PALETTE.void, 12, 4); // screaming maw
+    for (let t = 0; t < 7; t += 1) px(ctx, cx - 5 + skullLean + t * 2, hy + 9, PALETTE.hostBone, 1, 4);
+    px(ctx, cx - 4 + skullLean, hy + 7, PALETTE.hostGold, 1, 7); // black-gold weeping
+    px(ctx, cx + 4 + skullLean, hy + 8, PALETTE.hostGold, 1, 5);
   } else {
-    px(ctx, hx + 3, hy + 9, PALETTE.hostBlack, 3, 1);
+    px(ctx, cx - 3 + skullLean, hy + 10, PALETTE.hostBlack, 7, 1);
   }
 
   // --- Blood running to the sacrament bowl at the foot --------------------
-  px(ctx, cx, lTop + 14, PALETTE.hostRed, 1, 8);
-  drawIsoDiamond(ctx, cx + 2, cy + 1, 16, 8, PALETTE.rustDark);
-  px(ctx, cx - 2, cy, PALETTE.hostRed, 9, 2);
+  px(ctx, cx, lTop + 16, PALETTE.hostRed, 1, 10);
+  drawIsoDiamond(ctx, cx + 2, cy + 1, 18, 9, PALETTE.rustDark);
+  px(ctx, cx - 3, cy, PALETTE.hostRed, 10, 2);
+}
+
+// The Choir's "larder": the next victim, bound upright to a post and kept
+// alive while the first is eaten. NOT crucified and NOT yet opened -- early
+// Host only (sick pallor, a few black-gold veins, a bud of bone), gagged and
+// roped. opts: { pulse, flicker, killed, dim }
+export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
+  const pulse = opts.pulse ?? 0;
+  const flicker = opts.flicker ?? 0;
+  const killed = Boolean(opts.killed);
+  const dim = Boolean(opts.dim);
+  const topY = cy - 56;
+  const footY = cy - 4;
+
+  drawShadowBlob(ctx, cx, cy + 2, 28, 12);
+
+  // A thin, cold seep of light (a grate, not a window) while it still lives.
+  if (!killed) {
+    ctx.save();
+    for (let row = -5; row <= 5; row += 1) {
+      const halfW = 14 - Math.abs(row) * 2;
+      if (halfW <= 0) continue;
+      ctx.globalAlpha = (dim ? 0.05 : 0.1) * (1 - Math.abs(row) / 7) + (flicker ? 0.01 : 0);
+      ctx.fillStyle = PALETTE.rustMid;
+      ctx.fillRect(cx - halfW, cy - 30 + row * 4, halfW * 2, 4);
+    }
+    ctx.restore();
+  }
+
+  // The post + a short bar near the top to lash the wrists to.
+  px(ctx, cx - 2, topY, PALETTE.outline, 6, footY - topY + 2);
+  px(ctx, cx - 1, topY, PALETTE.woodDark, 4, footY - topY);
+  px(ctx, cx - 1, topY, PALETTE.woodMid, 2, footY - topY);
+  px(ctx, cx - 10, topY + 6, PALETTE.outline, 21, 4);
+  px(ctx, cx - 9, topY + 7, PALETTE.woodDark, 19, 2);
+  px(ctx, cx - 9, topY + 7, PALETTE.woodMid, 19, 1);
+
+  // Wrists wrenched up to the bar and roped.
+  px(ctx, cx - 9, topY + 9, PALETTE.skinDark, 4, 2);
+  px(ctx, cx + 6, topY + 9, PALETTE.skinDark, 4, 2);
+  px(ctx, cx - 11, topY + 7, PALETTE.clothTan, 4, 2);
+  px(ctx, cx + 8, topY + 7, PALETTE.clothTan, 4, 2);
+
+  // Head, lolling forward, gagged.
+  const hy = topY + 11 + (killed ? 3 : 0);
+  px(ctx, cx - 4, hy, PALETTE.outline, 9, 9);
+  px(ctx, cx - 3, hy, PALETTE.skinMid, 7, 8);
+  px(ctx, cx - 3, hy, PALETTE.skinDark, 7, 2);
+  if (!killed) {
+    px(ctx, cx - 2, hy + 3, PALETTE.void, 1, 1); // hollow eyes
+    px(ctx, cx + 1, hy + 3, PALETTE.void, 1, 1);
+    px(ctx, cx - 2, hy + 5, PALETTE.clothDark, 5, 2); // a gag
+    px(ctx, cx, hy, PALETTE.hostBone, 2, 1); // a first bud of bone at the temple
+  } else {
+    px(ctx, cx - 3, hy + 6, PALETTE.skinDark, 7, 1);
+  }
+  px(ctx, cx - 3, hy + 8, PALETTE.clothTan, 7, 1); // a roped collar to the post
+
+  // Torso, sagging in a torn shift -- whole, NOT opened.
+  const tTop = hy + 9;
+  const tBot = footY - 12;
+  for (let row = 0; row <= tBot - tTop; row += 1) {
+    const w = 11 - Math.floor(row / 6);
+    px(ctx, cx - Math.floor(w / 2), tTop + row, PALETTE.clothDark, w, 1);
+  }
+  px(ctx, cx - 5, tTop, PALETTE.skinDark, 1, tBot - tTop); // a sliver of pale skin
+  // Early black-gold creeping up, and a small forming wound (a bud, not a cavity).
+  px(ctx, cx - 1, tTop + 1, PALETTE.hostGold, 1, 8);
+  px(ctx, cx + 2, tTop + 4, PALETTE.hostGold, 1, 6);
+  if (!killed) px(ctx, cx, tTop + 5, pulse ? PALETTE.hostGlow : PALETTE.hostGold, 1, 2);
+  px(ctx, cx - 5, tBot - 2, PALETTE.clothTan, 11, 1); // rope around the waist to the post
+
+  // Legs, slack and bound.
+  const lTop = tBot + 1;
+  for (let row = 0; row < footY - lTop; row += 1) {
+    const w = 6 - Math.floor(row / 5);
+    px(ctx, cx - Math.floor(w / 2), lTop + row, PALETTE.clothDark, w, 1);
+  }
+  px(ctx, cx - 4, footY - 2, PALETTE.stoneDark, 9, 2); // bound ankles
+  // Old blood at the base from being held a while -- but no carving gore.
+  drawNoisePixels(ctx, cx - 8, cy - 3, 16, 8, [PALETTE.hostRed, PALETTE.rustDark], 0.05, seed);
 }
 
 // A Choir blood-sigil daubed on the floor: an inverted cross in a rough ring.

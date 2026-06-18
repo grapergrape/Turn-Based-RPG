@@ -7,6 +7,10 @@ entrances that move to a separate JSON level. Story and dialogue authoring
 should still start in `docs/story/story-dialogue-workflow.md` before moving
 playable lines into `data/dialogue/`.
 
+All dialogue lines are player-facing, so they must follow
+`anti_ai_slop_writing_skill/SKILL.md`: no em-dashes / `--` / `—`, no AI-tell
+vocabulary, varied sentence length. Rewrite, do not dash.
+
 ## Current Authoring Rule
 
 Write story and dialogue together as **scene packets** in the story docs. A scene packet ties a quest beat to speakers, pressure, choices, sample lines, and consequences.

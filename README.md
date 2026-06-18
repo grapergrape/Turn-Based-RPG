@@ -114,8 +114,9 @@ The slice contains:
   Europa, a Lumen Compact medicine crate, and a Penitent Engine's wheel-rut.
 - Lootable reliquary and field-satchel containers.
 - A separate secret cellar level, rendered colder and darker than the nave, where
-  the Choir keep the **next victim** hammered up for after the first is eaten,
-  plus a dead road warden, a buried reliquary, and an ossuary heap.
+  the Choir keep the **next victim** bound to a post (not yet crucified — saved
+  for after the first is eaten), plus a dead road warden, a buried reliquary, and
+  an ossuary heap.
 - An Explore mode and an AP-based turn combat mode with win / lose / restart.
 
 ### Controls
@@ -130,6 +131,8 @@ Explore mode:
   `UP/DN SCROLL` hint appear when there is more to read)
 - `Enter` / click: advance the opening writ; `Esc`: skip it
 - `I`: open or close the field pack inventory screen
+- In the field pack: Arrow keys / `W` `S` select an item or gear slot, Left /
+  Right switch panels, `1` / `Enter` equip, `2` remove gear
 - `H`: use a Field Dressing (restores 4 HP)
 - `Esc` / `Enter`: close an open inventory or readout panel
 - `R`: restart
@@ -144,6 +147,8 @@ Combat mode:
 - `Space` / `Enter`: attack the selected target
 - `E`: end turn
 - `I`: open or close the field pack inventory screen
+- In the field pack: Arrow keys / `W` `S` select an item or gear slot, Left /
+  Right switch panels, `1` / `Enter` equip, `2` remove gear
 - `H`: use a Field Dressing
 - `Esc` / `Enter`: close an open inventory or readout panel
 - `R`: restart

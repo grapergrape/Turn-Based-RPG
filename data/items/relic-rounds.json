@@ -2,5 +2,6 @@
   "id": "relic-rounds",
   "name": "Relic Rounds",
   "type": "ammo",
-  "description": "Hand-pressed cartridges blessed at a Free City shrine. Flavour for now; the sidearm never runs dry in this slice."
+  "weight": 0.1,
+  "description": "Hand-pressed cartridges blessed at a Free City shrine. The sidearm never runs dry in this slice."
 }

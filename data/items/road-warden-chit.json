@@ -2,5 +2,6 @@
   "id": "road-warden-chit",
   "name": "Road Warden Chit",
   "type": "trinket",
+  "weight": 0.1,
   "description": "A stamped brass road chit from before the Free Cities fixed their borders. A gate clerk or old caravan hand may still honor it."
 }
