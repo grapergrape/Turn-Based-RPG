@@ -56,6 +56,7 @@ export async function loadLevel(levelPath) {
   const playerSpawn = level.spawns.player;
   const playerData = await loadJson(`./data/actors/${playerSpawn.actor ?? 'mara-vey'}.json`);
   const player = createActor(playerData, { x: playerSpawn.x, y: playerSpawn.y });
+  const playerLoadout = playerData.inventory ?? null;
 
   // Enemies (load each unique enemy id once).
   const enemySpawns = level.spawns.enemies ?? [];
@@ -81,6 +82,8 @@ export async function loadLevel(levelPath) {
   for (const object of interactables) {
     for (const entry of object.interact.loot ?? []) itemIds.add(entry.item);
   }
+  for (const entry of playerLoadout?.items ?? []) itemIds.add(entry.item);
+  for (const itemId of Object.values(playerLoadout?.equipment ?? {})) itemIds.add(itemId);
   const itemDefs = {};
   for (const id of itemIds) {
     itemDefs[id] = await loadJson(`./data/items/${id}.json`);
@@ -102,6 +105,7 @@ export async function loadLevel(levelPath) {
     player,
     enemies,
     itemDefs,
+    playerLoadout,
     dialogueDefs,
     questDefs,
     combatIntro: level.combatIntro ?? [],

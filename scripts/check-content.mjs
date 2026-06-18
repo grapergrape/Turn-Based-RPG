@@ -34,10 +34,13 @@ const REQUIRED_DIALOGUE_IDS = [
 const DECAL_KINDS = new Set([
   'rubble-pile', 'rubble-decal', 'floor-crack', 'blood-stain', 'glass-debris', 'dust', 'road-dust'
 ]);
+const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring']);
+const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
 
 const seenItemIds = new Set();
 const seenQuestIds = new Set();
 const seenDialogueIds = new Set();
+const referencedItemIds = new Set();
 
 async function main() {
   await checkRenderConfig();
@@ -70,6 +73,11 @@ async function main() {
   for (const id of REQUIRED_DIALOGUE_IDS) {
     if (!seenDialogueIds.has(id)) {
       errors.push(`data/dialogue: required dialogue "${id}" is missing.`);
+    }
+  }
+  for (const id of referencedItemIds) {
+    if (!seenItemIds.has(id)) {
+      errors.push(`data/items: referenced item "${id}" is missing.`);
     }
   }
 
@@ -226,6 +234,7 @@ function validateLevel(filePath, data) {
         errors.push(`${name}: object ${object.kind ?? 'unknown'} at (${object.x}, ${object.y}) is out of bounds.`);
       }
     }
+    validateLoot(name, object.interact?.loot);
   }
 
   if (data.id === MAIN_LEVEL_ID) validateAshChapelMain(name, data, enemies, objects);
@@ -366,6 +375,7 @@ function validateActor(filePath, data) {
   requireString(name, data.name, 'name');
   requireString(name, data.type, 'type');
   validateStats(name, data.stats);
+  validateActorInventory(name, data.inventory);
 }
 
 function validateEnemy(filePath, data) {
@@ -389,7 +399,73 @@ function validateItem(filePath, data) {
   requireString(name, data.id, 'id');
   requireString(name, data.name, 'name');
   requireString(name, data.type, 'type');
+  requireNumber(name, data.weight, 'weight');
+  if (typeof data.weight === 'number' && data.weight < 0) {
+    errors.push(`${name}: weight must be zero or greater.`);
+  }
+  if (data.equipment !== undefined) {
+    if (!data.equipment || typeof data.equipment !== 'object') {
+      errors.push(`${name}: equipment must be an object.`);
+    } else if (!ITEM_EQUIPMENT_SLOTS.has(data.equipment.slot)) {
+      errors.push(`${name}: equipment.slot must be one of ${[...ITEM_EQUIPMENT_SLOTS].join(', ')}.`);
+    }
+  }
   if (typeof data.id === 'string') seenItemIds.add(data.id);
+}
+
+function validateActorInventory(name, inventory) {
+  if (inventory === undefined) return;
+  if (!inventory || typeof inventory !== 'object') {
+    errors.push(`${name}: inventory must be an object.`);
+    return;
+  }
+
+  if (inventory.maxCarryWeight !== undefined) {
+    requireNumber(name, inventory.maxCarryWeight, 'inventory.maxCarryWeight');
+    if (typeof inventory.maxCarryWeight === 'number' && inventory.maxCarryWeight < 0) {
+      errors.push(`${name}: inventory.maxCarryWeight must be zero or greater.`);
+    }
+  }
+
+  if (inventory.items !== undefined) {
+    if (!Array.isArray(inventory.items)) {
+      errors.push(`${name}: inventory.items must be an array.`);
+    } else {
+      validateLoot(name, inventory.items, 'inventory.items');
+    }
+  }
+
+  if (inventory.equipment !== undefined) {
+    if (!inventory.equipment || typeof inventory.equipment !== 'object' || Array.isArray(inventory.equipment)) {
+      errors.push(`${name}: inventory.equipment must be an object.`);
+    } else {
+      for (const [slot, itemId] of Object.entries(inventory.equipment)) {
+        if (!ACTOR_EQUIPMENT_SLOTS.has(slot)) {
+          errors.push(`${name}: inventory.equipment slot "${slot}" is not valid.`);
+        }
+        requireString(name, itemId, `inventory.equipment.${slot}`);
+        if (typeof itemId === 'string') referencedItemIds.add(itemId);
+      }
+    }
+  }
+}
+
+function validateLoot(name, loot, fieldName = 'loot') {
+  if (loot === undefined) return;
+  if (!Array.isArray(loot)) {
+    errors.push(`${name}: ${fieldName} must be an array.`);
+    return;
+  }
+  for (const entry of loot) {
+    requireString(name, entry?.item, `${fieldName}[].item`);
+    if (typeof entry?.item === 'string') referencedItemIds.add(entry.item);
+    if (entry?.count !== undefined) {
+      requireNumber(name, entry.count, `${fieldName}[].count`);
+      if (typeof entry.count === 'number' && entry.count <= 0) {
+        errors.push(`${name}: ${fieldName}[].count must be greater than zero.`);
+      }
+    }
+  }
 }
 
 function validateQuest(filePath, data) {

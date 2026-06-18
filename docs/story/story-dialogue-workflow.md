@@ -2,6 +2,10 @@
 
 This file defines where narrative work goes before the game has runtime quest and dialogue data.
 
+> Any line that will become player-facing must follow
+> `anti_ai_slop_writing_skill/SKILL.md` (no em-dashes / `--` / `—`, no AI-tell
+> phrasing). Apply it while drafting, not only at the end.
+
 ## Where to Write
 
 Use these files for design work:

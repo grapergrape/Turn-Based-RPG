@@ -4,6 +4,8 @@
 // lines plus whether the action should start combat. It does not know what a
 // "reliquary" means beyond the data attached to the object.
 
+import { Inventory } from '../core/Inventory.js';
+
 function inReach(actor, object) {
   const dx = Math.abs(actor.x - object.x);
   const dy = Math.abs(actor.y - object.y);
@@ -44,6 +46,22 @@ export class InteractionSystem {
     };
 
     if (descriptor.type === 'container') {
+      const carry = inventory.canAddLoot(descriptor.loot ?? []);
+      if (!carry.ok) {
+        const current = Inventory.formatWeight(carry.current);
+        const max = Inventory.formatWeight(inventory.maxCarryWeight);
+        const over = Inventory.formatWeight(carry.overBy);
+        logs.push(`Too much to carry. Pack ${current}/${max} kg.`);
+        logs.push(`Need ${over} kg free.`);
+        return {
+          logs,
+          triggersCombat,
+          combatEncounter: descriptor.encounter ?? null,
+          dialogueId: descriptor.dialogue ?? null,
+          questUpdate: descriptor.questUpdate ?? null
+        };
+      }
+
       for (const entry of descriptor.loot ?? []) {
         inventory.add(entry.item, entry.count ?? 1);
       }

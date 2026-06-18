@@ -272,6 +272,14 @@ export class IsometricRenderer {
           dim: prop.dim
         });
         break;
+      case 'bound-victim':
+        P.drawBoundVictim(ctx, s.x, s.y, seed, {
+          pulse,
+          flicker,
+          killed: prop.killed,
+          dim: prop.dim
+        });
+        break;
       default:
         break;
     }

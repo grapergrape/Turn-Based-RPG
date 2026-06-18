@@ -1,0 +1,8 @@
+{
+  "id": "censure-hood",
+  "name": "Censure Hood",
+  "type": "helmet",
+  "weight": 0.4,
+  "equipment": { "slot": "helmet" },
+  "description": "A smoke-dark hood with a narrow brow guard sewn under the cloth. It hides the face without making a saint of it."
+}

@@ -4,8 +4,9 @@
   "nodes": {
     "start": {
       "lines": [
-        "Past the low wall, in the cold, they have hammered up the next one. The nails are fresh. The black-gold has only begun to climb its arms, and the halo is still mostly bone-bud, soft and wet.",
-        "A Choir tally is pinned to the post beside it: 'First on the altar. This one for after. Do not start it early -- hunger ruins the lesson.'",
+        "Past the low wall, in the cold, they have the next one bound upright to a post. Wrists lashed to a crossbar, a gag in its mouth, a roped collar to keep it from sagging. Not nailed. Not opened. Not yet.",
+        "The black-gold has only begun to climb its arms, and a single bud of bone is pushing through the skin above one eye. It is still mostly a person. That is the point: they keep it whole and breathing until the one upstairs is finished.",
+        "A Choir tally is pinned to the post beside it: 'First on the altar. This one for after. Cross it when the saint runs thin. Do not start it early; hunger ruins the lesson.'",
         "It hears you breathing and tries, very slowly, to shape a word it has heard the other one whisper upstairs. Whatever you choose down here is yours to carry up with you."
       ],
       "choices": [
@@ -19,8 +20,8 @@
         {
           "label": "Cut it down",
           "effects": {
-            "kill": "cellar-cross-martyr",
-            "log": "You end it before the Choir can. The cold gets a little colder, and a little quieter."
+            "kill": "cellar-victim",
+            "log": "You cut the ropes and end it before the Choir can raise it. The cold gets a little colder, and a little quieter."
           },
           "next": "cut"
         }
@@ -28,14 +29,14 @@
     },
     "cut": {
       "lines": [
-        "It sags on the nails and stops trying to speak. One fewer saint for the road to Hallowfen.",
+        "It slumps off the post the moment the ropes part, and stops trying to speak. One fewer saint for the road to Hallowfen.",
         "Whether that was mercy or meddling, you will not know until you reach the place this chapel keeps pointing at."
       ]
     },
     "leave": {
       "lines": [
-        "You leave it hanging, half-made, waiting its turn behind the low wall.",
-        "The Choir keeps a patient larder. When the first saint is gone, this one will already be ready, and someone will have to come back down here."
+        "You leave it bound and breathing, kept for after, behind the low wall.",
+        "The Choir keeps a patient larder. When the first saint runs thin they will hammer this one up in its place, and someone will have to come back down here."
       ]
     }
   }

@@ -1,7 +1,7 @@
 {
   "id": "ash-chapel-cellar",
   "name": "Ash Chapel Cellar",
-  "intro": "The service cellar under the chapel is colder than the nave. Water ticks somewhere behind the stone, and something in the dark is trying to learn a word. The barrel-ladder you climbed down is the only way back up -- use it (E) when you are ready to leave.",
+  "intro": "The service cellar under the chapel is colder than the nave. Water ticks somewhere behind the stone, and something in the dark is trying to learn a word. The barrel-ladder you climbed down is the only way back up. Use it (E) when you are ready to leave.",
   "width": 24,
   "height": 16,
   "tileSize": 64,
@@ -63,20 +63,20 @@
   },
   "objects": [
     {
-      "kind": "cross-martyr",
+      "kind": "bound-victim",
       "x": 4,
       "y": 2,
       "blocking": true,
-      "id": "cellar-cross-martyr",
+      "id": "cellar-victim",
       "dim": true,
       "name": "The Next Confession",
       "ambient": [
-        "The bound thing wets its lips and tries the word: \"...speak... no evil...\""
+        "The bound thing works its jaw against the gag and tries the word: \"...speak... no evil...\""
       ],
       "interact": {
         "type": "shrine",
         "dialogue": "ash-chapel-cellar-victim",
-        "log": "They have hammered the next one up already, down here in the cold, waiting its turn."
+        "log": "They have the next one bound to a post in the cold, roped and collared, kept for after. Not yet on a cross."
       }
     },
     {

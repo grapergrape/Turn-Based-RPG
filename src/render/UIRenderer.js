@@ -202,7 +202,10 @@ export class UIRenderer {
       this.#text(ctx, this.#clip(`> ${ui.target ?? '-'}`, 19), x, y, PALETTE.uiBad);
     } else {
       const itemCount = (ui.inventoryItems ?? []).reduce((total, item) => total + item.count, 0);
-      const packLine = itemCount === 0 ? 'PACK EMPTY' : `PACK ${itemCount} ITEM${itemCount === 1 ? '' : 'S'}`;
+      const hasCarry = typeof ui.carryWeight === 'number' && typeof ui.maxCarryWeight === 'number';
+      const packLine = hasCarry
+        ? `PACK ${this.#formatWeight(ui.carryWeight)}/${this.#formatWeight(ui.maxCarryWeight)} KG`
+        : itemCount === 0 ? 'PACK EMPTY' : `PACK ${itemCount} ITEM${itemCount === 1 ? '' : 'S'}`;
       this.#text(ctx, packLine, x, y, PALETTE.uiDim);
     }
   }
@@ -219,37 +222,136 @@ export class UIRenderer {
   #drawInventory(ctx, ui) {
     this.#screenBackdrop(ctx);
     this.#window(ctx, INVENTORY_BOX, 'FIELD PACK');
-    const left = { x: INVENTORY_BOX.x + 14, y: INVENTORY_BOX.y + 28, w: 230, h: 222 };
-    const right = { x: INVENTORY_BOX.x + 260, y: INVENTORY_BOX.y + 28, w: 254, h: 222 };
-    this.#inset(ctx, left);
-    this.#inset(ctx, right);
+    const carry = `CARRY ${this.#formatWeight(ui.carryWeight ?? 0)}/${this.#formatWeight(ui.maxCarryWeight ?? 0)} KG`;
+    this.#text(ctx, carry, INVENTORY_BOX.x + INVENTORY_BOX.w - this.#textWidth(carry) - 14, INVENTORY_BOX.y + 6, PALETTE.uiDim);
 
-    this.#text(ctx, 'ITEMS', left.x + 8, left.y + 8, PALETTE.uiBorderLight);
+    const left = { x: INVENTORY_BOX.x + 14, y: INVENTORY_BOX.y + 28, w: 202, h: 171 };
+    const figure = { x: INVENTORY_BOX.x + 224, y: INVENTORY_BOX.y + 28, w: 118, h: 171 };
+    const right = { x: INVENTORY_BOX.x + 350, y: INVENTORY_BOX.y + 28, w: 168, h: 171 };
+    const detail = { x: INVENTORY_BOX.x + 14, y: INVENTORY_BOX.y + 206, w: 504, h: 58 };
+    this.#inset(ctx, left);
+    this.#inset(ctx, figure);
+    this.#inset(ctx, right);
+    this.#inset(ctx, detail);
+
     const items = ui.inventoryItems ?? [];
+    const selectedIndex = Math.max(0, Math.min(items.length - 1, ui.inventoryIndex ?? 0));
+    const focusItems = ui.inventoryFocus !== 'gear';
+    this.#text(ctx, 'ITEMS', left.x + 8, left.y + 8, focusItems ? PALETTE.uiText : PALETTE.uiBorderLight);
     if (items.length === 0) {
       this.#text(ctx, 'PACK EMPTY', left.x + 8, left.y + 25, PALETTE.uiDim);
     } else {
       let y = left.y + 25;
       for (let i = 0; i < items.length; i += 1) {
         const item = items[i];
-        const color = i === 0 ? PALETTE.uiText : PALETTE.uiDim;
-        if (i === 0) this.#rect(ctx, left.x + 5, y - 2, left.w - 10, 10, PALETTE.uiDark);
-        this.#text(ctx, `${i === 0 ? '>' : ' '} ${item.count}X ${item.name}`, left.x + 8, y, color);
+        const selected = focusItems && i === selectedIndex;
+        const color = selected ? PALETTE.uiText : PALETTE.uiDim;
+        if (selected) this.#rect(ctx, left.x + 5, y - 2, left.w - 10, 10, PALETTE.uiDark);
+        const worn = item.equippedCount > 0 ? '*' : ' ';
+        const marker = selected ? '>' : worn;
+        const name = this.#clip(item.name, 19);
+        this.#text(ctx, `${marker} ${item.count}X ${name}`, left.x + 8, y, color);
+        const wt = `${this.#formatWeight(item.totalWeight)}KG`;
+        this.#text(ctx, wt, left.x + left.w - this.#textWidth(wt) - 8, y, PALETTE.uiDim);
         y += 11;
       }
     }
 
-    const selected = items[0] ?? null;
-    this.#text(ctx, selected ? selected.name : 'NO ITEM SELECTED', right.x + 8, right.y + 8, PALETTE.uiBorderLight);
-    if (selected) {
-      this.#text(ctx, `TYPE ${selected.type}`, right.x + 8, right.y + 22, PALETTE.uiGood);
-      let y = right.y + 39;
-      for (const line of this.#wrap(selected.description || 'NO DESCRIPTION.', 37).slice(0, 9)) {
-        this.#text(ctx, line, right.x + 8, y, PALETTE.uiDim);
-        y += 9;
-      }
+    this.#drawPaperDoll(ctx, figure, ui.equipmentSlots ?? []);
+
+    const slots = ui.equipmentSlots ?? [];
+    const slotIndex = Math.max(0, Math.min(slots.length - 1, ui.equipmentIndex ?? 0));
+    const focusGear = ui.inventoryFocus === 'gear';
+    this.#text(ctx, 'GEAR', right.x + 8, right.y + 8, focusGear ? PALETTE.uiText : PALETTE.uiBorderLight);
+    let sy = right.y + 24;
+    for (let i = 0; i < slots.length; i += 1) {
+      const slot = slots[i];
+      const selected = focusGear && i === slotIndex;
+      if (selected) this.#rect(ctx, right.x + 5, sy - 2, right.w - 10, 18, PALETTE.uiDark);
+      const color = selected ? PALETTE.uiText : PALETTE.uiDim;
+      this.#text(ctx, `${selected ? '>' : ' '} ${this.#clip(slot.label, 8)}`, right.x + 8, sy, color);
+      this.#text(ctx, this.#clip(slot.name, 19), right.x + 17, sy + 9, slot.empty ? PALETTE.uiBorderDark : PALETTE.uiDim);
+      sy += 21;
     }
-    this.#text(ctx, 'I OR ESC CLOSE    H USE DRESSING', INVENTORY_BOX.x + 14, INVENTORY_BOX.y + INVENTORY_BOX.h - 24, PALETTE.uiText);
+
+    const slotSelection = slots[slotIndex] ?? null;
+    const detailItem = focusGear
+      ? (slotSelection && !slotSelection.empty ? slotSelection : null)
+      : items[selectedIndex] ?? null;
+    this.#drawInventoryDetail(ctx, detail, detailItem, focusGear ? slotSelection : null);
+
+    const footer = 'UP/DN SELECT  LEFT/RIGHT PANEL  1 EQUIP  2 REMOVE  H DRESS  ESC CLOSE';
+    this.#text(ctx, footer, INVENTORY_BOX.x + 14, INVENTORY_BOX.y + INVENTORY_BOX.h - 22, PALETTE.uiText);
+  }
+
+  #drawInventoryDetail(ctx, box, item, slot) {
+    if (!item) {
+      const label = slot ? `${slot.label}: Empty` : 'NO ITEM SELECTED';
+      this.#text(ctx, label, box.x + 8, box.y + 8, PALETTE.uiBorderLight);
+      return;
+    }
+
+    const title = slot ? `${slot.label}: ${item.name}` : item.name;
+    this.#text(ctx, this.#clip(title, 46), box.x + 8, box.y + 8, PALETTE.uiBorderLight);
+    const parts = [`TYPE ${item.type || 'item'}`, `WT ${this.#formatWeight(item.weight ?? item.totalWeight ?? 0)} KG`];
+    if (item.equipmentSlot) parts.push(item.equipmentSlot === 'ring' ? 'GEAR RING' : `GEAR ${item.equipmentSlot}`);
+    if (Array.isArray(item.wornSlots) && item.wornSlots.length > 0) parts.push(`WORN ${item.wornSlots.join(', ')}`);
+    this.#text(ctx, this.#clip(parts.join('  '), 79), box.x + 8, box.y + 20, PALETTE.uiGood);
+
+    let y = box.y + 34;
+    for (const line of this.#wrap(item.description || 'NO DESCRIPTION.', 80).slice(0, 2)) {
+      this.#text(ctx, line, box.x + 8, y, PALETTE.uiDim);
+      y += 9;
+    }
+  }
+
+  #drawPaperDoll(ctx, box, slots) {
+    const worn = new Map((slots ?? []).map((slot) => [slot.slot, !slot.empty]));
+    const cx = box.x + Math.floor(box.w / 2);
+    const top = box.y + 22;
+
+    this.#text(ctx, 'MARA VEY', box.x + Math.floor((box.w - this.#textWidth('MARA VEY')) / 2), box.y + 8, PALETTE.uiBorderLight);
+    this.#rect(ctx, cx - 24, top + 123, 48, 6, PALETTE.outline);
+    this.#rect(ctx, cx - 20, top + 121, 40, 3, PALETTE.uiBorderDark);
+
+    const coat = worn.get('clothes') ? PALETTE.clothRed : PALETTE.clothDark;
+    const armor = worn.get('armor') ? PALETTE.rustMid : PALETTE.uiBorderDark;
+    const boot = worn.get('boots') ? PALETTE.woodLight : PALETTE.woodDark;
+    const hood = worn.get('helmet') ? PALETTE.clothDark : PALETTE.skinDark;
+    const metal = PALETTE.hostGold;
+
+    this.#rect(ctx, cx - 10, top + 12, 20, 19, PALETTE.outline);
+    this.#rect(ctx, cx - 8, top + 14, 16, 16, hood);
+    this.#rect(ctx, cx - 5, top + 18, 10, 10, PALETTE.skinMid);
+    this.#rect(ctx, cx - 3, top + 22, 2, 2, PALETTE.outline);
+    this.#rect(ctx, cx + 3, top + 22, 2, 2, PALETTE.outline);
+
+    this.#rect(ctx, cx - 15, top + 33, 30, 47, PALETTE.outline);
+    this.#rect(ctx, cx - 13, top + 35, 26, 45, coat);
+    this.#rect(ctx, cx - 10, top + 39, 20, 30, armor);
+    this.#rect(ctx, cx - 1, top + 37, 2, 39, PALETTE.outline);
+    this.#rect(ctx, cx - 9, top + 43, 18, 2, PALETTE.uiBorderLight);
+    this.#rect(ctx, cx - 9, top + 53, 18, 1, PALETTE.uiBorderDark);
+
+    this.#rect(ctx, cx - 25, top + 39, 9, 37, PALETTE.outline);
+    this.#rect(ctx, cx - 23, top + 41, 6, 34, coat);
+    this.#rect(ctx, cx + 16, top + 39, 9, 37, PALETTE.outline);
+    this.#rect(ctx, cx + 17, top + 41, 6, 34, coat);
+    if (worn.get('ring1')) this.#rect(ctx, cx - 23, top + 71, 4, 2, metal);
+    if (worn.get('ring2')) this.#rect(ctx, cx + 19, top + 71, 4, 2, metal);
+
+    this.#rect(ctx, cx - 11, top + 80, 9, 36, PALETTE.outline);
+    this.#rect(ctx, cx - 9, top + 82, 6, 32, PALETTE.clothDark);
+    this.#rect(ctx, cx + 2, top + 80, 9, 36, PALETTE.outline);
+    this.#rect(ctx, cx + 3, top + 82, 6, 32, PALETTE.clothDark);
+    this.#rect(ctx, cx - 14, top + 111, 13, 7, boot);
+    this.#rect(ctx, cx + 1, top + 111, 13, 7, boot);
+
+    if (worn.get('trinket')) {
+      this.#rect(ctx, cx - 1, top + 49, 2, 11, metal);
+      this.#rect(ctx, cx - 5, top + 53, 10, 2, metal);
+      this.#rect(ctx, cx - 1, top + 60, 2, 3, PALETTE.outline);
+    }
   }
 
   #drawDialogue(ctx, ui) {
@@ -458,6 +560,11 @@ export class UIRenderer {
   #clip(str, max) {
     const text = this.#normalize(str);
     return text.length > max ? `${text.slice(0, Math.max(0, max - 3))}...` : text;
+  }
+
+  #formatWeight(value) {
+    const rounded = Math.round((Number(value) || 0) * 10) / 10;
+    return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
   }
 
   #normalize(str) {
