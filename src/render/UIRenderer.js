@@ -90,6 +90,7 @@ export class UIRenderer {
     if (ui.screen === 'dialogue') this.#drawDialogue(ctx, ui);
 
     this.#drawHud(ctx, ui);
+    if (ui.areaTitle && !ui.screen) this.#drawAreaTitle(ctx, ui.areaTitle);
     if (ui.hoverText && !ui.screen) this.#drawHoverText(ctx, ui.hoverText);
     this.#drawCursor(ctx, ui.cursor);
 
@@ -391,6 +392,41 @@ export class UIRenderer {
       const w = dir < 0 ? i * 2 + 1 : 7 - i * 2;
       this.#rect(ctx, x - Math.floor(w / 2), y + i, w, 1, color);
     }
+  }
+
+  #drawAreaTitle(ctx, areaTitle) {
+    const ttl = Math.max(0, areaTitle.ttl ?? 0);
+    if (ttl <= 0) return;
+
+    const duration = Math.max(areaTitle.duration ?? ttl, 0.001);
+    const progress = Math.max(0, Math.min(1, 1 - ttl / duration));
+    if (progress > 0.78 && Math.floor(ttl * 18) % 2 === 0) return;
+
+    const label = this.#clip(areaTitle.text, 46);
+    const scale = 2;
+    const textW = this.#textWidth(label, scale);
+    const bandW = Math.min(VIEWPORT.width - 72, Math.max(textW + 48, 248));
+    const x = Math.round((VIEWPORT.width - textW) / 2);
+    const y = 36;
+    const bx = Math.round((VIEWPORT.width - bandW) / 2);
+    const by = y - 12;
+    const edge = progress < 0.18 || progress > 0.68 ? PALETTE.uiWarn : PALETTE.uiBorderLight;
+    const text = progress > 0.7 && Math.floor(ttl * 14) % 2 === 0 ? PALETTE.uiWarn : PALETTE.uiText;
+
+    this.#rect(ctx, bx - 2, by - 2, bandW + 4, 34, PALETTE.outline);
+    this.#rect(ctx, bx, by, bandW, 30, PALETTE.uiDark);
+    this.#rect(ctx, bx + 2, by + 2, bandW - 4, 1, edge);
+    this.#rect(ctx, bx + 2, by + 27, bandW - 4, 1, PALETTE.uiBorderDark);
+    for (let sx = bx + 8; sx < bx + bandW - 8; sx += 16) {
+      this.#rect(ctx, sx, by + 6 + ((sx >> 2) % 3), 7, 1, PALETTE.uiBorderDark);
+      this.#rect(ctx, sx + 4, by + 23 - ((sx >> 3) % 3), 5, 1, PALETTE.uiBorderDark);
+    }
+    this.#rect(ctx, bx + 6, by + 8, 12, 1, edge);
+    this.#rect(ctx, bx + bandW - 18, by + 8, 12, 1, edge);
+    this.#rect(ctx, bx + 6, by + 21, 12, 1, PALETTE.uiBorderDark);
+    this.#rect(ctx, bx + bandW - 18, by + 21, 12, 1, PALETTE.uiBorderDark);
+    this.#text(ctx, label, x + 2, y + 2, PALETTE.outline, scale);
+    this.#text(ctx, label, x, y, text, scale);
   }
 
   #drawHoverText(ctx, text) {

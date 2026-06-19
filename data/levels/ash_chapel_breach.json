@@ -786,8 +786,8 @@
     },
     {
       "kind": "chalk-drawing",
-      "x": 24,
-      "y": 25,
+      "x": 20,
+      "y": 18,
       "name": "Child's Drawing",
       "interact": {
         "type": "note",
@@ -797,14 +797,18 @@
     },
     {
       "kind": "chapel-font",
-      "x": 24,
-      "y": 26,
+      "x": 21,
+      "y": 25,
       "blocking": true,
-      "name": "Fouled Font"
+      "name": "Fouled Font",
+      "interact": {
+        "type": "note",
+        "log": "The holy water in the stoup has been replaced with dark blood. A mixture of Host matter and blood."
+      }
     },
     {
       "kind": "machine-oil",
-      "x": 27,
+      "x": 18,
       "y": 25,
       "name": "Oil and Tread",
       "interact": {
@@ -1042,7 +1046,7 @@
     {
       "kind": "paper-scraps",
       "x": 15,
-      "y": 22,
+      "y": 18,
       "name": "Quarantine House Orders",
       "interact": {
         "type": "note",
