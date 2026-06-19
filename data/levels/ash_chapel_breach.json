@@ -1,7 +1,7 @@
 {
   "id": "ash-chapel-breach",
   "name": "Ash Chapel Breach",
-  "intro": "A ruined quarantine chapel on the old road to Hallowfen. The bells hang still, but someone has kept a fire inside, and the altar is not empty.",
+  "intro": "A settlement inside an old quarantine chapel on the Hallowfen road has gone quiet. The bells hang still, but someone has kept a fire inside, and the altar is not empty.",
   "briefingTitle": "FIELD WRIT OF THE ASHEN CENSURE",
   "briefing": [
     [
@@ -23,7 +23,7 @@
     [
       "Lately there are more of them than there should be.",
       "The cults are spreading faster than the Censure can burn them, springing up in places quiet for generations, some with names and rites that match nothing in the old files. No one in the Office will say why. You have started to wonder if anyone knows, or if they simply will not say.",
-      "Your latest writ: a quarantine chapel on the old road to the Hallowfen wall has gone silent, and a cult has nested in it. Go and put it down.",
+      "Your latest writ: a settlement inside an old quarantine chapel on the Hallowfen road has gone quiet. The Office suspects a cult. Find out what happened and put the cell down.",
       "You did not expect this one to be where the question finally started asking back."
     ]
   ],
@@ -51,6 +51,7 @@
     "ash-chapel-warden-safe-locked",
     "ash-chapel-choir-sigil",
     "ash-chapel-cult-victim",
+    "ash-chapel-dead-guard",
     "ash-chapel-penitent-corpse",
     "ash-chapel-saint-statue"
   ],
@@ -133,6 +134,7 @@
         "They call infection confession, and the opened ones icons, not monsters.",
         "They open only those they judge to be turning holy. The merely faithful they leave in the road, marked refuse.",
         "They feed a saint slowly, by hand, to keep it growing.",
+        "They kept settlement guards for opening and moved the families before you arrived.",
         "Their ledger marks the Hallowfen wall as their next ground."
       ]
     },
@@ -143,7 +145,7 @@
       "unlockedBy": { "flag": "inspected-engine-rut" },
       "summary": "Warrior-monks who cut away their own flesh and seal the rest in machine, so the rot finds nothing to take. The old war-orders, never the Pontifex's. The Censure files them under do not engage.",
       "facts": [
-        "One stood in this chapel's doorway, then turned and marched for the crash scars without coming in.",
+        "One stood in this chapel's doorway, then turned and left without coming in.",
         "They do not abandon a route for nothing.",
         "By every record the roads keep, a Penitent cannot fall to the rot."
       ]
@@ -152,7 +154,7 @@
   "journalNotes": [
     { "flag": "read-warden-journal", "text": "The warden's own book names this place Quarantine House Seventeen. After the Stilling it stopped holding the sick and began holding anyone who argued a tithe or asked the wrong question. The diocese let it be forgotten." },
     { "flag": "found-catacombs", "text": "Under-galleries run beneath the chapel, packed jaw to heel with the quarantine dead. The cult chose a house already taught to suffer." },
-    { "flag": "inspected-engine-rut", "text": "A Penitent Engine stood in the doorway, then turned and marched for the crash scars without coming inside. They do not abandon a route for nothing." }
+    { "flag": "inspected-engine-rut", "text": "A Penitent Engine stood in the doorway, then turned and left without coming inside. They do not abandon a route for nothing." }
   ],
   "tiles": [
     "##############W##W##W##W##W#############",
@@ -262,7 +264,7 @@
         "y": 5,
         "encounter": "nave-rite",
         "ambient": [
-          "Wonder how the one in the cellar tastes.",
+          "Wonder how the guard in the cellar tastes.",
           "The wax remembers every hand that prayed here.",
           "Hush. The Opened Saint is listening."
         ]
@@ -340,11 +342,11 @@
         "questUpdate": {
           "quest": "investigate-ash-chapel-cult",
           "stage": "rite-found",
-          "log": "Quest updated: the altar was prepared to carve sacrament from the body on the cross."
+          "log": "Quest updated: the altar was prepared to carve sacrament from the guard on the cross."
         },
         "log": [
           "The altar is set for a meal, not a sermon.",
-          "Strips of pale flesh lie drying in the bowls. They were cut from the man on the cross."
+          "Strips of pale flesh lie drying in the bowls. They were cut from the guard on the cross."
         ]
       }
     },
@@ -438,7 +440,7 @@
         "questUpdate": {
           "quest": "investigate-ash-chapel-cult",
           "stage": "evidence-found",
-          "log": "Quest updated: the ledger points toward the Hallowfen wall without explaining why."
+          "log": "Quest updated: the ledger names the missing settlement families and points toward the Hallowfen wall."
         },
         "log": "A grease-dark ledger lies open beside a cracked bowl."
       }
@@ -798,11 +800,11 @@
       "kind": "cult-victim",
       "x": 21,
       "y": 22,
-      "name": "Knifed Traveller",
+      "name": "Marked Settlement Guard",
       "interact": {
         "type": "shrine",
         "dialogue": "ash-chapel-cult-victim",
-        "log": "A man lies on his back in a wide pool of blood, his coat cut open and his chest carved."
+        "log": "A settlement guard lies on his back in a wide pool of blood, his coat cut open and his chest carved."
       }
     },
     {
@@ -828,7 +830,13 @@
     {
       "kind": "corpse",
       "x": 15,
-      "y": 24
+      "y": 24,
+      "name": "Dead Settlement Guard",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-dead-guard",
+        "log": "A settlement guard lies beside the intake barricade, one hand still closed around a broken chapel key."
+      }
     },
     {
       "kind": "field-satchel",

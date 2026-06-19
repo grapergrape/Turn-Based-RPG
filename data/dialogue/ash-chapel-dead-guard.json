@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-dead-guard",
+  "title": "Dead Settlement Guard",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The body wears the same patched guard coat as the marked man near the font. A chapel key hangs on twine under the collar.",
+        "His hands are cut to pieces. He died trying to hold the intake barricade, not rob it.",
+        "A folded watch scrap is tucked under his belt: two guards dead at the threshold, two kept for opening, women and children moved before dawn. The rest of the note is blood."
+      ]
+    }
+  }
+}

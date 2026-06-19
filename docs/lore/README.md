@@ -3,6 +3,7 @@
 This folder holds canon-level setting material. The current authority is:
 
 - `the_host_story_bible.md` - full canon for The Host, the Solar Ecclesiate, Father Marius Vale, the Vale Imprint, the Descent, the Stilling, factions, locations, campaign spine, and themes.
+- `../story/originality.md` - audit of familiar CRPG risks and the guardrails that keep the campaign specific to this setting.
 
 ## Canon Hierarchy
 
@@ -37,6 +38,8 @@ If a lower-level file contradicts the story bible, update the lower-level file u
 - The Choir is not simply random madness.
 - The Free Cities are not clean heroic rebels.
 - The Bloomborn are not automatically saved, doomed, or morally pure.
+- The Devil manifestation is not proof that Hell was real. It is The Host making human doctrine into flesh.
+- The endgame is not killing a source monster. It is deciding what price survival is allowed to charge.
 
 ## Retcon Rule
 

@@ -121,8 +121,8 @@ Severian teaches that the Descent opened creation to the Infernal Host. He rejec
 
 He is not a fool. He understands logistics, fear, law, hunger, and the power of ritual. Under his rule, roads are safer and books survive. Under his rule, people burn for carrying the wrong truth.
 
-**Campaign function:** Principal Remnant power broker and possible endgame patron for the Fire Ending.
-**Pressure point:** He may know more than he publicly admits, but cannot allow the Remnant's authority to fracture during a second Bloom.
+**Campaign function:** Principal Remnant power broker, Act III abduction target, and possible endgame patron for the Fire Ending.
+**Pressure point:** He may know more than he publicly admits, but cannot allow the Remnant's authority to fracture during a second Bloom. His symbolic weight is why the Choir wants him alive: if the pope is immersed in harvested Host matter, Ysolde believes the Devil can manifest through him.
 
 ### Cardinal Maera Caldus
 
@@ -193,10 +193,12 @@ Vahr preserves old knowledge at any cost. She is capable of sacrificing a settle
 
 Sorell was a xenobiologist aboard _Eschaton's Mercy_, listed as dead during atmospheric entry. In truth, Sorell survived the crash in a changed state and used old Ecclesiate systems plus infected tissue relays to trap The Host inside the Vale Imprint.
 
-Sorell saved the world by preserving a nightmare.
+During the Stilling, Sorell calcified into the lock network. They are alive, but fused to the walls and unable to move. Their voice can still travel through old relays, damaged cores, and Host tissue, which is how the player first receives the Three Witnesses warning. Sorell can confess, beg, bargain, and defend the lock, but cannot repair it alone.
 
-**Campaign function:** Hidden voice behind the archive fragments, central Act IV revelation, possible sacrifice or endgame actor.
-**Pressure point:** Sorell may no longer be fully separable from the lock.
+Sorell saved the world by preserving a nightmare. They looped Father Vale's terror back through the Host until the organism could not grow beyond Vale's Hell. That act prevented a planet-wide Bloom and made Vale's torture eternal.
+
+**Campaign function:** Hidden voice behind the Three Witnesses, central Act IV revelation, final lock defender, possible sacrifice or endgame actor.
+**Pressure point:** Sorell is no longer separable from the lock. They did something unforgivable that also saved humanity.
 
 ## Free City Characters
 
@@ -249,8 +251,10 @@ Renna speaks for a city that grows food under cracked artificial skies and uses 
 
 Ysolde shelters people no one else will touch, then teaches them that their suffering is a door. She is gentle in person and monstrous in consequence.
 
-**Campaign function:** Main Choir face, tempter, and ideological antagonist.
-**Pressure point:** She genuinely believes the second Bloom will end loneliness, shame, and false bodies.
+By Act III, Ysolde is harvesting living Host matter in barrels and vats for a total-immersion rite. She believes a worthy body lowered fully into the Host will survive as Satan made manifest. Her preferred victim is Pontifex Severian III, not because she hates him in a simple way, but because the pope carries the full symbolic burden of the Remnant's fear.
+
+**Campaign function:** Main Choir face, tempter, ideological antagonist, and architect of the Devil manifestation.
+**Pressure point:** She genuinely believes the second Bloom will end loneliness, shame, and false bodies. If she dies, her theology can still win if the player breaks the lock later.
 
 ### Brother Senn
 
@@ -363,7 +367,9 @@ He was never important. That is the point. He was an ordinary, frightened missio
 
 **Talking to him** flickers, often mid-sentence, between three registers: **the man** (lucid, ashamed, gentle, begging to die, quietly warning you about the Remnant), **the demon** (a raving Hell-saint in the voices of the dead, blessing and damning, a genuine and lethal boss), and **the blur** — the true horror, where he can no longer tell which he is and knows it. Not possessed by the Host so much as no longer separable from it.
 
-He is victim, relay, monster, saint, weapon, and prison at once. The player should pity and fear him in the same breath. What you do with him — kill, preserve as the lock's keystone, free, or hear out — is the hinge the ending turns on (see the story bible, Act V).
+In the revised endgame, Vale is found with Sorell. Sorell is fused to the wall of the lock chamber, and Vale has spent years torturing the person who turned his fear into humanity's prison. Vale is lucid enough to understand what Sorell did. He wants the Stilling broken because the lock is also his Hell.
+
+He is victim, relay, monster, saint, weapon, and prison at once. The player should pity and fear him in the same breath. What you do with him, kill, preserve as the lock's keystone, free, or hear out, is the hinge the ending turns on.
 
 ### Canticle
 

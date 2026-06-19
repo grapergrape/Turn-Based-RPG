@@ -14,7 +14,11 @@ Core canon:
 - The Choir of the Open Wound is retconned as a recently emerged, unknown Host-cult (last few years), distinct from the common older Host/satanic cults the Censure has always burned. The protagonist is an experienced cult-breaker meeting THIS cult for the first time and investigates it; its name and doctrine are discovered in play (the Ash Chapel cult ledger reveals the name). Its rapid, coordinated emergence is a symptom of the failing lock. Player-facing slice text must not pre-name the Choir in narration; narration calls them "the cult" until the ledger reveal.
 - Hallowfen is the walled Earthside crash scar the Holy Remnant calls holy ground. Its checkpoint bell towers, not the town itself, are the first Act I silence.
 - Act I begins with the Hallowfen wall crisis: expose or survive a Choir-held checkpoint, enter through that checkpoint or a smuggler tunnel, and decide whether Hallowfen survives the siege.
-- The data-core mystery comes after Hallowfen's fate is settled. The core later warns that the lock is failing and no one must find the priest.
+- The data-core mystery comes after Hallowfen's fate is settled. The core carries Sorell's damaged warning that the lock is failing, that Sorell cannot repair it, and that the listener must find the Three Witnesses through puzzle clues rather than exact coordinates.
+- Act II is the largest act: towns, side quests, faction courts, companion arcs, and the Three Witnesses. The Witnesses reveal Father Vale as first contact, show that early Host forms were not only Hell-shaped, and prove Sorell created the lock while calcifying into it.
+- Act III narrows around the Choir's way of life and Ysolde's total-immersion rite. The Pontifex is abducted, a moon sigil is left behind, and the Choir tries to manifest Satan by lowering a symbolically worthy body into harvested Host matter.
+- Act IV resolves Woundfall, Vale, and Sorell. Sorell is fused into the lock chamber. Vale tortures Sorell because Sorell turned Vale's fear into humanity's prison. The final choice is about the cost of preserving, breaking, replacing, or renewing that lock.
+- The originality guardrail is documented in `docs/story/originality.md`: the story may use familiar CRPG structures, but its spine is first contact through Vale, the Vale Imprint, Sorell's lock, the Choir's false Satan, and the final moral crime scene.
 
 ## Current Direction
 
@@ -22,7 +26,8 @@ Use `docs/story/` as the game-facing story layer:
 
 - `docs/story/world.md` - current era, timeline, regions, factions, tone, and open story questions.
 - `docs/story/characters.md` - player premise, companions, faction leaders, recurring antagonists, and old-world figures.
-- `docs/story/quests.md` - five-act campaign structure, witness quests, faction questlines, companion hooks, and endings.
+- `docs/story/quests.md` - four-act campaign structure, witness quests, faction questlines, companion hooks, and endings.
+- `docs/story/originality.md` - originality audit, genre-drift risks, and checks for keeping quests specific to this setting.
 - `docs/story/story-dialogue-workflow.md` - story/dialogue authoring workflow, scene packet format, and rules for keeping dialogue tied to quest beats.
 
 Story and dialogue should be written together as scene packets. Each packet names the quest, location, speakers, player state, purpose, pressure, choices, sample lines, consequences, dependencies, and open questions. Do not write final dialogue only in `docs/story/quests.md`, and do not write isolated dialogue with no quest beat or consequence.
