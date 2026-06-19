@@ -108,6 +108,31 @@ The lore should influence systems:
 - Enemy designs should reflect past identity and Vale-Imprint damnation roles.
 - Quests should often force choices between truth, survival, faith, and exploitation.
 
+## Originality guardrails
+
+The story uses familiar CRPG ingredients: factions, forbidden archives, cults, political hubs, and a late truth about the world. Those pieces are allowed only when the cause-and-effect chain stays specific to this setting. Use `docs/story/originality.md` as the longer audit when designing major quests, bosses, and faction branches.
+
+The core chain is:
+
+1. First contact was filtered through Father Marius Vale.
+2. The Host inherited Vale's fear of Hell as biological grammar.
+3. Sorell saved humanity by turning that fear into the Stilling lock.
+4. The Choir mistakes Host-shaped doctrine for divine revelation.
+5. The Devil manifestation is not a generic demon boss. It is the Host making Remnant fear into flesh.
+6. The endgame is not "kill the source." It is deciding whether Vale's torture remains the price of human survival.
+
+Avoid these drift risks:
+
+- A lore hunt where the Three Witnesses are just collectible exposition.
+- A cult that is evil because cultists are evil.
+- A Remnant that is only a bad church.
+- A Compact that is only good science or only mad science.
+- A final boss that is only a large monster.
+- A supernatural answer that cancels the biological and psychological horror.
+- A faction ending that ignores Vale and Sorell's chamber.
+
+Every major quest should make at least one ordinary human need matter: food, medicine, citizenship, road access, safety, shelter, grief, fear, or law. The horror works because it grows through those needs.
+
 ## Names
 
 Use serious, grounded names.

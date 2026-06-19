@@ -6,9 +6,16 @@ The canonical setting is defined by `docs/lore/the_host_story_bible.md`. This fi
 
 The game takes place roughly 130 years after **the Descent**, when the infected research-pilgrimage vessel _Eschaton's Mercy_ broke apart over Earth and seeded the world with the Europa organism now called **The Host**. Humanity survived the first apocalypse because the Bloom stopped. That halt is called **the Stilling**.
 
-The public does not know the truth. The Holy Remnant calls the Stilling divine mercy. The Lumen Compact calls it a biological limit. The Choir of the Open Wound calls it a pause before communion. The campaign reveals that the Stilling was an artificial lock created by Dr. Elian Sorell to trap The Host inside **the Vale Imprint**, the inherited psychic-biological pattern left by Father Marius Vale.
+The public does not know the truth. The Holy Remnant calls the Stilling divine mercy. The Lumen Compact calls it a biological limit. The Choir of the Open Wound calls it a pause before communion. The campaign reveals that the Stilling was an artificial lock created by Dr. Elian Sorell to trap The Host inside **the Vale Imprint**, the inherited psychic-biological pattern left by Father Marius Vale. Sorell saved humanity by turning Vale's fear into a prison. Vale knows this, and the prison is also his torture.
 
 The current era is the **Age of Ashen Cities**. Earth is broken but alive. Cities still farm, trade, pray, repair walls, hold courts, raise children, and make ugly compromises. The old stability is failing: dormant Host tissue pulses again, Choir Trees speak new phrases, minor exposures are becoming more severe, and low-frequency signals are moving beneath old crash sites.
+
+The campaign shape is narrow, wide, narrow, abyss:
+
+- **Act I:** Ash Road and Hallowfen. Local horror, siege pressure, and the first crack in doctrine.
+- **Act II:** The Broken World. The largest act, where the player explores towns, factions, side quests, companions, and the Three Witnesses.
+- **Act III:** The Choir Revealed. The cult becomes a society and a strategic threat, ending with Pontifex Severian III's abduction and the Devil manifestation.
+- **Act IV:** Woundfall. The final descent to Sorell and Father Vale, where the player decides what survives of the lock.
 
 ## Canon Rules
 
@@ -19,7 +26,7 @@ The current era is the **Age of Ashen Cities**. Earth is broken but alive. Citie
 - The Host is not proven to be morally evil, but it reproduces Vale's inherited vision of damnation.
 - The Stilling was not a cure. It was containment.
 - The Stilling both calcified the Bloom-era Host and left an ongoing lock. Calcified hosts are frozen mid-change with the lights on, faintly aware, not dead. Infection after the Stilling still transforms new victims, but it can no longer chain into a Bloom unless deliberately fed. As the lock fails, calcified hosts can thaw and fresh infection can begin to catch again.
-- The new crisis is caused by the lock failing as something beneath Europa calls the Earth fragment home.
+- The new crisis is caused by the lock failing. The deep cause may be Europa pulling at the Earth fragment, but the playable crisis is immediate: cults multiply, Host matter wakes, and Vale wants the prison broken.
 - The Choir of the Open Wound is a recently emerged, poorly understood Host-cult, distinct from the common older Host-cults the Censure routinely burns. Field agents meet it as an unknown and investigate it; its rapid, coordinated spread is itself a symptom of the failing lock.
 
 ## Historical Spine
@@ -78,7 +85,7 @@ Hallowfen must feel human before it becomes horrific, but its human life is a la
 
 Act I asks what happens to Hallowfen. The player can help its people break the siege, steer attackers away long enough for partial evacuation, or abandon the town. If abandoned, later reports reveal that the Choir crucified the whole town upside down to decorate its new temple-capital at the heart of the holy land.
 
-The discovery beneath Hallowfen still leads into the wider campaign, but not as the first Act I reveal. After Hallowfen's fate is settled, the blackened _Eschaton's Mercy_ data core can carry Sorell's warning that the Stilling was a lock, the lock is failing, and no one must find the priest.
+The discovery beneath Hallowfen still leads into the wider campaign, but not as the first Act I reveal. After Hallowfen's fate is settled, the blackened _Eschaton's Mercy_ data core can carry Sorell's damaged warning that the Stilling was a lock, the lock is failing, and the listener must find the Three Witnesses. The recording gives puzzle clues, not clean coordinates.
 
 ### Ash Roads
 
@@ -114,7 +121,7 @@ The Bell in the Water archive fragment lies in a submerged section of _Eschaton'
 
 A dormant Bloom zone where transformed bodies have rooted into the soil like trees. The Orchard can heal, poison, feed, or prophesy depending on who harvests it and why. The Remnant wants to burn it. The Compact wants to study it. The Choir makes pilgrimages there. Local villages quietly rely on it.
 
-The Act III awakening at the Pale Orchard proves that the failing lock is being pulled from Europa, not simply by Vale or Sorell.
+The Pale Orchard is an important Act II or Act IV site depending on route. It can prove that dormant Host tissue is waking and that Sorell's lock is failing, but it is no longer the required Act III climax.
 
 ### Woundfall
 
@@ -155,6 +162,8 @@ The Free Cities are not pure democrats or generic rebels. They are practical com
 A Host-worshipping movement that calls infection confession and Host creatures icons. It shelters outcasts, rejected Bloomborn, plague victims, criminals, and refugees, then asks them to pay with their bodies. Unlike the common road-cults the Censure has always burned, the Choir is a recent arrival: it surfaced only in the last few years, across long-quiet regions, already speaking one coherent doctrine, and almost no one who fights it yet knows its name. Its sudden, coordinated rise is a symptom of the failing lock, though it is not yet read as one.
 
 The Choir wants to restart the Bloom, or in its own language, finish the hymn.
+
+By Act III, the Choir's larger rite is revealed. Ysolde's people harvest living Host matter into barrels and vats. They believe full immersion of a symbolically worthy body can summon Satan. Their highest prize is Pontifex Severian III, because immersing the Remnant's pope lets the Host answer the Church's own fear of Hell. The hidden truth is that the resulting Devil is not proof of the supernatural. It is the Host making doctrine into flesh.
 
 ### Penitent Engines
 

@@ -97,10 +97,22 @@ The Bell Below has protected Low Harrow in exchange for offerings. It may be int
 **Location:** Choir hospice, gate-opening assault, or Pale Orchard pilgrimage route
 **Narrative purpose:** Show why people join the Choir before showing what the Choir costs.
 
-Ysolde should be persuasive enough that killing her feels like stopping a real danger and destroying one of the only shelters some people had.
+Ysolde should be persuasive enough that killing her feels like stopping a real danger and destroying one of the only shelters some people had. By Act III, her larger rite is clear: she is harvesting living Host matter in barrels and vats for a total-immersion sacrament. She believes a worthy body submerged whole in the Host can survive as Satan made manifest.
 
-**Encounter role:** Ritual leader who buffs voluntary Stage Two converts, opens hazard zones, and uses civilian positioning as moral pressure.
-**Branching outcome:** Kill, capture, discredit, let her evacuate outcasts, or allow Anselm to confront her.
+**Encounter role:** Ritual leader who buffs voluntary Stage Two converts, opens hazard zones, uses civilian positioning as moral pressure, and prepares the Pontifex immersion.
+**Branching outcome:** Kill, capture, discredit, let her evacuate outcasts, allow Anselm to confront her, or help her complete enough of the rite to change the Act III climax.
+
+### The Devil Manifestation
+
+**Faction:** The Host, Choir rite, Vale Imprint
+**Location:** Choir lair, immersion hall, or desecrated cathedral-vat
+**Former identity:** Pontifex Severian III if the rite succeeds fully, or a lesser symbolic vessel if the player prevents his immersion.
+**Narrative purpose:** Let the player and every faction witness something that appears to confirm doctrine before the later reveal explains it.
+
+The Choir believes this is Satan entering the world. The Remnant may believe it too. The Compact knows better only after the evidence is studied. The truth is that the Host has built a supreme Adversary Icon from harvested Host matter, the victim's fear, Remnant doctrine, and the symbolic burden of the pope.
+
+**Encounter role:** Multi-phase horror boss with temptation dialogue, fear attacks, false miracles, Host-vat hazards, and faction-specific rescue or execution objectives.
+**Branching outcome:** Rescue Severian before full immersion, kill the manifestation, let the Choir complete the rite, let the Compact capture samples, or let the Remnant destroy the entire site.
 
 ### The Rooted Witness
 
@@ -125,7 +137,7 @@ Malrec wants the Penitent Engines to stop negotiating with civilian powers and p
 **Encounter role:** Heavy cybernetic commander with suppression, artillery, and doctrine-triggered buffs when allies die.
 **Branching outcome:** Kill, depose, expose, support, or force Tarn into a duel of doctrine.
 
-## Act IV Bosses
+## Act IV Bosses and Endgame Confrontations
 
 ### Canticle's Choir
 
@@ -150,18 +162,16 @@ The Guardian should not be "evil." It exists because keeping people away from th
 **Encounter role:** Multi-phase defensive boss with shield zones, confession relays, old security systems, and Host structures that punish reckless damage.
 **Branching outcome:** Destroying it may weaken the lock. Bypassing it may require Sorell, Vale data, companion sacrifice, or faction-specific access.
 
-## Endgame Confrontations
-
 ### Dr. Elian Sorell
 
 **Faction:** Partially Host-integrated, architect of the Stilling
 **Location:** The Nave, lock network, or a distributed Host relay
 **Narrative purpose:** Confront the person who saved humanity by preserving Hell.
 
-Sorell may appear as voice, body, memory, Host form, machine choir, or all of these. This should be a conversation and systems confrontation more than a standard boss fight.
+Sorell is alive but calcified into the lock network. They are fused to the walls of the final chamber, unable to move, and defended by automations, machine-choir routines, and Host structures built to preserve the Stilling. This should be a conversation and systems confrontation more than a standard boss fight.
 
-**Encounter role:** Decision boss involving lock integrity, archive truth, faction intervention, and companion arguments.
-**Branching outcome:** Preserve Sorell, sever Sorell, sacrifice Sorell, merge Sorell with the First Icon, or use Sorell's work for cure research.
+**Encounter role:** Decision boss involving lock integrity, archive truth, faction intervention, companion arguments, and defensive systems if the player sides with Vale.
+**Branching outcome:** Preserve Sorell, sever Sorell, sacrifice Sorell, use Sorell's work for cure research, or fight through Sorell's defenses to free Vale.
 
 ### The First Icon
 
@@ -172,8 +182,10 @@ Sorell may appear as voice, body, memory, Host form, machine choir, or all of th
 
 The First Icon is not a simple final boss. Vale is a ruined person, alien relay, saint, victim, monster, weapon, and prison. He may speak lucidly for moments, beg to die, insist Hell is real, or admit he no longer knows which thoughts are his.
 
+In the revised endgame, Vale is found with Sorell. Sorell's lock saved the world by making Vale's fear repeat forever, and Vale knows it. The chamber is also a torture room. Vale torments Sorell because Sorell made his private Hell into a planetary cage. Vale wants the Stilling broken so he can escape.
+
 **Encounter role:** Moral and tactical endgame confrontation. The arena should react to player history through accusations, companion fears, faction arrivals, and changes to the lock.
-**Branching outcome:** Kill, preserve, sacrifice, communicate, use as key, or let the Choir awaken him.
+**Branching outcome:** Kill, preserve, sacrifice, communicate, use as key, free him by breaking Sorell's systems, or fight his monstrous form to restore the lock.
 
 ### The Europa Signal
 

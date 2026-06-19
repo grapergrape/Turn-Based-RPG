@@ -30,6 +30,19 @@ Now, more than a century after Earth’s collapse, the surviving cities live beh
 
 And beneath the old wound where the starship fell, something has begun to sing again.
 
+## Originality Spine
+
+This setting can use familiar CRPG structures, but it must not rely on them alone. Factions, forbidden archives, cult routes, and late revelations are only tools. The original spine is the causal chain:
+
+1. The first human mind the organism truly learned was Father Marius Vale.
+2. Vale's fear of Hell became the Earthborn Host's inherited grammar.
+3. Sorell saved humanity by turning that grammar into the Stilling lock.
+4. The Choir mistakes the failing lock for revelation and tries to manufacture Satan through total immersion in harvested Host matter.
+5. The Devil manifestation is not proof that Hell was real. It is the Host making human doctrine into flesh.
+6. The endgame is not killing the source monster. It is deciding whether Vale's eternal torture remains the price of survival.
+
+Protect this chain in every major plot decision. The longer audit lives in `docs/story/originality.md`.
+
 ---
 
 ## The World Before the Fall
@@ -588,6 +601,10 @@ The Choir reveres Father Marius Vale as **the First Opened Saint**. They believe
 
 Their rituals are designed to recreate the first infection: confession, terror, prayer, blood contact, and exposure to living Host tissue. They believe the correct emotional and spiritual state produces more beautiful transformations. To them, a False Saint is not a horror. It is proof that the soul has finally stopped pretending.
 
+Ysolde's inner rites go further. The Choir harvests living Host matter into barrels and vats, keeping it fed by hand so it does not burn out alone. They believe a complete immersion can call the Devil into the world: lower a worthy body fully into the Host, let fear and confession do their work, and if the body survives it becomes Satan made flesh. The rite is wrong in its explanation, but not harmless. A body with enough symbolic weight can give the Host a stronger pattern to wear.
+
+Their greatest intended vessel is Pontifex Severian III. If the Remnant's pope is immersed, the Choir believes the Church's own fear of Hell will answer back in one body.
+
 The Choir is dangerous because not all of its members are mad. Many are articulate, gentle, and persuasive. They shelter outcasts, rejected Bloomborn, plague victims, criminals, refugees, and people condemned by every other faction. Their communities can appear compassionate until one understands the price.
 
 They want to restart the Bloom.
@@ -864,7 +881,7 @@ Hallowfen should still feel human before it becomes horrific, but its humanity i
 
 The Act I question is not who receives the truth yet. It is whether Hallowfen survives. The player can help the people inside break the siege and drive off the Choir attackers, misdirect the attackers long enough for an evacuation, or leave the town to its fate. If Hallowfen is abandoned, later reports reveal that the Choir crucified the whole town upside down and used the bodies to decorate its new capital.
 
-The deeper campaign still turns on a relic from _Eschaton's Mercy_, but Hallowfen does not explain the Stilling during Act I. Once the fate of the city is settled, the story can return to the crash site's heart and the blackened data core hidden there. When that core is recovered and decoded, it plays Father Vale's voice, then the voice of Dr. Elian Sorell, the xenobiologist listed as dead during the Descent.
+The deeper campaign still turns on a relic from _Eschaton's Mercy_, but Hallowfen does not explain the Stilling during Act I. Once the fate of the city is settled, the story can return to the crash site's heart and the blackened data core hidden there. When that core is recovered and decoded, it plays a damaged recording of Dr. Elian Sorell, the xenobiologist listed as dead during the Descent.
 
 The message says:
 
@@ -874,9 +891,11 @@ The message says:
 >
 > The lock is failing.
 >
-> Do not let them find the priest.
+> I cannot repair it.
+>
+> Find the Three Witnesses.
 
-That discovery begins the larger archive mystery.
+The core does not give clean coordinates. It gives damaged names, partial images, old mission phrases, and puzzle clues. The player must solve where the Three Witnesses lie by investigation across the broken world. Sorell's plea is the motive: save humanity by learning how the lock was made before it fails.
 
 ---
 
@@ -906,174 +925,94 @@ A caravan guard transforms after touching a relic that had been safe for decades
 
 A Penitent Engine patrol abandons its route and marches toward Woundfall, claiming the bells under the earth have started again.
 
-The act ends when the data core is partially decoded. It contains coordinates for three fragments of the original mission archive scattered across Earth during the Descent.
+The act ends when the data core is partially decoded. It does not contain coordinates. It contains Sorell's damaged plea and the first puzzle clues toward the Three Witnesses.
 
-Each fragment is held, hidden, or worshipped by a different faction.
+Each Witness is held, hidden, or worshipped by a different faction.
 
 ---
 
-## Act II: The Three Witnesses
+## Act II: The Broken World and the Three Witnesses
 
-The player must recover the three archive fragments.
+Act II is the largest act. Hallowfen opened one wound; now the player sees the broken world around it. The Three Witnesses are the spine, but the act should be full of towns, side quests, companion conflicts, local politics, and faction pressure.
 
-### The First Witness: The Surgeon’s Gospel
+Sorell's damaged recording does not tell the player where to go. It gives puzzle clues: a confessor's key, a surgeon's gospel, a bell under water. The player follows doctored Remnant records, Compact medical tags, drowned bell codes, old maps, black-market testimony, and companion knowledge until each Witness location becomes clear.
 
-The first fragment lies beneath Meridian Vault in the sealed remains of an early Compact laboratory. It contains medical footage from _Eschaton’s Mercy_ showing infected crew members transforming during the return journey.
+The Witnesses answer three questions the player needs before any faction can act.
 
-The key revelation: not every transformation became Hell-like immediately. The first few secondary infections showed unstable, beautiful, alien geometries before Vale’s pattern overwhelmed them. This suggests the Vale Imprint spread like a dominant signal through the organism.
+- The Confessor's Key reveals who first contact was, and why Father Vale mattered.
+- The Surgeon's Gospel reveals that early Host forms were not only shaped like Hell.
+- The Bell in the Water reveals that Sorell created the Stilling lock and cannot repair it.
 
-The Compact wants to bury this because it proves their theory but also implies a terrifying possibility: if the Imprint fails, the Host may become something even less predictable.
+### The First Witness: The Confessor's Key
 
-### The Second Witness: The Confessor’s Key
-
-The second fragment is hidden in Sanctum Aurelian, inside the private vault of the Quiet Cardinals. It contains Father Vale’s pre-mission confessions, including evidence that he believed the Europa mission was spiritually dangerous before launch.
+The first Witness is hidden in Sanctum Aurelian, inside the private vault of the Quiet Cardinals. It contains Father Vale's pre-mission confessions and proof that the first meaningful human contact with the organism was a priest.
 
 It also reveals that Vale was not merely present for observation. He had been instructed to perform a first-contact rite if alien life was found. The Ecclesiate wanted the encounter framed through human theology from the beginning.
 
 The Holy Remnant will kill to keep this secret.
 
+### The Second Witness: The Surgeon's Gospel
+
+The second Witness lies beneath Meridian Vault in the sealed remains of an early Compact laboratory. It contains medical footage from _Eschaton's Mercy_ showing infected crew members transforming during the return journey.
+
+The key revelation: not every transformation became Hell-like immediately. The first few secondary infections showed unstable, beautiful, alien geometries before Vale's pattern overwhelmed them. This suggests the Vale Imprint spread like a dominant signal through the organism.
+
+The Compact wants to bury this because it proves their theory but also implies a terrifying possibility: if the Imprint fails, the Host may become something even less predictable.
+
 ### The Third Witness: The Bell in the Water
 
-The third fragment lies in Low Harrow, beneath the flooded lower city, inside a section of _Eschaton’s Mercy_ that fell into the old harbor. The local ruling families have concealed it for generations because the dormant Host intelligence beneath the water protects the city in exchange for offerings.
+The third Witness lies in Low Harrow, beneath the flooded lower city, inside a section of _Eschaton's Mercy_ that fell into the old harbor. The local ruling families have concealed it for generations because the dormant Host intelligence beneath the water protects the city in exchange for offerings.
 
-This fragment contains the voice of Dr. Elian Sorell explaining that the Host did not stop because it weakened. It stopped because Sorell used a network of old Ecclesiate systems, machine choirs, and infected tissue to trap the organism inside the Vale Imprint.
+This Witness contains Sorell's confession. The Host did not stop because it weakened. It stopped because Sorell used a network of old Ecclesiate systems, machine choirs, orbital relays, confession networks, and infected tissue to trap the organism inside the Vale Imprint.
+
+Sorell did not escape the Stilling. During the lock's creation, Sorell calcified into it. They are alive, fused to the walls, and unable to move. Sorell can warn, defend, and confess, but cannot repair the lock alone.
 
 The Stilling was not a cure.
 
 It was a cage made from Hell.
 
 ---
+## Act III: The Choir Revealed
 
-## Act III: The Politics of Truth
+Once the player assembles the Witnesses, the truth is dangerous enough to move armies. Before any faction can fully act on it, Pontifex Severian III is abducted.
 
-Once the player assembles the archive, every major faction reacts.
+The abduction scene bears a moon sigil that most Remnant investigators cannot place. By now the player can connect it to the Choir through the Witness trail and earlier cult evidence.
 
-The Holy Remnant declares the archive demonic forgery and begins preparing a crusade to seize Woundfall. Pontifex Severian III argues that if the Host is awakening, only unified faith can prevent extinction.
+Act III narrows the story around the Choir. It shows the cult as a way of life, not only a battlefield: hospices for the rejected, families who joined because no city would admit their sick, teachers who call infection confession, and vats of living Host matter fed by hand so the flesh does not burn out alone.
 
-The Lumen Compact demands access to the full data and prepares an expedition to find pre-Vale material. Some Compact leaders believe they can remove the Imprint and restore the Host to its original state. Others believe the Imprint is the only thing keeping the Host recognizable enough to fight.
+Ysolde's inner rite is total immersion. A living person is lowered whole into harvested Host matter. If the person is worthy and survives, the Choir believes Satan will manifest. Their chosen vessel is Pontifex Severian III, because the pope carries the Remnant's fear of Hell in one body.
 
-The Choir of the Open Wound interprets the archive as prophecy. They believe the failing lock means Father Vale is calling the world back into communion. Choir cells begin coordinated attacks, not to destroy cities, but to open gates and expose populations.
+The player can join a Remnant rescue crusade, help the Compact eliminate the cult and seize samples, enter the Choir's rite from inside, or intervene through independent alliances.
 
-The Free Cities panic. Some want to ally with the Remnant. Others seek Compact protection. Others form a defensive league. Refugee crises explode as border towns are abandoned.
+The act climaxes with the Devil manifestation. For everyone present, it should feel like doctrine has become real. The later truth is worse in a different way: the Host has learned to make belief into flesh. The manifestation is not proof of the supernatural. It is the Host, the Vale Imprint, the Pontifex's terror, and Remnant doctrine forming a supreme Adversary Icon.
 
-The Ash Cartels profit from everyone until the roads become too dangerous even for them.
-
-The Penitent Engines march toward Woundfall without waiting for orders.
-
-During this act, the player’s choices shape which factions survive, which unite, and which become enemies. The player may expose the truth publicly, suppress parts of it, use it to blackmail leaders, or attempt to build a coalition.
-
-The act ends with a major Host awakening at the Pale Orchard.
-
-The Orchard blooms out of season. The rooted dead begin speaking in unison. They do not speak with Father Vale’s voice.
-
-They speak with Dr. Sorell’s.
-
-> The lock is failing because something is pulling from beneath it.
->
-> Not the priest.
->
-> Not Hell.
->
-> Europa.
+Whichever faction wins the battle understands the same hard fact. The manifestation was possible because the lock is failing. The next objective is finding Father Vale.
 
 ---
 
-## Act IV: Woundfall
+## Act IV: Woundfall, Vale, and Sorell
 
-The fourth act centers on the race to reach the Nave at Woundfall, the largest surviving section of _Eschaton’s Mercy_ and the probable center of the planetary lock.
+The final act combines the old Woundfall pilgrimage and the final confrontation with Father Vale. After the Devil manifestation, the story should move with force toward the source of the lock.
 
-The journey should feel like a dark pilgrimage.
+The player reaches Woundfall through the consequences of the Act III faction path. A Remnant route becomes a crusade, a Compact route becomes an armed expedition, a Free City route becomes a desperate coalition, and a Choir route becomes a pilgrimage into the wound.
 
-The player crosses dead highways, ash farms, abandoned orbital defense sites, Host battlefields from the Bloom Years, refugee columns, cartel ambushes, Penitent Engine war camps, Remnant crusade lines, Compact forward laboratories, and Choir processions walking barefoot into contamination.
+Inside the Nave, the player finds Sorell calcified into the lock network, fused to the walls and unable to move. Sorell is alive enough to speak, bargain, suffer, and defend the system through automations, machine-choir routines, and Host structures.
 
-Woundfall itself is a massive explorable region. It is not simply a dungeon. It is a landscape of crashed starship architecture fused with dormant Host growth. Half-buried corridors lead into open wasteland. Old chapels hang upside down. Airlocks open into forests of bone. The ship’s PA system still plays fragments of distress hymns. Gravity plating malfunctions in pockets. Some rooms are preserved exactly as they were during the Descent, as if time inside them stopped.
+Father Vale is there with Sorell. The chamber is also a torture room. Sorell trapped the Host inside Vale's fear and made that fear into the Stilling lock. That act saved humanity. It also made Vale's private Hell eternal. Vale is lucid enough to know what Sorell did, and he has been torturing Sorell for it.
 
-Inside the Nave, the player discovers the truth of the Stilling.
+Vale wants the Stilling broken because the lock is also his prison. Sorell wants it preserved because without it the Host may Bloom again. Both are right about something. Neither is clean.
 
-Dr. Elian Sorell survived the crash, but not as an ordinary human. During the Bloom Years, Sorell became partially integrated with the Host while retaining enough identity to understand its growth. Sorell realized that the Vale Imprint, horrific as it was, gave the Host a limited symbolic structure. As long as the Host remained trapped inside Vale’s Hell, it could be contained, predicted, and slowed.
+The final choice turns on who the player sides with and what factional preparation they brought to Woundfall.
 
-Without the Imprint, the organism might expand beyond human comprehension.
+- Side with Vale and fight Sorell's automations to free the First Icon.
+- Side with Sorell or the lock and fight Vale's monstrous form to restore containment.
+- Restore the lock through Remnant fire doctrine, Compact cure research, Free City coalition sacrifice, Penitent discipline, or another prepared solution.
+- Kill both and risk partial collapse, brutal lock renewal, or the cult's victory after its leaders are gone.
+- Attempt a new imprint and seek a path toward the Europa ending.
 
-Sorell used old Ecclesiate satellites, machine choirs, orbital mirrors, confession networks, and infected tissue relays to reinforce the Vale Imprint across Earth. The Stilling occurred when the Host was locked into a recursive pattern: Hell repeating Hell, unable to learn a larger language. A Host that can only replay one fixed nightmare cannot adapt to each new mind the way the Bloom did, and an organism that cannot adapt cannot chain. Infection still passes by touch, blood, and contaminated relics, but it stops feeding forward into runaway growth. That, not any saint's death, is why the Bloom ended, and why a bitten traveler today no longer becomes a burning district.
-
-The world survived because the Host was imprisoned inside one priest’s nightmare.
-
-But the lock is failing because something beneath Europa has begun transmitting again.
-
-The organism under the ice was not dead.
-
-It was not fully present on Earth.
-
-And now it is calling its wounded fragment home.
+The endings remain factional, but the emotional center is this chamber: Sorell did something unforgivable that saved the world, and Vale wants freedom from a Hell that everyone else may need to survive.
 
 ---
-
-## Act V: The Priest and the Ocean
-
-The final act can branch depending on the desired scale of the game.
-
-The player may remain on Earth and decide the fate of the planetary lock, or the story may escalate toward Europa through old launch systems, orbital debris colonies, and abandoned pilgrimage ships.
-
-At the center is the question of Father Vale.
-
-His original transformed body, **the First Icon**, may still exist inside the deepest part of Woundfall, fused into the remains of _Eschaton’s Mercy_. The Remnant claims he was destroyed. The Choir claims he sleeps. The Compact believes only fragments remain. Sorell’s archive suggests Vale’s body is not the lock, but the key that gave the lock its shape.
-
-Finding the First Icon should be one of the game’s most disturbing sequences.
-
-Vale is not a final boss in the simple sense. He is a ruined person, an alien relay, a saint, a victim, a monster, a weapon, and a prison. He may speak lucidly for moments. He may beg the player to kill him. He may insist that Hell is real. He may admit he no longer knows which thoughts are his.
-
-#### One hundred and thirty years in his own nightmare
-
-This is the heart of what makes Vale unbearable, and it should be written that way.
-
-The Vale Imprint is not an abstraction. It is **his** Hell — the specific terror of damnation drilled into one frightened priest — and when the organism froze into the Stilling, it froze around him with the lights still on. Vale did not die at Saint Origen and he did not get to stop being Vale. He has spent **one hundred and thirty years awake, or half-awake, fused into the wreck at Woundfall, living inside the exact nightmare he feared most** — eternal punishment, endless judgment, a Hell with no door — except it is real now, it is made of his own body, and it never, ever ends. No mind survives that intact. His did not.
-
-Worse: he is the **relay**. For over a century, every confession whispered into a contaminated reliquary, every prayer of the dying, every transformation across Earth has passed *through him*. He has heard it all. So when the player finally reaches him, Vale is not an innocent who slept through history — he has been a helpless, horrified **witness** to the world his nightmare built. He has felt the Holy Remnant burn frightened families in his name. He has heard them teach that he is the Devil, and heard them teach that he is a saint, and known both are lies told to keep people kneeling. He learned the cruelty of the Church the slow way: one screamed confession at a time, for a hundred and thirty years, unable to answer or refuse.
-
-Talking to him should oscillate, sometimes mid-sentence, between three registers:
-
-- **The man.** Lucid, exhausted flashes of who he was: ordinary, ashamed, gentle, apologetic. He blames himself for all of it ("it came out of *me*"), begs to be killed, and — having heard everything through the network — quietly warns the player about the Remnant and the lie of the Mercy of the Last Dawn. This is the version that earns pity.
-- **The demon.** The raving Hell-saint: grandiose, hostile, speaking in the voices of the dead and of people the player knows, blessing and damning in the same breath, insisting Hell is literal and he is its first opened saint. This is the version that is a genuine boss and will kill you.
-- **The blur.** The true horror — he can no longer tell which one he is. The gentle man dissolves into the monster and back again, and he knows it is happening, and cannot stop it. He is not possessed by the Host so much as *no longer separable from it*.
-
-He should never be a clean villain or a clean victim. The player should want to free him and fear him at once — and the choice of whether to kill him, preserve him as the lock's keystone, free him, or speak with him long enough to learn the truth is exactly what branches the ending.
-
-The player must decide what to do with the Host, the Vale Imprint, and the failing lock.
-
-Possible endings include:
-
-### The Fire Ending
-
-The player helps the Holy Remnant activate the Spear of Dawn or another ancient weapon to burn Woundfall and major Host sites. The second Bloom is delayed or prevented, but countless infected, Bloomborn, prisoners, and civilians die. The Remnant emerges as the dominant power and begins forced reunification of Earth.
-
-Humanity survives under bells and fire.
-
-### The Cure Ending
-
-The player helps the Lumen Compact stabilize a treatment derived from Sorell’s work. The cure suppresses early infection and may reverse some Stage Two cases, but it cannot save Stage Three Icons. The Compact gains immense influence. Host activity decreases, but the signal from Europa remains unresolved.
-
-Humanity survives through knowledge and compromise, with many bodies left outside the definition of saved.
-
-### The Open Wound Ending
-
-The player sides with or fails to stop the Choir. The lock breaks. The Host begins a second Bloom, but this time the transformation is stranger. The Vale Imprint weakens. Some people become Hell-forms. Others become alien geometries, impossible ecosystems, or new modes of consciousness. Civilization collapses further, but something new is born.
-
-Humanity does not survive unchanged.
-
-### The Lock Renewed Ending
-
-The player sacrifices the First Icon, Sorell, a companion, or themselves to reinforce the Vale Imprint and maintain the Stilling. The world remains broken but stable. Cities endure. The Host remains trapped in Hell’s shape. Future generations may get another chance.
-
-Humanity survives by preserving a nightmare.
-
-### The Europa Ending
-
-The player reaches or contacts Europa and discovers the source organism beneath the ice. It is not demonic. It is not innocent. It is a vast alien ecology or intelligence that never understood what its Earth fragment became. The player may sever the connection, communicate with it, destroy the relay, or invite a new imprint that could overwrite Vale’s Hell.
-
-Humanity survives only if it dares first contact again, this time without a priest’s fear as the first language.
-
----
-
 # Companion Concepts
 
 ## Sister Ilyra Voss

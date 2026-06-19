@@ -3,7 +3,7 @@
   "title": "The Ash Chapel",
   "initialStage": "active",
   "objectives": [
-    { "text": "Search the chapel. Learn who they are and what they preach.", "stage": "evidence-found" },
+    { "text": "Search the chapel settlement. Learn who they are and what they preach.", "stage": "evidence-found" },
     { "text": "Break the cult that has taken the chapel.", "stage": "complete" },
     { "text": "Follow the road to the Hallowfen wall.", "lead": true, "reveal": "evidence-found" }
   ],
@@ -11,12 +11,12 @@
     {
       "id": "active",
       "task": "Investigate the cult",
-      "description": "A cult has taken the quarantine chapel on the Hallowfen road. Find out who they are and what they want."
+      "description": "A settlement inside an old quarantine chapel on the Hallowfen road has gone quiet. Find out who took it and what they want."
     },
     {
       "id": "evidence-found",
       "task": "Eliminate the cult",
-      "description": "Their own ledger names them the Choir of the Open Wound, a cult no Censure file has ever recorded, and marks the Hallowfen wall as their next ground."
+      "description": "Their own ledger names them the Choir of the Open Wound, a cult no Censure file has ever recorded. It says they kept settlement guards for opening and moved the families before you arrived."
     },
     {
       "id": "rite-found",
