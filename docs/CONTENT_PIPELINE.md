@@ -164,6 +164,11 @@ Rules:
   pull. If omitted, the spawn gets its own encounter.
 - Enemy spawns can define `ambient` as short overheard lines. These draw as
   subtitles above the NPC during exploration when the player is nearby.
+- Enemy spawns can define `dialogue` to make a living enemy talkable in explore
+  mode. The id must also appear in the level `dialogue` list so the loader brings
+  the scene in. Optional `talkRadius` controls manual E/Enter reach, and optional
+  `dialogueTriggerRadius` opens the dialogue automatically when the player steps
+  close enough. Use `aggroRadius: 0` when dialogue should happen before combat.
 - `combatTriggers` defines authored trigger zones. Each trigger should name an
   `encounter`, use grid coordinates, set a `radius`, and include short `intro`
   lines. Combat only activates living enemies in that encounter.
@@ -181,6 +186,18 @@ Rules:
       "path": "./data/levels/ash_chapel_cellar.json",
       "player": { "x": 12, "y": 13 }
     }
+  }
+}
+```
+
+- Dialogue choice effects can use `startCombat` to begin a named encounter from
+  dialogue:
+
+```json
+{
+  "effects": {
+    "log": "The entrance Choir spread apart and come at you.",
+    "startCombat": "entrance-catechism"
   }
 }
 ```
@@ -322,7 +339,7 @@ Rules:
 
 - `id`, `title`, `nodes`, and `nodes.start` are required.
 - Each node needs a non-empty `lines` array.
-- A node may have one or two choices. Number keys `1` and `2` choose them.
+- A node may have one to five choices. Number keys `1` through `5` choose them.
 - Choice `effects` can log text, teleport the player within a level, load
   another level, and update a quest.
 

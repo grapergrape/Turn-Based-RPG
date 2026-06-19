@@ -19,6 +19,7 @@ import { IsometricRenderer } from '../render/IsometricRenderer.js';
 import { bakeMara } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
 import { DEBUG_GRID_DEFAULT, VIEWPORT_HEIGHT } from '../render/renderConfig.js';
+import { DIALOGUE_MAX_CHOICES, buildDialogueLayout } from '../ui/dialogueLayout.js';
 
 const STEP_DURATION = 0.64;
 const ENEMY_ACTION_DELAY = 0.2;
@@ -82,18 +83,20 @@ const OBJECT_NAMES = {
 };
 
 export class Game {
-  constructor({ canvas, levelPath, atlas, statusElement }) {
+  constructor({ canvas, levelPath, atlas, statusElement, bootOptions = {}, debugGrid = null }) {
     this.canvas = canvas;
     this.levelPath = levelPath;
     this.atlas = atlas;
     this.statusElement = statusElement;
+    this.startupOptions = { ...bootOptions };
 
     this.input = new Input(canvas);
     this.renderer = new IsometricRenderer(canvas, atlas);
     this.combat = new CombatSystem();
     this.turnManager = new TurnManager();
 
-    this.debugGrid = DEBUG_GRID_DEFAULT;
+    this.debugGridDefault = debugGrid ?? DEBUG_GRID_DEFAULT;
+    this.debugGrid = this.debugGridDefault;
     this.introSeen = false; // the opening writ shows once per session, not on R
     this.levelStateByPath = new Map();
     this.loop = new GameLoop({
@@ -108,17 +111,21 @@ export class Game {
   // (Re)load the level and reset runtime state. Level transitions preserve the
   // run state; restarts intentionally start clean.
   async boot(options = {}) {
+    const bootOptions = this.#bootOptions(options);
     this.ready = false;
-    if (!options.preserveRun) this.levelStateByPath = new Map();
+    if (!bootOptions.preserveRun) {
+      this.levelStateByPath = new Map();
+      this.debugGrid = this.debugGridDefault;
+    }
 
-    const previousInventory = options.preserveRun ? this.inventory : null;
-    const previousQuestStages = options.preserveRun && this.questStages
+    const previousInventory = bootOptions.preserveRun ? this.inventory : null;
+    const previousQuestStages = bootOptions.preserveRun && this.questStages
       ? new Map(this.questStages)
       : null;
-    const previousFlags = options.preserveRun && this.flags
+    const previousFlags = bootOptions.preserveRun && this.flags
       ? new Set(this.flags)
       : null;
-    const previousPlayer = options.preserveRun && this.player
+    const previousPlayer = bootOptions.preserveRun && this.player
       ? { hp: this.player.hp, maxHp: this.player.maxHp }
       : null;
 
@@ -127,6 +134,7 @@ export class Game {
     this.grid = level.grid;
     this.player = level.player;
     this.enemies = level.enemies;
+    if (bootOptions.noCombat) this.enemies = [];
     if (previousPlayer) {
       const hpRatio = previousPlayer.maxHp > 0 ? previousPlayer.hp / previousPlayer.maxHp : 1;
       this.player.hp = Math.max(1, Math.min(this.player.maxHp, Math.round(this.player.maxHp * hpRatio)));
@@ -189,7 +197,7 @@ export class Game {
     this.actionTimer = 0;
 
     this.#restoreLevelState();
-    if (options.player) this.#teleportPlayer(options.player);
+    if (bootOptions.player) this.#teleportPlayer(bootOptions.player);
     this.renderer.rebuildStaticScene({ grid: this.grid, props: this.level.props, mood: this.level.mood });
 
     this.areaTitle = level.name;
@@ -197,10 +205,11 @@ export class Game {
     this.#log(level.intro || level.name);
     this.#startQuests(previousQuestStages);
     this.#log('Explore the chapel. E inspect, I pack, H bind wounds.');
+    if (bootOptions.skipIntro) this.introSeen = true;
 
     // The opening writ plays once, on a fresh start (not on level transitions
     // or R restarts), before the player is dropped into the chapel.
-    if (!this.introSeen && !options.preserveRun && Array.isArray(level.briefing) && level.briefing.length) {
+    if (!this.introSeen && !bootOptions.preserveRun && Array.isArray(level.briefing) && level.briefing.length) {
       this.mode = 'intro';
       this.briefing = level.briefing;
       this.briefingTitle = level.briefingTitle ?? 'FIELD WRIT';
@@ -215,6 +224,16 @@ export class Game {
 
   get actors() {
     return [this.player, ...this.enemies];
+  }
+
+  #bootOptions(options) {
+    if (options.preserveRun) {
+      return {
+        noCombat: this.startupOptions.noCombat,
+        ...options
+      };
+    }
+    return { ...this.startupOptions, ...options };
   }
 
   // ---- Main update -------------------------------------------------------
@@ -336,6 +355,12 @@ export class Game {
   }
 
   #doInteract() {
+    const talker = this.#talkableEnemyInReach();
+    if (talker) {
+      this.#openEnemyDialogue(talker);
+      return;
+    }
+
     const object = this.interactions.findInReach(this.player);
     if (!object) {
       const corpse = this.#inspectableCorpseInReach();
@@ -501,15 +526,14 @@ export class Game {
   #openDialogue(title, lines, kind = 'inspect') {
     const cleanLines = [].concat(lines ?? []).filter(Boolean);
     if (cleanLines.length === 0) return;
-    this.uiScreen = 'dialogue';
-    this.dialogue = {
+    this.#setDialogueState({
       title,
       kind,
       lines: cleanLines,
       choices: [],
       scroll: 0,
       options: ['ENTER CLOSE', 'ESC CLOSE']
-    };
+    });
   }
 
   #openDialogueById(dialogueId, nodeId = 'start') {
@@ -542,20 +566,33 @@ export class Game {
       for (const flag of [].concat(node.effects.setFlag)) this.flags.add(flag);
     }
     const lines = [].concat(node.lines ?? node.text ?? []).filter(Boolean);
-    const choices = (node.choices ?? []).slice(0, 2);
-    this.uiScreen = 'dialogue';
-    this.dialogue = {
+    const choices = (node.choices ?? []).slice(0, DIALOGUE_MAX_CHOICES);
+    this.#setDialogueState({
       id: definition.id,
       nodeId,
       title: node.title ?? definition.title ?? 'Inspect',
       kind: 'dialogue',
       lines,
       choices,
+      mustChoose: Boolean(definition.mustChoose || node.mustChoose),
       scroll: 0,
       options: choices.length > 0
-        ? choices.map((choice, index) => `${index + 1} ${choice.label}`)
+        ? choices.map((choice, index) => `${index + 1}. ${choice.label}`)
         : ['ENTER CLOSE', 'ESC CLOSE']
-    };
+    });
+  }
+
+  #setDialogueState(dialogue) {
+    this.uiScreen = 'dialogue';
+    this.dialogue = dialogue;
+    this.#syncDialogueLayout();
+  }
+
+  #syncDialogueLayout() {
+    if (!this.dialogue) return;
+    const layout = buildDialogueLayout(this.dialogue);
+    this.dialogue.scroll = layout.scroll;
+    this.dialogue.maxScroll = layout.maxScroll;
   }
 
   // True when every flag and quest-stage a dialogue node requires is satisfied.
@@ -572,34 +609,44 @@ export class Game {
 
   #handleDialogueScreen(actions) {
     const choices = this.dialogue?.choices ?? [];
+    this.#syncDialogueLayout();
     for (const action of actions) {
       if (action === 'up') {
         this.dialogue.scroll = Math.max(0, (this.dialogue.scroll ?? 0) - 1);
+        this.#syncDialogueLayout();
         continue;
       }
       if (action === 'down') {
         this.dialogue.scroll = Math.min(this.dialogue.maxScroll ?? 0, (this.dialogue.scroll ?? 0) + 1);
+        this.#syncDialogueLayout();
         continue;
       }
       if (choices.length > 0) {
-        // 1 / melee, or Enter / Space / E, all take the first (default) option;
-        // 2 / sidearm takes the second. Destructive choices are authored second
-        // so the forgiving default key never triggers them by accident.
-        if (action === 'melee' || action === 'confirm' || action === 'interact') {
+        const choiceIndex = this.#dialogueChoiceIndex(action);
+        if (choiceIndex !== null) {
+          this.#chooseDialogueOption(choiceIndex);
+          return;
+        }
+        if (action === 'confirm' || action === 'interact') {
           this.#chooseDialogueOption(0);
           return;
         }
-        if (action === 'sidearm') {
-          this.#chooseDialogueOption(1);
-          return;
-        }
-        if (action === 'cancel') {
+        if (action === 'cancel' && !this.dialogue?.mustChoose) {
           this.#closeUiScreen();
           return;
         }
       } else if (action === 'cancel' || action === 'confirm' || action === 'interact') {
         this.#closeUiScreen();
         return;
+      }
+
+      if (this.dialogue?.mustChoose && choices.length > 0) {
+        if (action === 'restart') {
+          this.boot();
+          return;
+        }
+        if (action === 'debug') this.debugGrid = !this.debugGrid;
+        continue;
       }
 
       if (action === 'inventory') {
@@ -616,6 +663,11 @@ export class Game {
       }
       if (action === 'debug') this.debugGrid = !this.debugGrid;
     }
+  }
+
+  #dialogueChoiceIndex(action) {
+    const choiceKeys = { melee: 0, sidearm: 1, choice3: 2, choice4: 3, choice5: 4 };
+    return choiceKeys[action] ?? null;
   }
 
   #chooseDialogueOption(index) {
@@ -638,6 +690,13 @@ export class Game {
     this.#applyQuestUpdate(effects.questUpdate);
     if (effects.kill) this.#silenceProp(effects.kill);
     if (effects.teleport) this.#teleportPlayer(effects.teleport);
+    if (effects.startCombat) {
+      const start = effects.startCombat;
+      const encounter = typeof start === 'string' ? start : start.encounter;
+      this.#closeUiScreen();
+      this.#startCombat(encounter ?? true, { fromAltar: Boolean(start.fromAltar) });
+      return true;
+    }
     if (effects.loadLevel) {
       void this.#transitionLevel(effects.loadLevel);
       return true;
@@ -913,7 +972,7 @@ export class Game {
     this.#log('Combat begins.');
     const introLines = this.#encounterIntro(resolvedEncounter).length
       ? this.#encounterIntro(resolvedEncounter)
-      : this.#livingEnemies().map((enemy) => `${enemy.name} advances.`);
+      : combatants.map((enemy) => `${enemy.name} advances.`);
     for (const line of introLines) this.#log(line);
   }
 
@@ -1035,6 +1094,12 @@ export class Game {
   }
 
   #checkCombatProximity() {
+    const speaker = this.#triggeredDialogueEnemy();
+    if (speaker) {
+      this.#openEnemyDialogue(speaker);
+      return;
+    }
+
     for (const trigger of this.level.combatTriggers ?? []) {
       const encounterId = this.#resolveEncounterId(trigger.encounter ?? trigger.id);
       if (this.clearedEncounters.has(encounterId)) continue;
@@ -1423,6 +1488,49 @@ export class Game {
     return best;
   }
 
+  #talkableEnemyInReach() {
+    let best = null;
+    let bestDist = Infinity;
+    for (const enemy of this.enemies) {
+      if (enemy.isDead || !enemy.dialogue) continue;
+      if (enemy.dialogueSeen && !enemy.dialogueRepeat) continue;
+      const reach = enemy.talkRadius ?? 1;
+      if (chebyshev(this.player.position, enemy.position) > reach) continue;
+      const dist = manhattan(this.player.position, enemy.position);
+      if (dist < bestDist) {
+        best = enemy;
+        bestDist = dist;
+      }
+    }
+    return best;
+  }
+
+  #triggeredDialogueEnemy() {
+    let best = null;
+    let bestDist = Infinity;
+    for (const enemy of this.enemies) {
+      if (enemy.isDead || !enemy.dialogue || enemy.dialogueTriggerRadius == null) continue;
+      if (enemy.dialogueSeen && !enemy.dialogueRepeat) continue;
+      const encounterId = this.#resolveEncounterId(enemy.encounter);
+      if (this.clearedEncounters.has(encounterId)) continue;
+      const dist = manhattan(this.player.position, enemy.position);
+      if (dist > enemy.dialogueTriggerRadius || dist >= bestDist) continue;
+      best = enemy;
+      bestDist = dist;
+    }
+    return best;
+  }
+
+  #openEnemyDialogue(enemy) {
+    if (!enemy?.dialogue) return;
+    enemy.dialogueSeen = true;
+    enemy.speech = null;
+    this.pathQueue = [];
+    this.#faceToward(this.player, enemy.position);
+    this.#faceToward(enemy, this.player.position);
+    this.#openDialogueById(enemy.dialogue);
+  }
+
   #objectAtCell(cell) {
     const interactable = this.level.interactables.find((object) => object.x === cell.x && object.y === cell.y);
     if (interactable) return interactable;
@@ -1450,8 +1558,8 @@ export class Game {
       return { x: mouse.x, y: mouse.y, state: 'talk', text: `TALK: ${actor.name}` };
     }
     if (actor) {
-      const state = this.mode === 'combat' ? 'attack' : 'inspect';
-      const verb = this.mode === 'combat' ? 'ATTACK' : 'LOOK';
+      const state = this.mode === 'combat' ? 'attack' : actor.dialogue ? 'talk' : 'inspect';
+      const verb = this.mode === 'combat' ? 'ATTACK' : actor.dialogue ? 'TALK' : 'LOOK';
       return { x: mouse.x, y: mouse.y, state, text: `${verb}: ${actor.name}` };
     }
 
@@ -1502,7 +1610,11 @@ export class Game {
     if (this.uiScreen === 'inventory') {
       controls = ['Up/Dn Select', 'Left/Right Panel', '1/Enter Equip', '2 Remove', 'H Dress', 'Esc Close'];
     } else if (this.uiScreen === 'dialogue' && this.dialogue?.choices?.length) {
-      controls = ['1/2 or Enter Choose', 'Esc Close', 'I Pack'];
+      const choiceMax = Math.min(this.dialogue.choices.length, DIALOGUE_MAX_CHOICES);
+      const choiceHelp = choiceMax === 1 ? '1 Choose' : `1 TO ${choiceMax} Choose`;
+      controls = this.dialogue.mustChoose
+        ? [choiceHelp, 'Enter First']
+        : [choiceHelp, 'Enter First', 'Esc Close', 'I Pack'];
     } else if (this.uiScreen === 'dialogue') {
       controls = ['Enter Close', 'Esc Close', 'I Pack'];
     } else if (this.mode === 'combat') {

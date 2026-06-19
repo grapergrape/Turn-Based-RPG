@@ -2,10 +2,9 @@
 // upscaling, create the Game, load the level, and start the loop.
 
 import { Game } from './core/Game.js';
+import { resolveDevStart } from './core/DevStart.js';
 import { buildSpriteAtlas } from './render/SpriteAtlas.js';
 import { INTERNAL_WIDTH, INTERNAL_HEIGHT } from './render/renderConfig.js';
-
-const LEVEL_PATH = './data/levels/ash_chapel_breach.json';
 
 // Keep the backing store at the fixed internal resolution and scale up via CSS
 // using whole-number factors so every pixel stays square.
@@ -31,7 +30,15 @@ async function start() {
   window.addEventListener('resize', () => fitCanvas(canvas));
 
   const atlas = buildSpriteAtlas();
-  const game = new Game({ canvas, levelPath: LEVEL_PATH, atlas, statusElement });
+  const devStart = resolveDevStart(window.location);
+  const game = new Game({
+    canvas,
+    levelPath: devStart.levelPath,
+    atlas,
+    statusElement,
+    bootOptions: devStart.bootOptions,
+    debugGrid: devStart.debugGrid
+  });
   await game.boot();
   game.start();
 }

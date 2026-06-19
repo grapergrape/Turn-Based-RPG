@@ -34,6 +34,20 @@ Then open:
 http://127.0.0.1:8080
 ```
 
+Developer jump URLs can load a specific area without walking the full route:
+
+```text
+http://127.0.0.1:8080/?level=catacombs&x=20&y=33&grid=1
+http://127.0.0.1:8080/?level=basement&x=18&y=4
+http://127.0.0.1:8080/?level=chapel&x=20&y=8&noCombat=1
+```
+
+Available aliases: `chapel`, `basement` or `cellar`, and `catacombs`. You can
+also pass a level JSON path, for example `?level=data/levels/ash_chapel_catacombs.json`.
+Dev jumps skip the opening writ by default. Add `&intro=1` to view it, `&grid=1`
+to show coordinates, and `&noCombat=1` or `&enemies=0` to suppress enemy spawns.
+Pressing `R` restarts back into the same dev jump.
+
 Run basic repository/content checks:
 
 ```bash

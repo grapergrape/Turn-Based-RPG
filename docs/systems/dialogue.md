@@ -1,7 +1,7 @@
 # Dialogue System
 
 The first runtime dialogue pass exists for the Ash Chapel slice. It supports
-short readout scenes, one or two numbered choices, log effects, quest-stage
+short readout scenes, up to five numbered choices, log effects, quest-stage
 updates, simple same-level teleport effects, and `loadLevel` effects for secret
 entrances that move to a separate JSON level. Story and dialogue authoring
 should still start in `docs/story/story-dialogue-workflow.md` before moving

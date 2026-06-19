@@ -8,12 +8,18 @@
 import { PALETTE } from './palette.js';
 import { UI_PANEL, VIEWPORT } from './renderConfig.js';
 import { getFrame } from './SpriteAtlas.js';
+import {
+  DIALOGUE_BOX,
+  DIALOGUE_LINE_HEIGHT,
+  DIALOGUE_OPTION_LINE_HEIGHT,
+  buildDialogueLayout,
+  wrapUiText
+} from '../ui/dialogueLayout.js';
 
 const LOG_BOX = { x: 8, y: UI_PANEL.y + 7, w: 328, h: UI_PANEL.height - 14 };
 const STATUS_BOX = { x: 342, y: UI_PANEL.y + 7, w: 138, h: UI_PANEL.height - 14 };
 const COMMAND_BOX = { x: 486, y: UI_PANEL.y + 7, w: 146, h: UI_PANEL.height - 14 };
 const INVENTORY_BOX = { x: 54, y: 42, w: 532, h: 296 };
-const DIALOGUE_BOX = { x: 36, y: 188, w: 568, h: 184 };
 
 const FONT = {
   A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
@@ -87,9 +93,8 @@ export class UIRenderer {
     ctx.imageSmoothingEnabled = false;
 
     if (ui.screen === 'inventory') this.#drawInventory(ctx, ui);
-    if (ui.screen === 'dialogue') this.#drawDialogue(ctx, ui);
-
     this.#drawHud(ctx, ui);
+    if (ui.screen === 'dialogue') this.#drawDialogue(ctx, ui);
     if (ui.areaTitle && !ui.screen) this.#drawAreaTitle(ctx, ui.areaTitle);
     if (ui.hoverText && !ui.screen) this.#drawHoverText(ctx, ui.hoverText);
     this.#drawCursor(ctx, ui.cursor);
@@ -346,43 +351,25 @@ export class UIRenderer {
 
   #drawDialogue(ctx, ui) {
     const dialogue = ui.dialogue ?? { title: 'INSPECT', lines: [] };
+    const layout = buildDialogueLayout(dialogue);
+    const { body, responseBox, scroll, maxScroll } = layout;
+    this.#screenBackdrop(ctx, true);
     this.#window(ctx, DIALOGUE_BOX, dialogue.title ?? 'INSPECT');
-    const body = { x: DIALOGUE_BOX.x + 14, y: DIALOGUE_BOX.y + 26, w: DIALOGUE_BOX.w - 28, h: DIALOGUE_BOX.h - 58 };
     this.#inset(ctx, body);
 
-    // Wrap every paragraph (keeping blank-line breaks between them) so the whole
-    // script is available, then show a scrollable window of it.
-    const maxChars = Math.floor((body.w - 16) / 6);
-    const all = [];
-    for (const para of dialogue.lines ?? []) {
-      if (all.length) all.push('');
-      all.push(...this.#wrap(para, maxChars));
-    }
-    const lineH = 10;
-    const visible = Math.max(1, Math.floor((body.h - 14) / lineH));
-    const maxScroll = Math.max(0, all.length - visible);
-    const scroll = Math.max(0, Math.min(dialogue.scroll ?? 0, maxScroll));
-    // Write the clamped values back so Game's input handler knows the bounds.
-    dialogue.scroll = scroll;
-    dialogue.maxScroll = maxScroll;
-
     let y = body.y + 8;
-    for (const line of all.slice(scroll, scroll + visible)) {
+    for (const line of layout.lines) {
       this.#text(ctx, line, body.x + 8, y, PALETTE.uiText);
-      y += lineH;
+      y += DIALOGUE_LINE_HEIGHT;
     }
     if (scroll > 0) this.#scrollArrow(ctx, body.x + body.w - 12, body.y + 7, -1, PALETTE.uiBorderLight);
     if (scroll < maxScroll) this.#scrollArrow(ctx, body.x + body.w - 12, body.y + body.h - 11, 1, PALETTE.uiWarn);
 
-    const options = dialogue.options ?? ['ENTER CLOSE'];
-    let ox = DIALOGUE_BOX.x + 14;
-    for (const option of options) {
-      this.#text(ctx, `[${option}]`, ox, DIALOGUE_BOX.y + DIALOGUE_BOX.h - 20, PALETTE.uiGood);
-      ox += this.#textWidth(`[${option}]`) + 14;
-    }
-    if (maxScroll > 0) {
-      const hint = 'UP/DN SCROLL';
-      this.#text(ctx, hint, DIALOGUE_BOX.x + DIALOGUE_BOX.w - this.#textWidth(hint) - 14, DIALOGUE_BOX.y + DIALOGUE_BOX.h - 20, PALETTE.uiDim);
+    this.#inset(ctx, responseBox);
+    y = responseBox.y + 7;
+    for (const option of layout.options) {
+      this.#text(ctx, option, responseBox.x + 8, y, PALETTE.uiGood);
+      y += DIALOGUE_OPTION_LINE_HEIGHT;
     }
   }
 
@@ -484,8 +471,9 @@ export class UIRenderer {
     }
   }
 
-  #screenBackdrop(ctx) {
-    for (let y = 0; y < VIEWPORT.height; y += 2) {
+  #screenBackdrop(ctx, fullScreen = false) {
+    const h = fullScreen ? ctx.canvas.height : VIEWPORT.height;
+    for (let y = 0; y < h; y += 2) {
       this.#rect(ctx, 0, y, VIEWPORT.width, 1, 'rgba(5, 5, 5, 0.45)');
     }
   }
@@ -560,26 +548,7 @@ export class UIRenderer {
   }
 
   #wrap(str, maxChars) {
-    const words = this.#normalize(str).split(/\s+/).filter(Boolean);
-    const lines = [];
-    let line = '';
-    for (const word of words) {
-      if (word.length > maxChars) {
-        if (line) lines.push(line);
-        lines.push(word.slice(0, maxChars));
-        line = '';
-        continue;
-      }
-      const next = line ? `${line} ${word}` : word;
-      if (next.length > maxChars) {
-        if (line) lines.push(line);
-        line = word;
-      } else {
-        line = next;
-      }
-    }
-    if (line) lines.push(line);
-    return lines.length > 0 ? lines : [''];
+    return wrapUiText(str, maxChars);
   }
 
   #clip(str, max) {
