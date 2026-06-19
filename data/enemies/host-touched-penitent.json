@@ -3,7 +3,8 @@
   "name": "Host-Touched Penitent",
   "type": "enemy",
   "faction": "the-host",
-  "description": "An early-stage Host victim, a worshipper the rot has bent into a broken kneeling penitent: elongated arms, bone-thorn growths, a shattered halo of bone, and black-gold tissue weeping from a single glowing wound. Slow, but heavier than any raider.",
+  "description": "A Penitent Engine the Host has overgrown. The cult-monks seal themselves in machine to deny the rot any flesh to take, yet this one kneels broken, black-gold veined thin through the gaps in its plating, bone-thorns pushing through and a shattered halo above a cracked vox-grille. Slow, heavier than any raider, and not a thing the roads believed could happen.",
+  "inspect": "ash-chapel-penitent-corpse",
   "stats": {
     "hp": 11,
     "maxHp": 11,
@@ -13,5 +14,5 @@
   "attacks": [
     { "id": "rake", "name": "Thorned Hands", "apCost": 3, "damage": 3, "range": 1 }
   ],
-  "tags": ["host", "vale-imprint", "penitent", "bloomborn"]
+  "tags": ["host", "vale-imprint", "penitent", "penitent-engine"]
 }

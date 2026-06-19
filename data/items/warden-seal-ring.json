@@ -1,0 +1,8 @@
+{
+  "id": "warden-seal-ring",
+  "name": "Warden's Seal Ring",
+  "type": "ring",
+  "weight": 0.1,
+  "equipment": { "slot": "ring" },
+  "description": "The diocese sun-cross worn smooth from turning locks. The quarantine warden used it to seal the hours he kept, the names he struck, and the things he chose not to confess."
+}

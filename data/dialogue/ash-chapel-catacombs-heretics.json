@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-catacombs-heretics",
+  "title": "Warden's Note: the Doubters",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A note cut into the lintel of a long row. Under each niche a question is scratched into the stone, the way another house might carve a name.",
+        "'These asked. Why the Host is called the Devil when no scripture names it so. Why the Stilling held and no saint is given the credit. Why the Pontifex keeps the count and never the cure.'",
+        "'The diocese says doubt is its own contagion, so I treated the loud as I treated the sick. Collar and litany until quiet. They died still asking. The prayer did not close their mouths. I have started to wonder what it means that it would not.'"
+      ]
+    }
+  }
+}

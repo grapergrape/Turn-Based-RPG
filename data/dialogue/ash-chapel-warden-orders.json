@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-warden-orders",
+  "title": "Quarantine House Orders",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A Remnant writ nailed to a board, gone soft with damp. The seal is a sun-cross pressed in red wax, cracked across the middle.",
+        "'Standing Orders, Quarantine House Seventeen. The afflicted are to be collared on arrival and set to the litany. Prayer is to be continuous, kept in shifts, day into night. A body that prays cannot panic, and a body that does not panic opens slower. Wardens will log every hour kept.'",
+        "A later hand has nailed an amendment over the lower third, in fresher ink. 'By order of the diocese, this house will also hold those who trouble the peace of the roads. Doubt is its own contagion. Treat the loud as you treat the sick. They pray until they are quiet.'"
+      ]
+    }
+  }
+}

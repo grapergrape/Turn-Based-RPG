@@ -42,7 +42,7 @@ The Host does not reveal the true self of victims. It condemns victims through V
 
 ### The Descent
 
-The infected vessel _Eschaton's Mercy_ returned toward Earth carrying survivors, samples, archives, contaminated equipment, and Host growth. Earth's defense grid failed to destroy it. The ship broke apart during atmospheric entry, scattering infected debris across the planet.
+The infected vessel _Eschaton's Mercy_ returned toward Earth carrying survivors, samples, archives, contaminated equipment, and Host growth. Earth's defense grid failed to destroy it. The ship broke apart during atmospheric entry, scattering infected debris across the planet. Hallowfen became the first crash scar most survivors later named as the Earthside origin of the Host.
 
 This event is called the Descent.
 
@@ -68,17 +68,21 @@ The central present-tense conflict is not "a new infection starts." It is that e
 
 ### Hallowfen
 
-The opening settlement. Hallowfen sits near the borderlands between Free City territory and old Bloom zones. The player's field squad arrives for what should be a routine outbreak investigation.
+The opening settlement and first major Act I crisis. Hallowfen sits near the borderlands between Free City territory and old Bloom zones, but it is older than the current border. A section of _Eschaton's Mercy_ fell there during the Descent, and the Holy Remnant built a wall around the crash scar. The Remnant calls the site holy ground. Smugglers, gamblers, bandits, failed pilgrims, relic thieves, black-market doctors, and glory hunters call it a way to get rich or die known.
 
-Hallowfen must feel human before it becomes horrific: dinner left on tables, children's drawings, repair invoices, political posters, devotional candles, Compact medicine labels, smuggler marks, and ordinary evidence of interrupted life.
+The bell towers are on the wall checkpoints, not in the town itself. The opening problem is that those checkpoint towers stop answering. The first route in is the canon route: a checkpoint still pretending to be Remnant-held, already captured by a Choir gang. The alternate route is a smuggler tunnel under the wall.
 
-The discovery beneath Hallowfen is the campaign trigger: a blackened _Eschaton's Mercy_ data core that carries Sorell's warning that the Stilling was a lock, the lock is failing, and no one must find the priest.
+Hallowfen must feel human before it becomes horrific, but its human life is a lawless settlement under siege: gambling debts, illegal pumps, market-table beds, cheap relic stalls, smuggler marks, Compact medicine labels, wall graffiti, barricades, and people who entered for fortune but stayed because the wall cuts both ways.
+
+Act I asks what happens to Hallowfen. The player can help its people break the siege, steer attackers away long enough for partial evacuation, or abandon the town. If abandoned, later reports reveal that the Choir crucified the whole town upside down to decorate its new temple-capital at the heart of the holy land.
+
+The discovery beneath Hallowfen still leads into the wider campaign, but not as the first Act I reveal. After Hallowfen's fate is settled, the blackened _Eschaton's Mercy_ data core can carry Sorell's warning that the Stilling was a lock, the lock is failing, and no one must find the priest.
 
 ### Ash Roads
 
-The early-game travel region between Hallowfen, quarantine chapels, small Free City settlements, abandoned suburbs, road shrines, salvage stops, and the outskirts of Veyr's Gate. The Ash Roads introduce practical survival, faction checkpoints, caravan politics, and the first signs that old Host sites are waking.
+The early-game travel region between Hallowfen's wall, quarantine chapels, small Free City settlements, abandoned suburbs, road shrines, salvage stops, and the outskirts of Veyr's Gate. The Ash Roads introduce practical survival, faction checkpoints, caravan politics, and the first signs that old Host sites are waking.
 
-The current playable slice, **Ash Chapel Breach**, fits here as a roadside quarantine chapel encounter. It is not the whole Hallowfen sequence, but it should support the same mood: old faith, failed quarantine, cartel scavenging, and active Host tissue.
+The current playable slice, **Ash Chapel Breach**, fits here as a roadside quarantine chapel encounter. It is not the whole Hallowfen sequence, but it should support the same mood: old faith, failed quarantine, cartel scavenging, captured bells, and active Host tissue.
 
 ### Veyr's Gate
 

@@ -1,0 +1,22 @@
+{
+  "id": "ash-chapel-warden-safe-locked",
+  "title": "Warden's Wall Safe",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "read-warden-journal"
+      },
+      "else": "sealed",
+      "lines": [
+        "An iron strongbox is set into the wall behind the hung saint, stamped with a cracked Remnant sun-cross. The hinges are seized and the keyhole is packed with grit, but the lock is sound.",
+        "It will not give without the warden's key. His journal placed it behind a loose stone, low in the wall of the westmost cell, where they kept the loud ones."
+      ]
+    },
+    "sealed": {
+      "lines": [
+        "An iron strongbox is set into the wall behind the hung saint, stamped with a cracked Remnant sun-cross. The hinges are seized and the keyhole is packed with grit, but the lock is sound.",
+        "It will not give without the warden's key, and the key is not on the lock. He hid it somewhere in the house, and did not trust the wall to remember where."
+      ]
+    }
+  }
+}

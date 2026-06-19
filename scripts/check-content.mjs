@@ -1,10 +1,16 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { getSprite } from '../src/render/spriteCatalog.js';
 
 const root = process.cwd();
 const dataRoot = join(root, 'data');
 const errors = [];
+
+// NOTE: DECAL_KINDS below is a curated scene-density heuristic (ground clutter
+// to keep rooms from looking bare), NOT the renderer's flat-decal set. The
+// authoritative list of renderable kinds and which are flat lives in the sprite
+// catalog (src/render/spriteCatalog.js); kind validity is checked against it.
 
 // Content this slice (Ash Chapel Breach) must contain.
 const MAIN_LEVEL_ID = 'ash-chapel-breach';
@@ -234,7 +240,17 @@ function validateLevel(filePath, data) {
         errors.push(`${name}: object ${object.kind ?? 'unknown'} at (${object.x}, ${object.y}) is out of bounds.`);
       }
     }
+    if (typeof object.kind === 'string' && !getSprite(object.kind)) {
+      errors.push(`${name}: object kind "${object.kind}" at (${object.x}, ${object.y}) is not registered in the sprite catalog.`);
+    }
     validateLoot(name, object.interact?.loot);
+  }
+
+  // Every non-walkable legend block must be a renderable kind in the catalog.
+  for (const [tileChar, def] of Object.entries(data.legend ?? {})) {
+    if (def && def.walkable === false && !getSprite(def.kind)) {
+      errors.push(`${name}: legend "${tileChar}" kind "${def.kind}" is not a renderable block in the sprite catalog.`);
+    }
   }
 
   if (data.id === MAIN_LEVEL_ID) validateAshChapelMain(name, data, enemies, objects);

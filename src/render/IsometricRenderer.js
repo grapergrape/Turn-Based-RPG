@@ -8,27 +8,15 @@
 // effects, a dim screen vignette, and the interface bar.
 
 import { PALETTE } from './palette.js';
-import { RENDER_CONFIG, VIEWPORT, WALL_HEIGHT, TILE_WIDTH, TILE_HEIGHT } from './renderConfig.js';
+import { RENDER_CONFIG, VIEWPORT, TILE_WIDTH, TILE_HEIGHT } from './renderConfig.js';
 import { computeSceneBounds, gridToScreen, screenToGrid, sortKey } from './isoMath.js';
 import * as P from './PixelPrimitives.js';
+import { getSprite, FLAT_KINDS } from './spriteCatalog.js';
 import { UIRenderer } from './UIRenderer.js';
 import { getFrame } from './SpriteAtlas.js';
 
-const FLAT_KINDS = new Set([
-  'road-dust',
-  'blood-stain',
-  'rubble-decal',
-  'glass-debris',
-  'dust',
-  'floor-crack',
-  'scorch-mark',
-  'wax-stain',
-  'paper-scraps',
-  'chalk-drawing',
-  'machine-oil',
-  'blood-sigil',
-  'ritual-circle'
-]);
+// Which `kind`s are flat ground decals vs volumetric props is owned by the
+// sprite catalog (spriteCatalog.js), the single source of truth for all kinds.
 
 export class IsometricRenderer {
   constructor(canvas, atlas) {
@@ -36,7 +24,7 @@ export class IsometricRenderer {
     this.ctx = canvas.getContext('2d');
     this.ctx.imageSmoothingEnabled = false;
     this.atlas = atlas;
-    this.ui = new UIRenderer();
+    this.ui = new UIRenderer(atlas);
 
     this.scene = document.createElement('canvas');
     this.sceneCtx = this.scene.getContext('2d');
@@ -168,7 +156,7 @@ export class IsometricRenderer {
     const player = (state.actors ?? []).find((actor) => actor.type === 'player') ?? null;
 
     for (const prop of this.volumeProps) {
-      const zLayer = prop.kind === 'wall' ? 0 : 2;
+      const zLayer = getSprite(prop.kind)?.layer ?? 2;
       queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
     }
     for (const actor of state.actors ?? []) {
@@ -193,95 +181,11 @@ export class IsometricRenderer {
       ctx.globalAlpha *= alpha;
     }
 
-    switch (prop.kind) {
-      case 'wall':
-        P.drawIsoWallBlock(ctx, s.x, s.y, prop.height ?? WALL_HEIGHT, seed);
-        break;
-      case 'wall-broken':
-        P.drawIsoWallBlock(ctx, s.x, s.y, prop.height ?? Math.round(WALL_HEIGHT * 0.55), seed);
-        break;
-      case 'broken-pew':
-        P.drawBrokenPew(ctx, s.x, s.y, seed);
-        break;
-      case 'rusted-reliquary':
-        P.drawRustedReliquary(ctx, s.x, s.y, seed);
-        break;
-      case 'field-satchel':
-        P.drawFieldSatchel(ctx, s.x, s.y, seed);
-        break;
-      case 'corpse':
-        P.drawCorpseSilhouette(ctx, s.x, s.y, seed);
-        break;
-      case 'quarantine-sign':
-        P.drawQuarantineSign(ctx, s.x, s.y, seed);
-        break;
-      case 'damaged-altar':
-        P.drawDamagedAltar(ctx, s.x, s.y, seed, pulse);
-        break;
-      case 'host-growth':
-        P.drawShadowBlob(ctx, s.x, s.y + 2, 30, 14);
-        P.drawHostGrowth(ctx, s.x, s.y, seed, pulse);
-        break;
-      case 'candle-cluster':
-        P.drawWarmLightPool(ctx, s.x, s.y, seed, flicker);
-        P.drawCandleCluster(ctx, s.x, s.y, seed, flicker);
-        break;
-      case 'rubble-pile':
-        P.drawRubblePile(ctx, s.x, s.y, seed);
-        break;
-      case 'rusted-crate':
-        P.drawRustedCrate(ctx, s.x, s.y, seed);
-        break;
-      case 'campfire':
-        P.drawCampfire(ctx, s.x, s.y, seed, flicker);
-        break;
-      case 'chapel-banner':
-        P.drawChapelBanner(ctx, s.x, s.y, seed);
-        break;
-      case 'broken-bell':
-        P.drawBrokenBell(ctx, s.x, s.y, seed);
-        break;
-      case 'prayer-lectern':
-        P.drawPrayerLectern(ctx, s.x, s.y, seed);
-        break;
-      case 'ritual-bowl':
-        P.drawRitualBowl(ctx, s.x, s.y, seed);
-        break;
-      case 'rusted-barrel':
-        P.drawRustedBarrel(ctx, s.x, s.y, seed, {
-          ladder: prop.interact?.type === 'secret-exit' || prop.interact?.type === 'secret-entrance'
-        });
-        break;
-      case 'cracked-column':
-        P.drawCrackedColumn(ctx, s.x, s.y, seed);
-        break;
-      case 'quarantine-barricade':
-        P.drawQuarantineBarricade(ctx, s.x, s.y, seed);
-        break;
-      case 'loose-flagstone':
-        P.drawLooseFlagstone(ctx, s.x, s.y, seed);
-        break;
-      case 'bone-pile':
-        P.drawBonePile(ctx, s.x, s.y, seed);
-        break;
-      case 'cross-martyr':
-        P.drawCrossMartyr(ctx, s.x, s.y, seed, {
-          pulse,
-          flicker,
-          killed: prop.killed,
-          dim: prop.dim
-        });
-        break;
-      case 'bound-victim':
-        P.drawBoundVictim(ctx, s.x, s.y, seed, {
-          pulse,
-          flicker,
-          killed: prop.killed,
-          dim: prop.dim
-        });
-        break;
-      default:
-        break;
+    // Dispatch through the sprite catalog (single source of truth for kinds).
+    // Flat decals are handled in their own floor pass; skip them here.
+    const entry = getSprite(prop.kind);
+    if (entry && !entry.flat) {
+      entry.draw(ctx, s.x, s.y, seed, { prop, anim, pulse, flicker, player });
     }
 
     if (alpha < 1) ctx.restore();
@@ -302,47 +206,13 @@ export class IsometricRenderer {
 
   #drawFlatDecal(ctx, prop, s) {
     const seed = prop.seed ?? P.hash2D(prop.x + 5, prop.y + 5);
-    switch (prop.kind) {
-      case 'road-dust':
-        P.drawNoisePixels(ctx, s.x - 30, s.y - 11, 60, 22, [PALETTE.stoneDust, PALETTE.stoneMid], 0.1, seed);
-        break;
-      case 'blood-stain':
-        P.drawNoisePixels(ctx, s.x - 18, s.y - 8, 36, 16, [PALETTE.hostRed, PALETTE.rustDark], 0.16, seed);
-        break;
-      case 'rubble-decal':
-        P.drawRubbleCluster(ctx, s.x, s.y, seed, 9);
-        break;
-      case 'glass-debris':
-        P.drawNoisePixels(ctx, s.x - 18, s.y - 8, 36, 16, [PALETTE.hostBone, PALETTE.stoneLight], 0.07, seed);
-        break;
-      case 'floor-crack':
-        P.drawCracks(ctx, s.x, s.y, seed, 5);
-        break;
-      case 'scorch-mark':
-        P.drawScorchMark(ctx, s.x, s.y, seed);
-        break;
-      case 'wax-stain':
-        P.drawWaxStain(ctx, s.x, s.y, seed);
-        break;
-      case 'paper-scraps':
-        P.drawPaperScraps(ctx, s.x, s.y, seed);
-        break;
-      case 'chalk-drawing':
-        P.drawChalkDrawing(ctx, s.x, s.y, seed);
-        break;
-      case 'machine-oil':
-        P.drawMachineOil(ctx, s.x, s.y, seed);
-        break;
-      case 'blood-sigil':
-        P.drawBloodSigil(ctx, s.x, s.y, seed);
-        break;
-      case 'ritual-circle':
-        P.drawRitualCircle(ctx, s.x, s.y, seed);
-        break;
-      case 'dust':
-      default:
-        P.drawNoisePixels(ctx, s.x - 22, s.y - 9, 44, 18, [PALETTE.stoneDust], 0.05, seed);
-        break;
+    // Dispatch through the sprite catalog. `dust` is also the fallback for any
+    // flat kind without its own entry.
+    const entry = getSprite(prop.kind);
+    if (entry && entry.flat) {
+      entry.draw(ctx, s.x, s.y, seed, { prop });
+    } else {
+      P.drawNoisePixels(ctx, s.x - 22, s.y - 9, 44, 18, [PALETTE.stoneDust], 0.05, seed);
     }
   }
 

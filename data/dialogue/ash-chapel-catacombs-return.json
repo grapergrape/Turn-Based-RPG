@@ -1,0 +1,31 @@
+{
+  "id": "ash-chapel-catacombs-return",
+  "title": "Stone Stair Up",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The cut stair climbs back toward the cellar and the grey light of the chapel above. The cold lets go of you slowly."
+      ],
+      "choices": [
+        {
+          "label": "Climb back up",
+          "effects": {
+            "log": "You climb back up out of the galleries.",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_cellar.json",
+              "player": { "x": 3, "y": 6 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay down here",
+          "effects": {
+            "log": "You stay in the dark with the warden's dead."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

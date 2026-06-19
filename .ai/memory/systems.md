@@ -4,6 +4,8 @@
 
 The selected character-sheet direction is **Five Keeps and Seven Virtues**, documented in `docs/systems/progression.md`. It is not implemented in runtime data or source code yet.
 
+**Rendering / prop registry.** Every drawable object `kind` is registered in `src/render/spriteCatalog.js` (the single source of truth: draw function, category, depth layer, flat-vs-block). The renderer (`IsometricRenderer.js`), the flat/volumetric split, and the content validator (`scripts/check-content.mjs`) all read it; there is no per-kind switch. Draw functions live in `PixelPrimitives.js` grouped by category. Wall blocks (`wall`, `wall-broken`) and wall fixtures (`wall-window`, `wall-safe`, `wall-stash`) render at layer 0; fixtures with loot/locks are authored objects on wall cells (tiles cannot carry `interact`). How to add one: `character_creature_art_skill/SKILL.md` Section 8b.
+
 The game should not use SPECIAL, Dungeons & Dragons ability scores, free point-buy attributes, or generic fantasy classes. Character creation should be package-based:
 
 - Origin

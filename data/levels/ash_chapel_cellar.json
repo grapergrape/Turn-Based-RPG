@@ -11,7 +11,11 @@
   "dialogue": [
     "ash-chapel-cellar-corpse",
     "ash-chapel-cellar-ladder",
-    "ash-chapel-cellar-victim"
+    "ash-chapel-cellar-victim",
+    "ash-chapel-cellar-penitents",
+    "ash-chapel-choir-sigil",
+    "ash-chapel-cellar-cross",
+    "ash-chapel-cellar-loose-brick"
   ],
   "mood": {
     "floorShade": "#10161e",
@@ -62,6 +66,32 @@
     "enemies": []
   },
   "objects": [
+    {
+      "kind": "loose-flagstone",
+      "x": 2,
+      "y": 6,
+      "blocking": true,
+      "name": "Loose Brick",
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "ash-chapel-cellar-loose-brick",
+        "log": "A brick sits proud of the cold-wall, low where the old stone has shifted."
+      }
+    },
+    {
+      "kind": "cross-martyr",
+      "x": 18,
+      "y": 3,
+      "blocking": true,
+      "dead": true,
+      "id": "cellar-old-cross",
+      "name": "An Older Saint",
+      "interact": {
+        "type": "shrine",
+        "dialogue": "ash-chapel-cellar-cross",
+        "log": "An older cross, the body on it long dead and calcified, the head opened all the way into a goat-skull."
+      }
+    },
     {
       "kind": "bound-victim",
       "x": 4,
@@ -282,6 +312,61 @@
       "kind": "scorch-mark",
       "x": 14,
       "y": 6
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 9,
+      "y": 1,
+      "blocking": true,
+      "id": "cellar-penitent-row",
+      "name": "The Litany Kept",
+      "ambient": [
+        "The chained pale things do not move. One skull is still bowed over hands fused in prayer."
+      ],
+      "interact": {
+        "type": "shrine",
+        "dialogue": "ash-chapel-cellar-penitents",
+        "log": "A row of prisoners, collared to the wall and calcified mid-prayer, beaten and cut before the cold took them."
+      }
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 13,
+      "y": 1,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 17,
+      "y": 1,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 20,
+      "y": 1,
+      "blocking": true
+    },
+    {
+      "kind": "choir-pentagram",
+      "x": 11,
+      "y": 1,
+      "name": "Wound-Star",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-choir-sigil",
+        "log": "A wound-star is painted fresh and red on the wall above the chained row."
+      }
+    },
+    {
+      "kind": "choir-pentagram",
+      "x": 19,
+      "y": 1
+    },
+    {
+      "kind": "choir-pentagram",
+      "x": 21,
+      "y": 3
     }
   ]
 }

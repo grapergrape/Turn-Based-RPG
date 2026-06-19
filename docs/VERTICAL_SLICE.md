@@ -142,7 +142,7 @@ Must have:
 
 Suggested demo area:
 
-- A quarantined chapel on the road to Hallowfen where a Choir cell has left teachings, a camp, separated cultist groups, and a hidden service cellar.
+- A quarantined chapel on the road to the Hallowfen wall where a Choir cell has left teachings, a camp, separated cultist groups, and a hidden service cellar.
 
 ## Scope traps to avoid
 

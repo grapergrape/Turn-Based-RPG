@@ -16,7 +16,8 @@ export class Entity {
     position = { x: 0, y: 0 },
     tags = [],
     spriteId = null,
-    attacks = []
+    attacks = [],
+    inspect = null
   }) {
     this.id = id;
     this.name = name;
@@ -24,6 +25,8 @@ export class Entity {
     this.faction = faction;
     this.role = role;
     this.background = background;
+    // Dialogue id shown when the player inspects this actor's corpse, if any.
+    this.inspect = inspect;
     this.tags = [...tags];
     this.position = { ...position };
     this.spriteId = spriteId ?? id;

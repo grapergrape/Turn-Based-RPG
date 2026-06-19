@@ -195,30 +195,47 @@ function drawSmallHead(ctx, x, y, meta, pose, style) {
     return;
   }
 
+  // With a hood equipped the crown reads as smoke-dark cloth; bare-headed it is
+  // hair, drawn in the same compact cap so the silhouette stays Mara's. Only the
+  // player uses this branch (enemies are masked/host heads), so the bareHead
+  // path never touches enemy sprites.
+  const bare = Boolean(style.bareHead);
+  const crown = bare ? style.hair : hood;
+  const crownHi = bare ? (style.hairHi ?? style.hair) : hoodHi;
+
   if (meta.view === 'side') {
     taperedSpan(ctx, x + hit, y, 5, 6, 8, skin, side * 0.3);
-    px(ctx, x - 2 + hit, y - 1, hood, 5, 1);
-    px(ctx, x - 3 + hit, y, hood, 6, 1);
-    px(ctx, x - 3 + hit, y + 1, hood, 2, 4);
+    px(ctx, x - 2 + hit, y - 1, crown, 5, 1);
+    px(ctx, x - 3 + hit, y, crown, 6, 1);
+    px(ctx, x - 3 + hit, y + 1, crown, 2, 4);
     px(ctx, x + (side > 0 ? 4 : -1) + hit, y + 4, skin.mid, 2, 2);
     px(ctx, x + (side > 0 ? 2 : 3) + hit, y + 4, skin.dk, 2, 1);
-    px(ctx, x - 1 + hit, y - 1, hoodHi, 2, 1);
+    px(ctx, x - 1 + hit, y - 1, crownHi, 2, 1);
+    if (bare) px(ctx, x + hit, y + 2, skin.hi, 2, 1); // lit temple
     return;
   }
 
   taperedSpan(ctx, x + hit, y, 6, 7, 8, skin);
-  px(ctx, x - 2 + hit, y - 1, hood, 5, 1);
-  px(ctx, x - 3 + hit, y, hood, 7, 1);
-  px(ctx, x - 4 + hit, y + 1, hood, 2, 4);
-  px(ctx, x + 3 + hit, y + 1, hood, 1, 4);
-  px(ctx, x - 1 + hit, y - 1, hoodHi, 2, 1);
+  px(ctx, x - 2 + hit, y - 1, crown, 5, 1);
+  px(ctx, x - 3 + hit, y, crown, 7, 1);
+  px(ctx, x - 4 + hit, y + 1, crown, 2, 4);
+  px(ctx, x + 3 + hit, y + 1, crown, 1, 4);
+  px(ctx, x - 1 + hit, y - 1, crownHi, 2, 1);
   if (meta.back) {
-    px(ctx, x - 3 + hit, y + 2, hood, 6, 6);
+    px(ctx, x - 3 + hit, y + 2, crown, 6, 6);
     return;
   }
   px(ctx, x - 2 + hit, y + 4, skin.dk, 2, 1);
   px(ctx, x + 1 + hit, y + 4, skin.dk, 1, 1);
   px(ctx, x + hit, y + 6, skin.lo, 2, 1);
+  if (bare) {
+    // A brighter brow and cheek so the open face reads as skin, not shadow.
+    px(ctx, x - 1 + hit, y + 2, skin.hi, 3, 1);
+    px(ctx, x - 2 + hit, y + 3, skin.mid, 5, 1);
+  } else {
+    // Hood up: a narrow brow-guard shadow keeps the face in cowl shadow.
+    px(ctx, x - 2 + hit, y + 3, PALETTE.void, 5, 1);
+  }
 }
 
 function drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style) {
@@ -430,10 +447,44 @@ function compose(w, h, drawBody) {
   return canvas;
 }
 
-function drawMaraDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
+// A boiled-leather vest with thin iron plates, worn over the coat. Kept narrow
+// so the coat still shows at the shoulders and below the hem: removing either
+// the coat or the vest visibly changes the figure.
+function drawLeatherVest(ctx, px, c, shoulderY, hipY, meta, torso, vest) {
+  const top = shoulderY + 3;
+  const bot = hipY - 1;
+  const span = Math.max(1, bot - top);
+  const topW = Math.max(5, torso.shoulderW - 4);
+  const botW = Math.max(5, torso.waistW);
+  for (let y = top; y <= bot; y += 1) {
+    const t = (y - top) / span;
+    const w = Math.max(4, Math.round(topW + (botW - topW) * t));
+    const x = c - Math.floor(w / 2);
+    px(ctx, x, y, vest.mid, w, 1);
+    px(ctx, x, y, vest.hi);
+    px(ctx, x + w - 1, y, vest.lo);
+  }
+  // Shoulder straps anchoring the vest.
+  px(ctx, c - Math.floor(torso.shoulderW / 2) + 1, shoulderY + 2, vest.lo, 3, 5);
+  px(ctx, c + Math.floor(torso.shoulderW / 2) - 3, shoulderY + 2, vest.lo, 3, 5);
+  if (meta.back) {
+    px(ctx, c - 1, top, vest.lo, 2, span); // back seam
+    return;
+  }
+  // Two thin iron plates across the chest, plus a laced front seam.
+  px(ctx, c - 4, top + 3, vest.plate, 9, 2);
+  px(ctx, c - 4, top + 3, vest.hi, 9, 1);
+  px(ctx, c - 3, top + 7, vest.plate, 7, 2);
+  px(ctx, c, top + 1, vest.lo, 1, span - 2);
+}
+
+function drawMaraDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso, style }) {
   const side = directionSide(meta);
   const bob = pose.bob ?? 0;
   const c = torso.bodyCx;
+
+  // Equipped body armor sits under the harness/pouches drawn below.
+  if (style.vest) drawLeatherVest(ctx, px, c, shoulderY, hipY, meta, torso, style.vest);
 
   // Low scarf at the neck, not a face-wide red band.
   px(ctx, c - 3, headY + 8 + bob, PALETTE.clothDark, 5, 1);
@@ -453,6 +504,13 @@ function drawMaraDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, 
   const holsterX = c - (meta.side || -1) * 9;
   px(ctx, holsterX, hipY - 8, PALETTE.rustDark, 3, 8);
   px(ctx, holsterX + 1, hipY - 8, PALETTE.rustLight, 1, 3);
+
+  // Equipped trinket: a saint-token on a short chain at the sternum.
+  if (style.pendant && !meta.back) {
+    px(ctx, c, headY + 10 + bob, style.pendant, 1, 4);
+    px(ctx, c - 1, headY + 13 + bob, style.pendant, 3, 3);
+    px(ctx, c, headY + 14 + bob, PALETTE.rustDark, 1, 1);
+  }
 }
 
 function drawCutthroatDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
@@ -622,7 +680,10 @@ function drawChoirDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY,
   px(ctx, c - 9, shoulderY + 5, PALETTE.hostGold, 4, 1);
 }
 
-const MARA_STYLE = {
+// Mara's body: proportions, skin, pants, belt, and the things that never change
+// with her kit. Coat / boots / hood / vest are layered on top from equipment so
+// the same figure can be drawn dressed or stripped, in the world and the pack.
+const MARA_BODY = {
   shoulders: 15,
   waist: 9,
   torsoLength: 16,
@@ -630,24 +691,16 @@ const MARA_STYLE = {
   headHeight: 9,
   legSize: 2,
   armSize: 2,
-  coatTail: 7,
-  coatHi: PALETTE.hostBone,
-  coat: PALETTE.stoneDust,
-  coatLo: PALETTE.stoneMid,
-  coatDk: PALETTE.skinDark,
   pantsHi: PALETTE.stoneDust,
   pants: PALETTE.clothDark,
   pantsLo: PALETTE.stoneDark,
   pantsDk: PALETTE.void,
-  boot: PALETTE.rustDark,
-  bootHi: PALETTE.rustMid,
-  bootLo: PALETTE.stoneDark,
   skinHi: PALETTE.skinLight,
   skin: PALETTE.skinMid,
   skinLo: PALETTE.skinDark,
   skinDk: PALETTE.clothDark,
-  hair: PALETTE.clothDark,
-  hairHi: PALETTE.stoneMid,
+  hair: PALETTE.woodMid,
+  hairHi: PALETTE.woodLight,
   hood: PALETTE.clothDark,
   hoodHi: PALETTE.stoneDark,
   belt: PALETTE.rustDark,
@@ -655,6 +708,116 @@ const MARA_STYLE = {
   hunch: 0,
   decorate: drawMaraDetails
 };
+
+// How each worn item changes the figure. Item JSON may carry its own `visual`
+// block (resolved first); these are the canonical fallbacks for the slice's
+// loadout, authored so a fully-dressed Mara matches her established sprite.
+const MARA_ITEM_VISUALS = {
+  'censure-field-coat': { coat: 'stoneDust', coatHi: 'hostBone', coatLo: 'stoneMid', coatDk: 'skinDark', coatTail: 7 },
+  'scarred-leather-vest': { vest: { mid: 'rustMid', hi: 'rustLight', lo: 'rustDark', plate: 'stoneLight' } },
+  'ash-road-boots': { boot: 'rustDark', bootHi: 'rustMid', bootLo: 'stoneDark' },
+  'censure-hood': { hood: 'clothDark', hoodHi: 'stoneDark' },
+  'tarnished-saint-token': { pendant: 'hostGold' },
+  'iron-vow-ring': { ring: 'stoneLight' },
+  'mourning-ring': { ring: 'clothDark' }
+};
+
+const MARA_DEFAULT_EQUIPMENT = {
+  clothes: 'censure-field-coat',
+  armor: 'scarred-leather-vest',
+  boots: 'ash-road-boots',
+  helmet: 'censure-hood',
+  trinket: 'tarnished-saint-token',
+  ring1: 'iron-vow-ring',
+  ring2: 'mourning-ring'
+};
+
+function pal(ref, fallback) {
+  if (ref == null) return fallback;
+  if (typeof ref === 'string') return PALETTE[ref] ?? ref;
+  return fallback;
+}
+
+function resolveVest(vest) {
+  if (!vest) return null;
+  return {
+    mid: pal(vest.mid, PALETTE.rustMid),
+    hi: pal(vest.hi, PALETTE.rustLight),
+    lo: pal(vest.lo, PALETTE.rustDark),
+    plate: pal(vest.plate, PALETTE.stoneLight)
+  };
+}
+
+function genericVisualForSlot(slot) {
+  switch (slot) {
+    case 'clothes': return { coat: 'stoneDust', coatHi: 'hostBone', coatLo: 'stoneMid', coatDk: 'skinDark', coatTail: 6 };
+    case 'armor': return { vest: { mid: 'rustMid', hi: 'rustLight', lo: 'rustDark', plate: 'stoneLight' } };
+    case 'boots': return { boot: 'rustDark', bootHi: 'rustMid', bootLo: 'stoneDark' };
+    case 'helmet': return { hood: 'clothDark', hoodHi: 'stoneDark' };
+    case 'trinket': return { pendant: 'hostGold' };
+    default: return {};
+  }
+}
+
+// Build the final draw style from the worn items, slot by slot. Empty slots fall
+// back to a stripped look (dark shirt, no vest, bare feet, bare head) so taking
+// gear off is always visible.
+function composeMaraStyle(visuals) {
+  const style = { ...MARA_BODY };
+
+  const clothes = visuals.clothes;
+  if (clothes) {
+    style.coat = pal(clothes.coat, PALETTE.stoneDust);
+    style.coatHi = pal(clothes.coatHi, style.coat);
+    style.coatLo = pal(clothes.coatLo, style.coat);
+    style.coatDk = pal(clothes.coatDk, style.coatLo);
+    style.coatTail = clothes.coatTail ?? 0;
+  } else {
+    style.coat = PALETTE.stoneMid;
+    style.coatHi = PALETTE.stoneLight;
+    style.coatLo = PALETTE.stoneDark;
+    style.coatDk = PALETTE.void;
+    style.coatTail = 0;
+  }
+
+  style.vest = visuals.armor ? resolveVest(visuals.armor.vest ?? visuals.armor) : null;
+
+  if (visuals.boots) {
+    style.boot = pal(visuals.boots.boot, PALETTE.rustDark);
+    style.bootHi = pal(visuals.boots.bootHi, PALETTE.rustMid);
+    style.bootLo = pal(visuals.boots.bootLo, PALETTE.stoneDark);
+  } else {
+    style.boot = PALETTE.skinMid;
+    style.bootHi = PALETTE.skinLight;
+    style.bootLo = PALETTE.skinDark;
+  }
+
+  if (visuals.helmet) {
+    style.hood = pal(visuals.helmet.hood, PALETTE.clothDark);
+    style.hoodHi = pal(visuals.helmet.hoodHi, PALETTE.stoneDark);
+    style.bareHead = false;
+  } else {
+    style.bareHead = true;
+  }
+
+  style.pendant = visuals.trinket ? pal(visuals.trinket.pendant, PALETTE.hostGold) : null;
+
+  return style;
+}
+
+// Turn an equipment snapshot ({ clothes: itemId, ... }) into a draw style,
+// preferring each item's own `visual` block and falling back to the canonical
+// table, then a generic per-slot look for unknown gear.
+export function deriveMaraStyle(equipment = {}, itemDefs = {}) {
+  const visuals = {};
+  for (const [slot, itemId] of Object.entries(equipment)) {
+    if (!itemId) continue;
+    const baseSlot = slot === 'ring1' || slot === 'ring2' ? 'ring' : slot;
+    visuals[baseSlot] =
+      itemDefs?.[itemId]?.visual ?? MARA_ITEM_VISUALS[itemId] ?? genericVisualForSlot(baseSlot);
+  }
+  return composeMaraStyle(visuals);
+}
 
 const CUT_STYLE = {
   shoulders: 16,
@@ -769,9 +932,17 @@ function bakeActor(w, h, style) {
   };
 }
 
+// Bake Mara's sprite for a given equipment snapshot. Called once at startup with
+// her default loadout, then again by the game whenever gear changes so the world
+// figure (and the inventory paper doll, which reads the same atlas entry) stay
+// in sync with what she is actually wearing.
+export function bakeMara(equipment = MARA_DEFAULT_EQUIPMENT, itemDefs = {}) {
+  return bakeActor(42, 62, deriveMaraStyle(equipment, itemDefs));
+}
+
 export function buildSpriteAtlas() {
   return {
-    'mara-vey': bakeActor(42, 62, MARA_STYLE),
+    'mara-vey': bakeMara(MARA_DEFAULT_EQUIPMENT, {}),
     'choir-cultist': bakeActor(44, 64, CHOIR_STYLE),
     'red-tithe-cutthroat': bakeActor(44, 64, CUT_STYLE),
     'host-touched-penitent': bakeActor(64, 92, PEN_STYLE)

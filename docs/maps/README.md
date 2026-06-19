@@ -17,11 +17,11 @@ The full canon lives in `docs/lore/the_host_story_bible.md`. The game-facing wor
 ### Hallowfen
 
 **Campaign role:** Prologue settlement.
-**Map type:** Small Free City border settlement, later outbreak site.
-**Key spaces:** Homes, water pump, local market, repair shop, chapel, council basement, survivor hiding places, smuggler marks.
-**Gameplay purpose:** Investigation, survivor triage, first major Host reveal, data-core discovery.
+**Map type:** Walled _Eschaton's Mercy_ crash scar with a lawless inner settlement.
+**Key spaces:** Outer wall road, Remnant checkpoints with bell towers, inspection back rooms, smuggler tunnel, gambling dens, illegal clinics, relic stalls, water pumps, barricades, chapel ruins, crash-heart holy ground, survivor hiding places, smuggler marks.
+**Gameplay purpose:** Checkpoint infiltration, confiscation or escape route, siege choices, survivor triage, first major Choir reveal, later data-core discovery.
 
-Hallowfen should begin quiet and human. The player should understand what was lost before seeing the tribunal beneath the chapel.
+Hallowfen should begin dangerous and human. The player should understand who chose the forbidden city, who got trapped there, and who is still worth saving before seeing what the Choir wants to build at the crash heart.
 
 ### Ash Roads
 
@@ -124,7 +124,7 @@ Woundfall should shift between outdoor wasteland, starship interior, living Host
 ## Open Map Questions
 
 - Which locations need playable maps for the first vertical slice after Ash Chapel Breach?
-- Is Hallowfen a full explorable settlement or a sequence of smaller maps?
+- Does Hallowfen use one full settlement map, or a sequence of wall checkpoint, tunnel, inner streets, and crash-heart maps?
 - Does Veyr's Gate use one hub map or district maps?
 - Is Woundfall open-region traversal, act-based linear approach, or a hybrid?
 - Does the Europa Ending require a playable Europa map or can it resolve through Woundfall's relay?

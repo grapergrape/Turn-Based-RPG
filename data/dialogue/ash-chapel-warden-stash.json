@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-warden-stash",
+  "title": "Loose Cell Stone",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A stone set low in the wall of the westmost cell lifts free on a fingernail. Behind it, dry where nothing else is, sits a flat tin the size of a prayer book.",
+        "Inside is a heavy iron key, oiled against rust, and a scrap folded small. 'For the wall box. There is no pay in it worth dying for. I left it for whoever outlives this place, not for the diocese. They can dig their own holes.'",
+        "You pocket the key. It is cold and good in the hand, the way old iron is."
+      ]
+    }
+  }
+}

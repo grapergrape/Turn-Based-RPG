@@ -9,7 +9,7 @@
     },
     {
       "id": "evidence-found",
-      "description": "The cult ledger records strange lessons and names Hallowfen as the next place to witness."
+      "description": "The cult ledger records strange lessons and names the Hallowfen wall as the next place to witness."
     },
     {
       "id": "rite-found",
@@ -21,7 +21,7 @@
     },
     {
       "id": "complete",
-      "description": "The chapel cell is broken. The evidence points down the road toward Hallowfen."
+      "description": "The chapel cell is broken. The evidence points down the road toward the Hallowfen wall."
     }
   ]
 }

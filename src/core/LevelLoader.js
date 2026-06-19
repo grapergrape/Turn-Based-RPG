@@ -23,9 +23,11 @@ async function loadContentById(ids, folder) {
   return entries;
 }
 
-// Map a non-walkable legend entry to a renderer prop kind.
+// Map a non-walkable legend entry to a renderer prop kind. Any block kind the
+// sprite catalog knows (wall, wall-broken, wall-window, ...) passes straight
+// through; an unnamed entry falls back to a plain wall block.
 function wallKindFor(def) {
-  return def?.kind === 'wall-broken' ? 'wall-broken' : 'wall';
+  return typeof def?.kind === 'string' ? def.kind : 'wall';
 }
 
 export async function loadLevel(levelPath) {
@@ -34,11 +36,21 @@ export async function loadLevel(levelPath) {
 
   const props = [];
 
+  // Cells already covered by an authored wall-block object (a `wall-*` kind set
+  // into the wall, e.g. wall-safe / wall-stash): the default tile-wall behind it
+  // is skipped so the block is not drawn twice.
+  const wallObjectCells = new Set();
+  for (const object of level.objects ?? []) {
+    if (typeof object.kind === 'string' && object.kind.startsWith('wall-')) {
+      wallObjectCells.add(`${object.x},${object.y}`);
+    }
+  }
+
   // Walls from the tile map.
   for (let y = 0; y < grid.height; y += 1) {
     for (let x = 0; x < grid.width; x += 1) {
       const def = grid.getTileDef(x, y);
-      if (def && !def.walkable) {
+      if (def && !def.walkable && !wallObjectCells.has(`${x},${y}`)) {
         props.push({ kind: wallKindFor(def), x, y, height: def.height });
       }
     }

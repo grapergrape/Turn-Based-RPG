@@ -7,6 +7,7 @@
 
 import { PALETTE } from './palette.js';
 import { UI_PANEL, VIEWPORT } from './renderConfig.js';
+import { getFrame } from './SpriteAtlas.js';
 
 const LOG_BOX = { x: 8, y: UI_PANEL.y + 7, w: 328, h: UI_PANEL.height - 14 };
 const STATUS_BOX = { x: 342, y: UI_PANEL.y + 7, w: 138, h: UI_PANEL.height - 14 };
@@ -75,6 +76,12 @@ const FONT = {
 };
 
 export class UIRenderer {
+  // `atlas` is the same sprite atlas the world renderer draws from, so the
+  // inventory paper doll shows the exact figure (and equipped gear) seen in play.
+  constructor(atlas = null) {
+    this.atlas = atlas;
+  }
+
   draw(ctx, ui) {
     ctx.save();
     ctx.imageSmoothingEnabled = false;
@@ -257,7 +264,7 @@ export class UIRenderer {
       }
     }
 
-    this.#drawPaperDoll(ctx, figure, ui.equipmentSlots ?? []);
+    this.#drawPaperDoll(ctx, figure, ui.figureSpriteId ?? 'mara-vey', ui.actorName ?? 'MARA VEY');
 
     const slots = ui.equipmentSlots ?? [];
     const slotIndex = Math.max(0, Math.min(slots.length - 1, ui.equipmentIndex ?? 0));
@@ -305,52 +312,34 @@ export class UIRenderer {
     }
   }
 
-  #drawPaperDoll(ctx, box, slots) {
-    const worn = new Map((slots ?? []).map((slot) => [slot.slot, !slot.empty]));
+  // The paper doll is the live game sprite, scaled up on a small stand, so it is
+  // literally the same figure the player controls and reflects equipped gear.
+  #drawPaperDoll(ctx, box, spriteId, name) {
+    this.#text(ctx, name, box.x + Math.floor((box.w - this.#textWidth(name)) / 2), box.y + 8, PALETTE.uiBorderLight);
+
     const cx = box.x + Math.floor(box.w / 2);
-    const top = box.y + 22;
+    const baseY = box.y + box.h - 16;
 
-    this.#text(ctx, 'MARA VEY', box.x + Math.floor((box.w - this.#textWidth('MARA VEY')) / 2), box.y + 8, PALETTE.uiBorderLight);
-    this.#rect(ctx, cx - 24, top + 123, 48, 6, PALETTE.outline);
-    this.#rect(ctx, cx - 20, top + 121, 40, 3, PALETTE.uiBorderDark);
+    // A stepped cast shadow under the boots grounds the figure on its stand.
+    this.#rect(ctx, cx - 22, baseY + 2, 44, 1, PALETTE.outline);
+    this.#rect(ctx, cx - 18, baseY + 3, 36, 1, PALETTE.uiDark);
+    this.#rect(ctx, cx - 11, baseY + 4, 22, 1, PALETTE.uiDark);
 
-    const coat = worn.get('clothes') ? PALETTE.clothRed : PALETTE.clothDark;
-    const armor = worn.get('armor') ? PALETTE.rustMid : PALETTE.uiBorderDark;
-    const boot = worn.get('boots') ? PALETTE.woodLight : PALETTE.woodDark;
-    const hood = worn.get('helmet') ? PALETTE.clothDark : PALETTE.skinDark;
-    const metal = PALETTE.hostGold;
-
-    this.#rect(ctx, cx - 10, top + 12, 20, 19, PALETTE.outline);
-    this.#rect(ctx, cx - 8, top + 14, 16, 16, hood);
-    this.#rect(ctx, cx - 5, top + 18, 10, 10, PALETTE.skinMid);
-    this.#rect(ctx, cx - 3, top + 22, 2, 2, PALETTE.outline);
-    this.#rect(ctx, cx + 3, top + 22, 2, 2, PALETTE.outline);
-
-    this.#rect(ctx, cx - 15, top + 33, 30, 47, PALETTE.outline);
-    this.#rect(ctx, cx - 13, top + 35, 26, 45, coat);
-    this.#rect(ctx, cx - 10, top + 39, 20, 30, armor);
-    this.#rect(ctx, cx - 1, top + 37, 2, 39, PALETTE.outline);
-    this.#rect(ctx, cx - 9, top + 43, 18, 2, PALETTE.uiBorderLight);
-    this.#rect(ctx, cx - 9, top + 53, 18, 1, PALETTE.uiBorderDark);
-
-    this.#rect(ctx, cx - 25, top + 39, 9, 37, PALETTE.outline);
-    this.#rect(ctx, cx - 23, top + 41, 6, 34, coat);
-    this.#rect(ctx, cx + 16, top + 39, 9, 37, PALETTE.outline);
-    this.#rect(ctx, cx + 17, top + 41, 6, 34, coat);
-    if (worn.get('ring1')) this.#rect(ctx, cx - 23, top + 71, 4, 2, metal);
-    if (worn.get('ring2')) this.#rect(ctx, cx + 19, top + 71, 4, 2, metal);
-
-    this.#rect(ctx, cx - 11, top + 80, 9, 36, PALETTE.outline);
-    this.#rect(ctx, cx - 9, top + 82, 6, 32, PALETTE.clothDark);
-    this.#rect(ctx, cx + 2, top + 80, 9, 36, PALETTE.outline);
-    this.#rect(ctx, cx + 3, top + 82, 6, 32, PALETTE.clothDark);
-    this.#rect(ctx, cx - 14, top + 111, 13, 7, boot);
-    this.#rect(ctx, cx + 1, top + 111, 13, 7, boot);
-
-    if (worn.get('trinket')) {
-      this.#rect(ctx, cx - 1, top + 49, 2, 11, metal);
-      this.#rect(ctx, cx - 5, top + 53, 10, 2, metal);
-      this.#rect(ctx, cx - 1, top + 60, 2, 3, PALETTE.outline);
+    const resolved = this.atlas ? getFrame(this.atlas, spriteId, 'idle', 's', 0) : null;
+    if (resolved?.frame) {
+      const scale = 2;
+      const { sprite, frame } = resolved;
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(
+        frame,
+        cx - sprite.anchorX * scale,
+        baseY - sprite.anchorY * scale,
+        sprite.width * scale,
+        sprite.height * scale
+      );
+    } else {
+      const label = 'NO FIGURE';
+      this.#text(ctx, label, cx - this.#textWidth(label) / 2, box.y + Math.floor(box.h / 2), PALETTE.uiDim);
     }
   }
 

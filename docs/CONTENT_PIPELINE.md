@@ -138,13 +138,19 @@ Shape:
 
 Rules:
 
-- `objects[].kind` selects a renderer prop (wall, broken-pew, rusted-reliquary,
-  field-satchel, corpse, quarantine-sign, damaged-altar, host-growth,
-  candle-cluster, campfire, chapel-banner, broken-bell, prayer-lectern,
-  ritual-bowl, rubble-pile, rusted-crate, rusted-barrel, cracked-column,
-  quarantine-barricade, and flat decals: blood-stain, floor-crack,
-  rubble-decal, glass-debris, dust, road-dust, scorch-mark, wax-stain,
-  paper-scraps).
+- `objects[].kind` selects a renderable kind from the **sprite catalog**
+  (`src/render/spriteCatalog.js`), the single source of truth for every kind:
+  its draw function, category, depth layer, and whether it is a flat decal or a
+  wall block. That file (not a list here) is authoritative; to add a new kind,
+  add one entry there and a draw function (see the art skill, Section 8b). Kinds
+  group into terrain blocks (`wall`, `wall-broken`), wall fixtures
+  (`wall-window`, `wall-safe`, `wall-stash`), structures, furniture, props,
+  lights, gore, creatures, ritual marks, and flat ground decals.
+- Wall fixtures are blocks drawn into a wall cell. A purely visual one (a window)
+  can be a legend tile letter. One that carries loot or a lock (a safe, a stash)
+  is an authored object placed on a wall cell with `blocking: true` and an
+  `interact`; the loader skips the default wall behind any `wall-*` object so the
+  block is not drawn twice. The player reaches it from the floor tile in front.
 - `blocking: true` makes the object's tile impassable (collision uses the same
   rule in explore and combat).
 - `interact` (optional) can mark a loot container (`type: "container"` with
@@ -183,7 +189,9 @@ Rules:
   starts, main chapel encounter groups with spread trigger zones, required
   slice enemy ids, required interactables, a Cult Ledger note, a separate cellar
   secret exit, a Dead Road Warden corpse with loot, enough chapel props/decals,
-  and richer secret-area loot.
+  and richer secret-area loot. It also checks that every object `kind` and every
+  non-walkable legend block is registered in the sprite catalog, so a typo'd or
+  unrenderable kind fails the build instead of silently drawing nothing.
 
 ## Item data
 

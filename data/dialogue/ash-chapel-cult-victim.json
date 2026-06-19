@@ -1,0 +1,14 @@
+{
+  "id": "ash-chapel-cult-victim",
+  "title": "The Marked Dead",
+  "nodes": {
+    "start": {
+      "lines": [
+        "You crouch over him. A traveller on his back, knifed far past what killing takes, in a pool that has not finished drying. A silver cross still hangs at his throat. They did not want it.",
+        "His coat has been opened at the chest and the skin beneath it carved. A star, five lines, driven in point-down. Below it, cut slower and deeper, two lines: NOT HOLY. DO NOT FEAST.",
+        "You know the star. The Choir of the Open Wound. They open and eat only the ones they think are turning holy, the Host-touched they raise on their altars. This man was just faithful, a closed body with a cross. To the Choir that is refuse. They carved the words so the next of them would not waste a bite on him.",
+        "You draw his coat shut over the star. It does nothing for him. You do it anyway."
+      ]
+    }
+  }
+}

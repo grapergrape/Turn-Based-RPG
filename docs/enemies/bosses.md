@@ -14,16 +14,30 @@ Use `docs/lore/the_host_story_bible.md` and `docs/LORE_INTEGRATION.md` as canon.
 
 ## Early Game Bosses
 
+### Hallowfen Gate Cantor
+
+**Faction:** Choir of the Open Wound
+**Location:** Hallowfen wall checkpoint
+**Former identity:** Unknown gate-captor posing as a Remnant checkpoint officer
+**Narrative purpose:** Reveal that the wall is already breached before the player enters Hallowfen.
+
+The Gate Cantor controls a checkpoint that still wears Remnant forms: inspection orders, bell codes, confiscation trays, and quarantine language. The lie is visible in the wrong details. The guards speak in repeated phrases, keep their uniforms filthy, and hide wound-star tattoos under collars and gloves.
+
+The player can expose the gang through dialogue and start combat at the gate. If the player submits to inspection or misses the signs, the party is taken to the back room, stripped of gear, and forced to escape past bodies, blood sigils, and point-down pentagram wound-stars.
+
+**Encounter role:** Human cult boss with knife guards, bell-pull alarms, confiscated gear pressure, and bodies that show what happened to earlier travelers.
+**Branching outcome:** Kill, capture, expose, or escape him. His letter reveals the local Choir plan to seize the holy land and build a temple-capital at Hallowfen's heart.
+
 ### Hallowfen Tribunal
 
 **Faction:** The Host
-**Location:** Hallowfen chapel basement
-**Former identity:** Hallowfen town council
-**Narrative purpose:** Show that Host horror is personal, civic, and accusatory.
+**Location:** Hallowfen crash-heart chapel or underground claim court
+**Former identity:** Hallowfen claim judges, gang bosses, and settlement arbiters
+**Narrative purpose:** Show that Host horror is personal, civic, and accusatory even in a lawless place.
 
-The town council has fused into a living tribunal. Its mouths accuse the player characters by name, including secrets they have not told each other. It guards or surrounds the _Eschaton's Mercy_ data core.
+The people who decided claims, debts, entry rights, and punishments inside Hallowfen have fused into a living tribunal. Its mouths accuse the player characters by name, including secrets they have not told each other. It guards or surrounds the crash-heart route and may become tied to the _Eschaton's Mercy_ data core after the fate of Hallowfen is settled.
 
-**Encounter role:** Multi-mouth stationary boss with summoned Choir Larvae, accusation debuffs, and environmental hazards from pews, bells, and basement supports.
+**Encounter role:** Multi-mouth stationary boss with summoned Choir Larvae, accusation debuffs, and environmental hazards from pews, claim posts, bell salvage, and basement supports.
 **Branching outcome:** Destroying it is safest. Stabilizing or recording it may reveal survivor names, hidden corruption, or proof that the data core is active.
 
 ### Bishop Rusk Dain

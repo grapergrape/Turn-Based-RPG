@@ -1,0 +1,3273 @@
+{
+  "id": "ash-chapel-catacombs",
+  "name": "Ash Chapel Catacombs",
+  "intro": "The stair gives onto cold that has not moved in years. The dark ahead is full of small pale shapes, and they are all the same shape. The warden kept his dead in order. The cut stair behind you is the way back up. Use it (E) when you have seen enough.",
+  "width": 40,
+  "height": 50,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "ash-chapel-catacombs-return",
+    "ash-chapel-catacombs-ledger",
+    "ash-chapel-catacombs-fever",
+    "ash-chapel-catacombs-heretics",
+    "ash-chapel-catacombs-criminals",
+    "ash-chapel-catacombs-politicals",
+    "ash-chapel-catacombs-deep",
+    "ash-chapel-catacombs-shrine"
+  ],
+  "mood": {
+    "floorShade": "#0a0f15",
+    "floorShadeAlpha": 0.48,
+    "ambient": "#0a141c",
+    "ambientAlpha": 0.13,
+    "vignette": 1.85
+  },
+  "tiles": [
+    "########################################",
+    "########################################",
+    "###############..........###############",
+    "###############..........###############",
+    "###############..........###############",
+    "###############..........###############",
+    "##################....##################",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "###..................................###",
+    "###..................................###",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "##################....##################",
+    "##################....##################",
+    "##################....##################",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "###..................................###",
+    "###..................................###",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "###.............##....##.............###",
+    "##################....##################",
+    "##################....##################",
+    "##################....##################",
+    "########........................########",
+    "########........................########",
+    "########........................########",
+    "########........................########",
+    "########........................########",
+    "########........................########",
+    "########........................########",
+    "########........................########",
+    "########........................########",
+    "##################....##################",
+    "##################....##################",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "########################################",
+    "########################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    "b": {
+      "kind": "wall-broken",
+      "walkable": false,
+      "height": 30
+    },
+    ".": {
+      "kind": "floor",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 20,
+      "y": 4
+    },
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "loose-flagstone",
+      "x": 20,
+      "y": 2,
+      "name": "Stone Stair Up",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "ash-chapel-catacombs-return",
+        "log": "The cut stair climbs back toward the cellar."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 22,
+      "y": 4,
+      "name": "Warden's Burial Ledger",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-catacombs-ledger",
+        "log": "A tin ledger nailed to the stair-head, the warden's hand counting his dead."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 5,
+      "y": 7,
+      "name": "Warden's Note: the Sick",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-catacombs-fever",
+        "log": "A note pinned over the first gallery, where the fevered were laid."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 35,
+      "y": 7,
+      "name": "Warden's Note: the Doubters",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-catacombs-heretics",
+        "log": "A note carved over a row of niches, each scratched with the question that earned it."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 4,
+      "y": 18,
+      "name": "Warden's Note: the Useful Dead",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-catacombs-criminals",
+        "log": "A work-tally nailed to a post above the chained dead."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 35,
+      "y": 18,
+      "name": "Warden's Note: the Loud Ones",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-catacombs-politicals",
+        "log": "A note above the largest row, in a tighter and angrier hand."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 9,
+      "y": 31,
+      "name": "Warden's Last Tally",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-catacombs-deep",
+        "log": "A page torn from the ledger and left on the bones, the counting given up."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 20,
+      "y": 47,
+      "name": "Warden's Shrine Confession",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-catacombs-shrine",
+        "log": "A confession folded into the hands of a skeleton crowned with carved thorn."
+      }
+    },
+    {
+      "kind": "stone-tomb",
+      "x": 5,
+      "y": 13,
+      "blocking": true,
+      "name": "Sealed Berth",
+      "interact": {
+        "type": "container",
+        "log": "A berth in the fever wall, its slab dragged aside.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "stone-tomb",
+      "x": 13,
+      "y": 25,
+      "blocking": true,
+      "name": "Foreman's Berth",
+      "interact": {
+        "type": "container",
+        "log": "A larger berth, the slab carved with a tally of work done.",
+        "loot": [
+          {
+            "item": "relic-rounds",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "stone-tomb",
+      "x": 26,
+      "y": 25,
+      "blocking": true,
+      "name": "Unnamed Berth",
+      "interact": {
+        "type": "container",
+        "log": "A berth with the name chiselled off the slab.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "rusted-reliquary",
+      "x": 29,
+      "y": 37,
+      "blocking": true,
+      "name": "Bone Reliquary",
+      "interact": {
+        "type": "container",
+        "log": "A reliquary stuffed with sorted finger-bones instead of relics.",
+        "loot": [
+          {
+            "item": "choir-hymnal-fragment",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "host-growth",
+      "x": 6,
+      "y": 13
+    },
+    {
+      "kind": "host-growth",
+      "x": 12,
+      "y": 8
+    },
+    {
+      "kind": "cobweb",
+      "x": 3,
+      "y": 7,
+      "seed": 36
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 7,
+      "seed": 96
+    },
+    {
+      "kind": "cobweb",
+      "x": 3,
+      "y": 14,
+      "seed": 57
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 14,
+      "seed": 117
+    },
+    {
+      "kind": "bone-niche",
+      "x": 4,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 7,
+      "seed": 133
+    },
+    {
+      "kind": "bone-pile",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "kind": "bone-niche",
+      "x": 10,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 11,
+      "y": 7,
+      "seed": 76
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "dust",
+      "x": 13,
+      "y": 7
+    },
+    {
+      "kind": "bone-niche",
+      "x": 3,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 5,
+      "y": 8
+    },
+    {
+      "kind": "skeleton",
+      "x": 8,
+      "y": 8,
+      "seed": 160
+    },
+    {
+      "kind": "bone-pile",
+      "x": 10,
+      "y": 8
+    },
+    {
+      "kind": "skeleton",
+      "x": 13,
+      "y": 8,
+      "seed": 195
+    },
+    {
+      "kind": "bone-niche",
+      "x": 3,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 5,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 9,
+      "seed": 159
+    },
+    {
+      "kind": "skeleton",
+      "x": 8,
+      "y": 9,
+      "seed": 173
+    },
+    {
+      "kind": "bone-pile",
+      "x": 11,
+      "y": 9
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 9,
+      "seed": 201
+    },
+    {
+      "kind": "skeleton",
+      "x": 13,
+      "y": 9,
+      "seed": 208
+    },
+    {
+      "kind": "skeleton",
+      "x": 15,
+      "y": 9,
+      "seed": 222
+    },
+    {
+      "kind": "skeleton",
+      "x": 3,
+      "y": 10,
+      "seed": 151
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 10,
+      "seed": 172
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 11,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 12,
+      "y": 10
+    },
+    {
+      "kind": "skeleton",
+      "x": 13,
+      "y": 10,
+      "seed": 221
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 10,
+      "seed": 228
+    },
+    {
+      "kind": "bone-niche",
+      "x": 3,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 5,
+      "y": 11,
+      "seed": 178
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 7,
+      "y": 11
+    },
+    {
+      "kind": "skeleton",
+      "x": 8,
+      "y": 11,
+      "seed": 199
+    },
+    {
+      "kind": "bone-pile",
+      "x": 9,
+      "y": 11
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 11,
+      "y": 11
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 15,
+      "y": 11
+    },
+    {
+      "kind": "skeleton",
+      "x": 3,
+      "y": 12,
+      "seed": 177
+    },
+    {
+      "kind": "skeleton",
+      "x": 4,
+      "y": 12,
+      "seed": 184
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 5,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 12,
+      "seed": 226
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 12,
+      "seed": 240
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 12,
+      "seed": 254
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 3,
+      "y": 13,
+      "seed": 190
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 13,
+      "seed": 211
+    },
+    {
+      "kind": "skeleton",
+      "x": 11,
+      "y": 13,
+      "seed": 246
+    },
+    {
+      "kind": "bone-pile",
+      "x": 14,
+      "y": 13
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 13,
+      "seed": 114
+    },
+    {
+      "kind": "bone-niche",
+      "x": 5,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 6,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 7,
+      "y": 14,
+      "seed": 231
+    },
+    {
+      "kind": "bone-niche",
+      "x": 8,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 10,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 11,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 13,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 14,
+      "seed": 280
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 7,
+      "seed": 141
+    },
+    {
+      "kind": "cobweb",
+      "x": 36,
+      "y": 7,
+      "seed": 201
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 14,
+      "seed": 162
+    },
+    {
+      "kind": "cobweb",
+      "x": 36,
+      "y": 14,
+      "seed": 222
+    },
+    {
+      "kind": "bone-niche",
+      "x": 25,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 27,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 7,
+      "seed": 287
+    },
+    {
+      "kind": "cobweb",
+      "x": 32,
+      "y": 7,
+      "seed": 181
+    },
+    {
+      "kind": "bone-niche",
+      "x": 33,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 34,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 8,
+      "seed": 144
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 8,
+      "seed": 286
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 8,
+      "seed": 300
+    },
+    {
+      "kind": "skeleton",
+      "x": 32,
+      "y": 8,
+      "seed": 328
+    },
+    {
+      "kind": "skeleton",
+      "x": 35,
+      "y": 8,
+      "seed": 349
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 24,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 25,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 35,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 24,
+      "y": 10,
+      "seed": 298
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 10,
+      "seed": 319
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 10,
+      "seed": 326
+    },
+    {
+      "kind": "bone-pile",
+      "x": 29,
+      "y": 10
+    },
+    {
+      "kind": "skeleton",
+      "x": 31,
+      "y": 10,
+      "seed": 347
+    },
+    {
+      "kind": "skeleton",
+      "x": 34,
+      "y": 10,
+      "seed": 368
+    },
+    {
+      "kind": "bone-pile",
+      "x": 35,
+      "y": 10
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 25,
+      "y": 11,
+      "seed": 318
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 27,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 28,
+      "y": 11
+    },
+    {
+      "kind": "bone-pile",
+      "x": 30,
+      "y": 11
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 32,
+      "y": 11
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 33,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 35,
+      "y": 11
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 36,
+      "y": 11
+    },
+    {
+      "kind": "skeleton",
+      "x": 24,
+      "y": 12,
+      "seed": 324
+    },
+    {
+      "kind": "bone-pile",
+      "x": 25,
+      "y": 12
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 12,
+      "seed": 345
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 12,
+      "seed": 366
+    },
+    {
+      "kind": "skeleton",
+      "x": 31,
+      "y": 12,
+      "seed": 373
+    },
+    {
+      "kind": "skeleton",
+      "x": 33,
+      "y": 12,
+      "seed": 387
+    },
+    {
+      "kind": "bone-pile",
+      "x": 34,
+      "y": 12
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 24,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 26,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 32,
+      "y": 13
+    },
+    {
+      "kind": "skeleton",
+      "x": 33,
+      "y": 13,
+      "seed": 400
+    },
+    {
+      "kind": "skeleton",
+      "x": 34,
+      "y": 13,
+      "seed": 407
+    },
+    {
+      "kind": "skeleton",
+      "x": 35,
+      "y": 13,
+      "seed": 414
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 25,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 14,
+      "seed": 364
+    },
+    {
+      "kind": "bone-niche",
+      "x": 27,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 14,
+      "seed": 378
+    },
+    {
+      "kind": "cobweb",
+      "x": 29,
+      "y": 14,
+      "seed": 187
+    },
+    {
+      "kind": "bone-niche",
+      "x": 30,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 31,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 32,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 33,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 35,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 3,
+      "y": 18,
+      "seed": 69
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 18,
+      "seed": 129
+    },
+    {
+      "kind": "cobweb",
+      "x": 3,
+      "y": 26,
+      "seed": 93
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 26,
+      "seed": 153
+    },
+    {
+      "kind": "bone-niche",
+      "x": 6,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 7,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 8,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 9,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 10,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 11,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 13,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 18,
+      "seed": 332
+    },
+    {
+      "kind": "bone-niche",
+      "x": 3,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 4,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 5,
+      "y": 19,
+      "seed": 282
+    },
+    {
+      "kind": "skeleton",
+      "x": 7,
+      "y": 19,
+      "seed": 296
+    },
+    {
+      "kind": "skeleton",
+      "x": 8,
+      "y": 19,
+      "seed": 303
+    },
+    {
+      "kind": "skeleton",
+      "x": 9,
+      "y": 19,
+      "seed": 310
+    },
+    {
+      "kind": "dust",
+      "x": 11,
+      "y": 19
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 19,
+      "seed": 331
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 3,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 4,
+      "y": 20
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 20,
+      "seed": 302
+    },
+    {
+      "kind": "skeleton",
+      "x": 9,
+      "y": 20,
+      "seed": 323
+    },
+    {
+      "kind": "bone-pile",
+      "x": 10,
+      "y": 20
+    },
+    {
+      "kind": "bone-pile",
+      "x": 13,
+      "y": 20
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 20,
+      "seed": 358
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 3,
+      "y": 21,
+      "seed": 294
+    },
+    {
+      "kind": "bone-pile",
+      "x": 4,
+      "y": 21
+    },
+    {
+      "kind": "skeleton",
+      "x": 5,
+      "y": 21,
+      "seed": 308
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 21,
+      "seed": 315
+    },
+    {
+      "kind": "bone-pile",
+      "x": 7,
+      "y": 21
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 8,
+      "y": 21,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 21,
+      "seed": 343
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 14,
+      "y": 21,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 21,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 3,
+      "y": 22,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 22,
+      "seed": 328
+    },
+    {
+      "kind": "skeleton",
+      "x": 7,
+      "y": 22,
+      "seed": 335
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 11,
+      "y": 22
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 15,
+      "y": 22
+    },
+    {
+      "kind": "bone-niche",
+      "x": 3,
+      "y": 23,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 4,
+      "y": 23,
+      "seed": 327
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 6,
+      "y": 23,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 9,
+      "y": 23
+    },
+    {
+      "kind": "bone-pile",
+      "x": 12,
+      "y": 23
+    },
+    {
+      "kind": "skeleton",
+      "x": 4,
+      "y": 24,
+      "seed": 340
+    },
+    {
+      "kind": "bone-pile",
+      "x": 7,
+      "y": 24
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 11,
+      "y": 24,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 12,
+      "y": 24,
+      "blocking": true
+    },
+    {
+      "kind": "dust",
+      "x": 13,
+      "y": 24
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 24,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 3,
+      "y": 25,
+      "seed": 90
+    },
+    {
+      "kind": "skeleton",
+      "x": 5,
+      "y": 25,
+      "seed": 360
+    },
+    {
+      "kind": "skeleton",
+      "x": 9,
+      "y": 25,
+      "seed": 388
+    },
+    {
+      "kind": "skeleton",
+      "x": 11,
+      "y": 25,
+      "seed": 402
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 25,
+      "seed": 423
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 25,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 4,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 5,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 6,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 7,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 8,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 9,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 10,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 11,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 12,
+      "y": 26,
+      "seed": 138
+    },
+    {
+      "kind": "bone-niche",
+      "x": 14,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 18,
+      "seed": 174
+    },
+    {
+      "kind": "cobweb",
+      "x": 36,
+      "y": 18,
+      "seed": 234
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 26,
+      "seed": 198
+    },
+    {
+      "kind": "cobweb",
+      "x": 36,
+      "y": 26,
+      "seed": 258
+    },
+    {
+      "kind": "bone-niche",
+      "x": 25,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 26,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 27,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 29,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 30,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 31,
+      "y": 18,
+      "seed": 451
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 32,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 33,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 34,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 24,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 19,
+      "seed": 429
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 28,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 32,
+      "y": 19,
+      "seed": 471
+    },
+    {
+      "kind": "bone-pile",
+      "x": 35,
+      "y": 19
+    },
+    {
+      "kind": "skeleton",
+      "x": 36,
+      "y": 19,
+      "seed": 499
+    },
+    {
+      "kind": "bone-niche",
+      "x": 24,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 20,
+      "seed": 449
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 20,
+      "seed": 456
+    },
+    {
+      "kind": "dust",
+      "x": 32,
+      "y": 20
+    },
+    {
+      "kind": "skeleton",
+      "x": 33,
+      "y": 20,
+      "seed": 491
+    },
+    {
+      "kind": "skeleton",
+      "x": 35,
+      "y": 20,
+      "seed": 505
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 24,
+      "y": 21,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 25,
+      "y": 21,
+      "seed": 448
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 21,
+      "seed": 455
+    },
+    {
+      "kind": "bone-pile",
+      "x": 27,
+      "y": 21
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 21,
+      "seed": 469
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 21,
+      "seed": 483
+    },
+    {
+      "kind": "skeleton",
+      "x": 31,
+      "y": 21,
+      "seed": 490
+    },
+    {
+      "kind": "bone-pile",
+      "x": 33,
+      "y": 21
+    },
+    {
+      "kind": "cobweb",
+      "x": 36,
+      "y": 21,
+      "seed": 243
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 24,
+      "y": 22
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 28,
+      "y": 22
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 32,
+      "y": 22
+    },
+    {
+      "kind": "dust",
+      "x": 35,
+      "y": 22
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 22,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 23,
+      "seed": 488
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 23,
+      "seed": 495
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 23,
+      "seed": 509
+    },
+    {
+      "kind": "skeleton",
+      "x": 33,
+      "y": 23,
+      "seed": 530
+    },
+    {
+      "kind": "skeleton",
+      "x": 35,
+      "y": 23,
+      "seed": 544
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 23,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 27,
+      "y": 24
+    },
+    {
+      "kind": "bone-pile",
+      "x": 29,
+      "y": 24
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 24,
+      "seed": 522
+    },
+    {
+      "kind": "bone-pile",
+      "x": 33,
+      "y": 24
+    },
+    {
+      "kind": "skeleton",
+      "x": 35,
+      "y": 24,
+      "seed": 557
+    },
+    {
+      "kind": "skeleton",
+      "x": 36,
+      "y": 24,
+      "seed": 564
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 24,
+      "y": 25,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 25,
+      "y": 25,
+      "seed": 500
+    },
+    {
+      "kind": "bone-pile",
+      "x": 27,
+      "y": 25
+    },
+    {
+      "kind": "skeleton",
+      "x": 31,
+      "y": 25,
+      "seed": 542
+    },
+    {
+      "kind": "skeleton",
+      "x": 33,
+      "y": 25,
+      "seed": 556
+    },
+    {
+      "kind": "skeleton",
+      "x": 34,
+      "y": 25,
+      "seed": 563
+    },
+    {
+      "kind": "bone-pile",
+      "x": 35,
+      "y": 25
+    },
+    {
+      "kind": "bone-niche",
+      "x": 36,
+      "y": 25,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 25,
+      "y": 26,
+      "seed": 513
+    },
+    {
+      "kind": "bone-niche",
+      "x": 26,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 27,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 28,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 29,
+      "y": 26
+    },
+    {
+      "kind": "bone-niche",
+      "x": 31,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 32,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 33,
+      "y": 26,
+      "seed": 569
+    },
+    {
+      "kind": "bone-niche",
+      "x": 34,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 8,
+      "y": 30,
+      "seed": 130
+    },
+    {
+      "kind": "cobweb",
+      "x": 31,
+      "y": 30,
+      "seed": 245
+    },
+    {
+      "kind": "cobweb",
+      "x": 8,
+      "y": 38,
+      "seed": 154
+    },
+    {
+      "kind": "cobweb",
+      "x": 31,
+      "y": 38,
+      "seed": 269
+    },
+    {
+      "kind": "bone-niche",
+      "x": 9,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 10,
+      "y": 30,
+      "seed": 140
+    },
+    {
+      "kind": "cobweb",
+      "x": 11,
+      "y": 30,
+      "seed": 145
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 13,
+      "y": 30,
+      "seed": 155
+    },
+    {
+      "kind": "bone-niche",
+      "x": 14,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 16,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 17,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 30,
+      "seed": 516
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 20,
+      "y": 30
+    },
+    {
+      "kind": "bone-niche",
+      "x": 22,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 24,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 29,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 30,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 8,
+      "y": 31,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 31,
+      "seed": 473
+    },
+    {
+      "kind": "bone-pile",
+      "x": 11,
+      "y": 31
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 31,
+      "seed": 487
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 31,
+      "seed": 529
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 31,
+      "seed": 585
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 31,
+      "seed": 599
+    },
+    {
+      "kind": "skeleton",
+      "x": 29,
+      "y": 31,
+      "seed": 606
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 31,
+      "seed": 613
+    },
+    {
+      "kind": "bone-niche",
+      "x": 31,
+      "y": 31,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 11,
+      "y": 32,
+      "seed": 493
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 32,
+      "seed": 500
+    },
+    {
+      "kind": "bone-pile",
+      "x": 13,
+      "y": 32
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 32,
+      "seed": 514
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 15,
+      "y": 32,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 17,
+      "y": 32,
+      "seed": 535
+    },
+    {
+      "kind": "skeleton",
+      "x": 23,
+      "y": 32,
+      "seed": 577
+    },
+    {
+      "kind": "skeleton",
+      "x": 24,
+      "y": 32,
+      "seed": 584
+    },
+    {
+      "kind": "dust",
+      "x": 25,
+      "y": 32
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 32,
+      "seed": 598
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 32,
+      "seed": 605
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 32,
+      "seed": 612
+    },
+    {
+      "kind": "skeleton",
+      "x": 29,
+      "y": 32,
+      "seed": 619
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 33,
+      "seed": 499
+    },
+    {
+      "kind": "skeleton",
+      "x": 11,
+      "y": 33,
+      "seed": 506
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 33,
+      "seed": 513
+    },
+    {
+      "kind": "skeleton",
+      "x": 15,
+      "y": 33,
+      "seed": 534
+    },
+    {
+      "kind": "skeleton",
+      "x": 16,
+      "y": 33,
+      "seed": 541
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 33,
+      "seed": 555
+    },
+    {
+      "kind": "bone-pile",
+      "x": 23,
+      "y": 33
+    },
+    {
+      "kind": "skeleton",
+      "x": 25,
+      "y": 33,
+      "seed": 604
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 33,
+      "seed": 618
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 33,
+      "seed": 625
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 33,
+      "seed": 639
+    },
+    {
+      "kind": "bone-niche",
+      "x": 8,
+      "y": 34,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 34,
+      "seed": 512
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 12,
+      "y": 34
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 34,
+      "seed": 540
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 16,
+      "y": 34
+    },
+    {
+      "kind": "bone-pile",
+      "x": 20,
+      "y": 34
+    },
+    {
+      "kind": "skeleton",
+      "x": 21,
+      "y": 34,
+      "seed": 589
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 34,
+      "seed": 624
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 27,
+      "y": 34,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 28,
+      "y": 34
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 34,
+      "seed": 652
+    },
+    {
+      "kind": "bone-pile",
+      "x": 31,
+      "y": 34
+    },
+    {
+      "kind": "skeleton",
+      "x": 8,
+      "y": 35,
+      "seed": 511
+    },
+    {
+      "kind": "dust",
+      "x": 10,
+      "y": 35
+    },
+    {
+      "kind": "dust",
+      "x": 11,
+      "y": 35
+    },
+    {
+      "kind": "skeleton",
+      "x": 13,
+      "y": 35,
+      "seed": 546
+    },
+    {
+      "kind": "skeleton",
+      "x": 16,
+      "y": 35,
+      "seed": 567
+    },
+    {
+      "kind": "bone-pile",
+      "x": 18,
+      "y": 35
+    },
+    {
+      "kind": "dust",
+      "x": 19,
+      "y": 35
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 35,
+      "seed": 595
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 24,
+      "y": 35,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 29,
+      "y": 35,
+      "seed": 658
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 31,
+      "y": 35,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 8,
+      "y": 36,
+      "seed": 524
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 36,
+      "seed": 538
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 11,
+      "y": 36,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 36,
+      "seed": 552
+    },
+    {
+      "kind": "skeleton",
+      "x": 15,
+      "y": 36,
+      "seed": 573
+    },
+    {
+      "kind": "skeleton",
+      "x": 16,
+      "y": 36,
+      "seed": 580
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 36,
+      "seed": 594
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 36,
+      "seed": 601
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 36,
+      "seed": 608
+    },
+    {
+      "kind": "skeleton",
+      "x": 23,
+      "y": 36,
+      "seed": 629
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 24,
+      "y": 36,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 25,
+      "y": 36
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 36,
+      "seed": 657
+    },
+    {
+      "kind": "skeleton",
+      "x": 31,
+      "y": 36,
+      "seed": 685
+    },
+    {
+      "kind": "cobweb",
+      "x": 8,
+      "y": 37,
+      "seed": 151
+    },
+    {
+      "kind": "skeleton",
+      "x": 12,
+      "y": 37,
+      "seed": 565
+    },
+    {
+      "kind": "dust",
+      "x": 14,
+      "y": 37
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 37,
+      "seed": 607
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 37,
+      "seed": 621
+    },
+    {
+      "kind": "bone-pile",
+      "x": 21,
+      "y": 37
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 26,
+      "y": 37,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 37,
+      "seed": 677
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 37,
+      "seed": 691
+    },
+    {
+      "kind": "bone-niche",
+      "x": 31,
+      "y": 37,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 9,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 38,
+      "seed": 564
+    },
+    {
+      "kind": "skeleton",
+      "x": 11,
+      "y": 38,
+      "seed": 571
+    },
+    {
+      "kind": "bone-pile",
+      "x": 12,
+      "y": 38
+    },
+    {
+      "kind": "bone-niche",
+      "x": 14,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 38,
+      "seed": 189
+    },
+    {
+      "kind": "skeleton",
+      "x": 16,
+      "y": 38,
+      "seed": 606
+    },
+    {
+      "kind": "bone-niche",
+      "x": 17,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 38,
+      "seed": 627
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 20,
+      "y": 38
+    },
+    {
+      "kind": "bone-niche",
+      "x": 22,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 23,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 24,
+      "y": 38
+    },
+    {
+      "kind": "bone-niche",
+      "x": 25,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 26,
+      "y": 38,
+      "seed": 244
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 38,
+      "seed": 683
+    },
+    {
+      "kind": "bone-niche",
+      "x": 28,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 29,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 12,
+      "y": 41,
+      "seed": 183
+    },
+    {
+      "kind": "cobweb",
+      "x": 27,
+      "y": 41,
+      "seed": 258
+    },
+    {
+      "kind": "cobweb",
+      "x": 12,
+      "y": 47,
+      "seed": 201
+    },
+    {
+      "kind": "cobweb",
+      "x": 27,
+      "y": 47,
+      "seed": 276
+    },
+    {
+      "kind": "skeleton",
+      "x": 13,
+      "y": 41,
+      "seed": 624
+    },
+    {
+      "kind": "bone-niche",
+      "x": 14,
+      "y": 41,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 16,
+      "y": 41
+    },
+    {
+      "kind": "bone-niche",
+      "x": 17,
+      "y": 41,
+      "blocking": true
+    },
+    {
+      "kind": "dust",
+      "x": 18,
+      "y": 41
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 41,
+      "seed": 666
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 20,
+      "y": 41
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 21,
+      "y": 41,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 22,
+      "y": 41,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 25,
+      "y": 41,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 26,
+      "y": 41,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 42,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 13,
+      "y": 42,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 14,
+      "y": 42,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 16,
+      "y": 42,
+      "seed": 658
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 42,
+      "seed": 672
+    },
+    {
+      "kind": "skeleton",
+      "x": 24,
+      "y": 42,
+      "seed": 714
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 26,
+      "y": 42,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 43,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 13,
+      "y": 43,
+      "seed": 650
+    },
+    {
+      "kind": "skeleton",
+      "x": 17,
+      "y": 43,
+      "seed": 678
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 43,
+      "seed": 692
+    },
+    {
+      "kind": "bone-pile",
+      "x": 20,
+      "y": 43
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 21,
+      "y": 43,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 22,
+      "y": 43,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 23,
+      "y": 43,
+      "seed": 720
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 24,
+      "y": 43,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 26,
+      "y": 43
+    },
+    {
+      "kind": "bone-niche",
+      "x": 27,
+      "y": 43,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 44,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 13,
+      "y": 44,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 44,
+      "seed": 670
+    },
+    {
+      "kind": "skeleton",
+      "x": 15,
+      "y": 44,
+      "seed": 677
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 16,
+      "y": 44,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 44,
+      "seed": 705
+    },
+    {
+      "kind": "skeleton",
+      "x": 21,
+      "y": 44,
+      "seed": 719
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 23,
+      "y": 44,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 24,
+      "y": 44,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 27,
+      "y": 44,
+      "blocking": true
+    },
+    {
+      "kind": "dust",
+      "x": 12,
+      "y": 45
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 45,
+      "seed": 683
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 16,
+      "y": 45
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 19,
+      "y": 45,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 20,
+      "y": 45
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 21,
+      "y": 45,
+      "blocking": true
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 23,
+      "y": 45,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 24,
+      "y": 45
+    },
+    {
+      "kind": "bone-pile",
+      "x": 25,
+      "y": 45
+    },
+    {
+      "kind": "bone-niche",
+      "x": 27,
+      "y": 45,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 12,
+      "y": 46,
+      "blocking": true
+    },
+    {
+      "kind": "bone-pile",
+      "x": 13,
+      "y": 46
+    },
+    {
+      "kind": "skeleton",
+      "x": 15,
+      "y": 46,
+      "seed": 703
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 16,
+      "y": 46,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 46,
+      "seed": 724
+    },
+    {
+      "kind": "calcified-penitent",
+      "x": 19,
+      "y": 46,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 23,
+      "y": 46,
+      "seed": 759
+    },
+    {
+      "kind": "skeleton",
+      "x": 24,
+      "y": 46,
+      "seed": 766
+    },
+    {
+      "kind": "skeleton",
+      "x": 27,
+      "y": 46,
+      "seed": 787
+    },
+    {
+      "kind": "skeleton",
+      "x": 14,
+      "y": 47,
+      "seed": 709
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 47,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 18,
+      "y": 47,
+      "seed": 231
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 47,
+      "seed": 744
+    },
+    {
+      "kind": "bone-pile",
+      "x": 22,
+      "y": 47
+    },
+    {
+      "kind": "bone-niche",
+      "x": 23,
+      "y": 47,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 24,
+      "y": 47,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 25,
+      "y": 47,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 26,
+      "y": 47,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 16,
+      "y": 3
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 23,
+      "y": 3
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 2,
+      "seed": 81
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 2,
+      "seed": 126
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 5,
+      "seed": 90
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 5,
+      "seed": 135
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 2,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 2,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 22,
+      "y": 2,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 15,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 16,
+      "y": 3,
+      "seed": 151
+    },
+    {
+      "kind": "bone-pile",
+      "x": 22,
+      "y": 3
+    },
+    {
+      "kind": "cobweb",
+      "x": 24,
+      "y": 3,
+      "seed": 129
+    },
+    {
+      "kind": "cobweb",
+      "x": 15,
+      "y": 4,
+      "seed": 87
+    },
+    {
+      "kind": "bone-niche",
+      "x": 16,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 17,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 18,
+      "y": 5
+    },
+    {
+      "kind": "cobweb",
+      "x": 22,
+      "y": 5,
+      "seed": 125
+    },
+    {
+      "kind": "cobweb",
+      "x": 23,
+      "y": 5,
+      "seed": 130
+    },
+    {
+      "kind": "cracked-column",
+      "x": 20,
+      "y": 33,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 7,
+      "seed": 54
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 18,
+      "y": 9,
+      "seed": 117
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 10
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 12,
+      "seed": 79
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 13,
+      "seed": 84
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 15,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 15
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "cobweb",
+      "x": 21,
+      "y": 16,
+      "seed": 153
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 17,
+      "seed": 105
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 19,
+      "seed": 114
+    },
+    {
+      "kind": "cobweb",
+      "x": 21,
+      "y": 20,
+      "seed": 165
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 20
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 21,
+      "seed": 125
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 22,
+      "seed": 130
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 24,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 25,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 25,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 25,
+      "seed": 144
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 25,
+      "seed": 145
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 26,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 26,
+      "seed": 150
+    },
+    {
+      "kind": "cobweb",
+      "x": 18,
+      "y": 27,
+      "seed": 171
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 28,
+      "blocking": true
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 29,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 29,
+      "seed": 164
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 29,
+      "seed": 165
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 30
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 31,
+      "seed": 174
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 32,
+      "seed": 179
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 37,
+      "seed": 204
+    },
+    {
+      "kind": "bone-niche",
+      "x": 18,
+      "y": 39,
+      "blocking": true
+    },
+    {
+      "kind": "skeleton",
+      "x": 19,
+      "y": 39,
+      "seed": 214
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 39,
+      "seed": 215
+    },
+    {
+      "kind": "bone-niche",
+      "x": 21,
+      "y": 40,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 40
+    }
+  ]
+}

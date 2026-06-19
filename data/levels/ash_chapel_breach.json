@@ -13,7 +13,7 @@
     [
       "The Holy Remnant feeds the cities, mans the walls, and rings the hours. In return it owns your faith, your confession, and your silence. It teaches that this is God's war, that the Host is Hell itself come to test the faithful, and that obedience is the only armor that holds.",
       "It also keeps a quieter office, the one the sermons never mention. You serve the Ashen Censure. You are a cult-breaker.",
-      "When a chapel goes dark, when a town stops answering its bells, when someone starts teaching that the rot is holy, they send you to end it, before it spreads and before anyone starts asking the wrong kind of question."
+      "When a chapel goes dark, when a checkpoint tower stops answering its bell, when someone starts teaching that the rot is holy, they send you to end it, before it spreads and before anyone starts asking the wrong kind of question."
     ],
     [
       "It is not holy work, and it has never once felt like saving anyone.",
@@ -23,7 +23,7 @@
     [
       "Lately there are more of them than there should be.",
       "The Choir of the Open Wound and a dozen smaller blasphemies are spreading faster than the Censure can burn them, in places quiet for generations. No one in the Office will say why. You have started to wonder if anyone knows, or if they simply will not say.",
-      "Your latest writ: a quarantine chapel on the old road to Hallowfen has gone silent. A Choir cell has nested inside. Clear it.",
+      "Your latest writ: a quarantine chapel on the old road to the Hallowfen wall has gone silent. A Choir cell has nested inside. Clear it.",
       "You did not expect this one to be where the question finally started asking back."
     ]
   ],
@@ -42,7 +42,16 @@
     "ash-chapel-confession-scratch",
     "ash-chapel-child-drawing",
     "ash-chapel-medicine-crate",
-    "ash-chapel-engine-rut"
+    "ash-chapel-engine-rut",
+    "ash-chapel-warden-orders",
+    "ash-chapel-warden-journal",
+    "ash-chapel-warden-stash",
+    "ash-chapel-warden-safe",
+    "ash-chapel-warden-safe-locked",
+    "ash-chapel-choir-sigil",
+    "ash-chapel-cult-victim",
+    "ash-chapel-penitent-corpse",
+    "ash-chapel-saint-statue"
   ],
   "enemyAggroRadius": 2,
   "combatTriggers": [
@@ -87,11 +96,11 @@
     "questUpdate": {
       "quest": "investigate-ash-chapel-cult",
       "stage": "complete",
-      "log": "Quest complete: the Ash Chapel cell is broken. Their teachings point down the road to Hallowfen."
+      "log": "Quest complete: the Ash Chapel cell is broken. Their teachings point down the road to the Hallowfen wall."
     }
   },
   "tiles": [
-    "########################################",
+    "##############W##W##W##W##W#############",
     "############................############",
     "############................############",
     "############................############",
@@ -125,6 +134,10 @@
   "legend": {
     "#": {
       "kind": "wall",
+      "walkable": false
+    },
+    "W": {
+      "kind": "wall-window",
       "walkable": false
     },
     "b": {
@@ -177,7 +190,7 @@
         "y": 14,
         "encounter": "west-camp",
         "ambient": [
-          "Hallowfen has gone quiet. Quiet places hear better.",
+          "The wall bells have gone quiet. Quiet gates hear better.",
           "Sing low, or the road wardens hear us.",
           "Smoke goes up. The hunger goes down."
         ]
@@ -200,7 +213,7 @@
         "encounter": "east-watch",
         "ambient": [
           "The old saints kept their mouths shut. We will not.",
-          "No bells from Hallowfen. That is its own answer.",
+          "No tower bell from the wall. That is its own answer.",
           "Listen past the chapel stone."
         ]
       },
@@ -342,7 +355,7 @@
         "questUpdate": {
           "quest": "investigate-ash-chapel-cult",
           "stage": "evidence-found",
-          "log": "Quest updated: the ledger points toward Hallowfen without explaining why."
+          "log": "Quest updated: the ledger points toward the Hallowfen wall without explaining why."
         },
         "log": "A grease-dark ledger lies open beside a cracked bowl."
       }
@@ -421,75 +434,99 @@
       "blocking": true
     },
     {
+      "kind": "saint-statue",
+      "x": 16,
+      "y": 8,
+      "blocking": true,
+      "name": "Beheaded Saint",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-saint-statue",
+        "log": "A chapel saint carved in stone, the head struck clean off and a wound-star cut into the breast."
+      }
+    },
+    {
+      "kind": "saint-statue",
+      "x": 23,
+      "y": 8,
+      "blocking": true,
+      "name": "Beheaded Saint",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-saint-statue",
+        "log": "A chapel saint carved in stone, the head struck clean off and a wound-star cut into the breast."
+      }
+    },
+    {
       "kind": "broken-pew",
-      "x": 10,
-      "y": 9,
+      "x": 15,
+      "y": 11,
       "blocking": true
     },
     {
       "kind": "broken-pew",
-      "x": 11,
-      "y": 10,
+      "x": 17,
+      "y": 11,
       "blocking": true
     },
     {
       "kind": "broken-pew",
-      "x": 10,
-      "y": 12,
+      "x": 23,
+      "y": 11,
       "blocking": true
     },
     {
       "kind": "broken-pew",
-      "x": 11,
-      "y": 13,
+      "x": 25,
+      "y": 11,
       "blocking": true
     },
     {
       "kind": "broken-pew",
-      "x": 10,
-      "y": 17,
-      "blocking": true
-    },
-    {
-      "kind": "broken-pew",
-      "x": 11,
-      "y": 18,
-      "blocking": true
-    },
-    {
-      "kind": "broken-pew",
-      "x": 29,
-      "y": 9,
-      "blocking": true
-    },
-    {
-      "kind": "broken-pew",
-      "x": 28,
-      "y": 10,
-      "blocking": true
-    },
-    {
-      "kind": "broken-pew",
-      "x": 29,
-      "y": 13,
-      "blocking": true
-    },
-    {
-      "kind": "broken-pew",
-      "x": 28,
+      "x": 15,
       "y": 14,
       "blocking": true
     },
     {
       "kind": "broken-pew",
-      "x": 29,
+      "x": 17,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 23,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 25,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 15,
       "y": 17,
       "blocking": true
     },
     {
       "kind": "broken-pew",
-      "x": 28,
-      "y": 18,
+      "x": 17,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 23,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 25,
+      "y": 17,
       "blocking": true
     },
     {
@@ -675,9 +712,35 @@
       "blocking": true
     },
     {
-      "kind": "corpse",
+      "kind": "cult-victim",
+      "x": 21,
+      "y": 22,
+      "name": "Knifed Traveller",
+      "interact": {
+        "type": "shrine",
+        "dialogue": "ash-chapel-cult-victim",
+        "log": "A man lies on his back in a wide pool of blood, his coat cut open and his chest carved."
+      }
+    },
+    {
+      "kind": "blood-stain",
+      "x": 20,
+      "y": 22
+    },
+    {
+      "kind": "blood-stain",
       "x": 22,
-      "y": 26
+      "y": 22
+    },
+    {
+      "kind": "blood-stain",
+      "x": 21,
+      "y": 23
+    },
+    {
+      "kind": "blood-sigil",
+      "x": 22,
+      "y": 23
     },
     {
       "kind": "corpse",
@@ -733,9 +796,16 @@
       }
     },
     {
+      "kind": "chapel-font",
+      "x": 24,
+      "y": 26,
+      "blocking": true,
+      "name": "Fouled Font"
+    },
+    {
       "kind": "machine-oil",
       "x": 27,
-      "y": 26,
+      "y": 25,
       "name": "Oil and Tread",
       "interact": {
         "type": "note",
@@ -927,6 +997,113 @@
       "kind": "dust",
       "x": 35,
       "y": 12
+    },
+    {
+      "kind": "wall-safe",
+      "x": 24,
+      "y": 0,
+      "blocking": true,
+      "id": "warden-wall-safe",
+      "name": "Warden's Wall Safe",
+      "interact": {
+        "type": "container",
+        "requiresItem": "warden-safe-key",
+        "lockedDialogue": "ash-chapel-warden-safe-locked",
+        "lockedLog": "The wall safe is locked. It will not give without the warden's key.",
+        "dialogue": "ash-chapel-warden-safe",
+        "log": "An iron strongbox set into the wall behind the hung saint.",
+        "loot": [
+          {
+            "item": "warden-seal-ring",
+            "count": 1
+          },
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 35,
+      "y": 13,
+      "name": "Warden's Journal",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-warden-journal",
+        "log": "A hymnal lies split in the old warden's post, hollowed out around a private book."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 15,
+      "y": 22,
+      "name": "Quarantine House Orders",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-warden-orders",
+        "log": "A Remnant writ is still nailed to the board by the old intake gate."
+      }
+    },
+    {
+      "kind": "wall-stash",
+      "x": 1,
+      "y": 15,
+      "blocking": true,
+      "id": "warden-confession-stash",
+      "name": "Loose Cell Stone",
+      "interact": {
+        "type": "container",
+        "dialogue": "ash-chapel-warden-stash",
+        "log": "A stone set low in the old cell wall sits proud of the rest, pried out and pushed back.",
+        "loot": [
+          {
+            "item": "warden-safe-key",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "choir-pentagram",
+      "x": 13,
+      "y": 2
+    },
+    {
+      "kind": "choir-pentagram",
+      "x": 26,
+      "y": 2,
+      "name": "Wound-Star",
+      "interact": {
+        "type": "note",
+        "dialogue": "ash-chapel-choir-sigil",
+        "log": "A wound-star is daubed point-down on the nave wall, painted over an older mark."
+      }
+    },
+    {
+      "kind": "choir-pentagram",
+      "x": 9,
+      "y": 19
+    },
+    {
+      "kind": "choir-pentagram",
+      "x": 30,
+      "y": 10
+    },
+    {
+      "kind": "bone-pile",
+      "x": 3,
+      "y": 17
+    },
+    {
+      "kind": "corpse",
+      "x": 35,
+      "y": 14
     }
   ]
 }
