@@ -27,6 +27,7 @@ const ATTACK_ANIM = 0.5;
 const HIT_ANIM = 0.24;
 const TRIGGER_RADIUS = 2;
 const AMBIENT_SPEECH_LIFE = 2.7;
+const AREA_TITLE_DURATION = 2.35;
 const MAX_LOG = 8;
 const WALK_FRAMES = 8;
 const ATTACK_FRAMES = 6;
@@ -100,6 +101,8 @@ export class Game {
       render: () => this.render()
     });
     this.ready = false;
+    this.areaTitle = null;
+    this.areaTitleTimer = 0;
   }
 
   // (Re)load the level and reset runtime state. Level transitions preserve the
@@ -189,6 +192,8 @@ export class Game {
     if (options.player) this.#teleportPlayer(options.player);
     this.renderer.rebuildStaticScene({ grid: this.grid, props: this.level.props, mood: this.level.mood });
 
+    this.areaTitle = level.name;
+    this.areaTitleTimer = AREA_TITLE_DURATION;
     this.#log(level.intro || level.name);
     this.#startQuests(previousQuestStages);
     this.#log('Explore the chapel. E inspect, I pack, H bind wounds.');
@@ -218,6 +223,9 @@ export class Game {
     if (!this.ready) return;
 
     this.#advanceAnim(dt);
+    if (this.areaTitleTimer > 0 && this.mode !== 'intro') {
+      this.areaTitleTimer = Math.max(0, this.areaTitleTimer - dt);
+    }
     this.#ageEffects(dt);
     this.#advanceAmbientSpeech(dt);
     for (const actor of this.actors) this.#advanceActorAnim(actor, dt);
@@ -1525,6 +1533,9 @@ export class Game {
       equipmentIndex: this.equipmentIndex ?? 0,
       carryWeight: this.inventory.currentWeight(),
       maxCarryWeight: this.inventory.maxCarryWeight,
+      areaTitle: this.areaTitleTimer > 0
+        ? { text: this.areaTitle, ttl: this.areaTitleTimer, duration: AREA_TITLE_DURATION }
+        : null,
       screen: this.uiScreen,
       dialogue: this.dialogue,
       hoverText: cursor?.text ?? null,

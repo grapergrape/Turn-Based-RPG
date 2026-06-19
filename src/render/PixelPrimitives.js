@@ -1030,27 +1030,92 @@ export function drawLooseFlagstone(ctx, cx, cy, seed) {
 
 // A low ossuary heap: stacked saint-bone, the kind chapels kept in their
 // cellars long before the Host gave bone a new meaning.
+function boneStroke(ctx, x0, y0, x1, y1, color, size = 1) {
+  const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    px(ctx, Math.round(x0 + (x1 - x0) * t), Math.round(y0 + (y1 - y0) * t), color, size, size);
+  }
+}
+
+function drawOssuaryLongBone(ctx, x0, y0, x1, y1, compact = false) {
+  const bone = PALETTE.hostBone;
+  const hi = PALETTE.stoneDust;
+  const knob = compact ? 3 : 5;
+  const body = compact ? 1 : 2;
+
+  boneStroke(ctx, x0, y0 + 1, x1, y1 + 1, PALETTE.outline, body + 1);
+  boneStroke(ctx, x0, y0, x1, y1, bone, body);
+  boneStroke(
+    ctx,
+    Math.round(x0 + (x1 - x0) * 0.22),
+    Math.round(y0 + (y1 - y0) * 0.22),
+    Math.round(x0 + (x1 - x0) * 0.56),
+    Math.round(y0 + (y1 - y0) * 0.56),
+    hi,
+    1
+  );
+
+  const cap = (x, y) => {
+    px(ctx, x - Math.floor(knob / 2), y - 1, PALETTE.outline, knob, compact ? 3 : 4);
+    px(ctx, x - 1, y - 1, bone, 3, compact ? 3 : 4);
+    px(ctx, x - Math.floor(knob / 2), y, bone, knob, 2);
+    px(ctx, x - 1, y - 1, hi, 2, 1);
+  };
+  cap(Math.round(x0), Math.round(y0));
+  cap(Math.round(x1), Math.round(y1));
+}
+
+function drawOssuarySkull(ctx, sx, sy, compact = false, flip = 1) {
+  const bone = PALETTE.hostBone;
+  const hi = PALETTE.stoneDust;
+  const dark = PALETTE.void;
+  if (compact) {
+    px(ctx, sx - 3, sy - 4, PALETTE.outline, 7, 8);
+    px(ctx, sx - 2, sy - 5, PALETTE.outline, 5, 1);
+    px(ctx, sx - 2, sy - 4, bone, 5, 6);
+    px(ctx, sx - 3, sy - 2, bone, 7, 3);
+    px(ctx, sx - 2, sy - 4, hi, 2, 1);
+    px(ctx, sx - 1, sy - 2, dark, 1, 2);
+    px(ctx, sx + 2, sy - 2, dark, 1, 2);
+    px(ctx, sx, sy + 1, dark, 1, 2);
+    px(ctx, sx - flip, sy + 3, PALETTE.outline, 4, 1);
+    px(ctx, sx - flip, sy + 4, bone, 3, 1);
+    return;
+  }
+
+  px(ctx, sx - 5, sy - 6, PALETTE.outline, 11, 10);
+  px(ctx, sx - 3, sy - 8, PALETTE.outline, 7, 3);
+  px(ctx, sx - 4, sy - 6, bone, 9, 8);
+  px(ctx, sx - 2, sy - 8, bone, 5, 3);
+  px(ctx, sx - 3, sy - 7, hi, 4, 1);
+  px(ctx, sx - 3, sy - 3, dark, 2, 3);
+  px(ctx, sx + 2, sy - 3, dark, 2, 3);
+  px(ctx, sx - 1, sy, PALETTE.stoneDark, 3, 2);
+  px(ctx, sx - 3, sy + 3, PALETTE.outline, 7, 3);
+  px(ctx, sx - 2, sy + 3, bone, 5, 2);
+  px(ctx, sx - 1, sy + 4, dark, 1, 1);
+  px(ctx, sx + 2, sy + 4, dark, 1, 1);
+}
+
 export function drawBonePile(ctx, cx, cy, seed) {
   drawShadowBlob(ctx, cx, cy + 3, 38, 15);
   const rng = rngFrom(hash2D(seed + 61, seed * 9 + 7));
-  for (let i = 0; i < 9; i += 1) {
+  for (let i = 0; i < 7; i += 1) {
     const x0 = cx + Math.floor((rng() - 0.5) * 28);
     const y0 = cy + Math.floor((rng() - 0.5) * 9);
-    const len = 6 + Math.floor(rng() * 10);
-    px(ctx, x0, y0, PALETTE.outline, len + 2, 3);
-    px(ctx, x0 + 1, y0, PALETTE.hostBone, len, 2);
-    px(ctx, x0 + 1, y0, PALETTE.stoneDust, Math.floor(len / 2), 1);
-    px(ctx, x0, y0 - 1, PALETTE.hostBone, 2, 4);
-    px(ctx, x0 + len, y0 - 1, PALETTE.hostBone, 2, 4);
+    const len = 8 + Math.floor(rng() * 12);
+    const lean = Math.floor(rng() * 5) - 2;
+    drawOssuaryLongBone(ctx, x0, y0, x0 + len, y0 + lean, true);
   }
-  // A skull resting near the top of the heap.
-  const sx = cx - 2;
-  const sy = cy - 9;
-  px(ctx, sx - 4, sy, PALETTE.outline, 10, 9);
-  px(ctx, sx - 3, sy, PALETTE.hostBone, 8, 8);
-  px(ctx, sx - 2, sy + 2, PALETTE.void, 2, 2);
-  px(ctx, sx + 1, sy + 2, PALETTE.void, 2, 2);
-  px(ctx, sx - 1, sy + 5, PALETTE.stoneDark, 4, 3);
+  drawOssuarySkull(ctx, cx - 4, cy - 5, false, rng() < 0.5 ? -1 : 1);
+  drawOssuarySkull(ctx, cx + 9, cy + 1, true, 1);
+  for (let rib = 0; rib < 5; rib += 1) {
+    const rx = cx - 14 + rib * 6 + Math.floor(rng() * 2);
+    const ry = cy - 1 + Math.floor(rng() * 5);
+    boneStroke(ctx, rx, ry - 4, rx + 2, ry + 2, PALETTE.hostBone, 1);
+    px(ctx, rx + 2, ry + 2, PALETTE.outline, 2, 1);
+  }
   drawNoisePixels(ctx, cx - 20, cy - 11, 40, 22, [PALETTE.stoneDust, PALETTE.rustDark], 0.03, seed);
 }
 
@@ -1068,32 +1133,27 @@ export function drawSkeleton(ctx, cx, cy, seed, opts = {}) {
   const hx = cx + flip * 9; // skull at one end
   const hy = cy - 1;
   // Spine running from the skull toward the pelvis.
-  for (let i = 0; i < 9; i += 1) px(ctx, Math.round(hx - flip * (3 + i * 1.5)), hy + 1, bone, 2, 1);
+  for (let i = 0; i < 9; i += 1) {
+    px(ctx, Math.round(hx - flip * (3 + i * 1.5)), hy + 1 + (i % 2), bone, 2, 1);
+  }
   // Ribcage: a few curved ribs off the upper spine.
   for (let r = 0; r < 4; r += 1) {
     const rx = Math.round(hx - flip * (4 + r * 2));
-    px(ctx, rx, hy - 3, bone, 1, 7);
-    px(ctx, rx - (flip > 0 ? 1 : 0), hy - 4, bone, 2, 1);
-    px(ctx, rx - (flip > 0 ? 1 : 0), hy + 3, bone, 2, 1);
+    boneStroke(ctx, rx, hy - 4, rx - flip * 2, hy - 1, bone, 1);
+    boneStroke(ctx, rx, hy + 4, rx - flip * 2, hy + 1, bone, 1);
+    px(ctx, rx - (flip > 0 ? 1 : 0), hy - 4, hi, 2, 1);
   }
   // Pelvis at the far end.
   const pelX = Math.round(hx - flip * 17);
+  px(ctx, pelX - 3, hy - 1, PALETTE.outline, 8, 5);
   px(ctx, pelX - 2, hy - 1, bone, 6, 4);
   px(ctx, pelX, hy, dark, 2, 2);
   // Splayed limb long-bones.
-  for (let l = 0; l < 3; l += 1) {
-    const lx = Math.round(hx - flip * (5 + l * 5));
-    const ly = hy + 4 + l;
-    px(ctx, Math.min(lx, lx - flip * 6), ly, bone, 7, 1);
-    px(ctx, Math.min(lx, lx - flip * 6), ly + 1, dark, 7, 1);
-  }
-  // Skull, lolled, two dark sockets and a jaw gap (the strongest tell).
-  px(ctx, hx - 4, hy - 5, PALETTE.outline, 9, 8);
-  px(ctx, hx - 3, hy - 5, bone, 7, 7);
-  px(ctx, hx - 3, hy - 5, hi, 3, 1);
-  px(ctx, hx - 2, hy - 3, dark, 2, 2);
-  px(ctx, hx + 1, hy - 3, dark, 2, 2);
-  px(ctx, hx - 1, hy + 1, dark, 3, 1);
+  drawOssuaryLongBone(ctx, Math.round(hx - flip * 8), hy + 5, Math.round(hx - flip * 1), hy + 9, true);
+  drawOssuaryLongBone(ctx, Math.round(hx - flip * 12), hy + 5, Math.round(hx - flip * 20), hy + 8, true);
+  drawOssuaryLongBone(ctx, pelX - flip * 1, hy + 3, pelX - flip * 10, hy + 11, true);
+  drawOssuaryLongBone(ctx, pelX + flip * 2, hy + 2, pelX + flip * 8, hy + 8, true);
+  drawOssuarySkull(ctx, hx, hy - 1, false, flip);
   drawNoisePixels(ctx, cx - 15, cy - 6, 30, 14, [PALETTE.stoneDust, PALETTE.rustDark], 0.03, seed);
 }
 
@@ -1107,34 +1167,57 @@ export function drawBoneNiche(ctx, cx, cy, seed, opts = {}) {
   const bone = PALETTE.hostBone;
   const dark = PALETTE.void;
   const rng = rngFrom(hash2D(seed + 41, seed * 5 + 9));
-  const w = 26;
-  const h = 30;
+  const w = 28;
+  const h = 32;
   const top = cy - h + 4;
-  const x = cx - w / 2;
+  const x = Math.round(cx - w / 2);
 
   drawShadowBlob(ctx, cx, cy + 3, 30, 13);
-  px(ctx, x - 1, top - 1, PALETTE.outline, w + 2, h + 2);
-  px(ctx, x, top, lo, w, h); // recess back
-  px(ctx, x, top, dark, w, 4); // shadow under the lintel
-  px(ctx, x - 1, top - 2, stone, w + 2, 3); // lintel
-  px(ctx, x - 1, top - 2, dust, w + 2, 1);
-  px(ctx, x - 1, top, stone, 2, h); // left jamb
-  px(ctx, x + w - 1, top, stone, 2, h); // right jamb
-  // Three shelves of bone.
+  px(ctx, x - 2, top - 2, PALETTE.outline, w + 4, h + 4);
+  px(ctx, x - 1, top - 1, lo, w + 2, h + 2);
+  px(ctx, x + 2, top + 4, dark, w - 4, h - 7); // deep recess
+  px(ctx, x - 2, top - 3, stone, w + 4, 4); // lintel
+  px(ctx, x - 2, top - 3, dust, w + 4, 1);
+  px(ctx, x - 2, top, stone, 3, h); // left jamb
+  px(ctx, x + w - 1, top, stone, 3, h); // right jamb
+  px(ctx, x + 1, top + h - 3, stone, w - 2, 3);
+  px(ctx, x + 3, top + 2, PALETTE.outline, w - 6, 1);
+
+  // Three uneven shelves of skulls, femurs, ribs and gaps.
   for (let row = 0; row < 3; row += 1) {
-    const ry = top + 7 + row * 8;
-    px(ctx, x + 2, ry, bone, w - 4, 2); // stacked long-bones
-    px(ctx, x + 2, ry, dust, w - 4, 1);
-    const skulls = 2 + (row % 2);
-    for (let s = 0; s < skulls; s += 1) {
-      const sx = x + 3 + s * 8 + Math.floor(rng() * 2);
-      px(ctx, sx - 1, ry - 5, PALETTE.outline, 7, 6);
-      px(ctx, sx, ry - 5, bone, 5, 5);
-      px(ctx, sx, ry - 5, dust, 2, 1);
-      px(ctx, sx, ry - 3, dark, 1, 2);
-      px(ctx, sx + 3, ry - 3, dark, 1, 2);
+    const ry = top + 8 + row * 8;
+    px(ctx, x + 3, ry + 4, PALETTE.outline, w - 6, 2);
+    px(ctx, x + 4, ry + 3, stone, w - 8, 2);
+    px(ctx, x + 5, ry - 4, dark, w - 10, 5);
+
+    const leftLean = Math.floor(rng() * 3) - 1;
+    const rightLean = Math.floor(rng() * 3) - 1;
+    if (row === 0) {
+      drawOssuarySkull(ctx, x + 8, ry - 1, true, -1);
+      drawOssuaryLongBone(ctx, x + 13, ry + 1, x + w - 7, ry + leftLean, true);
+      drawOssuaryLongBone(ctx, x + 11, ry + 3, x + w - 10, ry + 4 + rightLean, true);
+    } else if (row === 1) {
+      drawOssuaryLongBone(ctx, x + 5, ry + 2, x + w - 7, ry - 1 + leftLean, true);
+      drawOssuaryLongBone(ctx, x + 7, ry - 2, x + w - 9, ry + 3 + rightLean, true);
+      for (let rib = 0; rib < 5; rib += 1) {
+        const rx = x + 7 + rib * 4 + Math.floor(rng() * 2);
+        boneStroke(ctx, rx, ry - 5, rx + 1, ry + 2, bone, 1);
+        px(ctx, rx + 1, ry + 1, PALETTE.outline, 2, 1);
+      }
+    } else {
+      drawOssuaryLongBone(ctx, x + 5, ry + 1, x + w - 12, ry + 2 + leftLean, true);
+      drawOssuaryLongBone(ctx, x + 6, ry + 3, x + w - 14, ry + rightLean, true);
+      drawOssuarySkull(ctx, x + w - 9, ry, true, 1);
+      for (let rib = 0; rib < 3; rib += 1) {
+        const rx = x + 7 + rib * 4 + Math.floor(rng() * 2);
+        boneStroke(ctx, rx, ry - 4, rx + 2, ry + 1, bone, 1);
+      }
     }
   }
+  // A few loose pale fragments catch the eye at the base.
+  drawOssuaryLongBone(ctx, x + 5, cy - 1, x + 15, cy + 2, true);
+  px(ctx, x + w - 7, cy - 2, bone, 4, 2);
+  px(ctx, x + w - 8, cy - 3, PALETTE.outline, 6, 1);
   drawNoisePixels(ctx, x, top, w, h, [lo, PALETTE.stoneDark], 0.05, seed);
 }
 
@@ -1400,20 +1483,23 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
   const dead = Boolean(opts.dead) || (Boolean(opts.killed) && !released);
   const killed = dead; // the on-cross body code reads `killed` as "dead, still hanging"
 
-  const flesh = PALETTE.skinMid; // human skin: this was a man, and still reads as one
-  const fleshHi = PALETTE.skinLight;
-  const fleshSh = PALETTE.skinDark;
-  const wet = PALETTE.hostRed;
-  const dark = PALETTE.hostBlack;
-  const rim = dim ? PALETTE.hostGold : PALETTE.hostBone; // bone (calcified -> gold when dim)
+  const alivePulse = !dead && pulse ? 1 : 0;
+  const deadSag = dead ? 8 : 0;
+  const headDrop = dead ? 13 : 0;
+  const flesh = dead ? PALETTE.stoneDust : PALETTE.skinMid; // human-sized even after the Host opens him
+  const fleshHi = dead ? PALETTE.hostBone : PALETTE.skinLight;
+  const fleshSh = dead ? PALETTE.stoneDark : PALETTE.skinDark;
+  const wet = dead ? PALETTE.rustDark : PALETTE.hostRed;
+  const dark = dead ? PALETTE.stoneDark : PALETTE.hostBlack;
+  const rim = dead ? PALETTE.stoneDust : (dim ? PALETTE.hostGold : PALETTE.hostBone);
   const bone = rim;
-  const gold = PALETTE.hostGold;
+  const gold = dead ? PALETTE.stoneDark : PALETTE.hostGold;
   const topY = cy - 88;
   const armY = cy - 60; // crossbeam / nailed wrists
   const footY = cy - 2;
   const beamHalf = 23;
-  const shY = armY + 8; // shoulders
-  const lean = 2 + (dead ? 1 : 0) + (pulse ? 1 : 0); // the whole body lolls aside
+  const shY = armY + 8 + deadSag; // shoulders
+  const lean = dead ? 8 : 2 + alivePulse; // dead hangs still; living lolls with the pulse
 
   // Thick stepped line, for the sagging limbs.
   const seg = (x0, y0, x1, y1, color, thick) => {
@@ -1430,11 +1516,13 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
     let x = x0;
     let y = y0;
     let vy = -rise;
+    const tendrilBase = dead ? PALETTE.stoneDark : PALETTE.rustDark;
+    const tendrilEdge = dead ? PALETTE.stoneDust : PALETTE.rustMid;
     for (let i = 0; i < len; i += 1) {
       const t = i / len;
       const w = Math.max(1, Math.round(baseW * (1 - t * 0.6)));
-      px(ctx, Math.round(x - w / 2), Math.round(y), PALETTE.rustDark, w, 1);
-      px(ctx, Math.round(x - w / 2), Math.round(y), PALETTE.rustMid, 1, 1); // lit edge
+      px(ctx, Math.round(x - w / 2), Math.round(y), tendrilBase, w, 1);
+      px(ctx, Math.round(x - w / 2), Math.round(y), tendrilEdge, 1, 1); // lit edge
       x += dir * (1 - t * 0.25);
       y += vy;
       vy += 0.38;
@@ -1575,7 +1663,7 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
 
   // --- Legs: human, nailed together at one foot-spike, knees buckled aside -
   const kneeX = cx + lean - 4;
-  const kneeY = hipY + 9;
+  const kneeY = hipY + 9 + (dead ? 2 : 0);
   const footX = cx + 1;
   seg(cx - 2 + lean, hipY, kneeX, kneeY, flesh, 7); // thighs
   seg(kneeX, kneeY, footX, footY - 2, flesh, 5); // shins
@@ -1588,7 +1676,7 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
   // --- Goat skull: the head opened all the way, jaw torn open, one curling
   //     ram horn and the other snapped to a jagged spike --------------------
   const gx = cx + lean;
-  const gy = armY - 17;
+  const gy = armY - 17 + headDrop;
   px(ctx, cx - 2 + lean, shY - 4, flesh, 5, 6); // a short human neck below it
   px(ctx, cx - 2 + lean, shY - 4, fleshHi, 1, 6);
   px(ctx, gx - 5, gy, PALETTE.outline, 11, 9); // cranium
@@ -1810,9 +1898,11 @@ export function drawChoirPentagram(ctx, cx, cy, seed) {
 // pale and grey. Beaten and cut before the end, still collared to the wall.
 export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 91, seed * 7 + 13));
-  const tilt = Math.round((rng() - 0.5) * 3); // the head and torso loll to one side
+  const tilt = Math.round((rng() - 0.5) * 5); // the head and torso loll to one side
+  const side = (seed & 1) ? 1 : -1;
   const bone = PALETTE.hostBone;   // calcified pale flesh
   const boneLo = PALETTE.stoneDust;
+  const boneDk = PALETTE.stoneDark;
   const grey = PALETTE.stoneLight;
   const vein = PALETTE.stoneDark;  // black-gold gone dead and grey
   const cut = PALETTE.rustDark;    // old dried wounds
@@ -1821,93 +1911,136 @@ export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
   const ironHi = PALETTE.stoneLight;
 
   const footY = cy - 2;
-  const hipY = cy - 16;
-  const chestY = cy - 30;
-  const headY = cy - 40;   // bowed head centre
-  const wristY = cy - 45;  // wrists hauled up
-  const ringY = cy - 55;   // iron rings in the wall
+  const hipY = cy - 18;
+  const chestY = cy - 34;
+  const shoulderY = cy - 43;
+  const headY = cy - 54;
+  const ringY = cy - 60;   // iron rings in the wall
+
+  const seg = (x0, y0, x1, y1, color, thick = 1) => {
+    const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+    for (let i = 0; i <= steps; i += 1) {
+      const t = i / steps;
+      px(ctx, Math.round(x0 + (x1 - x0) * t - Math.floor(thick / 2)), Math.round(y0 + (y1 - y0) * t), color, thick, 1);
+    }
+  };
 
   drawShadowBlob(ctx, cx, cy + 2, 26, 11);
 
-  // Each wrist is chained up to an iron ring in the wall, so the body hangs and
-  // sags from the arms. Ring, a run of links, the manacle, then the pale arm.
+  // Uneven wall rings and chains. They hold the body up, but not cleanly.
   for (const s of [-1, 1]) {
-    const rx = cx + s * 11;
-    for (let n = 0; n < 8; n += 1) {
-      const a = (Math.PI * 2 * n) / 8;
-      px(ctx, rx + Math.round(Math.cos(a) * 2), ringY + Math.round(Math.sin(a) * 2), iron);
+    const rx = cx + s * (11 + ((seed >> (s > 0 ? 2 : 4)) & 1));
+    const ry = ringY + (s === side ? -2 : 2);
+    for (const [dx, dy] of [[-2, 0], [-1, -2], [1, -2], [2, 0], [1, 2], [-1, 2]]) {
+      px(ctx, rx + dx, ry + dy, iron);
     }
-    const wx = cx + s * 6;
-    for (let i = 0; i <= 5; i += 1) {
+    const ax = cx + tilt + s * (4 + (s === side ? 2 : 0));
+    const ay = shoulderY + (s === side ? -2 : 3);
+    for (let i = 0; i <= 6; i += 1) {
       const t = i / 5;
-      const x = Math.round(rx + (wx - rx) * t);
-      const y = Math.round(ringY + 2 + (wristY - ringY - 2) * t);
-      px(ctx, x, y, i % 2 ? ironHi : iron, 2, 2);
+      const x = Math.round(rx + (ax - rx) * t);
+      const y = Math.round(ry + 2 + (ay - ry - 2) * t);
+      px(ctx, x, y, i % 2 ? ironHi : iron, 2, 1 + (i & 1));
     }
-    px(ctx, wx - 1, wristY, iron, 4, 2); // manacle
-    const sx = cx + s * 3 + tilt;        // shoulder
-    for (let i = 0; i <= 5; i += 1) {
-      const t = i / 5;
-      const x = Math.round(wx + (sx - wx) * t);
-      const y = Math.round(wristY + (chestY - wristY) * t);
-      px(ctx, x - 1, y, boneLo, 2, 2);
-      px(ctx, x, y, bone, 1, 1);
-    }
+    px(ctx, ax - 1, ay - 1, iron, 4, 2); // manacle buried in calcified flesh
+    seg(ax, ay, cx + tilt + s * 6, chestY - 2, boneLo, 2);
+    seg(ax + s, ay, cx + tilt + s * 5, chestY - 2, bone, 1);
   }
 
-  // One continuous sagging body from chest to hips, leaning with the tilt.
-  for (let y = chestY; y <= hipY; y += 1) {
-    const t = (y - chestY) / Math.max(1, hipY - chestY);
-    const w = Math.round(9 - t);
-    const lx = cx - Math.floor(w / 2) + Math.round(tilt * (1 - t));
+  // Broken halo behind the bowed skull, snapped open on one side.
+  const haloCx = cx + tilt + side * 2;
+  for (let n = 0; n < 15; n += 1) {
+    if ((side > 0 && n > 8 && n < 12) || (side < 0 && n > 3 && n < 7)) continue;
+    const a = Math.PI * (0.15 + n * 0.055);
+    const hx = haloCx + Math.round(Math.cos(a) * (10 + (n % 2)));
+    const hy = headY + 6 - Math.round(Math.sin(a) * 8);
+    px(ctx, hx, hy, n % 3 === 0 ? bone : boneLo, n % 4 === 0 ? 2 : 1, 1);
+  }
+
+  // Long bowed skull, not a clean square face. The lower jaw hangs crooked and
+  // the sockets read as holes, not eyes or a smile.
+  const skullX = cx + tilt + side * 2;
+  const skullY = headY + 3;
+  const skullRows = [
+    [3, 0], [6, -1], [8, -1], [7, 0], [6, 1], [5, 1], [4, 2], [3, 3], [2, 4]
+  ];
+  for (let row = 0; row < skullRows.length; row += 1) {
+    const [w, off] = skullRows[row];
+    const x = skullX - Math.floor(w / 2) + off;
+    const y = skullY + row;
+    px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y, row < 3 ? bone : boneLo, w, 1);
+    px(ctx, x, y, grey, 1, 1);
+  }
+  px(ctx, skullX - 3, skullY + 4, PALETTE.void, 2, 3);
+  px(ctx, skullX + 2, skullY + 3, PALETTE.void, 2, 3);
+  px(ctx, skullX + side, skullY + 7, PALETTE.void, 3, 3); // broken open jaw
+  px(ctx, skullX + side * 2, skullY + 9, boneLo, 3, 1);
+  px(ctx, skullX - side * 5, skullY + 1, bone, 2, 2); // snapped horn/halo stub
+  px(ctx, skullX - side * 7, skullY, PALETTE.outline, 2, 1);
+
+  // Iron collar and throat chain, cutting the neck line instead of forming a face.
+  px(ctx, cx - 5 + tilt, shoulderY - 1, iron, 11, 2);
+  px(ctx, cx - 5 + tilt, shoulderY - 1, ironHi, 7, 1);
+  seg(cx + tilt, shoulderY, cx + tilt - side * 8, ringY + 1, iron, 1);
+
+  // One continuous but twisted hanging body from shoulders to hips. The offset
+  // rows and dark side edge break the old tidy gray-man silhouette.
+  for (let y = shoulderY; y <= hipY; y += 1) {
+    const t = (y - shoulderY) / Math.max(1, hipY - shoulderY);
+    const w = Math.round(12 - t * 4);
+    const drift = Math.round(tilt * (1 - t) + side * Math.sin(t * Math.PI) * 3);
+    const lx = cx - Math.floor(w / 2) + drift;
     px(ctx, lx, y, boneLo, w, 1);
     px(ctx, lx, y, bone, 1, 1);
     px(ctx, lx + w - 1, y, vein, 1, 1);
+    if (y % 5 === 0) px(ctx, lx + 2, y, boneDk, Math.max(2, w - 5), 1);
   }
-  // dead, sunken chest wound, no glow left in it
-  px(ctx, cx - 2 + tilt, chestY + 4, PALETTE.void, 5, 6);
-  px(ctx, cx - 1 + tilt, chestY + 6, vein, 3, 3);
-  // a couple of dried gashes from a beating
+
+  // Ribcage cracked open and frozen shut around a dead cavity. No glow.
+  const cavX = cx + tilt - 3 + side;
+  const cavY = chestY - 1;
+  px(ctx, cavX, cavY, PALETTE.void, 8, 12);
+  px(ctx, cavX + 1, cavY + 2, vein, 5, 7);
+  for (const s of [-1, 1]) {
+    const baseX = s < 0 ? cavX : cavX + 7;
+    for (let r = 0; r < 4; r += 1) {
+      const y = cavY + 1 + r * 3;
+      const len = 5 - (r === 3 ? 1 : 0);
+      seg(baseX, y, baseX + s * len, y + (r - 1), bone, 1);
+    }
+  }
+  px(ctx, cavX + 3, cavY - 1, boneDk, 1, 13); // split sternum, drained dark
+
+  // Fused prayer-hands caught at the wound, with one side cracked away.
+  const handY = cavY + 8;
+  px(ctx, cx + tilt - 2, handY, bone, 5, 6);
+  px(ctx, cx + tilt, handY + 1, PALETTE.void, 1, 5);
+  px(ctx, cx + tilt + side * 3, handY + 2, boneDk, 2, 3);
+
+  // Dried cuts and snapped thorns, uneven so the row never reads as dolls.
   const cuts = 2 + (rng() < 0.5 ? 1 : 0);
   for (let i = 0; i < cuts; i += 1) {
-    const gy = chestY + 2 + Math.floor(rng() * Math.max(1, hipY - chestY));
-    px(ctx, cx - 4 + tilt, gy, i % 2 ? cutWet : cut, 9, 1);
+    const gy = chestY - 3 + Math.floor(rng() * Math.max(1, hipY - chestY + 8));
+    const gx = cx - 6 + tilt + Math.floor(rng() * 8);
+    px(ctx, gx, gy, i % 2 ? cutWet : cut, 6 + Math.floor(rng() * 5), 1);
   }
-  // small snapped bone-thorns at the shoulders
   for (let i = 0; i < 3; i += 1) {
-    const bx = cx - 4 + tilt + i * 4;
-    const hh = i === 1 ? 1 : 3;
-    px(ctx, bx, chestY - hh, bone, 1, hh);
+    const bx = cx - 6 + tilt + i * 5;
+    const hh = 2 + ((seed + i) & 2);
+    seg(bx, shoulderY + 2, bx + (i === 1 ? -side : side) * 2, shoulderY - hh, bone, 1);
   }
 
-  // Buckled legs folded beneath, continuing the body so it is one hanging mass.
-  for (let y = hipY + 1; y <= footY; y += 1) {
-    const t = (y - hipY) / Math.max(1, footY - hipY);
-    const w = Math.round(8 + t * 4);
-    const lx = cx - Math.floor(w / 2);
-    px(ctx, lx, y, boneLo, w, 1);
-    px(ctx, lx, y, vein, 1, 1);
-  }
-  px(ctx, cx - 6, footY, vein, 12, 2);
-  px(ctx, cx - 6, footY - 2, iron, 3, 2); // ankle irons
-  px(ctx, cx + 3, footY - 2, iron, 3, 2);
-
-  // Bowed, calcified skull lolling forward, hollow sockets, a locked jaw.
-  const hx = cx + tilt + 1;
-  px(ctx, hx - 4, headY, PALETTE.outline, 10, 10);
-  px(ctx, hx - 3, headY, bone, 8, 9);
-  px(ctx, hx - 3, headY, grey, 8, 1);
-  px(ctx, hx - 1, headY + 4, PALETTE.void, 2, 2);
-  px(ctx, hx + 2, headY + 4, PALETTE.void, 1, 2);
-  px(ctx, hx - 1, headY + 7, vein, 3, 1);
-  // a low broken bone-crown, snapped open on one side
-  for (let i = 0; i < 5; i += 1) {
-    if (i === 3) continue;
-    px(ctx, hx - 4 + i * 2, headY - 1 - (i === 1 ? 2 : 1), bone, 1, i === 1 ? 3 : 2);
-  }
-  // iron collar at the neck
-  px(ctx, hx - 4, headY + 9, iron, 9, 2);
-  px(ctx, hx - 4, headY + 9, ironHi, 9, 1);
+  // Legs are folded and partly fused into a hanging calcified skirt, with one
+  // ankle dragged sideways by iron.
+  const kneeY = hipY + 8;
+  seg(cx + tilt - 3, hipY, cx - 8 + side, kneeY, boneLo, 4);
+  seg(cx + tilt + 3, hipY + 1, cx + 7 + side * 2, kneeY + 2, boneLo, 3);
+  seg(cx - 8 + side, kneeY, cx - 4, footY - 2, boneDk, 2);
+  seg(cx + 7 + side * 2, kneeY + 2, cx + 5, footY - 1, boneDk, 2);
+  px(ctx, cx - 8, footY - 2, iron, 5, 2);
+  px(ctx, cx + 3, footY - 1, iron, 6, 2);
+  seg(cx - 6, footY - 2, cx - 13, footY - 5, iron, 1);
 
   // Blood pooled and gone dark beneath.
   drawNoisePixels(ctx, cx - 10, cy - 3, 20, 8, [cut, PALETTE.stoneDark], 0.07, seed);
