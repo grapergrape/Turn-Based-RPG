@@ -24,6 +24,9 @@ const KEY_TOKENS = {
   r: 'restart',
   1: 'melee',
   2: 'sidearm',
+  3: 'choice3',
+  4: 'choice4',
+  5: 'choice5',
   tab: 'cycle',
   g: 'debug'
 };

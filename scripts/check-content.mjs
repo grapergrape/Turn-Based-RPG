@@ -47,6 +47,7 @@ const seenItemIds = new Set();
 const seenQuestIds = new Set();
 const seenDialogueIds = new Set();
 const referencedItemIds = new Set();
+const referencedDialogueIds = new Set();
 
 async function main() {
   await checkRenderConfig();
@@ -84,6 +85,11 @@ async function main() {
   for (const id of referencedItemIds) {
     if (!seenItemIds.has(id)) {
       errors.push(`data/items: referenced item "${id}" is missing.`);
+    }
+  }
+  for (const id of referencedDialogueIds) {
+    if (!seenDialogueIds.has(id)) {
+      errors.push(`data/dialogue: referenced dialogue "${id}" is missing.`);
     }
   }
 
@@ -222,9 +228,35 @@ function validateLevel(filePath, data) {
   }
 
   const enemies = data.spawns?.enemies ?? [];
+  const levelDialogue = new Set();
+  if (data.dialogue !== undefined) {
+    if (!Array.isArray(data.dialogue)) {
+      errors.push(`${name}: dialogue must be an array.`);
+    } else {
+      for (const id of data.dialogue) {
+        requireString(name, id, 'dialogue[]');
+        if (typeof id === 'string') {
+          levelDialogue.add(id);
+          referencedDialogueIds.add(id);
+        }
+      }
+    }
+  }
   for (const point of enemies) {
     if (!inBounds(data, point)) {
       errors.push(`${name}: enemy spawn (${point.x}, ${point.y}) is out of bounds.`);
+    }
+    if (point.dialogue !== undefined) {
+      validateDialogueReference(name, point.dialogue, 'spawns.enemies[].dialogue');
+      if (typeof point.dialogue === 'string' && !levelDialogue.has(point.dialogue)) {
+        errors.push(`${name}: enemy dialogue "${point.dialogue}" must also be listed in level dialogue.`);
+      }
+    }
+    if (point.dialogueTriggerRadius !== undefined) {
+      requireNumber(name, point.dialogueTriggerRadius, 'spawns.enemies[].dialogueTriggerRadius');
+    }
+    if (point.talkRadius !== undefined) {
+      requireNumber(name, point.talkRadius, 'spawns.enemies[].talkRadius');
     }
   }
 
@@ -243,6 +275,8 @@ function validateLevel(filePath, data) {
     if (typeof object.kind === 'string' && !getSprite(object.kind)) {
       errors.push(`${name}: object kind "${object.kind}" at (${object.x}, ${object.y}) is not registered in the sprite catalog.`);
     }
+    validateDialogueReference(name, object.interact?.dialogue, 'objects[].interact.dialogue');
+    validateDialogueReference(name, object.interact?.lockedDialogue, 'objects[].interact.lockedDialogue');
     validateLoot(name, object.interact?.loot);
   }
 
@@ -484,6 +518,12 @@ function validateLoot(name, loot, fieldName = 'loot') {
   }
 }
 
+function validateDialogueReference(name, id, fieldName) {
+  if (id === undefined) return;
+  requireString(name, id, fieldName);
+  if (typeof id === 'string') referencedDialogueIds.add(id);
+}
+
 function validateQuest(filePath, data) {
   const name = relative(filePath);
   requireString(name, data.id, 'id');
@@ -524,15 +564,33 @@ function validateDialogue(filePath, data) {
       for (const line of node.lines) requireString(name, line, `nodes.${nodeId}.lines[]`);
     }
     if (node.choices !== undefined) {
-      if (!Array.isArray(node.choices) || node.choices.length === 0 || node.choices.length > 2) {
-        errors.push(`${name}: node "${nodeId}" choices must contain 1 or 2 choices.`);
+      if (!Array.isArray(node.choices) || node.choices.length === 0 || node.choices.length > 5) {
+        errors.push(`${name}: node "${nodeId}" choices must contain 1 to 5 choices.`);
       } else {
         for (const choice of node.choices) {
           requireString(name, choice.label, `nodes.${nodeId}.choices[].label`);
+          validateDialogueEffects(name, choice.effects, `nodes.${nodeId}.choices[].effects`);
         }
       }
     }
   }
+}
+
+function validateDialogueEffects(name, effects, fieldName) {
+  if (effects === undefined) return;
+  if (!effects || typeof effects !== 'object' || Array.isArray(effects)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+
+  const startCombat = effects.startCombat;
+  if (startCombat === undefined) return;
+  if (typeof startCombat === 'string') return;
+  if (startCombat && typeof startCombat === 'object' && !Array.isArray(startCombat)) {
+    requireString(name, startCombat.encounter, `${fieldName}.startCombat.encounter`);
+    return;
+  }
+  errors.push(`${name}: ${fieldName}.startCombat must be an encounter id or object.`);
 }
 
 function validateStats(name, stats) {

@@ -1,0 +1,60 @@
+{
+  "id": "ash-chapel-entrance-catechism",
+  "title": "Threshold Catechism",
+  "mustChoose": true,
+  "nodes": {
+    "start": {
+      "lines": [
+        "Two Choir cultists wait where the narthex floor narrows. One holds a guttering candle tray. The other has relic glass wrapped into his fist.",
+        "\"Ash on your coat,\" the throat-singer says. \"Office steel under it. Before you come farther, name the mouth you serve.\""
+      ],
+      "choices": [
+        {
+          "label": "Stand aside or burn",
+          "next": "aggressive"
+        },
+        {
+          "label": "Who do you worship?",
+          "next": "worship"
+        }
+      ]
+    },
+    "aggressive": {
+      "lines": [
+        "\"Then you came with a closed hand,\" the candle-bearer says.",
+        "The throat-singer raises the shard. \"The Censure only knows how to seal a door. We open them.\""
+      ],
+      "choices": [
+        {
+          "label": "Draw steel",
+          "effects": {
+            "log": "The entrance Choir spread apart and come at you.",
+            "startCombat": "entrance-catechism"
+          }
+        }
+      ]
+    },
+    "worship": {
+      "lines": [
+        "\"The Host that makes confession honest,\" the throat-singer says.",
+        "\"The wound that does not let a body lie,\" says the candle-bearer. \"And you?\""
+      ],
+      "choices": [
+        {
+          "label": "I serve the bell and the fire",
+          "effects": {
+            "log": "The cultists hiss at the old words and reach for their knives.",
+            "startCombat": "entrance-catechism"
+          }
+        },
+        {
+          "label": "No god in this room gets my knee",
+          "effects": {
+            "log": "The candle-bearer lowers the tray. Hot wax spills across his sleeve as he draws his knife.",
+            "startCombat": "entrance-catechism"
+          }
+        }
+      ]
+    }
+  }
+}

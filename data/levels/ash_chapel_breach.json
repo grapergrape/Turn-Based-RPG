@@ -37,6 +37,7 @@
     "ash-chapel-altar-rite",
     "ash-chapel-barrel-ladder",
     "ash-chapel-cult-ledger",
+    "ash-chapel-entrance-catechism",
     "ash-chapel-cross-martyr",
     "ash-chapel-loose-flagstone",
     "ash-chapel-confession-scratch",
@@ -162,6 +163,34 @@
       "y": 26
     },
     "enemies": [
+      {
+        "id": "choir-throat-singer",
+        "x": 19,
+        "y": 24,
+        "spawnId": "entrance-throat-singer",
+        "encounter": "entrance-catechism",
+        "aggroRadius": 0,
+        "dialogue": "ash-chapel-entrance-catechism",
+        "dialogueTriggerRadius": 2,
+        "talkRadius": 2,
+        "ambient": [
+          "Answer clean, road ash. The chapel hears liars."
+        ]
+      },
+      {
+        "id": "choir-candle-bearer",
+        "x": 21,
+        "y": 24,
+        "spawnId": "entrance-candle-bearer",
+        "encounter": "entrance-catechism",
+        "aggroRadius": 0,
+        "dialogue": "ash-chapel-entrance-catechism",
+        "dialogueTriggerRadius": 2,
+        "talkRadius": 2,
+        "ambient": [
+          "No closed hands past the threshold."
+        ]
+      },
       {
         "id": "choir-flesh-eater",
         "x": 18,

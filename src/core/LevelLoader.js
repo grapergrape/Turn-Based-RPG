@@ -83,6 +83,9 @@ export async function loadLevel(levelPath) {
     enemy.spawnId = spawn.spawnId ?? `${spawn.id}-${index}`;
     enemy.encounter = spawn.encounter ?? enemy.spawnId;
     enemy.aggroRadius = spawn.aggroRadius ?? level.enemyAggroRadius ?? null;
+    enemy.dialogue = spawn.dialogue ?? null;
+    enemy.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
+    enemy.talkRadius = spawn.talkRadius ?? 1;
     enemy.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
     enemy.ambientIndex = 0;
     enemy.ambientTimer = 1.2 + (index % 3) * 1.4;
