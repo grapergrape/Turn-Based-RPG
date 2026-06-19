@@ -22,8 +22,8 @@
     ],
     [
       "Lately there are more of them than there should be.",
-      "The Choir of the Open Wound and a dozen smaller blasphemies are spreading faster than the Censure can burn them, in places quiet for generations. No one in the Office will say why. You have started to wonder if anyone knows, or if they simply will not say.",
-      "Your latest writ: a quarantine chapel on the old road to the Hallowfen wall has gone silent. A Choir cell has nested inside. Clear it.",
+      "The cults are spreading faster than the Censure can burn them, springing up in places quiet for generations, some with names and rites that match nothing in the old files. No one in the Office will say why. You have started to wonder if anyone knows, or if they simply will not say.",
+      "Your latest writ: a quarantine chapel on the old road to the Hallowfen wall has gone silent, and a cult has nested in it. Go and put it down.",
       "You did not expect this one to be where the question finally started asking back."
     ]
   ],
@@ -63,7 +63,7 @@
       "y": 8,
       "radius": 2,
       "intro": [
-        "The Choir turns from the cross, knives still wet with sacrament.",
+        "The cultists turn from the cross, knives still wet with sacrament.",
         "One keeps cutting even as the others rise to meet you."
       ]
     },
@@ -74,7 +74,7 @@
       "y": 15,
       "radius": 2,
       "intro": [
-        "The campfire Choir scatter their bowls and reach for blades.",
+        "The campfire cultists scatter their bowls and reach for blades.",
         "One keeps whispering the lesson even as the fight begins."
       ]
     },
@@ -91,7 +91,7 @@
     }
   ],
   "combatIntro": [
-    "The Choir breaks from prayer into violence."
+    "The cultists break from prayer into violence."
   ],
   "onVictory": {
     "questUpdate": {
@@ -100,6 +100,60 @@
       "log": "Quest complete: the Ash Chapel cell is broken. Their teachings point down the road to the Hallowfen wall."
     }
   },
+  "codex": [
+    {
+      "id": "ashen-censure",
+      "name": "The Ashen Censure",
+      "kind": "Holy Remnant, field office",
+      "summary": "The office you serve. The quiet arm of the Remnant that finds Host-cults and ends them before they spread, or before anyone starts asking why the rot still rises.",
+      "facts": [
+        "Sends cult-breakers down the ash roads on written writs.",
+        "Thankless work. Many of the faithful find it distasteful.",
+        "Lately the writs come faster than they used to, and the Office will not say why."
+      ]
+    },
+    {
+      "id": "the-host",
+      "name": "The Host",
+      "kind": "The rot. Hell's work, by doctrine.",
+      "summary": "What the fires of the Descent left behind. It opens a body and rebuilds it in the shape of damnation: halos of bone, ribs spread like chapel doors, borrowed scripture in too many mouths.",
+      "facts": [
+        "Spreads by touch, by blood, and by contaminated relic-metal.",
+        "Since the Stilling it no longer catches the way it did in the Bloom. An opening left alone tends to burn out unless something feeds it.",
+        "Doctrine forbids asking why the Bloom ever stopped."
+      ]
+    },
+    {
+      "id": "choir-open-wound",
+      "name": "The Choir of the Open Wound",
+      "kind": "Host-cult. No Censure record.",
+      "unlockedBy": { "questStage": { "investigate-ash-chapel-cult": "evidence-found" } },
+      "summary": "The cult that took this chapel. They worship the rot and call its spread a kindness. You have never met the name on any writ, and that is what frightens you.",
+      "facts": [
+        "They call infection confession, and the opened ones icons, not monsters.",
+        "They open only those they judge to be turning holy. The merely faithful they leave in the road, marked refuse.",
+        "They feed a saint slowly, by hand, to keep it growing.",
+        "Their ledger marks the Hallowfen wall as their next ground."
+      ]
+    },
+    {
+      "id": "penitent-engines",
+      "name": "The Penitent Engines",
+      "kind": "War-monks. Do not engage.",
+      "unlockedBy": { "flag": "inspected-engine-rut" },
+      "summary": "Warrior-monks who cut away their own flesh and seal the rest in machine, so the rot finds nothing to take. The old war-orders, never the Pontifex's. The Censure files them under do not engage.",
+      "facts": [
+        "One stood in this chapel's doorway, then turned and marched for the crash scars without coming in.",
+        "They do not abandon a route for nothing.",
+        "By every record the roads keep, a Penitent cannot fall to the rot."
+      ]
+    }
+  ],
+  "journalNotes": [
+    { "flag": "read-warden-journal", "text": "The warden's own book names this place Quarantine House Seventeen. After the Stilling it stopped holding the sick and began holding anyone who argued a tithe or asked the wrong question. The diocese let it be forgotten." },
+    { "flag": "found-catacombs", "text": "Under-galleries run beneath the chapel, packed jaw to heel with the quarantine dead. The cult chose a house already taught to suffer." },
+    { "flag": "inspected-engine-rut", "text": "A Penitent Engine stood in the doorway, then turned and marched for the crash scars without coming inside. They do not abandon a route for nothing." }
+  ],
   "tiles": [
     "##############W##W##W##W##W#############",
     "############................############",
@@ -269,7 +323,7 @@
       "interact": {
         "type": "shrine",
         "dialogue": "ash-chapel-cross-martyr",
-        "log": "He is hammered to the cross and still half-alive. The Choir has been cutting from him."
+        "log": "He is hammered to the cross and still half-alive. The cult has been cutting from him."
       }
     },
     {
@@ -821,7 +875,7 @@
       "interact": {
         "type": "note",
         "dialogue": "ash-chapel-child-drawing",
-        "log": "A child drew here in chalk, long before the Choir came."
+        "log": "A child drew here in chalk, long before the cult came."
       }
     },
     {

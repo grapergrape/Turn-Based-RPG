@@ -5,8 +5,9 @@
   "nodes": {
     "start": {
       "lines": [
-        "Two Choir cultists wait where the narthex floor narrows. One holds a guttering candle tray. The other has relic glass wrapped into his fist.",
-        "\"Ash on your coat,\" the throat-singer says. \"Office steel under it. Before you come farther, name the mouth you serve.\""
+        "The narthex is a throat of cold stone that narrows toward a doorway hung with someone's stole turned inside out. Tallow smoke lies in flat sheets in the air. Past the two who block the way, deeper in the dark, a voice is reciting something slow and wet, and a second voice answers it on the offbeat.",
+        "Two cultists wait where the floor pinches in. One holds a guttering candle tray, the wax run down over his knuckles and gone hard. The other has relic glass wound into his fist with wire, the kind of bright shard children are warned never to lift after a fall, and his hand is not bleeding the way a hand should.",
+        "\"Ash on your coat,\" the throat-singer says. \"Office steel under it. We have had word a bell-and-fire man was on this road, and we kept a place for you. Before you come farther, name the mouth you serve.\""
       ],
       "choices": [
         {
@@ -16,19 +17,23 @@
         {
           "label": "Who do you worship?",
           "next": "worship"
+        },
+        {
+          "label": "Look past them. What is that, behind you?",
+          "next": "behind"
         }
       ]
     },
     "aggressive": {
       "lines": [
-        "\"Then you came with a closed hand,\" the candle-bearer says.",
-        "The throat-singer raises the shard. \"The Censure only knows how to seal a door. We open them.\""
+        "\"Then you came with a closed hand,\" the candle-bearer says, almost sorry about it. He sets the candle tray down on the dry font, the way a man frees both hands for work he has done before.",
+        "The throat-singer lifts the shard. \"The Censure only knows how to seal a door. We open them. Come and be opened with the rest.\""
       ],
       "choices": [
         {
           "label": "Draw steel",
           "effects": {
-            "log": "The entrance Choir spread apart and come at you.",
+            "log": "The two cultists spread apart and come at you.",
             "startCombat": "entrance-catechism"
           }
         }
@@ -36,8 +41,9 @@
     },
     "worship": {
       "lines": [
-        "\"The Host that makes confession honest,\" the throat-singer says.",
-        "\"The wound that does not let a body lie,\" says the candle-bearer. \"And you?\""
+        "\"The Host that makes confession honest,\" the throat-singer says, gently, the way a man recites a thing to a child who should already know it.",
+        "\"The wound that does not let a body lie,\" says the candle-bearer. \"Your Office seals the sick in cellars and calls the silence mercy. We open them and let the truth stand where it can be seen. It is the same work, friend. We are only braver about the door.\"",
+        "He tips his head toward the wet voice beyond the inverted stole. \"There is an opening in progress behind us, and it is going well. You could be made honest too, if you knelt. So. Name your mouth.\""
       ],
       "choices": [
         {
@@ -53,6 +59,26 @@
             "log": "The candle-bearer lowers the tray. Hot wax spills across his sleeve as he draws his knife.",
             "startCombat": "entrance-catechism"
           }
+        }
+      ]
+    },
+    "behind": {
+      "lines": [
+        "You do not watch the shard or the candle. You read the room first, the way the Office teaches, before the room can read you. Past the inverted stole, back in the dark of the nave, something kneels that is too wide at the shoulders and far too still, and a smaller shape moves around it with a bowl, unhurried.",
+        "\"Ah.\" The throat-singer sounds pleased. \"You looked. Most of your kind keep their eyes on our hands until it is too late for their eyes.\" He still does not lower the shard. \"That is a saint mid-confession. We have been patient with it. It opens slower when it is fed slow, and a slow opening is a true one.\"",
+        "\"Your warden knew that much,\" the candle-bearer adds. \"He kept his sick at the litany for the very same reason, to open them quiet and call it keeping the peace. We do the honest version, out loud, with the candles lit. You can witness it, or you can be witnessed. There is no third door in this house.\""
+      ],
+      "choices": [
+        {
+          "label": "End them before the bowl makes another round",
+          "effects": {
+            "log": "You move before the shard does. The two cultists come apart and close on you.",
+            "startCombat": "entrance-catechism"
+          }
+        },
+        {
+          "label": "Make them say it plainly: who do you worship?",
+          "next": "worship"
         }
       ]
     }

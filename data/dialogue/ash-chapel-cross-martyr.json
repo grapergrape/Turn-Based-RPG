@@ -5,13 +5,13 @@
     "start": {
       "lines": [
         "A man is hammered to a chapel cross behind the altar, lit cold and grey by the tall windows broken into the wall behind him. They show no sky, no day, no moon. Only a flat, sourceless light pours through, and their lead came is shaped into inverted crosses.",
-        "He is not only a man anymore, but he is still, unmistakably, a man: opened up rather than replaced, no bigger than you are. His ribcage has been cracked down the middle and spread wide like two wings of bone, the cavity behind it wet and working. Thin tendrils have grown out of the opening, and a second mouth, ringed in bone teeth, has torn itself into his belly. His head has gone all the way over into a goat's skull, one horn curling, the other snapped. Black-gold runs in thin lines beneath what skin is left, no flood of it, just lit wire under the surface. The Choir has been slicing the closed flesh from his ribs and arms, and it keeps growing back for them to cut again.",
+        "He is not only a man anymore, but he is still, unmistakably, a man: opened up rather than replaced, no bigger than you are. His ribcage has been cracked down the middle and spread wide like two wings of bone, the cavity behind it wet and working. Thin tendrils have grown out of the opening, and a second mouth, ringed in bone teeth, has torn itself into his belly. His head has gone all the way over into a goat's skull, one horn curling, the other snapped. Black-gold runs in thin lines beneath what skin is left, no flood of it, just lit wire under the surface. The cult has been slicing the closed flesh from his ribs and arms, and it keeps growing back for them to cut again.",
         "His head turns the little the spikes allow. He looks down the length of the cross at you and whispers the same words, over and over: \"Looking down the cross... speak no evil...\"",
-        "You could end him. You could leave him to whatever the Choir intends. Either way, this is a thing you will carry. Choices on this road have a way of waiting for you further down it."
+        "You could end him. You could leave him to whatever the cult intends. Either way, this is a thing you will carry. Choices on this road have a way of waiting for you further down it."
       ],
       "choices": [
         {
-          "label": "Leave him to the Choir",
+          "label": "Leave him to the cult",
           "effects": {
             "log": "You step back and leave him on the cross. His whisper follows you across the stone."
           },
@@ -30,7 +30,7 @@
     "cut": {
       "lines": [
         "The halo guts out to dead bone as the body tears free of the spikes. It slides off the cross and drops to the floor, and lies there at last only a body.",
-        "Mercy, or evidence burned, or one less saint for the Choir to finish: you will not know which you chose until later. On this road, you rarely do."
+        "Mercy, or evidence burned, or one less saint for the cult to finish: you will not know which you chose until later. On this road, you rarely do."
       ]
     },
     "leave": {

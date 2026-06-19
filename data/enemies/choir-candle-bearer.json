@@ -1,6 +1,6 @@
 {
   "id": "choir-candle-bearer",
-  "name": "Choir Candle-Bearer",
+  "name": "Candle-Bearer",
   "type": "enemy",
   "faction": "choir-open-wound",
   "spriteId": "choir-cultist",

@@ -1,10 +1,10 @@
 {
   "id": "choir-flesh-eater",
-  "name": "Choir Flesh-Eater",
+  "name": "Flesh-Eater",
   "type": "enemy",
   "faction": "choir-open-wound",
   "spriteId": "choir-cultist",
-  "description": "A Choir of the Open Wound initiate carrying dried Host tissue as sacrament. He is still mostly human, which makes the practiced calm worse.",
+  "description": "A cult initiate carrying dried Host tissue as sacrament. He is still mostly human, which makes the practiced calm worse.",
   "stats": {
     "hp": 8,
     "maxHp": 8,

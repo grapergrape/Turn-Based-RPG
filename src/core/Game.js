@@ -29,6 +29,7 @@ const HIT_ANIM = 0.24;
 const TRIGGER_RADIUS = 2;
 const AMBIENT_SPEECH_LIFE = 2.7;
 const AREA_TITLE_DURATION = 2.35;
+const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS'];
 const MAX_LOG = 8;
 const WALK_FRAMES = 8;
 const ATTACK_FRAMES = 6;
@@ -168,7 +169,13 @@ export class Game {
     }
     this.dialogueDefs = level.dialogueDefs ?? {};
     this.questDefs = level.questDefs ?? {};
+    // Static journal sources: faction/cult codex and flag-gated field notes.
+    this.codexDefs = level.codex ?? [];
+    this.journalNotes = level.journalNotes ?? [];
     this.questStages = new Map();
+    // Per-quest set of every stage id reached, so the journal shows monotonic
+    // progress and crosses off objectives regardless of discovery order.
+    this.questReached = new Map();
     // Run-global story flags (e.g. "read-warden-journal"). Like quest stages they
     // survive level transitions within a run and clear on a fresh start (R).
     this.flags = previousFlags ?? new Set();
@@ -182,6 +189,8 @@ export class Game {
     this.moving = null;
     this.pathQueue = [];
     this.uiScreen = null;
+    this.journalSection = 0;
+    this.journalFactionIndex = 0;
     this.inventoryFocus = 'items';
     this.inventoryIndex = 0;
     this.equipmentIndex = 0;
@@ -204,7 +213,7 @@ export class Game {
     this.areaTitleTimer = AREA_TITLE_DURATION;
     this.#log(level.intro || level.name);
     this.#startQuests(previousQuestStages);
-    this.#log('Explore the chapel. E inspect, I pack, H bind wounds.');
+    this.#log('Explore the chapel. E inspect, I pack, J journal, H bind wounds.');
     if (bootOptions.skipIntro) this.introSeen = true;
 
     // The opening writ plays once, on a fresh start (not on level transitions
@@ -339,6 +348,9 @@ export class Game {
         case 'inventory':
           this.#toggleInventory();
           break;
+        case 'journal':
+          this.#toggleJournal();
+          break;
         case 'dressing':
           this.#log(this.inventory.useFieldDressing(this.player));
           break;
@@ -396,6 +408,10 @@ export class Game {
       this.#handleInventoryScreen(actions);
       return;
     }
+    if (this.uiScreen === 'journal') {
+      this.#handleJournalScreen(actions);
+      return;
+    }
     for (const action of actions) {
       if (action === 'cancel' || action === 'confirm' || action === 'interact') {
         this.#closeUiScreen();
@@ -403,6 +419,10 @@ export class Game {
       }
       if (action === 'inventory') {
         this.#toggleInventory();
+        return;
+      }
+      if (action === 'journal') {
+        this.#toggleJournal();
         return;
       }
       if (action === 'dressing') {
@@ -425,6 +445,44 @@ export class Game {
     this.uiScreen = 'inventory';
     this.dialogue = null;
     this.#clampInventorySelection();
+  }
+
+  #toggleJournal() {
+    if (this.uiScreen === 'journal') {
+      this.#closeUiScreen();
+      return;
+    }
+    this.uiScreen = 'journal';
+    this.journalSection = 0;
+    this.journalFactionIndex = 0;
+    this.dialogue = null;
+  }
+
+  #handleJournalScreen(actions) {
+    for (const action of actions) {
+      if (action === 'cancel' || action === 'journal') {
+        this.#closeUiScreen();
+        return;
+      }
+      if (action === 'left' || action === 'cycle') this.#cycleJournalSection(-1);
+      else if (action === 'right') this.#cycleJournalSection(1);
+      else if (action === 'up') { if (this.journalSection === 2) this.#moveJournalFaction(-1); }
+      else if (action === 'down') { if (this.journalSection === 2) this.#moveJournalFaction(1); }
+      else if (action === 'inventory') { this.#toggleInventory(); return; }
+      else if (action === 'restart') { this.boot(); return; }
+      else if (action === 'debug') this.debugGrid = !this.debugGrid;
+    }
+  }
+
+  #cycleJournalSection(delta) {
+    const count = JOURNAL_SECTIONS.length;
+    this.journalSection = (((this.journalSection ?? 0) + delta) % count + count) % count;
+  }
+
+  #moveJournalFaction(delta) {
+    const known = (this.codexDefs ?? []).filter((entry) => !entry.unlockedBy || this.#journalConditionMet(entry.unlockedBy));
+    if (!known.length) { this.journalFactionIndex = 0; return; }
+    this.journalFactionIndex = Math.max(0, Math.min(known.length - 1, (this.journalFactionIndex ?? 0) + delta));
   }
 
   #handleInventoryScreen(actions) {
@@ -792,6 +850,9 @@ export class Game {
           break;
         case 'inventory':
           this.#toggleInventory();
+          return;
+        case 'journal':
+          this.#toggleJournal();
           return;
         case 'restart':
           this.boot();
@@ -1302,10 +1363,26 @@ export class Game {
     for (const quest of Object.values(this.questDefs)) {
       const stage = previousStages?.get(quest.id) ?? quest.initialStage ?? quest.stages?.[0]?.id ?? 'active';
       this.questStages.set(quest.id, stage);
+      this.questReached.set(quest.id, this.#stagesUpTo(quest, stage));
       this.#log(`Quest: ${quest.title}.`);
       const description = this.#questStageDescription(quest.id, stage);
       if (description) this.#log(description);
     }
+  }
+
+  // Every stage id up to and including `stageId` in the quest's ordered list.
+  // Stages advance forward, so this yields sensible progress even after a reload
+  // that only restored the current stage.
+  #stagesUpTo(quest, stageId) {
+    const stages = quest.stages ?? [];
+    const idx = stages.findIndex((stage) => stage.id === stageId);
+    const reached = new Set();
+    if (idx < 0) {
+      reached.add(stageId);
+      return reached;
+    }
+    for (let i = 0; i <= idx; i += 1) reached.add(stages[i].id);
+    return reached;
   }
 
   #applyQuestUpdate(update) {
@@ -1314,6 +1391,9 @@ export class Game {
     const current = this.questStages.get(update.quest);
     if (!quest || current === update.stage) return;
     this.questStages.set(update.quest, update.stage);
+    const reached = this.questReached.get(update.quest) ?? new Set();
+    reached.add(update.stage);
+    this.questReached.set(update.quest, reached);
     if (update.log) this.#log(update.log);
     if (update.stage === 'complete') {
       this.#log(`Quest complete: ${quest.title}.`);
@@ -1326,6 +1406,95 @@ export class Game {
   #questStageDescription(questId, stageId) {
     const quest = this.questDefs[questId];
     return quest?.stages?.find((stage) => stage.id === stageId)?.description ?? '';
+  }
+
+  // The whole journal book: the quest checklist (source of truth), the running
+  // findings log that grows as the player discovers things, and the faction
+  // codex whose cult entries unlock as the investigation advances.
+  #buildJournal() {
+    return {
+      section: this.journalSection ?? 0,
+      sections: JOURNAL_SECTIONS,
+      factionIndex: this.journalFactionIndex ?? 0,
+      quests: this.#journalQuests(),
+      findings: this.#journalFindings(),
+      factions: this.#journalFactions()
+    };
+  }
+
+  #journalQuests() {
+    const quests = [];
+    for (const quest of Object.values(this.questDefs)) {
+      const stages = quest.stages ?? [];
+      const reached = this.questReached.get(quest.id) ?? new Set();
+      const currentStage = this.questStages.get(quest.id);
+      const isComplete = reached.has('complete') || currentStage === 'complete';
+      let bestIdx = -1;
+      stages.forEach((stage, i) => { if (reached.has(stage.id)) bestIdx = Math.max(bestIdx, i); });
+      const headStage = stages[bestIdx] ?? stages.find((stage) => stage.id === currentStage) ?? stages[0] ?? null;
+      const objectives = (quest.objectives ?? [])
+        .filter((obj) => !obj.reveal || reached.has(obj.reveal))
+        .map((obj) => {
+          if (obj.lead) return { text: obj.text, done: false, active: false, lead: true };
+          const done = isComplete || (obj.stage ? reached.has(obj.stage) : false);
+          return { text: obj.text, done, active: false, lead: false };
+        });
+      const firstOpen = objectives.find((obj) => !obj.lead && !obj.done);
+      if (firstOpen) {
+        firstOpen.active = true;
+      } else {
+        const lead = objectives.find((obj) => obj.lead);
+        if (lead) lead.active = true;
+      }
+      quests.push({
+        title: quest.title ?? quest.id,
+        task: headStage?.task ?? null,
+        note: headStage?.description ?? '',
+        complete: isComplete,
+        objectives
+      });
+    }
+    return quests;
+  }
+
+  // Findings accumulate: each reached quest stage logs its note, and each
+  // flag-gated field note appears once the player has actually seen the thing.
+  #journalFindings() {
+    const findings = [];
+    for (const quest of Object.values(this.questDefs)) {
+      const reached = this.questReached.get(quest.id) ?? new Set();
+      for (const stage of quest.stages ?? []) {
+        if (reached.has(stage.id) && stage.description) findings.push(stage.description);
+      }
+    }
+    for (const note of this.journalNotes ?? []) {
+      if (note.text && this.#journalConditionMet(note)) findings.push(note.text);
+    }
+    return findings;
+  }
+
+  #journalFactions() {
+    return (this.codexDefs ?? []).map((entry) => ({
+      name: entry.name,
+      kind: entry.kind ?? '',
+      summary: entry.summary ?? '',
+      facts: entry.facts ?? [],
+      known: !entry.unlockedBy || this.#journalConditionMet(entry.unlockedBy)
+    }));
+  }
+
+  // A flag/quest-stage gate shared by codex entries and field notes. A note may
+  // carry the condition inline; a codex entry nests it under `unlockedBy`.
+  #journalConditionMet(spec) {
+    if (!spec) return true;
+    if (spec.flag && this.flags.has(spec.flag)) return true;
+    if (spec.questStage) {
+      for (const [questId, stageId] of Object.entries(spec.questStage)) {
+        if ((this.questReached.get(questId) ?? new Set()).has(stageId)) return true;
+      }
+    }
+    if (!spec.flag && !spec.questStage) return true;
+    return false;
   }
 
   #snapshotLevelState() {
@@ -1607,7 +1776,11 @@ export class Game {
     const modeLabel = { explore: 'EXPLORE', combat: 'COMBAT', victory: 'VICTORY', defeat: 'DEFEAT' }[this.mode];
 
     let controls;
-    if (this.uiScreen === 'inventory') {
+    if (this.uiScreen === 'journal') {
+      controls = this.journalSection === 2
+        ? ['Up/Dn Select', 'Left/Right Pages', 'J/Esc Close']
+        : ['Left/Right Pages', 'J/Esc Close'];
+    } else if (this.uiScreen === 'inventory') {
       controls = ['Up/Dn Select', 'Left/Right Panel', '1/Enter Equip', '2 Remove', 'H Dress', 'Esc Close'];
     } else if (this.uiScreen === 'dialogue' && this.dialogue?.choices?.length) {
       const choiceMax = Math.min(this.dialogue.choices.length, DIALOGUE_MAX_CHOICES);
@@ -1620,7 +1793,7 @@ export class Game {
     } else if (this.mode === 'combat') {
       controls = ['Click/WASD Move', '1 Knife 2 Gun', 'Tab Target', 'Space Attack', 'E End Turn', 'I Pack', 'H Dress'];
     } else {
-      controls = ['Click/WASD Move', 'E Inspect/Use', 'I Pack', 'H Dressing', 'R Restart', 'G Debug'];
+      controls = ['Click/WASD Move', 'E Inspect/Use', 'I Pack', 'J Journal', 'H Dressing', 'R Restart', 'G Debug'];
     }
 
     const cursor = this.#cursorInfo();
@@ -1649,6 +1822,7 @@ export class Game {
         ? { text: this.areaTitle, ttl: this.areaTitleTimer, duration: AREA_TITLE_DURATION }
         : null,
       screen: this.uiScreen,
+      journal: this.uiScreen === 'journal' ? this.#buildJournal() : null,
       dialogue: this.dialogue,
       hoverText: cursor?.text ?? null,
       cursor,

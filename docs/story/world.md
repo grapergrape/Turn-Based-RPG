@@ -18,7 +18,9 @@ The current era is the **Age of Ashen Cities**. Earth is broken but alive. Citie
 - The **Vale Imprint** is why Host forms become religious body horror instead of random alien mutations.
 - The Host is not proven to be morally evil, but it reproduces Vale's inherited vision of damnation.
 - The Stilling was not a cure. It was containment.
+- The Stilling both calcified the Bloom-era Host and left an ongoing lock. Calcified hosts are frozen mid-change with the lights on, faintly aware, not dead. Infection after the Stilling still transforms new victims, but it can no longer chain into a Bloom unless deliberately fed. As the lock fails, calcified hosts can thaw and fresh infection can begin to catch again.
 - The new crisis is caused by the lock failing as something beneath Europa calls the Earth fragment home.
+- The Choir of the Open Wound is a recently emerged, poorly understood Host-cult, distinct from the common older Host-cults the Censure routinely burns. Field agents meet it as an unknown and investigate it; its rapid, coordinated spread is itself a symptom of the failing lock.
 
 ## Historical Spine
 
@@ -54,7 +56,7 @@ The Solar Ecclesiate collapsed. Off-world colonies abandoned Earth. The first ap
 
 ### The Stilling
 
-The Bloom stopped. Dormant flesh hardened, spores weakened, rivers cleared, and active growth became dangerous but geographically limited. The Stilling allowed humanity to survive.
+The Bloom stopped. Dormant flesh hardened, spores weakened, rivers cleared, and active growth became dangerous but geographically limited. The hosts caught in the freeze did not die; they calcified mid-transformation, still faintly aware, which is why dormant Host sites are treated as sleeping rather than spent. Infection after the Stilling still opens new victims, but it no longer catches and spreads on its own the way it did in the Bloom. The Stilling allowed humanity to survive.
 
 The hidden truth is that Dr. Elian Sorell used old Ecclesiate systems, machine choirs, orbital mirrors, confession networks, and infected tissue relays to trap The Host in a recursive version of Vale's nightmare. Humanity survived because The Host was imprisoned inside one priest's Hell.
 
@@ -150,7 +152,7 @@ The Free Cities are not pure democrats or generic rebels. They are practical com
 
 ### Choir of the Open Wound
 
-A Host-worshipping movement that calls infection confession and Host creatures icons. It shelters outcasts, rejected Bloomborn, plague victims, criminals, and refugees, then asks them to pay with their bodies.
+A Host-worshipping movement that calls infection confession and Host creatures icons. It shelters outcasts, rejected Bloomborn, plague victims, criminals, and refugees, then asks them to pay with their bodies. Unlike the common road-cults the Censure has always burned, the Choir is a recent arrival: it surfaced only in the last few years, across long-quiet regions, already speaking one coherent doctrine, and almost no one who fights it yet knows its name. Its sudden, coordinated rise is a symptom of the failing lock, though it is not yet read as one.
 
 The Choir wants to restart the Bloom, or in its own language, finish the hymn.
 

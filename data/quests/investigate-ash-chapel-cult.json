@@ -1,27 +1,37 @@
 {
   "id": "investigate-ash-chapel-cult",
-  "title": "Investigate the Ash Chapel Cult",
+  "title": "The Ash Chapel",
   "initialStage": "active",
+  "objectives": [
+    { "text": "Search the chapel. Learn who they are and what they preach.", "stage": "evidence-found" },
+    { "text": "Break the cult that has taken the chapel.", "stage": "complete" },
+    { "text": "Follow the road to the Hallowfen wall.", "lead": true, "reveal": "evidence-found" }
+  ],
   "stages": [
     {
       "id": "active",
-      "description": "Search the quarantine chapel and learn why a Choir cell gathered here."
+      "task": "Investigate the cult",
+      "description": "A cult has taken the quarantine chapel on the Hallowfen road. Find out who they are and what they want."
     },
     {
       "id": "evidence-found",
-      "description": "The cult ledger records strange lessons and names the Hallowfen wall as the next place to witness."
+      "task": "Eliminate the cult",
+      "description": "Their own ledger names them the Choir of the Open Wound, a cult no Censure file has ever recorded, and marks the Hallowfen wall as their next ground."
     },
     {
       "id": "rite-found",
-      "description": "The altar was prepared for a private Choir meal. The notes do not prove what the rite was meant to do."
+      "task": "Eliminate the cult",
+      "description": "The altar was set for a feeding. End the cell before it raises another saint."
     },
     {
       "id": "cellar-found",
-      "description": "A hidden service cellar lies below the split barrel."
+      "task": "Eliminate the cult",
+      "description": "A hidden service cellar runs beneath the split barrel."
     },
     {
       "id": "complete",
-      "description": "The chapel cell is broken. The evidence points down the road toward the Hallowfen wall."
+      "task": "Travel to Hallowfen",
+      "description": "The chapel cell is broken. The trail runs down the road to the Hallowfen wall."
     }
   ]
 }

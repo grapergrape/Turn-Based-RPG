@@ -123,6 +123,8 @@ export async function loadLevel(levelPath) {
     playerLoadout,
     dialogueDefs,
     questDefs,
+    codex: Array.isArray(level.codex) ? level.codex : [],
+    journalNotes: Array.isArray(level.journalNotes) ? level.journalNotes : [],
     combatIntro: level.combatIntro ?? [],
     combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
     onVictory: level.onVictory ?? null,

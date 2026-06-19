@@ -20,6 +20,18 @@ const LOG_BOX = { x: 8, y: UI_PANEL.y + 7, w: 328, h: UI_PANEL.height - 14 };
 const STATUS_BOX = { x: 342, y: UI_PANEL.y + 7, w: 138, h: UI_PANEL.height - 14 };
 const COMMAND_BOX = { x: 486, y: UI_PANEL.y + 7, w: 146, h: UI_PANEL.height - 14 };
 const INVENTORY_BOX = { x: 54, y: 42, w: 532, h: 296 };
+const JOURNAL_BOOK = { x: 48, y: 16, w: 544, h: 352 };
+// Aged-paper palette for the journal book (dark ink on dirty parchment).
+const PARCHMENT = {
+  base: '#c7b487',
+  hi: '#d8c79a',
+  lo: '#9a8a60',
+  rule: '#bca877',
+  fox: '#a07c44',
+  ink: '#241b12',
+  inkDim: '#5e4f35',
+  flap: '#cfbd88'
+};
 
 const FONT = {
   A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
@@ -93,6 +105,7 @@ export class UIRenderer {
     ctx.imageSmoothingEnabled = false;
 
     if (ui.screen === 'inventory') this.#drawInventory(ctx, ui);
+    if (ui.screen === 'journal') this.#drawJournal(ctx, ui);
     this.#drawHud(ctx, ui);
     if (ui.screen === 'dialogue') this.#drawDialogue(ctx, ui);
     if (ui.areaTitle && !ui.screen) this.#drawAreaTitle(ctx, ui.areaTitle);
@@ -346,6 +359,300 @@ export class UIRenderer {
     } else {
       const label = 'NO FIGURE';
       this.#text(ctx, label, cx - this.#textWidth(label) / 2, box.y + Math.floor(box.h / 2), PALETTE.uiDim);
+    }
+  }
+
+  // The quest journal: a worn leather book with section tabs (QUESTS, NOTES,
+  // FACTIONS). It is the run's source of truth: the live quest checklist, a
+  // findings log that grows as you discover things, and a faction codex whose
+  // cult entries unlock as the investigation advances.
+  #drawJournal(ctx, ui) {
+    this.#screenBackdrop(ctx);
+
+    const B = JOURNAL_BOOK;
+    const noise = (n) => { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); };
+
+    // Soft drop shadow, then scuffed leather with brass corner fittings.
+    this.#rect(ctx, B.x + 5, B.y + 7, B.w, B.h, 'rgba(5, 5, 5, 0.5)');
+    this.#rect(ctx, B.x - 1, B.y - 1, B.w + 2, B.h + 2, PALETTE.outline);
+    this.#rect(ctx, B.x, B.y, B.w, B.h, PALETTE.woodDark);
+    this.#rect(ctx, B.x + 1, B.y + 1, B.w - 2, B.h - 2, PALETTE.woodMid);
+    this.#rect(ctx, B.x + 1, B.y + 1, B.w - 2, 1, PALETTE.woodLight);
+    this.#rect(ctx, B.x + 1, B.y + 1, 1, B.h - 2, PALETTE.woodLight);
+    this.#rect(ctx, B.x + 1, B.y + B.h - 2, B.w - 2, 1, PALETTE.outline);
+    this.#rect(ctx, B.x + B.w - 2, B.y + 1, 1, B.h - 2, PALETTE.outline);
+    for (let i = 0; i < 12; i += 1) {
+      const sx = B.x + 12 + Math.floor(noise(i + 1) * (B.w - 28));
+      const sy = B.y + 10 + Math.floor(noise(i * 2 + 3) * (B.h - 20));
+      const len = 4 + Math.floor(noise(i * 3 + 5) * 12);
+      this.#rect(ctx, sx, sy, len, 1, noise(i + 7) > 0.5 ? PALETTE.woodDark : PALETTE.woodLight);
+    }
+    for (const [fx, fy] of [[B.x + 4, B.y + 4], [B.x + B.w - 12, B.y + 4], [B.x + 4, B.y + B.h - 12], [B.x + B.w - 12, B.y + B.h - 12]]) {
+      this.#rect(ctx, fx, fy, 8, 8, PALETTE.uiBorderDark);
+      this.#rect(ctx, fx + 1, fy + 1, 6, 6, PALETTE.uiBorderLight);
+      this.#rect(ctx, fx + 2, fy + 2, 4, 4, PALETTE.woodDark);
+    }
+
+    // Two worn parchment pages flanking a stitched spine.
+    const left = { x: B.x + 16, y: B.y + 14, w: 244, h: B.h - 26 };
+    const right = { x: B.x + 284, y: B.y + 14, w: 244, h: B.h - 26 };
+    this.#journalPage(ctx, left, { dogEar: 'bl' });
+    this.#journalPage(ctx, right, { dogEar: 'br', ring: true });
+    const spineX = left.x + left.w;
+    const spineW = right.x - spineX;
+    this.#rect(ctx, spineX, left.y, spineW, left.h, PALETTE.woodDark);
+    this.#rect(ctx, spineX + Math.floor(spineW / 2), left.y, 1, left.h, PALETTE.outline);
+    for (let yy = left.y + 6; yy < left.y + left.h; yy += 16) {
+      this.#rect(ctx, spineX + Math.floor(spineW / 2) - 1, yy, 3, 6, PALETTE.uiBorderDark);
+    }
+    this.#rect(ctx, spineX - 6, left.y, 6, left.h, PARCHMENT.lo);
+    this.#rect(ctx, right.x, right.y, 6, right.h, PARCHMENT.lo);
+
+    // Red ribbon down the spine, forked tail below the book.
+    const rx = spineX + Math.floor((spineW - 7) / 2);
+    this.#rect(ctx, rx, B.y - 4, 7, B.h - 6, PALETTE.clothRed);
+    this.#rect(ctx, rx, B.y - 4, 1, B.h - 6, PALETTE.uiBad);
+    this.#rect(ctx, rx + 6, B.y - 4, 1, B.h - 6, PALETTE.hostRed);
+    const tailY = B.y + B.h - 10;
+    this.#rect(ctx, rx, tailY, 2, 12, PALETTE.clothRed);
+    this.#rect(ctx, rx + 5, tailY, 2, 12, PALETTE.clothRed);
+
+    const journal = ui.journal ?? {};
+    const section = journal.section ?? 0;
+    this.#journalTabs(ctx, B, journal.sections ?? [], section);
+
+    if (section === 1) this.#journalNotesPage(ctx, left, right, journal.findings ?? []);
+    else if (section === 2) this.#journalFactionsPage(ctx, left, right, journal.factions ?? [], journal.factionIndex ?? 0);
+    else this.#journalQuestsPage(ctx, left, right, journal.quests ?? []);
+
+    this.#text(ctx, 'LEFT/RIGHT PAGES   J OR ESC TO CLOSE', B.x + 18, B.y + B.h - 11, PALETTE.clothTan);
+  }
+
+  // Section tabs sticking up from the top edge; the active one is parchment and
+  // sits a little proud of the leather ones.
+  #journalTabs(ctx, B, sections, active) {
+    const tabW = 104;
+    const gap = 8;
+    const total = sections.length * tabW + Math.max(0, sections.length - 1) * gap;
+    let x = B.x + Math.floor((B.w - total) / 2);
+    for (let i = 0; i < sections.length; i += 1) {
+      const on = i === active;
+      const h = on ? 19 : 15;
+      const y = on ? B.y - 10 : B.y - 6;
+      this.#rect(ctx, x - 1, y - 1, tabW + 2, h + 2, PALETTE.outline);
+      this.#rect(ctx, x, y, tabW, h, on ? PARCHMENT.base : PALETTE.woodMid);
+      this.#rect(ctx, x, y, tabW, 1, on ? PARCHMENT.hi : PALETTE.woodLight);
+      const label = sections[i];
+      const lw = this.#textWidth(label);
+      this.#text(ctx, label, x + Math.floor((tabW - lw) / 2), y + Math.floor((h - 7) / 2) + 1, on ? PARCHMENT.ink : PALETTE.clothTan);
+      x += tabW + gap;
+    }
+  }
+
+  #journalHeader(ctx, page, label) {
+    this.#text(ctx, label, page.x + 12, page.y + 6, PARCHMENT.ink);
+    this.#rect(ctx, page.x + 10, page.y + 17, page.w - 20, 1, PARCHMENT.inkDim);
+    return page.y + 26;
+  }
+
+  #journalSeal(ctx, page) {
+    const sx = page.x + page.w - 42;
+    const sy = page.y + page.h - 38;
+    this.#journalDisc(ctx, sx, sy, 13, PALETTE.hostRed);
+    this.#journalDisc(ctx, sx, sy, 11, PALETTE.clothRed);
+    this.#rect(ctx, sx - 1, sy - 8, 2, 16, PALETTE.hostGold);
+    this.#rect(ctx, sx - 8, sy - 1, 16, 2, PALETTE.hostGold);
+    this.#rect(ctx, sx - 1, sy - 1, 2, 2, PALETTE.uiWarn);
+    this.#text(ctx, 'MARA VEY', page.x + 12, page.y + page.h - 24, PARCHMENT.inkDim);
+    this.#text(ctx, 'ASHEN CENSURE', page.x + 12, page.y + page.h - 14, PARCHMENT.inkDim);
+  }
+
+  #journalQuestsPage(ctx, left, right, quests) {
+    const C = PARCHMENT;
+    const INK_RED = PALETTE.clothRed;
+    const lx = left.x + 12;
+    let y = left.y + 8;
+    if (!quests.length) this.#text(ctx, 'NO ACTIVE WRIT.', lx, y, C.inkDim);
+    for (const quest of quests) {
+      const title = this.#clip(quest.title, 30);
+      this.#text(ctx, title, lx, y, C.ink);
+      this.#rect(ctx, lx, y + 9, this.#textWidth(title), 1, C.inkDim);
+      y += 16;
+      if (quest.task) {
+        this.#text(ctx, 'TASK', lx, y, C.inkDim);
+        this.#text(ctx, this.#clip(quest.task, 26), lx + 30, y, quest.complete ? C.inkDim : INK_RED);
+        y += 15;
+      }
+      for (const obj of quest.objectives ?? []) {
+        const color = obj.lead ? INK_RED : obj.done ? C.inkDim : C.ink;
+        const wrapped = this.#wrap(obj.text, 33);
+        const tx = lx + 13;
+        if (obj.active) this.#rect(ctx, lx - 3, y - 2, left.w - 18, wrapped.length * 10 + 3, C.hi);
+        if (obj.lead) this.#text(ctx, '>>', lx, y, INK_RED);
+        else this.#journalCheckbox(ctx, lx, y - 1, obj.done);
+        let ly = y;
+        for (const line of wrapped) {
+          this.#text(ctx, line, tx, ly, color);
+          if (obj.done) this.#rect(ctx, tx, ly + 3, this.#textWidth(line), 1, C.inkDim);
+          ly += 10;
+        }
+        y = ly + 3;
+      }
+      y += 6;
+    }
+
+    let ry = this.#journalHeader(ctx, right, 'CURRENT ORDERS');
+    const rx = right.x + 12;
+    const note = quests.find((q) => q.note)?.note ?? '';
+    if (note) {
+      for (const line of this.#wrap(note, 36)) { this.#text(ctx, line, rx, ry, C.inkDim); ry += 11; }
+    } else {
+      this.#text(ctx, 'NOTHING SET DOWN YET.', rx, ry, C.inkDim);
+    }
+    this.#journalSeal(ctx, right);
+  }
+
+  #journalNotesPage(ctx, left, right, findings) {
+    const C = PARCHMENT;
+    const pages = [left, right];
+    let pi = 0;
+    let page = pages[0];
+    let y = this.#journalHeader(ctx, page, 'FINDINGS');
+    if (!findings.length) {
+      this.#text(ctx, 'YOU HAVE WRITTEN NOTHING DOWN YET.', page.x + 12, y, C.inkDim);
+      return;
+    }
+    for (const finding of findings) {
+      const wrapped = this.#wrap(finding, 34);
+      const blockH = wrapped.length * 10 + 9;
+      if (y + blockH > page.y + page.h - 8) {
+        if (pi + 1 >= pages.length) { this.#text(ctx, '. . .', page.x + 12, y, C.inkDim); break; }
+        pi += 1; page = pages[pi];
+        y = this.#journalHeader(ctx, page, 'FINDINGS');
+      }
+      this.#text(ctx, '+', page.x + 12, y, PALETTE.clothRed);
+      let ly = y;
+      for (const line of wrapped) { this.#text(ctx, line, page.x + 22, ly, C.ink); ly += 10; }
+      y = ly + 3;
+      this.#rect(ctx, page.x + 12, y, page.w - 24, 1, C.rule);
+      y += 7;
+    }
+  }
+
+  // A codex: a selectable list of known factions on the left, the full record of
+  // the selected one on the right. Cult entries appear here as they are learned.
+  #journalFactionsPage(ctx, left, right, factions, selected) {
+    const C = PARCHMENT;
+    const known = factions.filter((f) => f.known);
+    const hasLocked = factions.some((f) => !f.known);
+
+    // Left page: the index of what you have on file.
+    let y = this.#journalHeader(ctx, left, 'FACTIONS');
+    const lx = left.x + 12;
+    if (!known.length) this.#text(ctx, 'NO RECORDS YET.', lx, y, C.inkDim);
+    const sel = Math.max(0, Math.min(known.length - 1, selected));
+    for (let i = 0; i < known.length; i += 1) {
+      const on = i === sel;
+      if (on) this.#rect(ctx, left.x + 6, y - 2, left.w - 12, 12, C.hi);
+      this.#text(ctx, on ? '>' : ' ', lx, y, PALETTE.clothRed);
+      this.#text(ctx, this.#clip(known[i].name, 27), lx + 10, y, on ? C.ink : C.inkDim);
+      y += 13;
+    }
+    if (hasLocked) {
+      y += 6;
+      this.#text(ctx, '[ unfiled records remain ]', lx, y, C.inkDim);
+    }
+
+    // Right page: the open record.
+    let ry = this.#journalHeader(ctx, right, 'RECORD');
+    const rx = right.x + 12;
+    const entry = known[sel];
+    if (!entry) { this.#text(ctx, 'NOTHING ON FILE.', rx, ry, C.inkDim); return; }
+    this.#text(ctx, this.#clip(entry.name, 30), rx, ry, C.ink);
+    this.#rect(ctx, rx, ry + 9, this.#textWidth(this.#clip(entry.name, 30)), 1, C.inkDim);
+    ry += 14;
+    if (entry.kind) { this.#text(ctx, this.#clip(entry.kind, 36), rx, ry, PALETTE.clothRed); ry += 13; }
+    for (const line of this.#wrap(entry.summary, 36)) { this.#text(ctx, line, rx, ry, C.inkDim); ry += 10; }
+    ry += 4;
+    for (const fact of entry.facts ?? []) {
+      this.#text(ctx, '-', rx, ry, C.inkDim);
+      let ly = ry;
+      for (const line of this.#wrap(fact, 34)) { this.#text(ctx, line, rx + 8, ly, C.inkDim); ly += 10; }
+      ry = ly + 2;
+    }
+  }
+
+  #journalPage(ctx, p, opts = {}) {
+    const C = PARCHMENT;
+    const noise = (n) => { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); };
+    this.#rect(ctx, p.x, p.y, p.w, p.h, C.base);
+    this.#rect(ctx, p.x, p.y, p.w, 1, C.hi);
+    this.#rect(ctx, p.x, p.y + 1, p.w, 1, C.hi);
+    // aged edge darkening on the three open sides
+    this.#rect(ctx, p.x, p.y + p.h - 1, p.w, 1, C.lo);
+    this.#rect(ctx, p.x, p.y, 2, p.h, C.lo);
+    this.#rect(ctx, p.x + p.w - 2, p.y, 2, p.h, C.lo);
+    // faint ruled lines
+    for (let yy = p.y + 18; yy < p.y + p.h - 4; yy += 11) this.#rect(ctx, p.x + 6, yy, p.w - 12, 1, C.rule);
+    // specks and brown foxing spots
+    for (let i = 0; i < 24; i += 1) {
+      const sx = p.x + 8 + Math.floor(noise(p.x + i * 3.1 + 1) * (p.w - 16));
+      const sy = p.y + 10 + Math.floor(noise(p.y + i * 5.7 + 2) * (p.h - 20));
+      const big = noise(i * 1.7 + p.x) > 0.82;
+      this.#rect(ctx, sx, sy, big ? 2 : 1, big ? 2 : 1, big ? C.fox : C.lo);
+    }
+    // a faint coffee-ring stain
+    if (opts.ring) {
+      const cx = p.x + p.w - 60;
+      const cy = p.y + 66;
+      const r = 24;
+      for (let t = 0; t < 72; t += 1) {
+        const a = (t / 72) * Math.PI * 2;
+        const rr = r + (noise(t + p.x) * 2 - 1);
+        this.#rect(ctx, Math.round(cx + Math.cos(a) * rr), Math.round(cy + Math.sin(a) * rr), 1, 1, 'rgba(74, 48, 20, 0.22)');
+      }
+    }
+    // a small ink blot
+    const bx = p.x + p.w - 30;
+    const by = p.y + p.h - 56;
+    this.#rect(ctx, bx, by, 3, 2, C.ink);
+    this.#rect(ctx, bx + 2, by + 1, 2, 3, C.ink);
+    this.#rect(ctx, bx - 1, by + 2, 2, 1, C.ink);
+    this.#rect(ctx, bx + 3, by - 1, 1, 1, C.ink);
+    // a folded-over dog-ear at the bottom outer corner
+    if (opts.dogEar === 'bl' || opts.dogEar === 'br') {
+      const s = 18;
+      for (let i = 0; i < s; i += 1) {
+        const w = s - i;
+        const rowY = p.y + p.h - 1 - i;
+        if (opts.dogEar === 'bl') {
+          this.#rect(ctx, p.x, rowY, w, 1, C.flap);
+          this.#rect(ctx, p.x + (s - 1 - i), rowY, 1, 1, C.lo);
+        } else {
+          this.#rect(ctx, p.x + p.w - w, rowY, w, 1, C.flap);
+          this.#rect(ctx, p.x + p.w - 1 - (s - 1 - i), rowY, 1, 1, C.lo);
+        }
+      }
+    }
+  }
+
+  #journalDisc(ctx, cx, cy, r, color) {
+    for (let dy = -r; dy <= r; dy += 1) {
+      const half = Math.floor(Math.sqrt(Math.max(0, r * r - dy * dy)));
+      this.#rect(ctx, cx - half, cy + dy, half * 2 + 1, 1, color);
+    }
+  }
+
+  #journalCheckbox(ctx, x, y, done) {
+    const INK = '#241b12';
+    this.#rect(ctx, x, y, 8, 8, INK);
+    this.#rect(ctx, x + 1, y + 1, 6, 6, '#c7b487');
+    if (done) {
+      this.#rect(ctx, x + 1, y + 4, 2, 2, INK);
+      this.#rect(ctx, x + 2, y + 5, 2, 2, INK);
+      this.#rect(ctx, x + 3, y + 3, 2, 2, INK);
+      this.#rect(ctx, x + 4, y + 2, 2, 2, INK);
+      this.#rect(ctx, x + 5, y + 1, 2, 2, INK);
     }
   }
 
