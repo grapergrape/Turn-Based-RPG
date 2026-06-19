@@ -46,6 +46,20 @@ export class InteractionSystem {
     };
 
     if (descriptor.type === 'container') {
+      // A locked container (e.g. the warden's wall safe) stays shut until the
+      // matching key is in the pack. It reports the lock and leaves itself
+      // unconsumed so the player can return once they have found the key.
+      if (descriptor.requiresItem && !inventory.has(descriptor.requiresItem)) {
+        pushLog(descriptor.lockedLog ?? 'It is locked. You do not have the key.');
+        return {
+          logs,
+          triggersCombat: false,
+          combatEncounter: null,
+          dialogueId: descriptor.lockedDialogue ?? null,
+          questUpdate: null
+        };
+      }
+
       const carry = inventory.canAddLoot(descriptor.loot ?? []);
       if (!carry.ok) {
         const current = Inventory.formatWeight(carry.current);

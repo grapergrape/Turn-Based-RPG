@@ -16,6 +16,7 @@ import { planTurn, flavorLine } from '../combat/EnemyAI.js';
 import { findPath } from '../world/Pathfinder.js';
 import { InteractionSystem } from '../world/InteractionSystem.js';
 import { IsometricRenderer } from '../render/IsometricRenderer.js';
+import { bakeMara } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
 import { DEBUG_GRID_DEFAULT, VIEWPORT_HEIGHT } from '../render/renderConfig.js';
 
@@ -111,6 +112,9 @@ export class Game {
     const previousQuestStages = options.preserveRun && this.questStages
       ? new Map(this.questStages)
       : null;
+    const previousFlags = options.preserveRun && this.flags
+      ? new Set(this.flags)
+      : null;
     const previousPlayer = options.preserveRun && this.player
       ? { hp: this.player.hp, maxHp: this.player.maxHp }
       : null;
@@ -137,6 +141,9 @@ export class Game {
     } else {
       this.#loadStartingInventory(level.playerLoadout);
     }
+    // Bake the player sprite to match the loaded equipment so the world figure
+    // and inventory paper doll reflect what Mara is actually wearing.
+    this.#refreshPlayerAppearance();
     this.interactions = new InteractionSystem(level.interactables);
     // Props that murmur on their own (e.g. the crucified Opened Saint) get the
     // same ambient-speech treatment as enemies, on a staggered timer.
@@ -151,6 +158,9 @@ export class Game {
     this.dialogueDefs = level.dialogueDefs ?? {};
     this.questDefs = level.questDefs ?? {};
     this.questStages = new Map();
+    // Run-global story flags (e.g. "read-warden-journal"). Like quest stages they
+    // survive level transitions within a run and clear on a fresh start (R).
+    this.flags = previousFlags ?? new Set();
     this.appliedLevelEvents = new Set();
     this.activeEncounter = null;
     this.clearedEncounters = new Set();
@@ -320,6 +330,11 @@ export class Game {
   #doInteract() {
     const object = this.interactions.findInReach(this.player);
     if (!object) {
+      const corpse = this.#inspectableCorpseInReach();
+      if (corpse) {
+        this.#openDialogueById(corpse.inspect);
+        return;
+      }
       this.#log('Nothing within reach.');
       return;
     }
@@ -410,12 +425,14 @@ export class Game {
       if (action === 'melee' || action === 'confirm' || action === 'interact') {
         if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
         else this.#equipSelectedInventoryItem();
+        this.#refreshPlayerAppearance();
         this.#clampInventorySelection();
         continue;
       }
       if (action === 'sidearm') {
         if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
         else this.#unequipSelectedInventoryItem();
+        this.#refreshPlayerAppearance();
         this.#clampInventorySelection();
       }
     }
@@ -461,6 +478,18 @@ export class Game {
     this.#log(this.inventory.unequip(slot.slot).message);
   }
 
+  // Re-bake the player sprite from the current equipment. The new atlas entry
+  // replaces the old one in the shared atlas, so both the world renderer and the
+  // inventory paper doll (which read the same atlas) update together. Only the
+  // equipment-aware player sprite is rebaked; enemy sprites are left untouched.
+  #refreshPlayerAppearance() {
+    if (!this.atlas || this.player?.spriteId !== 'mara-vey') return;
+    this.atlas[this.player.spriteId] = bakeMara(
+      this.inventory.equipmentSnapshot(),
+      this.inventory.itemDefs
+    );
+  }
+
   #openDialogue(title, lines, kind = 'inspect') {
     const cleanLines = [].concat(lines ?? []).filter(Boolean);
     if (cleanLines.length === 0) return;
@@ -485,10 +514,24 @@ export class Game {
   }
 
   #setDialogueNode(definition, nodeId) {
-    const node = definition.nodes?.[nodeId];
+    let node = definition.nodes?.[nodeId];
+    // A node may be gated on story flags / quest stages. If its conditions are
+    // not met it redirects to its `else` node, so (for example) a locked safe
+    // only names the key's hiding place once the warden's journal has been read.
+    let guard = 0;
+    while (node && node.conditions && !this.#meetsConditions(node.conditions)) {
+      if (!node.else || guard++ > 8) break;
+      nodeId = node.else;
+      node = definition.nodes?.[nodeId];
+    }
     if (!node) {
       this.#log(`Missing dialogue node: ${definition.id}.${nodeId}.`);
       return;
+    }
+    // Showing a node can set run-global flags. This is idempotent (a Set), so
+    // re-reading the same note is safe; one-shot effects stay on choices.
+    if (node.effects?.setFlag) {
+      for (const flag of [].concat(node.effects.setFlag)) this.flags.add(flag);
     }
     const lines = [].concat(node.lines ?? node.text ?? []).filter(Boolean);
     const choices = (node.choices ?? []).slice(0, 2);
@@ -505,6 +548,18 @@ export class Game {
         ? choices.map((choice, index) => `${index + 1} ${choice.label}`)
         : ['ENTER CLOSE', 'ESC CLOSE']
     };
+  }
+
+  // True when every flag and quest-stage a dialogue node requires is satisfied.
+  #meetsConditions(conditions) {
+    if (!conditions) return true;
+    for (const flag of [].concat(conditions.flag ?? [], conditions.flags ?? [])) {
+      if (!this.flags.has(flag)) return false;
+    }
+    for (const [questId, stage] of Object.entries(conditions.questStages ?? {})) {
+      if (this.questStages.get(questId) !== stage) return false;
+    }
+    return true;
   }
 
   #handleDialogueScreen(actions) {
@@ -571,6 +626,7 @@ export class Game {
   #applyEffects(effects) {
     if (!effects) return false;
     for (const line of [].concat(effects.log ?? [])) this.#log(line);
+    for (const flag of [].concat(effects.setFlag ?? [])) this.flags.add(flag);
     this.#applyQuestUpdate(effects.questUpdate);
     if (effects.kill) this.#silenceProp(effects.kill);
     if (effects.teleport) this.#teleportPlayer(effects.teleport);
@@ -591,6 +647,12 @@ export class Game {
     prop.consumed = true;
     prop.speech = null;
     prop.ambient = [];
+    // A crucified saint cut down falls off the cross and dies on the ground; the
+    // renderer animates the drop from this timestamp.
+    if (prop.kind === 'cross-martyr') {
+      prop.released = true;
+      prop.fallStart = this.anim?.tick ?? 0;
+    }
   }
 
   async #transitionLevel(effect) {
@@ -1228,6 +1290,8 @@ export class Game {
         object.killed = true;
         object.consumed = true;
         object.ambient = [];
+        // A cut-down saint stays fallen on the ground when you return (fall=1).
+        if (object.kind === 'cross-martyr') object.released = true;
       }
       if (!state.consumedObjects?.has(key)) continue;
       object.consumed = true;
@@ -1328,6 +1392,29 @@ export class Game {
     return this.actors.find((actor) => !actor.isDead && actor.x === cell.x && actor.y === cell.y) ?? null;
   }
 
+  // A slain enemy on this cell that carries an inspection dialogue.
+  #inspectableCorpseAt(cell) {
+    return this.enemies.find(
+      (enemy) => enemy.isDead && enemy.inspect && enemy.x === cell.x && enemy.y === cell.y
+    ) ?? null;
+  }
+
+  // The nearest inspectable corpse on or beside the player, if any.
+  #inspectableCorpseInReach() {
+    let best = null;
+    let bestDist = Infinity;
+    for (const enemy of this.enemies) {
+      if (!enemy.isDead || !enemy.inspect) continue;
+      if (Math.max(Math.abs(enemy.x - this.player.x), Math.abs(enemy.y - this.player.y)) > 1) continue;
+      const dist = Math.abs(enemy.x - this.player.x) + Math.abs(enemy.y - this.player.y);
+      if (dist < bestDist) {
+        best = enemy;
+        bestDist = dist;
+      }
+    }
+    return best;
+  }
+
   #objectAtCell(cell) {
     const interactable = this.level.interactables.find((object) => object.x === cell.x && object.y === cell.y);
     if (interactable) return interactable;
@@ -1358,6 +1445,11 @@ export class Game {
       const state = this.mode === 'combat' ? 'attack' : 'inspect';
       const verb = this.mode === 'combat' ? 'ATTACK' : 'LOOK';
       return { x: mouse.x, y: mouse.y, state, text: `${verb}: ${actor.name}` };
+    }
+
+    const corpse = this.#inspectableCorpseAt(cell);
+    if (corpse) {
+      return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${corpse.name}` };
     }
 
     const object = this.#objectAtCell(cell);
@@ -1428,6 +1520,7 @@ export class Game {
       inventoryItems: this.inventory.entries(),
       inventoryIndex: this.inventoryIndex ?? 0,
       inventoryFocus: this.inventoryFocus ?? 'items',
+      figureSpriteId: this.player.spriteId,
       equipmentSlots: this.inventory.equipmentEntries(),
       equipmentIndex: this.equipmentIndex ?? 0,
       carryWeight: this.inventory.currentWeight(),

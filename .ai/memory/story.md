@@ -10,7 +10,9 @@ Core canon:
 - Every Earthborn Host strain descends from the sample that infected Father Marius Vale.
 - The **Vale Imprint** is the inherited psychic-biological pattern that makes Host transformations religious body horror instead of random alien mutation.
 - The first apocalypse stopped during **the Stilling**, but the Stilling was an artificial lock created by Dr. Elian Sorell to trap The Host inside the Vale Imprint.
-- The campaign begins when the player's field squad investigates Hallowfen and finds an _Eschaton's Mercy_ data core warning that the lock is failing and no one must find the priest.
+- Hallowfen is the walled Earthside crash scar the Holy Remnant calls holy ground. Its checkpoint bell towers, not the town itself, are the first Act I silence.
+- Act I begins with the Hallowfen wall crisis: expose or survive a Choir-held checkpoint, enter through that checkpoint or a smuggler tunnel, and decide whether Hallowfen survives the siege.
+- The data-core mystery comes after Hallowfen's fate is settled. The core later warns that the lock is failing and no one must find the priest.
 
 ## Current Direction
 
@@ -28,7 +30,7 @@ Runtime dialogue belongs in future `data/dialogue/` files only after a conversat
 Use `docs/enemies/` for hostile faction and boss design:
 
 - `docs/enemies/factions.md` - The Host, Choir, Ash Cartels, Remnant, Compact, Penitent Engines, Free City militias, Bloomborn hostility cases, and hazards.
-- `docs/enemies/bosses.md` - Hallowfen Tribunal, Lazarus Subject, Bell Below, Rooted Witness, Canticle's Choir, Sorell, the First Icon, and other boss concepts.
+- `docs/enemies/bosses.md` - Hallowfen Gate Cantor, Hallowfen Tribunal, Lazarus Subject, Bell Below, Rooted Witness, Canticle's Choir, Sorell, the First Icon, and other boss concepts.
 
 Use `docs/maps/README.md` as the canonical location index for Hallowfen, Ash Roads, Veyr's Gate, Sanctum Aurelian, Meridian Vault, Low Harrow, Cinder Parish, Glassmarket, Pale Orchard, Black Reliquary, Woundfall, Saint Origen Deep Bore, and Europa.
 

@@ -302,7 +302,9 @@ The crash was called **The Descent**.
 
 The Descent did not look like one impact. It looked like a rain of burning relics.
 
-Ship fragments crossed the sky like falling stars. Some burned away completely. Some struck oceans, forests, cities, deserts, mountains, monasteries, and military installations. Some pieces were no bigger than coffins. Others were the size of districts. A section of the command spine tore a trench through an entire province. A chapel module landed intact in the center of a farming town and rang its bell for three days.
+Ship fragments crossed the sky like falling stars. Some burned away completely. Some struck oceans, forests, cities, deserts, mountains, monasteries, and military installations. Some pieces were no bigger than coffins. Others were the size of districts. A section of the command spine tore a trench through an entire province.
+
+Hallowfen became the first crash scar most survivors named as the Earthside origin of the Host. A chapel-and-archive section of _Eschaton's Mercy_ landed in the farming town with active tissue still alive inside it. Its bell rang for three days. The Holy Remnant later called the site holy ground, not because it was safe, but because it was where Earth first understood what had come home.
 
 People went to help.
 
@@ -466,7 +468,7 @@ Militant hardliners who want total war against Host creatures, Bloomborn, Lumen 
 
 ### The Ashen Censure
 
-A field office of the Holy Remnant tasked with the quiet, unglamorous work of finding and destroying blasphemous Host-cults before they can open a gate. Where the Iron Penitents wage open war on whole contaminated towns, the Censure works smaller and darker: a handful of field agents — **cult-breakers** — sent down the ash roads on written writs to walk into a silent chapel, a stopped farm, a settlement that has quit answering its bells, and end whatever has begun teaching that the rot is holy.
+A field office of the Holy Remnant tasked with the quiet, unglamorous work of finding and destroying blasphemous Host-cults before they can open a gate. Where the Iron Penitents wage open war on whole contaminated towns, the Censure works smaller and darker: a handful of field agents called **cult-breakers** sent down the ash roads on written writs to walk into a silent chapel, a stopped farm, or a checkpoint tower that has quit answering its bell, then end whatever has begun teaching that the rot is holy.
 
 It is thankless, grinding work. Cult-breakers are not celebrated; many of the faithful find them distasteful, a living reminder that the enemy is not only out in the Blooms but inside the Church's own flocks. They burn what they find, bury whoever the Censure sent with them last time, and ride to the next writ. The cults never stop coming.
 
@@ -592,9 +594,11 @@ Their doctrine is simple: flesh is weak because flesh can be tempted, infected, 
 
 Members replace body parts with machine systems as acts of discipline and sacrifice. Arms become weapon mounts. Lungs become filter engines. Eyes become targeting relics. Spines become armored conduits. Their armor is etched with scripture, kill counts, failure records, and the names of those they could not save.
 
-Some serve the Holy Remnant. Some reject all central authority. Some wander as monster hunters, caravan escorts, bounty killers, relic guards, or pilgrims of violence.
+The Penitent Engines answer to no authority but their own order. They are not the Holy Remnant's Iron Penitents, whatever the shared word suggests to a frightened town. The Engines come down from the Ecclesiate war-orders that survived the fall with their command intact, and they never accepted the Pontifex's claim to inherit the old Church. To them the Remnant is the corpse wearing the crown. Some hire out as monster hunters, caravan escorts, relic guards, or pilgrims of violence, but none of them kneel to a bishop, and Remnant field offices like the Ashen Censure are taught plainly not to engage them.
 
 They hate the Host because it proves the body can betray the will.
+
+They cut their own flesh away as much to deny the Host as to discipline the self. A body that is mostly machine gives the rot little to tempt and less to reshape. Through the Bloom Years this seemed to hold. Penitents marched into active growth that killed everyone around them and walked back out uncorrupted, and the orders took it as settled that a true Penitent could not fall. A Host-touched Penitent is, by every record the roads keep, impossible. The few that have surfaced lately are not spoken of, because what they imply about the Stilling is worse than any cult.
 
 But the tragedy of the Penitent Engines is that their war against corruption has already mutilated them. Many are more machine than person. They speak through damaged speakers, pray while reloading railguns, and sometimes forget the faces they sacrificed to protect.
 
@@ -706,9 +710,11 @@ They believe Stage Four is the beginning of true communion.
 
 # Host Forms
 
-The Host’s creatures are not random mutants. They are infernal icons grown from human material. Every design should feel like something trying to be holy and failing horribly.
+The Host’s creatures are not random mutants. They are infernal icons grown from human material. Every design should feel like something trying to be holy and failing horribly. The horror is bodily and structural: the Host reshapes a person rather than dissolving them, so until a form is fully consumed it still reads as a human being opened up, roughly human-sized, the man still visible under what has grown through him.
 
-Common visual features include bone halos, fused prayer-hands, exposed nerves like red scripture, black-gold tissue, thorn growths, false wings, mouth clusters, faces stretched into agony masks, ribs opening like chapel doors, candle-like fat growths, bell organs, wet vestment-like flesh, embedded ship metal, stained-glass eye clusters, and bodies bent into kneeling or cruciform poses.
+Common visual features include bone halos, fused prayer-hands, exposed nerves like red scripture, thorn growths, false wings, mouth clusters, faces stretched into agony masks, a ribcage cracked down the sternum and butterflied open over a single small wound, candle-like fat growths, bell organs, wet vestment-like flesh, embedded ship metal, stained-glass eye clusters, and bodies bent into kneeling or cruciform poses.
+
+The black-gold is the lit wiring of the change, not a flood of substance. It runs as thin veins and seams mostly beneath the skin, glints in the bone and the eye sockets, and at most beads a little from a fresh opening. A Host form is never gushing or oozing black-gold; the gold is a trace, the bone and the opened flesh are the body of the horror.
 
 ## Penitent Bastions
 
@@ -828,25 +834,27 @@ Perhaps Saint Origen was not humanity’s first contact with it.
 
 ## Player Setup
 
-The player begins as the leader of a small field squad working along the borderlands between Free City territory and old Bloom zones. The squad may be affiliated with a Free City militia, a salvage company, a neutral quarantine office, a mixed expedition funded by several factions, or — as in the current playable vertical slice — the Holy Remnant's **Ashen Censure**, the cult-purgation office whose field agents (cult-breakers) ride writs into silent chapels and stopped towns to put down blasphemous Host-cults. Framed this way, the protagonist has spent years breaking cults for the Church and has privately noted that there are far more of them lately than there used to be; the Ash Chapel on the road to Hallowfen is simply the latest writ, and the one where the larger mystery begins to surface.
+The player begins as the leader of a small field squad working along the borderlands between Free City territory and old Bloom zones. The squad may be affiliated with a Free City militia, a salvage company, a neutral quarantine office, a mixed expedition funded by several factions, or, as in the current playable vertical slice, the Holy Remnant's **Ashen Censure**, the cult-purgation office whose field agents, called cult-breakers, ride writs into silent chapels and stopped towns to put down blasphemous Host-cults. Framed this way, the protagonist has spent years breaking cults for the Church and has privately noted that there are far more of them lately than there used to be. The Ash Chapel on the road to Hallowfen is simply the latest writ, and the one where the larger crisis first shows its edge.
 
-Their first mission is ordinary by the standards of the world: investigate a silent settlement, identify whether the outbreak is active, recover survivors if possible, and prevent contaminated material from reaching trade roads.
+The first major campaign site is **Hallowfen**.
 
-The settlement is called **Hallowfen**.
+Hallowfen is not a normal settlement. It is the best-known Earthside crash scar of _Eschaton's Mercy_, the site the Holy Remnant calls holy ground and tries to keep out of ordinary speech. After the Stilling, rumors spread that the sealed town still held relic metal, dead saints, old ship archives, and Host tissue that had not gone fully cold. The Remnant tried to crush those stories. It built a ring wall around Hallowfen and placed bell towers on the checkpoints. The bells belong to the perimeter, not to the town.
 
-Hallowfen should feel human before it becomes horrific. The player finds dinner still on tables, children’s drawings of wall guards, a half-finished wedding dress, repair invoices, local political posters, devotional candles, Compact medicine labels, and smuggler markings near the water pump.
+The wall did not make Hallowfen orderly. It made it valuable. Over the years, gamblers, smugglers, bandits, relic thieves, failed pilgrims, black-market doctors, and glory hunters found illegal ways inside. A rough inner settlement grew in the ruins, living on salvage claims, debts, armed bargains, and old lies about what the first crash left behind.
 
-The outbreak appears small at first.
+The player's immediate summons is not that Hallowfen stopped answering. The checkpoint towers have stopped answering their bells.
 
-Then the squad finds a chapel basement where the entire town council has fused into a single living tribunal. Its many mouths accuse the player characters by name, including things they have not told each other.
+The canonical approach is through a checkpoint that still looks Remnant-held. The men at the gate are wrong before they are openly hostile: their speech falls into repeated phrases, their uniforms are filthy, and inked wound-stars show beneath their collars. The player can expose them through dialogue and begin combat at the gate. If the player accepts the inspection or fails to press the lie, the guards lead the party into a back room, strip them of gear, and leave them to escape past bodies, blood sigils, and point-down pentagram wound-stars. That is the reveal: the checkpoint is no longer Remnant. It belongs to the Choir of the Open Wound.
 
-In the basement is a relic: a blackened data core from _Eschaton’s Mercy_, still warm after 130 years.
+Killing or capturing the checkpoint boss reveals a letter. The local Choir gang means to seize Hallowfen, take the holy land at the heart of the wall, and build a temple-capital for the cult on the first Earthside crash scar. This boss is not the Choir's overall leader. He is a gate-captor with one piece of a larger plan.
 
-When touched, it plays a fragment of Father Vale’s voice.
+There is another way in: a smuggler tunnel nearby that passes under the wall. It is a non-canon route for stealth, avoidance, or alternate faction play. The checkpoint route is the canonical entry because it exposes the Choir takeover before the player sees the city.
 
-Then a second voice interrupts him.
+Hallowfen should still feel human before it becomes horrific, but its humanity is not clean village life. The player finds gambling debts pinned beside prayer cards, repair invoices for illegal pumps, smuggler marks near cisterns, children sleeping under market tables, Compact medicine labels, cheap relic stalls, half-finished barricades, and people who came looking for fortune but stayed because the wall cuts both ways.
 
-The second voice belongs to Dr. Elian Sorell, the xenobiologist listed as dead during the Descent.
+The Act I question is not who receives the truth yet. It is whether Hallowfen survives. The player can help the people inside break the siege and drive off the Choir attackers, misdirect the attackers long enough for an evacuation, or leave the town to its fate. If Hallowfen is abandoned, later reports reveal that the Choir crucified the whole town upside down and used the bodies to decorate its new capital.
+
+The deeper campaign still turns on a relic from _Eschaton's Mercy_, but Hallowfen does not explain the Stilling during Act I. Once the fate of the city is settled, the story can return to the crash site's heart and the blackened data core hidden there. When that core is recovered and decoded, it plays Father Vale's voice, then the voice of Dr. Elian Sorell, the xenobiologist listed as dead during the Descent.
 
 The message says:
 
@@ -858,25 +866,25 @@ The message says:
 >
 > Do not let them find the priest.
 
-This discovery begins the main story.
+That discovery begins the larger archive mystery.
 
 ---
 
 ## Act I: Ash Roads
 
-The early game centers on survival, investigation, and faction introduction.
+The early game centers on Hallowfen's fate, survival, investigation, and faction introduction.
 
-The player must escape Hallowfen, decide what to do with exposed survivors, and choose who receives the recovered data core. Every option has consequences.
+The player must reach the walled crash site, expose or survive the captured checkpoint, enter Hallowfen, and decide whether the people inside are worth saving. Every option has consequences.
 
-Giving it to the Holy Remnant grants protection but risks censorship and execution of witnesses.
+Helping Hallowfen break the siege earns witnesses, local allies, and dangerous gratitude from people the Remnant considers trespassers on holy ground.
 
-Giving it to the Lumen Compact reveals more data but exposes the player to dangerous experiments and political manipulation.
+Steering attackers away or evacuating selected groups saves some lives but leaves the inner settlement fractured and resentful.
 
-Selling it in Veyr’s Gate brings money and underworld contacts but spreads the secret to multiple factions.
+Leaving Hallowfen to the Choir preserves the party's resources and secrecy. Later, the player learns the whole town was raised on upside-down crosses around the cult's new temple-capital.
 
-Keeping it makes the player a target.
+Only after Hallowfen does the data core become the central political object. Giving it to the Holy Remnant grants protection but risks censorship and execution of witnesses. Giving it to the Lumen Compact reveals more data but exposes the player to dangerous experiments and political manipulation. Selling it in Veyr's Gate brings money and underworld contacts but spreads the secret to multiple factions. Keeping it makes the player a target.
 
-Act I introduces the world’s unstable balance. The player travels through trade roads, quarantine checkpoints, ruined suburbs, small towns, and the outskirts of Veyr’s Gate. They encounter Remnant inquisitors, Compact field teams, Ash Cartel smugglers, Bloomborn refugees, and Choir missionaries.
+Act I introduces the world's unstable balance. The player travels through trade roads, Hallowfen wall checkpoints, ruined suburbs, small towns, and the outskirts of Veyr's Gate. They encounter Remnant inquisitors, Compact field teams, Ash Cartel smugglers, Bloomborn refugees, Choir missionaries, and Hallowfen citizens who are criminals only because every lawful gate was closed to them.
 
 Signs of renewed Host activity appear everywhere.
 
@@ -1257,4 +1265,3 @@ Now every city, faction, companion, monster, and quest should orbit that wound.
 The player is not simply fighting an infection.
 
 They are fighting a nightmare that became hereditary.
-

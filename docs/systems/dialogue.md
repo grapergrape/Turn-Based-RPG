@@ -72,13 +72,46 @@ Current dialogue files contain:
 }
 ```
 
-This shape is intentionally narrow. Add conditions, speakers, reputation,
-companion reactions, or skill checks only when a playable scene needs them.
+This shape is intentionally narrow. Add speakers, reputation, companion
+reactions, or skill checks only when a playable scene needs them. Conditional
+nodes and story flags already exist (see below).
 
 Ambient NPC lines are authored on enemy spawns as `ambient` arrays, not as full
 dialogue nodes. Use them for short overheard teachings, warnings, or routines
 before combat. They should not explain the plot or reveal information the player
 has not earned.
+
+## Conditional nodes and story flags
+
+Information must be earned. A node should not reveal something the player has not
+yet found. Dialogue nodes can be gated on run-global flags so a hint only appears
+once its source has actually been read.
+
+- A note's `start` node can set a flag when it is shown:
+  `"effects": { "setFlag": "read-warden-journal" }`. Setting a flag is idempotent
+  (it is a Set), so re-reading a note is harmless. One-shot effects (`log`,
+  `kill`, `loadLevel`, `questUpdate`) stay on choices, where they fire once on
+  selection.
+- Any node can require flags or a quest stage with `conditions`, and redirect to
+  another node with `else` when they are not met:
+
+```json
+"start": {
+  "conditions": { "flag": "read-warden-journal" },
+  "else": "sealed",
+  "lines": ["... his journal placed the key behind a loose stone ..."]
+},
+"sealed": {
+  "lines": ["... it will not give without the key; he hid it somewhere ..."]
+}
+```
+
+`conditions` supports `flag` (one required), `flags` (all required), and
+`questStages` (`{ "quest-id": "stage" }`). Flags are run-global: they survive
+level transitions within a run and clear on a fresh start (R). The worked example
+is the warden's wall safe (`ash-chapel-warden-safe-locked`), which only names the
+key's hiding place after the warden's journal (`ash-chapel-warden-journal`, which
+sets the flag) has been read.
 
 ## Dialogue Tone
 

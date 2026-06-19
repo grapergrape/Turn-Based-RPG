@@ -14,7 +14,7 @@ The player's exact origin remains open:
 - Mixed expedition captain funded by several factions.
 - **Cult-breaker of the Ashen Censure** (the framing used by the current playable slice): a field agent of the Holy Remnant's cult-purgation office, sent down the ash roads on written writs to find and destroy blasphemous Host-cults before they open a gate.
 
-The player should not begin as a world-famous hero. Their authority should be local, practical, and fragile. Hallowfen makes them important because they find the data core, not because destiny chose them.
+The player should not begin as a world-famous hero. Their authority should be local, practical, and fragile. Hallowfen makes them important because they decide who survives the holy-ground siege and later uncover the data core, not because destiny chose them.
 
 ### Player Premise — Demo Vertical Slice (Ash Chapel)
 

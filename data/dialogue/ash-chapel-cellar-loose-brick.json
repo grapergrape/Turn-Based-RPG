@@ -1,0 +1,34 @@
+{
+  "id": "ash-chapel-cellar-loose-brick",
+  "title": "Loose Brick",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A brick sits a finger proud of the rest, low in the old wall where the cold comes through. It rocks when you lean on it.",
+        "You press it home. Something behind the stone gives, and a slab grinds back off a doorway that was dressed to look like wall. Cold breathes out of the dark. Cut steps go down past the reach of the light, and the smell that climbs them is dry bone and years of dust.",
+        "This is on no plan of the house. Whatever the warden put down here, he did not want it found."
+      ],
+      "choices": [
+        {
+          "label": "Go down into the dark",
+          "effects": {
+            "log": "You take the cut steps down into the cold.",
+            "setFlag": "found-catacombs",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_catacombs.json",
+              "player": { "x": 20, "y": 4 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Leave it shut",
+          "effects": {
+            "log": "You set the brick back and leave the doorway closed."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

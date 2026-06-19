@@ -6,55 +6,56 @@ These are design docs, not runtime quest data. When quest JSON is added later, I
 
 ## Campaign Premise
 
-The player leads a small field squad working along the borderlands between Free City territory and old Bloom zones. Their ordinary outbreak investigation at **Hallowfen** uncovers a blackened data core from _Eschaton's Mercy_.
+The player leads a small field squad working along the borderlands between Free City territory and old Bloom zones. Their first major crisis is **Hallowfen**, the walled Earthside crash scar the Holy Remnant calls holy ground and every outlaw calls a chance.
 
-The data core contains two voices: Father Marius Vale and Dr. Elian Sorell. Sorell's message reveals that the Stilling was not divine intervention, but a lock. The lock is failing. No one must find the priest.
+Act I does not hand the player the full truth. It asks whether Hallowfen survives. The wider archive mystery begins after the Hallowfen decision, when a blackened data core from _Eschaton's Mercy_ is recovered and decoded. That core contains two voices: Father Marius Vale and Dr. Elian Sorell. Sorell's message reveals that the Stilling was not divine intervention, but a lock. The lock is failing. No one must find the priest.
 
 The campaign asks what the player will do with truth when every faction can use it to save people and destroy people.
 
 ## Critical Path
 
-### Prologue: Hallowfen Silence
+### Prologue: Hallowfen Checkpoint
 
-**Narrative purpose:** Make the apocalypse personal before it becomes historical.
-**Gameplay purpose:** Introduce exploration, investigation, contamination risk, first combat, survivor decisions, and the data core.
+**Narrative purpose:** Make the first crash site personal before it becomes historical.
+**Gameplay purpose:** Introduce checkpoint pressure, investigation, confiscation risk, first combat, escape play, and the Choir's plan for Hallowfen.
 
-**Starting conditions:** The player squad is sent to Hallowfen after the settlement stops answering road signals.
+**Starting conditions:** The player squad is sent toward Hallowfen after the Remnant checkpoint towers on the wall stop answering their bells.
 
 **Objectives:**
 
-- Enter Hallowfen and establish why it went silent.
-- Search homes, public notices, shrine spaces, medicine stores, and water infrastructure.
-- Identify exposed survivors and decide whether to evacuate, quarantine, hide, or execute them.
-- Discover the chapel basement tribunal formed from the town council.
-- Recover the blackened _Eschaton's Mercy_ data core.
-- Escape before Remnant, Compact, cartel, or Choir agents can seize the whole site.
+- Approach a Hallowfen wall checkpoint that still claims to be Remnant-held.
+- Notice the false guards' repeated speech, dirty uniforms, hidden tattoos, and wrong ritual habits.
+- Expose the Choir takeover through dialogue and fight at the gate, or submit to inspection and escape after the party is stripped in the back room.
+- Recover the checkpoint boss's letter describing the Choir plan to seize the holy land and build a temple-capital at Hallowfen's heart.
+- Enter Hallowfen through the captured checkpoint, which is the canon route, or find the nearby smuggler tunnel under the wall as an alternate route.
 
-**Key characters:** Player, Mara Vey, possible first contact with Ilyra or Kael, Hallowfen survivors, Hallowfen Tribunal.
-**Locations:** Hallowfen streets, water pump, council chapel, basement tribunal chamber.
-**Branching outcomes:** Survivor handling affects Remnant trust, Compact interest, Free City reputation, Lio's later view of the player, and future outbreak rumors.
+**Key characters:** Player, Mara Vey, checkpoint Choir boss, Hallowfen smugglers, scavengers, illegal settlers, possible first contact with Ilyra or Kael.
+**Locations:** Hallowfen wall road, Remnant checkpoint, inspection back room, smuggler tunnel, first streets inside the wall.
+**Branching outcomes:** The entry route affects starting gear, local trust, Remnant suspicion, and which Hallowfen groups believe the player came to save them rather than loot them.
 
-### Act I: Ash Roads
+### Act I: The Fate of Hallowfen
 
-**Narrative purpose:** Introduce the living world and force the first political decision over the data core.
-**Gameplay purpose:** Establish travel, faction checkpoints, side encounters, early hub access, and reputation.
+**Narrative purpose:** Decide whether the lawless holy land remains a living settlement or becomes the Choir's capital.
+**Gameplay purpose:** Establish siege play, faction pressure, route choices, survivor decisions, early hub access, and reputation.
 
-**Primary decision:** Who receives or learns about the data core?
+**Primary decision:** What happens to Hallowfen?
 
-- Give it to the Holy Remnant: gain protection and legal cover, but witnesses may be silenced.
-- Give it to the Lumen Compact: gain analysis and medical access, but become research-adjacent assets.
-- Sell it in Veyr's Gate: gain money and cartel contacts, but spread the secret.
-- Keep it: retain control, but become a target.
+- Help Hallowfen break the siege and drive off the Choir attackers.
+- Steer attackers away or evacuate selected people, saving some lives while leaving others behind.
+- Leave Hallowfen to its fate. Later reports reveal the town was crucified upside down to decorate the Choir's new temple-capital.
 
 **Required beats:**
 
-- Escape Hallowfen pursuit.
-- Cross quarantine checkpoints and road shrines.
-- Encounter Remnant inquisitors, Compact field teams, Ash Cartel scouts, Bloomborn refugees, and Choir missionaries.
+- Search gambling dens, salvage stalls, illegal clinics, water infrastructure, shrine spaces, and barricades inside the wall.
+- Decide which Hallowfen citizens count as citizens, criminals, witnesses, carriers, or liabilities.
+- Cross quarantine checkpoints and road shrines beyond the wall.
+- Encounter Remnant inquisitors, Compact field teams, Ash Cartel scouts, Bloomborn refugees, Hallowfen claim gangs, and Choir missionaries.
 - See evidence of renewed Host activity: a Choir Tree speaking mission-log language, a child drawing Saint Origen from memory, a relic becoming dangerous again, and Penitent Engines marching toward Woundfall.
-- Decode enough of the data core to reveal three archive coordinates.
+- Resolve Hallowfen's fate before the blackened data core becomes the next political problem.
 
-**Early playable slice connection:** `data/levels/ash_chapel_breach.json` functions as an Ash Roads side encounter and tutorial combat space. It foreshadows Hallowfen through a Choir cell, overheard teachings, a private altar rite, and a ledger that says Hallowfen has stopped answering signal bells. The slice should not name Father Vale, reveal Sorell, explain the data core, or confirm why anyone is changing.
+**Transition to the archive plot:** After Hallowfen, the recovered data core forces the first main-lore decision: give it to the Holy Remnant, give it to the Lumen Compact, sell it in Veyr's Gate, or keep it. Decoding it reveals enough to point toward three archive coordinates.
+
+**Early playable slice connection:** `data/levels/ash_chapel_breach.json` functions as an Ash Roads side encounter and tutorial combat space. It foreshadows Hallowfen through a Choir cell, overheard teachings, a private altar rite, and a ledger that says the Hallowfen wall checkpoints have stopped answering tower bells. The slice should not name Father Vale, reveal Sorell, explain the data core, or confirm why anyone is changing.
 
 ### Act II: The Three Witnesses
 
@@ -214,7 +215,7 @@ Once the player assembles the archive:
 
 **Possible quests:**
 
-- Negotiate Veyr's Gate entry for Hallowfen survivors.
+- Negotiate Veyr's Gate entry for Hallowfen survivors, fugitives, and smugglers who survived the siege.
 - Build a Free City defensive league.
 - Decide whether Low Harrow's pact is exposed or preserved.
 - Handle Glassmarket grain blackmail during refugee crisis.

@@ -21,6 +21,7 @@ If a lower-level file contradicts the story bible, update the lower-level file u
 - **The Host:** Common name for the Earthborn alien organism descended from the sample that infected Father Marius Vale.
 - **Vale Imprint:** The inherited psychic-biological pattern imposed on The Host by Vale's first infection.
 - **The Descent:** The crash of _Eschaton's Mercy_ and the start of Earth's Host apocalypse.
+- **Hallowfen:** The walled Earthside crash scar the Holy Remnant calls holy ground. Its checkpoint bell towers, not the town itself, are the first Act I silence.
 - **The Bloom Years:** The first decade after the Descent, when The Host expanded like a second biosphere.
 - **The Stilling:** The halt of planetary-scale Host expansion.
 - **The Lock:** Dr. Elian Sorell's artificial containment pattern, which trapped The Host inside the Vale Imprint.

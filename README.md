@@ -69,7 +69,7 @@ roads, and a rising tide of them that no one will explain), you are dropped into
 a ruined quarantine chapel on the old road toward **Hallowfen**. The area works
 as a first-area sample: multiple small combats, looting, an investigation quest,
 in-lore secrets, a hidden cellar, a moral choice with foreshadowed consequences,
-and background lore that points at the Hallowfen outbreak and the unexplained
+and background lore that points at the Hallowfen wall crisis and the unexplained
 surge of cults without explaining the larger cause. (The state teaches that this
 is Hell invading and that it fights God's war; almost no one knows otherwise.
 What is really happening is dev canon in `docs/lore/`, not something in-game
@@ -108,7 +108,7 @@ The slice contains:
 - Ambient cultist and prop subtitles, written as overheard teaching and ritual
   rather than lore summaries.
 - A quest, **Investigate the Ash Chapel Cult**, with ledger evidence pointing
-  toward Hallowfen while keeping the deeper cause mysterious.
+  toward the Hallowfen checkpoints while keeping the deeper cause mysterious.
 - In-lore secrets to find: a child's hidden bright-metal fragment under a loose
   flagstone, a scratched confession on a column, a child's chalk drawing of
   Europa, a Lumen Compact medicine crate, and a Penitent Engine's wheel-rut.
@@ -192,8 +192,8 @@ attacks, four-frame hit reactions, interact frames, and a ten-frame death
 collapse. Mara is 42x62 px and the Choir cultists use a 44x64 px hooded ritual
 sprite (bloodied stole, a bone rite-knife, a held strip of pale sacrament-flesh).
 The Host-Touched Penitent is a hulking 64x92 px body-horror sprite: a broken bone
-halo, a screaming horned skull, a ribcage splayed open like chapel doors over a
-glowing black-gold wound, shoulder thorns, and elongated bone prayer-arms. Cleared
+halo, a screaming horned skull, a ribcage cracked and butterflied open over a
+single small wound, shoulder thorns, and elongated bone prayer-arms. Cleared
 actors leave type-specific corpses on the ground.
 
 Sprites are drawn directly at native resolution with clustered pixels, small

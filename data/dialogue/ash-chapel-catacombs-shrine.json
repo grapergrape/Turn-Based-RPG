@@ -1,0 +1,13 @@
+{
+  "id": "ash-chapel-catacombs-shrine",
+  "title": "Warden's Shrine Confession",
+  "nodes": {
+    "start": {
+      "lines": [
+        "At the deepest reach the bones are not stacked. They are set. Skeletons stood upright on frames of their own ribs, hands wired into prayer, skulls crowned with carved thorn. A confession is folded into the fingers of the one in the middle.",
+        "'I told them prayer would save them, and I think now it has, only not the way the Pontifex means it. Look what the long litany made. Quiet. Patient. Kept. Not opened the way the Host opens a man, but closed all the way down to the bone and held there.'",
+        "'I have set the best of them so they can go on. The diocese forgot this house. The diocese forgot that God lives in what is kept and not in what is counted. I will climb up and walk out into the road and say nothing of any of it. But this stays down here. This is the only true thing I ever made.'"
+      ]
+    }
+  }
+}

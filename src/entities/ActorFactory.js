@@ -18,6 +18,7 @@ export function createActor(data, position) {
     tags: data.tags ?? [],
     spriteId: data.spriteId ?? data.id,
     attacks: data.attacks ?? [],
+    inspect: data.inspect ?? null,
     position
   });
 }

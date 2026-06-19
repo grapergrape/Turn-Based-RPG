@@ -29,6 +29,24 @@ player-facing text. Rewrite with periods, commas, colons, or restructured
 sentences (see the dash-rewrite guide in the skill). Do not ship player-facing
 text until it passes the skill's self-check.
 
+## Character and creature art — MANDATORY
+
+Before you draw or edit **any visible figure** (a player/NPC/enemy sprite in
+`src/render/SpriteAtlas.js`, or any hand-built creature, corpse, prop, gore, or
+sigil in `src/render/PixelPrimitives.js`), you **must** apply
+**`character_creature_art_skill/SKILL.md`**. It is the single quality bar for
+models so a weaker agent's sprite still sits beside Mara Vey and the Opened
+Saint.
+
+Headline rules: hard pixels only (no smooth gradients, blur, or bloom); only
+colors from `src/render/palette.js`; humans read as small real people, never
+blocky or chibi; Host monsters are Vale Imprint body horror grown from a person
+and still human-sized (broken bone halos, prayer-fused hands, butterflied-open
+ribcages, thin black-gold veins kept under the skin not gushing, goat or ram
+skulls for fully opened heads), always asymmetric, never clean golems; environmental light
+(windows, glows) belongs to terrain, never baked into a creature. Verify every
+model on a detached-canvas render and in a real scene before shipping.
+
 ## Non-negotiable project rules
 
 1. **Keep the repo boring and maintainable.** Do not create clever, over-engineered structures. Prefer clear folders, clear names, and small modules.
@@ -42,6 +60,7 @@ text until it passes the skill's self-check.
 9. **No TODO graveyard.** Use short TODOs only when attached to a specific nearby issue. Prefer `docs/VERTICAL_SLICE.md` for planned work.
 10. **Run checks before finishing.** At minimum run `npm run check` after editing data or source files.
 11. **Player-facing text follows the anti-AI-slop skill.** Apply `anti_ai_slop_writing_skill/SKILL.md` to all player-readable text. Hard ban on em-dashes / `--` / `—`. Rewrite, do not dash.
+12. **Register renderable kinds in the sprite catalog.** Every drawable object `kind` (walls, wall fixtures, structures, furniture, props, decals, creatures, lights) is registered once in `src/render/spriteCatalog.js`, with its draw function living in `PixelPrimitives.js`. Add new building blocks there, never by editing a renderer switch or a second list of kinds. See `character_creature_art_skill/SKILL.md` Section 8b.
 
 ## Canon and tone rules
 
