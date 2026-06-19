@@ -28,7 +28,8 @@ const KEY_TOKENS = {
   4: 'choice4',
   5: 'choice5',
   tab: 'cycle',
-  g: 'debug'
+  g: 'debug',
+  j: 'journal'
 };
 
 export class Input {

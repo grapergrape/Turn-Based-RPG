@@ -42,7 +42,7 @@ Current data examples:
 **Narrative role:** Human collaborators with infection who can still shelter outcasts.
 **Encounter roles:** Cult speakers, knife defenders, contaminated martyrs, ritual chanters, Host handlers, gate saboteurs.
 
-The Choir calls infection confession and Host forms icons. Its members may be gentle, articulate, and visibly compassionate before the player understands the cost. They should not fight like generic cultists; their tactics should center on exposure, panic, consent manipulation, and opening spaces that other factions sealed.
+The Choir calls infection confession and Host forms icons. Its members may be gentle, articulate, and visibly compassionate before the player understands the cost. They should not fight like generic cultists; their tactics should center on exposure, panic, consent manipulation, and opening spaces that other factions sealed. It is a recent and poorly understood movement, not one of the old road-cults; field agents encounter it as an unknown to be pieced together, and even its name should land as a discovery rather than a given.
 
 Possible units:
 

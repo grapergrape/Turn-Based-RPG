@@ -3,7 +3,7 @@
   "name": "Penitent Bastion",
   "type": "enemy",
   "faction": "the-host",
-  "description": "A Host-transformed former protector forced by the Vale Imprint into an armored, kneeling damnation-role. It cannot flee. It only guards.",
+  "description": "A former protector the Host has opened and reshaped into an armored, kneeling guardian, fixed in the one posture its damnation allows. It cannot flee. It only guards.",
   "stats": {
     "hp": 18,
     "maxHp": 18,

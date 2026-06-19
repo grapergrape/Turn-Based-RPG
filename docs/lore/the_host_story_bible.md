@@ -378,6 +378,14 @@ It changed state.
 
 Direct contact could still infect. Active creatures could still convert victims through wounds, blood, or touch. Dormant growth could awaken under unknown conditions. Certain relics remained lethally contaminated. But the first apocalypse had ended.
 
+Two things about the Stilling matter for everything that comes after, and survivors learned them the hard way rather than from any doctrine.
+
+First, calcification is not death. The Host that froze did not let its hosts go. A calcified Bloom victim is caught mid-transformation, pale and hard as old wax, and still, faintly, in there: aware, unfinished, and afraid, the way Father Vale is aware in the wreck at Woundfall, only dimmer and without his reach. The rooted dead of the Pale Orchard whisper for the same reason. The Stilling froze the Host with the lights on. This is why the Choir treats a dormant saint as sleeping rather than spent, and why the kindest thing a road-warden can do to a calcified penitent is break it past waking.
+
+Second, the freeze was a one-time event, not a property new victims inherit. The Stilling calcified the Host as it stood roughly a hundred and twenty years ago. It did not make later infection harmless. A person bitten, cut, or exposed today still opens through the stages and becomes an active Host form; they do not turn to pale stone. What changed is that infection can no longer catch. During the Bloom a single opened body could seed a district; after the Stilling each opening tends to burn out alone, a candle instead of a wildfire, unless something deliberately feeds it. This is the real reason cities survive, and the real reason the Choir must hand-feed its saints one victim at a time: the rot can no longer spread itself.
+
+The danger in the present era is that both of these are reversible. As the lock fails, calcified hosts have begun, in scattered places, to thaw, resuming a transformation interrupted for over a century while still awake to feel it; and fresh infections have begun, here and there, to catch the way they did in the Bloom. The second Bloom will not announce itself with a new plague. It will announce itself when the old frozen ones open their eyes the rest of the way.
+
 Humanity survived because the Host stopped.
 
 That fact shaped every politics, religion, and science that followed.
@@ -563,6 +571,8 @@ The Free Cities are often the emotional heart of the game. They contain local po
 The **Choir of the Open Wound** worships the Host.
 
 To outsiders, they are cultists, plague carriers, body horror prophets, and collaborators with extinction. To themselves, they are the only people honest enough to accept the revelation of the new flesh.
+
+The Choir is new. Earth has never lacked for Host-cults: ash-road covens, relic-eaters, a hundred local blasphemies that rise wherever the rot is worshipped, and the Remnant's cult-breakers have burned them for generations. The Choir of the Open Wound is not one of these. It appeared only in the last few years, and it appeared in many places at once, in regions that had been quiet since the Stilling, already speaking one coherent doctrine as though it had been waiting fully formed. No one knows where it came from. Most who fight it do not yet know its name. Its sudden, coordinated emergence is itself one of the clearest symptoms of the failing lock, though almost no one alive can read it as such.
 
 The Choir teaches that ordinary human bodies are masks. Skin is denial. Anatomy is hypocrisy. Every person carries guilt, fear, longing, hunger, and violence beneath the surface. The Host removes the lie. It gives the body its deserved form.
 
@@ -834,7 +844,7 @@ Perhaps Saint Origen was not humanity’s first contact with it.
 
 ## Player Setup
 
-The player begins as the leader of a small field squad working along the borderlands between Free City territory and old Bloom zones. The squad may be affiliated with a Free City militia, a salvage company, a neutral quarantine office, a mixed expedition funded by several factions, or, as in the current playable vertical slice, the Holy Remnant's **Ashen Censure**, the cult-purgation office whose field agents, called cult-breakers, ride writs into silent chapels and stopped towns to put down blasphemous Host-cults. Framed this way, the protagonist has spent years breaking cults for the Church and has privately noted that there are far more of them lately than there used to be. The Ash Chapel on the road to Hallowfen is simply the latest writ, and the one where the larger crisis first shows its edge.
+The player begins as the leader of a small field squad working along the borderlands between Free City territory and old Bloom zones. The squad may be affiliated with a Free City militia, a salvage company, a neutral quarantine office, a mixed expedition funded by several factions, or, as in the current playable vertical slice, the Holy Remnant's **Ashen Censure**, the cult-purgation office whose field agents, called cult-breakers, ride writs into silent chapels and stopped towns to put down blasphemous Host-cults. Framed this way, the protagonist has spent years breaking cults for the Church and has privately noted that there are far more of them lately than there used to be. The cults the Censure burns are mostly old, squalid, and familiar. The thing that has taken the Ash Chapel on the road to Hallowfen is not: the protagonist will not know its mark, its doctrine, or its name, and the unease of hunting a blasphemy that should be on file and simply is not is where the larger crisis first shows its edge.
 
 The first major campaign site is **Hallowfen**.
 
@@ -984,7 +994,7 @@ Dr. Elian Sorell survived the crash, but not as an ordinary human. During the Bl
 
 Without the Imprint, the organism might expand beyond human comprehension.
 
-Sorell used old Ecclesiate satellites, machine choirs, orbital mirrors, confession networks, and infected tissue relays to reinforce the Vale Imprint across Earth. The Stilling occurred when the Host was locked into a recursive pattern: Hell repeating Hell, unable to learn a larger language.
+Sorell used old Ecclesiate satellites, machine choirs, orbital mirrors, confession networks, and infected tissue relays to reinforce the Vale Imprint across Earth. The Stilling occurred when the Host was locked into a recursive pattern: Hell repeating Hell, unable to learn a larger language. A Host that can only replay one fixed nightmare cannot adapt to each new mind the way the Bloom did, and an organism that cannot adapt cannot chain. Infection still passes by touch, blood, and contaminated relics, but it stops feeding forward into runaway growth. That, not any saint's death, is why the Bloom ended, and why a bitten traveler today no longer becomes a burning district.
 
 The world survived because the Host was imprisoned inside one priest’s nightmare.
 
