@@ -111,6 +111,9 @@ export const SPRITE_CATALOG = {
   'rusted-reliquary': simple(P.drawRustedReliquary, CATEGORY.FURNITURE),
   'field-satchel': simple(P.drawFieldSatchel, CATEGORY.FURNITURE),
   'rusted-crate': simple(P.drawRustedCrate, CATEGORY.FURNITURE),
+  'sealed-storage-crate': simple(P.drawSealedStorageCrate, CATEGORY.FURNITURE),
+  'canvas-tent': simple(P.drawCanvasTent, CATEGORY.FURNITURE),
+  'camp-bedroll': simple(P.drawCampBedroll, CATEGORY.FURNITURE),
   'chapel-banner': simple(P.drawChapelBanner, CATEGORY.FURNITURE),
   'prayer-lectern': simple(P.drawPrayerLectern, CATEGORY.FURNITURE),
   'ritual-bowl': simple(P.drawRitualBowl, CATEGORY.FURNITURE),
@@ -127,6 +130,12 @@ export const SPRITE_CATALOG = {
   'bone-pile': simple(P.drawBonePile, CATEGORY.PROP),
   'bone-niche': simple(P.drawBoneNiche, CATEGORY.PROP), // wall ossuary shelf of skulls + bones
   'loose-flagstone': simple(P.drawLooseFlagstone, CATEGORY.PROP), // a floor stash block
+  'blue-ball': {
+    category: CATEGORY.PROP, layer: 2,
+    draw: (ctx, x, y, seed, c) => {
+      if (!c.prop.consumed) P.drawBlueBall(ctx, x, y, seed);
+    }
+  },
 
   // --- Lights (emissive props) -------------------------------------------
   'candle-cluster': {

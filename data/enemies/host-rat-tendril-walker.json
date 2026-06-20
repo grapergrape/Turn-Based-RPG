@@ -1,0 +1,29 @@
+{
+  "id": "host-rat-tendril-walker",
+  "name": "Tendril-Walker Host Rat",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "host-rat-tendril-walker",
+  "description": "The legs are gone into the belly. Thin tendrils carry it over the stone, setting down little bone tips while a small wound pulses under the ribs.",
+  "stats": {
+    "hp": 3,
+    "maxHp": 3,
+    "actionPoints": 7,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "tendril-lash",
+      "name": "Tendril Lash",
+      "apCost": 3,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "rat",
+    "tendril"
+  ]
+}

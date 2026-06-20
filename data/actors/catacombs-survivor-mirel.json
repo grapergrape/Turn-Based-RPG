@@ -1,0 +1,17 @@
+{
+  "id": "catacombs-survivor-mirel",
+  "name": "Mirel Ardent",
+  "type": "npc",
+  "faction": "ash-chapel-settlement",
+  "role": "Seamstress and quartermaster",
+  "spriteId": "settlement-mirel",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "survivor",
+    "ash-chapel-settlement"
+  ]
+}

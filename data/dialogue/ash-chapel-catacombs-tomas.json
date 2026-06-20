@@ -1,0 +1,23 @@
+{
+  "id": "ash-chapel-catacombs-tomas",
+  "title": "Tomas Vek",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Tomas watches the road through a broken shutter.",
+        "\"No boot marks since before the knives. Not Remnant boots, not wall boots. Something swallowed the road before the cult found us.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Tomas has the look of a man who counted exits until the numbers stopped helping.",
+        "\"I ran messages to the Hallowfen outposts. Same route every week. Then the bells quit answering. Selka told me not to go looking alone.\"",
+        "\"For once I listened.\""
+      ]
+    }
+  }
+}

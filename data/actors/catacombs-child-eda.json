@@ -1,0 +1,17 @@
+{
+  "id": "catacombs-child-eda",
+  "name": "Eda",
+  "type": "npc",
+  "faction": "ash-chapel-settlement",
+  "role": "Settlement child",
+  "spriteId": "settlement-eda",
+  "stats": {
+    "hp": 4,
+    "maxHp": 4,
+    "actionPoints": 0
+  },
+  "tags": [
+    "survivor",
+    "ash-chapel-settlement"
+  ]
+}

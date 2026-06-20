@@ -1,0 +1,17 @@
+{
+  "id": "catacombs-survivor-nessa",
+  "name": "Nessa Quay",
+  "type": "npc",
+  "faction": "ash-chapel-settlement",
+  "role": "Water keeper",
+  "spriteId": "settlement-nessa",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "survivor",
+    "ash-chapel-settlement"
+  ]
+}

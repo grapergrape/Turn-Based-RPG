@@ -1,0 +1,29 @@
+{
+  "id": "host-rat-sixlegs",
+  "name": "Six-Legged Host Rat",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "host-rat-sixlegs",
+  "description": "A catacomb rat split into a low sprinting thing. Four old legs drag under the belly, and two new bone legs jab from the ribs where the Host forced more running into it.",
+  "stats": {
+    "hp": 4,
+    "maxHp": 4,
+    "actionPoints": 6,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "six-leg-bite",
+      "name": "Six-Leg Bite",
+      "apCost": 3,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "rat",
+    "skitter"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "carry-lucky-necklace",
+  "title": "Carry Mirel's Lucky Necklace",
+  "initialStage": "available",
+  "stages": [
+    {
+      "id": "available",
+      "task": "Speak with Mirel in the catacombs.",
+      "description": "Mirel Ardent keeps checking an empty cord at her wrist."
+    },
+    {
+      "id": "charm-received",
+      "task": "Find Jarik near Hallowfen and give him the necklace.",
+      "description": "Mirel gave you Jarik's lucky necklace. Her husband left for Hallowfen chasing wall pay and forgot the charm he trusted most."
+    },
+    {
+      "id": "complete",
+      "task": "The necklace reached Jarik.",
+      "description": "Jarik has his lucky necklace again."
+    }
+  ],
+  "objectives": [
+    {
+      "text": "Take Mirel's necklace.",
+      "stage": "charm-received"
+    },
+    {
+      "text": "Find Jarik near Hallowfen.",
+      "reveal": "charm-received",
+      "lead": true
+    },
+    {
+      "text": "Give Jarik the necklace.",
+      "reveal": "charm-received",
+      "stage": "complete"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "ash-chapel-catacombs-nessa",
+  "title": "Nessa Quay",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Nessa has already lined clean jars near the door, each one covered with cloth.",
+        "\"The font is ruined. The cistern may be clean if they did not know where to look. I know where to look.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Nessa sits beside three stoppered jars and a knife.",
+        "\"I kept the water ledger. Soldiers used to joke that I weighed every swallow. I did, too. Walls do not stand on prayers alone.\"",
+        "\"No soldier has laughed here in weeks.\""
+      ]
+    }
+  }
+}

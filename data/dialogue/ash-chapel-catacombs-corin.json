@@ -1,0 +1,98 @@
+{
+  "id": "ash-chapel-catacombs-corin",
+  "title": "Corin",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "questStages": {
+          "retrieve-blue-ball": "complete"
+        }
+      },
+      "else": "ball-found",
+      "lines": [
+        "Corin holds the blue ball against his chest with both arms.",
+        "\"I am not letting Eda kick it inside again. Outside only. If outside comes back.\""
+      ]
+    },
+    "ball-found": {
+      "conditions": {
+        "questStages": {
+          "retrieve-blue-ball": "ball-found"
+        }
+      },
+      "else": "accepted",
+      "lines": [
+        "Corin sees the blue in your pack before you speak.",
+        "\"You found it. That is mine. It is still mine, right?\""
+      ],
+      "choices": [
+        {
+          "label": "Give him the blue ball",
+          "effects": {
+            "inventory": {
+              "remove": [
+                {
+                  "item": "blue-ball",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "field-dressing",
+                  "count": 1
+                }
+              ]
+            },
+            "questUpdate": {
+              "quest": "retrieve-blue-ball",
+              "stage": "complete",
+              "log": "Quest complete: Corin has his blue ball again."
+            },
+            "log": "Hanne gives you a clean field dressing for bringing the ball back."
+          },
+          "close": true
+        },
+        {
+          "label": "Hold onto it for now",
+          "close": true
+        }
+      ]
+    },
+    "accepted": {
+      "conditions": {
+        "questStages": {
+          "retrieve-blue-ball": "accepted"
+        }
+      },
+      "else": "offer",
+      "lines": [
+        "Corin points down the central hall, then pulls his hand back fast.",
+        "\"It went past the old shelves. Selka said nobody little goes there. She said nobody big should either.\""
+      ]
+    },
+    "offer": {
+      "lines": [
+        "Corin is small enough to vanish behind Selka, but he steps out when he sees you looking at the lower hall.",
+        "\"Eda kicked my blue ball. She said she could make it hit the wall and come back. It did not come back.\"",
+        "\"It went down there. We are not allowed deeper. You are allowed, maybe.\""
+      ],
+      "choices": [
+        {
+          "label": "Look for the ball",
+          "effects": {
+            "questUpdate": {
+              "quest": "retrieve-blue-ball",
+              "stage": "accepted",
+              "log": "Quest updated: find Corin's blue ball deeper in the catacombs."
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Not now",
+          "close": true
+        }
+      ]
+    }
+  }
+}

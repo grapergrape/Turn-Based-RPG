@@ -1,0 +1,49 @@
+{
+  "id": "ash-chapel-catacombs-selka",
+  "title": "Selka Ardent",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "cult-dead",
+      "lines": [
+        "Selka stands in the chapel with her hands closed around a broken broom handle.",
+        "\"We are back because hiding teaches children the wrong lesson. We will clean what can be cleaned. The rest we remember.\""
+      ]
+    },
+    "cult-dead": {
+      "conditions": {
+        "questStages": {
+          "investigate-ash-chapel-cult": "complete"
+        }
+      },
+      "else": "hideout",
+      "lines": [
+        "Selka studies your coat, then the dark stair behind you.",
+        "\"If the eight above are dead, say it plain. I will not bring the children up for hope.\""
+      ],
+      "choices": [
+        {
+          "label": "Tell her the cultists are dead",
+          "effects": {
+            "setFlag": "survivors-returning-chapel",
+            "log": "Selka gathers the survivors. They will climb after you and reclaim the chapel."
+          },
+          "close": true
+        },
+        {
+          "label": "Not yet",
+          "close": true
+        }
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Selka keeps herself between you and the children. Her voice stays low so the stone does not carry it.",
+        "\"We were the Ash Chapel settlement before the knives came. Remnant found this quarantine house abandoned and gave us a writ: live here, keep beds ready, feed the soldiers on the Hallowfen wall when they passed.\"",
+        "\"Then the soldiers stopped passing. Before the cult came, not one patrol crossed the chapel road. No bell, no runner, no explanation. We came down here because quiet like that has teeth.\""
+      ]
+    }
+  }
+}

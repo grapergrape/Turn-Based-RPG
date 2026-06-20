@@ -6,7 +6,9 @@
   "height": 50,
   "tileSize": 64,
   "quests": [
-    "investigate-ash-chapel-cult"
+    "investigate-ash-chapel-cult",
+    "retrieve-blue-ball",
+    "carry-lucky-necklace"
   ],
   "dialogue": [
     "ash-chapel-catacombs-return",
@@ -16,7 +18,18 @@
     "ash-chapel-catacombs-criminals",
     "ash-chapel-catacombs-politicals",
     "ash-chapel-catacombs-deep",
-    "ash-chapel-catacombs-shrine"
+    "ash-chapel-catacombs-shrine",
+    "ash-chapel-catacombs-selka",
+    "ash-chapel-catacombs-mirel",
+    "ash-chapel-catacombs-oren",
+    "ash-chapel-catacombs-tomas",
+    "ash-chapel-catacombs-runa",
+    "ash-chapel-catacombs-istra",
+    "ash-chapel-catacombs-nessa",
+    "ash-chapel-catacombs-dalia",
+    "ash-chapel-catacombs-hanne",
+    "ash-chapel-catacombs-corin",
+    "ash-chapel-catacombs-eda"
   ],
   "mood": {
     "floorShade": "#0a0f15",
@@ -98,7 +111,279 @@
       "x": 20,
       "y": 4
     },
-    "enemies": []
+    "npcs": [
+      {
+        "actor": "catacombs-survivor-selka",
+        "x": 18,
+        "y": 4,
+        "dialogue": "ash-chapel-catacombs-selka",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "Keep your voices under the stone. The little ones hear enough already."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-mirel",
+        "x": 23,
+        "y": 4,
+        "dialogue": "ash-chapel-catacombs-mirel",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "Jarik should have taken the charm. Stubborn man."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-oren",
+        "x": 18,
+        "y": 10,
+        "dialogue": "ash-chapel-catacombs-oren",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "I can hear claws past the lower hall. Not chapel mice."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-tomas",
+        "x": 22,
+        "y": 10,
+        "dialogue": "ash-chapel-catacombs-tomas",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "No wall patrol, no bell, no road horn. Nothing."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-runa",
+        "x": 16,
+        "y": 4,
+        "dialogue": "ash-chapel-catacombs-runa",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "The stew pot is upstairs. If it is still there, I do not want to see what they put in it."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-istra",
+        "x": 19,
+        "y": 3,
+        "dialogue": "ash-chapel-catacombs-istra",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "The children sleep when the candles burn low. Then the stone starts talking."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-nessa",
+        "x": 21,
+        "y": 5,
+        "dialogue": "ash-chapel-catacombs-nessa",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "Three jars left. We drink small until the chapel is ours again."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-dalia",
+        "x": 9,
+        "y": 10,
+        "dialogue": "ash-chapel-catacombs-dalia",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "I counted eight voices above us when they came. Then I stopped counting."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-hanne",
+        "x": 31,
+        "y": 9,
+        "dialogue": "ash-chapel-catacombs-hanne",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "If you are bitten down there, do not hide it from me."
+        ]
+      },
+      {
+        "actor": "catacombs-child-corin",
+        "x": 16,
+        "y": 2,
+        "dialogue": "ash-chapel-catacombs-corin",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "It is blue. You can see it even in bad light."
+        ]
+      },
+      {
+        "actor": "catacombs-child-eda",
+        "x": 23,
+        "y": 2,
+        "dialogue": "ash-chapel-catacombs-eda",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "survivors-returning-chapel"
+          ]
+        },
+        "ambient": [
+          "I did not mean to kick it that far."
+        ]
+      }
+    ],
+    "enemies": [
+      {
+        "id": "host-rat-sixlegs",
+        "x": 5,
+        "y": 22,
+        "encounter": "catacomb-west-rats",
+        "aggroRadius": 2,
+        "ambient": [
+          "Six feet tick once, then stop together."
+        ]
+      },
+      {
+        "id": "host-rat-throat-maw",
+        "x": 13,
+        "y": 23,
+        "encounter": "catacomb-west-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-tendril-walker",
+        "x": 8,
+        "y": 24,
+        "encounter": "catacomb-west-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-throat-maw",
+        "x": 26,
+        "y": 22,
+        "encounter": "catacomb-east-rats",
+        "aggroRadius": 2,
+        "ambient": [
+          "A little mouth works open in the dark."
+        ]
+      },
+      {
+        "id": "host-rat-sixlegs",
+        "x": 34,
+        "y": 23,
+        "encounter": "catacomb-east-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-tendril-walker",
+        "x": 28,
+        "y": 24,
+        "encounter": "catacomb-east-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-sixlegs",
+        "x": 15,
+        "y": 31,
+        "encounter": "catacomb-deep-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-throat-maw",
+        "x": 25,
+        "y": 31,
+        "encounter": "catacomb-deep-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-tendril-walker",
+        "x": 21,
+        "y": 32,
+        "encounter": "catacomb-deep-rats",
+        "aggroRadius": 2,
+        "ambient": [
+          "Tendrils scratch at the stone, patient and blind."
+        ]
+      },
+      {
+        "id": "host-rat-sixlegs",
+        "x": 17,
+        "y": 42,
+        "encounter": "catacomb-shrine-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-throat-maw",
+        "x": 25,
+        "y": 44,
+        "encounter": "catacomb-shrine-rats",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-rat-tendril-walker",
+        "x": 22,
+        "y": 46,
+        "encounter": "catacomb-shrine-rats",
+        "aggroRadius": 2
+      }
+    ]
   },
   "objects": [
     {
@@ -111,6 +396,84 @@
         "dialogue": "ash-chapel-catacombs-return",
         "log": "The cut stair climbs back toward the cellar."
       }
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 17,
+      "y": 3,
+      "name": "Canvas Tent"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 7,
+      "y": 10,
+      "blocking": true,
+      "name": "Canvas Tent"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 32,
+      "y": 10,
+      "blocking": true,
+      "name": "Canvas Tent"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 17,
+      "y": 4,
+      "name": "Camp Bedroll"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 21,
+      "y": 4,
+      "name": "Camp Bedroll"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 20,
+      "y": 5,
+      "name": "Camp Bedroll"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 12,
+      "y": 11,
+      "name": "Camp Bedroll"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 31,
+      "y": 11,
+      "name": "Camp Bedroll"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 19,
+      "y": 5,
+      "blocking": true,
+      "name": "Sealed Storage Crate"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 24,
+      "y": 4,
+      "blocking": true,
+      "name": "Sealed Storage Crate"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 10,
+      "y": 11,
+      "blocking": true,
+      "name": "Sealed Storage Crate"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 30,
+      "y": 10,
+      "blocking": true,
+      "name": "Sealed Storage Crate"
     },
     {
       "kind": "paper-scraps",
@@ -3268,6 +3631,78 @@
       "kind": "candle-cluster",
       "x": 19,
       "y": 40
+    },
+    {
+      "kind": "blue-ball",
+      "x": 13,
+      "y": 31,
+      "id": "corins-blue-ball",
+      "name": "Blue Ball",
+      "interact": {
+        "type": "container",
+        "log": "The blue ball rests under an ossuary shelf, tooth-scored and cold with dust.",
+        "loot": [
+          {
+            "item": "blue-ball",
+            "count": 1
+          }
+        ],
+        "questUpdate": {
+          "quest": "retrieve-blue-ball",
+          "stage": "ball-found",
+          "log": "Quest updated: you found Corin's blue ball."
+        }
+      }
+    }
+  ],
+  "victoryLog": "The last infected rat folds into the dust. The catacombs answer with water and teeth settling in the dark.",
+  "combatIntro": [
+    "The infected rats come out of the bone rows in a wet, quick rush."
+  ],
+  "combatTriggers": [
+    {
+      "id": "catacomb-west-rats-trigger",
+      "encounter": "catacomb-west-rats",
+      "x": 9,
+      "y": 22,
+      "radius": 3,
+      "intro": [
+        "Claws tick from the west burial shelves.",
+        "Small bodies move under the bones, too many legs for the shape."
+      ]
+    },
+    {
+      "id": "catacomb-east-rats-trigger",
+      "encounter": "catacomb-east-rats",
+      "x": 29,
+      "y": 22,
+      "radius": 3,
+      "intro": [
+        "Something wet drops from an ossuary slot.",
+        "The rats come low and fast, necks opening where heads should be."
+      ]
+    },
+    {
+      "id": "catacomb-deep-rats-trigger",
+      "encounter": "catacomb-deep-rats",
+      "x": 20,
+      "y": 31,
+      "radius": 3,
+      "intro": [
+        "The lower hall stirs all at once.",
+        "Tendrils tap the floor like fingers looking for a pulse."
+      ]
+    },
+    {
+      "id": "catacomb-shrine-rats-trigger",
+      "encounter": "catacomb-shrine-rats",
+      "x": 21,
+      "y": 43,
+      "radius": 3,
+      "intro": [
+        "The shrine bones shift without wind.",
+        "A nest of Host-touched rats spills out around the candles."
+      ]
     }
   ]
 }
