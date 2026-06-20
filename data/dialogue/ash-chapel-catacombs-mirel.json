@@ -12,6 +12,24 @@
       "lines": [
         "Mirel touches the empty place at her wrist where the necklace cord used to sit.",
         "\"If you find Jarik, tell him I was angry when I gave it away. Then tell him I was more afraid than angry.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about Jarik",
+          "next": "jarik"
+        },
+        {
+          "label": "Ask about the lucky necklace",
+          "next": "necklace"
+        },
+        {
+          "label": "Ask how the settlement managed",
+          "next": "quartermaster"
+        },
+        {
+          "label": "Leave her with the thought",
+          "close": true
+        }
       ]
     },
     "offer": {
@@ -41,8 +59,173 @@
           "close": true
         },
         {
+          "label": "Ask about Jarik",
+          "next": "jarik"
+        },
+        {
+          "label": "Ask why the charm matters",
+          "next": "necklace"
+        },
+        {
           "label": "Leave it with her",
           "close": true
+        }
+      ]
+    },
+    "jarik": {
+      "lines": [
+        "\"Jarik can mend a pump with wire, prayer, and insults aimed at the pump's ancestors.\"",
+        "\"He went to Hallowfen because wall pay spends better than chapel gratitude. I told him gratitude has fewer teeth. He said teeth do not buy boots.\""
+      ],
+      "choices": [
+        {
+          "label": "He sounds useful",
+          "next": "useful"
+        },
+        {
+          "label": "He sounds stubborn",
+          "next": "stubborn"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "useful": {
+      "lines": [
+        "\"Infuriatingly. The worst people to miss are the ones who were good at things.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the lucky necklace",
+          "next": "necklace"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "stubborn": {
+      "lines": [
+        "\"He once argued with a mule and lost. Then he claimed the mule had better legal training.\"",
+        "\"So yes. Stubborn.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the lucky necklace",
+          "next": "necklace"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "necklace": {
+      "lines": [
+        "\"No blessing on it. Do not let a priest charge you for that lie.\"",
+        "\"Cheap tin saint, worn smooth by three fevers and one roof collapse. Luck is memory with a better coat.\""
+      ],
+      "choices": [
+        {
+          "label": "That still matters",
+          "next": "matters"
+        },
+        {
+          "label": "Tin will not save him",
+          "next": "tin"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "matters": {
+      "lines": [
+        "\"It matters because he thinks it does. People have lived on worse engineering.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how the settlement managed",
+          "next": "quartermaster"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "tin": {
+      "lines": [
+        "\"No. But it may make him stand up one more time before sense returns.\"",
+        "\"I have known him long enough to respect a delay in sense.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "quartermaster": {
+      "lines": [
+        "\"I cut coats down for children, mended straps, counted needles, lied about how much thread was left.\"",
+        "\"Quartermaster is a fine word for a woman who knows exactly which blanket everyone stole.\""
+      ],
+      "choices": [
+        {
+          "label": "Did everyone steal blankets?",
+          "next": "blankets"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "blankets": {
+      "lines": [
+        "\"Only the cold ones. I noted the theft and stole them back in spring.\""
+      ],
+      "choices": [
+        {
+          "label": "Efficient",
+          "close": true
+        },
+        {
+          "label": "Ask about Jarik",
+          "next": "jarik"
         }
       ]
     }

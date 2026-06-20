@@ -11,11 +11,13 @@
     {
       "id": "charm-received",
       "task": "Find Jarik near Hallowfen and give him the necklace.",
+      "xp": 10,
       "description": "Mirel gave you Jarik's lucky necklace. Her husband left for Hallowfen chasing wall pay and forgot the charm he trusted most."
     },
     {
       "id": "complete",
       "task": "The necklace reached Jarik.",
+      "xp": 60,
       "description": "Jarik has his lucky necklace again."
     }
   ],

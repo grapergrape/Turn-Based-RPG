@@ -5,6 +5,53 @@
   "faction": "holy-remnant",
   "role": "Cult-Breaker, Ashen Censure",
   "background": "A field agent of the Ashen Censure, the Holy Remnant's quiet office for hunting and burning blasphemous Host-cults along the ash roads. Years of it now: find the cell, end it, bury whoever the Censure sent with you last time, move on. No one thanks a cult-breaker, and the cults never stop coming. Lately there are more of them than there should be, and no one in the Office will say why.",
+  "progression": {
+    "level": 1,
+    "xp": 0,
+    "build": "field-agent",
+    "primaryPoints": 0,
+    "primaries": {
+      "body": 5,
+      "agility": 6,
+      "eye": 6,
+      "intelligence": 4,
+      "religion": 5,
+      "voice": 4,
+      "nerve": 6
+    },
+    "trace": 0,
+    "iconRisk": "not-assessed",
+    "scarPoints": 0,
+    "scars": [
+      {
+        "id": "failed-quarantine",
+        "name": "Failed Quarantine",
+        "rank": 1,
+        "tags": ["quarantine", "guilt", "censure"],
+        "modifiers": { "containment": 5 },
+        "summary": "You remember the wrong door.",
+        "cost": "Rescue scenes press harder."
+      },
+      {
+        "id": "burned-false-saint",
+        "name": "Burned a False Saint",
+        "rank": 1,
+        "tags": ["host", "purgation", "mercy"],
+        "modifiers": { "purgationTools": 5 },
+        "summary": "You killed something that still spoke.",
+        "cost": "Mercy scenes cut deeper."
+      },
+      {
+        "id": "heard-the-choir-below",
+        "name": "Heard the Choir Below",
+        "rank": 1,
+        "tags": ["host", "fear", "signs"],
+        "modifiers": { "hostSigns": 5 },
+        "summary": "You know the first sound before a room turns wrong.",
+        "cost": "Quiet rooms do not leave you alone."
+      }
+    ]
+  },
   "stats": {
     "hp": 14,
     "maxHp": 14,

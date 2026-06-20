@@ -230,6 +230,16 @@ Rules:
 }
 ```
 
+- Dialogue choice effects can grant explicit XP:
+
+```json
+{
+  "effects": {
+    "xp": 50
+  }
+}
+```
+
 - The validator (`npm run check`) requires: valid tile grids, in-bounds player
   starts, main chapel encounter groups with spread trigger zones, required
   slice enemy ids, required interactables, a Cult Ledger note, a separate cellar
@@ -284,6 +294,32 @@ Minimal actor shape:
     "maxHp": 24,
     "actionPoints": 6
   },
+  "progression": {
+    "level": 1,
+    "xp": 0,
+    "build": "field-agent",
+    "primaryPoints": 0,
+    "primaries": {
+      "body": 5,
+      "agility": 6,
+      "eye": 6,
+      "intelligence": 4,
+      "religion": 5,
+      "voice": 4,
+      "nerve": 6
+    },
+    "trace": 0,
+    "iconRisk": "not-assessed",
+    "scarPoints": 0,
+    "scars": [
+      {
+        "id": "failed-quarantine",
+        "name": "Failed Quarantine",
+        "rank": 1,
+        "modifiers": { "containment": 5 }
+      }
+    ]
+  },
   "inventory": {
     "maxCarryWeight": 10,
     "items": [
@@ -302,11 +338,30 @@ Rules:
 - `id` is stable.
 - `name` is display text.
 - `type` tells systems how to treat the actor.
+- `progression` is optional. Player and companion actors can define the current
+  character sheet here.
+- `progression.level` is an integer from 1 to the level cap in
+  `src/core/Progression.js`. `progression.xp` is cumulative.
+- `progression.build` must match a build profile id from
+  `src/core/Progression.js`. If omitted, runtime actors get a small default
+  build based on actor type and tags.
+- `progression.primaryPoints` stores unspent level-up Primary Points. There is
+  no start-of-game spending UI.
+- `progression.primaries` uses all seven primary ids from
+  `src/core/Progression.js`, each rated from 0 to 10.
+- `progression.primaryBonuses` can store spent Primary Point bonuses later. Do
+  not edit field ratings directly.
+- `progression.scars[].modifiers` keys must match field rating ids from
+  `src/core/Progression.js`. Values add to the derived 0 to 100 field rating.
+- `progression.trace` must match a defined Trace stage. `iconRisk` can stay
+  `not-assessed` until the story has earned a stronger reveal.
 - `inventory` is optional. Player actors can define a starting pack with
   `maxCarryWeight`, item stacks, and equipped item ids.
 - Actor equipment slots are `clothes`, `armor`, `boots`, `helmet`, `trinket`,
   `ring1`, and `ring2`.
 - Avoid putting long dialogue or lore paragraphs inside actor stat files. Use dialogue/lore files later.
+- Do not add start-of-game character customization here. The current plan is to
+  introduce player creation after the Ash Chapel opening.
 
 ## Enemy data
 
@@ -325,6 +380,12 @@ Minimal enemy shape:
     "maxHp": 18,
     "actionPoints": 4
   },
+  "progression": {
+    "level": 1,
+    "build": "host-threat",
+    "complexity": "hardened",
+    "xpReward": 40
+  },
   "tags": ["host", "vale-imprint", "tank"]
 }
 ```
@@ -332,6 +393,14 @@ Minimal enemy shape:
 Rules:
 
 - Enemies should express gameplay role through tags and stats.
+- `progression` is optional for enemies. If present, it can be compact:
+  `level`, `build`, `complexity`, and optional `xpReward` are enough. If
+  omitted, the loader supplies a level-one build from existing tags and combat
+  XP derives complexity from tags such as `minion`, `rat`, `tank`, `elite`, and
+  `boss`.
+- Enemy complexity ids are defined in `src/core/Progression.js`: `minion`,
+  `standard`, `hardened`, `elite`, and `boss`.
+- `xpReward` overrides the default encounter XP reward for that enemy.
 - Lore-heavy descriptions can be added as `description`, but keep them concise.
 - Host enemies must follow the Vale Imprint rules in `docs/LORE_INTEGRATION.md`.
 
@@ -376,6 +445,11 @@ Rules:
 - A node may have one to five choices. Number keys `1` through `5` choose them.
 - Choice `effects` can log text, teleport the player within a level, load
   another level, and update a quest.
+- Node and choice `conditions` can gate content with `flag`, `flags`,
+  `notFlag`, `flagsAbsent`, `questStages`, `scar`, `scars`, `notScar`,
+  `scarsAbsent`, `scarRanks`, `fieldRatings`, `traceMin`, and `traceMax`.
+  `fieldRatings` maps field rating ids to minimum 0 to 100 values. `scarRanks`
+  maps scar ids to minimum ranks.
 
 ## Quest data
 
@@ -391,6 +465,8 @@ Current shape:
   "stages": [
     {
       "id": "active",
+      "task": "Search the quarantine chapel.",
+      "xp": 0,
       "description": "Search the quarantine chapel."
     }
   ]
@@ -400,7 +476,11 @@ Current shape:
 Rules:
 
 - `id`, `title`, `initialStage`, and `stages` are required.
-- Every stage needs `id` and `description`.
+- Every stage needs `id` and `description`. `task` is optional display text for
+  the journal.
+- Stage `xp` is optional and awards that much XP the first time the stage is
+  reached by a quest update. Initial stages should normally omit `xp` or use
+  `0`, because loading a quest is not task completion.
 - The current quest runtime tracks one active stage per quest.
 - Keep quest consequences simple until a second quest needs reputation,
   companion, or world-state changes.

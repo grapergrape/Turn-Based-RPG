@@ -10,13 +10,176 @@
       "lines": [
         "Tomas watches the road through a broken shutter.",
         "\"No boot marks since before the knives. Not Remnant boots, not wall boots. Something swallowed the road before the cult found us.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the road",
+          "next": "road"
+        },
+        {
+          "label": "Ask why he listened to Selka",
+          "next": "selka"
+        },
+        {
+          "label": "Ask what he would do next",
+          "next": "next-run"
+        },
+        {
+          "label": "Leave the shutter",
+          "close": true
+        }
       ]
     },
     "hideout": {
       "lines": [
         "Tomas has the look of a man who counted exits until the numbers stopped helping.",
-        "\"I ran messages to the Hallowfen outposts. Same route every week. Then the bells quit answering. Selka told me not to go looking alone.\"",
+        "\"I ran messages to the Hallowfen outposts on the same route every week. Then the bells quit answering, and Selka put one finger in my face until I agreed not to go alone.\"",
         "\"For once I listened.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the Hallowfen route",
+          "next": "road"
+        },
+        {
+          "label": "Ask about the bells",
+          "next": "bells"
+        },
+        {
+          "label": "For once?",
+          "next": "selka"
+        },
+        {
+          "label": "Leave him with the exits",
+          "close": true
+        }
+      ]
+    },
+    "road": {
+      "lines": [
+        "\"The route is simple if nothing wants you. Chapel gate, dry ditch, broken toll post, then the wall road.\"",
+        "\"Simple routes kill more people than complicated ones. A man stops watching because the ground has behaved itself before.\""
+      ],
+      "choices": [
+        {
+          "label": "What changed?",
+          "next": "bells"
+        },
+        {
+          "label": "You sound like a scout",
+          "next": "scout"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "bells": {
+      "lines": [
+        "\"Bells are lazy things. They only have one job, and they still make men pull ropes for them.\"",
+        "\"When every tower goes quiet at once, do not blame laziness. Blame hands, blades, or something worse than either.\""
+      ],
+      "choices": [
+        {
+          "label": "Who would silence them?",
+          "next": "who"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "who": {
+      "lines": [
+        "\"If I knew, I would be more useful and less frightened. Selka says those two states rarely meet in the same man.\"",
+        "\"The cult wanted the road quiet. I know that much. The part that scares me is whether they found it quiet when they arrived.\""
+      ],
+      "choices": [
+        {
+          "label": "Enough for now",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
+      ]
+    },
+    "selka": {
+      "lines": [
+        "\"Because Selka has a voice that can make a grown man feel like an unpaid child.\"",
+        "\"Also because Selka was right, which you will not repeat unless you enjoy feeding her.\""
+      ],
+      "choices": [
+        {
+          "label": "I will keep your secret",
+          "next": "scout"
+        },
+        {
+          "label": "No promises",
+          "next": "no-promises"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "no-promises": {
+      "lines": [
+        "\"Cruel work, cult-breaker. I knew I should have charged for that confession.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "scout": {
+      "lines": [
+        "\"Runner. Scouts get better boots and worse orders.\"",
+        "\"I carried notices, ration marks, warning scraps. Half the job was arriving before the lie did.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what he would do next",
+          "next": "next-run"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "next-run": {
+      "lines": [
+        "\"If Selka lets me, I watch the road by daylight and mark what is missing.\"",
+        "\"If she does not, I will watch it anyway from somewhere she cannot see. I remain a fool. I am only becoming a supervised one.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
       ]
     }
   }

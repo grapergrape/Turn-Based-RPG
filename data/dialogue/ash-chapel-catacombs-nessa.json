@@ -10,6 +10,24 @@
       "lines": [
         "Nessa has already lined clean jars near the door, each one covered with cloth.",
         "\"The font is ruined. The cistern may be clean if they did not know where to look. I know where to look.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the cistern",
+          "next": "cistern"
+        },
+        {
+          "label": "Ask about the ruined font",
+          "next": "font"
+        },
+        {
+          "label": "Ask about the water ledger",
+          "next": "ledger"
+        },
+        {
+          "label": "Leave the jars",
+          "close": true
+        }
       ]
     },
     "hideout": {
@@ -17,6 +35,132 @@
         "Nessa sits beside three stoppered jars and a knife.",
         "\"I kept the water ledger. Soldiers used to joke that I weighed every swallow. I did, too. Walls do not stand on prayers alone.\"",
         "\"No soldier has laughed here in weeks.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the water ledger",
+          "next": "ledger"
+        },
+        {
+          "label": "Ask about the knife",
+          "next": "knife"
+        },
+        {
+          "label": "Ask about clean water",
+          "next": "cistern"
+        },
+        {
+          "label": "Leave her to the jars",
+          "close": true
+        }
+      ]
+    },
+    "ledger": {
+      "lines": [
+        "\"Water makes liars honest. A man who says he drank one cup leaves two cups missing.\"",
+        "\"The ledger did not make me beloved. Beloved people die thirsty first.\""
+      ],
+      "choices": [
+        {
+          "label": "Hard rule",
+          "next": "hard-rule"
+        },
+        {
+          "label": "Ask about the cistern",
+          "next": "cistern"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "hard-rule": {
+      "lines": [
+        "\"Soft rules leak.\"",
+        "\"Bad water joke. I keep the good ones for people who return jars.\""
+      ],
+      "choices": [
+        {
+          "label": "I will remember the jar law",
+          "next": "cistern"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "cistern": {
+      "lines": [
+        "\"The old cistern has a false lip under the third slab. Wardens hid a second draw there when the fever house still ran.\"",
+        "\"The cult loved symbols more than plumbing. For once, their ignorance earned its keep.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the ruined font",
+          "next": "font"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "font": {
+      "lines": [
+        "\"Do not touch it bare-handed. Do not let a child look in and ask why it shines.\"",
+        "\"Holy water is only water until someone needs it to be more. Blood is worse. Blood always means itself first.\""
+      ],
+      "choices": [
+        {
+          "label": "You sound sure",
+          "next": "sure"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "sure": {
+      "lines": [
+        "\"I am sure of covered jars, boiled cloth, and knives kept clean.\"",
+        "\"Everything else can argue with Selka.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "knife": {
+      "lines": [
+        "\"For seals, rope, and anyone who thinks water is free because it falls from the sky.\"",
+        "\"It has never fallen free here. It falls with ash in it, and then I get blamed for the taste.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
       ]
     }
   }

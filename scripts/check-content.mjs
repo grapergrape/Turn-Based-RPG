@@ -1,6 +1,14 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import {
+  BUILD_PROFILES,
+  ENEMY_COMPLEXITIES,
+  FIELD_RATINGS,
+  LEVEL_CAP,
+  PRIMARY_ATTRIBUTES,
+  TRACE_STAGES
+} from '../src/core/Progression.js';
 import { getSprite } from '../src/render/spriteCatalog.js';
 import { Grid } from '../src/world/Grid.js';
 import { findPathToAdjacent } from '../src/world/Pathfinder.js';
@@ -49,6 +57,11 @@ const ITEM_GROUND_MODELS = new Set([
 ]);
 const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
 const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
+const PRIMARY_ATTRIBUTE_IDS = new Set(PRIMARY_ATTRIBUTES.map((primary) => primary.id));
+const FIELD_RATING_IDS = new Set(FIELD_RATINGS.map((field) => field.id));
+const TRACE_STAGE_VALUES = new Set(TRACE_STAGES.map((stage) => stage.value));
+const BUILD_PROFILE_IDS = new Set(BUILD_PROFILES.map((profile) => profile.id));
+const ENEMY_COMPLEXITY_IDS = new Set(ENEMY_COMPLEXITIES.map((profile) => profile.id));
 
 const seenItemIds = new Set();
 const seenActorIds = new Set();
@@ -562,6 +575,7 @@ function validateActor(filePath, data) {
   if (typeof data.id === 'string') seenActorIds.add(data.id);
   validateStats(name, data.stats);
   validateActorInventory(name, data.inventory);
+  validateActorProgression(name, data.progression);
 }
 
 function validateEnemy(filePath, data) {
@@ -571,6 +585,7 @@ function validateEnemy(filePath, data) {
   requireString(name, data.type, 'type');
   requireString(name, data.faction, 'faction');
   validateStats(name, data.stats);
+  validateActorProgression(name, data.progression);
 
   if (data.faction === 'the-host') {
     const tags = Array.isArray(data.tags) ? data.tags : [];
@@ -640,6 +655,143 @@ function validateActorInventory(name, inventory) {
   }
 }
 
+function validateActorProgression(name, progression) {
+  if (progression === undefined) return;
+  if (!progression || typeof progression !== 'object' || Array.isArray(progression)) {
+    errors.push(`${name}: progression must be an object.`);
+    return;
+  }
+
+  if (progression.level !== undefined) {
+    requireNumber(name, progression.level, 'progression.level');
+    if (typeof progression.level === 'number' && (!Number.isInteger(progression.level) || progression.level < 1 || progression.level > LEVEL_CAP)) {
+      errors.push(`${name}: progression.level must be an integer from 1 to ${LEVEL_CAP}.`);
+    }
+  }
+  if (progression.xp !== undefined) {
+    requireNumber(name, progression.xp, 'progression.xp');
+    if (typeof progression.xp === 'number' && (!Number.isInteger(progression.xp) || progression.xp < 0)) {
+      errors.push(`${name}: progression.xp must be a zero or greater integer.`);
+    }
+  }
+  if (progression.xpReward !== undefined) {
+    requireNumber(name, progression.xpReward, 'progression.xpReward');
+    if (typeof progression.xpReward === 'number' && (!Number.isInteger(progression.xpReward) || progression.xpReward < 0)) {
+      errors.push(`${name}: progression.xpReward must be a zero or greater integer.`);
+    }
+  }
+  if (progression.primaryPoints !== undefined) {
+    requireNumber(name, progression.primaryPoints, 'progression.primaryPoints');
+    if (typeof progression.primaryPoints === 'number' && (!Number.isInteger(progression.primaryPoints) || progression.primaryPoints < 0)) {
+      errors.push(`${name}: progression.primaryPoints must be a zero or greater integer.`);
+    }
+  }
+  if (progression.build !== undefined) {
+    requireString(name, progression.build, 'progression.build');
+    if (typeof progression.build === 'string' && !BUILD_PROFILE_IDS.has(progression.build)) {
+      errors.push(`${name}: progression.build must match a defined build profile.`);
+    }
+  }
+  if (progression.complexity !== undefined) {
+    requireString(name, progression.complexity, 'progression.complexity');
+    if (typeof progression.complexity === 'string' && !ENEMY_COMPLEXITY_IDS.has(progression.complexity)) {
+      errors.push(`${name}: progression.complexity must match a defined enemy complexity.`);
+    }
+  }
+
+  if (progression.primaries !== undefined) {
+    if (!progression.primaries || typeof progression.primaries !== 'object' || Array.isArray(progression.primaries)) {
+      errors.push(`${name}: progression.primaries must be an object.`);
+    } else {
+      validatePrimaryMap(name, progression.primaries, 'progression.primaries');
+    }
+  }
+
+  if (progression.primaryBonuses !== undefined) {
+    if (!progression.primaryBonuses || typeof progression.primaryBonuses !== 'object' || Array.isArray(progression.primaryBonuses)) {
+      errors.push(`${name}: progression.primaryBonuses must be an object.`);
+    } else {
+      validatePrimaryMap(name, progression.primaryBonuses, 'progression.primaryBonuses', { allowMissing: true, min: -10, max: 10 });
+    }
+  }
+
+  if (progression.trace !== undefined) {
+    requireNumber(name, progression.trace, 'progression.trace');
+    if (typeof progression.trace === 'number' && (!Number.isInteger(progression.trace) || !TRACE_STAGE_VALUES.has(progression.trace))) {
+      errors.push(`${name}: progression.trace must match a defined Trace stage.`);
+    }
+  }
+  if (progression.iconRisk !== undefined) requireString(name, progression.iconRisk, 'progression.iconRisk');
+  if (progression.scarPoints !== undefined) {
+    requireNumber(name, progression.scarPoints, 'progression.scarPoints');
+    if (typeof progression.scarPoints === 'number' && (!Number.isInteger(progression.scarPoints) || progression.scarPoints < 0)) {
+      errors.push(`${name}: progression.scarPoints must be a zero or greater integer.`);
+    }
+  }
+  validateFieldModifiers(name, progression.fieldModifiers, 'progression.fieldModifiers');
+
+  if (progression.scars !== undefined) {
+    if (!Array.isArray(progression.scars)) {
+      errors.push(`${name}: progression.scars must be an array.`);
+    } else {
+      for (const [index, scar] of progression.scars.entries()) {
+        const fieldName = `progression.scars[${index}]`;
+        if (!scar || typeof scar !== 'object' || Array.isArray(scar)) {
+          errors.push(`${name}: ${fieldName} must be an object.`);
+          continue;
+        }
+        requireString(name, scar.id, `${fieldName}.id`);
+        requireString(name, scar.name, `${fieldName}.name`);
+        requireNumber(name, scar.rank, `${fieldName}.rank`);
+        if (typeof scar.rank === 'number' && (!Number.isInteger(scar.rank) || scar.rank < 1 || scar.rank > 5)) {
+          errors.push(`${name}: ${fieldName}.rank must be an integer from 1 to 5.`);
+        }
+        if (scar.branch !== undefined && scar.branch !== null) requireString(name, scar.branch, `${fieldName}.branch`);
+        if (scar.summary !== undefined) requireString(name, scar.summary, `${fieldName}.summary`);
+        if (scar.cost !== undefined) requireString(name, scar.cost, `${fieldName}.cost`);
+        if (scar.tags !== undefined) {
+          if (!Array.isArray(scar.tags)) {
+            errors.push(`${name}: ${fieldName}.tags must be an array.`);
+          } else {
+            for (const tag of scar.tags) requireString(name, tag, `${fieldName}.tags[]`);
+          }
+        }
+        validateFieldModifiers(name, scar.modifiers, `${fieldName}.modifiers`);
+      }
+    }
+  }
+}
+
+function validatePrimaryMap(name, primaries, fieldName, { allowMissing = false, min = 0, max = 10 } = {}) {
+  for (const key of Object.keys(primaries)) {
+    if (!PRIMARY_ATTRIBUTE_IDS.has(key)) {
+      errors.push(`${name}: ${fieldName} has unknown primary "${key}".`);
+    }
+  }
+  for (const primary of PRIMARY_ATTRIBUTES) {
+    if (primaries[primary.id] === undefined && allowMissing) continue;
+    requireNumber(name, primaries[primary.id], `${fieldName}.${primary.id}`);
+    const value = primaries[primary.id];
+    if (typeof value === 'number' && (!Number.isInteger(value) || value < min || value > max)) {
+      errors.push(`${name}: ${fieldName}.${primary.id} must be an integer from ${min} to ${max}.`);
+    }
+  }
+}
+
+function validateFieldModifiers(name, modifiers, fieldName) {
+  if (modifiers === undefined) return;
+  if (!modifiers || typeof modifiers !== 'object' || Array.isArray(modifiers)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  for (const [fieldId, value] of Object.entries(modifiers)) {
+    if (!FIELD_RATING_IDS.has(fieldId)) {
+      errors.push(`${name}: ${fieldName} has unknown field rating "${fieldId}".`);
+    }
+    requireNumber(name, value, `${fieldName}.${fieldId}`);
+  }
+}
+
 function validateLoot(name, loot, fieldName = 'loot') {
   if (loot === undefined) return;
   if (!Array.isArray(loot)) {
@@ -678,6 +830,14 @@ function validateQuest(filePath, data) {
   for (const stage of data.stages) {
     requireString(name, stage.id, 'stages[].id');
     requireString(name, stage.description, 'stages[].description');
+    validateXpNumber(name, stage.xp, `stages.${stage.id ?? 'unknown'}.xp`);
+    if (stage.reward !== undefined) {
+      if (!stage.reward || typeof stage.reward !== 'object' || Array.isArray(stage.reward)) {
+        errors.push(`${name}: stages.${stage.id ?? 'unknown'}.reward must be an object.`);
+      } else {
+        validateXpNumber(name, stage.reward.xp, `stages.${stage.id ?? 'unknown'}.reward.xp`);
+      }
+    }
     if (stage.id === data.initialStage) hasInitial = true;
   }
   if (!hasInitial) {
@@ -698,6 +858,7 @@ function validateDialogue(filePath, data) {
     errors.push(`${name}: nodes.start is required.`);
   }
   for (const [nodeId, node] of Object.entries(data.nodes)) {
+    validateDialogueConditions(name, node.conditions, `nodes.${nodeId}.conditions`);
     if (!Array.isArray(node.lines) || node.lines.length === 0) {
       errors.push(`${name}: node "${nodeId}" must define a non-empty lines array.`);
     } else {
@@ -709,10 +870,97 @@ function validateDialogue(filePath, data) {
       } else {
         for (const choice of node.choices) {
           requireString(name, choice.label, `nodes.${nodeId}.choices[].label`);
+          validateDialogueConditions(name, choice.conditions, `nodes.${nodeId}.choices[].conditions`);
           validateDialogueEffects(name, choice.effects, `nodes.${nodeId}.choices[].effects`);
         }
       }
     }
+  }
+}
+
+function validateDialogueConditions(name, conditions, fieldName) {
+  if (conditions === undefined) return;
+  if (!conditions || typeof conditions !== 'object' || Array.isArray(conditions)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+
+  validateStringList(name, conditions.flag, `${fieldName}.flag`);
+  validateStringList(name, conditions.flags, `${fieldName}.flags`);
+  validateStringList(name, conditions.notFlag, `${fieldName}.notFlag`);
+  validateStringList(name, conditions.flagsAbsent, `${fieldName}.flagsAbsent`);
+  validateStringList(name, conditions.scar, `${fieldName}.scar`);
+  validateStringList(name, conditions.scars, `${fieldName}.scars`);
+  validateStringList(name, conditions.notScar, `${fieldName}.notScar`);
+  validateStringList(name, conditions.scarsAbsent, `${fieldName}.scarsAbsent`);
+
+  if (conditions.questStages !== undefined) {
+    if (!conditions.questStages || typeof conditions.questStages !== 'object' || Array.isArray(conditions.questStages)) {
+      errors.push(`${name}: ${fieldName}.questStages must be an object.`);
+    } else {
+      for (const [questId, stageId] of Object.entries(conditions.questStages)) {
+        requireString(name, questId, `${fieldName}.questStages quest id`);
+        requireString(name, stageId, `${fieldName}.questStages.${questId}`);
+      }
+    }
+  }
+
+  if (conditions.scarRanks !== undefined) {
+    if (!conditions.scarRanks || typeof conditions.scarRanks !== 'object' || Array.isArray(conditions.scarRanks)) {
+      errors.push(`${name}: ${fieldName}.scarRanks must be an object.`);
+    } else {
+      for (const [scarId, rank] of Object.entries(conditions.scarRanks)) {
+        requireString(name, scarId, `${fieldName}.scarRanks scar id`);
+        requireNumber(name, rank, `${fieldName}.scarRanks.${scarId}`);
+        if (typeof rank === 'number' && (!Number.isInteger(rank) || rank < 1 || rank > 5)) {
+          errors.push(`${name}: ${fieldName}.scarRanks.${scarId} must be an integer from 1 to 5.`);
+        }
+      }
+    }
+  }
+
+  if (conditions.fieldRatings !== undefined) {
+    if (!conditions.fieldRatings || typeof conditions.fieldRatings !== 'object' || Array.isArray(conditions.fieldRatings)) {
+      errors.push(`${name}: ${fieldName}.fieldRatings must be an object.`);
+    } else {
+      for (const [fieldId, minimum] of Object.entries(conditions.fieldRatings)) {
+        if (!FIELD_RATING_IDS.has(fieldId)) {
+          errors.push(`${name}: ${fieldName}.fieldRatings has unknown field rating "${fieldId}".`);
+        }
+        requireNumber(name, minimum, `${fieldName}.fieldRatings.${fieldId}`);
+        if (typeof minimum === 'number' && (!Number.isInteger(minimum) || minimum < 0 || minimum > 100)) {
+          errors.push(`${name}: ${fieldName}.fieldRatings.${fieldId} must be an integer from 0 to 100.`);
+        }
+      }
+    }
+  }
+
+  validateTraceCondition(name, conditions.traceMin, `${fieldName}.traceMin`);
+  validateTraceCondition(name, conditions.traceMax, `${fieldName}.traceMax`);
+}
+
+function validateStringList(name, value, fieldName) {
+  if (value === undefined) return;
+  if (Array.isArray(value)) {
+    for (const entry of value) requireString(name, entry, `${fieldName}[]`);
+    return;
+  }
+  requireString(name, value, fieldName);
+}
+
+function validateTraceCondition(name, value, fieldName) {
+  if (value === undefined) return;
+  requireNumber(name, value, fieldName);
+  if (typeof value === 'number' && (!Number.isInteger(value) || !TRACE_STAGE_VALUES.has(value))) {
+    errors.push(`${name}: ${fieldName} must match a defined Trace stage.`);
+  }
+}
+
+function validateXpNumber(name, value, fieldName) {
+  if (value === undefined) return;
+  requireNumber(name, value, fieldName);
+  if (typeof value === 'number' && (!Number.isInteger(value) || value < 0)) {
+    errors.push(`${name}: ${fieldName} must be a zero or greater integer.`);
   }
 }
 
@@ -724,6 +972,7 @@ function validateDialogueEffects(name, effects, fieldName) {
   }
 
   validateInventoryEffects(name, effects.inventory, `${fieldName}.inventory`);
+  validateXpNumber(name, effects.xp, `${fieldName}.xp`);
 
   const startCombat = effects.startCombat;
   if (startCombat === undefined) return;

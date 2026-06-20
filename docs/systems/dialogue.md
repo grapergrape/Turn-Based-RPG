@@ -141,4 +141,4 @@ Avoid:
 
 - Does the player character speak as a defined voice, selected intent, or silent protagonist?
 - How are later consequences applied: faction reputation, companion approval, world state, or all three?
-- Can dialogue choices test Keeps, Virtues, Trace, faction clearances, or companion presence?
+- Can dialogue choices test field ratings, scars, Trace, faction clearances, or companion presence?

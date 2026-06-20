@@ -10,13 +10,158 @@
       "lines": [
         "Oren kneels by the intake barricade, fitting split boards back into a shape that might hold.",
         "\"The cult pulled the nails clean, like they had all night and no fear of interruption. I keep asking what made them so sure no soldier would come.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the missing soldiers",
+          "next": "missing-soldiers"
+        },
+        {
+          "label": "Ask about the barricade",
+          "next": "barricade"
+        },
+        {
+          "label": "Ask how the chapel held out",
+          "next": "chapel-work"
+        },
+        {
+          "label": "Leave him to the boards",
+          "close": true
+        }
       ]
     },
     "hideout": {
       "lines": [
         "Oren grips a rusted pry bar with both hands.",
-        "\"I kept the chapel fence. Not glorious work. Good work. A soldier needs soup, a dry sock, and someone to say the wall is still standing.\"",
-        "\"Lately no one came asking. That is what I cannot swallow.\""
+        "\"I kept the chapel fence. Useful work, if nobody writes a song about hinges. A soldier needs soup, a dry sock, and someone plain enough to say the wall is still standing.\"",
+        "\"Lately no one came to lean on that fence and complain. I keep planing the thought and finding the same knot.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the wall road",
+          "next": "missing-soldiers"
+        },
+        {
+          "label": "Ask what he did here",
+          "next": "chapel-work"
+        },
+        {
+          "label": "Ask about the pry bar",
+          "next": "pry-bar"
+        },
+        {
+          "label": "Leave him be",
+          "close": true
+        }
+      ]
+    },
+    "missing-soldiers": {
+      "lines": [
+        "\"The Hallowfen men used to come through with mud on their knees and lies in their mouths.\"",
+        "\"They complained about Runa's stew, drank Nessa's water, slept under our roof, then went back to pretending this place was only a supply mark on a ledger.\"",
+        "\"Then nothing: no boots, no bell, no runner with bad news. Bad news at least has the manners to arrive.\""
+      ],
+      "choices": [
+        {
+          "label": "The silence worries you",
+          "next": "silence"
+        },
+        {
+          "label": "Soldiers abandon places",
+          "next": "soldiers-leave"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "silence": {
+      "lines": [
+        "\"Aye. Men run; bells do not. Road horns do not get scared and crawl under a bed.\"",
+        "\"Something stopped the road before the knives found us. I keep turning that nail over with my thumb.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "soldiers-leave": {
+      "lines": [
+        "\"Some do. Most come back for their socks.\"",
+        "\"Laugh if you like, but a man who abandons a post still remembers dry feet. Nobody came for the socks.\""
+      ],
+      "choices": [
+        {
+          "label": "Point taken",
+          "next": "silence"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "chapel-work": {
+      "lines": [
+        "\"Fence, hinges, shutter slats, little repairs the Remnant never writes songs about.\"",
+        "\"A post will betray you slower than a bishop, but it gets there. You watch both for cracks.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the barricade",
+          "next": "barricade"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "barricade": {
+      "lines": [
+        "\"It will not stop a determined saint or a man with a proper axe.\"",
+        "\"It might stop a fool with a knife. Most bad nights bring at least one fool, so I build for him.\""
+      ],
+      "choices": [
+        {
+          "label": "Practical",
+          "next": "chapel-work"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "pry-bar": {
+      "lines": [
+        "Oren looks down at the pry bar as if surprised to find it still in his hands.",
+        "\"I keep meaning to set it down. Then I remember how many doors in this house used to lock from the outside.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
       ]
     }
   }

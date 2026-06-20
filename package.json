@@ -6,6 +6,6 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "check": "node scripts/check-content.mjs",
-    "test": "node tests/interactionTargeting.test.mjs && node tests/groundItems.test.mjs"
+    "test": "node tests/interactionTargeting.test.mjs && node tests/groundItems.test.mjs && node tests/progression.test.mjs && node tests/xpRuntime.test.mjs && node tests/journalUi.test.mjs"
   }
 }

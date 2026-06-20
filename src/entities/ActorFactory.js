@@ -19,6 +19,18 @@ export function createActor(data, position) {
     spriteId: data.spriteId ?? data.id,
     attacks: data.attacks ?? [],
     inspect: data.inspect ?? null,
+    progression: data.progression ?? defaultProgressionFor(data),
     position
   });
+}
+
+function defaultProgressionFor(data) {
+  if (data.type === 'enemy') {
+    const tags = new Set(Array.isArray(data.tags) ? data.tags : []);
+    if (tags.has('host') || tags.has('vale-imprint')) return { level: 1, build: 'host-threat' };
+    if (tags.has('ranged')) return { level: 1, build: 'gunhand' };
+    return { level: 1, build: 'breaker' };
+  }
+  if (data.type === 'player' || data.type === 'npc') return { level: 1, build: 'field-agent' };
+  return null;
 }
