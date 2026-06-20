@@ -7,17 +7,17 @@
     [
       "A hundred and thirty years ago the sky broke open and the damned came down with the wreckage.",
       "What the fires touched did not stay dead. It rose in the shape of Hell the way the old paintings always promised: halos of bone, ribs like chapel doors, mouths full of borrowed scripture. The Remnant names it the Infernal Host. Most people just call it the Host, and bar their doors.",
-      "The Bloom that followed should have ended the world. Then, for reasons no priest will explain and no scholar is permitted to, it stopped. People called the stopping the Stilling, because that is what it was, the rot going still in the ground mid-reach. The walls held. The bells still ring.",
+      "The Bloom that followed should have ended the world. Then, for reasons no priest will explain and no scholar is permitted to, it stopped. People called it the Stilling. The rot went still in the ground mid-reach. The walls held. The bells still ring.",
       "No one is supposed to ask why it stopped. You learned not to a long time ago."
     ],
     [
-      "The Holy Remnant feeds the cities, mans the walls, and rings the hours. In return it owns your faith, your confession, and your silence. It teaches that this is God's war, that the Host is Hell itself come to test the faithful, and that obedience is the only armor that holds.",
+      "The Holy Remnant feeds the cities, mans the walls, and rings the hours. In return it owns your faith, your confession, and your silence. The sermons call the Host Hell itself come to test the faithful, with obedience as the only armor that holds.",
       "It also keeps a quieter office, the one the sermons never mention. You serve the Ashen Censure. You are a cult-breaker.",
       "When a chapel goes dark, when a checkpoint tower stops answering its bell, when someone starts teaching that the rot is holy, they send you to end it, before it spreads and before anyone starts asking the wrong kind of question."
     ],
     [
-      "It is not holy work, and it has never once felt like saving anyone.",
-      "You walk the ash roads. You find the cell. You put it down. You bury whoever the Censure sent with you last time, and you move on.",
+      "No sermon makes the work holy, and it has never once felt like saving anyone.",
+      "Year after year, the ash road gives you the same work: find the cell, put it down, bury the Censure partner who did not make the walk back.",
       "You have done this for years. You are good at it. It has cost you more than you will ever say out loud."
     ],
     [
@@ -144,7 +144,7 @@
           "investigate-ash-chapel-cult": "evidence-found"
         }
       },
-      "summary": "The cult that took this chapel. They worship the rot and call its spread a kindness. You have never met the name on any writ, and that is what frightens you.",
+      "summary": "The cult that took this chapel. They worship the rot and call its spread a kindness. You have never seen their name on a writ. The absence frightens you.",
       "facts": [
         "They call infection confession, and the opened ones icons, not monsters.",
         "They open only those they judge to be turning holy. The merely faithful they leave in the road, marked refuse.",
@@ -324,7 +324,7 @@
         "encounter": "east-watch",
         "ambient": [
           "The old saints kept their mouths shut. We will not.",
-          "No tower bell from the wall. That is its own answer.",
+          "No tower bell from the wall. Silence answers enough.",
           "Listen past the chapel stone."
         ]
       },
@@ -390,7 +390,7 @@
           "flag": "survivors-returning-chapel"
         },
         "ambient": [
-          "The wall road is still quiet. That is worse now."
+          "The wall road is still quiet. Worse after seeing the chapel again."
         ]
       },
       {
@@ -404,7 +404,7 @@
           "flag": "survivors-returning-chapel"
         },
         "ambient": [
-          "They left the pot clean. That should comfort me. It does not."
+          "They left the pot clean, and a clean pot should comfort me. Not after them."
         ]
       },
       {

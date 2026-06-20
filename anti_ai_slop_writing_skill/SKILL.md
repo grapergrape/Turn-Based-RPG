@@ -45,6 +45,13 @@ non-negotiable.
 7. **Plain punctuation.** No `…` ellipsis sprinkled for mood (one, rarely). No
    exclamation-mark spam. No emoji, no markdown, no hashtags in player text.
 
+8. **No clipped ladder cadence.** Do not fall into repeated units like "Short
+   statement, comma. Another short statement, comma. That is what..." or "It is
+   X. It is Y. That is the part..." across intros, notes, object text, and
+   dialogue. This cadence makes every speaker sound like the same assistant.
+   Break the ladder with real syntax, concrete motive, interruption, evasion,
+   slang, profession-specific words, or a different sentence shape.
+
 ## The dash-rewrite guide (do this every time you reach for `--`)
 
 A dash almost always wants to be one of these:
@@ -57,6 +64,38 @@ A dash almost always wants to be one of these:
 
 Example. Bad: `You walk the ash roads -- you find the cell -- you put it down.`
 Good: `You walk the ash roads. You find the cell. You put it down.`
+
+## The clipped-ladder rewrite guide
+
+The bad pattern is not just short sentences. Short sentences are useful. The
+problem is a repeated explanatory rhythm that sounds generated:
+
+Bad: `I counted the dead, twice. I marked the door, twice. That is what kept the
+children calm.`
+
+Better for a quartermaster: `I counted blankets first. Dead second. Children
+notice what you count, so I kept my finger on the linen column and did not look
+at the door.`
+
+Better for a medic: `I counted pulses until the numbers quit helping. After
+that I wrote names on cuffs, because a name was still a treatment I could give.`
+
+Before writing a line, choose the speaker's pressure and tools:
+
+- **Background:** What work taught them their words? Kitchen, ward, guard post,
+  chapel school, black market, field surgery, water ration line.
+- **Pressure:** What are they trying to hide, win, excuse, protect, or remember?
+- **Vocabulary:** What nouns do they reach for first? Ledgers, hinges, soup,
+  thread, veins, bells, keys, rot, saints.
+- **Syntax habit:** Long legal clauses, blunt fragments, jokes under panic,
+  prayer cadence, child logic, inventory lists, medical triage, gossip.
+- **Avoidance:** What do they refuse to name plainly?
+
+For notes, readouts, and object text, pick the writer or document form before
+drafting: warden ledger, Censure field report, cult instruction, child's drawing,
+stolen inventory, altar scratch, survivor warning, or player inspection. The
+form controls diction. A field report should not sound like a frightened child,
+and neither should sound like the narrator.
 
 ## Banned / suspect vocabulary (rewrite to plain words)
 
@@ -79,12 +118,22 @@ Sensory, specific nouns over abstractions. Let dread come from what is described
 not from adjectives. A weary cult-breaker, a frightened priest, and a cult that
 believes its own gospel should each sound like themselves, not like a press release.
 
+Every named person needs a private voice rule before drafting. A line should feel
+hard to move to a different speaker without rewriting it. If Selka, Runa, Hanne,
+Oren, Dalia, and a warden note can trade sentences without friction, the writing
+has failed even if each sentence is clean.
+
 ## Self-check before you finish any player-facing text
 
 - [ ] Zero `--`, `—`, em-dashes. (Search the file. If you find one, rewrite it.)
 - [ ] No banned word / phrase / opener slipped in.
 - [ ] Sentence lengths vary; no wall of identical clauses.
 - [ ] No reflexive rule-of-three.
+- [ ] No clipped-ladder cadence or repeated "That is what..." explanation tail.
+- [ ] Each speaker or document has a clear voice rule: background, pressure,
+      vocabulary, syntax habit, and avoidance.
+- [ ] A named character's line could not be handed to another named character
+      unchanged.
 - [ ] No fabricated facts; consistent with the story bible.
 - [ ] It sounds like a person in this world wrote it, not an assistant.
 

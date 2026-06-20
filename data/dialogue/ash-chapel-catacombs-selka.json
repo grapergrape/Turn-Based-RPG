@@ -10,6 +10,33 @@
       "lines": [
         "Selka stands in the chapel with her hands closed around a broken broom handle.",
         "\"We are back because hiding teaches children the wrong lesson. We will clean what can be cleaned. The rest we remember.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why come back so soon",
+          "next": "come-back"
+        },
+        {
+          "label": "Ask about the children",
+          "next": "children"
+        },
+        {
+          "label": "Ask what happens next",
+          "next": "next"
+        },
+        {
+          "label": "Tell her Corin has his ball",
+          "conditions": {
+            "questStages": {
+              "retrieve-blue-ball": "complete"
+            }
+          },
+          "next": "corin-ball-returned"
+        },
+        {
+          "label": "Leave her to the broom",
+          "close": true
+        }
       ]
     },
     "cult-dead": {
@@ -33,6 +60,19 @@
           "close": true
         },
         {
+          "label": "Ask what happens if the chapel is cleared",
+          "next": "if-safe"
+        },
+        {
+          "label": "Tell her Corin has his ball",
+          "conditions": {
+            "questStages": {
+              "retrieve-blue-ball": "complete"
+            }
+          },
+          "next": "corin-ball-returned"
+        },
+        {
           "label": "Not yet",
           "close": true
         }
@@ -43,6 +83,248 @@
         "Selka keeps herself between you and the children. Her voice stays low so the stone does not carry it.",
         "\"We were the Ash Chapel settlement before the knives came. Remnant found this quarantine house abandoned and gave us a writ: live here, keep beds ready, feed the soldiers on the Hallowfen wall when they passed.\"",
         "\"Then the soldiers stopped passing. Before the cult came, not one patrol crossed the chapel road. No bell, no runner, no explanation. We came down here because quiet like that has teeth.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the settlement",
+          "next": "settlement"
+        },
+        {
+          "label": "Ask about the silent road",
+          "next": "silent-road"
+        },
+        {
+          "label": "Ask about the children",
+          "next": "children"
+        },
+        {
+          "label": "Tell her Corin has his ball",
+          "conditions": {
+            "questStages": {
+              "retrieve-blue-ball": "complete"
+            }
+          },
+          "next": "corin-ball-returned"
+        },
+        {
+          "label": "Leave her guarding them",
+          "close": true
+        }
+      ]
+    },
+    "settlement": {
+      "lines": [
+        "\"Settlement is a generous word. We had a garden, a leaky roof, two goats with criminal habits, and enough stubbornness to make the writ seem true.\"",
+        "\"The Remnant liked us best when we were useful and quiet. We managed useful. Quiet came harder.\""
+      ],
+      "choices": [
+        {
+          "label": "What did you provide?",
+          "next": "provide"
+        },
+        {
+          "label": "Ask about the silent road",
+          "next": "silent-road"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "provide": {
+      "lines": [
+        "\"Beds, boiled water, soup, mended socks, road gossip, and faces that proved the chapel was still alive.\"",
+        "\"The soldiers valued the socks most. Theology has never beaten a dry heel.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what happens next",
+          "next": "next"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "silent-road": {
+      "lines": [
+        "\"A road does not go quiet because one patrol fails. It goes quiet because the next patrol never hears the first one missing.\"",
+        "\"I count that fear after the children sleep.\""
+      ],
+      "choices": [
+        {
+          "label": "You think Hallowfen is in trouble",
+          "next": "hallowfen"
+        },
+        {
+          "label": "You cannot know that yet",
+          "next": "cannot-know"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "hallowfen": {
+      "lines": [
+        "\"I think the wall has stopped behaving like a wall.\"",
+        "\"Name the fear if you want. I am still only counting empty road.\""
+      ],
+      "choices": [
+        {
+          "label": "Fair",
+          "next": "next"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "cannot-know": {
+      "lines": [
+        "\"No. Certainty is for people with maps.\"",
+        "\"I have empty road, hungry children, and enough sense to count food before I count prayers.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the children",
+          "next": "children"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "children": {
+      "lines": [
+        "\"They need a floor that holds and food measured before anyone starts shouting over it.\"",
+        "\"If we lie, it had better buy them one more calm morning. Corin needs his ball. Eda needs chores heavy enough to catch her foot before trouble does.\""
+      ],
+      "choices": [
+        {
+          "label": "You are keeping them steady",
+          "next": "steady"
+        },
+        {
+          "label": "Ask what happens next",
+          "next": "next"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "corin-ball-returned": {
+      "lines": [
+        "\"Good. One child can stop measuring the dark by what it stole from him.\"",
+        "\"Do not laugh at small repairs. They keep a camp from coming apart.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the children",
+          "next": "children"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "steady": {
+      "lines": [
+        "\"I am keeping them busy. Steady is what people call it after the shaking stops.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "come-back": {
+      "lines": [
+        "\"Because if the children only remember crawling under dead stone, the cult keeps part of the chapel.\"",
+        "\"So we come back broom-first, because children understand sweeping better than victory.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what happens next",
+          "next": "next"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "if-safe": {
+      "lines": [
+        "\"Then I bring them up by twos, not all at once. Children can survive fear. They should not have to swim in it.\"",
+        "\"We clean a room before they see the next. Logistics, with a heart still attached.\""
+      ],
+      "choices": [
+        {
+          "label": "Tell her the cultists are dead",
+          "effects": {
+            "setFlag": "survivors-returning-chapel",
+            "log": "Selka gathers the survivors. They will climb after you and reclaim the chapel."
+          },
+          "close": true
+        },
+        {
+          "label": "Not yet",
+          "close": true
+        }
+      ]
+    },
+    "next": {
+      "lines": [
+        "\"Water first. Then doors. Then names for the dead, if we can bear the counting.\"",
+        "\"After that I decide whether to thank the Remnant for sending you or curse them for needing to.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        }
       ]
     }
   }

@@ -10,6 +10,24 @@
       "lines": [
         "Runa stands in the service room doorway, face hard as she looks at the bowls by the altar.",
         "\"They used our meal bowls. I know the chips in the rim. I scrubbed those bowls while the children argued over crusts.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the bowls",
+          "next": "bowls"
+        },
+        {
+          "label": "Ask about food stores",
+          "next": "stores"
+        },
+        {
+          "label": "Ask about the wall soldiers",
+          "next": "soldiers"
+        },
+        {
+          "label": "Leave the service room",
+          "close": true
+        }
       ]
     },
     "hideout": {
@@ -17,6 +35,132 @@
         "Runa keeps one hand over a sack of chapel grain.",
         "\"The Remnant told us this house needed warm bodies again. Grow greens in the yard, boil water for the wall men, keep the chapel decent.\"",
         "\"We did all that. Then the wall forgot us.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the grain",
+          "next": "stores"
+        },
+        {
+          "label": "Ask what the chapel owed the wall",
+          "next": "soldiers"
+        },
+        {
+          "label": "Ask what she needs",
+          "next": "needs"
+        },
+        {
+          "label": "Leave her with the grain",
+          "close": true
+        }
+      ]
+    },
+    "bowls": {
+      "lines": [
+        "\"A bowl remembers a house. That one with the chip was Corin's because he claimed soup tasted faster out of it.\"",
+        "\"The cult filled it with things I will not name in front of children. If I ever see another holy man use my pot for blood, I am charging rent.\""
+      ],
+      "choices": [
+        {
+          "label": "Charge rent",
+          "next": "needs"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "stores": {
+      "lines": [
+        "\"Three sacks of grain, one of beans, salt enough for a week if Nessa stops salting like a rich widow.\"",
+        "\"Do not repeat that. She controls the water, and I enjoy living.\""
+      ],
+      "choices": [
+        {
+          "label": "You still count rations",
+          "next": "rations"
+        },
+        {
+          "label": "Ask what she needs",
+          "next": "needs"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "rations": {
+      "lines": [
+        "\"Someone must. Prayer fills the mouth, not the belly.\"",
+        "\"The Remnant remembers that when it wants obedience. Forgets it when a chapel asks for flour.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "soldiers": {
+      "lines": [
+        "\"The wall men came hungry and left pious. Serve stew first, doctrine after. Even bishops learn the order when their bellies pinch.\"",
+        "\"Most were decent if you fed them before they started quoting regulations.\""
+      ],
+      "choices": [
+        {
+          "label": "You miss them",
+          "next": "miss"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "miss": {
+      "lines": [
+        "\"I miss knowing which fools were on the road.\"",
+        "\"A known fool is practically family after the third bowl.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
+      ]
+    },
+    "needs": {
+      "lines": [
+        "\"Clean water, a door that locks, and nobody bleeding into my flour.\"",
+        "\"If you have all three in your pack, I will call you a saint and only half mean it.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
       ]
     }
   }

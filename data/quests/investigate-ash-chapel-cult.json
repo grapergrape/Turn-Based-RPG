@@ -16,21 +16,25 @@
     {
       "id": "evidence-found",
       "task": "Eliminate the cult",
+      "xp": 35,
       "description": "Their own ledger names them the Choir of the Open Wound, a cult no Censure file has ever recorded. It says they kept settlement guards for opening and moved the families before you arrived."
     },
     {
       "id": "rite-found",
       "task": "Eliminate the cult",
+      "xp": 25,
       "description": "The altar was set for a feeding. End the cell before it raises another saint."
     },
     {
       "id": "cellar-found",
       "task": "Eliminate the cult",
+      "xp": 25,
       "description": "A hidden service cellar runs beneath the split barrel."
     },
     {
       "id": "complete",
       "task": "Travel to Hallowfen",
+      "xp": 100,
       "description": "The chapel cell is broken. The trail runs down the road to the Hallowfen wall."
     }
   ]

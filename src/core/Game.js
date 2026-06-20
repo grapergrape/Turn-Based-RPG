@@ -10,6 +10,16 @@ import { GameLoop } from './GameLoop.js';
 import { Input } from './Input.js';
 import { Inventory } from './Inventory.js';
 import { loadLevel } from './LevelLoader.js';
+import {
+  FIELD_RATINGS,
+  awardExperience,
+  buildCharacterSheet,
+  calculateFieldRating,
+  experienceRewardForEncounter,
+  normalizeProgression,
+  questStageExperience,
+  questStageExperienceKey
+} from './Progression.js';
 import { TurnManager } from '../combat/TurnManager.js';
 import { CombatSystem, manhattan, chebyshev } from '../combat/CombatSystem.js';
 import { planTurn, flavorLine } from '../combat/EnemyAI.js';
@@ -33,6 +43,7 @@ import { bakeMara } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
 import { DEBUG_GRID_DEFAULT, VIEWPORT_HEIGHT } from '../render/renderConfig.js';
 import { DIALOGUE_MAX_CHOICES, buildDialogueLayout } from '../ui/dialogueLayout.js';
+import { journalArrowAt } from '../ui/journalLayout.js';
 
 const STEP_DURATION = 0.64;
 const ENEMY_ACTION_DELAY = 0.2;
@@ -45,7 +56,8 @@ const AMBIENT_SPEECH_COOLDOWN = 7.5;
 const AMBIENT_ACTOR_DELAY = 18;
 const AMBIENT_PROP_DELAY = 12;
 const AREA_TITLE_DURATION = 2.35;
-const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS'];
+const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS'];
+const JOURNAL_TURN_DURATION = 0.46;
 const MAX_LOG = 8;
 const WALK_FRAMES = 8;
 const ATTACK_FRAMES = 6;
@@ -149,8 +161,15 @@ export class Game {
     const previousFlags = bootOptions.preserveRun && this.flags
       ? new Set(this.flags)
       : null;
+    const previousAwardedQuestXp = bootOptions.preserveRun && this.awardedQuestXp
+      ? new Set(this.awardedQuestXp)
+      : null;
     const previousPlayer = bootOptions.preserveRun && this.player
-      ? { hp: this.player.hp, maxHp: this.player.maxHp }
+      ? {
+          hp: this.player.hp,
+          maxHp: this.player.maxHp,
+          progression: this.player.progression ? JSON.parse(JSON.stringify(this.player.progression)) : null
+        }
       : null;
     const previousGroundItemSeq = bootOptions.preserveRun ? this.groundItemSeq ?? 0 : 0;
 
@@ -158,6 +177,10 @@ export class Game {
     this.level = level;
     this.grid = level.grid;
     this.player = level.player;
+    if (previousPlayer?.progression) {
+      this.player.progression = JSON.parse(JSON.stringify(previousPlayer.progression));
+      if (typeof this.player.refreshProgressionStats === 'function') this.player.refreshProgressionStats();
+    }
     this.flags = previousFlags ?? new Set();
     this.enemies = level.enemies;
     if (bootOptions.noCombat) this.enemies = [];
@@ -208,6 +231,7 @@ export class Game {
     // Run-global story flags (e.g. "read-warden-journal"). Like quest stages they
     // survive level transitions within a run and clear on a fresh start (R).
     this.appliedLevelEvents = new Set();
+    this.awardedQuestXp = previousAwardedQuestXp ?? new Set();
     this.activeEncounter = null;
     this.clearedEncounters = new Set();
 
@@ -220,6 +244,7 @@ export class Game {
     this.uiScreen = null;
     this.journalSection = 0;
     this.journalFactionIndex = 0;
+    this.journalTurn = null;
     this.inventoryFocus = 'items';
     this.inventoryIndex = 0;
     this.equipmentIndex = 0;
@@ -280,6 +305,7 @@ export class Game {
     if (!this.ready) return;
 
     this.#advanceAnim(dt);
+    this.#advanceJournalTurn(dt);
     this.#advanceGroundItems();
     if (this.areaTitleTimer > 0 && this.mode !== 'intro') {
       this.areaTitleTimer = Math.max(0, this.areaTitleTimer - dt);
@@ -550,6 +576,10 @@ export class Game {
   // ---- UI screens --------------------------------------------------------
 
   #handleUiScreen(actions, click) {
+    if (this.uiScreen === 'journal') {
+      this.#handleJournalScreen(actions, click);
+      return;
+    }
     if (click) return;
     if (this.uiScreen === 'dialogue') {
       this.#handleDialogueScreen(actions);
@@ -557,10 +587,6 @@ export class Game {
     }
     if (this.uiScreen === 'inventory') {
       this.#handleInventoryScreen(actions);
-      return;
-    }
-    if (this.uiScreen === 'journal') {
-      this.#handleJournalScreen(actions);
       return;
     }
     for (const action of actions) {
@@ -606,10 +632,17 @@ export class Game {
     this.uiScreen = 'journal';
     this.journalSection = 0;
     this.journalFactionIndex = 0;
+    this.journalTurn = null;
     this.dialogue = null;
   }
 
-  #handleJournalScreen(actions) {
+  #handleJournalScreen(actions, click = null) {
+    if (click) {
+      const arrow = journalArrowAt(click);
+      if (arrow === 'prev') this.#cycleJournalSection(-1);
+      else if (arrow === 'next') this.#cycleJournalSection(1);
+      return;
+    }
     for (const action of actions) {
       if (action === 'cancel' || action === 'journal') {
         this.#closeUiScreen();
@@ -626,8 +659,27 @@ export class Game {
   }
 
   #cycleJournalSection(delta) {
+    if (this.journalTurn) return;
     const count = JOURNAL_SECTIONS.length;
-    this.journalSection = (((this.journalSection ?? 0) + delta) % count + count) % count;
+    const from = this.journalSection ?? 0;
+    const to = ((from + delta) % count + count) % count;
+    if (to === from) return;
+    this.journalTurn = {
+      from,
+      to,
+      direction: delta < 0 ? -1 : 1,
+      age: 0,
+      duration: JOURNAL_TURN_DURATION
+    };
+  }
+
+  #advanceJournalTurn(dt) {
+    if (!this.journalTurn) return;
+    this.journalTurn.age += dt;
+    if (this.journalTurn.age >= this.journalTurn.duration) {
+      this.journalSection = this.journalTurn.to;
+      this.journalTurn = null;
+    }
   }
 
   #moveJournalFaction(delta) {
@@ -837,7 +889,9 @@ export class Game {
       for (const flag of [].concat(node.effects.setFlag)) this.flags.add(flag);
     }
     const lines = [].concat(node.lines ?? node.text ?? []).filter(Boolean);
-    const choices = (node.choices ?? []).slice(0, DIALOGUE_MAX_CHOICES);
+    const choices = (node.choices ?? [])
+      .filter((choice) => this.#meetsConditions(choice.conditions))
+      .slice(0, DIALOGUE_MAX_CHOICES);
     this.#setDialogueState({
       id: definition.id,
       nodeId,
@@ -866,7 +920,7 @@ export class Game {
     this.dialogue.maxScroll = layout.maxScroll;
   }
 
-  // True when every flag and quest-stage a dialogue node requires is satisfied.
+  // True when every flag, quest, scar, Trace, and field-rating gate is satisfied.
   #meetsConditions(conditions) {
     if (!conditions) return true;
     for (const flag of [].concat(conditions.flag ?? [], conditions.flags ?? [])) {
@@ -878,7 +932,40 @@ export class Game {
     for (const [questId, stage] of Object.entries(conditions.questStages ?? {})) {
       if (this.questStages?.get(questId) !== stage) return false;
     }
+    for (const scarId of [].concat(conditions.scar ?? [], conditions.scars ?? [])) {
+      if (!this.#hasScar(scarId)) return false;
+    }
+    for (const scarId of [].concat(conditions.notScar ?? [], conditions.scarsAbsent ?? [])) {
+      if (this.#hasScar(scarId)) return false;
+    }
+    for (const [scarId, rank] of Object.entries(conditions.scarRanks ?? {})) {
+      if (!this.#hasScar(scarId, rank)) return false;
+    }
+    for (const [fieldId, minimum] of Object.entries(conditions.fieldRatings ?? {})) {
+      if (typeof minimum !== 'number' || this.#fieldRating(fieldId) < minimum) return false;
+    }
+    if (conditions.traceMin !== undefined && this.#traceValue() < conditions.traceMin) return false;
+    if (conditions.traceMax !== undefined && this.#traceValue() > conditions.traceMax) return false;
     return true;
+  }
+
+  #playerProgression() {
+    return normalizeProgression(this.player?.progression);
+  }
+
+  #hasScar(scarId, rank = 1) {
+    const minRank = typeof rank === 'number' ? rank : 1;
+    return this.#playerProgression().scars.some((scar) => scar.id === scarId && scar.rank >= minRank);
+  }
+
+  #fieldRating(fieldId) {
+    const field = FIELD_RATINGS.find((entry) => entry.id === fieldId);
+    if (!field) return Number.NEGATIVE_INFINITY;
+    return calculateFieldRating(this.#playerProgression(), field);
+  }
+
+  #traceValue() {
+    return this.#playerProgression().trace;
   }
 
   #handleDialogueScreen(actions) {
@@ -963,6 +1050,7 @@ export class Game {
     for (const flag of [].concat(effects.setFlag ?? [])) this.flags.add(flag);
     this.#applyInventoryEffects(effects.inventory);
     this.#applyQuestUpdate(effects.questUpdate);
+    if (effects.xp !== undefined) this.#awardPlayerExperience(effects.xp);
     if (effects.kill) this.#silenceProp(effects.kill);
     if (effects.teleport) this.#teleportPlayer(effects.teleport);
     if (effects.startCombat) {
@@ -1208,11 +1296,13 @@ export class Game {
   }
 
   #checkOutcome() {
-    const activeEnemies = this.#activeEncounterEnemies();
-    const outcome = this.combat.outcome(this.player, activeEnemies);
+    const encounterEnemies = this.#activeEncounterEnemies();
+    const outcome = this.combat.outcome(this.player, encounterEnemies);
     if (outcome === 'victory') {
+      const clearedEncounter = this.activeEncounter;
+      if (!this.clearedEncounters.has(clearedEncounter)) this.#awardExperienceForEnemies(encounterEnemies);
       this.turnManager.active = false;
-      if (this.activeEncounter) this.clearedEncounters.add(this.activeEncounter);
+      if (clearedEncounter) this.clearedEncounters.add(clearedEncounter);
       this.activeEncounter = null;
       this.enemyActions = null;
       this.enemyActor = null;
@@ -1235,6 +1325,21 @@ export class Game {
       this.turnManager.active = false;
       this.player.render.state = 'dead';
       this.#log('Mara Vey falls on the chapel stone. Press R to try again.');
+    }
+  }
+
+  #awardExperienceForEnemies(enemies) {
+    const total = experienceRewardForEncounter(enemies);
+    this.#awardPlayerExperience(total);
+  }
+
+  #awardPlayerExperience(amount) {
+    const result = awardExperience(this.player, amount);
+    if (result.amount <= 0) return;
+    this.#log(`Experience gained: ${result.amount}.`);
+    if (result.levelDelta > 0) {
+      this.#log(`Level ${result.level} reached.`);
+      this.#log(`Primary points available: ${result.primaryPoints}.`);
     }
   }
 
@@ -1572,8 +1677,9 @@ export class Game {
   }
 
   #activeEncounterEnemies() {
-    if (!this.activeEncounter) return this.#livingEnemies();
-    return this.#livingEnemiesForEncounter(this.activeEncounter);
+    if (!this.activeEncounter) return this.enemies;
+    const resolved = this.#resolveEncounterId(this.activeEncounter);
+    return this.enemies.filter((enemy) => this.#resolveEncounterId(enemy.encounter) === resolved);
   }
 
   #resolveEncounterId(encounterId) {
@@ -1665,6 +1771,7 @@ export class Game {
     reached.add(update.stage);
     this.questReached.set(update.quest, reached);
     if (update.log) this.#log(update.log);
+    this.#awardQuestStageExperience(quest, update.stage);
     if (update.stage === 'complete') {
       this.#log(`Quest complete: ${quest.title}.`);
       return;
@@ -1678,6 +1785,13 @@ export class Game {
     return quest?.stages?.find((stage) => stage.id === stageId)?.description ?? '';
   }
 
+  #awardQuestStageExperience(quest, stageId) {
+    const key = questStageExperienceKey(quest.id, stageId);
+    if (this.awardedQuestXp.has(key)) return;
+    this.awardedQuestXp.add(key);
+    this.#awardPlayerExperience(questStageExperience(quest, stageId));
+  }
+
   // The whole journal book: the quest checklist (source of truth), the running
   // findings log that grows as the player discovers things, and the faction
   // codex whose cult entries unlock as the investigation advances.
@@ -1685,11 +1799,28 @@ export class Game {
     return {
       section: this.journalSection ?? 0,
       sections: JOURNAL_SECTIONS,
+      turn: this.#journalTurnState(),
       factionIndex: this.journalFactionIndex ?? 0,
       quests: this.#journalQuests(),
       findings: this.#journalFindings(),
-      factions: this.#journalFactions()
+      factions: this.#journalFactions(),
+      character: this.#journalCharacter()
     };
+  }
+
+  #journalTurnState() {
+    if (!this.journalTurn) return null;
+    const duration = this.journalTurn.duration || JOURNAL_TURN_DURATION;
+    return {
+      from: this.journalTurn.from,
+      to: this.journalTurn.to,
+      direction: this.journalTurn.direction,
+      progress: Math.max(0, Math.min(1, this.journalTurn.age / duration))
+    };
+  }
+
+  #journalCharacter() {
+    return buildCharacterSheet(this.player);
   }
 
   #journalQuests() {
@@ -1946,6 +2077,11 @@ export class Game {
   #cursorInfo() {
     const mouse = this.input.mouse;
     if (!mouse) return null;
+    if (this.uiScreen === 'journal') {
+      const arrow = journalArrowAt(mouse);
+      const text = arrow === 'prev' ? 'PREV PAGE' : arrow === 'next' ? 'NEXT PAGE' : null;
+      return { x: mouse.x, y: mouse.y, state: 'ui', text };
+    }
     if (mouse.y >= VIEWPORT_HEIGHT) {
       return { x: mouse.x, y: mouse.y, state: 'ui', text: null };
     }
@@ -2007,8 +2143,8 @@ export class Game {
     let controls;
     if (this.uiScreen === 'journal') {
       controls = this.journalSection === 2
-        ? ['Up/Dn Select', 'Left/Right Pages', 'J/Esc Close']
-        : ['Left/Right Pages', 'J/Esc Close'];
+        ? ['Up/Dn Select', 'A/D Turn Page', 'J/Esc Close']
+        : ['A/D Turn Page', 'J/Esc Close'];
     } else if (this.uiScreen === 'inventory') {
       controls = ['Up/Dn Select', 'Left/Right Panel', '1/Enter Equip', '2 Remove', '3 Drop', 'H Dress', 'Esc Close'];
     } else if (this.uiScreen === 'dialogue' && this.dialogue?.choices?.length) {

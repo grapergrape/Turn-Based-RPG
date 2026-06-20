@@ -1,21 +1,263 @@
 {
   "id": "ash-chapel-catacombs-hanne",
-  "title": "Hanne Sore",
+  "title": "Hanne Rovik",
   "nodes": {
     "start": {
       "conditions": {
-        "flag": "survivors-returning-chapel"
+        "flag": "survivors-returning-chapel",
+        "notFlag": "hanne-offended"
+      },
+      "else": "offended-or-hideout",
+      "lines": [
+        "Hanne Rovik sorts bandages into clean and ruined piles.",
+        "\"They took the good cloth for restraints, not dressings; linen remembers how it was pulled, and so do wrists.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the pale bodies below",
+          "next": "pale-bodies"
+        },
+        {
+          "label": "Leave her to the bandages",
+          "close": true
+        }
+      ]
+    },
+    "offended-or-hideout": {
+      "conditions": {
+        "flag": "hanne-offended"
       },
       "else": "hideout",
       "lines": [
-        "Hanne sorts bandages into clean and ruined piles.",
-        "\"They took the good cloth for bindings. Not wounds. Bindings. I know the difference.\""
+        "Hanne keeps one hand on the bandage box.",
+        "\"You said enough about the ones in the walls. Find another nurse if you came for judgment.\""
       ]
     },
     "hideout": {
+      "conditions": {
+        "notFlag": "hanne-offended"
+      },
+      "else": "offended-or-hideout",
       "lines": [
         "Hanne looks you over for blood that might not be yours.",
         "\"If something in the lower hall bites you, come back before pride does its work. I have needle, fire, and enough mercy to use both.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she knows about the pale bodies",
+          "next": "pale-bodies"
+        },
+        {
+          "label": "Leave her to her work",
+          "close": true
+        }
+      ]
+    },
+    "pale-bodies": {
+      "lines": [
+        "\"You saw them down there. The ones gone hard and white.\"",
+        "\"The Censure calls them spent; the ones upstairs call them asleep. Dust fell in one eye and it blinked.\"",
+        "\"If someone remains inside, we have been walking past prisoners.\""
+      ],
+      "choices": [
+        {
+          "label": "You think they are alive?",
+          "next": "still-alive"
+        },
+        {
+          "label": "They are dangers first",
+          "next": "monsters"
+        },
+        {
+          "label": "I pity anyone trapped like that",
+          "next": "pity"
+        },
+        {
+          "label": "They are already dead",
+          "next": "dead"
+        },
+        {
+          "label": "Leave this alone",
+          "close": true
+        }
+      ]
+    },
+    "still-alive": {
+      "lines": [
+        "\"Not knowing keeps me awake.\"",
+        "\"One beside the cistern shaped the same word all morning. No sound. Just a jaw trying to remember mercy.\"",
+        "\"If a mind is caught behind that face, does time crawl for it? Does every footstep take a day to pass?\""
+      ],
+      "choices": [
+        {
+          "label": "Do you pity them?",
+          "next": "ask-pity"
+        },
+        {
+          "label": "A threat is still a threat",
+          "next": "monsters"
+        },
+        {
+          "label": "Mercy may mean ending it",
+          "next": "mercy"
+        },
+        {
+          "label": "We cannot know",
+          "next": "uncertain"
+        },
+        {
+          "label": "Enough",
+          "close": true
+        }
+      ]
+    },
+    "ask-pity": {
+      "lines": [
+        "\"Yes. God help me, yes.\"",
+        "\"Not when they come for a child. Not when they bite. But the still ones, the ones trapped in the wall with eyes that follow candlelight, I pity them.\"",
+        "\"Do you?\""
+      ],
+      "choices": [
+        {
+          "label": "Yes. They are prisoners",
+          "next": "pity"
+        },
+        {
+          "label": "No. They are monsters",
+          "next": "monsters"
+        },
+        {
+          "label": "I pity them, but I will burn them if I must",
+          "next": "hard-mercy"
+        },
+        {
+          "label": "Pity is wasted on rot",
+          "effects": {
+            "setFlag": "hanne-offended"
+          },
+          "next": "offended"
+        }
+      ]
+    },
+    "pity": {
+      "lines": [
+        "Hanne lets out a breath she had been holding.",
+        "\"Then remember that when the next one twitches. Fear turns every body into a target.\"",
+        "\"If a person remains, even a torn piece, we owe them more than a curse and a torch.\""
+      ],
+      "choices": [
+        {
+          "label": "What would mercy look like?",
+          "next": "mercy"
+        },
+        {
+          "label": "I cannot promise mercy in a fight",
+          "next": "hard-mercy"
+        },
+        {
+          "label": "Leave her to the bandages",
+          "close": true
+        }
+      ]
+    },
+    "monsters": {
+      "lines": [
+        "Hanne's hands stop over the bandages.",
+        "\"Maybe. A gate guard with a bitten throat does not live long by pitying claws.\"",
+        "\"But give every trapped soul one easy name and the torch-hand gets steady. I have seen decent people learn to like the smell.\""
+      ],
+      "choices": [
+        {
+          "label": "Orders still stand",
+          "effects": {
+            "setFlag": "hanne-offended"
+          },
+          "next": "offended"
+        },
+        {
+          "label": "I hear you",
+          "next": "uncertain"
+        },
+        {
+          "label": "Maybe they deserve pity",
+          "next": "pity"
+        }
+      ]
+    },
+    "dead": {
+      "lines": [
+        "\"If death were that quiet, I would agree with you.\"",
+        "\"But I have cleaned bodies; real dead have a stillness to them. Those things listen.\""
+      ],
+      "choices": [
+        {
+          "label": "Listening does not make them people",
+          "next": "monsters"
+        },
+        {
+          "label": "Then what are they?",
+          "next": "still-alive"
+        },
+        {
+          "label": "I hope you are wrong",
+          "next": "uncertain"
+        }
+      ]
+    },
+    "mercy": {
+      "lines": [
+        "\"I have no clean answer, and I hate that.\"",
+        "\"Maybe a prayer before the hammer. Maybe keeping children from throwing stones at faces that may still feel them.\"",
+        "\"Maybe mercy is admitting we do not know where the person ends.\""
+      ],
+      "choices": [
+        {
+          "label": "I can carry that",
+          "next": "hard-mercy"
+        },
+        {
+          "label": "Leave it off my ledger",
+          "effects": {
+            "setFlag": "hanne-offended"
+          },
+          "next": "offended"
+        },
+        {
+          "label": "Leave her to the bandages",
+          "close": true
+        }
+      ]
+    },
+    "hard-mercy": {
+      "lines": [
+        "\"Maybe the only honest answer.\"",
+        "\"Pity does not open a locked jaw. It can keep your hand from shaking when you have to end one.\"",
+        "\"I can live with that. I cannot live with laughter.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her to the bandages",
+          "close": true
+        }
+      ]
+    },
+    "uncertain": {
+      "lines": [
+        "\"Then keep the uncertainty. Heavier than doctrine, but it does less harm.\"",
+        "\"The Remnant wants clean names: dead, damned, saved, burned. I have seen too many eyes move inside those names.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her to the bandages",
+          "close": true
+        }
+      ]
+    },
+    "offended": {
+      "lines": [
+        "Hanne pulls the clean bandages out of your reach.",
+        "\"Go, then. There are enough people here who can speak of the damned as if they were kindling.\"",
+        "\"I have work, and I do not want your voice beside it.\""
       ]
     }
   }

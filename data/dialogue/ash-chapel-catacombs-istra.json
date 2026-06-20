@@ -9,14 +9,158 @@
       "else": "hideout",
       "lines": [
         "Istra touches the scratched bedpost with two fingers, then wipes them on her skirt.",
-        "\"They carved into places where children slept. Not for need. For lesson.\""
+        "\"They carved into bedposts in the children's row. Not theft. Instruction.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the carved beds",
+          "next": "beds"
+        },
+        {
+          "label": "Ask what can be repaired",
+          "next": "repairs"
+        },
+        {
+          "label": "Ask about the dead below",
+          "next": "dead-walls"
+        },
+        {
+          "label": "Leave her to the bedpost",
+          "close": true
+        }
       ]
     },
     "hideout": {
       "lines": [
         "Istra keeps glancing at the lower hall.",
-        "\"I mended fences and patched roof tin. The chapel was not kind, but it was ours enough.\"",
+        "\"I mended fences and patched roof tin. The chapel never acted kind, but it knew our hands.\"",
         "\"Down here the dead have better walls than the living.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she fixed here",
+          "next": "repairs"
+        },
+        {
+          "label": "Ask about the lower hall",
+          "next": "dead-walls"
+        },
+        {
+          "label": "Ask if the chapel was home",
+          "next": "home"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "beds": {
+      "lines": [
+        "\"A knife in a bedpost is petty cruelty. Petty is why it lasts.\"",
+        "\"People lower their voices for the grand horror and shrug at scratches. Scratches teach a house to bow.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what can be repaired",
+          "next": "repairs"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "repairs": {
+      "lines": [
+        "\"Hinges, shutters, the south roof if it stops pretending to be lace.\"",
+        "\"I can fix wood and tin. I cannot fix a wall that learned theology, but I can hang a blanket over the worst of it.\""
+      ],
+      "choices": [
+        {
+          "label": "It would help",
+          "next": "home"
+        },
+        {
+          "label": "A blanket is not much",
+          "next": "not-much"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "not-much": {
+      "lines": [
+        "\"No. Cloth, two nails, and a hand that hangs it straight.\"",
+        "\"Some mornings the hand matters. A child can eat breakfast under a blanket without staring at the blood mark behind it.\""
+      ],
+      "choices": [
+        {
+          "label": "Fair",
+          "next": "home"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "dead-walls": {
+      "lines": [
+        "\"The old wardens packed people into the stone and called it order.\"",
+        "\"I have patched enough cracks to know a wall keeps secrets badly. This one mutters in its sleep.\""
+      ],
+      "choices": [
+        {
+          "label": "Do you want to leave?",
+          "next": "leave"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "leave": {
+      "lines": [
+        "\"Every day. Then Runa swears at a sack of grain, and Nessa insults the cistern, and the children make a court case out of a ball.\"",
+        "\"A poor place. Still ours enough to answer when we complain about it by name.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whether she called this home",
+          "next": "home"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "home": {
+      "lines": [
+        "\"Home is a roof that leaks in familiar places.\"",
+        "\"This one leaked over my cot and nowhere else, which felt personal. I suppose I missed it.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
       ]
     }
   }

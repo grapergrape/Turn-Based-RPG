@@ -9,7 +9,25 @@
       "else": "hideout",
       "lines": [
         "Dalia looks over the nave and counts under her breath.",
-        "\"Eight dead above. I believe you. My hands do not. They keep counting.\""
+        "\"You said eight dead above. I believe you, but my hands keep arguing.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she is counting",
+          "next": "counting"
+        },
+        {
+          "label": "Ask about the voices",
+          "next": "voices"
+        },
+        {
+          "label": "Tell her the chapel is quiet now",
+          "next": "quiet"
+        },
+        {
+          "label": "Leave her to count",
+          "close": true
+        }
       ]
     },
     "hideout": {
@@ -17,6 +35,162 @@
         "Dalia has wrapped her sleeves tight around both wrists.",
         "\"When the cult came, I heard eight voices. Maybe more. The children were crying, and the stone made echoes.\"",
         "\"If you go back up, count for me. I need a number that stays still.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the eight voices",
+          "next": "voices"
+        },
+        {
+          "label": "Ask why numbers help",
+          "next": "counting"
+        },
+        {
+          "label": "Tell her numbers can lie",
+          "next": "numbers-lie"
+        },
+        {
+          "label": "Leave her with the number",
+          "close": true
+        }
+      ]
+    },
+    "voices": {
+      "lines": [
+        "\"Two laughed. One prayed. One sounded younger than the rest and kept asking where the women were.\"",
+        "\"Polite cruelty wears a clean shirt. I remember the collar.\""
+      ],
+      "choices": [
+        {
+          "label": "You heard all that?",
+          "next": "heard"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "heard": {
+      "lines": [
+        "\"Fear opens the ears. I do not recommend it as a talent.\"",
+        "\"If you can choose a talent, choose singing. People give singers more bread.\""
+      ],
+      "choices": [
+        {
+          "label": "Can you sing?",
+          "next": "sing"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "sing": {
+      "lines": [
+        "\"Badly enough that counting treated everyone kinder and never asked for more bread afterward.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "counting": {
+      "lines": [
+        "\"Children, jars, steps, breaths. Anything that proves the next moment came.\"",
+        "\"If I count bread, Selka calls it useful. If I count ghosts, everyone looks at my hands.\""
+      ],
+      "choices": [
+        {
+          "label": "It kept you alive",
+          "next": "alive"
+        },
+        {
+          "label": "Numbers can lie",
+          "next": "numbers-lie"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "alive": {
+      "lines": [
+        "\"Maybe. Or it gave my fear a little fence to pace inside.\"",
+        "\"Either way, I am still here. I suppose a fence does not have to be pretty.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "numbers-lie": {
+      "lines": [
+        "\"People lie with numbers. Numbers mostly sit there and get blamed.\"",
+        "\"Still, if you find a ninth body, tell me plain. I am tired of being surprised by arithmetic.\""
+      ],
+      "choices": [
+        {
+          "label": "I will",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
+      ]
+    },
+    "quiet": {
+      "lines": [
+        "\"Quiet has breeds: children asleep, snow on tin, a knife held behind a door.\"",
+        "\"Which kind is it now?\""
+      ],
+      "choices": [
+        {
+          "label": "The kind after a fight",
+          "next": "after-fight"
+        },
+        {
+          "label": "I do not know yet",
+          "next": "alive"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "after-fight": {
+      "lines": [
+        "\"Then I will take it. I have become less proud about the kind of quiet I accept.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "hideout"
+        }
       ]
     }
   }

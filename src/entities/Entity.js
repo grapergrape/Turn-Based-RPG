@@ -4,6 +4,8 @@
 // state (animation name/frame and a sub-tile pixel offset used for stepped
 // movement). Systems mutate this; it contains no rendering or rule logic.
 
+import { scaleStatsForProgression } from '../core/Progression.js';
+
 export class Entity {
   constructor({
     id,
@@ -17,7 +19,8 @@ export class Entity {
     tags = [],
     spriteId = null,
     attacks = [],
-    inspect = null
+    inspect = null,
+    progression = null
   }) {
     this.id = id;
     this.name = name;
@@ -31,12 +34,15 @@ export class Entity {
     this.position = { ...position };
     this.spriteId = spriteId ?? id;
     this.attacks = attacks.map((attack) => ({ ...attack }));
+    this.baseStats = { ...stats };
+    this.progression = progression ? JSON.parse(JSON.stringify(progression)) : null;
 
-    this.maxHp = stats.maxHp ?? stats.hp ?? 1;
-    this.hp = stats.hp ?? this.maxHp;
-    this.maxAp = stats.actionPoints ?? stats.ap ?? 0;
+    const scaledStats = scaleStatsForProgression(this.baseStats, this.progression);
+    this.maxHp = scaledStats.maxHp ?? scaledStats.hp ?? 1;
+    this.hp = scaledStats.hp ?? this.maxHp;
+    this.maxAp = scaledStats.actionPoints ?? scaledStats.ap ?? 0;
     this.ap = this.maxAp;
-    this.moveCost = stats.moveCost ?? 1;
+    this.moveCost = scaledStats.moveCost ?? 1;
 
     this.isDead = false;
     this.facing = 'se';
@@ -73,6 +79,25 @@ export class Entity {
     const before = this.hp;
     this.hp = Math.min(this.maxHp, this.hp + amount);
     return this.hp - before;
+  }
+
+  refreshProgressionStats() {
+    const previousMaxHp = this.maxHp;
+    const previousHp = this.hp;
+    const previousAp = this.ap;
+    const scaledStats = scaleStatsForProgression(this.baseStats, this.progression);
+
+    this.maxHp = scaledStats.maxHp ?? scaledStats.hp ?? 1;
+    this.maxAp = scaledStats.actionPoints ?? scaledStats.ap ?? 0;
+    this.moveCost = scaledStats.moveCost ?? 1;
+
+    if (this.isDead) {
+      this.hp = 0;
+    } else {
+      const gainedMaxHp = Math.max(0, this.maxHp - previousMaxHp);
+      this.hp = Math.max(1, Math.min(this.maxHp, previousHp + gainedMaxHp));
+    }
+    this.ap = Math.min(previousAp ?? this.maxAp, this.maxAp);
   }
 
   resetAp() {
