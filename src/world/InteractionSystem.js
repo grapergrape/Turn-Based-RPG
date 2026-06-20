@@ -72,7 +72,7 @@ export class InteractionSystem {
           triggersCombat,
           combatEncounter: descriptor.encounter ?? null,
           dialogueId: descriptor.dialogue ?? null,
-          questUpdate: descriptor.questUpdate ?? null
+          questUpdate: null
         };
       }
 

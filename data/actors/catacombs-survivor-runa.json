@@ -1,0 +1,17 @@
+{
+  "id": "catacombs-survivor-runa",
+  "name": "Runa Pell",
+  "type": "npc",
+  "faction": "ash-chapel-settlement",
+  "role": "Cook",
+  "spriteId": "settlement-runa",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "survivor",
+    "ash-chapel-settlement"
+  ]
+}

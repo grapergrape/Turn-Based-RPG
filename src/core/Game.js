@@ -28,6 +28,9 @@ const ATTACK_ANIM = 0.5;
 const HIT_ANIM = 0.24;
 const TRIGGER_RADIUS = 2;
 const AMBIENT_SPEECH_LIFE = 2.7;
+const AMBIENT_SPEECH_COOLDOWN = 7.5;
+const AMBIENT_ACTOR_DELAY = 18;
+const AMBIENT_PROP_DELAY = 12;
 const AREA_TITLE_DURATION = 2.35;
 const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS'];
 const MAX_LOG = 8;
@@ -123,6 +126,12 @@ export class Game {
     const previousQuestStages = bootOptions.preserveRun && this.questStages
       ? new Map(this.questStages)
       : null;
+    const previousQuestReached = bootOptions.preserveRun && this.questReached
+      ? new Map([...this.questReached].map(([id, reached]) => [id, new Set(reached)]))
+      : null;
+    const previousQuestDefs = bootOptions.preserveRun && this.questDefs
+      ? { ...this.questDefs }
+      : null;
     const previousFlags = bootOptions.preserveRun && this.flags
       ? new Set(this.flags)
       : null;
@@ -134,8 +143,10 @@ export class Game {
     this.level = level;
     this.grid = level.grid;
     this.player = level.player;
+    this.flags = previousFlags ?? new Set();
     this.enemies = level.enemies;
     if (bootOptions.noCombat) this.enemies = [];
+    this.npcs = (level.npcs ?? []).filter((npc) => this.#meetsConditions(npc.conditions));
     if (previousPlayer) {
       const hpRatio = previousPlayer.maxHp > 0 ? previousPlayer.hp / previousPlayer.maxHp : 1;
       this.player.hp = Math.max(1, Math.min(this.player.maxHp, Math.round(this.player.maxHp * hpRatio)));
@@ -164,11 +175,12 @@ export class Game {
     );
     for (const prop of this.speakingProps) {
       prop.ambientIndex = 0;
-      prop.ambientTimer = 2 + ((prop.x + prop.y) % 4) * 1.1;
+      prop.ambientTimer = 5 + ((prop.x + prop.y) % 4) * 2;
       prop.speech = null;
     }
+    this.ambientSpeechCooldown = 2.5;
     this.dialogueDefs = level.dialogueDefs ?? {};
-    this.questDefs = level.questDefs ?? {};
+    this.questDefs = { ...(previousQuestDefs ?? {}), ...(level.questDefs ?? {}) };
     // Static journal sources: faction/cult codex and flag-gated field notes.
     this.codexDefs = level.codex ?? [];
     this.journalNotes = level.journalNotes ?? [];
@@ -178,7 +190,6 @@ export class Game {
     this.questReached = new Map();
     // Run-global story flags (e.g. "read-warden-journal"). Like quest stages they
     // survive level transitions within a run and clear on a fresh start (R).
-    this.flags = previousFlags ?? new Set();
     this.appliedLevelEvents = new Set();
     this.activeEncounter = null;
     this.clearedEncounters = new Set();
@@ -212,7 +223,7 @@ export class Game {
     this.areaTitle = level.name;
     this.areaTitleTimer = AREA_TITLE_DURATION;
     this.#log(level.intro || level.name);
-    this.#startQuests(previousQuestStages);
+    this.#startQuests(previousQuestStages, previousQuestReached);
     this.#log('Explore the chapel. E inspect, I pack, J journal, H bind wounds.');
     if (bootOptions.skipIntro) this.introSeen = true;
 
@@ -232,7 +243,7 @@ export class Game {
   }
 
   get actors() {
-    return [this.player, ...this.enemies];
+    return [this.player, ...this.enemies, ...(this.npcs ?? [])];
   }
 
   #bootOptions(options) {
@@ -659,8 +670,11 @@ export class Game {
     for (const flag of [].concat(conditions.flag ?? [], conditions.flags ?? [])) {
       if (!this.flags.has(flag)) return false;
     }
+    for (const flag of [].concat(conditions.notFlag ?? [], conditions.flagsAbsent ?? [])) {
+      if (this.flags.has(flag)) return false;
+    }
     for (const [questId, stage] of Object.entries(conditions.questStages ?? {})) {
-      if (this.questStages.get(questId) !== stage) return false;
+      if (this.questStages?.get(questId) !== stage) return false;
     }
     return true;
   }
@@ -745,6 +759,7 @@ export class Game {
     if (!effects) return false;
     for (const line of [].concat(effects.log ?? [])) this.#log(line);
     for (const flag of [].concat(effects.setFlag ?? [])) this.flags.add(flag);
+    this.#applyInventoryEffects(effects.inventory);
     this.#applyQuestUpdate(effects.questUpdate);
     if (effects.kill) this.#silenceProp(effects.kill);
     if (effects.teleport) this.#teleportPlayer(effects.teleport);
@@ -760,6 +775,27 @@ export class Game {
       return true;
     }
     return false;
+  }
+
+  #applyInventoryEffects(inventoryEffects) {
+    if (!inventoryEffects) return;
+    for (const entry of [].concat(inventoryEffects.remove ?? [])) {
+      if (!entry?.item) continue;
+      const count = entry.count ?? 1;
+      if (!this.inventory.remove(entry.item, count)) {
+        this.#log(`${this.inventory.displayName(entry.item)} is not in the pack.`);
+      }
+    }
+    for (const entry of [].concat(inventoryEffects.add ?? [])) {
+      if (!entry?.item) continue;
+      const count = entry.count ?? 1;
+      const result = this.inventory.add(entry.item, count);
+      if (!result.ok) {
+        this.#log(`No room for ${this.inventory.displayName(entry.item)}.`);
+        continue;
+      }
+      this.#log(`Received: ${count}x ${this.inventory.displayName(entry.item)}.`);
+    }
   }
 
   // End a still-living staged victim (the crucified Opened Saint, or its cellar
@@ -985,7 +1021,7 @@ export class Game {
       }
 
       this.mode = 'victory';
-      this.#log('The chapel falls quiet. No cultist answers the bells now.');
+      this.#log(this.level.victoryLog ?? 'The area falls quiet. Nothing answers now.');
       if (this.level.onVictory?.questUpdate && !this.appliedLevelEvents.has('victory')) {
         this.appliedLevelEvents.add('victory');
         this.#applyQuestUpdate(this.level.onVictory?.questUpdate);
@@ -1184,44 +1220,64 @@ export class Game {
   // ---- Animation & effects ----------------------------------------------
 
   #advanceAmbientSpeech(dt) {
-    for (const enemy of this.enemies) {
-      if (enemy.speech) {
-        enemy.speech.ttl -= dt;
-        if (enemy.speech.ttl <= 0) enemy.speech = null;
+    let speechActive = false;
+    for (const actor of [...this.enemies, ...(this.npcs ?? [])]) {
+      if (actor.speech) {
+        actor.speech.ttl -= dt;
+        if (actor.speech.ttl <= 0) actor.speech = null;
+        else speechActive = true;
       }
     }
     for (const prop of this.speakingProps ?? []) {
       if (prop.speech) {
         prop.speech.ttl -= dt;
         if (prop.speech.ttl <= 0) prop.speech = null;
+        else speechActive = true;
       }
     }
 
     if (this.mode !== 'explore' || this.uiScreen) return;
 
-    for (const enemy of this.enemies) {
-      if (enemy.isDead || !Array.isArray(enemy.ambient) || enemy.ambient.length === 0) continue;
-      if (manhattan(this.player.position, enemy.position) > 10) continue;
+    this.ambientSpeechCooldown = Math.max(0, (this.ambientSpeechCooldown ?? 0) - dt);
+    const candidates = [];
 
-      enemy.ambientTimer = (enemy.ambientTimer ?? 1) - dt;
-      if (enemy.ambientTimer > 0) continue;
+    for (const actor of [...this.enemies, ...(this.npcs ?? [])]) {
+      if (actor.isDead || actor.speech || !Array.isArray(actor.ambient) || actor.ambient.length === 0) continue;
+      const distance = manhattan(this.player.position, actor.position);
+      if (distance > 10) continue;
 
-      const index = enemy.ambientIndex ?? 0;
-      enemy.speech = { text: enemy.ambient[index % enemy.ambient.length], ttl: AMBIENT_SPEECH_LIFE };
-      enemy.ambientIndex = index + 1;
-      enemy.ambientTimer = 5.5 + ((index + enemy.x + enemy.y) % 3) * 1.2;
+      actor.ambientTimer = (actor.ambientTimer ?? AMBIENT_ACTOR_DELAY) - dt;
+      if (actor.ambientTimer > 0) continue;
+      candidates.push({ type: 'actor', subject: actor, distance });
     }
 
     for (const prop of this.speakingProps ?? []) {
       if (prop.killed || prop.speech) continue;
-      if (manhattan(this.player.position, prop) > 11) continue;
-      prop.ambientTimer = (prop.ambientTimer ?? 1) - dt;
+      const distance = manhattan(this.player.position, prop);
+      if (distance > 11) continue;
+      prop.ambientTimer = (prop.ambientTimer ?? AMBIENT_PROP_DELAY) - dt;
       if (prop.ambientTimer > 0) continue;
+      candidates.push({ type: 'prop', subject: prop, distance });
+    }
+
+    if (speechActive || this.ambientSpeechCooldown > 0 || candidates.length === 0) return;
+
+    candidates.sort((a, b) => a.distance - b.distance || a.subject.y - b.subject.y || a.subject.x - b.subject.x);
+    const next = candidates[0];
+    if (next.type === 'actor') {
+      const actor = next.subject;
+      const index = actor.ambientIndex ?? 0;
+      actor.speech = { text: actor.ambient[index % actor.ambient.length], ttl: AMBIENT_SPEECH_LIFE };
+      actor.ambientIndex = index + 1;
+      actor.ambientTimer = AMBIENT_ACTOR_DELAY + ((index + actor.x + actor.y) % 5) * 3.5;
+    } else {
+      const prop = next.subject;
       const index = prop.ambientIndex ?? 0;
       prop.speech = { text: prop.ambient[index % prop.ambient.length], ttl: AMBIENT_SPEECH_LIFE + 1.4 };
       prop.ambientIndex = index + 1;
-      prop.ambientTimer = 6.5 + ((index + prop.x + prop.y) % 3) * 1.3;
+      prop.ambientTimer = AMBIENT_PROP_DELAY + ((index + prop.x + prop.y) % 4) * 2.4;
     }
+    this.ambientSpeechCooldown = AMBIENT_SPEECH_COOLDOWN;
   }
 
   #advanceAnim(dt) {
@@ -1359,11 +1415,15 @@ export class Game {
     this.equipmentIndex = Math.max(0, Math.min(Math.max(0, slotCount - 1), this.equipmentIndex ?? 0));
   }
 
-  #startQuests(previousStages = null) {
+  #startQuests(previousStages = null, previousReached = null) {
     for (const quest of Object.values(this.questDefs)) {
       const stage = previousStages?.get(quest.id) ?? quest.initialStage ?? quest.stages?.[0]?.id ?? 'active';
       this.questStages.set(quest.id, stage);
-      this.questReached.set(quest.id, this.#stagesUpTo(quest, stage));
+      const reached = previousReached?.get(quest.id)
+        ? new Set(previousReached.get(quest.id))
+        : this.#stagesUpTo(quest, stage);
+      for (const reachedStage of this.#stagesUpTo(quest, stage)) reached.add(reachedStage);
+      this.questReached.set(quest.id, reached);
       this.#log(`Quest: ${quest.title}.`);
       const description = this.#questStageDescription(quest.id, stage);
       if (description) this.#log(description);
@@ -1660,7 +1720,7 @@ export class Game {
   #talkableEnemyInReach() {
     let best = null;
     let bestDist = Infinity;
-    for (const enemy of this.enemies) {
+    for (const enemy of [...(this.npcs ?? []), ...this.enemies]) {
       if (enemy.isDead || !enemy.dialogue) continue;
       if (enemy.dialogueSeen && !enemy.dialogueRepeat) continue;
       const reach = enemy.talkRadius ?? 1;
@@ -1677,11 +1737,11 @@ export class Game {
   #triggeredDialogueEnemy() {
     let best = null;
     let bestDist = Infinity;
-    for (const enemy of this.enemies) {
+    for (const enemy of [...(this.npcs ?? []), ...this.enemies]) {
       if (enemy.isDead || !enemy.dialogue || enemy.dialogueTriggerRadius == null) continue;
       if (enemy.dialogueSeen && !enemy.dialogueRepeat) continue;
-      const encounterId = this.#resolveEncounterId(enemy.encounter);
-      if (this.clearedEncounters.has(encounterId)) continue;
+      const encounterId = enemy.encounter ? this.#resolveEncounterId(enemy.encounter) : null;
+      if (encounterId && this.clearedEncounters.has(encounterId)) continue;
       const dist = manhattan(this.player.position, enemy.position);
       if (dist > enemy.dialogueTriggerRadius || dist >= bestDist) continue;
       best = enemy;

@@ -23,6 +23,23 @@ async function loadContentById(ids, folder) {
   return entries;
 }
 
+function addInventoryEffectItems(effects, itemIds) {
+  const inventory = effects?.inventory;
+  if (!inventory) return;
+  for (const entry of [].concat(inventory.add ?? [], inventory.remove ?? [])) {
+    if (entry?.item) itemIds.add(entry.item);
+  }
+}
+
+function collectDialogueItemIds(dialogueDefs, itemIds) {
+  for (const dialogue of Object.values(dialogueDefs ?? {})) {
+    for (const node of Object.values(dialogue.nodes ?? {})) {
+      addInventoryEffectItems(node.effects, itemIds);
+      for (const choice of node.choices ?? []) addInventoryEffectItems(choice.effects, itemIds);
+    }
+  }
+}
+
 // Map a non-walkable legend entry to a renderer prop kind. Any block kind the
 // sprite catalog knows (wall, wall-broken, wall-window, ...) passes straight
 // through; an unnamed entry falls back to a plain wall block.
@@ -84,13 +101,42 @@ export async function loadLevel(levelPath) {
     enemy.encounter = spawn.encounter ?? enemy.spawnId;
     enemy.aggroRadius = spawn.aggroRadius ?? level.enemyAggroRadius ?? null;
     enemy.dialogue = spawn.dialogue ?? null;
+    enemy.dialogueRepeat = Boolean(spawn.dialogueRepeat);
     enemy.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
     enemy.talkRadius = spawn.talkRadius ?? 1;
     enemy.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
     enemy.ambientIndex = 0;
-    enemy.ambientTimer = 1.2 + (index % 3) * 1.4;
+    enemy.ambientTimer = 3 + (index % 3) * 2.4;
     return enemy;
   });
+
+  // Neutral NPCs use actor data and the same render/dialogue/ambient plumbing as
+  // enemies, but Game keeps them out of combat targeting and victory checks.
+  const npcSpawns = level.spawns.npcs ?? [];
+  const npcDataById = new Map();
+  for (const spawn of npcSpawns) {
+    const actorId = spawn.actor ?? spawn.id;
+    if (!npcDataById.has(actorId)) {
+      npcDataById.set(actorId, await loadJson(`./data/actors/${actorId}.json`));
+    }
+  }
+  const npcs = npcSpawns.map((spawn, index) => {
+    const actorId = spawn.actor ?? spawn.id;
+    const npc = createActor(npcDataById.get(actorId), { x: spawn.x, y: spawn.y });
+    npc.spawnId = spawn.spawnId ?? `${actorId}-${index}`;
+    npc.dialogue = spawn.dialogue ?? null;
+    npc.dialogueRepeat = spawn.dialogueRepeat !== false;
+    npc.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
+    npc.talkRadius = spawn.talkRadius ?? 1;
+    npc.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
+    npc.ambientIndex = 0;
+    npc.ambientTimer = 8 + (index % 6) * 3.2;
+    npc.conditions = spawn.conditions ?? null;
+    return npc;
+  });
+
+  const dialogueDefs = await loadContentById(level.dialogue ?? [], 'dialogue');
+  const questDefs = await loadContentById(level.quests ?? [], 'quests');
 
   // Item definitions referenced by loot.
   const itemIds = new Set();
@@ -99,13 +145,11 @@ export async function loadLevel(levelPath) {
   }
   for (const entry of playerLoadout?.items ?? []) itemIds.add(entry.item);
   for (const itemId of Object.values(playerLoadout?.equipment ?? {})) itemIds.add(itemId);
+  collectDialogueItemIds(dialogueDefs, itemIds);
   const itemDefs = {};
   for (const id of itemIds) {
     itemDefs[id] = await loadJson(`./data/items/${id}.json`);
   }
-
-  const dialogueDefs = await loadContentById(level.dialogue ?? [], 'dialogue');
-  const questDefs = await loadContentById(level.quests ?? [], 'quests');
 
   return {
     id: level.id,
@@ -119,6 +163,7 @@ export async function loadLevel(levelPath) {
     interactables,
     player,
     enemies,
+    npcs,
     itemDefs,
     playerLoadout,
     dialogueDefs,
@@ -127,6 +172,7 @@ export async function loadLevel(levelPath) {
     journalNotes: Array.isArray(level.journalNotes) ? level.journalNotes : [],
     combatIntro: level.combatIntro ?? [],
     combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
+    victoryLog: level.victoryLog ?? null,
     onVictory: level.onVictory ?? null,
     triggerZone: level.combatTrigger ?? null
   };

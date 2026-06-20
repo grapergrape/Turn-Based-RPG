@@ -25,6 +25,8 @@ export const PALETTE = {
   clothDark: '#241d19',
   clothRed: '#7a241f',
   clothTan: '#a69371',
+  clothBlueDark: '#172635',
+  clothBlue: '#2d4f6a',
 
   skinDark: '#4a3025',
   skinMid: '#8a5e43',

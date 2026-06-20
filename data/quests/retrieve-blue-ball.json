@@ -1,0 +1,43 @@
+{
+  "id": "retrieve-blue-ball",
+  "title": "Find the Blue Ball",
+  "initialStage": "available",
+  "stages": [
+    {
+      "id": "available",
+      "task": "Speak with Corin in the catacombs.",
+      "description": "A child in the hidden catacombs keeps watching the dark lower hall."
+    },
+    {
+      "id": "accepted",
+      "task": "Search the deeper catacombs for Corin's blue ball.",
+      "description": "Corin lost his blue ball when Eda kicked it down the hall. The children are not allowed past the survivor camp."
+    },
+    {
+      "id": "ball-found",
+      "task": "Return the blue ball to Corin.",
+      "description": "You found the blue ball in the lower catacombs. Corin is waiting near the stair."
+    },
+    {
+      "id": "complete",
+      "task": "Returned to Corin.",
+      "description": "You returned Corin's blue ball. Hanne pressed a clean field dressing into your hand as thanks."
+    }
+  ],
+  "objectives": [
+    {
+      "text": "Ask Corin what he lost.",
+      "stage": "accepted"
+    },
+    {
+      "text": "Find the blue ball deeper in the catacombs.",
+      "reveal": "accepted",
+      "stage": "ball-found"
+    },
+    {
+      "text": "Return the blue ball to Corin.",
+      "reveal": "ball-found",
+      "stage": "complete"
+    }
+  ]
+}

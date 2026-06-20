@@ -1,0 +1,23 @@
+{
+  "id": "ash-chapel-catacombs-oren",
+  "title": "Oren Rill",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Oren kneels by the intake barricade, fitting split boards back into a shape that might hold.",
+        "\"The cult pulled the nails clean, like they had all night and no fear of interruption. I keep asking what made them so sure no soldier would come.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Oren grips a rusted pry bar with both hands.",
+        "\"I kept the chapel fence. Not glorious work. Good work. A soldier needs soup, a dry sock, and someone to say the wall is still standing.\"",
+        "\"Lately no one came asking. That is what I cannot swallow.\""
+      ]
+    }
+  }
+}

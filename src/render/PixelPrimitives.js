@@ -63,6 +63,14 @@ function px(ctx, x, y, color, w = 1, h = 1) {
   ctx.fillRect(Math.round(x), Math.round(y), w, h);
 }
 
+function linePx(ctx, x0, y0, x1, y1, color, size = 1) {
+  const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    px(ctx, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, color, size, size);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Core volumes
 // ---------------------------------------------------------------------------
@@ -514,6 +522,18 @@ export function drawFieldSatchel(ctx, cx, cy, seed) {
   px(ctx, cx + 6, cy - 3, PALETTE.clothDark, 5, 1);
 }
 
+export function drawBlueBall(ctx, cx, cy, seed) {
+  drawShadowBlob(ctx, cx, cy + 2, 18, 7);
+  px(ctx, cx - 5, cy - 8, PALETTE.outline, 11, 10);
+  px(ctx, cx - 4, cy - 9, PALETTE.outline, 9, 12);
+  px(ctx, cx - 4, cy - 8, PALETTE.clothBlueDark, 9, 10);
+  px(ctx, cx - 3, cy - 9, PALETTE.clothBlue, 7, 2);
+  px(ctx, cx - 4, cy - 5, PALETTE.clothBlue, 2, 4);
+  px(ctx, cx + 3, cy - 4, PALETTE.void, 1, 4);
+  px(ctx, cx - 1, cy - 8, PALETTE.hostBone, 2, 1);
+  drawNoisePixels(ctx, cx - 7, cy - 9, 14, 12, [PALETTE.stoneDark, PALETTE.rustDark], 0.04, seed);
+}
+
 export function drawCorpseSilhouette(ctx, cx, cy, seed) {
   drawShadowBlob(ctx, cx, cy + 3, 46, 18);
   // Dried blood pooled under the body.
@@ -685,6 +705,81 @@ export function drawRustedCrate(ctx, cx, cy, seed) {
   px(ctx, cx - 14, cy - 14, PALETTE.stoneDust, 5, 1);
   for (const dx of [-17, -4, 9, 19]) px(ctx, cx + dx, cy - 8, PALETTE.rustLight, 1, 1);
   drawNoisePixels(ctx, cx - 21, cy - 26, 43, 34, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
+}
+
+export function drawCanvasTent(ctx, cx, cy, seed) {
+  const lean = (seed & 1) ? 2 : -2;
+  drawShadowBlob(ctx, cx, cy + 8, 62, 24);
+  poly(ctx, PALETTE.outline, [
+    [cx - 31, cy - 2],
+    [cx - 4 + lean, cy - 31],
+    [cx + 30, cy - 1],
+    [cx + 24, cy + 12],
+    [cx - 26, cy + 12]
+  ]);
+  poly(ctx, PALETTE.clothTan, [
+    [cx - 28, cy - 1],
+    [cx - 4 + lean, cy - 29],
+    [cx - 1 + lean, cy + 9],
+    [cx - 26, cy + 10]
+  ]);
+  poly(ctx, PALETTE.stoneDust, [
+    [cx - 4 + lean, cy - 29],
+    [cx + 27, cy - 1],
+    [cx + 22, cy + 10],
+    [cx - 1 + lean, cy + 9]
+  ]);
+  poly(ctx, PALETTE.void, [
+    [cx - 5 + lean, cy - 5],
+    [cx + 6 + lean, cy + 8],
+    [cx - 12 + lean, cy + 8]
+  ]);
+  linePx(ctx, cx - 4 + lean, cy - 29, cx - 2 + lean, cy + 11, PALETTE.woodMid, 2);
+  linePx(ctx, cx - 25, cy + 7, cx - 34, cy + 13, PALETTE.rustDark);
+  linePx(ctx, cx + 23, cy + 7, cx + 32, cy + 12, PALETTE.rustDark);
+  px(ctx, cx - 14, cy - 14, PALETTE.hostBone, 9, 1);
+  px(ctx, cx + 5, cy - 11, PALETTE.clothDark, 11, 1);
+  drawNoisePixels(ctx, cx - 26, cy - 27, 52, 38, [PALETTE.stoneDark, PALETTE.rustDark], 0.028, seed);
+}
+
+export function drawCampBedroll(ctx, cx, cy, seed) {
+  drawShadowBlob(ctx, cx, cy + 4, 38, 13);
+  const flip = (seed & 1) ? -1 : 1;
+  poly(ctx, PALETTE.outline, [
+    [cx - 19 * flip, cy - 6],
+    [cx - 1 * flip, cy - 14],
+    [cx + 18 * flip, cy - 6],
+    [cx + 12 * flip, cy + 5],
+    [cx - 12 * flip, cy + 6]
+  ]);
+  poly(ctx, PALETTE.clothDark, [
+    [cx - 17 * flip, cy - 5],
+    [cx - 1 * flip, cy - 12],
+    [cx + 16 * flip, cy - 5],
+    [cx + 10 * flip, cy + 4],
+    [cx - 11 * flip, cy + 5]
+  ]);
+  poly(ctx, PALETTE.stoneDust, [
+    [cx - 13 * flip, cy - 7],
+    [cx - 1 * flip, cy - 12],
+    [cx + 12 * flip, cy - 7],
+    [cx - 1 * flip, cy - 3]
+  ]);
+  px(ctx, cx - 14, cy, PALETTE.rustDark, 28, 2);
+  px(ctx, cx - 8, cy - 8, PALETTE.clothTan, 15, 1);
+  px(ctx, cx + 9 * flip, cy - 4, PALETTE.hostBone, 5, 1);
+}
+
+export function drawSealedStorageCrate(ctx, cx, cy, seed) {
+  drawRustedCrate(ctx, cx, cy, seed);
+  px(ctx, cx - 18, cy - 2, PALETTE.outline, 36, 4);
+  px(ctx, cx - 17, cy - 1, PALETTE.stoneDark, 34, 2);
+  px(ctx, cx - 5, cy - 14, PALETTE.outline, 11, 10);
+  px(ctx, cx - 4, cy - 13, PALETTE.rustDark, 9, 8);
+  px(ctx, cx - 1, cy - 12, PALETTE.rustLight, 3, 2);
+  for (const dx of [-12, -4, 4, 12]) {
+    px(ctx, cx + dx, cy - 18, PALETTE.hostBone, 2, 1);
+  }
 }
 
 export function drawRustedBarrel(ctx, cx, cy, seed, opts = {}) {

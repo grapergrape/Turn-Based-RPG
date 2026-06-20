@@ -680,6 +680,172 @@ function drawChoirDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY,
   px(ctx, c - 9, shoulderY + 5, PALETTE.hostGold, 4, 1);
 }
 
+function drawSurvivorManDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
+  const side = directionSide(meta);
+  const c = torso.bodyCx;
+  // Rope belt, patched work coat, and a rolled sleeping cloth.
+  linePx(ctx, c - 5, shoulderY + 5, c + 5, hipY - 5, PALETTE.rustDark);
+  px(ctx, c - 6, hipY - 4, PALETTE.rustLight, 12, 2);
+  px(ctx, c + side * 7, hipY - 14, PALETTE.clothTan, 5, 13);
+  px(ctx, c + side * 7, hipY - 14, PALETTE.stoneDust, 5, 1);
+  px(ctx, c - side * 8, shoulderY + 7, PALETTE.rustDark, 5, 4);
+  px(ctx, c - side * 8, shoulderY + 7, PALETTE.rustLight, 4, 1);
+  if (!meta.back) {
+    px(ctx, c - 2, headY + 7 + (pose.bob ?? 0), PALETTE.skinDark, 4, 1);
+  }
+}
+
+function drawSurvivorWomanDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
+  const side = directionSide(meta);
+  const c = torso.bodyCx;
+  // Shawl and apron layers make the figure read as a camp civilian, not militia.
+  px(ctx, c - 8, shoulderY + 2, PALETTE.clothTan, 16, 3);
+  linePx(ctx, c - 7, shoulderY + 4, c - 2, hipY + 2 + (pose.cloth ?? 0), PALETTE.clothTan);
+  linePx(ctx, c + 7, shoulderY + 4, c + 2, hipY + 1, PALETTE.stoneDust);
+  px(ctx, c - 5, hipY - 6, PALETTE.stoneMid, 10, 8);
+  px(ctx, c - 4, hipY - 6, PALETTE.stoneDust, 7, 1);
+  px(ctx, c + side * 7, hipY - 11, PALETTE.rustDark, 4, 8);
+  px(ctx, c + side * 7, hipY - 11, PALETTE.rustLight, 3, 1);
+  if (!meta.back) px(ctx, c + 2, headY + 8 + (pose.bob ?? 0), PALETTE.clothTan, 3, 1);
+}
+
+function drawSurvivorChildDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
+  const side = directionSide(meta);
+  const c = torso.bodyCx;
+  // Oversized coat hem, tiny satchel, and bare bright face.
+  px(ctx, c - 6, hipY - 1, PALETTE.clothTan, 12, 3);
+  px(ctx, c - 5, hipY + 1, PALETTE.stoneDust, 9, 1);
+  linePx(ctx, c - side * 5, shoulderY + 4, c + side * 5, hipY - 3, PALETTE.rustDark);
+  px(ctx, c + side * 6, hipY - 8, PALETTE.woodDark, 5, 5);
+  px(ctx, c + side * 6, hipY - 8, PALETTE.woodLight, 4, 1);
+  if (!meta.back) {
+    px(ctx, c - 2, headY + 7 + (pose.bob ?? 0), PALETTE.skinLight, 4, 1);
+  }
+}
+
+function drawCampStaff(ctx, linePx, x, topY, side, color = PALETTE.woodMid) {
+  linePx(ctx, x, topY, x + side * 2, topY + 22, PALETTE.outline, 2);
+  linePx(ctx, x, topY, x + side * 2, topY + 22, color, 1);
+  px(ctx, x - 1, topY + 3, PALETTE.woodLight, 1, 7);
+}
+
+function drawCampBundle(ctx, px, x, y, tone = PALETTE.clothTan) {
+  px(ctx, x - 3, y - 1, PALETTE.outline, 8, 13);
+  px(ctx, x - 2, y, tone, 6, 11);
+  px(ctx, x - 1, y, PALETTE.stoneDust, 4, 1);
+  px(ctx, x - 3, y + 5, PALETTE.rustDark, 8, 1);
+}
+
+function drawCampJar(ctx, px, x, y) {
+  px(ctx, x - 3, y, PALETTE.outline, 7, 9);
+  px(ctx, x - 2, y - 1, PALETTE.stoneLight, 5, 2);
+  px(ctx, x - 2, y + 1, PALETTE.stoneDust, 5, 7);
+  px(ctx, x + 2, y + 2, PALETTE.stoneDark, 1, 6);
+  px(ctx, x - 1, y + 1, PALETTE.hostBone, 1, 3);
+}
+
+function drawToolRoll(ctx, px, x, y) {
+  px(ctx, x - 4, y - 1, PALETTE.outline, 10, 8);
+  px(ctx, x - 3, y, PALETTE.clothDark, 8, 6);
+  px(ctx, x - 2, y, PALETTE.stoneDust, 6, 1);
+  px(ctx, x - 2, y + 2, PALETTE.rustLight, 1, 5);
+  px(ctx, x + 1, y + 1, PALETTE.stoneLight, 1, 6);
+  px(ctx, x + 4, y + 2, PALETTE.woodLight, 1, 4);
+}
+
+function drawSurvivorVariantDetails(args) {
+  const { ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso, style } = args;
+  const side = directionSide(meta);
+  const c = torso.bodyCx;
+  const bob = pose.bob ?? 0;
+
+  switch (style.campBase) {
+    case 'shawl':
+      drawSurvivorWomanDetails(args);
+      break;
+    case 'child':
+      drawSurvivorChildDetails(args);
+      break;
+    default:
+      drawSurvivorManDetails(args);
+      break;
+  }
+
+  switch (style.campKit) {
+    case 'matron':
+      px(ctx, c - 6, shoulderY + 1, PALETTE.hostBone, 12, 1);
+      px(ctx, c - 7, shoulderY + 3, PALETTE.clothDark, 14, 2);
+      drawCampStaff(ctx, linePx, c - side * 10, shoulderY + 6, -side, PALETTE.woodLight);
+      if (!meta.back) px(ctx, c - 1, headY + 8 + bob, PALETTE.hostGold, 2, 1);
+      break;
+    case 'quartermaster':
+      drawCampBundle(ctx, px, c + side * 9, hipY - 15, PALETTE.clothTan);
+      px(ctx, c - side * 8, hipY - 11, PALETTE.woodMid, 6, 8);
+      px(ctx, c - side * 8, hipY - 11, PALETTE.hostBone, 5, 1);
+      if (!meta.back) {
+        px(ctx, c - 4, shoulderY + 8, PALETTE.clothBlueDark, 8, 4);
+        px(ctx, c - 3, shoulderY + 8, PALETTE.clothBlue, 5, 1);
+      }
+      break;
+    case 'settler':
+      drawCampStaff(ctx, linePx, c + side * 11, shoulderY + 5, side, PALETTE.woodMid);
+      px(ctx, c - side * 9, hipY - 8, PALETTE.rustMid, 5, 5);
+      px(ctx, c - side * 9, hipY - 8, PALETTE.rustLight, 3, 1);
+      break;
+    case 'runner':
+      linePx(ctx, c - side * 6, shoulderY + 4, c + side * 6, hipY - 2, PALETTE.clothBlueDark);
+      px(ctx, c + side * 8, hipY - 10, PALETTE.woodDark, 6, 8);
+      px(ctx, c + side * 8, hipY - 10, PALETTE.woodLight, 4, 1);
+      px(ctx, c - side * 9, shoulderY + 7, PALETTE.stoneLight, 4, 2);
+      break;
+    case 'cook':
+      px(ctx, c - 5, shoulderY + 8, PALETTE.clothTan, 10, 13);
+      px(ctx, c - 4, shoulderY + 8, PALETTE.hostBone, 7, 1);
+      px(ctx, c + side * 8, hipY - 7, PALETTE.stoneDark, 6, 5);
+      px(ctx, c + side * 9, hipY - 8, PALETTE.stoneLight, 4, 1);
+      linePx(ctx, c - side * 8, shoulderY + 9, c - side * 9, hipY - 3, PALETTE.woodLight);
+      break;
+    case 'mender':
+      drawToolRoll(ctx, px, c + side * 8, hipY - 12);
+      linePx(ctx, c - side * 6, shoulderY + 5, c + side * 5, hipY - 2, PALETTE.rustLight);
+      px(ctx, c - side * 9, hipY - 4, PALETTE.stoneLight, 5, 2);
+      break;
+    case 'water':
+      drawCampJar(ctx, px, c + side * 9, hipY - 13);
+      drawCampJar(ctx, px, c - side * 8, hipY - 9);
+      linePx(ctx, c - side * 6, shoulderY + 5, c + side * 8, hipY - 4, PALETTE.clothDark);
+      break;
+    case 'chapel-hand':
+      drawCampBundle(ctx, px, c + side * 8, hipY - 13, PALETTE.stoneDust);
+      px(ctx, c - side * 9, shoulderY + 8, PALETTE.rustDark, 5, 5);
+      px(ctx, c - side * 9, shoulderY + 8, PALETTE.rustLight, 3, 1);
+      px(ctx, c - 4, hipY - 3, PALETTE.hostBone, 8, 1);
+      break;
+    case 'nurse':
+      px(ctx, c - 7, shoulderY + 3, PALETTE.stoneDust, 14, 2);
+      px(ctx, c + side * 8, hipY - 13, PALETTE.clothTan, 7, 10);
+      px(ctx, c + side * 9, hipY - 11, PALETTE.hostBone, 5, 1);
+      px(ctx, c + side * 10, hipY - 13, PALETTE.clothRed, 2, 7);
+      px(ctx, c + side * 8, hipY - 10, PALETTE.clothRed, 6, 2);
+      break;
+    case 'blue-child':
+      px(ctx, c + side * 7, hipY - 8, PALETTE.clothBlueDark, 5, 5);
+      px(ctx, c + side * 7, hipY - 8, PALETTE.clothBlue, 4, 1);
+      if (!meta.back) px(ctx, c - 2, shoulderY + 8, PALETTE.clothBlue, 4, 3);
+      break;
+    case 'chalk-child':
+      px(ctx, c - side * 7, hipY - 8, PALETTE.clothTan, 5, 5);
+      px(ctx, c - side * 6, hipY - 8, PALETTE.hostBone, 3, 1);
+      if (!meta.back) {
+        px(ctx, c + 3, hipY - 4, PALETTE.hostBone, 1, 4);
+        px(ctx, c + 2, hipY - 1, PALETTE.stoneDust, 3, 1);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 // Mara's body: proportions, skin, pants, belt, and the things that never change
 // with her kit. Coat / boots / hood / vest are layered on top from equipment so
 // the same figure can be drawn dressed or stripped, in the world and the pack.
@@ -907,6 +1073,409 @@ const PEN_STYLE = {
   decorate: drawHostDetails
 };
 
+const SURVIVOR_MAN_STYLE = {
+  shoulders: 15,
+  waist: 9,
+  torsoLength: 16,
+  legLength: 23,
+  headHeight: 9,
+  legSize: 2,
+  armSize: 2,
+  coatTail: 5,
+  coatHi: PALETTE.stoneDust,
+  coat: PALETTE.stoneMid,
+  coatLo: PALETTE.stoneDark,
+  coatDk: PALETTE.void,
+  pantsHi: PALETTE.stoneLight,
+  pants: PALETTE.clothDark,
+  pantsLo: PALETTE.stoneDark,
+  pantsDk: PALETTE.void,
+  boot: PALETTE.rustDark,
+  bootHi: PALETTE.rustMid,
+  bootLo: PALETTE.void,
+  skinHi: PALETTE.skinLight,
+  skin: PALETTE.skinMid,
+  skinLo: PALETTE.skinDark,
+  skinDk: PALETTE.clothDark,
+  hair: PALETTE.woodDark,
+  hairHi: PALETTE.woodLight,
+  hood: PALETTE.clothDark,
+  hoodHi: PALETTE.stoneDark,
+  belt: PALETTE.rustDark,
+  weapon: PALETTE.stoneLight,
+  hunch: 1,
+  decorate: drawSurvivorManDetails
+};
+
+const SURVIVOR_WOMAN_STYLE = {
+  ...SURVIVOR_MAN_STYLE,
+  shoulders: 13,
+  waist: 8,
+  torsoLength: 17,
+  coatTail: 8,
+  coatHi: PALETTE.clothTan,
+  coat: PALETTE.stoneDust,
+  coatLo: PALETTE.stoneMid,
+  pantsHi: PALETTE.stoneDust,
+  pants: PALETTE.stoneDark,
+  hair: PALETTE.woodMid,
+  hairHi: PALETTE.woodLight,
+  decorate: drawSurvivorWomanDetails
+};
+
+const SURVIVOR_CHILD_STYLE = {
+  ...SURVIVOR_MAN_STYLE,
+  shoulders: 11,
+  waist: 7,
+  torsoLength: 13,
+  legLength: 17,
+  headHeight: 9,
+  legSize: 1,
+  armSize: 1,
+  coatTail: 5,
+  coatHi: PALETTE.clothTan,
+  coat: PALETTE.stoneMid,
+  coatLo: PALETTE.stoneDark,
+  boot: PALETTE.rustDark,
+  bootHi: PALETTE.rustMid,
+  skinHi: PALETTE.skinLight,
+  skin: PALETTE.skinMid,
+  hunch: 0,
+  decorate: drawSurvivorChildDetails
+};
+
+const SURVIVOR_VARIANTS = {
+  selka: {
+    ...SURVIVOR_WOMAN_STYLE,
+    campBase: 'shawl',
+    campKit: 'matron',
+    coatHi: PALETTE.hostBone,
+    coat: PALETTE.clothTan,
+    coatLo: PALETTE.stoneDust,
+    hair: PALETTE.stoneDark,
+    hairHi: PALETTE.stoneDust,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  },
+  mirel: {
+    ...SURVIVOR_WOMAN_STYLE,
+    campBase: 'shawl',
+    campKit: 'quartermaster',
+    coatHi: PALETTE.stoneDust,
+    coat: PALETTE.stoneMid,
+    coatLo: PALETTE.clothDark,
+    hair: PALETTE.woodDark,
+    hairHi: PALETTE.woodMid,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  },
+  oren: {
+    ...SURVIVOR_MAN_STYLE,
+    campKit: 'settler',
+    shoulders: 16,
+    waist: 10,
+    coatHi: PALETTE.stoneLight,
+    coat: PALETTE.clothDark,
+    coatLo: PALETTE.void,
+    pants: PALETTE.stoneDark,
+    hair: PALETTE.woodMid,
+    hairHi: PALETTE.woodLight,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  },
+  tomas: {
+    ...SURVIVOR_MAN_STYLE,
+    campKit: 'runner',
+    shoulders: 14,
+    waist: 8,
+    legLength: 24,
+    coatHi: PALETTE.stoneDust,
+    coat: PALETTE.stoneLight,
+    coatLo: PALETTE.stoneDark,
+    pants: PALETTE.clothBlueDark,
+    hood: PALETTE.clothDark,
+    hoodHi: PALETTE.stoneDust,
+    decorate: drawSurvivorVariantDetails
+  },
+  runa: {
+    ...SURVIVOR_WOMAN_STYLE,
+    campBase: 'shawl',
+    campKit: 'cook',
+    coatHi: PALETTE.clothTan,
+    coat: PALETTE.rustDark,
+    coatLo: PALETTE.clothDark,
+    hair: PALETTE.woodMid,
+    hairHi: PALETTE.clothTan,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  },
+  istra: {
+    ...SURVIVOR_WOMAN_STYLE,
+    campBase: 'shawl',
+    campKit: 'mender',
+    shoulders: 14,
+    coatHi: PALETTE.stoneLight,
+    coat: PALETTE.stoneMid,
+    coatLo: PALETTE.clothDark,
+    pants: PALETTE.clothDark,
+    hood: PALETTE.stoneDark,
+    hoodHi: PALETTE.stoneDust,
+    decorate: drawSurvivorVariantDetails
+  },
+  nessa: {
+    ...SURVIVOR_WOMAN_STYLE,
+    campBase: 'shawl',
+    campKit: 'water',
+    coatHi: PALETTE.clothBlue,
+    coat: PALETTE.clothBlueDark,
+    coatLo: PALETTE.void,
+    pantsHi: PALETTE.stoneLight,
+    pants: PALETTE.stoneMid,
+    hair: PALETTE.woodDark,
+    hairHi: PALETTE.woodMid,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  },
+  dalia: {
+    ...SURVIVOR_WOMAN_STYLE,
+    campBase: 'shawl',
+    campKit: 'chapel-hand',
+    coatHi: PALETTE.stoneDust,
+    coat: PALETTE.clothDark,
+    coatLo: PALETTE.void,
+    pants: PALETTE.stoneDark,
+    hair: PALETTE.woodLight,
+    hairHi: PALETTE.clothTan,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  },
+  hanne: {
+    ...SURVIVOR_WOMAN_STYLE,
+    campBase: 'shawl',
+    campKit: 'nurse',
+    coatHi: PALETTE.hostBone,
+    coat: PALETTE.stoneDust,
+    coatLo: PALETTE.stoneDark,
+    hood: PALETTE.clothTan,
+    hoodHi: PALETTE.hostBone,
+    decorate: drawSurvivorVariantDetails
+  },
+  corin: {
+    ...SURVIVOR_CHILD_STYLE,
+    campBase: 'child',
+    campKit: 'blue-child',
+    coatHi: PALETTE.stoneLight,
+    coat: PALETTE.clothBlueDark,
+    coatLo: PALETTE.void,
+    hair: PALETTE.woodLight,
+    hairHi: PALETTE.clothTan,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  },
+  eda: {
+    ...SURVIVOR_CHILD_STYLE,
+    campBase: 'child',
+    campKit: 'chalk-child',
+    coatHi: PALETTE.clothTan,
+    coat: PALETTE.stoneMid,
+    coatLo: PALETTE.clothDark,
+    hair: PALETTE.woodDark,
+    hairHi: PALETTE.woodMid,
+    bareHead: true,
+    decorate: drawSurvivorVariantDetails
+  }
+};
+
+function ratSide(meta) {
+  return meta.side || (meta.back ? -1 : 1);
+}
+
+function ratSeg(ctx, x0, y0, x1, y1, color, size = 1) {
+  linePx(ctx, x0, y0, x1, y1, color, size);
+}
+
+function drawRatBody(ctx, cx, cy, side, pose, opts = {}) {
+  const bob = pose.bob ?? 0;
+  const hit = pose.hit ? side * 2 : 0;
+  const attack = pose.attack ?? 0;
+  const bodyCx = cx + hit + Math.round(side * (attack > 0 ? 1 : 0));
+  const bodyY = cy + bob;
+  const fur = opts.fur ?? PALETTE.hostBlack;
+  const furHi = opts.furHi ?? PALETTE.skinDark;
+  const furLo = opts.furLo ?? PALETTE.void;
+  const wound = opts.wound ?? PALETTE.hostRed;
+
+  for (let row = 0; row < 13; row += 1) {
+    const w = 28 - Math.abs(row - 6) * 2;
+    const x = bodyCx - Math.floor(w / 2);
+    const tone = row < 3 ? furHi : row < 10 ? fur : furLo;
+    px(ctx, x, bodyY - 12 + row, PALETTE.outline, w + 2, 1);
+    px(ctx, x + 1, bodyY - 12 + row, tone, w, 1);
+    if ((row & 3) === 0) px(ctx, x + 4, bodyY - 12 + row, wound, Math.max(3, w - 10), 1);
+    if (row === 2 || row === 7) px(ctx, x + w - 4, bodyY - 12 + row, PALETTE.hostGold, 2, 1);
+  }
+
+  const headX = bodyCx + side * (14 + Math.floor(attack / 3));
+  const headY = bodyY - 10 + Math.floor(attack / 5);
+  for (let row = 0; row < 8; row += 1) {
+    const w = 10 - Math.abs(row - 3);
+    const x = headX - Math.floor(w / 2);
+    px(ctx, x - 1, headY + row, PALETTE.outline, w + 2, 1);
+    px(ctx, x, headY + row, row < 3 ? furHi : fur, w, 1);
+  }
+  px(ctx, headX + side * 4, headY + 2, PALETTE.hostBone, 4, 2);
+  px(ctx, headX + side * 6, headY + 3, PALETTE.void, 2, 2);
+  px(ctx, headX + side * 2, headY + 3, PALETTE.hostGold, 1, 1);
+  ratSeg(ctx, bodyCx - side * 13, bodyY - 5, bodyCx - side * 25, bodyY - 9 + bob, PALETTE.hostBlack);
+  ratSeg(ctx, bodyCx - side * 16, bodyY - 6, bodyCx - side * 26, bodyY - 8 + bob, PALETTE.hostGold);
+  return { bodyCx, bodyY, headX, headY };
+}
+
+function drawSixLeggedRat(ctx, w, h, facing, pose) {
+  const meta = FACING_META[facing] ?? FACING_META.se;
+  const side = ratSide(meta);
+  const cx = Math.floor(w / 2);
+  const footY = h - 8;
+  const info = drawRatBody(ctx, cx, footY - 6, side, pose, {
+    fur: PALETTE.hostBlack,
+    furHi: PALETTE.skinDark,
+    furLo: PALETTE.void,
+    wound: PALETTE.hostRed
+  });
+  const step = pose.legA ?? 0;
+  const legXs = [-10, -3, 5];
+  for (let i = 0; i < 3; i += 1) {
+    const x = info.bodyCx + side * legXs[i];
+    const swing = Math.sign(step || (i - 1)) * (i + 1);
+    ratSeg(ctx, x, info.bodyY - 3, x - side * (5 + i), footY - 3 + (i & 1), PALETTE.hostBone, i === 1 ? 2 : 1);
+    ratSeg(ctx, x + side * 2, info.bodyY - 2, x + side * (6 + swing), footY - 1, PALETTE.skinDark, 1);
+  }
+  for (let i = 0; i < 7; i += 1) {
+    const x = info.bodyCx - 9 + i * 3;
+    ratSeg(ctx, x, info.bodyY - 13, x - 1 + (i & 1), info.bodyY - 17 - (i % 3), PALETTE.hostBone);
+  }
+  px(ctx, info.bodyCx - side * 3, info.bodyY - 9, PALETTE.hostGold, 2, 2);
+  px(ctx, info.bodyCx + side * 6, info.bodyY - 4, PALETTE.hostGold, 1, 4);
+}
+
+function drawThroatMawRat(ctx, w, h, facing, pose) {
+  const meta = FACING_META[facing] ?? FACING_META.se;
+  const side = ratSide(meta);
+  const cx = Math.floor(w / 2);
+  const footY = h - 8;
+  const info = drawRatBody(ctx, cx - side * 2, footY - 6, side, pose, {
+    fur: PALETTE.hostBlack,
+    furHi: PALETTE.rustDark,
+    furLo: PALETTE.void,
+    wound: PALETTE.hostRed
+  });
+  const mawX = info.bodyCx + side * 13;
+  const mawY = info.bodyY - 7 + Math.floor((pose.attack ?? 0) / 5);
+  px(ctx, mawX - 6, mawY - 5, PALETTE.hostBone, 12, 10);
+  px(ctx, mawX - 5, mawY - 4, PALETTE.void, 10, 8);
+  for (let i = 0; i < 10; i += 1) {
+    const tx = mawX - 5 + i;
+    px(ctx, tx, mawY - 4 + (i & 1), PALETTE.hostBone, 1, 3);
+    px(ctx, tx, mawY + 2 - (i & 1), PALETTE.hostBone, 1, 3);
+  }
+  px(ctx, mawX - 2, mawY - 1, PALETTE.hostRed, 5, 3);
+  px(ctx, mawX, mawY, PALETTE.hostGold, 1, 2);
+
+  const headX = mawX + side * (11 + (pose.bob ?? 0));
+  const headY = mawY + 8 + (pose.hit ? 2 : 0);
+  ratSeg(ctx, mawX + side * 2, mawY + 2, headX - side * 2, headY - 2, PALETTE.hostRed, 2);
+  ratSeg(ctx, mawX + side * 1, mawY + 1, headX - side * 3, headY - 4, PALETTE.hostGold);
+  for (let row = 0; row < 7; row += 1) {
+    const ww = 9 - Math.abs(row - 3);
+    px(ctx, headX - Math.floor(ww / 2), headY + row, row < 3 ? PALETTE.skinDark : PALETTE.hostBlack, ww, 1);
+  }
+  px(ctx, headX + side * 3, headY + 3, PALETTE.void, 2, 2);
+  px(ctx, headX - side * 2, headY + 5, PALETTE.hostBone, 5, 1);
+
+  for (const dx of [-8, 0, 8]) {
+    ratSeg(ctx, info.bodyCx + dx, info.bodyY - 1, info.bodyCx + dx - side * 5, footY - 2, PALETTE.skinDark);
+  }
+  for (let i = 0; i < 5; i += 1) {
+    px(ctx, info.bodyCx - 8 + i * 4, info.bodyY - 15 - (i & 1), PALETTE.hostBone, 2, 1);
+  }
+}
+
+function drawTendrilWalkerRat(ctx, w, h, facing, pose) {
+  const meta = FACING_META[facing] ?? FACING_META.se;
+  const side = ratSide(meta);
+  const cx = Math.floor(w / 2);
+  const footY = h - 7;
+  const info = drawRatBody(ctx, cx, footY - 10, side, pose, {
+    fur: PALETTE.hostBlack,
+    furHi: PALETTE.skinDark,
+    furLo: PALETTE.void,
+    wound: PALETTE.hostRed
+  });
+  const sway = pose.legB ?? pose.bob ?? 0;
+  const roots = [-11, -5, 1, 7, 12];
+  for (let i = 0; i < roots.length; i += 1) {
+    const rootX = info.bodyCx + roots[i];
+    const footX = rootX + side * (((i % 2) ? 7 : -5) + Math.sign(sway || 1) * (i % 3));
+    const foot = footY - (i & 1);
+    ratSeg(ctx, rootX, info.bodyY - 2, Math.round((rootX + footX) / 2), foot - 8, i % 2 ? PALETTE.hostRed : PALETTE.hostBlack, 2);
+    ratSeg(ctx, Math.round((rootX + footX) / 2), foot - 8, footX, foot, i % 2 ? PALETTE.hostGold : PALETTE.hostRed, 1);
+    px(ctx, footX - 1, foot, PALETTE.hostBone, 3, 1);
+  }
+  px(ctx, info.bodyCx - 6, info.bodyY - 7, PALETTE.void, 14, 7);
+  for (let r = 0; r < 4; r += 1) {
+    px(ctx, info.bodyCx - 8 - r, info.bodyY - 7 + r * 2, PALETTE.hostBone, 7, 1);
+    px(ctx, info.bodyCx + 4, info.bodyY - 7 + r * 2, PALETTE.hostBone, 7 + r, 1);
+  }
+  px(ctx, info.bodyCx, info.bodyY - 5, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold, 2, 3);
+  for (let i = 0; i < 6; i += 1) {
+    ratSeg(ctx, info.bodyCx - side * 12, info.bodyY - 9 + i, info.bodyCx - side * (18 + i), info.bodyY - 15 + i, PALETTE.hostRed);
+  }
+}
+
+function drawRatDeath(ctx, w, h, variant, frame) {
+  const cx = Math.floor(w / 2);
+  const cy = h - 12;
+  const settle = Math.min(1, frame / 7);
+  const wide = Math.round(22 + settle * 12);
+  px(ctx, cx - Math.floor(wide / 2), cy - 4, PALETTE.hostBlack, wide, 5);
+  px(ctx, cx - Math.floor(wide / 2) + 2, cy - 5, PALETTE.hostRed, wide - 4, 2);
+  for (let i = 0; i < 9; i += 1) px(ctx, cx - 15 + i * 4, cy - 6 + (i & 1), PALETTE.hostBone, 2, 1);
+  if (variant === 'maw') {
+    px(ctx, cx + 8, cy - 9, PALETTE.void, 10, 5);
+    for (let i = 0; i < 7; i += 1) px(ctx, cx + 8 + i, cy - 9, PALETTE.hostBone, 1, 4);
+  } else if (variant === 'tendril') {
+    for (let i = 0; i < 5; i += 1) ratSeg(ctx, cx - 8 + i * 4, cy - 2, cx - 18 + i * 8, cy + 4, PALETTE.hostRed);
+  } else {
+    for (let i = 0; i < 6; i += 1) ratSeg(ctx, cx - 12 + i * 4, cy - 2, cx - 18 + i * 7, cy + 2, PALETTE.hostBone);
+  }
+  px(ctx, cx - 1, cy - 4, frame % 2 ? PALETTE.hostGold : PALETTE.hostRed, 2, 1);
+}
+
+function bakeHostRat(variant, drawBody) {
+  const w = 54;
+  const h = 42;
+  const frames = {};
+  for (const state of Object.keys(POSES)) {
+    frames[state] = {};
+    for (const facing of FACINGS) {
+      frames[state][facing] = POSES[state].map((pose) =>
+        compose(w, h, (ctx) => drawBody(ctx, w, h, facing, pose))
+      );
+    }
+  }
+  const death = Array.from({ length: 10 }, (_, frame) =>
+    compose(w, h, (ctx) => drawRatDeath(ctx, w, h, variant, frame))
+  );
+  return {
+    width: w,
+    height: h,
+    anchorX: Math.floor(w / 2),
+    anchorY: h - 3,
+    frames,
+    death
+  };
+}
+
 function bakeActor(w, h, style) {
   const frames = {};
   for (const state of Object.keys(POSES)) {
@@ -943,9 +1512,26 @@ export function bakeMara(equipment = MARA_DEFAULT_EQUIPMENT, itemDefs = {}) {
 export function buildSpriteAtlas() {
   return {
     'mara-vey': bakeMara(MARA_DEFAULT_EQUIPMENT, {}),
+    'settlement-man': bakeActor(42, 62, SURVIVOR_MAN_STYLE),
+    'settlement-woman': bakeActor(42, 62, SURVIVOR_WOMAN_STYLE),
+    'settlement-child': bakeActor(36, 50, SURVIVOR_CHILD_STYLE),
+    'settlement-selka': bakeActor(42, 62, SURVIVOR_VARIANTS.selka),
+    'settlement-mirel': bakeActor(42, 62, SURVIVOR_VARIANTS.mirel),
+    'settlement-oren': bakeActor(42, 62, SURVIVOR_VARIANTS.oren),
+    'settlement-tomas': bakeActor(42, 62, SURVIVOR_VARIANTS.tomas),
+    'settlement-runa': bakeActor(42, 62, SURVIVOR_VARIANTS.runa),
+    'settlement-istra': bakeActor(42, 62, SURVIVOR_VARIANTS.istra),
+    'settlement-nessa': bakeActor(42, 62, SURVIVOR_VARIANTS.nessa),
+    'settlement-dalia': bakeActor(42, 62, SURVIVOR_VARIANTS.dalia),
+    'settlement-hanne': bakeActor(42, 62, SURVIVOR_VARIANTS.hanne),
+    'settlement-corin': bakeActor(36, 50, SURVIVOR_VARIANTS.corin),
+    'settlement-eda': bakeActor(36, 50, SURVIVOR_VARIANTS.eda),
     'choir-cultist': bakeActor(44, 64, CHOIR_STYLE),
     'red-tithe-cutthroat': bakeActor(44, 64, CUT_STYLE),
-    'host-touched-penitent': bakeActor(64, 92, PEN_STYLE)
+    'host-touched-penitent': bakeActor(64, 92, PEN_STYLE),
+    'host-rat-sixlegs': bakeHostRat('sixlegs', drawSixLeggedRat),
+    'host-rat-throat-maw': bakeHostRat('maw', drawThroatMawRat),
+    'host-rat-tendril-walker': bakeHostRat('tendril', drawTendrilWalkerRat)
   };
 }
 

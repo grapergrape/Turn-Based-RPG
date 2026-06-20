@@ -107,6 +107,16 @@ Shape:
   "legend": { "#": { "kind": "wall", "walkable": false }, ".": { "kind": "floor", "walkable": true } },
   "spawns": {
     "player": { "actor": "mara-vey", "x": 8, "y": 12 },
+    "npcs": [
+      {
+        "actor": "catacombs-survivor-oren",
+        "x": 18,
+        "y": 4,
+        "dialogue": "ash-chapel-catacombs-oren",
+        "dialogueRepeat": true,
+        "ambient": ["Keep the little ones near the stair."]
+      }
+    ],
     "enemies": [
       {
         "id": "choir-flesh-eater",
@@ -162,6 +172,11 @@ Rules:
 - `dialogue` lists runtime dialogue ids loaded from `data/dialogue/`.
 - Enemy spawns can define `encounter` to group nearby enemies into one combat
   pull. If omitted, the spawn gets its own encounter.
+- NPC spawns live under `spawns.npcs` and reference actor ids from
+  `data/actors/`. They render, block movement, speak ambient lines, and can be
+  given dialogue, but they do not enter combat targeting or victory checks.
+  Spawn `conditions` can use dialogue conditions such as `flag` or
+  `flagsAbsent` to show NPCs only after a run-state change.
 - Enemy spawns can define `ambient` as short overheard lines. These draw as
   subtitles above the NPC during exploration when the player is nearby.
 - Enemy spawns can define `dialogue` to make a living enemy talkable in explore
@@ -198,6 +213,19 @@ Rules:
   "effects": {
     "log": "The entrance Choir spread apart and come at you.",
     "startCombat": "entrance-catechism"
+  }
+}
+```
+
+- Dialogue choice effects can add or remove quest items from the pack:
+
+```json
+{
+  "effects": {
+    "inventory": {
+      "add": [{ "item": "mirels-lucky-necklace", "count": 1 }],
+      "remove": [{ "item": "blue-ball", "count": 1 }]
+    }
   }
 }
 ```

@@ -1,0 +1,22 @@
+{
+  "id": "ash-chapel-catacombs-hanne",
+  "title": "Hanne Sore",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Hanne sorts bandages into clean and ruined piles.",
+        "\"They took the good cloth for bindings. Not wounds. Bindings. I know the difference.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Hanne looks you over for blood that might not be yours.",
+        "\"If something in the lower hall bites you, come back before pride does its work. I have needle, fire, and enough mercy to use both.\""
+      ]
+    }
+  }
+}

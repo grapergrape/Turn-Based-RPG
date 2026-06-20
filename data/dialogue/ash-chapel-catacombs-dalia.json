@@ -1,0 +1,23 @@
+{
+  "id": "ash-chapel-catacombs-dalia",
+  "title": "Dalia Mor",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Dalia looks over the nave and counts under her breath.",
+        "\"Eight dead above. I believe you. My hands do not. They keep counting.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Dalia has wrapped her sleeves tight around both wrists.",
+        "\"When the cult came, I heard eight voices. Maybe more. The children were crying, and the stone made echoes.\"",
+        "\"If you go back up, count for me. I need a number that stays still.\""
+      ]
+    }
+  }
+}

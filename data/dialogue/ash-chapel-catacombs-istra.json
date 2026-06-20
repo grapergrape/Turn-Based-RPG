@@ -1,0 +1,23 @@
+{
+  "id": "ash-chapel-catacombs-istra",
+  "title": "Istra Havel",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Istra touches the scratched bedpost with two fingers, then wipes them on her skirt.",
+        "\"They carved into places where children slept. Not for need. For lesson.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Istra keeps glancing at the lower hall.",
+        "\"I mended fences and patched roof tin. The chapel was not kind, but it was ours enough.\"",
+        "\"Down here the dead have better walls than the living.\""
+      ]
+    }
+  }
+}

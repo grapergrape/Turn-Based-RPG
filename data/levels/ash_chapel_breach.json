@@ -53,7 +53,18 @@
     "ash-chapel-cult-victim",
     "ash-chapel-dead-guard",
     "ash-chapel-penitent-corpse",
-    "ash-chapel-saint-statue"
+    "ash-chapel-saint-statue",
+    "ash-chapel-catacombs-selka",
+    "ash-chapel-catacombs-mirel",
+    "ash-chapel-catacombs-oren",
+    "ash-chapel-catacombs-tomas",
+    "ash-chapel-catacombs-runa",
+    "ash-chapel-catacombs-istra",
+    "ash-chapel-catacombs-nessa",
+    "ash-chapel-catacombs-dalia",
+    "ash-chapel-catacombs-hanne",
+    "ash-chapel-catacombs-corin",
+    "ash-chapel-catacombs-eda"
   ],
   "enemyAggroRadius": 2,
   "combatTriggers": [
@@ -128,7 +139,11 @@
       "id": "choir-open-wound",
       "name": "The Choir of the Open Wound",
       "kind": "Host-cult. No Censure record.",
-      "unlockedBy": { "questStage": { "investigate-ash-chapel-cult": "evidence-found" } },
+      "unlockedBy": {
+        "questStage": {
+          "investigate-ash-chapel-cult": "evidence-found"
+        }
+      },
       "summary": "The cult that took this chapel. They worship the rot and call its spread a kindness. You have never met the name on any writ, and that is what frightens you.",
       "facts": [
         "They call infection confession, and the opened ones icons, not monsters.",
@@ -142,7 +157,9 @@
       "id": "penitent-engines",
       "name": "The Penitent Engines",
       "kind": "War-monks. Do not engage.",
-      "unlockedBy": { "flag": "inspected-engine-rut" },
+      "unlockedBy": {
+        "flag": "inspected-engine-rut"
+      },
       "summary": "Warrior-monks who cut away their own flesh and seal the rest in machine, so the rot finds nothing to take. The old war-orders, never the Pontifex's. The Censure files them under do not engage.",
       "facts": [
         "One stood in this chapel's doorway, then turned and left without coming in.",
@@ -152,9 +169,18 @@
     }
   ],
   "journalNotes": [
-    { "flag": "read-warden-journal", "text": "The warden's own book names this place Quarantine House Seventeen. After the Stilling it stopped holding the sick and began holding anyone who argued a tithe or asked the wrong question. The diocese let it be forgotten." },
-    { "flag": "found-catacombs", "text": "Under-galleries run beneath the chapel, packed jaw to heel with the quarantine dead. The cult chose a house already taught to suffer." },
-    { "flag": "inspected-engine-rut", "text": "A Penitent Engine stood in the doorway, then turned and left without coming inside. They do not abandon a route for nothing." }
+    {
+      "flag": "read-warden-journal",
+      "text": "The warden's own book names this place Quarantine House Seventeen. After the Stilling it stopped holding the sick and began holding anyone who argued a tithe or asked the wrong question. The diocese let it be forgotten."
+    },
+    {
+      "flag": "found-catacombs",
+      "text": "Under-galleries run beneath the chapel, packed jaw to heel with the quarantine dead. The cult chose a house already taught to suffer."
+    },
+    {
+      "flag": "inspected-engine-rut",
+      "text": "A Penitent Engine stood in the doorway, then turned and left without coming inside. They do not abandon a route for nothing."
+    }
   ],
   "tiles": [
     "##############W##W##W##W##W#############",
@@ -308,6 +334,162 @@
         "y": 12,
         "encounter": "east-watch",
         "aggroRadius": 1
+      }
+    ],
+    "npcs": [
+      {
+        "actor": "catacombs-survivor-selka",
+        "x": 18,
+        "y": 23,
+        "dialogue": "ash-chapel-catacombs-selka",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "They painted over our prayer marks. I can still see the old lines under it."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-mirel",
+        "x": 23,
+        "y": 23,
+        "dialogue": "ash-chapel-catacombs-mirel",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "Our cups are still here. They drank from them and left blood in the bowls."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-oren",
+        "x": 14,
+        "y": 24,
+        "dialogue": "ash-chapel-catacombs-oren",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "The barricade held the wrong people out. It did not hold the knives back."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-tomas",
+        "x": 25,
+        "y": 24,
+        "dialogue": "ash-chapel-catacombs-tomas",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "The wall road is still quiet. That is worse now."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-runa",
+        "x": 16,
+        "y": 25,
+        "dialogue": "ash-chapel-catacombs-runa",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "They left the pot clean. That should comfort me. It does not."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-istra",
+        "x": 24,
+        "y": 25,
+        "dialogue": "ash-chapel-catacombs-istra",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "They slept in our beds and scratched prayers into the posts."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-nessa",
+        "x": 19,
+        "y": 26,
+        "dialogue": "ash-chapel-catacombs-nessa",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "The font is fouled. No one touches it until I boil every cup twice."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-dalia",
+        "x": 21,
+        "y": 26,
+        "dialogue": "ash-chapel-catacombs-dalia",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "Eight dead, you said. I still look for a ninth in every shadow."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-hanne",
+        "x": 17,
+        "y": 27,
+        "dialogue": "ash-chapel-catacombs-hanne",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "They took the clean bandages and left the dirty ones folded like offerings."
+        ]
+      },
+      {
+        "actor": "catacombs-child-corin",
+        "x": 18,
+        "y": 18,
+        "dialogue": "ash-chapel-catacombs-corin",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "I am not kicking it inside again. Not ever."
+        ]
+      },
+      {
+        "actor": "catacombs-child-eda",
+        "x": 22,
+        "y": 18,
+        "dialogue": "ash-chapel-catacombs-eda",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "survivors-returning-chapel"
+        },
+        "ambient": [
+          "The chalk drawing is still there. I thought they would cut it up too."
+        ]
       }
     ]
   },
@@ -1200,5 +1382,6 @@
       "x": 35,
       "y": 14
     }
-  ]
+  ],
+  "victoryLog": "The chapel falls quiet. No cultist answers the bells now."
 }

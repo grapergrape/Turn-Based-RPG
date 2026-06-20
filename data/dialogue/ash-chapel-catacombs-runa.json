@@ -1,0 +1,23 @@
+{
+  "id": "ash-chapel-catacombs-runa",
+  "title": "Runa Pell",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Runa stands in the service room doorway, face hard as she looks at the bowls by the altar.",
+        "\"They used our meal bowls. I know the chips in the rim. I scrubbed those bowls while the children argued over crusts.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Runa keeps one hand over a sack of chapel grain.",
+        "\"The Remnant told us this house needed warm bodies again. Grow greens in the yard, boil water for the wall men, keep the chapel decent.\"",
+        "\"We did all that. Then the wall forgot us.\""
+      ]
+    }
+  }
+}

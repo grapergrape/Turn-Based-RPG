@@ -1,0 +1,23 @@
+{
+  "id": "ash-chapel-catacombs-eda",
+  "title": "Eda",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "survivors-returning-chapel"
+      },
+      "else": "hideout",
+      "lines": [
+        "Eda stands near the chalk drawing, trying not to look proud that it survived.",
+        "\"Corin says I cannot touch the ball. He is right. I can watch it, though.\""
+      ]
+    },
+    "hideout": {
+      "lines": [
+        "Eda scuffs one shoe over the dust.",
+        "\"I only kicked it because Corin said I could not hit the far wall. I hit farther than that.\"",
+        "\"I said sorry. He said sorry does not roll back.\""
+      ]
+    }
+  }
+}

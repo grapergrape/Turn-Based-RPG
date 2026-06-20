@@ -1,0 +1,29 @@
+{
+  "id": "host-rat-throat-maw",
+  "name": "Throat-Maw Host Rat",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "host-rat-throat-maw",
+  "description": "Its head hangs from a wet black vein beside the body. The neck stump opens and shuts instead, packed with needle teeth that scrape like a whispered prayer.",
+  "stats": {
+    "hp": 5,
+    "maxHp": 5,
+    "actionPoints": 5,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "neck-maw",
+      "name": "Neck Maw",
+      "apCost": 3,
+      "damage": 3,
+      "range": 1
+    }
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "rat",
+    "maw"
+  ]
+}

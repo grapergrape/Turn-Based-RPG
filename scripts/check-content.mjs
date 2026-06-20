@@ -44,9 +44,11 @@ const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'tr
 const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
 
 const seenItemIds = new Set();
+const seenActorIds = new Set();
 const seenQuestIds = new Set();
 const seenDialogueIds = new Set();
 const referencedItemIds = new Set();
+const referencedActorIds = new Set();
 const referencedDialogueIds = new Set();
 
 async function main() {
@@ -85,6 +87,11 @@ async function main() {
   for (const id of referencedItemIds) {
     if (!seenItemIds.has(id)) {
       errors.push(`data/items: referenced item "${id}" is missing.`);
+    }
+  }
+  for (const id of referencedActorIds) {
+    if (!seenActorIds.has(id)) {
+      errors.push(`data/actors: referenced actor "${id}" is missing.`);
     }
   }
   for (const id of referencedDialogueIds) {
@@ -228,6 +235,7 @@ function validateLevel(filePath, data) {
   }
 
   const enemies = data.spawns?.enemies ?? [];
+  const npcs = data.spawns?.npcs ?? [];
   const levelDialogue = new Set();
   if (data.dialogue !== undefined) {
     if (!Array.isArray(data.dialogue)) {
@@ -257,6 +265,26 @@ function validateLevel(filePath, data) {
     }
     if (point.talkRadius !== undefined) {
       requireNumber(name, point.talkRadius, 'spawns.enemies[].talkRadius');
+    }
+  }
+  for (const point of npcs) {
+    if (!inBounds(data, point)) {
+      errors.push(`${name}: npc spawn (${point.x}, ${point.y}) is out of bounds.`);
+    }
+    const actorId = point.actor ?? point.id;
+    requireString(name, actorId, 'spawns.npcs[].actor');
+    if (typeof actorId === 'string') referencedActorIds.add(actorId);
+    if (point.dialogue !== undefined) {
+      validateDialogueReference(name, point.dialogue, 'spawns.npcs[].dialogue');
+      if (typeof point.dialogue === 'string' && !levelDialogue.has(point.dialogue)) {
+        errors.push(`${name}: npc dialogue "${point.dialogue}" must also be listed in level dialogue.`);
+      }
+    }
+    if (point.dialogueTriggerRadius !== undefined) {
+      requireNumber(name, point.dialogueTriggerRadius, 'spawns.npcs[].dialogueTriggerRadius');
+    }
+    if (point.talkRadius !== undefined) {
+      requireNumber(name, point.talkRadius, 'spawns.npcs[].talkRadius');
     }
   }
 
@@ -424,6 +452,7 @@ function validateActor(filePath, data) {
   requireString(name, data.id, 'id');
   requireString(name, data.name, 'name');
   requireString(name, data.type, 'type');
+  if (typeof data.id === 'string') seenActorIds.add(data.id);
   validateStats(name, data.stats);
   validateActorInventory(name, data.inventory);
 }
@@ -583,6 +612,8 @@ function validateDialogueEffects(name, effects, fieldName) {
     return;
   }
 
+  validateInventoryEffects(name, effects.inventory, `${fieldName}.inventory`);
+
   const startCombat = effects.startCombat;
   if (startCombat === undefined) return;
   if (typeof startCombat === 'string') return;
@@ -591,6 +622,22 @@ function validateDialogueEffects(name, effects, fieldName) {
     return;
   }
   errors.push(`${name}: ${fieldName}.startCombat must be an encounter id or object.`);
+}
+
+function validateInventoryEffects(name, inventory, fieldName) {
+  if (inventory === undefined) return;
+  if (!inventory || typeof inventory !== 'object' || Array.isArray(inventory)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  for (const key of ['add', 'remove']) {
+    if (inventory[key] === undefined) continue;
+    if (!Array.isArray(inventory[key])) {
+      errors.push(`${name}: ${fieldName}.${key} must be an array.`);
+      continue;
+    }
+    validateLoot(name, inventory[key], `${fieldName}.${key}`);
+  }
 }
 
 function validateStats(name, stats) {

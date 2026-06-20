@@ -1,0 +1,17 @@
+{
+  "id": "catacombs-survivor-tomas",
+  "name": "Tomas Vek",
+  "type": "npc",
+  "faction": "ash-chapel-settlement",
+  "role": "Wall runner",
+  "spriteId": "settlement-tomas",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "survivor",
+    "ash-chapel-settlement"
+  ]
+}
