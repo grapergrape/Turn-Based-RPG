@@ -2,6 +2,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { getSprite } from '../src/render/spriteCatalog.js';
+import { Grid } from '../src/world/Grid.js';
+import { findPathToAdjacent } from '../src/world/Pathfinder.js';
 
 const root = process.cwd();
 const dataRoot = join(root, 'data');
@@ -41,6 +43,11 @@ const DECAL_KINDS = new Set([
   'rubble-pile', 'rubble-decal', 'floor-crack', 'blood-stain', 'glass-debris', 'dust', 'road-dust'
 ]);
 const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring']);
+const ITEM_GROUND_MODELS = new Set([
+  'ball', 'boots', 'coat', 'hood', 'vest', 'ring', 'necklace', 'key',
+  'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard'
+]);
+const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
 const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
 
 const seenItemIds = new Set();
@@ -307,6 +314,31 @@ function validateLevel(filePath, data) {
     validateDialogueReference(name, object.interact?.lockedDialogue, 'objects[].interact.lockedDialogue');
     validateLoot(name, object.interact?.loot);
   }
+  if (data.groundItems !== undefined) {
+    if (!Array.isArray(data.groundItems)) {
+      errors.push(`${name}: groundItems must be an array.`);
+    } else {
+      const grid = new Grid(data);
+      for (const item of data.groundItems) {
+        if (!inBounds(data, item)) {
+          errors.push(`${name}: ground item ${item?.item ?? 'unknown'} at (${item?.x}, ${item?.y}) is out of bounds.`);
+        } else if (!grid.isWalkable(item.x, item.y)) {
+          errors.push(`${name}: ground item ${item.item ?? 'unknown'} at (${item.x}, ${item.y}) must be on a walkable tile.`);
+        }
+        requireString(name, item?.item, 'groundItems[].item');
+        if (typeof item?.item === 'string') referencedItemIds.add(item.item);
+        if (item?.count !== undefined) {
+          requireNumber(name, item.count, 'groundItems[].count');
+          if (typeof item.count === 'number' && item.count <= 0) {
+            errors.push(`${name}: groundItems[].count must be greater than zero.`);
+          }
+        }
+        if (item?.pickupPolicy !== undefined && !GROUND_ITEM_PICKUP_POLICIES.has(item.pickupPolicy)) {
+          errors.push(`${name}: groundItems[].pickupPolicy must be one of ${[...GROUND_ITEM_PICKUP_POLICIES].join(', ')}.`);
+        }
+      }
+    }
+  }
 
   // Every non-walkable legend block must be a renderable kind in the catalog.
   for (const [tileChar, def] of Object.entries(data.legend ?? {})) {
@@ -315,8 +347,83 @@ function validateLevel(filePath, data) {
     }
   }
 
+  validateTalkableNpcReachability(name, data, npcs, objects);
+
   if (data.id === MAIN_LEVEL_ID) validateAshChapelMain(name, data, enemies, objects);
   if (data.id === CELLAR_LEVEL_ID) validateAshChapelCellar(name, data, objects);
+}
+
+function validateTalkableNpcReachability(name, data, npcs, objects) {
+  const player = data.spawns?.player;
+  if (!player || !inBounds(data, player)) return;
+  if (!Array.isArray(data.tiles) || !data.legend) return;
+
+  const talkableNpcs = npcs.filter((npc) => typeof npc.dialogue === 'string' && inBounds(data, npc));
+  if (talkableNpcs.length === 0) return;
+
+  const grid = new Grid(data);
+  for (const object of objects) {
+    if (object.blocking && inBounds(data, object)) {
+      grid.addBlocked(object.x, object.y);
+    }
+  }
+
+  for (const target of talkableNpcs) {
+    const actorId = target.actor ?? target.id ?? 'unknown';
+    if (!grid.isWalkable(target.x, target.y)) {
+      errors.push(`${name}: talkable npc "${actorId}" at (${target.x}, ${target.y}) must stand on a walkable cell.`);
+      continue;
+    }
+
+    const occupied = new Set();
+    for (const blocker of npcs) {
+      if (!inBounds(data, blocker)) continue;
+      if (!conditionsCanCoexist(target.conditions, blocker.conditions)) continue;
+      occupied.add(cellKey(blocker.x, blocker.y));
+    }
+
+    const path = findPathToAdjacent(grid, player, target, occupied);
+    if (path === null) {
+      errors.push(`${name}: talkable npc "${actorId}" at (${target.x}, ${target.y}) has no reachable adjacent talk tile from player start.`);
+    }
+  }
+}
+
+function conditionsCanCoexist(a, b) {
+  const aRequired = conditionRequiredFlags(a);
+  const bRequired = conditionRequiredFlags(b);
+  const aAbsent = conditionAbsentFlags(a);
+  const bAbsent = conditionAbsentFlags(b);
+
+  for (const flag of aRequired) {
+    if (bAbsent.has(flag)) return false;
+  }
+  for (const flag of bRequired) {
+    if (aAbsent.has(flag)) return false;
+  }
+
+  const aQuestStages = a?.questStages ?? {};
+  const bQuestStages = b?.questStages ?? {};
+  for (const [questId, stage] of Object.entries(aQuestStages)) {
+    if (Object.hasOwn(bQuestStages, questId) && bQuestStages[questId] !== stage) return false;
+  }
+  return true;
+}
+
+function conditionRequiredFlags(conditions) {
+  return new Set(flagValues(conditions?.flag).concat(flagValues(conditions?.flags)));
+}
+
+function conditionAbsentFlags(conditions) {
+  return new Set(flagValues(conditions?.notFlag).concat(flagValues(conditions?.flagsAbsent)));
+}
+
+function flagValues(value) {
+  return [].concat(value ?? []).filter((flag) => typeof flag === 'string');
+}
+
+function cellKey(x, y) {
+  return `${x},${y}`;
 }
 
 function validateAshChapelMain(name, data, enemies, objects) {
@@ -479,6 +586,10 @@ function validateItem(filePath, data) {
   requireString(name, data.name, 'name');
   requireString(name, data.type, 'type');
   requireNumber(name, data.weight, 'weight');
+  requireString(name, data.groundModel, 'groundModel');
+  if (typeof data.groundModel === 'string' && !ITEM_GROUND_MODELS.has(data.groundModel)) {
+    errors.push(`${name}: groundModel must be one of ${[...ITEM_GROUND_MODELS].join(', ')}.`);
+  }
   if (typeof data.weight === 'number' && data.weight < 0) {
     errors.push(`${name}: weight must be zero or greater.`);
   }

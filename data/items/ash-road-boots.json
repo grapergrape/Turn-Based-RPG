@@ -3,6 +3,7 @@
   "name": "Ash Road Boots",
   "type": "boots",
   "weight": 1.2,
+  "groundModel": "boots",
   "equipment": { "slot": "boots" },
   "description": "Heavy travel boots with stitched ankles and iron heel caps. The soles still hold pale chapel grit."
 }

@@ -13,8 +13,21 @@ import { loadLevel } from './LevelLoader.js';
 import { TurnManager } from '../combat/TurnManager.js';
 import { CombatSystem, manhattan, chebyshev } from '../combat/CombatSystem.js';
 import { planTurn, flavorLine } from '../combat/EnemyAI.js';
-import { findPath } from '../world/Pathfinder.js';
+import { findPath, findPathToAdjacent } from '../world/Pathfinder.js';
 import { InteractionSystem } from '../world/InteractionSystem.js';
+import {
+  GROUND_ITEM_KIND,
+  canActorPickupGroundItem,
+  createGroundItem,
+  hydrateGroundItem,
+  isGroundItemPickupComplete,
+  serializeGroundItem
+} from '../world/GroundItems.js';
+import {
+  isActionTarget,
+  isTargetInReach,
+  resolveInteractionTargetAtCell
+} from '../world/InteractionTargeting.js';
 import { IsometricRenderer } from '../render/IsometricRenderer.js';
 import { bakeMara } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
@@ -110,6 +123,7 @@ export class Game {
     this.ready = false;
     this.areaTitle = null;
     this.areaTitleTimer = 0;
+    this.pendingExploreTarget = null;
   }
 
   // (Re)load the level and reset runtime state. Level transitions preserve the
@@ -138,6 +152,7 @@ export class Game {
     const previousPlayer = bootOptions.preserveRun && this.player
       ? { hp: this.player.hp, maxHp: this.player.maxHp }
       : null;
+    const previousGroundItemSeq = bootOptions.preserveRun ? this.groundItemSeq ?? 0 : 0;
 
     const level = await loadLevel(this.levelPath);
     this.level = level;
@@ -147,6 +162,8 @@ export class Game {
     this.enemies = level.enemies;
     if (bootOptions.noCombat) this.enemies = [];
     this.npcs = (level.npcs ?? []).filter((npc) => this.#meetsConditions(npc.conditions));
+    this.groundItems = level.groundItems ?? [];
+    this.groundItemSeq = previousGroundItemSeq;
     if (previousPlayer) {
       const hpRatio = previousPlayer.maxHp > 0 ? previousPlayer.hp / previousPlayer.maxHp : 1;
       this.player.hp = Math.max(1, Math.min(this.player.maxHp, Math.round(this.player.maxHp * hpRatio)));
@@ -199,6 +216,7 @@ export class Game {
     this.effects = [];
     this.moving = null;
     this.pathQueue = [];
+    this.pendingExploreTarget = null;
     this.uiScreen = null;
     this.journalSection = 0;
     this.journalFactionIndex = 0;
@@ -224,7 +242,7 @@ export class Game {
     this.areaTitleTimer = AREA_TITLE_DURATION;
     this.#log(level.intro || level.name);
     this.#startQuests(previousQuestStages, previousQuestReached);
-    this.#log('Explore the chapel. E inspect, I pack, J journal, H bind wounds.');
+    this.#log('Explore the chapel. Click to move or inspect. I pack, J journal, H bind wounds.');
     if (bootOptions.skipIntro) this.introSeen = true;
 
     // The opening writ plays once, on a fresh start (not on level transitions
@@ -262,6 +280,7 @@ export class Game {
     if (!this.ready) return;
 
     this.#advanceAnim(dt);
+    this.#advanceGroundItems();
     if (this.areaTitleTimer > 0 && this.mode !== 'intro') {
       this.areaTitleTimer = Math.max(0, this.areaTitleTimer - dt);
     }
@@ -344,18 +363,15 @@ export class Game {
   // ---- Explore mode ------------------------------------------------------
 
   #handleExplore(actions, click) {
-    if (click) this.#handleClickMove(click, false);
+    if (click) this.#handleExploreClick(click);
     for (const action of actions) {
       if (DIRS[action]) {
+        this.pendingExploreTarget = null;
         this.pathQueue = []; // manual step overrides any click path
         this.#tryStep(this.player, DIRS[action], { logBlock: true });
         return; // one step per update; trigger check runs on completion
       }
       switch (action) {
-        case 'interact':
-        case 'confirm':
-          this.#doInteract();
-          break;
         case 'inventory':
           this.#toggleInventory();
           break;
@@ -377,23 +393,121 @@ export class Game {
     }
   }
 
-  #doInteract() {
-    const talker = this.#talkableEnemyInReach();
-    if (talker) {
-      this.#openEnemyDialogue(talker);
+  #handleExploreClick(click) {
+    if (click.button !== 0) return;
+    if (click.y >= VIEWPORT_HEIGHT) return;
+
+    const target = this.#interactionTargetFromPoint(click, 'explore');
+    if (!target) return;
+
+    if (target.type === 'move') {
+      this.pendingExploreTarget = null;
+      const path = findPath(this.grid, this.player.position, target.cell, this.#occupiedSet(this.player));
+      this.pathQueue = path && path.length ? path : [];
       return;
     }
 
-    const object = this.interactions.findInReach(this.player);
-    if (!object) {
-      const corpse = this.#inspectableCorpseInReach();
-      if (corpse) {
-        this.#openDialogueById(corpse.inspect);
-        return;
-      }
-      this.#log('Nothing within reach.');
+    if (!isActionTarget(target)) {
+      this.pendingExploreTarget = null;
       return;
     }
+
+    if (isTargetInReach(this.player, target)) {
+      this.#executeExploreTarget(target);
+      return;
+    }
+
+    const path = this.#pathToExploreTarget(target);
+    this.pendingExploreTarget = path && path.length ? target : null;
+    this.pathQueue = path && path.length ? path : [];
+  }
+
+  #interactionTargetFromPoint(point, mode = this.mode) {
+    const cell = this.renderer.toGrid(point.x, point.y);
+    return this.#interactionTargetAtCell(cell, mode);
+  }
+
+  #interactionTargetAtCell(cell, mode = this.mode) {
+    return resolveInteractionTargetAtCell({
+      cell,
+      grid: this.grid,
+      player: this.player,
+      actors: this.actors,
+      enemies: this.enemies,
+      interactables: this.#allInteractables(),
+      mode
+    });
+  }
+
+  #allInteractables() {
+    return [
+      ...(this.groundItems ?? []).filter((item) => !item.consumed),
+      ...(this.level?.interactables ?? [])
+    ];
+  }
+
+  #pathToExploreTarget(target) {
+    const occupied = this.#occupiedSet(this.player);
+    const cell = target.cell;
+    if ((target.type === 'object' || target.type === 'corpse') &&
+        this.grid.isWalkable(cell.x, cell.y) &&
+        !this.#isOccupied(cell.x, cell.y, this.player)) {
+      const direct = findPath(this.grid, this.player.position, cell, occupied);
+      if (direct && direct.length) return direct;
+    }
+    return findPathToAdjacent(this.grid, this.player.position, cell, occupied);
+  }
+
+  #tryCompletePendingExploreTarget() {
+    const target = this.pendingExploreTarget;
+    if (!target || this.mode !== 'explore' || this.uiScreen) return;
+    if (!this.#isExploreTargetValid(target)) {
+      this.pendingExploreTarget = null;
+      return;
+    }
+    if (isTargetInReach(this.player, target)) {
+      this.#executeExploreTarget(target);
+    }
+  }
+
+  #isExploreTargetValid(target) {
+    if (target.type === 'talk') {
+      const actor = target.actor;
+      return Boolean(actor && !actor.isDead && actor.dialogue && !(actor.dialogueSeen && !actor.dialogueRepeat));
+    }
+    if (target.type === 'corpse') {
+      const enemy = target.enemy;
+      return Boolean(enemy && enemy.isDead && enemy.inspect);
+    }
+    if (target.type === 'object') {
+      const object = target.object;
+      return Boolean(object && !object.consumed && object.x === target.cell.x && object.y === target.cell.y);
+    }
+    return false;
+  }
+
+  #executeExploreTarget(target) {
+    this.pendingExploreTarget = null;
+    this.pathQueue = [];
+    if (target.type === 'talk') {
+      this.#openEnemyDialogue(target.actor);
+      return;
+    }
+    if (target.type === 'corpse') {
+      this.#openDialogueById(target.enemy.inspect);
+      return;
+    }
+    if (target.type === 'object') {
+      this.#interactWithObject(target.object);
+    }
+  }
+
+  #interactWithObject(object) {
+    if (object?.kind === GROUND_ITEM_KIND || object?.interact?.type === 'ground-item') {
+      this.#pickupGroundItem(object);
+      return;
+    }
+
     const result = this.interactions.interact(object, this.inventory);
     for (const line of result.logs) this.#log(line);
     this.#applyQuestUpdate(result.questUpdate);
@@ -405,6 +519,32 @@ export class Game {
     if (result.triggersCombat && this.mode !== 'combat') {
       this.#startCombat(result.combatEncounter ?? true, { fromAltar: true });
     }
+  }
+
+  #pickupGroundItem(item) {
+    if (!canActorPickupGroundItem(this.player, item)) return;
+    const count = item.count ?? 1;
+    const carry = this.inventory.canAdd(item.itemId, count);
+    if (!carry.ok) {
+      const current = Inventory.formatWeight(carry.current);
+      const max = Inventory.formatWeight(this.inventory.maxCarryWeight);
+      const over = Inventory.formatWeight(carry.overBy);
+      this.#log(`Too much to carry. Pack ${current}/${max} kg.`);
+      this.#log(`Need ${over} kg free.`);
+      return;
+    }
+
+    const result = this.inventory.add(item.itemId, count);
+    if (!result.ok) {
+      this.#log('Could not pick that up.');
+      return;
+    }
+
+    item.consumed = true;
+    item.pickupStart = this.anim.tick;
+    const label = `${count}x ${item.name ?? this.inventory.displayName(item.itemId)}`;
+    this.#log(`Picked up: ${label}.`);
+    this.#clampInventorySelection();
   }
 
   // ---- UI screens --------------------------------------------------------
@@ -536,6 +676,12 @@ export class Game {
         else this.#unequipSelectedInventoryItem();
         this.#refreshPlayerAppearance();
         this.#clampInventorySelection();
+        continue;
+      }
+      if (action === 'choice3') {
+        this.#dropSelectedInventoryItem();
+        this.#refreshPlayerAppearance();
+        this.#clampInventorySelection();
       }
     }
   }
@@ -578,6 +724,62 @@ export class Game {
     const slot = this.inventory.equipmentEntries()[this.equipmentIndex];
     if (!slot) return;
     this.#log(this.inventory.unequip(slot.slot).message);
+  }
+
+  #dropSelectedInventoryItem() {
+    if (this.inventoryFocus === 'gear') {
+      const slot = this.inventory.equipmentEntries()[this.equipmentIndex];
+      if (!slot || !slot.itemId) {
+        this.#log(slot?.empty ? `${slot.label} is empty.` : 'No gear selected.');
+        return;
+      }
+      this.#dropItemFromInventory(slot.itemId, { slot: slot.slot });
+      return;
+    }
+
+    const item = this.inventory.entries()[this.inventoryIndex];
+    if (!item) {
+      this.#log('Pack is empty.');
+      return;
+    }
+    this.#dropItemFromInventory(item.id);
+  }
+
+  #dropItemFromInventory(itemId, options = {}) {
+    const itemDef = this.inventory.itemDefs[itemId] ?? {};
+    const name = this.inventory.displayName(itemId);
+    if (options.slot) {
+      const result = this.inventory.unequip(options.slot);
+      if (!result.ok) {
+        this.#log(result.message);
+        return false;
+      }
+    }
+    if (!this.inventory.remove(itemId, 1)) {
+      this.#log(`${name} is not in the pack.`);
+      return false;
+    }
+
+    this.groundItemSeq += 1;
+    const groundItem = createGroundItem({
+      id: `${this.level?.id ?? 'level'}-drop-${this.groundItemSeq}`,
+      itemId,
+      itemDef,
+      count: 1,
+      x: this.player.x,
+      y: this.player.y,
+      tick: this.anim.tick,
+      source: 'player'
+    });
+    if (!groundItem) {
+      this.inventory.add(itemId, 1, { ignoreCapacity: true });
+      this.#log(`Could not drop ${name}.`);
+      return false;
+    }
+
+    this.groundItems.push(groundItem);
+    this.#log(`Dropped: ${name}.`);
+    return true;
   }
 
   // Re-bake the player sprite from the current equipment. The new atlas entry
@@ -832,6 +1034,7 @@ export class Game {
     this.player.render.frameIndex = 0;
     this.moving = null;
     this.pathQueue = [];
+    this.pendingExploreTarget = null;
   }
 
   #closeUiScreen() {
@@ -1058,6 +1261,7 @@ export class Game {
     this.mode = 'combat';
     this.activeEncounter = resolvedEncounter;
     this.pathQueue = [];
+    this.pendingExploreTarget = null;
     for (const enemy of combatants) enemy.speech = null;
     this.turnManager.begin([this.player, ...combatants]);
     this.targetIndex = 0;
@@ -1187,6 +1391,7 @@ export class Game {
   #onStepComplete(actor) {
     if (actor === this.player && this.mode === 'explore') {
       this.#checkCombatProximity();
+      this.#tryCompletePendingExploreTarget();
     }
   }
 
@@ -1286,6 +1491,11 @@ export class Game {
     this.anim.bob = Math.floor(this.anim.tick / 0.5) % 2;
     this.anim.flicker = Math.floor(this.anim.tick / 0.13) % 2;
     this.anim.pulse = Math.floor(this.anim.tick / 0.6) % 2;
+  }
+
+  #advanceGroundItems() {
+    if (!this.groundItems?.length) return;
+    this.groundItems = this.groundItems.filter((item) => !isGroundItemPickupComplete(item, this.anim.tick));
   }
 
   #advanceActorAnim(actor, dt) {
@@ -1574,11 +1784,15 @@ export class Game {
         .filter((object) => object.killed)
         .map((object) => this.#objectStateKey(object))
     );
+    const groundItems = (this.groundItems ?? [])
+      .map((item) => serializeGroundItem(item))
+      .filter(Boolean);
     this.levelStateByPath.set(this.levelPath, {
       consumedObjects,
       killedObjects,
       deadEnemies,
-      clearedEncounters: new Set(this.clearedEncounters ?? [])
+      clearedEncounters: new Set(this.clearedEncounters ?? []),
+      groundItems
     });
   }
 
@@ -1606,6 +1820,11 @@ export class Game {
       enemy.render.state = 'dead';
       enemy.render.frameIndex = DEATH_FRAMES - 1;
     }
+    if (Array.isArray(state.groundItems)) {
+      this.groundItems = state.groundItems
+        .map((item) => hydrateGroundItem(item))
+        .filter(Boolean);
+    }
     this.clearedEncounters = new Set(state.clearedEncounters ?? []);
   }
 
@@ -1630,6 +1849,7 @@ export class Game {
       focus: { x: this.player.x, y: this.player.y, pxOffset: this.player.pxOffset },
       actors: this.actors,
       ambientSpeakers: this.speakingProps ?? [],
+      groundItems: this.groundItems ?? [],
       effects: this.effects,
       anim: this.anim,
       overlay: this.#buildOverlay(),
@@ -1690,50 +1910,6 @@ export class Game {
     return this.grid.isInside(cell.x, cell.y) ? cell : null;
   }
 
-  #actorAtCell(cell) {
-    return this.actors.find((actor) => !actor.isDead && actor.x === cell.x && actor.y === cell.y) ?? null;
-  }
-
-  // A slain enemy on this cell that carries an inspection dialogue.
-  #inspectableCorpseAt(cell) {
-    return this.enemies.find(
-      (enemy) => enemy.isDead && enemy.inspect && enemy.x === cell.x && enemy.y === cell.y
-    ) ?? null;
-  }
-
-  // The nearest inspectable corpse on or beside the player, if any.
-  #inspectableCorpseInReach() {
-    let best = null;
-    let bestDist = Infinity;
-    for (const enemy of this.enemies) {
-      if (!enemy.isDead || !enemy.inspect) continue;
-      if (Math.max(Math.abs(enemy.x - this.player.x), Math.abs(enemy.y - this.player.y)) > 1) continue;
-      const dist = Math.abs(enemy.x - this.player.x) + Math.abs(enemy.y - this.player.y);
-      if (dist < bestDist) {
-        best = enemy;
-        bestDist = dist;
-      }
-    }
-    return best;
-  }
-
-  #talkableEnemyInReach() {
-    let best = null;
-    let bestDist = Infinity;
-    for (const enemy of [...(this.npcs ?? []), ...this.enemies]) {
-      if (enemy.isDead || !enemy.dialogue) continue;
-      if (enemy.dialogueSeen && !enemy.dialogueRepeat) continue;
-      const reach = enemy.talkRadius ?? 1;
-      if (chebyshev(this.player.position, enemy.position) > reach) continue;
-      const dist = manhattan(this.player.position, enemy.position);
-      if (dist < bestDist) {
-        best = enemy;
-        bestDist = dist;
-      }
-    }
-    return best;
-  }
-
   #triggeredDialogueEnemy() {
     let best = null;
     let bestDist = Infinity;
@@ -1755,15 +1931,10 @@ export class Game {
     enemy.dialogueSeen = true;
     enemy.speech = null;
     this.pathQueue = [];
+    this.pendingExploreTarget = null;
     this.#faceToward(this.player, enemy.position);
     this.#faceToward(enemy, this.player.position);
     this.#openDialogueById(enemy.dialogue);
-  }
-
-  #objectAtCell(cell) {
-    const interactable = this.level.interactables.find((object) => object.x === cell.x && object.y === cell.y);
-    if (interactable) return interactable;
-    return [...this.level.props].reverse().find((object) => object.x === cell.x && object.y === cell.y) ?? null;
   }
 
   #objectName(object) {
@@ -1782,42 +1953,21 @@ export class Game {
     const cell = this.#hoverCell();
     if (!cell) return { x: mouse.x, y: mouse.y, state: 'blocked', text: 'OUT OF BOUNDS' };
 
-    const actor = this.#actorAtCell(cell);
-    if (actor === this.player) {
-      return { x: mouse.x, y: mouse.y, state: 'talk', text: `TALK: ${actor.name}` };
+    const target = this.#interactionTargetAtCell(cell, this.mode);
+    if (target.type === 'combatant') {
+      return { x: mouse.x, y: mouse.y, state: 'attack', text: `ATTACK: ${target.actor.name}` };
     }
-    if (actor) {
-      const state = this.mode === 'combat' ? 'attack' : actor.dialogue ? 'talk' : 'inspect';
-      const verb = this.mode === 'combat' ? 'ATTACK' : actor.dialogue ? 'TALK' : 'LOOK';
-      return { x: mouse.x, y: mouse.y, state, text: `${verb}: ${actor.name}` };
+    if (target.type === 'talk') {
+      return { x: mouse.x, y: mouse.y, state: 'talk', text: `TALK: ${target.actor.name}` };
     }
-
-    const corpse = this.#inspectableCorpseAt(cell);
-    if (corpse) {
-      return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${corpse.name}` };
+    if (target.type === 'corpse') {
+      return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${target.enemy.name}` };
     }
-
-    const object = this.#objectAtCell(cell);
-    if (object) {
-      const name = this.#objectName(object);
-      if (object.interact?.type === 'container' && !object.consumed) {
-        return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${name}` };
-      }
-      if (object.interact?.type === 'altar') {
-        return { x: mouse.x, y: mouse.y, state: 'use', text: `USE: ${name}` };
-      }
-      if (object.interact?.type === 'secret-entrance' || object.interact?.type === 'secret-exit') {
-        return { x: mouse.x, y: mouse.y, state: 'use', text: `USE: ${name}` };
-      }
-      if (object.kind === 'cross-martyr' && !object.consumed) {
-        return { x: mouse.x, y: mouse.y, state: 'use', text: `APPROACH: ${name}` };
-      }
-      if (object.kind !== 'wall') {
-        return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${name}` };
-      }
+    if (target.type === 'object') {
+      return this.#objectCursorInfo(mouse, target.object);
     }
 
-    if (this.grid.isWalkable(cell.x, cell.y)) {
+    if (target.type === 'move') {
       if (this.mode === 'combat' && this.turnManager.isPlayerTurn()) {
         const path = findPath(this.grid, this.player.position, cell, this.#occupiedSet(this.player));
         if (path && path.length > 0) {
@@ -1828,6 +1978,25 @@ export class Game {
     }
 
     return { x: mouse.x, y: mouse.y, state: 'blocked', text: 'BLOCKED' };
+  }
+
+  #objectCursorInfo(mouse, object) {
+    const name = this.#objectName(object);
+    if (object.kind === GROUND_ITEM_KIND || object.interact?.type === 'ground-item') {
+      return { x: mouse.x, y: mouse.y, state: 'loot', text: `PICK UP: ${name}` };
+    }
+    if (object.interact?.type === 'container') {
+      return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${name}` };
+    }
+    if (object.interact?.type === 'altar' ||
+        object.interact?.type === 'secret-entrance' ||
+        object.interact?.type === 'secret-exit') {
+      return { x: mouse.x, y: mouse.y, state: 'use', text: `USE: ${name}` };
+    }
+    if (object.kind === 'cross-martyr') {
+      return { x: mouse.x, y: mouse.y, state: 'use', text: `APPROACH: ${name}` };
+    }
+    return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${name}` };
   }
 
   #buildUi() {
@@ -1841,7 +2010,7 @@ export class Game {
         ? ['Up/Dn Select', 'Left/Right Pages', 'J/Esc Close']
         : ['Left/Right Pages', 'J/Esc Close'];
     } else if (this.uiScreen === 'inventory') {
-      controls = ['Up/Dn Select', 'Left/Right Panel', '1/Enter Equip', '2 Remove', 'H Dress', 'Esc Close'];
+      controls = ['Up/Dn Select', 'Left/Right Panel', '1/Enter Equip', '2 Remove', '3 Drop', 'H Dress', 'Esc Close'];
     } else if (this.uiScreen === 'dialogue' && this.dialogue?.choices?.length) {
       const choiceMax = Math.min(this.dialogue.choices.length, DIALOGUE_MAX_CHOICES);
       const choiceHelp = choiceMax === 1 ? '1 Choose' : `1 TO ${choiceMax} Choose`;
@@ -1853,7 +2022,7 @@ export class Game {
     } else if (this.mode === 'combat') {
       controls = ['Click/WASD Move', '1 Knife 2 Gun', 'Tab Target', 'Space Attack', 'E End Turn', 'I Pack', 'H Dress'];
     } else {
-      controls = ['Click/WASD Move', 'E Inspect/Use', 'I Pack', 'J Journal', 'H Dressing', 'R Restart', 'G Debug'];
+      controls = ['Click Move/Use', 'WASD Move', 'I Pack', 'J Journal', 'H Dressing', 'R Restart', 'G Debug'];
     }
 
     const cursor = this.#cursorInfo();

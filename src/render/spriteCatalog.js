@@ -136,6 +136,27 @@ export const SPRITE_CATALOG = {
       if (!c.prop.consumed) P.drawBlueBall(ctx, x, y, seed);
     }
   },
+  'ground-item': {
+    category: CATEGORY.PROP, layer: 2,
+    draw: (ctx, x, y, seed, c) => {
+      const now = c.anim?.tick ?? 0;
+      const dropDuration = c.prop.dropDuration ?? 0.38;
+      const pickupDuration = c.prop.pickupDuration ?? 0.24;
+      const drop = c.prop.droppedAt == null
+        ? 1
+        : Math.max(0, Math.min(1, (now - c.prop.droppedAt) / dropDuration));
+      const pickup = c.prop.pickupStart == null
+        ? 0
+        : Math.max(0, Math.min(1, (now - c.prop.pickupStart) / pickupDuration));
+      if (c.prop.consumed && pickup >= 1) return;
+      P.drawGroundItem(ctx, x, y, seed, {
+        model: c.prop.model,
+        count: c.prop.count,
+        drop,
+        pickup
+      });
+    }
+  },
 
   // --- Lights (emissive props) -------------------------------------------
   'candle-cluster': {

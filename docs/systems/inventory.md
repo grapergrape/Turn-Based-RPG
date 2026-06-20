@@ -35,3 +35,8 @@ ring slot on the actor.
 - Fresh starts load the player actor's authored inventory.
 - The inventory screen shows carried weight, item stacks, a small character
   image, and each gear slot.
+- Pressing `3` in the inventory drops one selected item onto the player's tile.
+  Dropping selected gear removes it from that gear slot first.
+- Ground items are player pickup by default. The data model keeps a
+  `pickupPolicy` hook so quest scripts or later NPC animations can opt into
+  broader pickup without changing the inventory core.

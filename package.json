@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/serve.mjs",
-    "check": "node scripts/check-content.mjs"
+    "check": "node scripts/check-content.mjs",
+    "test": "node tests/interactionTargeting.test.mjs && node tests/groundItems.test.mjs"
   }
 }
