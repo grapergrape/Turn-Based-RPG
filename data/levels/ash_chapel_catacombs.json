@@ -1,7 +1,7 @@
 {
   "id": "ash-chapel-catacombs",
   "name": "Ash Chapel Hidden Catacombs",
-  "intro": "The stair gives onto cold that has not moved in years. The dark ahead is full of small pale shapes, and they are all the same shape. The warden kept his dead in order. The cut stair behind you is the way back up. Use it (E) when you have seen enough.",
+  "intro": "The stair gives onto cold that has not moved in years. The dark ahead is full of small pale shapes, and they are all the same shape. The warden kept his dead in order. The cut stair behind you is the way back up. Click it when you have seen enough.",
   "width": 40,
   "height": 50,
   "tileSize": 64,
@@ -41,11 +41,11 @@
   "tiles": [
     "########################################",
     "########################################",
-    "###############..........###############",
-    "###############..........###############",
-    "###############..........###############",
-    "###############..........###############",
-    "##################....##################",
+    "############................############",
+    "############................############",
+    "############................############",
+    "############................############",
+    "##############............##############",
     "###.............##....##.............###",
     "###.............##....##.............###",
     "###.............##....##.............###",
@@ -3262,30 +3262,6 @@
       "seed": 135
     },
     {
-      "kind": "bone-niche",
-      "x": 18,
-      "y": 2,
-      "blocking": true
-    },
-    {
-      "kind": "bone-niche",
-      "x": 21,
-      "y": 2,
-      "blocking": true
-    },
-    {
-      "kind": "bone-niche",
-      "x": 22,
-      "y": 2,
-      "blocking": true
-    },
-    {
-      "kind": "bone-niche",
-      "x": 15,
-      "y": 3,
-      "blocking": true
-    },
-    {
       "kind": "skeleton",
       "x": 16,
       "y": 3,
@@ -3309,18 +3285,6 @@
       "seed": 87
     },
     {
-      "kind": "bone-niche",
-      "x": 16,
-      "y": 5,
-      "blocking": true
-    },
-    {
-      "kind": "bone-niche",
-      "x": 17,
-      "y": 5,
-      "blocking": true
-    },
-    {
       "kind": "candle-cluster",
       "x": 18,
       "y": 5
@@ -3341,12 +3305,6 @@
       "kind": "cracked-column",
       "x": 20,
       "y": 33,
-      "blocking": true
-    },
-    {
-      "kind": "bone-niche",
-      "x": 18,
-      "y": 6,
       "blocking": true
     },
     {

@@ -3,6 +3,7 @@
   "name": "Scarred Leather Vest",
   "type": "armor",
   "weight": 2.8,
+  "groundModel": "vest",
   "equipment": { "slot": "armor" },
   "description": "Boiled leather and thin iron plates, repaired often. The inner lining is marked with old impact bruises and dried altar dust."
 }

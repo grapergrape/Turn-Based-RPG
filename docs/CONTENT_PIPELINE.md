@@ -248,6 +248,7 @@ Items live in `data/items/`, one file per id.
   "name": "Field Dressing",
   "type": "consumable",
   "weight": 0.2,
+  "groundModel": "dressing",
   "description": "Restores 4 HP. Consumed on use.",
   "use": { "effect": "heal", "amount": 4 }
 }
@@ -257,10 +258,15 @@ Rules:
 
 - `id`, `name`, and `type` are required.
 - `weight` is required and uses kilograms. It must be zero or greater.
+- `groundModel` is required so the item has drop and pickup art. Current models
+  are `ball`, `boots`, `coat`, `hood`, `vest`, `ring`, `necklace`, `key`,
+  `token`, `chit`, `paper`, `vial`, `dressing`, `rounds`, and `shard`.
 - Equippable items define `equipment.slot`. Valid item slots are `clothes`,
   `armor`, `boots`, `helmet`, `trinket`, and `ring`.
 - Ring items can be worn in either actor slot, `ring1` or `ring2`.
 - Loot in level objects references items by `id`.
+- Optional level `groundItems` entries can place an item directly on a walkable
+  tile: `{ "item": "field-dressing", "count": 1, "x": 10, "y": 8 }`.
 
 ## Actor data
 

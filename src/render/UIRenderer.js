@@ -306,7 +306,7 @@ export class UIRenderer {
       : items[selectedIndex] ?? null;
     this.#drawInventoryDetail(ctx, detail, detailItem, focusGear ? slotSelection : null);
 
-    const footer = 'UP/DN SELECT  LEFT/RIGHT PANEL  1 EQUIP  2 REMOVE  H DRESS  ESC CLOSE';
+    const footer = 'UP/DN SELECT  LEFT/RIGHT PANEL  1 EQUIP  2 REMOVE  3 DROP  H DRESS  ESC CLOSE';
     this.#text(ctx, footer, INVENTORY_BOX.x + 14, INVENTORY_BOX.y + INVENTORY_BOX.h - 22, PALETTE.uiText);
   }
 

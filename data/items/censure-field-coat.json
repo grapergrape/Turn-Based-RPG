@@ -3,6 +3,7 @@
   "name": "Censure Field Coat",
   "type": "clothes",
   "weight": 1.5,
+  "groundModel": "coat",
   "equipment": { "slot": "clothes" },
   "description": "A long black field coat cut for ash roads, cold chapels, and doors opened with a knife hand. Its hem smells of smoke."
 }

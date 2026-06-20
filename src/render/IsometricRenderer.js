@@ -17,6 +17,11 @@ import { getFrame } from './SpriteAtlas.js';
 
 // Which `kind`s are flat ground decals vs volumetric props is owned by the
 // sprite catalog (spriteCatalog.js), the single source of truth for all kinds.
+const SPEECH_MAX_TEXT_WIDTH = 168;
+const SPEECH_PAD_X = 7;
+const SPEECH_PAD_Y = 5;
+const SPEECH_LINE_HEIGHT = 11;
+const SPEECH_VIEWPORT_PAD = 4;
 
 export class IsometricRenderer {
   constructor(canvas, atlas) {
@@ -159,6 +164,10 @@ export class IsometricRenderer {
       const zLayer = getSprite(prop.kind)?.layer ?? 2;
       queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
     }
+    for (const prop of state.groundItems ?? []) {
+      const zLayer = getSprite(prop.kind)?.layer ?? 2;
+      queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
+    }
     for (const actor of state.actors ?? []) {
       const zLayer = actor.isDead ? 1 : 3;
       queue.push({ key: sortKey(actor.x, actor.y, zLayer), draw: () => this.#drawActor(ctx, actor, anim) });
@@ -277,11 +286,24 @@ export class IsometricRenderer {
       const y = base.y + (actor.pxOffset?.y ?? 0) - 78;
       if (!this.#onScreen({ x, y }, 180)) continue;
 
-      const lines = this.#wrapSpeech(ctx, actor.speech.text, 168);
-      const width = Math.min(180, Math.max(...lines.map((line) => ctx.measureText(line).width)) + 12);
-      const height = lines.length * 11 + 8;
-      const left = Math.round(x - width / 2);
-      const top = Math.round(y - height);
+      const maxTextWidth = Math.min(
+        SPEECH_MAX_TEXT_WIDTH,
+        VIEWPORT.width - SPEECH_VIEWPORT_PAD * 2 - SPEECH_PAD_X * 2
+      );
+      const lines = this.#wrapSpeech(ctx, actor.speech.text, maxTextWidth);
+      const textWidth = Math.max(...lines.map((line) => ctx.measureText(line).width));
+      const width = Math.ceil(Math.min(VIEWPORT.width - SPEECH_VIEWPORT_PAD * 2, textWidth + SPEECH_PAD_X * 2));
+      const height = lines.length * SPEECH_LINE_HEIGHT + SPEECH_PAD_Y * 2;
+      const left = Math.round(clamp(
+        x - width / 2,
+        VIEWPORT.x + SPEECH_VIEWPORT_PAD,
+        VIEWPORT.x + VIEWPORT.width - width - SPEECH_VIEWPORT_PAD
+      ));
+      const top = Math.round(clamp(
+        y - height,
+        VIEWPORT.y + SPEECH_VIEWPORT_PAD,
+        VIEWPORT.y + VIEWPORT.height - height - SPEECH_VIEWPORT_PAD
+      ));
       const fade = Math.min(1, Math.max(0.25, actor.speech.ttl / 0.35));
 
       ctx.globalAlpha = 0.84 * fade;
@@ -292,7 +314,7 @@ export class IsometricRenderer {
       ctx.strokeRect(left + 0.5, top + 0.5, width - 1, height - 1);
       ctx.fillStyle = PALETTE.uiText;
       for (let i = 0; i < lines.length; i += 1) {
-        ctx.fillText(lines[i], left + 6, top + 4 + i * 11);
+        ctx.fillText(lines[i], left + SPEECH_PAD_X, top + SPEECH_PAD_Y + i * SPEECH_LINE_HEIGHT);
       }
     }
 
@@ -304,6 +326,14 @@ export class IsometricRenderer {
     const lines = [];
     let line = '';
     for (const word of words) {
+      if (ctx.measureText(word).width > maxWidth) {
+        if (line) {
+          lines.push(line);
+          line = '';
+        }
+        lines.push(...this.#splitSpeechWord(ctx, word, maxWidth));
+        continue;
+      }
       const next = line ? `${line} ${word}` : word;
       if (line && ctx.measureText(next).width > maxWidth) {
         lines.push(line);
@@ -313,7 +343,23 @@ export class IsometricRenderer {
       }
     }
     if (line) lines.push(line);
-    return lines.slice(0, 2);
+    return lines.length > 0 ? lines : [''];
+  }
+
+  #splitSpeechWord(ctx, word, maxWidth) {
+    const parts = [];
+    let part = '';
+    for (const ch of word) {
+      const next = part + ch;
+      if (part && ctx.measureText(next).width > maxWidth) {
+        parts.push(part);
+        part = ch;
+      } else {
+        part = next;
+      }
+    }
+    if (part) parts.push(part);
+    return parts;
   }
 
   #drawPlayerVisibilityHalo(ctx, state) {
@@ -536,4 +582,8 @@ export class IsometricRenderer {
   toGrid(internalX, internalY) {
     return screenToGrid(internalX, internalY, this.worldOrigin);
   }
+}
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
 }

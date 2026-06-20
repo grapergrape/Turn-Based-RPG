@@ -1,11 +1,12 @@
 // Loads a level and all the content it references, then assembles the runtime
 // objects the game needs: a Grid, the renderer prop list (walls derived from
-// tiles + authored objects), the interactable subset, the player and enemy
-// entities, item definitions, dialogue definitions, quest definitions, and
-// encounter trigger zones.
+// tiles + authored objects), the interactable subset, ground items, the player
+// and enemy entities, item definitions, dialogue definitions, quest
+// definitions, and encounter trigger zones.
 
 import { Grid } from '../world/Grid.js';
 import { createActor } from '../entities/ActorFactory.js';
+import { createGroundItem } from '../world/GroundItems.js';
 
 async function loadJson(path) {
   const response = await fetch(path);
@@ -143,6 +144,9 @@ export async function loadLevel(levelPath) {
   for (const object of interactables) {
     for (const entry of object.interact.loot ?? []) itemIds.add(entry.item);
   }
+  for (const entry of level.groundItems ?? []) {
+    if (entry.item) itemIds.add(entry.item);
+  }
   for (const entry of playerLoadout?.items ?? []) itemIds.add(entry.item);
   for (const itemId of Object.values(playerLoadout?.equipment ?? {})) itemIds.add(itemId);
   collectDialogueItemIds(dialogueDefs, itemIds);
@@ -150,6 +154,19 @@ export async function loadLevel(levelPath) {
   for (const id of itemIds) {
     itemDefs[id] = await loadJson(`./data/items/${id}.json`);
   }
+
+  const groundItems = (level.groundItems ?? [])
+    .map((entry, index) => createGroundItem({
+      id: entry.id ?? `${level.id}-ground-${index}`,
+      itemId: entry.item,
+      itemDef: itemDefs[entry.item],
+      count: entry.count ?? 1,
+      x: entry.x,
+      y: entry.y,
+      source: entry.source ?? 'authored',
+      pickupPolicy: entry.pickupPolicy
+    }))
+    .filter(Boolean);
 
   return {
     id: level.id,
@@ -164,6 +181,7 @@ export async function loadLevel(levelPath) {
     player,
     enemies,
     npcs,
+    groundItems,
     itemDefs,
     playerLoadout,
     dialogueDefs,

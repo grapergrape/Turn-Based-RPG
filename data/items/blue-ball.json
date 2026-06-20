@@ -3,5 +3,6 @@
   "name": "Blue Ball",
   "type": "quest",
   "weight": 0.1,
+  "groundModel": "ball",
   "description": "A small blue ball, tooth-scored and cold from the catacomb dust."
 }
