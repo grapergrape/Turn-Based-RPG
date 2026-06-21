@@ -8,7 +8,7 @@ These are design docs, not runtime quest data. When quest JSON is added later, I
 
 The player leads a small field squad working along the borderlands between Free City territory and old Bloom zones. Their first major crisis is **Hallowfen**, the walled Earthside crash scar the Holy Remnant calls holy ground and every outlaw calls a chance.
 
-Act I does not hand the player the full truth. It asks whether Hallowfen survives. The wider archive mystery begins after the Hallowfen decision, when a blackened data core from _Eschaton's Mercy_ is recovered and decoded. The core contains a broken recording of Dr. Elian Sorell. Sorell says the Stilling was not divine intervention. It was a lock. The lock is failing. He cannot repair it. He urges the listener to save humanity by finding the Three Witnesses, but the recording does not give clean coordinates. It gives damaged puzzle clues, names, images, and contradictions that the player must solve through investigation.
+Act I does not hand the player the full truth. It asks whether Hallowfen survives. The wider archive mystery begins after the Hallowfen decision, when a blackened data core from _Eschaton's Mercy_ is recovered from Hallowfen's crash-scar heart and decoded. The core contains a broken recording of Dr. Elian Sorell. Sorell says the Stilling was not divine intervention. It was a lock. The lock is failing. He cannot repair it. He urges the listener to save humanity by finding the Three Witnesses, but the recording does not give clean coordinates. It gives damaged puzzle clues, names, images, and contradictions that the player must solve through investigation.
 
 The campaign asks what the player will do with truth when every faction can use it to save people and destroy people.
 
@@ -45,6 +45,10 @@ The current campaign shape is narrow, wide, narrow, abyss:
 **Narrative purpose:** Decide whether the lawless holy land remains a living settlement or becomes the Choir's capital.
 **Gameplay purpose:** Establish siege play, faction pressure, route choices, survivor decisions, early hub access, and reputation.
 
+**Scale target:** Act I should plan for at least **180,000 authored map tiles**, roughly fifty times the current Ash Chapel tutorial footprint. This does not mean one huge map. It should be built as linked road, checkpoint, district, interior, and siege levels so the player feels regional distance without forcing every system to carry one massive scene.
+
+**Opening route:** Act I should not start inside the Censure Road Camp. The first playable stretch is the **Long Ash Road Approach**, a semi-long road that lets the player feel field distance before reaching organized authority. It should include road shrines, stopped carts, old bell markers, scavenger traces, and one or two low-risk encounters. The Censure Road Camp then becomes the first command point where the player receives orders, checks gear, and hears that the Hallowfen checkpoint towers have stopped answering.
+
 **Primary decision:** What happens to Hallowfen?
 
 - Help Hallowfen break the siege and drive off the Choir attackers.
@@ -61,6 +65,52 @@ The current campaign shape is narrow, wide, narrow, abyss:
 - Resolve Hallowfen's fate before the blackened data core becomes the next political problem.
 
 **Transition to the archive plot:** After Hallowfen, the recovered data core forces the first main-lore decision: give it to the Holy Remnant, give it to the Lumen Compact, sell it in Veyr's Gate, or keep it. Decoding it reveals Sorell's damaged warning and points toward the Three Witnesses through puzzle clues rather than exact coordinates.
+
+**Blackened data core placement:** The core is not found on the road, in Ash Chapel, or inside the Censure Road Camp. It is recovered late in Act I through this route:
+
+1. **Wreckward Perimeter:** The player reaches the edge of Hallowfen's crash scar after the settlement's fate is decided.
+2. **Shrine Rows and Bell Yard:** Remnant and local witnesses point toward old ship-metal beneath the public shrines.
+3. **Buried Archive Chapel:** A chapel-and-archive section of _Eschaton's Mercy_ lies under Hallowfen, sealed by wreckage, doctrine, and dormant Host tissue.
+4. **Reliquary Cradle:** The blackened core is fused into a cradle of ship metal and old containment hardware.
+
+Early player-facing text should call it the **blackened core**, **reliquary core**, or **ship-cube**. It should not be called Sorell's black box before decoding. The pickup should create pressure rather than answers. The warning plays only after partial decoding, and that decode leads into the Remnant, Compact, Veyr's Gate, or keep-it-hidden choice.
+
+**Act I regional map budget:** Planned total: **180,000 tiles**.
+
+- **Long Ash Road Approach:** 160x70, 11,200 tiles. Road scavengers and minor Host traces establish distance, silence, and Censure field work before camp.
+- **Censure Road Camp:** 70x50, 3,500 tiles. Holy Remnant and Ashen Censure officers give orders and official doctrine without revealing hidden history.
+- **Ash Road South:** 130x80, 10,400 tiles. Remnant patrols and refugees show stopped bells and renewed cult activity.
+- **Old Pilgrim Way:** 120x70, 8,400 tiles. Pilgrims and road priests show how faith still organizes travel and fear.
+- **Quarantine Farms:** 110x80, 8,800 tiles. Free City farmers and Remnant quarantine law put food, carriers, abandoned families, and harvest law into play.
+- **Road Warden Toll:** 90x70, 6,300 tiles. Road wardens and Remnant doubts give the first hard proof that the Hallowfen perimeter is failing.
+- **Red Tithe Ford:** 110x80, 8,800 tiles. Ash Cartels control tolls, medicine traffic, and criminal road movement.
+- **Smuggler Switchbacks:** 90x70, 6,300 tiles. Ash Cartels and Hallowfen guides offer alternate movement around lawful gates.
+- **Hallowfen Outer Wall:** 140x90, 12,600 tiles. Remnant gate law and local fear frame the first full view of the walled crash scar.
+- **Captured Checkpoint:** 80x70, 5,600 tiles. Choir impostors reveal that the gate has been taken before the city is seen.
+- **Inspection Back Rooms:** 60x50, 3,000 tiles. Choir captors teach confiscation risk and expose the takeover.
+- **Smuggler Culvert Route:** 100x60, 6,000 tiles. Smugglers and claim gangs support stealth, avoidance, or faction play.
+- **First Streets Inside Wall:** 130x90, 11,700 tiles. Hallowfen citizens make the settlement human before the siege dominates it.
+- **Hallowfen Commons:** 120x90, 10,800 tiles. Claim gangs, refugees, and traders form the main hub for survivor needs, rumors, and local law.
+- **Water Ledger Quarter:** 100x90, 9,000 tiles. Lumen Compact staff and water guards center medicine, ration control, sample suspicion, and civic need.
+- **Shrine Rows and Bell Yard:** 100x90, 9,000 tiles. Remnant agents and Penitent Engines put public doctrine, bell failure, and crash-scar pressure in one district.
+- **Relic Market and Claim Dens:** 90x80, 7,200 tiles. Ash Cartels and relic fences show why Hallowfen is valuable and why every faction wants it.
+- **Bloomborn Refuge Rows:** 90x80, 7,200 tiles. Bloomborn and Free City advocates bring personhood, citizenship, fear, and mercy into the siege.
+- **Wreckward Perimeter:** 130x90, 11,700 tiles. Remnant, Compact, and Choir probes crowd the edge of the crash scar and the late Act I evidence trail.
+- **Buried Archive Chapel:** 70x60, 4,200 tiles. Remnant secrecy and dormant Host tissue frame the final approach to the blackened core.
+- **East Barricades:** 110x80, 8,800 tiles. Hallowfen defenders and Choir attackers carry the main siege pressure and settlement-fate choice.
+- **Choir Breach Lines:** 90x70, 6,300 tiles. The Choir becomes a coordinated battlefield threat without revealing the full cult society.
+- **Veyr's Gate Road Outskirts:** 80x40, 3,200 tiles. Free City agents and smugglers open the exit route to the Act II political world.
+
+**Faction discovery order:**
+
+1. **Holy Remnant and Ashen Censure:** Censure Road Camp, Road Warden Toll, Shrine Rows and Bell Yard.
+2. **Ash Cartels:** Red Tithe Ford, Smuggler Switchbacks, Relic Market and Claim Dens.
+3. **Hallowfen citizens:** First Streets Inside Wall, Hallowfen Commons, East Barricades.
+4. **Lumen Compact:** Water Ledger Quarter, Wreckward Perimeter.
+5. **Bloomborn:** Bloomborn Refuge Rows and clinic-adjacent disputes.
+6. **Choir of the Open Wound:** Captured Checkpoint, Inspection Back Rooms, Choir Breach Lines.
+
+**Act I lore discipline:** The player should feel that the official story is cracking, but Act I should not explain the Vale Imprint, Father Vale, Europa, or the Stilling. The blackened core is the hinge. Before decoding, it is a dangerous relic. After decoding, it becomes the first object every faction can use, hide, sell, or kill for.
 
 **Early playable slice connection:** `data/levels/ash_chapel_breach.json` functions as an Ash Roads side encounter and tutorial combat space. It foreshadows Hallowfen through a Choir cell, overheard teachings, a private altar rite, and a ledger that says the Hallowfen wall checkpoints have stopped answering tower bells. The slice should not name Father Vale, reveal Sorell, explain the data core, or confirm why anyone is changing.
 
