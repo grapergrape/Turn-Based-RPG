@@ -881,7 +881,7 @@ Hallowfen should still feel human before it becomes horrific, but its humanity i
 
 The Act I question is not who receives the truth yet. It is whether Hallowfen survives. The player can help the people inside break the siege and drive off the Choir attackers, misdirect the attackers long enough for an evacuation, or leave the town to its fate. If Hallowfen is abandoned, later reports reveal that the Choir crucified the whole town upside down and used the bodies to decorate its new capital.
 
-The deeper campaign still turns on a relic from _Eschaton's Mercy_, but Hallowfen does not explain the Stilling during Act I. Once the fate of the city is settled, the story can return to the crash site's heart and the blackened data core hidden there. When that core is recovered and decoded, it plays a damaged recording of Dr. Elian Sorell, the xenobiologist listed as dead during the Descent.
+The deeper campaign still turns on a relic from _Eschaton's Mercy_, but Hallowfen does not explain the Stilling during Act I. Once the fate of the city is settled, the story can return to the crash site's heart. The route passes through the Wreckward Perimeter, the Shrine Rows and Bell Yard, and the Buried Archive Chapel beneath Hallowfen. There, inside a reliquary cradle fused with ship metal and old containment hardware, the player recovers the blackened data core. When that core is decoded, it plays a damaged recording of Dr. Elian Sorell, the xenobiologist listed as dead during the Descent.
 
 The message says:
 
@@ -913,7 +913,7 @@ Leaving Hallowfen to the Choir preserves the party's resources and secrecy. Late
 
 Only after Hallowfen does the data core become the central political object. Giving it to the Holy Remnant grants protection but risks censorship and execution of witnesses. Giving it to the Lumen Compact reveals more data but exposes the player to dangerous experiments and political manipulation. Selling it in Veyr's Gate brings money and underworld contacts but spreads the secret to multiple factions. Keeping it makes the player a target.
 
-Act I introduces the world's unstable balance. The player travels through trade roads, Hallowfen wall checkpoints, ruined suburbs, small towns, and the outskirts of Veyr's Gate. They encounter Remnant inquisitors, Compact field teams, Ash Cartel smugglers, Bloomborn refugees, Choir missionaries, and Hallowfen citizens who are criminals only because every lawful gate was closed to them.
+Act I introduces the world's unstable balance. The route begins on a long ash road into a Censure road camp, then moves through trade roads, Hallowfen wall checkpoints, ruined suburbs, small towns, and the outskirts of Veyr's Gate. The player encounters Remnant inquisitors, Compact field teams, Ash Cartel smugglers, Bloomborn refugees, Choir missionaries, and Hallowfen citizens who are criminals only because every lawful gate was closed to them.
 
 Signs of renewed Host activity appear everywhere.
 

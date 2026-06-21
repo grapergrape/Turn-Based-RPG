@@ -1021,6 +1021,248 @@ export function drawCampBedroll(ctx, cx, cy, seed) {
   px(ctx, cx + 9 * flip, cy - 4, PALETTE.hostBone, 5, 1);
 }
 
+export function drawSettlementTable(ctx, cx, cy, seed) {
+  drawShadowBlob(ctx, cx, cy + 8, 66, 22);
+  const rng = rngFrom(hash2D(seed + 67, seed * 5 + 3));
+  const top = [
+    [cx - 34, cy - 12],
+    [cx - 6, cy - 26],
+    [cx + 31, cy - 12],
+    [cx + 3, cy + 4]
+  ];
+  const front = [
+    [cx - 27, cy - 5],
+    [cx + 3, cy + 4],
+    [cx + 31, cy - 12],
+    [cx + 29, cy - 6],
+    [cx + 2, cy + 10],
+    [cx - 28, cy - 1]
+  ];
+
+  poly(ctx, PALETTE.outline, [
+    [cx - 36, cy - 12],
+    [cx - 7, cy - 28],
+    [cx + 34, cy - 13],
+    [cx + 31, cy - 5],
+    [cx + 2, cy + 12],
+    [cx - 30, cy]
+  ]);
+  poly(ctx, PALETTE.woodDark, front);
+  poly(ctx, PALETTE.woodMid, top);
+  poly(ctx, PALETTE.woodLight, [
+    [cx - 31, cy - 13],
+    [cx - 6, cy - 25],
+    [cx + 2, cy - 22],
+    [cx - 22, cy - 9]
+  ]);
+
+  for (const off of [-23, -13, -3, 8, 19]) {
+    ctx.strokeStyle = off === 8 ? PALETTE.woodDark : PALETTE.stoneDark;
+    ctx.lineWidth = off === 8 ? 2 : 1;
+    ctx.beginPath();
+    ctx.moveTo(cx - 27 + off, cy - 12 + Math.floor(off * 0.06));
+    ctx.lineTo(cx + 2 + off, cy - 25 + Math.floor(off * 0.06));
+    ctx.stroke();
+  }
+
+  // Broken far corner and trestle legs make the table feel repaired, not cute.
+  px(ctx, cx + 21, cy - 15, PALETTE.outline, 8, 3);
+  px(ctx, cx + 22, cy - 14, PALETTE.woodDark, 5, 2);
+  for (const leg of [[-24, -3], [-7, 4], [18, -7]]) {
+    px(ctx, cx + leg[0], cy + leg[1], PALETTE.outline, 4, 15);
+    px(ctx, cx + leg[0] + 1, cy + leg[1], PALETTE.woodDark, 2, 13);
+  }
+  linePx(ctx, cx - 21, cy + 6, cx + 17, cy - 6, PALETTE.outline, 2);
+  linePx(ctx, cx - 20, cy + 5, cx + 16, cy - 7, PALETTE.woodDark, 1);
+
+  // Household evidence kept tiny so it reads as mess, not icons.
+  drawIsoDiamond(ctx, cx - 13, cy - 16, 10, 5, PALETTE.stoneDust);
+  drawIsoDiamond(ctx, cx + 8, cy - 14, 8, 4, PALETTE.rustDark);
+  px(ctx, cx - 14, cy - 18, PALETTE.void, 5, 1);
+  px(ctx, cx + 6, cy - 16, PALETTE.stoneDark, 5, 1);
+  px(ctx, cx - 1, cy - 17, PALETTE.hostBone, 2, 2);
+  for (let i = 0; i < 12; i += 1) {
+    const color = rng() < 0.4 ? PALETTE.stoneDark : PALETTE.woodDark;
+    px(ctx, cx - 28 + Math.floor(rng() * 55), cy - 20 + Math.floor(rng() * 18), color);
+  }
+}
+
+export function drawLowStool(ctx, cx, cy, seed) {
+  const lean = (seed & 1) ? 2 : -2;
+  drawShadowBlob(ctx, cx, cy + 4, 25, 10);
+  const top = [
+    [cx - 13 + lean, cy - 7],
+    [cx - 2 + lean, cy - 13],
+    [cx + 13 + lean, cy - 7],
+    [cx + 2 + lean, cy]
+  ];
+  poly(ctx, PALETTE.outline, [
+    [cx - 15 + lean, cy - 7],
+    [cx - 2 + lean, cy - 15],
+    [cx + 15 + lean, cy - 7],
+    [cx + 2 + lean, cy + 2]
+  ]);
+  poly(ctx, PALETTE.woodMid, top);
+  poly(ctx, PALETTE.woodDark, [
+    [cx - 11 + lean, cy - 5],
+    [cx + 2 + lean, cy],
+    [cx + 13 + lean, cy - 7],
+    [cx + 12 + lean, cy - 4],
+    [cx + 2 + lean, cy + 4],
+    [cx - 11 + lean, cy - 1]
+  ]);
+  px(ctx, cx - 7 + lean, cy - 10, PALETTE.woodLight, 10, 1);
+  for (const leg of [[-9, -1], [0, 4], [9, -2]]) {
+    px(ctx, cx + leg[0] + lean, cy + leg[1], PALETTE.outline, 3, 9);
+    px(ctx, cx + leg[0] + 1 + lean, cy + leg[1], PALETTE.woodDark, 1, 8);
+  }
+  px(ctx, cx + 8 + lean, cy - 8, PALETTE.outline, 4, 2);
+}
+
+export function drawKitchenHearth(ctx, cx, cy, seed) {
+  drawShadowBlob(ctx, cx, cy + 8, 64, 22);
+  const rng = rngFrom(hash2D(seed + 83, seed * 7 + 9));
+  drawIsoPrism(ctx, cx, cy + 2, 60, 28, 15, {
+    top: PALETTE.stoneMid,
+    left: PALETTE.stoneDark,
+    right: PALETTE.void,
+    outline: PALETTE.outline
+  });
+  poly(ctx, PALETTE.outline, [
+    [cx - 28, cy - 17],
+    [cx - 5, cy - 29],
+    [cx + 27, cy - 17],
+    [cx + 24, cy - 8],
+    [cx - 4, cy + 6],
+    [cx - 28, cy - 5]
+  ]);
+  poly(ctx, PALETTE.stoneDark, [
+    [cx - 25, cy - 16],
+    [cx - 5, cy - 27],
+    [cx + 24, cy - 16],
+    [cx - 4, cy - 2]
+  ]);
+  poly(ctx, PALETTE.stoneMid, [
+    [cx - 23, cy - 18],
+    [cx - 5, cy - 27],
+    [cx + 2, cy - 24],
+    [cx - 16, cy - 14]
+  ]);
+
+  // Off-center oven mouth and ash bed. Avoids the face-like symmetry.
+  poly(ctx, PALETTE.outline, [
+    [cx - 16, cy - 13],
+    [cx - 4, cy - 19],
+    [cx + 10, cy - 14],
+    [cx + 9, cy - 5],
+    [cx - 7, cy],
+    [cx - 17, cy - 5]
+  ]);
+  poly(ctx, PALETTE.void, [
+    [cx - 13, cy - 12],
+    [cx - 4, cy - 17],
+    [cx + 7, cy - 13],
+    [cx + 7, cy - 6],
+    [cx - 6, cy - 2],
+    [cx - 14, cy - 6]
+  ]);
+  px(ctx, cx - 11, cy - 5, PALETTE.rustDark, 17, 3);
+  px(ctx, cx - 3, cy - 8, PALETTE.stoneDark, 6, 2);
+
+  drawIsoDiamond(ctx, cx + 16, cy - 15, 16, 8, PALETTE.outline);
+  drawIsoDiamond(ctx, cx + 16, cy - 16, 13, 6, PALETTE.rustDark);
+  px(ctx, cx + 10, cy - 18, PALETTE.stoneDark, 12, 1);
+  linePx(ctx, cx + 10, cy - 21, cx + 4, cy - 18, PALETTE.rustDark);
+  linePx(ctx, cx + 23, cy - 19, cx + 28, cy - 16, PALETTE.rustDark);
+
+  for (let i = 0; i < 9; i += 1) {
+    const x = cx - 24 + Math.floor(rng() * 48);
+    const y = cy - 24 + Math.floor(rng() * 25);
+    px(ctx, x, y, rng() < 0.5 ? PALETTE.stoneDark : PALETTE.rustDark);
+  }
+  drawNoisePixels(ctx, cx - 25, cy - 22, 50, 24, [PALETTE.stoneDark, PALETTE.rustDark], 0.06, seed);
+}
+
+export function drawPantryShelf(ctx, cx, cy, seed) {
+  drawShadowBlob(ctx, cx, cy + 7, 43, 17);
+  const lean = (seed & 1) ? 2 : -2;
+  linePx(ctx, cx - 21 + lean, cy - 55, cx - 24 + lean, cy + 1, PALETTE.outline, 4);
+  linePx(ctx, cx + 19 + lean, cy - 53, cx + 17 + lean, cy + 2, PALETTE.outline, 4);
+  linePx(ctx, cx - 20 + lean, cy - 54, cx - 23 + lean, cy, PALETTE.woodDark, 2);
+  linePx(ctx, cx + 20 + lean, cy - 52, cx + 18 + lean, cy + 1, PALETTE.woodDark, 2);
+
+  for (const shelf of [
+    [-46, 42],
+    [-32, 36],
+    [-17, 43]
+  ]) {
+    drawIsoPrism(ctx, cx + lean, cy + shelf[0], shelf[1], 10, 4, {
+      top: PALETTE.woodMid,
+      left: PALETTE.woodDark,
+      right: PALETTE.stoneDark,
+      outline: PALETTE.outline
+    });
+  }
+
+  // Irregular sacks and jars, subdued to avoid toy-like eyes.
+  for (const item of [
+    [-15, -48, PALETTE.rustDark, 6, 7],
+    [-5, -48, PALETTE.stoneDust, 5, 5],
+    [8, -46, PALETTE.clothTan, 7, 4],
+    [-13, -34, PALETTE.clothDark, 8, 6],
+    [2, -32, PALETTE.rustMid, 5, 5],
+    [12, -20, PALETTE.stoneDark, 7, 4],
+    [-4, -18, PALETTE.clothTan, 9, 3]
+  ]) {
+    px(ctx, cx + item[0] + lean, cy + item[1], PALETTE.outline, item[3] + 2, item[4] + 1);
+    px(ctx, cx + item[0] + 1 + lean, cy + item[1], item[2], item[3], item[4]);
+    if (item[2] !== PALETTE.stoneDark) px(ctx, cx + item[0] + 2 + lean, cy + item[1], PALETTE.stoneDust, 2, 1);
+  }
+  px(ctx, cx + 12 + lean, cy - 35, PALETTE.outline, 9, 2);
+  px(ctx, cx + 12 + lean, cy - 34, PALETTE.woodDark, 7, 1);
+  drawNoisePixels(ctx, cx - 22, cy - 52, 43, 49, [PALETTE.woodDark, PALETTE.stoneDark], 0.045, seed);
+}
+
+export function drawWashTub(ctx, cx, cy, seed) {
+  drawShadowBlob(ctx, cx, cy + 6, 43, 15);
+  const shift = (seed & 1) ? 1 : -1;
+  const rim = [
+    [cx - 22 + shift, cy - 12],
+    [cx - 3 + shift, cy - 20],
+    [cx + 22 + shift, cy - 11],
+    [cx + 3 + shift, cy - 2]
+  ];
+  poly(ctx, PALETTE.outline, [
+    [cx - 24 + shift, cy - 12],
+    [cx - 3 + shift, cy - 22],
+    [cx + 24 + shift, cy - 12],
+    [cx + 4 + shift, cy],
+    [cx - 22 + shift, cy - 1]
+  ]);
+  poly(ctx, PALETTE.woodMid, [
+    [cx - 22 + shift, cy - 11],
+    [cx + 3 + shift, cy - 2],
+    [cx + 22 + shift, cy - 11],
+    [cx + 21 + shift, cy - 6],
+    [cx + 3 + shift, cy + 5],
+    [cx - 21 + shift, cy - 3]
+  ]);
+  poly(ctx, PALETTE.woodDark, [
+    [cx + 3 + shift, cy - 2],
+    [cx + 22 + shift, cy - 11],
+    [cx + 21 + shift, cy - 6],
+    [cx + 3 + shift, cy + 5]
+  ]);
+  poly(ctx, PALETTE.stoneDark, rim);
+  drawIsoDiamond(ctx, cx + shift, cy - 11, 35, 14, PALETTE.stoneDark);
+  drawIsoDiamond(ctx, cx - 1 + shift, cy - 12, 25, 9, PALETTE.stoneMid);
+  px(ctx, cx - 19 + shift, cy - 7, PALETTE.rustDark, 35, 2);
+  px(ctx, cx - 11 + shift, cy - 20, PALETTE.clothTan, 11, 5);
+  px(ctx, cx + 2 + shift, cy - 18, PALETTE.stoneDust, 9, 3);
+  px(ctx, cx + 16 + shift, cy - 11, PALETTE.outline, 5, 2);
+  drawNoisePixels(ctx, cx - 21, cy - 18, 42, 22, [PALETTE.woodDark, PALETTE.stoneDark], 0.055, seed);
+}
+
 export function drawSealedStorageCrate(ctx, cx, cy, seed) {
   drawRustedCrate(ctx, cx, cy, seed);
   px(ctx, cx - 18, cy - 2, PALETTE.outline, 36, 4);

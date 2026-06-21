@@ -819,6 +819,47 @@
       }
     },
     {
+      "kind": "settlement-table",
+      "x": 20,
+      "y": 20,
+      "blocking": true,
+      "name": "Settlement Table",
+      "interact": {
+        "type": "note",
+        "log": "Tin cups are set by height around the table. One child scratched flowers into the wood with a nail."
+      }
+    },
+    {
+      "kind": "low-stool",
+      "x": 18,
+      "y": 20
+    },
+    {
+      "kind": "low-stool",
+      "x": 22,
+      "y": 20
+    },
+    {
+      "kind": "low-stool",
+      "x": 19,
+      "y": 19
+    },
+    {
+      "kind": "low-stool",
+      "x": 21,
+      "y": 19
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 11,
+      "y": 23
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 28,
+      "y": 24
+    },
+    {
       "kind": "campfire",
       "x": 4,
       "y": 16,
@@ -833,6 +874,38 @@
       "kind": "candle-cluster",
       "x": 5,
       "y": 16
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 2,
+      "y": 14,
+      "blocking": true,
+      "name": "Pantry Shelf",
+      "interact": {
+        "type": "note",
+        "log": "Jars of beans and hard root sit in careful rows. Two labels are written in a child's block letters."
+      }
+    },
+    {
+      "kind": "kitchen-hearth",
+      "x": 3,
+      "y": 15,
+      "blocking": true,
+      "name": "Kitchen Hearth",
+      "interact": {
+        "type": "note",
+        "log": "Cold soup has skinned over in the pot. Someone banked the coals before the chapel fell quiet."
+      }
+    },
+    {
+      "kind": "wash-tub",
+      "x": 6,
+      "y": 16,
+      "name": "Wash Tub",
+      "interact": {
+        "type": "note",
+        "log": "Clean rags hang over the rim. The water is grey with ash, not blood."
+      }
     },
     {
       "kind": "rusted-reliquary",
