@@ -244,9 +244,29 @@ That is the entire workflow. No renderer edits, no Set edits.
 - A PROP is a free-standing object at layer 2. A DECAL is a flat floor mark
   (`flat: true`), drawn in the baked floor pass and ignoring `layer`.
 
+**Orientation-aware props (reuse one texture at any facing):** a free-standing
+piece whose footprint has a long axis or a clear front (tables, benches,
+counters, beds, shelves, anything that can sit either way along a wall) should
+support the four isometric facings so it can be reused at different places and
+orientations from data, not redrawn per rotation. Author it once on the
+`isoFrame` / `orientedBox` helpers in `PixelPrimitives.js`: `isoFrame(cx, cy,
+orient)` gives a rotated local footprint frame (`point(la, lb, h)` in tile
+units), and `orientedBox` draws a raised box on that footprint. The four facings
+are `'se'` (default), `'sw'`, `'nw'`, `'ne'` (the screen direction the front
+points). Crucially, `orientedBox` colors faces by SCREEN position (lower-left =
+lit ramp, lower-right = shade, cap = top), so the light stays upper-left in every
+facing and a rotated copy never looks lit from the wrong side (Section 16). Put
+asymmetric top detail (plates, an oven mouth, a cutting board) in LOCAL frame
+coords via `frame.point(...)` so it rotates with the piece. Register the kind
+with `oriented(P.drawX, CATEGORY.FURNITURE)` (not `simple`) so the catalog
+forwards `c.prop.orient` as `opts.orient`; level data then sets `"orient"` on the
+object. Exemplars: `drawDiningTable`, `drawDiningBench`, `drawKitchenCounter`.
+
 **DON'T:** add a `case` to a renderer switch (there isn't one); keep a second
-hardcoded list of kinds; or bake a window/light pool/god-ray into a creature or
-prop (Section 16).
+hardcoded list of kinds; bake a window/light pool/god-ray into a creature or
+prop (Section 16); or mirror an oriented prop with a raw `ctx.scale(-1, 1)`
+(that swaps the lit and shaded faces, breaking upper-left light). Use the
+orientation frame instead.
 
 ---
 

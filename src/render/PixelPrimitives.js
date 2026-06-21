@@ -7,7 +7,7 @@
 // frame to frame and never shimmers.
 
 import { PALETTE } from './palette.js';
-import { TILE_WIDTH, TILE_HEIGHT } from './renderConfig.js';
+import { TILE_WIDTH, TILE_HEIGHT, WALL_HEIGHT } from './renderConfig.js';
 
 // ---------------------------------------------------------------------------
 // Seeded helpers
@@ -69,6 +69,188 @@ function linePx(ctx, x0, y0, x1, y1, color, size = 1) {
     const t = i / steps;
     px(ctx, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, color, size, size);
   }
+}
+
+function mixPoint(a, b, t) {
+  return [
+    a[0] + (b[0] - a[0]) * t,
+    a[1] + (b[1] - a[1]) * t
+  ];
+}
+
+function faceTools(ctx, topLeft, topRight, bottomRight, bottomLeft) {
+  const point = (u, v) => {
+    const top = mixPoint(topLeft, topRight, u);
+    const bottom = mixPoint(bottomLeft, bottomRight, u);
+    return mixPoint(top, bottom, v);
+  };
+
+  return {
+    point,
+    line(u0, v0, u1, v1, color, size = 1) {
+      const a = point(u0, v0);
+      const b = point(u1, v1);
+      linePx(ctx, a[0], a[1], b[0], b[1], color, size);
+    },
+    rect(u0, v0, u1, v1, color) {
+      poly(ctx, color, [
+        point(u0, v0),
+        point(u1, v0),
+        point(u1, v1),
+        point(u0, v1)
+      ]);
+    }
+  };
+}
+
+// The camera-facing slanted face for a run of `span` wall blocks, used to mount
+// a wall fixture (a door, a future barred gate) flush on the stone. In this
+// fixed iso projection a wall runs along exactly one of two ground directions,
+// and each shows exactly ONE clean slanted face; `plane` names which:
+//   'se' -> wall runs along +y; visible face is the SE face, slopes up-right.
+//   'sw' -> wall runs along +x; visible face is the SW face, slopes up-left.
+// `plane` therefore fixes the run direction too, so the result is ALWAYS a real
+// slanted iso face. (The other two block faces are occluded by the next block in
+// the run, so there is deliberately no option to request them and accidentally
+// get a degenerate flat face. This is what kept the double door aligned.)
+function wallRunFace(ctx, cx, cy, opts = {}) {
+  const plane = opts.plane === 'sw' ? 'sw' : 'se';
+  const span = Math.max(1, Math.floor(opts.span ?? 1));
+  const tile = (index) => {
+    const dx = plane === 'sw' ? index * TILE_WIDTH / 2 : -index * TILE_WIDTH / 2;
+    const dy = index * TILE_HEIGHT / 2;
+    const base = diamond(cx + dx, cy + dy, TILE_WIDTH, TILE_HEIGHT);
+    const cap = diamond(cx + dx, cy + dy - WALL_HEIGHT, TILE_WIDTH, TILE_HEIGHT);
+    return { base, cap };
+  };
+  const first = tile(0);
+  const last = tile(span - 1);
+
+  if (plane === 'sw') {
+    return faceTools(ctx, first.cap.left, last.cap.bottom, last.base.bottom, first.base.left);
+  }
+  return faceTools(ctx, last.cap.bottom, first.cap.right, first.base.right, last.base.bottom);
+}
+
+// ---------------------------------------------------------------------------
+// Orientation (reusable iso facings for free-standing props)
+// ---------------------------------------------------------------------------
+//
+// A free-standing prop sits on a floor diamond, but its footprint long-axis and
+// "front" can face any of the four isometric ground directions. One draw
+// function can therefore be reused at any rotation: the same table runs along
+// either diagonal, the same counter faces the room or the wall. Orientation is
+// authored as `orient` on the level object and forwarded by the sprite catalog
+// (see the `oriented()` helper there) as `opts.orient`.
+//
+// The four facings name the screen direction the prop's FRONT points:
+//   'se' (default, front toward lower-right), 'sw', 'nw', 'ne'.
+//
+// Lighting stays correct in every facing because the box draws its two visible
+// faces by SCREEN position: the lower-left face is always the lit ramp, the
+// lower-right face the shade ramp, the cap the top. Rotating a prop therefore
+// never moves the light off the upper-left, so a mirrored copy never looks
+// lit from the wrong side.
+
+export const ORIENTS = ['se', 'sw', 'nw', 'ne'];
+
+export function normalizeOrient(orient) {
+  return ORIENTS.includes(orient) ? orient : 'se';
+}
+
+// Local footprint frame for an oriented prop. `point(la, lb, h)` maps local
+// footprint coords (tile units; la = long axis A, lb = depth axis B) raised
+// h px to a screen point, rotated for the chosen facing. Each facing is a 90deg
+// isometric rotation of the default basis, so a piece authored once renders at
+// any of the four facings without re-drawing.
+function isoFrame(cx, cy, orient) {
+  const o = normalizeOrient(orient);
+  const HW = TILE_WIDTH / 2;
+  const HH = TILE_HEIGHT / 2;
+  const basis = {
+    se: [[HW, HH], [-HW, HH]],
+    sw: [[-HW, HH], [-HW, -HH]],
+    nw: [[-HW, -HH], [HW, -HH]],
+    ne: [[HW, -HH], [HW, HH]]
+  };
+  const [ax, ay] = basis[o];
+  return {
+    orient: o,
+    point: (la, lb, h = 0) => [
+      Math.round(cx + la * ax[0] + lb * ay[0]),
+      Math.round(cy + la * ax[1] + lb * ay[1] - h)
+    ]
+  };
+}
+
+// A raised rectangular box on an oriented footprint. lenA x lenB in tile units,
+// raised `lift` px off the floor, with `height` px of body. Faces are colored by
+// SCREEN position so light stays upper-left at every facing: the lower-left face
+// uses `lit`, the lower-right face `shade`, the cap `top`. Returns the resolved
+// base/cap screen corners so callers can add edge detail.
+function orientedBox(ctx, frame, lenA, lenB, height, colors, lift = 0) {
+  const ha = lenA / 2;
+  const hb = lenB / 2;
+  const corners = [
+    frame.point(-ha, -hb, lift),
+    frame.point(ha, -hb, lift),
+    frame.point(ha, hb, lift),
+    frame.point(-ha, hb, lift)
+  ];
+  let top = corners[0];
+  let bottom = corners[0];
+  let left = corners[0];
+  let right = corners[0];
+  for (const p of corners) {
+    if (p[1] < top[1]) top = p;
+    if (p[1] > bottom[1]) bottom = p;
+    if (p[0] < left[0]) left = p;
+    if (p[0] > right[0]) right = p;
+  }
+  const up = (p) => [p[0], p[1] - height];
+  const capTop = up(top);
+  const capBottom = up(bottom);
+  const capLeft = up(left);
+  const capRight = up(right);
+
+  poly(ctx, colors.lit, [capLeft, capBottom, bottom, left]); // lower-left face
+  poly(ctx, colors.shade, [capBottom, capRight, right, bottom]); // lower-right face
+  poly(ctx, colors.top, [capTop, capRight, capBottom, capLeft]); // top cap
+
+  if (colors.outline) {
+    ctx.strokeStyle = colors.outline;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(capTop[0], capTop[1]);
+    ctx.lineTo(capRight[0], capRight[1]);
+    ctx.lineTo(right[0], right[1]);
+    ctx.lineTo(bottom[0], bottom[1]);
+    ctx.lineTo(left[0], left[1]);
+    ctx.lineTo(capLeft[0], capLeft[1]);
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  return {
+    base: { top, bottom, left, right },
+    cap: { top: capTop, bottom: capBottom, left: capLeft, right: capRight }
+  };
+}
+
+// Footprint screen extent (width, height) for a box, used to size the contact
+// shadow. The extent is identical across facings (the basis is a pure rotation),
+// so a centred shadow diamond covers every orientation.
+function footprintExtent(lenA, lenB) {
+  return {
+    w: (lenA + lenB) * (TILE_WIDTH / 2),
+    h: (lenA + lenB) * (TILE_HEIGHT / 2)
+  };
+}
+
+// A single vertical wooden leg rising `height` px from a floor corner `p`.
+function drawPropLeg(ctx, p, height, color, outline = PALETTE.outline) {
+  px(ctx, p[0] - 1, p[1] - height, outline, 4, height + 1);
+  px(ctx, p[0], p[1] - height, color, 2, height);
 }
 
 // ---------------------------------------------------------------------------
@@ -1263,6 +1445,182 @@ export function drawWashTub(ctx, cx, cy, seed) {
   drawNoisePixels(ctx, cx - 21, cy - 18, 42, 22, [PALETTE.woodDark, PALETTE.stoneDark], 0.055, seed);
 }
 
+// A long refectory dining table. Orientation-aware: the same plank top runs
+// along either isometric diagonal and the tableware rotates with it. Pair it
+// with drawDiningBench / drawLowStool on its long sides.
+export function drawDiningTable(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient);
+  const rng = rngFrom(hash2D(seed + 71, seed * 5 + 13));
+  const lenA = 1.9;
+  const lenB = 0.92;
+  const legH = 13;
+  const slabT = 5;
+  const ext = footprintExtent(lenA, lenB);
+  drawShadowBlob(ctx, cx, cy + 5, ext.w * 0.82, ext.h * 0.82);
+
+  const ha = lenA / 2;
+  const hb = lenB / 2;
+  const legCorners = [
+    frame.point(-ha + 0.06, -hb + 0.12),
+    frame.point(ha - 0.06, -hb + 0.12),
+    frame.point(ha - 0.06, hb - 0.12),
+    frame.point(-ha + 0.06, hb - 0.12)
+  ].sort((a, b) => a[1] - b[1]);
+  // Trestle stretcher between the leg pairs, low to the ground.
+  const sA = frame.point(-ha + 0.1, 0, 3);
+  const sB = frame.point(ha - 0.1, 0, 3);
+  linePx(ctx, sA[0], sA[1], sB[0], sB[1], PALETTE.outline, 3);
+  linePx(ctx, sA[0], sA[1] - 1, sB[0], sB[1] - 1, PALETTE.woodDark, 1);
+  for (const c of legCorners) drawPropLeg(ctx, c, legH, PALETTE.woodDark);
+
+  const box = orientedBox(ctx, frame, lenA, lenB, slabT, {
+    top: PALETTE.woodMid,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.woodDark,
+    outline: PALETTE.outline
+  }, legH);
+
+  // Plank seams along the long axis.
+  for (let i = 1; i < 4; i += 1) {
+    const lb = -hb + (i / 4) * (2 * hb);
+    const a0 = frame.point(-ha + 0.06, lb, legH + slabT);
+    const a1 = frame.point(ha - 0.06, lb, legH + slabT);
+    linePx(ctx, a0[0], a0[1], a1[0], a1[1], PALETTE.woodDark, 1);
+  }
+  // Lit upper-left edge of the plank top.
+  linePx(ctx, box.cap.left[0], box.cap.left[1], box.cap.top[0], box.cap.top[1], PALETTE.woodLight, 1);
+  linePx(ctx, box.cap.top[0], box.cap.top[1], box.cap.right[0], box.cap.right[1], PALETTE.woodLight, 1);
+
+  // Tableware in local coords so it follows the facing. Bowls, a tin cup, bread.
+  const setTop = legH + slabT;
+  for (const [la, lb] of [[-0.58, -0.1], [-0.05, 0.12], [0.5, -0.08]]) {
+    const p = frame.point(la, lb, setTop);
+    drawIsoDiamond(ctx, p[0], p[1], 9, 5, PALETTE.outline);
+    drawIsoDiamond(ctx, p[0], p[1] - 1, 7, 4, PALETTE.stoneDust);
+    px(ctx, p[0] - 1, p[1] - 2, PALETTE.stoneMid, 2, 1);
+  }
+  const cup = frame.point(0.18, -0.22, setTop);
+  px(ctx, cup[0] - 2, cup[1] - 5, PALETTE.outline, 5, 6);
+  px(ctx, cup[0] - 1, cup[1] - 4, PALETTE.stoneMid, 3, 4);
+  px(ctx, cup[0] - 1, cup[1] - 5, PALETTE.stoneLight, 2, 1);
+  const bread = frame.point(-0.32, 0.16, setTop);
+  px(ctx, bread[0] - 3, bread[1] - 3, PALETTE.rustDark, 7, 4);
+  px(ctx, bread[0] - 2, bread[1] - 4, PALETTE.clothTan, 4, 2);
+
+  // Knife scars and grime, kept sparse so it reads as use, not noise.
+  for (let i = 0; i < 4; i += 1) {
+    const p = frame.point(-ha + rng() * lenA, -hb + rng() * lenB, setTop);
+    px(ctx, p[0], p[1], rng() < 0.5 ? PALETTE.woodDark : PALETTE.woodLight, rng() < 0.4 ? 2 : 1, 1);
+  }
+}
+
+// A long backless dining bench. Sits on a table's long side; orientation-aware
+// so it matches whichever diagonal the table runs along.
+export function drawDiningBench(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient);
+  const rng = rngFrom(hash2D(seed + 29, seed * 3 + 7));
+  const lenA = 1.7;
+  const lenB = 0.34;
+  const legH = 8;
+  const slabT = 3;
+  const ext = footprintExtent(lenA, lenB);
+  drawShadowBlob(ctx, cx, cy + 3, ext.w * 0.78, ext.h * 0.92);
+
+  const ha = lenA / 2;
+  const hb = lenB / 2;
+  const legCorners = [
+    frame.point(-ha + 0.08, 0),
+    frame.point(ha - 0.08, 0)
+  ].sort((a, b) => a[1] - b[1]);
+  for (const c of legCorners) drawPropLeg(ctx, c, legH, PALETTE.woodDark);
+
+  const box = orientedBox(ctx, frame, lenA, lenB, slabT, {
+    top: PALETTE.woodMid,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.woodDark,
+    outline: PALETTE.outline
+  }, legH);
+  linePx(ctx, box.cap.left[0], box.cap.left[1], box.cap.top[0], box.cap.top[1], PALETTE.woodLight, 1);
+
+  // A worn seat scuff and a couple of grain lines along the plank.
+  const a0 = frame.point(-ha + 0.1, 0, legH + slabT);
+  const a1 = frame.point(ha - 0.1, 0, legH + slabT);
+  linePx(ctx, a0[0], a0[1], a1[0], a1[1], PALETTE.woodDark, 1);
+  for (let i = 0; i < 3; i += 1) {
+    const p = frame.point(-ha + rng() * lenA, -hb + rng() * lenB, legH + slabT);
+    px(ctx, p[0], p[1], PALETTE.woodLight, 1, 1);
+  }
+}
+
+// A kitchen work counter: a stone base under a scarred wood worktop, with a
+// little prep clutter. Orientation-aware so a run of counters can wrap a wall.
+export function drawKitchenCounter(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient);
+  const rng = rngFrom(hash2D(seed + 53, seed * 7 + 5));
+  const lenA = 1.42;
+  const lenB = 0.82;
+  const baseH = 16;
+  const topT = 4;
+  const ext = footprintExtent(lenA, lenB);
+  drawShadowBlob(ctx, cx, cy + 6, ext.w * 0.86, ext.h * 0.86);
+
+  // Stone base.
+  const base = orientedBox(ctx, frame, lenA, lenB, baseH, {
+    top: PALETTE.stoneDark,
+    lit: PALETTE.stoneMid,
+    shade: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+  // Drawer / panel seams on the lit lower-left face.
+  const seam = (t) => {
+    const a = [
+      base.cap.left[0] + (base.cap.bottom[0] - base.cap.left[0]) * t,
+      base.cap.left[1] + (base.cap.bottom[1] - base.cap.left[1]) * t
+    ];
+    const b = [
+      base.base.left[0] + (base.base.bottom[0] - base.base.left[0]) * t,
+      base.base.left[1] + (base.base.bottom[1] - base.base.left[1]) * t
+    ];
+    linePx(ctx, a[0], a[1] + 2, b[0], b[1] - 2, PALETTE.void, 1);
+  };
+  seam(0.5);
+  px(ctx, base.cap.bottom[0] - 9, base.cap.bottom[1] + 6, PALETTE.stoneDust, 3, 1);
+
+  // Wood worktop, slightly overhanging the base.
+  const top = orientedBox(ctx, frame, lenA + 0.12, lenB + 0.12, topT, {
+    top: PALETTE.woodMid,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.woodDark,
+    outline: PALETTE.outline
+  }, baseH);
+  linePx(ctx, top.cap.left[0], top.cap.left[1], top.cap.top[0], top.cap.top[1], PALETTE.woodLight, 1);
+
+  // Prep clutter on the worktop, placed in local coords.
+  const workTop = baseH + topT;
+  const board = frame.point(-0.28, 0.04, workTop);
+  drawIsoDiamond(ctx, board[0], board[1], 16, 8, PALETTE.outline);
+  drawIsoDiamond(ctx, board[0], board[1] - 1, 13, 6, PALETTE.woodLight);
+  for (let i = 0; i < 4; i += 1) {
+    px(ctx, board[0] - 5 + i * 3, board[1] - 1, PALETTE.rustDark, 1, 1);
+  }
+  // A knife laid across the board.
+  const k0 = frame.point(-0.44, -0.06, workTop);
+  const k1 = frame.point(-0.1, 0.12, workTop);
+  linePx(ctx, k0[0], k0[1], k1[0], k1[1], PALETTE.stoneLight, 1);
+  px(ctx, k0[0] - 1, k0[1], PALETTE.woodDark, 2, 2);
+  // A clay jar and a bowl.
+  const jar = frame.point(0.4, -0.1, workTop);
+  px(ctx, jar[0] - 3, jar[1] - 8, PALETTE.outline, 7, 9);
+  px(ctx, jar[0] - 2, jar[1] - 7, PALETTE.rustMid, 5, 7);
+  px(ctx, jar[0] - 1, jar[1] - 6, PALETTE.rustLight, 2, 2);
+  const bowl = frame.point(0.22, 0.16, workTop);
+  drawIsoDiamond(ctx, bowl[0], bowl[1], 9, 5, PALETTE.outline);
+  drawIsoDiamond(ctx, bowl[0], bowl[1] - 1, 6, 3, PALETTE.stoneDust);
+
+  drawNoisePixels(ctx, cx - 18, cy - workTop, 36, workTop + 6, [PALETTE.stoneDark, PALETTE.woodDark], 0.03, seed);
+  if (rng() < 0.5) px(ctx, top.cap.top[0] - 4, top.cap.top[1] - 1, PALETTE.hostBone, 2, 1);
+}
+
 export function drawSealedStorageCrate(ctx, cx, cy, seed) {
   drawRustedCrate(ctx, cx, cy, seed);
   px(ctx, cx - 18, cy - 2, PALETTE.outline, 36, 4);
@@ -1472,6 +1830,147 @@ export function drawQuarantineBarricade(ctx, cx, cy, seed) {
     const mark = rng() < 0.5 ? PALETTE.clothTan : PALETTE.hostRed;
     px(ctx, sx, cy - 17, mark, 5, 2);
   }
+}
+
+export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
+  const opened = Boolean(opts.opened);
+  const leaf = opts.leaf === 'south' ? 'south' : 'north';
+  // wallPlane picks which iso wall direction the doorway sits on; wallRunFace
+  // derives the run axis from it, so the door always mounts on a real slanted
+  // face ('se' = up-right face, 'sw' = up-left face) and never goes flat.
+  const wallPlane = opts.wallPlane === 'sw' ? 'sw' : 'se';
+  const rawProgress = opened ? (typeof opts.progress === 'number' ? opts.progress : 1) : 0;
+  const frame = opened ? Math.max(1, Math.min(4, Math.ceil(rawProgress * 4))) : 0;
+  const rng = rngFrom(hash2D(seed + 41, seed * 3 + 17));
+  const doorFace = wallRunFace(ctx, cx, cy, { plane: wallPlane, span: 2 });
+  const lerp = (a, b, t) => a + (b - a) * t;
+
+  const drawBolt = (face, u, v, color = PALETTE.hostGold) => {
+    const p = face.point(u, v);
+    px(ctx, p[0] - 1, p[1] - 1, color, 2, 2);
+  };
+
+  const drawClosedDoor = (face) => {
+    face.rect(0.0, 0.0, 1.0, 1.0, PALETTE.outline);
+    face.rect(0.025, 0.035, 0.975, 0.965, PALETTE.stoneDark);
+    face.rect(0.07, 0.065, 0.93, 0.935, PALETTE.outline);
+    face.rect(0.105, 0.095, 0.895, 0.905, PALETTE.woodDark);
+    face.rect(0.145, 0.13, 0.485, 0.875, PALETTE.woodMid);
+    face.rect(0.515, 0.13, 0.855, 0.875, PALETTE.woodMid);
+
+    face.line(0.02, 0.03, 0.98, 0.03, PALETTE.stoneDust, 3);
+    face.line(0.02, 0.97, 0.98, 0.97, PALETTE.outline, 3);
+    face.line(0.045, 0.06, 0.045, 0.94, PALETTE.stoneLight, 1);
+    face.line(0.955, 0.06, 0.955, 0.94, PALETTE.outline, 3);
+    face.line(0.13, 0.12, 0.87, 0.12, PALETTE.woodLight, 1);
+    face.line(0.5, 0.105, 0.5, 0.905, PALETTE.outline, 4);
+    face.line(0.482, 0.14, 0.482, 0.86, PALETTE.rustDark, 1);
+    face.line(0.518, 0.14, 0.518, 0.86, PALETTE.rustLight, 1);
+
+    for (const u of [0.23, 0.36, 0.64, 0.77]) {
+      face.line(u, 0.15, u, 0.86, PALETTE.woodDark, 1);
+    }
+    for (const v of [0.26, 0.52, 0.74]) {
+      face.line(0.12, v, 0.88, v, PALETTE.outline, 4);
+      face.line(0.16, v - 0.02, 0.84, v - 0.02, PALETTE.rustDark, 2);
+      face.line(0.2, v - 0.03, 0.8, v - 0.03, PALETTE.rustMid, 1);
+      for (const u of [0.17, 0.38, 0.62, 0.83]) drawBolt(face, u, v - 0.045);
+    }
+
+    for (const hingeU of [0.12, 0.88]) {
+      face.line(hingeU, 0.13, hingeU, 0.88, PALETTE.outline, 4);
+      face.line(hingeU + (hingeU < 0.5 ? 0.035 : -0.035), 0.17, hingeU + (hingeU < 0.5 ? 0.035 : -0.035), 0.84, PALETTE.rustMid, 2);
+      for (const v of [0.27, 0.52, 0.77]) {
+        const p = face.point(hingeU, v);
+        px(ctx, p[0] - 2, p[1] - 3, PALETTE.outline, 6, 7);
+        px(ctx, p[0] - 1, p[1] - 2, PALETTE.rustDark, 4, 5);
+        px(ctx, p[0], p[1] - 1, PALETTE.hostGold, 2, 2);
+      }
+    }
+
+    const lock = face.point(0.535, 0.56);
+    px(ctx, lock[0] - 7, lock[1] - 5, PALETTE.outline, 16, 10);
+    px(ctx, lock[0] - 6, lock[1] - 4, PALETTE.rustDark, 14, 7);
+    px(ctx, lock[0] - 1, lock[1] - 3, PALETTE.hostGold, 5, 3);
+    px(ctx, lock[0], lock[1] + 2, PALETTE.void, 2, 3);
+
+    for (let i = 0; i < 4; i += 1) {
+      const scar = face.point(0.14 + rng() * 0.72, 0.16 + rng() * 0.66);
+      px(ctx, scar[0], scar[1], rng() < 0.55 ? PALETTE.woodLight : PALETTE.rustDark, rng() < 0.45 ? 2 : 1, 1);
+    }
+  };
+
+  if (!opened || frame === 0) {
+    if (leaf === 'south') return;
+    drawClosedDoor(doorFace);
+    return;
+  }
+
+  if (leaf === 'south') return;
+
+  const drawOpeningFrame = () => {
+    drawShadowBlob(ctx, cx - 30, cy + 17, TILE_WIDTH * 0.9, TILE_HEIGHT * 0.75);
+    doorFace.rect(0.0, 0.0, 1.0, 1.0, PALETTE.outline);
+    doorFace.rect(0.05, 0.06, 0.95, 0.94, PALETTE.void);
+    doorFace.rect(0.09, 0.11, 0.91, 0.89, PALETTE.hostBlack);
+    doorFace.line(0.0, 0.0, 1.0, 0.0, PALETTE.stoneDust, 4);
+    doorFace.line(0.0, 1.0, 1.0, 1.0, PALETTE.outline, 4);
+    doorFace.line(0.04, 0.08, 0.04, 0.92, PALETTE.stoneDark, 5);
+    doorFace.line(0.96, 0.08, 0.96, 0.92, PALETTE.stoneDark, 5);
+  };
+
+  const drawDoorWing = (side, swing) => {
+    const left = side === 'left';
+    const hingeU = left ? 0.12 : 0.88;
+    const freeClosedU = left ? 0.49 : 0.51;
+    const freeOpenU = left ? 0.235 : 0.765;
+    const freeU = lerp(freeClosedU, freeOpenU, swing);
+    const topV = lerp(0.13, 0.035, swing);
+    const bottomV = lerp(0.88, 0.965, swing);
+    const hingeTop = doorFace.point(hingeU, 0.13);
+    const hingeBottom = doorFace.point(hingeU, 0.88);
+    const freeTop = doorFace.point(freeU, topV);
+    const freeBottom = doorFace.point(freeU, bottomV);
+    const wing = left
+      ? faceTools(ctx, hingeTop, freeTop, freeBottom, hingeBottom)
+      : faceTools(ctx, freeTop, hingeTop, hingeBottom, freeBottom);
+    const hingeLocal = left ? 0.08 : 0.92;
+    const hingeBand = left ? 0.18 : 0.82;
+    const latchU = left ? 0.82 : 0.18;
+
+    wing.rect(0.0, 0.0, 1.0, 1.0, PALETTE.outline);
+    wing.rect(0.055, 0.05, 0.945, 0.95, PALETTE.woodDark);
+    wing.rect(0.13, 0.1, 0.87, 0.9, PALETTE.woodMid);
+    wing.line(0.08, 0.08, 0.92, 0.08, PALETTE.woodLight, 1);
+    wing.line(0.08, 0.92, 0.92, 0.92, PALETTE.outline, 2);
+    wing.line(hingeLocal, 0.08, hingeLocal, 0.92, PALETTE.outline, 4);
+    wing.line(hingeBand, 0.12, hingeBand, 0.88, PALETTE.rustMid, 2);
+
+    for (const u of [0.33, 0.62]) {
+      wing.line(u, 0.13, u, 0.87, PALETTE.woodDark, 1);
+    }
+    for (const v of [0.28, 0.55, 0.76]) {
+      wing.line(0.08, v, 0.92, v, PALETTE.outline, 3);
+      wing.line(0.15, v - 0.025, 0.85, v - 0.025, PALETTE.rustMid, 1);
+      for (const u of [0.2, 0.78]) drawBolt(wing, u, v - 0.045);
+    }
+
+    for (const v of [0.26, 0.52, 0.78]) {
+      const p = wing.point(hingeLocal, v);
+      px(ctx, p[0] - 2, p[1] - 3, PALETTE.outline, 5, 6);
+      px(ctx, p[0] - 1, p[1] - 2, PALETTE.rustDark, 3, 4);
+    }
+
+    const latch = wing.point(latchU, 0.56);
+    px(ctx, latch[0] - 4, latch[1] - 3, PALETTE.outline, 8, 6);
+    px(ctx, latch[0] - 3, latch[1] - 2, PALETTE.rustDark, 6, 4);
+    px(ctx, latch[0], latch[1] - 1, PALETTE.hostGold, 2, 2);
+  };
+
+  const swing = [0, 0.28, 0.52, 0.76, 1][frame];
+  drawOpeningFrame();
+  drawDoorWing('left', swing);
+  drawDoorWing('right', swing);
 }
 
 export function drawCampfire(ctx, cx, cy, seed, flicker = 0) {

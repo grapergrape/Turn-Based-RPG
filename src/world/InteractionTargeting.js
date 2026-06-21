@@ -1,3 +1,5 @@
+import { isOpenDoorObject } from './DoorSystem.js';
+
 function sameCell(subject, cell) {
   return subject?.x === cell?.x && subject?.y === cell?.y;
 }
@@ -23,10 +25,14 @@ export function resolveInteractionTargetAtCell({
   actors = [],
   enemies = [],
   interactables = [],
+  hiddenTiles = null,
   mode = 'explore'
 }) {
   if (!cell || !grid?.isInside(cell.x, cell.y)) {
     return { type: 'out-of-bounds', cell };
+  }
+  if (hiddenTiles?.has?.(`${cell.x},${cell.y}`) && !sameCell(player, cell)) {
+    return { type: 'blocked', cell };
   }
 
   const footItem = mode !== 'combat' && sameCell(player, cell)
@@ -45,7 +51,9 @@ export function resolveInteractionTargetAtCell({
   const corpse = enemies.find((enemy) => enemy.isDead && enemy.inspect && sameCell(enemy, cell)) ?? null;
   if (corpse) return { type: 'corpse', enemy: corpse, cell };
 
-  const object = interactables.find((entry) => !entry.consumed && sameCell(entry, cell)) ?? null;
+  const object = interactables.find((entry) =>
+    !entry.consumed && !isOpenDoorObject(entry) && sameCell(entry, cell)
+  ) ?? null;
   if (object) return { type: 'object', object, cell };
 
   if (grid.isWalkable(cell.x, cell.y)) return { type: 'move', cell };

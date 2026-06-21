@@ -82,11 +82,11 @@
     {
       "id": "west-camp-trigger",
       "encounter": "west-camp",
-      "x": 5,
+      "x": 4,
       "y": 15,
       "radius": 2,
       "intro": [
-        "The campfire cultists scatter their bowls and reach for blades.",
+        "The refectory cultists scatter their bowls and reach for blades.",
         "One keeps whispering the lesson even as the fight begins."
       ]
     },
@@ -100,6 +100,16 @@
         "A throat-singer drags his voice into a wet hymn.",
         "The bent penitent beside him answers with bone-thorn hands."
       ]
+    }
+  ],
+  "hiddenRegions": [
+    {
+      "id": "east-watch-room",
+      "doorGroup": "east-watch-double-door",
+      "x": 32,
+      "y": 9,
+      "width": 6,
+      "height": 7
     }
   ],
   "combatIntro": [
@@ -192,18 +202,18 @@
     "############................############",
     "############rrrrrrr..rrrrrrr############",
     "#########......................#########",
-    "#########......................b......##",
-    "#########......................b......##",
-    "#########.............................##",
-    "#########.............................##",
-    "##......b......................b......##",
-    "##......b......................b......##",
-    "##.............................b......##",
-    "##.............................#########",
+    "#########......................#......##",
+    "##......b......................#......##",
+    "##......b.............................##",
+    "##......b.............................##",
+    "##......b......................#......##",
+    "##.............................#......##",
+    "##.............................#......##",
     "##......b......................#########",
     "##......b......................#########",
-    "#########......................#########",
-    "#########......................#########",
+    "##......b......................#########",
+    "##......b......................#########",
+    "##......b......................#########",
     "#########bbbbbbbbbb..bbbbbbbbbb#########",
     "#########......................#########",
     "#########......................#########",
@@ -309,7 +319,7 @@
       {
         "id": "choir-candle-bearer",
         "x": 5,
-        "y": 17,
+        "y": 16,
         "encounter": "west-camp",
         "ambient": [
           "Hold the bowl with both hands.",
@@ -860,36 +870,9 @@
       "y": 24
     },
     {
-      "kind": "campfire",
-      "x": 4,
-      "y": 16,
-      "blocking": true
-    },
-    {
-      "kind": "candle-cluster",
-      "x": 3,
-      "y": 16
-    },
-    {
-      "kind": "candle-cluster",
-      "x": 5,
-      "y": 16
-    },
-    {
-      "kind": "pantry-shelf",
-      "x": 2,
-      "y": 14,
-      "blocking": true,
-      "name": "Pantry Shelf",
-      "interact": {
-        "type": "note",
-        "log": "Jars of beans and hard root sit in careful rows. Two labels are written in a child's block letters."
-      }
-    },
-    {
       "kind": "kitchen-hearth",
       "x": 3,
-      "y": 15,
+      "y": 10,
       "blocking": true,
       "name": "Kitchen Hearth",
       "interact": {
@@ -898,19 +881,34 @@
       }
     },
     {
-      "kind": "wash-tub",
-      "x": 6,
-      "y": 16,
-      "name": "Wash Tub",
+      "kind": "rusted-crate",
+      "x": 2,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "kitchen-counter",
+      "x": 5,
+      "y": 10,
+      "orient": "se",
+      "blocking": true,
+      "name": "Prep Counter",
       "interact": {
         "type": "note",
-        "log": "Clean rags hang over the rim. The water is grey with ash, not blood."
+        "log": "Flour, a worn board, and a paring knife. The last meal cut here was bread, enough for a crowd."
       }
     },
     {
+      "kind": "kitchen-counter",
+      "x": 6,
+      "y": 10,
+      "orient": "se",
+      "blocking": true
+    },
+    {
       "kind": "rusted-reliquary",
-      "x": 3,
-      "y": 13,
+      "x": 7,
+      "y": 10,
       "blocking": true,
       "interact": {
         "type": "container",
@@ -928,21 +926,20 @@
       }
     },
     {
-      "kind": "rusted-crate",
-      "x": 6,
-      "y": 13,
-      "blocking": true
-    },
-    {
-      "kind": "rusted-barrel",
-      "x": 6,
-      "y": 18,
-      "blocking": true
+      "kind": "pantry-shelf",
+      "x": 2,
+      "y": 11,
+      "blocking": true,
+      "name": "Pantry Shelf",
+      "interact": {
+        "type": "note",
+        "log": "Jars of beans and hard root sit in careful rows. Two labels are written in a child's block letters."
+      }
     },
     {
       "kind": "field-satchel",
-      "x": 5,
-      "y": 13,
+      "x": 7,
+      "y": 11,
       "interact": {
         "type": "container",
         "log": "The satchel smells of ash, old wool, and field antiseptic.",
@@ -955,14 +952,115 @@
       }
     },
     {
-      "kind": "scorch-mark",
+      "kind": "wash-tub",
+      "x": 7,
+      "y": 12,
+      "name": "Wash Tub",
+      "interact": {
+        "type": "note",
+        "log": "Clean rags hang over the rim. The water is grey with ash, not blood."
+      }
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 3,
+      "y": 12
+    },
+    {
+      "kind": "campfire",
+      "x": 3,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 6,
+      "y": 13
+    },
+    {
+      "kind": "dining-bench",
       "x": 4,
-      "y": 15
+      "y": 17,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-table",
+      "x": 4,
+      "y": 18,
+      "orient": "se",
+      "blocking": true,
+      "name": "Refectory Table",
+      "interact": {
+        "type": "note",
+        "log": "Two long benches and tin cups set by height. The cult ate at the settlers' table and left the bowls unwashed."
+      }
+    },
+    {
+      "kind": "dining-bench",
+      "x": 4,
+      "y": 19,
+      "orient": "se"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 4,
+      "y": 18
+    },
+    {
+      "kind": "low-stool",
+      "x": 2,
+      "y": 17
+    },
+    {
+      "kind": "low-stool",
+      "x": 3,
+      "y": 18
+    },
+    {
+      "kind": "dining-bench",
+      "x": 5,
+      "y": 19,
+      "orient": "sw"
+    },
+    {
+      "kind": "dining-table",
+      "x": 6,
+      "y": 19,
+      "orient": "sw",
+      "blocking": true
+    },
+    {
+      "kind": "dining-bench",
+      "x": 7,
+      "y": 19,
+      "orient": "sw"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 6,
+      "y": 19
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 2,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 7,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "scorch-mark",
+      "x": 3,
+      "y": 11
     },
     {
       "kind": "wax-stain",
       "x": 4,
-      "y": 17
+      "y": 12
     },
     {
       "kind": "blood-stain",
@@ -972,12 +1070,27 @@
     {
       "kind": "glass-debris",
       "x": 6,
-      "y": 17
+      "y": 16
     },
     {
-      "kind": "rubble-pile",
+      "kind": "floor-crack",
+      "x": 4,
+      "y": 16
+    },
+    {
+      "kind": "dust",
+      "x": 5,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 20
+    },
+    {
+      "kind": "rubble-decal",
       "x": 2,
-      "y": 13
+      "y": 19
     },
     {
       "kind": "rusted-barrel",
@@ -1349,6 +1462,72 @@
       "y": 12
     },
     {
+      "kind": "chapel-double-door",
+      "x": 31,
+      "y": 11,
+      "blocking": true,
+      "id": "east-watch-double-door-north",
+      "name": "East Watch Doors",
+      "doorGroup": "east-watch-double-door",
+      "doorLeaf": "north",
+      "wallPlane": "se",
+      "interact": {
+        "type": "door",
+        "log": "The double doors stand open. Cold air drags through the gap.",
+        "lock": {
+          "id": "east-watch-double-door-lock",
+          "title": "East Watch Doors",
+          "lines": [
+            "The double doors are chained from your side with a small Censure hasp, old but honest.",
+            "Beyond them, something heavy breathes through metal."
+          ],
+          "methods": [
+            {
+              "id": "pick-hasp",
+              "label": "Pick the Censure hasp",
+              "field": "security",
+              "dc": 35,
+              "successLog": "The hasp gives. Both doors swing outward on dry hinges.",
+              "failLog": "The pick slips and the hasp stays shut."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "chapel-double-door",
+      "x": 31,
+      "y": 12,
+      "blocking": true,
+      "id": "east-watch-double-door-south",
+      "name": "East Watch Doors",
+      "doorGroup": "east-watch-double-door",
+      "doorLeaf": "south",
+      "wallPlane": "se",
+      "interact": {
+        "type": "door",
+        "log": "The double doors stand open. Cold air drags through the gap.",
+        "lock": {
+          "id": "east-watch-double-door-lock",
+          "title": "East Watch Doors",
+          "lines": [
+            "The double doors are chained from your side with a small Censure hasp, old but honest.",
+            "Beyond them, something heavy breathes through metal."
+          ],
+          "methods": [
+            {
+              "id": "pick-hasp",
+              "label": "Pick the Censure hasp",
+              "field": "security",
+              "dc": 35,
+              "successLog": "The hasp gives. Both doors swing outward on dry hinges.",
+              "failLog": "The pick slips and the hasp stays shut."
+            }
+          ]
+        }
+      }
+    },
+    {
       "kind": "wall-safe",
       "x": 24,
       "y": 0,
@@ -1357,9 +1536,51 @@
       "name": "Warden's Wall Safe",
       "interact": {
         "type": "container",
-        "requiresItem": "warden-safe-key",
-        "lockedDialogue": "ash-chapel-warden-safe-locked",
-        "lockedLog": "The wall safe is locked. It will not give without the warden's key.",
+        "lock": {
+          "id": "warden-wall-safe-lock",
+          "title": "Warden's Wall Safe",
+          "lines": [
+            "The strongbox is set into the old wall. Grit packs the keyhole, but the pins still sit where they should.",
+            "The Remnant plate is a warden's seal, built to slow thieves and frighten prisoners."
+          ],
+          "methods": [
+            {
+              "id": "warden-key",
+              "label": "Use the warden's key",
+              "requiresItem": "warden-safe-key",
+              "successLog": "The warden's key turns hard. The safe opens."
+            },
+            {
+              "id": "pick-keyway",
+              "label": "Work the keyway",
+              "field": "security",
+              "dc": 50,
+              "successLog": "You clear the grit and walk the pins open.",
+              "failLog": "The pins hold. Another hard try may chew the keyway."
+            },
+            {
+              "id": "read-seal",
+              "label": "Read the warden seal",
+              "field": "doctrine",
+              "dc": 40,
+              "unlocks": false,
+              "successLog": "The plate marks diocesan pay, not a reliquary ward. This was a warden's box, not a priest's.",
+              "failLog": "The seal is too worn to read past the sun-cross."
+            },
+            {
+              "id": "pry-hinge",
+              "label": "Pry the hinge",
+              "primary": "body",
+              "dc": 7,
+              "successLog": "The hinge gives with a cracked metal groan.",
+              "failLog": "The hinge holds. The noise travels through the stone.",
+              "failure": {
+                "setFlag": "noisy-safe-attempt",
+                "log": "Something shifts in the chapel dark, then settles."
+              }
+            }
+          ]
+        },
         "dialogue": "ash-chapel-warden-safe",
         "log": "An iron strongbox set into the wall behind the hung saint.",
         "loot": [

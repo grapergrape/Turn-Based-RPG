@@ -166,9 +166,128 @@ Rules:
   rule in explore and combat).
 - `interact` (optional) can mark a loot container (`type: "container"` with
   `loot`), the altar (`type: "altar"` with `triggersCombat`), a readable note
-  (`type: "note"`), or a hidden ladder (`type: "secret-entrance"` /
-  `type: "secret-exit"`). Interactions can reference `dialogue` by id and apply
-  a `questUpdate`.
+  (`type: "note"`), a passable door (`type: "door"`), or a hidden ladder
+  (`type: "secret-entrance"` / `type: "secret-exit"`). Interactions can
+  reference `dialogue` by id and apply a `questUpdate`.
+- `interact.lock` can gate any interaction behind a deterministic fieldcraft
+  panel. The runtime shows the lock through the normal dialogue UI, then resolves
+  the selected method from item possession, a field rating, or a primary
+  attribute. No random roll is made. If the method succeeds and `unlocks` is not
+  `false`, the object is marked unlocked and the normal interaction runs. A
+  door opens when the lock succeeds and clears its blocking cell from pathing.
+
+```json
+{
+  "kind": "wall-safe",
+  "x": 24,
+  "y": 0,
+  "blocking": true,
+  "name": "Warden's Wall Safe",
+  "interact": {
+    "type": "container",
+    "lock": {
+      "id": "warden-wall-safe-lock",
+      "title": "Warden's Wall Safe",
+      "lines": [
+        "The strongbox is set into the old wall. Grit packs the keyhole, but the pins still sit where they should."
+      ],
+      "methods": [
+        {
+          "id": "warden-key",
+          "label": "Use the warden's key",
+          "requiresItem": "warden-safe-key",
+          "successLog": "The warden's key turns hard. The safe opens."
+        },
+        {
+          "id": "pick-keyway",
+          "label": "Work the keyway",
+          "field": "security",
+          "dc": 50,
+          "successLog": "You clear the grit and walk the pins open.",
+          "failLog": "The pins hold. Another hard try may chew the keyway."
+        },
+        {
+          "id": "pry-hinge",
+          "label": "Pry the hinge",
+          "primary": "body",
+          "dc": 7,
+          "failLog": "The hinge holds. The noise travels through the stone.",
+          "failure": { "setFlag": "noisy-safe-attempt" }
+        }
+      ]
+    },
+    "dialogue": "ash-chapel-warden-safe",
+    "loot": [{ "item": "relic-rounds", "count": 2 }]
+  }
+}
+```
+
+Lock rules:
+
+- `methods` must contain one to four entries. The fifth dialogue choice is
+  reserved for leaving the lock shut.
+- A method with `requiresItem` is shown only when the item is in the pack.
+- A method with `field` uses a field rating id from `src/core/Progression.js`
+  and a `dc` from 0 to 100. A method with `primary` uses a primary id and a
+  `dc` from 0 to 10.
+- Field and primary checks are deterministic. Current rating greater than or
+  equal to `dc` succeeds. Lower rating fails and leaves the lock shut.
+- `successLog`, `failLog`, and `unavailableLog` are optional player-facing log
+  text. Keep them short and follow the writing rules at the top of this file.
+- `success` and `failure` can use the same effect shape as dialogue choices,
+  such as `log`, `setFlag`, `inventory`, `questUpdate`, `xp`, or `startCombat`.
+- Set `unlocks: false` for an inspection method that gives information without
+  opening the object. Set `openOnSuccess: false` when the method should unlock
+  the object but require a second click to use it.
+- Doors use authored objects with `interact.type: "door"` and `blocking: true`.
+  When opened, the runtime sets `opened`, starts `openedAt` for the prop
+  animation, and removes the cell from the grid blocker set. Grouped door leaves
+  share a `doorGroup`; picking either leaf opens every object in that group.
+  `chapel-double-door` leaves must define `doorLeaf: "north"` or
+  `doorLeaf: "south"` so the two panels swing apart.
+- `wallPlane` is for art that mounts flush on a wall (double doors, future barred
+  gates), as opposed to `orient` below which rotates free-standing floor props.
+  Values are `"se"` and `"sw"`: in this projection a wall runs along exactly one
+  of two ground directions and shows exactly one clean slanted face, and the
+  plane names which one (`"se"` = the up-right face of a wall running along +y,
+  `"sw"` = the up-left face of a wall running along +x). It therefore also fixes
+  the run direction, so a wall fixture can never come out as a flat horizontal
+  face: match the plane to the wall the doorway is cut into. Use it so a door's
+  rails, jambs, and opening frame follow the same plane as the surrounding wall.
+- Free-standing props can define `orient` to rotate the same art to any of the
+  four isometric facings: `"se"` (default), `"sw"`, `"nw"`, `"ne"`. This is how
+  one texture is reused at different places and orientations (a long table run
+  along either diagonal, a counter facing the room or the wall). The facing
+  names the screen direction the prop's front points. Only kinds registered with
+  the `oriented()` helper in `src/render/spriteCatalog.js` read it (currently
+  `dining-table`, `dining-bench`, `kitchen-counter`); other kinds ignore it.
+  Lighting stays correct at every facing because the renderer colors faces by
+  screen position, so a rotated copy is never lit from the wrong side. To make a
+  new kind orientation-aware, give its draw function an `opts.orient` and build
+  it on the `isoFrame` / `orientedBox` helpers in `PixelPrimitives.js`, then
+  register it with `oriented(...)` (see `game_art_skill/SKILL.md`, Section 5).
+- `hiddenRegions` is a top-level array for rooms or cells that should stay
+  unseen until a grouped door opens. Each entry needs an `id`, a `doorGroup`, and
+  a rectangular grid area via `x`, `y`, `width`, and `height`. While hidden, the
+  runtime skips that region's floor bake, flat decals, props, actors, ground
+  items, hover targets, movement previews, ambient speech, and combat triggers.
+  The area becomes visible when any door object in the matching `doorGroup` is
+  opened.
+
+```json
+{
+  "hiddenRegions": [
+    {
+      "id": "east-watch-room",
+      "doorGroup": "east-watch-double-door",
+      "x": 32,
+      "y": 9,
+      "width": 6,
+      "height": 7
+    }
+  ]
+}
+```
 - `quests` lists runtime quest ids loaded from `data/quests/`.
 - `dialogue` lists runtime dialogue ids loaded from `data/dialogue/`.
 - Enemy spawns can define `encounter` to group nearby enemies into one combat

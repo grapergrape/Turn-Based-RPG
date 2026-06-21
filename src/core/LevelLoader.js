@@ -6,6 +6,7 @@
 
 import { Grid } from '../world/Grid.js';
 import { createActor } from '../entities/ActorFactory.js';
+import { isPassableWhenOpen } from '../world/DoorSystem.js';
 import { createGroundItem } from '../world/GroundItems.js';
 
 async function loadJson(path) {
@@ -38,6 +39,15 @@ function collectDialogueItemIds(dialogueDefs, itemIds) {
       addInventoryEffectItems(node.effects, itemIds);
       for (const choice of node.choices ?? []) addInventoryEffectItems(choice.effects, itemIds);
     }
+  }
+}
+
+function collectLockItemIds(lock, itemIds) {
+  if (!lock || typeof lock !== 'object' || !Array.isArray(lock.methods)) return;
+  for (const method of lock.methods) {
+    if (method?.requiresItem) itemIds.add(method.requiresItem);
+    addInventoryEffectItems(method?.success, itemIds);
+    addInventoryEffectItems(method?.failure, itemIds);
   }
 }
 
@@ -78,7 +88,7 @@ export async function loadLevel(levelPath) {
   const interactables = [];
   for (const object of level.objects ?? []) {
     props.push(object);
-    if (object.blocking) grid.addBlocked(object.x, object.y);
+    if (object.blocking && !(object.opened && isPassableWhenOpen(object))) grid.addBlocked(object.x, object.y);
     if (object.interact) interactables.push(object);
   }
 
@@ -143,6 +153,7 @@ export async function loadLevel(levelPath) {
   const itemIds = new Set();
   for (const object of interactables) {
     for (const entry of object.interact.loot ?? []) itemIds.add(entry.item);
+    collectLockItemIds(object.interact.lock, itemIds);
   }
   for (const entry of level.groundItems ?? []) {
     if (entry.item) itemIds.add(entry.item);
@@ -188,6 +199,7 @@ export async function loadLevel(levelPath) {
     questDefs,
     codex: Array.isArray(level.codex) ? level.codex : [],
     journalNotes: Array.isArray(level.journalNotes) ? level.journalNotes : [],
+    hiddenRegions: Array.isArray(level.hiddenRegions) ? level.hiddenRegions : [],
     combatIntro: level.combatIntro ?? [],
     combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
     victoryLog: level.victoryLog ?? null,

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Furniture / Orientation Preview</title>
+    <style>
+      html, body { margin: 0; background: #14110d; color: #c8b99a; font-family: "Courier New", monospace; }
+      main { display: grid; place-items: center; padding: 16px; }
+      canvas { image-rendering: pixelated; background: #14110d; }
+      p { opacity: 0.7; font-size: 12px; max-width: 880px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p>
+        Isolated render of orientation-aware kitchen furniture (left to right: se, sw, nw, ne)
+        beside non-oriented kitchen pieces, each on a stone floor tile at 3x. Verify the light
+        stays upper-left in every facing and the contact shadow reads.
+      </p>
+      <canvas id="c" width="560" height="760"></canvas>
+    </main>
+    <script type="module">
+      import * as P from '../src/render/PixelPrimitives.js';
+      import { PALETTE } from '../src/render/palette.js';
+
+      const canvas = document.getElementById('c');
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = false;
+      ctx.scale(3, 3);
+
+      function floor(cx, cy) {
+        P.drawIsoDiamond(ctx, cx, cy, 64, 32, PALETTE.stoneDark);
+        P.drawIsoDiamond(ctx, cx, cy - 1, 56, 28, PALETTE.stoneMid);
+      }
+
+      const orients = ['se', 'sw', 'nw', 'ne'];
+      const oriented = [
+        ['drawDiningTable', 'dining-table'],
+        ['drawDiningBench', 'dining-bench'],
+        ['drawKitchenCounter', 'kitchen-counter']
+      ];
+      const plain = [
+        ['drawKitchenHearth', 'kitchen-hearth'],
+        ['drawPantryShelf', 'pantry-shelf'],
+        ['drawWashTub', 'wash-tub'],
+        ['drawSettlementTable', 'settlement-table'],
+        ['drawLowStool', 'low-stool']
+      ];
+
+      let y = 60;
+      const stepY = 80;
+      const colX = [70, 190, 310, 430];
+
+      ctx.fillStyle = PALETTE.uiText ?? '#c8b99a';
+      for (const [fn, label] of oriented) {
+        orients.forEach((o, i) => {
+          const cx = colX[i];
+          floor(cx, y);
+          P[fn](ctx, cx, y, 4242, { orient: o });
+        });
+        y += stepY;
+      }
+
+      let px = 70;
+      for (const [fn, label] of plain) {
+        floor(px, y);
+        P[fn](ctx, px, y, 4242);
+        px += 120;
+        if (px > 520) { px = 70; y += stepY; }
+      }
+    </script>
+  </body>
+</html>
