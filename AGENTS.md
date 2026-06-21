@@ -29,23 +29,30 @@ player-facing text. Rewrite with periods, commas, colons, or restructured
 sentences (see the dash-rewrite guide in the skill). Do not ship player-facing
 text until it passes the skill's self-check.
 
-## Character and creature art — MANDATORY
+## Game art — MANDATORY
 
-Before you draw or edit **any visible figure** (a player/NPC/enemy sprite in
-`src/render/SpriteAtlas.js`, or any hand-built creature, corpse, prop, gore, or
-sigil in `src/render/PixelPrimitives.js`), you **must** apply
-**`character_creature_art_skill/SKILL.md`**. It is the single quality bar for
-models so a weaker agent's sprite still sits beside Mara Vey and the Opened
-Saint.
+Before you draw or edit **anything a player can see** (an animated actor in
+`src/render/SpriteAtlas.js`; any hand-built terrain, wall, building, interior,
+furniture, plant, prop, decal, creature, corpse, gore, sigil, or light in
+`src/render/PixelPrimitives.js` + `src/render/spriteCatalog.js`; or the interface
+in `src/render/UIRenderer.js` and `src/ui/*`), you **must** apply
+**`game_art_skill/SKILL.md`**. It is the single combined art standard, so a
+weaker agent's sprite, prop, or panel still sits beside Mara Vey, the Opened
+Saint, and the existing CRPG interface. (It absorbs the former
+`character_creature_art_skill`, which now redirects to it.)
 
 Headline rules: hard pixels only (no smooth gradients, blur, or bloom); only
-colors from `src/render/palette.js`; humans read as small real people, never
-blocky or chibi; Host monsters are Vale Imprint body horror grown from a person
-and still human-sized (broken bone halos, prayer-fused hands, butterflied-open
-ribcages, thin black-gold veins kept under the skin not gushing, goat or ram
-skulls for fully opened heads), always asymmetric, never clean golems; environmental light
-(windows, glows) belongs to terrain, never baked into a creature. Verify every
-model on a detached-canvas render and in a real scene before shipping.
+colors from `src/render/palette.js` (the `ui*` family for interface); shade with
+ramps and dither; light from the upper-left and a contact shadow on everything
+on the ground; humans read as small real people, never blocky or chibi; Host
+monsters are Vale Imprint body horror grown from a person and still human-sized
+(broken bone halos, prayer-fused hands, butterflied-open ribcages, thin
+black-gold veins kept under the skin not gushing, goat or ram skulls for fully
+opened heads), always asymmetric, never clean golems; environmental light
+(windows, glows) belongs to terrain, never baked into a creature; every static
+`kind` is registered once in the sprite catalog; UI is built from hard rects and
+the bitmap font, never browser-font chrome. Verify every piece on a
+detached-canvas render and in a real scene or screen before shipping.
 
 ## Non-negotiable project rules
 
@@ -60,7 +67,7 @@ model on a detached-canvas render and in a real scene before shipping.
 9. **No TODO graveyard.** Use short TODOs only when attached to a specific nearby issue. Prefer `docs/VERTICAL_SLICE.md` for planned work.
 10. **Run checks before finishing.** At minimum run `npm run check` after editing data or source files.
 11. **Player-facing text follows the anti-AI-slop skill.** Apply `anti_ai_slop_writing_skill/SKILL.md` to all player-readable text. Hard ban on em-dashes / `--` / `—`. Rewrite, do not dash.
-12. **Register renderable kinds in the sprite catalog.** Every drawable object `kind` (walls, wall fixtures, structures, furniture, props, decals, creatures, lights) is registered once in `src/render/spriteCatalog.js`, with its draw function living in `PixelPrimitives.js`. Add new building blocks there, never by editing a renderer switch or a second list of kinds. See `character_creature_art_skill/SKILL.md` Section 8b.
+12. **Register renderable kinds in the sprite catalog.** Every drawable object `kind` (walls, wall fixtures, structures, furniture, props, decals, creatures, lights) is registered once in `src/render/spriteCatalog.js`, with its draw function living in `PixelPrimitives.js`. Add new building blocks there, never by editing a renderer switch or a second list of kinds. See `game_art_skill/SKILL.md` Section 5.
 
 ## Canon and tone rules
 
