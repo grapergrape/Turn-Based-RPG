@@ -31,6 +31,10 @@ export class Grid {
     this.blockedProps.add(`${x},${y}`);
   }
 
+  removeBlocked(x, y) {
+    this.blockedProps.delete(`${x},${y}`);
+  }
+
   isBlockedProp(x, y) {
     return this.blockedProps.has(`${x},${y}`);
   }

@@ -12,6 +12,7 @@ import { Inventory } from './Inventory.js';
 import { loadLevel } from './LevelLoader.js';
 import {
   FIELD_RATINGS,
+  PRIMARY_ATTRIBUTES,
   awardExperience,
   buildCharacterSheet,
   calculateFieldRating,
@@ -25,6 +26,23 @@ import { CombatSystem, manhattan, chebyshev } from '../combat/CombatSystem.js';
 import { planTurn, flavorLine } from '../combat/EnemyAI.js';
 import { findPath, findPathToAdjacent } from '../world/Pathfinder.js';
 import { InteractionSystem } from '../world/InteractionSystem.js';
+import {
+  isObjectLocked,
+  lockLines,
+  lockMethodById,
+  lockMethodStatus,
+  lockMethods,
+  lockTitle,
+  objectLock,
+  resolveLockMethod
+} from '../world/LockSystem.js';
+import {
+  isDoorObject,
+  objectGroupId,
+  openLinkedObjects,
+  syncObjectPassability,
+  unlockLinkedObjects
+} from '../world/DoorSystem.js';
 import {
   GROUND_ITEM_KIND,
   canActorPickupGroundItem,
@@ -91,6 +109,7 @@ const OBJECT_NAMES = {
   'ritual-bowl': 'Ritual Bowl',
   'cracked-column': 'Cracked Column',
   'quarantine-barricade': 'Quarantine Barricade',
+  'chapel-double-door': 'Chapel Doors',
   'blood-stain': 'Blood Stain',
   'floor-crack': 'Floor Crack',
   'rubble-decal': 'Broken Stone',
@@ -252,6 +271,8 @@ export class Game {
     this.briefing = null;
     this.briefingPage = 0;
     this.anim = { tick: 0, bob: 0, flicker: 0, pulse: 0 };
+    this.hiddenTiles = new Set();
+    this.hiddenTilesKey = null;
 
     this.selectedAttackId = this.player.attacks[0]?.id ?? null;
     this.targetIndex = 0;
@@ -261,7 +282,13 @@ export class Game {
 
     this.#restoreLevelState();
     if (bootOptions.player) this.#teleportPlayer(bootOptions.player);
-    this.renderer.rebuildStaticScene({ grid: this.grid, props: this.level.props, mood: this.level.mood });
+    this.#refreshHiddenTiles();
+    this.renderer.rebuildStaticScene({
+      grid: this.grid,
+      props: this.level.props,
+      mood: this.level.mood,
+      hiddenTiles: this.hiddenTiles
+    });
 
     this.areaTitle = level.name;
     this.areaTitleTimer = AREA_TITLE_DURATION;
@@ -461,6 +488,7 @@ export class Game {
       actors: this.actors,
       enemies: this.enemies,
       interactables: this.#allInteractables(),
+      hiddenTiles: this.hiddenTiles,
       mode
     });
   }
@@ -533,6 +561,14 @@ export class Game {
       this.#pickupGroundItem(object);
       return;
     }
+    if (isObjectLocked(object)) {
+      this.#openLockDialogue(object);
+      return;
+    }
+    if (isDoorObject(object)) {
+      this.#openDoorObject(object);
+      return;
+    }
 
     const result = this.interactions.interact(object, this.inventory);
     for (const line of result.logs) this.#log(line);
@@ -545,6 +581,20 @@ export class Game {
     if (result.triggersCombat && this.mode !== 'combat') {
       this.#startCombat(result.combatEncounter ?? true, { fromAltar: true });
     }
+  }
+
+  #openDoorObject(object, { log = true } = {}) {
+    if (!isDoorObject(object)) return;
+    openLinkedObjects(object, this.level?.interactables ?? [], {
+      grid: this.grid,
+      now: this.anim?.tick ?? null
+    });
+    this.#refreshHiddenTiles({ rebuildStatic: true });
+    if (log) {
+      for (const line of [].concat(object.interact?.log ?? [])) this.#log(line);
+    }
+    if (object.interact?.questUpdate) this.#applyQuestUpdate(object.interact.questUpdate);
+    if (object.interact?.dialogue) this.#openDialogueById(object.interact.dialogue);
   }
 
   #pickupGroundItem(item) {
@@ -571,6 +621,96 @@ export class Game {
     const label = `${count}x ${item.name ?? this.inventory.displayName(item.itemId)}`;
     this.#log(`Picked up: ${label}.`);
     this.#clampInventorySelection();
+  }
+
+  #openLockDialogue(object, leadLines = []) {
+    const lock = objectLock(object);
+    if (!lock) return;
+
+    const title = lockTitle(lock, this.#objectName(object));
+    const bodyLines = [
+      ...[].concat(leadLines ?? []).filter(Boolean),
+      ...lockLines(lock, `${this.#objectName(object)} is locked.`)
+    ];
+    const choices = lockMethods(lock)
+      .filter((method) => this.#meetsConditions(method.conditions))
+      .map((method) => ({
+        method,
+        status: lockMethodStatus(method, {
+          inventory: this.inventory,
+          fieldRating: (fieldId) => this.#fieldRating(fieldId),
+          primaryRating: (primaryId) => this.#primaryRating(primaryId)
+        })
+      }))
+      .filter(({ status }) => status.available)
+      .slice(0, DIALOGUE_MAX_CHOICES - 1)
+      .map(({ method, status }) => ({
+        label: this.#lockChoiceLabel(method, status),
+        lockAction: { object, methodId: method.id },
+        close: false
+      }));
+
+    if (choices.length === 0) {
+      bodyLines.push('You see no useful way through this lock yet.');
+    }
+    choices.push({ label: 'Leave it shut', close: true });
+
+    this.#setDialogueState({
+      id: '__lock__',
+      title,
+      kind: 'lock',
+      lines: bodyLines,
+      choices,
+      scroll: 0,
+      options: choices.map((choice, index) => `${index + 1}. ${choice.label}`)
+    });
+  }
+
+  #lockChoiceLabel(method, status) {
+    const base = method.label ?? 'Try the lock';
+    const check = status?.check;
+    if (!check) return base;
+    const label = check.kind === 'primary'
+      ? this.#primaryLabel(check.id)
+      : this.#fieldLabel(check.id);
+    return `${base} (${label} ${check.rating} of ${check.dc})`;
+  }
+
+  #chooseLockOption(action) {
+    const object = action?.object;
+    if (!object) {
+      this.#closeUiScreen();
+      return;
+    }
+    if (!isObjectLocked(object)) {
+      this.#closeUiScreen();
+      this.#interactWithObject(object);
+      return;
+    }
+
+    const method = lockMethodById(objectLock(object), action.methodId);
+    const result = resolveLockMethod(method, {
+      inventory: this.inventory,
+      fieldRating: (fieldId) => this.#fieldRating(fieldId),
+      primaryRating: (primaryId) => this.#primaryRating(primaryId),
+      itemName: (itemId) => this.inventory.displayName(itemId)
+    });
+    if (result.unlocked) unlockLinkedObjects(object, this.level?.interactables ?? []);
+    for (const line of result.logs) this.#log(line);
+
+    const didTransition = this.#applyEffects(result.effects);
+    if (didTransition) return;
+
+    if (result.unlocked) {
+      this.#closeUiScreen();
+      if (isDoorObject(object) && result.openOnSuccess) {
+        this.#openDoorObject(object, { log: false });
+        return;
+      }
+      if (result.openOnSuccess) this.#interactWithObject(object);
+      return;
+    }
+    this.#openLockDialogue(object, result.logs);
   }
 
   // ---- UI screens --------------------------------------------------------
@@ -964,6 +1104,18 @@ export class Game {
     return calculateFieldRating(this.#playerProgression(), field);
   }
 
+  #primaryRating(primaryId) {
+    return this.#playerProgression().primaries[primaryId] ?? Number.NEGATIVE_INFINITY;
+  }
+
+  #fieldLabel(fieldId) {
+    return FIELD_RATINGS.find((entry) => entry.id === fieldId)?.label ?? fieldId;
+  }
+
+  #primaryLabel(primaryId) {
+    return PRIMARY_ATTRIBUTES.find((entry) => entry.id === primaryId)?.label ?? primaryId;
+  }
+
   #traceValue() {
     return this.#playerProgression().trace;
   }
@@ -1034,6 +1186,10 @@ export class Game {
   #chooseDialogueOption(index) {
     const choice = this.dialogue?.choices?.[index];
     if (!choice) return;
+    if (choice.lockAction) {
+      this.#chooseLockOption(choice.lockAction);
+      return;
+    }
     const didTransition = this.#applyEffects(choice.effects);
     if (didTransition) return;
     const definition = this.dialogueDefs[this.dialogue.id];
@@ -1390,7 +1546,7 @@ export class Game {
     if (this.moving) return false;
     const nx = actor.position.x + dir.x;
     const ny = actor.position.y + dir.y;
-    if (!this.grid.isWalkable(nx, ny) || this.#isOccupied(nx, ny, actor)) {
+    if (this.#isCellHidden(nx, ny) || !this.grid.isWalkable(nx, ny) || this.#isOccupied(nx, ny, actor)) {
       if (logBlock) this.#log('The ruins do not give way.');
       return false;
     }
@@ -1488,7 +1644,7 @@ export class Game {
         return;
       }
     }
-    if (!this.grid.isWalkable(cell.x, cell.y)) return;
+    if (this.#isCellHidden(cell.x, cell.y) || !this.grid.isWalkable(cell.x, cell.y)) return;
     const path = findPath(this.grid, this.player.position, cell, this.#occupiedSet(this.player));
     this.pathQueue = path && path.length ? path : [];
   }
@@ -1508,6 +1664,7 @@ export class Game {
     }
 
     for (const trigger of this.level.combatTriggers ?? []) {
+      if (this.#isCellHidden(trigger.x, trigger.y)) continue;
       const encounterId = this.#resolveEncounterId(trigger.encounter ?? trigger.id);
       if (this.clearedEncounters.has(encounterId)) continue;
       if (this.#livingEnemiesForEncounter(encounterId).length === 0) continue;
@@ -1519,6 +1676,7 @@ export class Game {
     for (const enemy of this.enemies) {
       const encounterId = this.#resolveEncounterId(enemy.encounter);
       if (enemy.isDead || this.clearedEncounters.has(encounterId)) continue;
+      if (this.#isCellHidden(enemy.position.x, enemy.position.y)) continue;
       const radius = enemy.aggroRadius ?? TRIGGER_RADIUS;
       if (manhattan(this.player.position, enemy.position) <= radius) {
         this.#startCombat(encounterId);
@@ -1553,6 +1711,7 @@ export class Game {
 
     for (const actor of [...this.enemies, ...(this.npcs ?? [])]) {
       if (actor.isDead || actor.speech || !Array.isArray(actor.ambient) || actor.ambient.length === 0) continue;
+      if (this.#isCellHidden(actor.position.x, actor.position.y)) continue;
       const distance = manhattan(this.player.position, actor.position);
       if (distance > 10) continue;
 
@@ -1563,6 +1722,7 @@ export class Game {
 
     for (const prop of this.speakingProps ?? []) {
       if (prop.killed || prop.speech) continue;
+      if (this.#isCellHidden(prop.x, prop.y)) continue;
       const distance = manhattan(this.player.position, prop);
       if (distance > 11) continue;
       prop.ambientTimer = (prop.ambientTimer ?? AMBIENT_PROP_DELAY) - dt;
@@ -1649,7 +1809,11 @@ export class Game {
 
   #isOccupied(x, y, exclude) {
     return this.actors.some(
-      (actor) => actor !== exclude && !actor.isDead && actor.position.x === x && actor.position.y === y
+      (actor) => actor !== exclude &&
+        !actor.isDead &&
+        !this.#isCellHidden(actor.position.x, actor.position.y) &&
+        actor.position.x === x &&
+        actor.position.y === y
     );
   }
 
@@ -1657,6 +1821,7 @@ export class Game {
     const set = new Set();
     for (const actor of this.actors) {
       if (actor === exclude || actor.isDead) continue;
+      if (this.#isCellHidden(actor.position.x, actor.position.y)) continue;
       set.add(`${actor.position.x},${actor.position.y}`);
     }
     return set;
@@ -1666,13 +1831,17 @@ export class Game {
     if (this.mode === 'combat' && this.activeEncounter) {
       return this.#livingEnemiesForEncounter(this.activeEncounter);
     }
-    return this.enemies.filter((enemy) => !enemy.isDead);
+    return this.enemies.filter((enemy) =>
+      !enemy.isDead && !this.#isCellHidden(enemy.position.x, enemy.position.y)
+    );
   }
 
   #livingEnemiesForEncounter(encounterId) {
     const resolved = this.#resolveEncounterId(encounterId);
     return this.enemies.filter((enemy) =>
-      !enemy.isDead && this.#resolveEncounterId(enemy.encounter) === resolved
+      !enemy.isDead &&
+      !this.#isCellHidden(enemy.position.x, enemy.position.y) &&
+      this.#resolveEncounterId(enemy.encounter) === resolved
     );
   }
 
@@ -1915,12 +2084,24 @@ export class Game {
         .filter((object) => object.killed)
         .map((object) => this.#objectStateKey(object))
     );
+    const unlockedObjects = new Set(
+      (this.level.interactables ?? [])
+        .filter((object) => object.unlocked)
+        .map((object) => this.#objectStateKey(object))
+    );
+    const openedObjects = new Set(
+      (this.level.interactables ?? [])
+        .filter((object) => object.opened)
+        .map((object) => this.#objectStateKey(object))
+    );
     const groundItems = (this.groundItems ?? [])
       .map((item) => serializeGroundItem(item))
       .filter(Boolean);
     this.levelStateByPath.set(this.levelPath, {
       consumedObjects,
       killedObjects,
+      unlockedObjects,
+      openedObjects,
       deadEnemies,
       clearedEncounters: new Set(this.clearedEncounters ?? []),
       groundItems
@@ -1943,6 +2124,15 @@ export class Game {
       if (!state.consumedObjects?.has(key)) continue;
       object.consumed = true;
       object.opened = true;
+      syncObjectPassability(object, this.grid);
+    }
+    for (const object of this.level.interactables ?? []) {
+      const key = this.#objectStateKey(object);
+      if (state.unlockedObjects?.has(key)) object.unlocked = true;
+      if (state.openedObjects?.has(key)) {
+        object.opened = true;
+        syncObjectPassability(object, this.grid);
+      }
     }
     for (const enemy of this.enemies) {
       if (!state.deadEnemies?.has(enemy.spawnId ?? enemy.id)) continue;
@@ -1957,6 +2147,63 @@ export class Game {
         .filter(Boolean);
     }
     this.clearedEncounters = new Set(state.clearedEncounters ?? []);
+  }
+
+  #refreshHiddenTiles({ rebuildStatic = false } = {}) {
+    const next = this.#activeHiddenTiles();
+    const key = [...next].sort().join('|');
+    if (this.hiddenTilesKey === key) return false;
+
+    this.hiddenTiles = next;
+    this.hiddenTilesKey = key;
+    if (rebuildStatic) {
+      this.renderer.rebuildStaticScene({
+        grid: this.grid,
+        props: this.level.props,
+        mood: this.level.mood,
+        hiddenTiles: this.hiddenTiles
+      });
+    }
+    return true;
+  }
+
+  #activeHiddenTiles() {
+    const hidden = new Set();
+    for (const region of this.level?.hiddenRegions ?? []) {
+      if (this.#isHiddenRegionRevealed(region)) continue;
+      const x0 = Math.floor(region.x);
+      const y0 = Math.floor(region.y);
+      const width = Math.floor(region.width);
+      const height = Math.floor(region.height);
+      if (
+        !Number.isFinite(x0) ||
+        !Number.isFinite(y0) ||
+        !Number.isFinite(width) ||
+        !Number.isFinite(height) ||
+        width <= 0 ||
+        height <= 0
+      ) continue;
+      for (let y = y0; y < y0 + height; y += 1) {
+        for (let x = x0; x < x0 + width; x += 1) {
+          if (this.grid?.isInside(x, y)) hidden.add(`${x},${y}`);
+        }
+      }
+    }
+    return hidden;
+  }
+
+  #isHiddenRegionRevealed(region) {
+    const group = typeof region?.doorGroup === 'string' && region.doorGroup.trim() !== ''
+      ? region.doorGroup
+      : null;
+    if (!group) return false;
+    return (this.level?.interactables ?? []).some((object) =>
+      objectGroupId(object) === group && object.opened
+    );
+  }
+
+  #isCellHidden(x, y) {
+    return this.hiddenTiles?.has?.(`${x},${y}`) ?? false;
   }
 
   #objectStateKey(object) {
@@ -1981,6 +2228,7 @@ export class Game {
       actors: this.actors,
       ambientSpeakers: this.speakingProps ?? [],
       groundItems: this.groundItems ?? [],
+      hiddenTiles: this.hiddenTiles,
       effects: this.effects,
       anim: this.anim,
       overlay: this.#buildOverlay(),
@@ -2006,7 +2254,7 @@ export class Game {
       // Show the move path to the hovered tile + its AP cost instead of
       // flooding every reachable cell.
       const hover = this.#hoverCell();
-      if (hover && this.grid.isWalkable(hover.x, hover.y) &&
+      if (hover && !this.#isCellHidden(hover.x, hover.y) && this.grid.isWalkable(hover.x, hover.y) &&
           !(hover.x === this.player.position.x && hover.y === this.player.position.y)) {
         const path = findPath(this.grid, this.player.position, hover, this.#occupiedSet(this.player));
         const budget = Math.floor(this.player.ap / this.player.moveCost);
@@ -2030,7 +2278,7 @@ export class Game {
 
   #hoverTile() {
     const cell = this.#hoverCell();
-    if (!cell || !this.grid.isWalkable(cell.x, cell.y)) return null;
+    if (!cell || this.#isCellHidden(cell.x, cell.y) || !this.grid.isWalkable(cell.x, cell.y)) return null;
     return `${cell.x},${cell.y}`;
   }
 
@@ -2046,6 +2294,7 @@ export class Game {
     let bestDist = Infinity;
     for (const enemy of [...(this.npcs ?? []), ...this.enemies]) {
       if (enemy.isDead || !enemy.dialogue || enemy.dialogueTriggerRadius == null) continue;
+      if (this.#isCellHidden(enemy.position.x, enemy.position.y)) continue;
       if (enemy.dialogueSeen && !enemy.dialogueRepeat) continue;
       const encounterId = enemy.encounter ? this.#resolveEncounterId(enemy.encounter) : null;
       if (encounterId && this.clearedEncounters.has(encounterId)) continue;
@@ -2120,6 +2369,9 @@ export class Game {
     const name = this.#objectName(object);
     if (object.kind === GROUND_ITEM_KIND || object.interact?.type === 'ground-item') {
       return { x: mouse.x, y: mouse.y, state: 'loot', text: `PICK UP: ${name}` };
+    }
+    if (isObjectLocked(object)) {
+      return { x: mouse.x, y: mouse.y, state: 'use', text: `LOCKED: ${name}` };
     }
     if (object.interact?.type === 'container') {
       return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${name}` };

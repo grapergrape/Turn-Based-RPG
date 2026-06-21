@@ -56,6 +56,10 @@ const ITEM_GROUND_MODELS = new Set([
   'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard'
 ]);
 const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
+const DOOR_LEAVES = new Set(['north', 'south']);
+const WALL_PLANES = new Set(['sw', 'se']);
+// Iso facings for orientation-aware props (mirrors ORIENTS in PixelPrimitives.js).
+const PROP_ORIENTS = new Set(['se', 'sw', 'nw', 'ne']);
 const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
 const PRIMARY_ATTRIBUTE_IDS = new Set(PRIMARY_ATTRIBUTES.map((primary) => primary.id));
 const FIELD_RATING_IDS = new Set(FIELD_RATINGS.map((field) => field.id));
@@ -323,10 +327,16 @@ function validateLevel(filePath, data) {
     if (typeof object.kind === 'string' && !getSprite(object.kind)) {
       errors.push(`${name}: object kind "${object.kind}" at (${object.x}, ${object.y}) is not registered in the sprite catalog.`);
     }
+    if (object.orient !== undefined && !PROP_ORIENTS.has(object.orient)) {
+      errors.push(`${name}: object ${object.kind ?? 'unknown'} orient "${object.orient}" must be one of ${[...PROP_ORIENTS].join(', ')}.`);
+    }
     validateDialogueReference(name, object.interact?.dialogue, 'objects[].interact.dialogue');
     validateDialogueReference(name, object.interact?.lockedDialogue, 'objects[].interact.lockedDialogue');
     validateLoot(name, object.interact?.loot);
+    validateLock(name, object.interact?.lock, 'objects[].interact.lock');
+    validateDoorObject(name, object);
   }
+  validateHiddenRegions(name, data, objects);
   if (data.groundItems !== undefined) {
     if (!Array.isArray(data.groundItems)) {
       errors.push(`${name}: groundItems must be an array.`);
@@ -814,6 +824,169 @@ function validateDialogueReference(name, id, fieldName) {
   if (id === undefined) return;
   requireString(name, id, fieldName);
   if (typeof id === 'string') referencedDialogueIds.add(id);
+}
+
+function validateLock(name, lock, fieldName) {
+  if (lock === undefined) return;
+  if (!lock || typeof lock !== 'object' || Array.isArray(lock)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+
+  if (lock.id !== undefined) requireString(name, lock.id, `${fieldName}.id`);
+  if (lock.title !== undefined) requireString(name, lock.title, `${fieldName}.title`);
+  validateStringList(name, lock.lines, `${fieldName}.lines`);
+  validateStringList(name, lock.lockedLines, `${fieldName}.lockedLines`);
+
+  if (!Array.isArray(lock.methods) || lock.methods.length === 0 || lock.methods.length > 4) {
+    errors.push(`${name}: ${fieldName}.methods must contain 1 to 4 methods.`);
+    return;
+  }
+
+  const methodIds = new Set();
+  for (const [index, method] of lock.methods.entries()) {
+    const methodName = `${fieldName}.methods[${index}]`;
+    if (!method || typeof method !== 'object' || Array.isArray(method)) {
+      errors.push(`${name}: ${methodName} must be an object.`);
+      continue;
+    }
+
+    requireString(name, method.id, `${methodName}.id`);
+    if (typeof method.id === 'string') {
+      if (methodIds.has(method.id)) errors.push(`${name}: ${methodName}.id "${method.id}" is duplicated.`);
+      methodIds.add(method.id);
+    }
+    requireString(name, method.label, `${methodName}.label`);
+    validateDialogueConditions(name, method.conditions, `${methodName}.conditions`);
+
+    if (method.requiresItem !== undefined) {
+      requireString(name, method.requiresItem, `${methodName}.requiresItem`);
+      if (typeof method.requiresItem === 'string') referencedItemIds.add(method.requiresItem);
+    }
+
+    const hasField = method.field !== undefined;
+    const hasPrimary = method.primary !== undefined;
+    if (hasField && hasPrimary) {
+      errors.push(`${name}: ${methodName} must use either field or primary, not both.`);
+    }
+    if (hasField) {
+      requireString(name, method.field, `${methodName}.field`);
+      if (typeof method.field === 'string' && !FIELD_RATING_IDS.has(method.field)) {
+        errors.push(`${name}: ${methodName}.field has unknown field rating "${method.field}".`);
+      }
+      validateLockDc(name, method.dc, `${methodName}.dc`, 0, 100);
+    } else if (hasPrimary) {
+      requireString(name, method.primary, `${methodName}.primary`);
+      if (typeof method.primary === 'string' && !PRIMARY_ATTRIBUTE_IDS.has(method.primary)) {
+        errors.push(`${name}: ${methodName}.primary has unknown primary "${method.primary}".`);
+      }
+      validateLockDc(name, method.dc, `${methodName}.dc`, 0, 10);
+    } else if (method.dc !== undefined) {
+      errors.push(`${name}: ${methodName}.dc requires field or primary.`);
+    }
+
+    validateStringList(name, method.successLog, `${methodName}.successLog`);
+    validateStringList(name, method.failLog, `${methodName}.failLog`);
+    validateStringList(name, method.unavailableLog, `${methodName}.unavailableLog`);
+    validateOptionalBoolean(name, method.unlocks, `${methodName}.unlocks`);
+    validateOptionalBoolean(name, method.openOnSuccess, `${methodName}.openOnSuccess`);
+    validateDialogueEffects(name, method.success, `${methodName}.success`);
+    validateDialogueEffects(name, method.failure, `${methodName}.failure`);
+  }
+}
+
+function validateDoorObject(name, object) {
+  if (object?.interact?.type !== 'door') return;
+  if (object.blocking !== true) {
+    errors.push(`${name}: door object "${object.id ?? object.name ?? object.kind}" must be blocking while shut.`);
+  }
+  if (object.doorGroup !== undefined) requireString(name, object.doorGroup, 'objects[].doorGroup');
+  if (object.interact.doorGroup !== undefined) requireString(name, object.interact.doorGroup, 'objects[].interact.doorGroup');
+  if (object.passableWhenOpen !== undefined) validateOptionalBoolean(name, object.passableWhenOpen, 'objects[].passableWhenOpen');
+  if (object.doorLeaf !== undefined && !DOOR_LEAVES.has(object.doorLeaf)) {
+    errors.push(`${name}: objects[].doorLeaf must be one of ${[...DOOR_LEAVES].join(', ')}.`);
+  }
+  if (object.wallPlane !== undefined && !WALL_PLANES.has(object.wallPlane)) {
+    errors.push(`${name}: objects[].wallPlane must be one of ${[...WALL_PLANES].join(', ')}.`);
+  }
+  if (object.kind === 'chapel-double-door' && !object.doorLeaf) {
+    errors.push(`${name}: chapel-double-door objects must define doorLeaf.`);
+  }
+}
+
+function validateHiddenRegions(name, data, objects) {
+  if (data.hiddenRegions === undefined) return;
+  if (!Array.isArray(data.hiddenRegions)) {
+    errors.push(`${name}: hiddenRegions must be an array.`);
+    return;
+  }
+
+  const doorGroups = new Set(
+    objects
+      .map((object) => object.doorGroup ?? object.interact?.doorGroup)
+      .filter((group) => typeof group === 'string' && group.trim() !== '')
+  );
+  const regionIds = new Set();
+
+  for (const [index, region] of data.hiddenRegions.entries()) {
+    const fieldName = `hiddenRegions[${index}]`;
+    if (!region || typeof region !== 'object' || Array.isArray(region)) {
+      errors.push(`${name}: ${fieldName} must be an object.`);
+      continue;
+    }
+
+    requireString(name, region.id, `${fieldName}.id`);
+    if (typeof region.id === 'string') {
+      if (regionIds.has(region.id)) errors.push(`${name}: ${fieldName}.id "${region.id}" is duplicated.`);
+      regionIds.add(region.id);
+    }
+    requireString(name, region.doorGroup, `${fieldName}.doorGroup`);
+    if (typeof region.doorGroup === 'string' && !doorGroups.has(region.doorGroup)) {
+      errors.push(`${name}: ${fieldName}.doorGroup "${region.doorGroup}" does not match any door object.`);
+    }
+
+    validateHiddenRegionInteger(name, region.x, `${fieldName}.x`);
+    validateHiddenRegionInteger(name, region.y, `${fieldName}.y`);
+    validateHiddenRegionInteger(name, region.width, `${fieldName}.width`, { positive: true });
+    validateHiddenRegionInteger(name, region.height, `${fieldName}.height`, { positive: true });
+
+    if (
+      Number.isInteger(region.x) &&
+      Number.isInteger(region.y) &&
+      Number.isInteger(region.width) &&
+      Number.isInteger(region.height) &&
+      (region.x < 0 ||
+        region.y < 0 ||
+        region.width <= 0 ||
+        region.height <= 0 ||
+        region.x + region.width > data.width ||
+        region.y + region.height > data.height)
+    ) {
+      errors.push(`${name}: ${fieldName} rectangle must stay inside the level bounds.`);
+    }
+  }
+}
+
+function validateLockDc(name, value, fieldName, min, max) {
+  requireNumber(name, value, fieldName);
+  if (typeof value === 'number' && (!Number.isInteger(value) || value < min || value > max)) {
+    errors.push(`${name}: ${fieldName} must be an integer from ${min} to ${max}.`);
+  }
+}
+
+function validateOptionalBoolean(name, value, fieldName) {
+  if (value !== undefined && typeof value !== 'boolean') {
+    errors.push(`${name}: ${fieldName} must be a boolean.`);
+  }
+}
+
+function validateHiddenRegionInteger(name, value, fieldName, { positive = false } = {}) {
+  requireNumber(name, value, fieldName);
+  if (typeof value !== 'number' || !Number.isInteger(value)) {
+    errors.push(`${name}: ${fieldName} must be an integer.`);
+    return;
+  }
+  if (positive && value <= 0) errors.push(`${name}: ${fieldName} must be greater than zero.`);
 }
 
 function validateQuest(filePath, data) {

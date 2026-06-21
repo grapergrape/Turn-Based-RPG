@@ -54,6 +54,13 @@ export const CATEGORY = {
 const simple = (fn, category, layer = 2) => ({
   category, layer, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed)
 });
+// An orientation-aware prop: forwards the authored facing as opts.orient so one
+// draw function can render at any of the four iso facings (see ORIENTS /
+// isoFrame in PixelPrimitives.js). Use this instead of `simple` for any piece
+// that reads opts.orient.
+const oriented = (fn, category, layer = 2) => ({
+  category, layer, draw: (ctx, x, y, seed, c) => fn(ctx, x, y, seed, { orient: c.prop.orient })
+});
 // A flat ground decal that takes (ctx, cx, cy, seed).
 const decal = (fn) => ({ category: CATEGORY.DECAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed) });
 
@@ -101,6 +108,22 @@ export const SPRITE_CATALOG = {
   'quarantine-barricade': simple(P.drawQuarantineBarricade, CATEGORY.STRUCTURE),
   'broken-bell': simple(P.drawBrokenBell, CATEGORY.STRUCTURE),
   'quarantine-sign': simple(P.drawQuarantineSign, CATEGORY.STRUCTURE),
+  'chapel-double-door': {
+    category: CATEGORY.STRUCTURE, layer: 18,
+    draw: (ctx, x, y, seed, c) => {
+      const opened = Boolean(c.prop.opened || c.prop.consumed);
+      const start = c.prop.openedAt;
+      const progress = opened
+        ? (start == null ? 1 : Math.max(0, Math.min(1, ((c.anim?.tick ?? 0) - start) / 0.56)))
+        : 0;
+      P.drawChapelDoubleDoor(ctx, x, y, seed, {
+        opened,
+        progress,
+        leaf: c.prop.doorLeaf,
+        wallPlane: c.prop.wallPlane
+      });
+    }
+  },
   'damaged-altar': {
     category: CATEGORY.STRUCTURE, layer: 2,
     draw: (ctx, x, y, seed, c) => P.drawDamagedAltar(ctx, x, y, seed, c.pulse)
@@ -116,6 +139,10 @@ export const SPRITE_CATALOG = {
   'camp-bedroll': simple(P.drawCampBedroll, CATEGORY.FURNITURE),
   'settlement-table': simple(P.drawSettlementTable, CATEGORY.FURNITURE),
   'low-stool': simple(P.drawLowStool, CATEGORY.FURNITURE),
+  // Orientation-aware refectory pieces (reuse one texture at any iso facing).
+  'dining-table': oriented(P.drawDiningTable, CATEGORY.FURNITURE),
+  'dining-bench': oriented(P.drawDiningBench, CATEGORY.FURNITURE),
+  'kitchen-counter': oriented(P.drawKitchenCounter, CATEGORY.FURNITURE),
   'kitchen-hearth': simple(P.drawKitchenHearth, CATEGORY.FURNITURE),
   'pantry-shelf': simple(P.drawPantryShelf, CATEGORY.FURNITURE),
   'wash-tub': simple(P.drawWashTub, CATEGORY.FURNITURE),

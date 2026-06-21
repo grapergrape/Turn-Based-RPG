@@ -42,6 +42,7 @@ export class IsometricRenderer {
     this.props = [];
     this.flatProps = [];
     this.volumeProps = [];
+    this.hiddenTiles = new Set();
   }
 
   // Bake the static background for a level. `level` = { grid, props, mood }.
@@ -49,6 +50,9 @@ export class IsometricRenderer {
     this.grid = level.grid;
     this.props = level.props ?? [];
     this.mood = level.mood ?? null;
+    this.hiddenTiles = level.hiddenTiles instanceof Set
+      ? new Set(level.hiddenTiles)
+      : new Set(level.hiddenTiles ?? []);
     this.flatProps = this.props.filter((p) => FLAT_KINDS.has(p.kind));
     this.volumeProps = this.props.filter((p) => !FLAT_KINDS.has(p.kind));
 
@@ -68,6 +72,7 @@ export class IsometricRenderer {
       for (let x = 0; x < this.grid.width; x += 1) {
         const def = this.grid.getTileDef(x, y);
         if (!def || def.kind === 'wall') continue;
+        if (this.#isHiddenCell(x, y)) continue;
         const s = gridToScreen(x, y, 0, this.sceneOrigin);
         P.drawRuinedStoneFloorCell(ctx, s.x, s.y, x, y);
         const wallPressure = this.#wallPressure(x, y);
@@ -79,6 +84,7 @@ export class IsometricRenderer {
 
     // Flat decals baked on top of the floor.
     for (const prop of this.flatProps) {
+      if (this.#isHiddenCell(prop.x, prop.y)) continue;
       const s = gridToScreen(prop.x, prop.y, 0, this.sceneOrigin);
       this.#drawFlatDecal(ctx, prop, s);
     }
@@ -128,6 +134,7 @@ export class IsometricRenderer {
 
   renderFrame(state) {
     const ctx = this.ctx;
+    if (state.hiddenTiles) this.hiddenTiles = state.hiddenTiles;
     this.#updateCamera(state.focus ?? { x: 0, y: 0 });
 
     ctx.fillStyle = PALETTE.void;
@@ -161,14 +168,17 @@ export class IsometricRenderer {
     const player = (state.actors ?? []).find((actor) => actor.type === 'player') ?? null;
 
     for (const prop of this.volumeProps) {
+      if (this.#isHiddenCell(prop.x, prop.y)) continue;
       const zLayer = getSprite(prop.kind)?.layer ?? 2;
       queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
     }
     for (const prop of state.groundItems ?? []) {
+      if (this.#isHiddenCell(prop.x, prop.y)) continue;
       const zLayer = getSprite(prop.kind)?.layer ?? 2;
       queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
     }
     for (const actor of state.actors ?? []) {
+      if (actor.type !== 'player' && this.#isHiddenCell(actor.x, actor.y)) continue;
       const zLayer = actor.isDead ? 1 : 3;
       queue.push({ key: sortKey(actor.x, actor.y, zLayer), draw: () => this.#drawActor(ctx, actor, anim) });
     }
@@ -281,6 +291,7 @@ export class IsometricRenderer {
 
     for (const actor of actors) {
       if (!actor.speech?.text || actor.isDead) continue;
+      if (actor.type !== 'player' && this.#isHiddenCell(actor.x, actor.y)) continue;
       const base = gridToScreen(actor.x, actor.y, 0, this.worldOrigin);
       const x = base.x + (actor.pxOffset?.x ?? 0);
       const y = base.y + (actor.pxOffset?.y ?? 0) - 78;
@@ -396,25 +407,37 @@ export class IsometricRenderer {
     );
   }
 
+  #isHiddenCell(x, y) {
+    return this.hiddenTiles?.has?.(`${x},${y}`) ?? false;
+  }
+
+  #isHiddenKey(key) {
+    return this.hiddenTiles?.has?.(key) ?? false;
+  }
+
   // ----- Overlays ---------------------------------------------------------
 
   #drawOverlays(ctx, overlay) {
     if (overlay.mode === 'COMBAT') {
       if (overlay.attackRange) {
-        for (const key of overlay.attackRange) this.#tileRing(ctx, key, PALETTE.rustMid, 0.28);
+        for (const key of overlay.attackRange) {
+          if (!this.#isHiddenKey(key)) this.#tileRing(ctx, key, PALETTE.rustMid, 0.28);
+        }
       }
       if (overlay.pathCells) {
         const color = overlay.pathAffordable ? PALETTE.uiGood : PALETTE.uiBad;
-        for (const key of overlay.pathCells) this.#pip(ctx, key, color);
+        for (const key of overlay.pathCells) {
+          if (!this.#isHiddenKey(key)) this.#pip(ctx, key, color);
+        }
       }
-      if (overlay.selectedTile) this.#selectedMarker(ctx, overlay.selectedTile);
-      if (overlay.targetTile) this.#targetBracket(ctx, overlay.targetTile);
-      if (overlay.pathTile && overlay.pathCost != null) {
+      if (overlay.selectedTile && !this.#isHiddenKey(overlay.selectedTile)) this.#selectedMarker(ctx, overlay.selectedTile);
+      if (overlay.targetTile && !this.#isHiddenKey(overlay.targetTile)) this.#targetBracket(ctx, overlay.targetTile);
+      if (overlay.pathTile && overlay.pathCost != null && !this.#isHiddenKey(overlay.pathTile)) {
         this.#moveCost(ctx, overlay.pathTile, overlay.pathCost, overlay.pathAffordable);
       }
     } else {
-      if (overlay.footTile) this.#footMarker(ctx, overlay.footTile, 0.32);
-      if (overlay.hoverTile) this.#footMarker(ctx, overlay.hoverTile, 0.18);
+      if (overlay.footTile && !this.#isHiddenKey(overlay.footTile)) this.#footMarker(ctx, overlay.footTile, 0.32);
+      if (overlay.hoverTile && !this.#isHiddenKey(overlay.hoverTile)) this.#footMarker(ctx, overlay.hoverTile, 0.18);
     }
   }
 
@@ -511,6 +534,7 @@ export class IsometricRenderer {
   #drawDebugGrid(ctx) {
     for (let y = 0; y < this.grid.height; y += 1) {
       for (let x = 0; x < this.grid.width; x += 1) {
+        if (this.#isHiddenCell(x, y)) continue;
         this.#tileRing(ctx, `${x},${y}`, PALETTE.uiBorderLight, 0.22);
       }
     }
