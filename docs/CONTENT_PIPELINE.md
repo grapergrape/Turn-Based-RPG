@@ -152,7 +152,8 @@ Rules:
   (`src/render/spriteCatalog.js`), the single source of truth for every kind:
   its draw function, category, depth layer, and whether it is a flat decal or a
   wall block. That file (not a list here) is authoritative; to add a new kind,
-  add one entry there and a draw function (see the art skill, Section 8b). Kinds
+  add one entry there and a draw function (see `game_art_skill/SKILL.md`,
+  Section 5). Kinds
   group into terrain blocks (`wall`, `wall-broken`), wall fixtures
   (`wall-window`, `wall-safe`, `wall-stash`), structures, furniture, props,
   lights, gore, creatures, ritual marks, and flat ground decals.
