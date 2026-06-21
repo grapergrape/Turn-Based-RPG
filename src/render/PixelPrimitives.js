@@ -103,18 +103,25 @@ function faceTools(ctx, topLeft, topRight, bottomRight, bottomLeft) {
   };
 }
 
-// The camera-facing slanted face for a run of `span` wall blocks, used to mount
-// a wall fixture (a door, a future barred gate) flush on the stone. In this
-// fixed iso projection a wall runs along exactly one of two ground directions,
-// and each shows exactly ONE clean slanted face; `plane` names which:
-//   'se' -> wall runs along +y; visible face is the SE face, slopes up-right.
-//   'sw' -> wall runs along +x; visible face is the SW face, slopes up-left.
+// A slanted face spanning `span` wall blocks, used to mount a wall fixture (a
+// door, a future barred gate) flush on the stone. In this fixed iso projection a
+// wall runs along exactly one of two ground directions, and `plane` names which:
+//   'se' -> wall runs along +y; faces slope up-right (the SE/NW pair).
+//   'sw' -> wall runs along +x; faces slope up-left  (the SW/NE pair).
 // `plane` therefore fixes the run direction too, so the result is ALWAYS a real
-// slanted iso face. (The other two block faces are occluded by the next block in
-// the run, so there is deliberately no option to request them and accidentally
-// get a degenerate flat face. This is what kept the double door aligned.)
+// slanted face (never a degenerate flat one). `side` then picks which of that
+// wall's two parallel faces to mount on:
+//   'near' (default) -> the camera-facing face (SE for 'se', SW for 'sw'); used
+//                       when the fixture should read from the front of the wall.
+//   'far'            -> the parallel face one tile-thickness back (NW for 'se',
+//                       NE for 'sw'). For a doorway (a gap with no wall block to
+//                       hide it) this far face is visible THROUGH the opening, so
+//                       the door reads as mounted on the far/back side of the
+//                       wall instead of the front. Solid walls hide their far
+//                       face, so 'far' is only meaningful inside an opening.
 function wallRunFace(ctx, cx, cy, opts = {}) {
   const plane = opts.plane === 'sw' ? 'sw' : 'se';
+  const side = opts.side === 'far' ? 'far' : 'near';
   const span = Math.max(1, Math.floor(opts.span ?? 1));
   const tile = (index) => {
     const dx = plane === 'sw' ? index * TILE_WIDTH / 2 : -index * TILE_WIDTH / 2;
@@ -127,7 +134,13 @@ function wallRunFace(ctx, cx, cy, opts = {}) {
   const last = tile(span - 1);
 
   if (plane === 'sw') {
+    if (side === 'far') {
+      return faceTools(ctx, first.cap.top, last.cap.right, last.base.right, first.base.top);
+    }
     return faceTools(ctx, first.cap.left, last.cap.bottom, last.base.bottom, first.base.left);
+  }
+  if (side === 'far') {
+    return faceTools(ctx, last.cap.left, first.cap.top, first.base.top, last.base.left);
   }
   return faceTools(ctx, last.cap.bottom, first.cap.right, first.base.right, last.base.bottom);
 }
@@ -1838,11 +1851,15 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
   // wallPlane picks which iso wall direction the doorway sits on; wallRunFace
   // derives the run axis from it, so the door always mounts on a real slanted
   // face ('se' = up-right face, 'sw' = up-left face) and never goes flat.
+  // wallSide picks which face of that wall the door hangs on: 'near' (default,
+  // the camera-facing front) or 'far' (the back face, seen through the opening
+  // so the door reads on the far/lobby side of the wall).
   const wallPlane = opts.wallPlane === 'sw' ? 'sw' : 'se';
+  const wallSide = opts.wallSide === 'far' ? 'far' : 'near';
   const rawProgress = opened ? (typeof opts.progress === 'number' ? opts.progress : 1) : 0;
   const frame = opened ? Math.max(1, Math.min(4, Math.ceil(rawProgress * 4))) : 0;
   const rng = rngFrom(hash2D(seed + 41, seed * 3 + 17));
-  const doorFace = wallRunFace(ctx, cx, cy, { plane: wallPlane, span: 2 });
+  const doorFace = wallRunFace(ctx, cx, cy, { plane: wallPlane, side: wallSide, span: 2 });
   const lerp = (a, b, t) => a + (b - a) * t;
 
   const drawBolt = (face, u, v, color = PALETTE.hostGold) => {
@@ -1909,7 +1926,8 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
   if (leaf === 'south') return;
 
   const drawOpeningFrame = () => {
-    drawShadowBlob(ctx, cx - 30, cy + 17, TILE_WIDTH * 0.9, TILE_HEIGHT * 0.75);
+    const sill = doorFace.point(0.5, 1.0);
+    drawShadowBlob(ctx, sill[0], sill[1], TILE_WIDTH * 0.9, TILE_HEIGHT * 0.75);
     doorFace.rect(0.0, 0.0, 1.0, 1.0, PALETTE.outline);
     doorFace.rect(0.05, 0.06, 0.95, 0.94, PALETTE.void);
     doorFace.rect(0.09, 0.11, 0.91, 0.89, PALETTE.hostBlack);

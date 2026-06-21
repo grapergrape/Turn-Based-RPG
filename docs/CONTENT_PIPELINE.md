@@ -254,6 +254,11 @@ Lock rules:
   the run direction, so a wall fixture can never come out as a flat horizontal
   face: match the plane to the wall the doorway is cut into. Use it so a door's
   rails, jambs, and opening frame follow the same plane as the surrounding wall.
+- `wallSide` (optional, `"near"` default or `"far"`) picks which of the wall's
+  two parallel faces the fixture hangs on. `"near"` is the camera-facing front;
+  `"far"` is the back face one tile-thickness behind it, which is visible through
+  a doorway opening so the door reads as mounted on the far/lobby side of the
+  wall. Only meaningful inside an opening (a solid wall hides its far face).
 - Free-standing props can define `orient` to rotate the same art to any of the
   four isometric facings: `"se"` (default), `"sw"`, `"nw"`, `"ne"`. This is how
   one texture is reused at different places and orientations (a long table run

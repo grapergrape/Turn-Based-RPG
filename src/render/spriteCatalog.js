@@ -120,7 +120,8 @@ export const SPRITE_CATALOG = {
         opened,
         progress,
         leaf: c.prop.doorLeaf,
-        wallPlane: c.prop.wallPlane
+        wallPlane: c.prop.wallPlane,
+        wallSide: c.prop.wallSide
       });
     }
   },
