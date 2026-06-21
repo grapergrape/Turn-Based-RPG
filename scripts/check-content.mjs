@@ -58,6 +58,7 @@ const ITEM_GROUND_MODELS = new Set([
 const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
 const DOOR_LEAVES = new Set(['north', 'south']);
 const WALL_PLANES = new Set(['sw', 'se']);
+const WALL_SIDES = new Set(['near', 'far']); // Which face of an opening a wall fixture mounts on.
 // Iso facings for orientation-aware props (mirrors ORIENTS in PixelPrimitives.js).
 const PROP_ORIENTS = new Set(['se', 'sw', 'nw', 'ne']);
 const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
@@ -908,6 +909,9 @@ function validateDoorObject(name, object) {
   }
   if (object.wallPlane !== undefined && !WALL_PLANES.has(object.wallPlane)) {
     errors.push(`${name}: objects[].wallPlane must be one of ${[...WALL_PLANES].join(', ')}.`);
+  }
+  if (object.wallSide !== undefined && !WALL_SIDES.has(object.wallSide)) {
+    errors.push(`${name}: objects[].wallSide must be one of ${[...WALL_SIDES].join(', ')}.`);
   }
   if (object.kind === 'chapel-double-door' && !object.doorLeaf) {
     errors.push(`${name}: chapel-double-door objects must define doorLeaf.`);
