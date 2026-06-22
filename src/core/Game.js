@@ -563,7 +563,7 @@ export class Game {
     }
     if (target.type === 'corpse') {
       const enemy = target.enemy;
-      return Boolean(enemy && enemy.isDead && enemy.inspect);
+      return Boolean(enemy && enemy.isDead && (enemy.inspect || this.#enemyHasUnclaimedLoot(enemy)));
     }
     if (target.type === 'object') {
       const object = target.object;
@@ -580,11 +580,66 @@ export class Game {
       return;
     }
     if (target.type === 'corpse') {
-      this.#openDialogueById(target.enemy.inspect);
+      this.#interactWithCorpse(target.enemy);
       return;
     }
     if (target.type === 'object') {
       this.#interactWithObject(target.object);
+    }
+  }
+
+  #enemyHasLoot(enemy) {
+    return Array.isArray(enemy?.loot) && enemy.loot.length > 0;
+  }
+
+  #enemyHasUnclaimedLoot(enemy) {
+    return this.#enemyHasLoot(enemy) && !enemy.lootClaimed;
+  }
+
+  #lootSummary(loot) {
+    return (loot ?? [])
+      .map((entry) => `${entry.count ?? 1}x ${this.inventory.displayName(entry.item)}`)
+      .join(', ');
+  }
+
+  #logCarryFailure(carry) {
+    const current = Inventory.formatWeight(carry.current);
+    const max = Inventory.formatWeight(this.inventory.maxCarryWeight);
+    const over = Inventory.formatWeight(carry.overBy);
+    this.#log(`Too much to carry. Pack ${current}/${max} kg.`);
+    this.#log(`Need ${over} kg free.`);
+  }
+
+  #interactWithCorpse(enemy) {
+    if (!enemy) return;
+    const loot = Array.isArray(enemy.loot) ? enemy.loot : [];
+    const panelLines = [];
+
+    if (loot.length && !enemy.lootClaimed) {
+      const carry = this.inventory.canAddLoot(loot);
+      if (!carry.ok) {
+        this.#logCarryFailure(carry);
+        panelLines.push('Too much to carry.');
+        if (enemy.inspect) this.#openDialogueById(enemy.inspect);
+        else this.#openDialogue(enemy.name, panelLines, 'corpse');
+        return;
+      }
+      for (const entry of loot) this.inventory.add(entry.item, entry.count ?? 1);
+      enemy.lootClaimed = true;
+      const summary = this.#lootSummary(loot);
+      if (summary) {
+        const line = `Recovered: ${summary}.`;
+        this.#log(line);
+        panelLines.push(line);
+      }
+    } else if (loot.length && enemy.lootClaimed && !enemy.inspect) {
+      panelLines.push('Nothing useful remains.');
+    }
+
+    if (enemy.inspect) {
+      this.#openDialogueById(enemy.inspect);
+    } else if (panelLines.length) {
+      this.#openDialogue(enemy.name, panelLines, 'corpse');
     }
   }
 
@@ -2268,6 +2323,11 @@ export class Game {
         .filter((enemy) => enemy.isDead)
         .map((enemy) => enemy.spawnId ?? enemy.id)
     );
+    const lootedEnemies = new Set(
+      this.enemies
+        .filter((enemy) => enemy.lootClaimed)
+        .map((enemy) => enemy.spawnId ?? enemy.id)
+    );
     const killedObjects = new Set(
       (this.level.interactables ?? [])
         .filter((object) => object.killed)
@@ -2281,6 +2341,16 @@ export class Game {
     const openedObjects = new Set(
       (this.level.interactables ?? [])
         .filter((object) => object.opened)
+        .map((object) => this.#objectStateKey(object))
+    );
+    const lootedObjects = new Set(
+      (this.level.interactables ?? [])
+        .filter((object) => object.looted)
+        .map((object) => this.#objectStateKey(object))
+    );
+    const revealedObjects = new Set(
+      (this.level.interactables ?? [])
+        .filter((object) => object.revealed)
         .map((object) => this.#objectStateKey(object))
     );
     const searchedObjects = new Map(
@@ -2297,8 +2367,11 @@ export class Game {
       killedObjects,
       unlockedObjects,
       openedObjects,
+      lootedObjects,
+      revealedObjects,
       searchedObjects,
       deadEnemies,
+      lootedEnemies,
       clearedEncounters: new Set(this.clearedEncounters ?? []),
       groundItems
     });
@@ -2313,12 +2386,19 @@ export class Game {
       if (state.searchedObjects?.has(key)) {
         restoreSearchCompleted(object, [...state.searchedObjects.get(key)]);
       }
+      if (state.revealedObjects?.has(key)) {
+        object.revealed = true;
+      }
       if (state.killedObjects?.has(key)) {
         object.killed = true;
         object.consumed = true;
         object.ambient = [];
         // A cut-down saint stays fallen on the ground when you return (fall=1).
         if (object.kind === 'cross-martyr') object.released = true;
+      }
+      if (state.lootedObjects?.has(key)) {
+        object.looted = true;
+        object.opened = true;
       }
       if (!state.consumedObjects?.has(key)) continue;
       object.consumed = true;
@@ -2334,7 +2414,9 @@ export class Game {
       }
     }
     for (const enemy of this.enemies) {
-      if (!state.deadEnemies?.has(enemy.spawnId ?? enemy.id)) continue;
+      const key = enemy.spawnId ?? enemy.id;
+      if (state.lootedEnemies?.has(key)) enemy.lootClaimed = true;
+      if (!state.deadEnemies?.has(key)) continue;
       enemy.hp = 0;
       enemy.isDead = true;
       enemy.render.state = 'dead';
@@ -2548,6 +2630,9 @@ export class Game {
       return { x: mouse.x, y: mouse.y, state: 'talk', text: `TALK: ${target.actor.name}` };
     }
     if (target.type === 'corpse') {
+      if (this.#enemyHasUnclaimedLoot(target.enemy)) {
+        return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${target.enemy.name}` };
+      }
       return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${target.enemy.name}` };
     }
     if (target.type === 'object') {
@@ -2576,6 +2661,9 @@ export class Game {
       return { x: mouse.x, y: mouse.y, state: 'use', text: `LOCKED: ${name}` };
     }
     if (object.interact?.type === 'container') {
+      return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${name}` };
+    }
+    if (object.interact?.type === 'corpse' && !object.looted && object.interact?.loot?.length) {
       return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${name}` };
     }
     if (object.interact?.type === 'altar' ||

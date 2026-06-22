@@ -20,6 +20,7 @@ export class Entity {
     spriteId = null,
     attacks = [],
     inspect = null,
+    loot = [],
     progression = null
   }) {
     this.id = id;
@@ -30,6 +31,8 @@ export class Entity {
     this.background = background;
     // Dialogue id shown when the player inspects this actor's corpse, if any.
     this.inspect = inspect;
+    this.loot = Array.isArray(loot) ? loot.map((entry) => ({ ...entry })) : [];
+    this.lootClaimed = false;
     this.tags = [...tags];
     this.position = { ...position };
     this.spriteId = spriteId ?? id;

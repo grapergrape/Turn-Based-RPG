@@ -12,6 +12,12 @@ function inReach(actor, object) {
   return Math.max(dx, dy) <= 1; // on the tile or any of the 8 neighbours
 }
 
+function lootSummary(loot, inventory) {
+  return (loot ?? [])
+    .map((entry) => `${entry.count ?? 1}x ${inventory.displayName(entry.item)}`)
+    .join(', ');
+}
+
 export class InteractionSystem {
   constructor(interactables) {
     // Objects with an `interact` descriptor, e.g. containers and the altar.
@@ -82,15 +88,43 @@ export class InteractionSystem {
       object.consumed = true;
       object.opened = true;
       pushLog(descriptor.log);
-      const summary = (descriptor.loot ?? [])
-        .map((entry) => `${entry.count ?? 1}x ${inventory.displayName(entry.item)}`)
-        .join(', ');
+      const summary = lootSummary(descriptor.loot, inventory);
       if (summary) logs.push(`Recovered: ${summary}.`);
+    } else if (descriptor.type === 'corpse') {
+      const loot = descriptor.loot ?? [];
+      pushLog(descriptor.log);
+      if (loot.length && !object.looted) {
+        const carry = inventory.canAddLoot(loot);
+        if (!carry.ok) {
+          const current = Inventory.formatWeight(carry.current);
+          const max = Inventory.formatWeight(inventory.maxCarryWeight);
+          const over = Inventory.formatWeight(carry.overBy);
+          logs.push(`Too much to carry. Pack ${current}/${max} kg.`);
+          logs.push(`Need ${over} kg free.`);
+          return {
+            logs,
+            triggersCombat,
+            combatEncounter: descriptor.encounter ?? null,
+            dialogueId: descriptor.dialogue ?? null,
+            questUpdate: null
+          };
+        }
+        for (const entry of loot) inventory.add(entry.item, entry.count ?? 1);
+        object.looted = true;
+        object.opened = true;
+        const summary = lootSummary(loot, inventory);
+        if (summary) logs.push(`Recovered: ${summary}.`);
+      } else if (loot.length && object.looted) {
+        pushLog(descriptor.emptyLog ?? 'Nothing useful remains.');
+      }
     } else if (descriptor.type === 'altar') {
       pushLog(descriptor.log);
       object.touched = true;
       triggersCombat = Boolean(descriptor.triggersCombat);
     } else {
+      if (descriptor.type === 'secret-entrance' || descriptor.type === 'secret-exit') {
+        object.revealed = true;
+      }
       pushLog(descriptor.log);
     }
 

@@ -1,0 +1,8 @@
+{
+  "id": "choir-tally-strip",
+  "name": "Choir Tally Strip",
+  "type": "evidence",
+  "weight": 0.1,
+  "groundModel": "paper",
+  "description": "A narrow paper strip pricked with names in candle soot. The last column counts hunger."
+}

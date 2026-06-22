@@ -12,6 +12,10 @@ function canTalk(actor) {
   return Boolean(actor?.dialogue) && !(actor.dialogueSeen && !actor.dialogueRepeat);
 }
 
+function canSearchCorpse(enemy) {
+  return Boolean(enemy?.isDead && (enemy.inspect || (Array.isArray(enemy.loot) && enemy.loot.length > 0)));
+}
+
 function groundItemAt(interactables, cell) {
   return interactables.find((entry) =>
     !entry.consumed && entry.interact?.type === 'ground-item' && sameCell(entry, cell)
@@ -48,7 +52,7 @@ export function resolveInteractionTargetAtCell({
     return { type: 'actor', actor, cell };
   }
 
-  const corpse = enemies.find((enemy) => enemy.isDead && enemy.inspect && sameCell(enemy, cell)) ?? null;
+  const corpse = enemies.find((enemy) => canSearchCorpse(enemy) && sameCell(enemy, cell)) ?? null;
   if (corpse) return { type: 'corpse', enemy: corpse, cell };
 
   const object = interactables.find((entry) =>

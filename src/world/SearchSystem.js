@@ -7,6 +7,16 @@ function lines(value) {
   return [].concat(value ?? []).filter((line) => typeof line === 'string' && line.trim() !== '');
 }
 
+function outcomeLogs(outcome, value) {
+  const prefix = outcome === 'success'
+    ? 'SUCCESS'
+    : outcome === 'failure'
+      ? 'FAILED'
+      : null;
+  const entries = lines(value);
+  return prefix ? entries.map((line) => `${prefix}: ${line}`) : entries;
+}
+
 function numeric(value, fallback) {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
 }
@@ -122,11 +132,12 @@ export function resolveSearchMethod(method, context = {}) {
   }
 
   const success = status.success;
+  const outcome = success ? 'success' : 'failure';
   return {
-    outcome: success ? 'success' : 'failure',
+    outcome,
     success,
     completed: success && method?.repeat !== true,
-    logs: lines(success ? method.successLog : method.failLog),
+    logs: outcomeLogs(outcome, success ? method.successLog : method.failLog),
     effects: success ? method.success : method.failure,
     status
   };

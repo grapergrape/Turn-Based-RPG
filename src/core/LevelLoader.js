@@ -124,6 +124,7 @@ export async function loadLevel(levelPath) {
     enemy.dialogueRepeat = Boolean(spawn.dialogueRepeat);
     enemy.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
     enemy.talkRadius = spawn.talkRadius ?? 1;
+    if (Array.isArray(spawn.loot)) enemy.loot = spawn.loot.map((entry) => ({ ...entry }));
     enemy.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
     enemy.ambientIndex = 0;
     enemy.ambientTimer = 3 + (index % 3) * 2.4;
@@ -164,6 +165,12 @@ export async function loadLevel(levelPath) {
     for (const entry of object.interact.loot ?? []) itemIds.add(entry.item);
     collectLockItemIds(object.interact.lock, itemIds);
     collectSearchItemIds(object.interact.search, itemIds);
+  }
+  for (const data of enemyDataById.values()) {
+    for (const entry of data.loot ?? []) itemIds.add(entry.item);
+  }
+  for (const spawn of enemySpawns) {
+    for (const entry of spawn.loot ?? []) itemIds.add(entry.item);
   }
   for (const entry of level.groundItems ?? []) {
     if (entry.item) itemIds.add(entry.item);

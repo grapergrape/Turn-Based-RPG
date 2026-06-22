@@ -21,6 +21,10 @@ const LOG_BOX = { x: 8, y: UI_PANEL.y + 7, w: 328, h: UI_PANEL.height - 14 };
 const STATUS_BOX = { x: 342, y: UI_PANEL.y + 7, w: 138, h: UI_PANEL.height - 14 };
 const COMMAND_BOX = { x: 486, y: UI_PANEL.y + 7, w: 146, h: UI_PANEL.height - 14 };
 const INVENTORY_BOX = { x: 54, y: 42, w: 532, h: 296 };
+const OUTCOME_PREFIXES = [
+  { text: 'SUCCESS:', color: PALETTE.uiSuccess },
+  { text: 'FAILED:', color: PALETTE.uiFailure }
+];
 // Aged-paper palette for the journal book (dark ink on dirty parchment).
 const PARCHMENT = {
   base: '#c7b487',
@@ -197,7 +201,7 @@ export class UIRenderer {
     const lines = wrapped.slice(-6);
     let y = LOG_BOX.y + 19;
     for (const line of lines) {
-      this.#text(ctx, line, LOG_BOX.x + 8, y, PALETTE.uiDim);
+      this.#outcomeText(ctx, line, LOG_BOX.x + 8, y, PALETTE.uiDim);
       y += 9;
     }
   }
@@ -902,7 +906,7 @@ export class UIRenderer {
 
     let y = body.y + 8;
     for (const line of layout.lines) {
-      this.#text(ctx, line, body.x + 8, y, PALETTE.uiText);
+      this.#outcomeText(ctx, line, body.x + 8, y, PALETTE.uiText);
       y += DIALOGUE_LINE_HEIGHT;
     }
     if (scroll > 0) this.#scrollArrow(ctx, body.x + body.w - 12, body.y + 7, -1, PALETTE.uiBorderLight);
@@ -1088,6 +1092,21 @@ export class UIRenderer {
 
   #textWidth(str, scale = 1) {
     return this.#normalize(str).length * 6 * scale;
+  }
+
+  #outcomeText(ctx, str, x, y, baseColor = PALETTE.uiText, scale = 1) {
+    const text = this.#normalize(str);
+    const outcome = OUTCOME_PREFIXES.find((entry) => text.startsWith(entry.text));
+    if (!outcome) {
+      this.#text(ctx, text, x, y, baseColor, scale);
+      return;
+    }
+
+    this.#text(ctx, outcome.text, x, y, outcome.color, scale);
+    const rest = text.slice(outcome.text.length);
+    if (rest) {
+      this.#text(ctx, rest, x + this.#textWidth(outcome.text, scale), y, baseColor, scale);
+    }
   }
 
   #wrap(str, maxChars) {

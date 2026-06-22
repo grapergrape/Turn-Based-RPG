@@ -269,6 +269,16 @@
         "talkRadius": 2,
         "ambient": [
           "Answer clean, road ash. The chapel hears liars."
+        ],
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 1
+          },
+          {
+            "item": "choir-tally-strip",
+            "count": 1
+          }
         ]
       },
       {
@@ -283,6 +293,12 @@
         "talkRadius": 2,
         "ambient": [
           "No closed hands past the threshold."
+        ],
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 1
+          }
         ]
       },
       {
@@ -294,6 +310,12 @@
           "Chew slow. Let the lesson find the throat.",
           "A closed body is only a locked chapel.",
           "Not this one yet. He still has hymns in him."
+        ],
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 1
+          }
         ]
       },
       {
@@ -1123,7 +1145,7 @@
     {
       "kind": "rusted-barrel",
       "x": 36,
-      "y": 14,
+      "y": 13,
       "blocking": true,
       "name": "Split Barrel",
       "interact": {
@@ -1135,7 +1157,7 @@
           "lines": [
             "Fresh scrapes ring the nails at the barrel base."
           ],
-          "useLabel": "Use the barrel ladder",
+          "useLabel": "Inspect the barrel",
           "methods": [
             {
               "id": "read-barrel-scrapes",
@@ -1217,9 +1239,15 @@
       "y": 22,
       "name": "Marked Settlement Guard",
       "interact": {
-        "type": "shrine",
+        "type": "corpse",
         "dialogue": "ash-chapel-cult-victim",
-        "log": "A settlement guard lies on his back in a wide pool of blood, his coat cut open and his chest carved."
+        "log": "A settlement guard lies on his back in a wide pool of blood, his coat cut open and his chest carved.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
       }
     },
     {
@@ -1248,9 +1276,15 @@
       "y": 24,
       "name": "Dead Settlement Guard",
       "interact": {
-        "type": "note",
+        "type": "corpse",
         "dialogue": "ash-chapel-dead-guard",
         "log": "A settlement guard lies beside the intake barricade, one hand still closed around a broken chapel key.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 2
+          }
+        ],
         "search": {
           "title": "Dead Settlement Guard",
           "lines": [

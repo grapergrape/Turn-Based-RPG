@@ -19,6 +19,7 @@ export function createActor(data, position) {
     spriteId: data.spriteId ?? data.id,
     attacks: data.attacks ?? [],
     inspect: data.inspect ?? null,
+    loot: data.loot ?? [],
     progression: data.progression ?? defaultProgressionFor(data),
     position
   });
