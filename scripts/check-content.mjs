@@ -335,6 +335,7 @@ function validateLevel(filePath, data) {
     validateDialogueReference(name, object.interact?.lockedDialogue, 'objects[].interact.lockedDialogue');
     validateLoot(name, object.interact?.loot);
     validateLock(name, object.interact?.lock, 'objects[].interact.lock');
+    validateSearch(name, object.interact?.search, 'objects[].interact.search');
     validateDoorObject(name, object);
   }
   validateHiddenRegions(name, data, objects);
@@ -545,6 +546,7 @@ function validateAshChapelMain(name, data, enemies, objects) {
   if (!data.onVictory?.questUpdate) {
     errors.push(`${name}: onVictory.questUpdate is required for this slice.`);
   }
+  validateDialogueEffects(name, data.onVictory, 'onVictory');
 }
 
 function validateAshChapelCellar(name, data, objects) {
@@ -896,6 +898,75 @@ function validateLock(name, lock, fieldName) {
   }
 }
 
+function validateSearch(name, search, fieldName) {
+  if (search === undefined) return;
+  if (!search || typeof search !== 'object' || Array.isArray(search)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+
+  if (search.id !== undefined) requireString(name, search.id, `${fieldName}.id`);
+  if (search.title !== undefined) requireString(name, search.title, `${fieldName}.title`);
+  if (search.useLabel !== undefined) requireString(name, search.useLabel, `${fieldName}.useLabel`);
+  if (search.leaveLabel !== undefined) requireString(name, search.leaveLabel, `${fieldName}.leaveLabel`);
+  validateStringList(name, search.lines, `${fieldName}.lines`);
+
+  if (!Array.isArray(search.methods) || search.methods.length === 0 || search.methods.length > 3) {
+    errors.push(`${name}: ${fieldName}.methods must contain 1 to 3 methods.`);
+    return;
+  }
+
+  const methodIds = new Set();
+  for (const [index, method] of search.methods.entries()) {
+    const methodName = `${fieldName}.methods[${index}]`;
+    if (!method || typeof method !== 'object' || Array.isArray(method)) {
+      errors.push(`${name}: ${methodName} must be an object.`);
+      continue;
+    }
+
+    requireString(name, method.id, `${methodName}.id`);
+    if (typeof method.id === 'string') {
+      if (methodIds.has(method.id)) errors.push(`${name}: ${methodName}.id "${method.id}" is duplicated.`);
+      methodIds.add(method.id);
+    }
+    requireString(name, method.label, `${methodName}.label`);
+    validateDialogueConditions(name, method.conditions, `${methodName}.conditions`);
+
+    if (method.requiresItem !== undefined) {
+      requireString(name, method.requiresItem, `${methodName}.requiresItem`);
+      if (typeof method.requiresItem === 'string') referencedItemIds.add(method.requiresItem);
+    }
+
+    const hasField = method.field !== undefined;
+    const hasPrimary = method.primary !== undefined;
+    if (hasField && hasPrimary) {
+      errors.push(`${name}: ${methodName} must use either field or primary, not both.`);
+    }
+    if (hasField) {
+      requireString(name, method.field, `${methodName}.field`);
+      if (typeof method.field === 'string' && !FIELD_RATING_IDS.has(method.field)) {
+        errors.push(`${name}: ${methodName}.field has unknown field rating "${method.field}".`);
+      }
+      validateLockDc(name, method.dc, `${methodName}.dc`, 0, 100);
+    } else if (hasPrimary) {
+      requireString(name, method.primary, `${methodName}.primary`);
+      if (typeof method.primary === 'string' && !PRIMARY_ATTRIBUTE_IDS.has(method.primary)) {
+        errors.push(`${name}: ${methodName}.primary has unknown primary "${method.primary}".`);
+      }
+      validateLockDc(name, method.dc, `${methodName}.dc`, 0, 10);
+    } else {
+      validateLockDc(name, method.dc, `${methodName}.dc`, 0, 100);
+    }
+
+    validateStringList(name, method.successLog, `${methodName}.successLog`);
+    validateStringList(name, method.failLog, `${methodName}.failLog`);
+    validateStringList(name, method.unavailableLog, `${methodName}.unavailableLog`);
+    validateOptionalBoolean(name, method.repeat, `${methodName}.repeat`);
+    validateDialogueEffects(name, method.success, `${methodName}.success`);
+    validateDialogueEffects(name, method.failure, `${methodName}.failure`);
+  }
+}
+
 function validateDoorObject(name, object) {
   if (object?.interact?.type !== 'door') return;
   if (object.blocking !== true) {
@@ -1141,6 +1212,50 @@ function validateXpNumber(name, value, fieldName) {
   }
 }
 
+function validateBriefingPage(name, page, fieldName) {
+  if (!Array.isArray(page) || page.length === 0) {
+    errors.push(`${name}: ${fieldName} must be a non-empty array of strings.`);
+    return;
+  }
+  for (const line of page) requireString(name, line, `${fieldName}[]`);
+}
+
+function validateShowBriefing(name, showBriefing, fieldName) {
+  if (showBriefing === undefined) return;
+  if (!showBriefing || typeof showBriefing !== 'object' || Array.isArray(showBriefing)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+
+  if (showBriefing.title !== undefined) requireString(name, showBriefing.title, `${fieldName}.title`);
+  if (showBriefing.nextPrompt !== undefined) requireString(name, showBriefing.nextPrompt, `${fieldName}.nextPrompt`);
+  if (showBriefing.lastPrompt !== undefined) requireString(name, showBriefing.lastPrompt, `${fieldName}.lastPrompt`);
+  if (showBriefing.skipPrompt !== undefined) requireString(name, showBriefing.skipPrompt, `${fieldName}.skipPrompt`);
+
+  if (!Array.isArray(showBriefing.pages) || showBriefing.pages.length === 0) {
+    errors.push(`${name}: ${fieldName}.pages must be a non-empty array of pages.`);
+  } else {
+    showBriefing.pages.forEach((page, index) => {
+      validateBriefingPage(name, page, `${fieldName}.pages[${index}]`);
+    });
+  }
+
+  if (showBriefing.conditionalPages === undefined) return;
+  if (!Array.isArray(showBriefing.conditionalPages)) {
+    errors.push(`${name}: ${fieldName}.conditionalPages must be an array.`);
+    return;
+  }
+  showBriefing.conditionalPages.forEach((entry, index) => {
+    const entryName = `${fieldName}.conditionalPages[${index}]`;
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      errors.push(`${name}: ${entryName} must be an object.`);
+      return;
+    }
+    validateDialogueConditions(name, entry.conditions, `${entryName}.conditions`);
+    validateBriefingPage(name, entry.page, `${entryName}.page`);
+  });
+}
+
 function validateDialogueEffects(name, effects, fieldName) {
   if (effects === undefined) return;
   if (!effects || typeof effects !== 'object' || Array.isArray(effects)) {
@@ -1152,13 +1267,16 @@ function validateDialogueEffects(name, effects, fieldName) {
   validateXpNumber(name, effects.xp, `${fieldName}.xp`);
 
   const startCombat = effects.startCombat;
-  if (startCombat === undefined) return;
-  if (typeof startCombat === 'string') return;
-  if (startCombat && typeof startCombat === 'object' && !Array.isArray(startCombat)) {
-    requireString(name, startCombat.encounter, `${fieldName}.startCombat.encounter`);
-    return;
+  if (startCombat !== undefined) {
+    if (typeof startCombat === 'string') {
+      // Valid compact form.
+    } else if (startCombat && typeof startCombat === 'object' && !Array.isArray(startCombat)) {
+      requireString(name, startCombat.encounter, `${fieldName}.startCombat.encounter`);
+    } else {
+      errors.push(`${name}: ${fieldName}.startCombat must be an encounter id or object.`);
+    }
   }
-  errors.push(`${name}: ${fieldName}.startCombat must be an encounter id or object.`);
+  validateShowBriefing(name, effects.showBriefing, `${fieldName}.showBriefing`);
 }
 
 function validateInventoryEffects(name, inventory, fieldName) {

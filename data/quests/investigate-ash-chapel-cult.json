@@ -4,8 +4,9 @@
   "initialStage": "active",
   "objectives": [
     { "text": "Search the chapel settlement. Learn who they are and what they preach.", "stage": "evidence-found" },
-    { "text": "Break the cult that has taken the chapel.", "stage": "complete" },
-    { "text": "Follow the road to the Hallowfen wall.", "lead": true, "reveal": "evidence-found" }
+    { "text": "Break the cult that has taken the chapel.", "stage": "cult-broken" },
+    { "text": "Ring the chapel bell so the Remnant knows the road house is safe enough to enter.", "stage": "hallowfen-checkpoints", "reveal": "cult-broken" },
+    { "text": "Investigate why the Hallowfen checkpoints stopped answering.", "lead": true, "reveal": "hallowfen-checkpoints" }
   ],
   "stages": [
     {
@@ -32,10 +33,15 @@
       "description": "A hidden service cellar runs beneath the split barrel."
     },
     {
-      "id": "complete",
-      "task": "Travel to Hallowfen",
+      "id": "cult-broken",
+      "task": "Ring the chapel bell",
       "xp": 100,
-      "description": "The chapel cell is broken. The trail runs down the road to the Hallowfen wall."
+      "description": "The chapel cell is broken. Ring the old bell rope so the road office knows the house is safe enough to enter."
+    },
+    {
+      "id": "hallowfen-checkpoints",
+      "task": "Investigate Hallowfen",
+      "description": "The Remnant will hear the chapel bell, but Hallowfen's checkpoints still do not answer. Follow the wall road and find who silenced them."
     }
   ]
 }

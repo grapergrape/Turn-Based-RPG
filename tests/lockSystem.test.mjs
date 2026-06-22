@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 
 import {
+  SECURITY_TOOL_ITEM,
   isObjectLocked,
   lockMethodStatus,
-  resolveLockMethod
+  lockMethodUsesSecurityTool,
+  resolveLockMethod,
+  securityToolSurvives
 } from '../src/world/LockSystem.js';
 
 function inventory(items = []) {
@@ -25,13 +28,23 @@ function inventory(items = []) {
 
 {
   const method = { id: 'pick', field: 'security', dc: 50 };
-  const status = lockMethodStatus(method, {
+  const missing = lockMethodStatus(method, {
     inventory: inventory(),
+    fieldRating: () => 50
+  });
+  assert.equal(missing.available, false);
+  assert.equal(missing.requiredItem, SECURITY_TOOL_ITEM);
+
+  const status = lockMethodStatus(method, {
+    inventory: inventory([SECURITY_TOOL_ITEM]),
     fieldRating: () => 50
   });
   assert.equal(status.available, true);
   assert.equal(status.success, true);
   assert.deepEqual(status.check, { kind: 'field', id: 'security', rating: 50, dc: 50, success: true });
+  assert.equal(lockMethodUsesSecurityTool(method, status), true);
+  assert.equal(securityToolSurvives(status, 0.49), true);
+  assert.equal(securityToolSurvives(status, 0.5), false);
 }
 
 {

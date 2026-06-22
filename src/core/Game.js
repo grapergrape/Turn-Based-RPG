@@ -27,15 +27,31 @@ import { planTurn, flavorLine } from '../combat/EnemyAI.js';
 import { findPath, findPathToAdjacent } from '../world/Pathfinder.js';
 import { InteractionSystem } from '../world/InteractionSystem.js';
 import {
+  SECURITY_TOOL_ITEM,
   isObjectLocked,
   lockLines,
   lockMethodById,
   lockMethodStatus,
   lockMethods,
+  lockMethodUsesSecurityTool,
   lockTitle,
   objectLock,
-  resolveLockMethod
+  resolveLockMethod,
+  securityToolSurvives
 } from '../world/LockSystem.js';
+import {
+  completeSearchMethod,
+  objectSearch,
+  resolveSearchMethod,
+  restoreSearchCompleted,
+  searchCompletedIds,
+  searchLines,
+  searchMethodById,
+  searchMethodCompleted,
+  searchMethodStatus,
+  searchMethods,
+  searchTitle
+} from '../world/SearchSystem.js';
 import {
   isDoorObject,
   objectGroupId,
@@ -105,6 +121,7 @@ const OBJECT_NAMES = {
   campfire: 'Campfire',
   'chapel-banner': 'Torn Chapel Banner',
   'broken-bell': 'Broken Bell',
+  'bell-rope': 'Bell Rope',
   'prayer-lectern': 'Prayer Lectern',
   'ritual-bowl': 'Ritual Bowl',
   'cracked-column': 'Cracked Column',
@@ -269,7 +286,12 @@ export class Game {
     this.equipmentIndex = 0;
     this.dialogue = null;
     this.briefing = null;
+    this.briefingTitle = null;
     this.briefingPage = 0;
+    this.briefingNextPrompt = null;
+    this.briefingLastPrompt = null;
+    this.briefingSkipPrompt = null;
+    this.briefingMarksIntro = false;
     this.anim = { tick: 0, bob: 0, flicker: 0, pulse: 0 };
     this.hiddenTiles = new Set();
     this.hiddenTilesKey = null;
@@ -304,6 +326,10 @@ export class Game {
       this.briefing = level.briefing;
       this.briefingTitle = level.briefingTitle ?? 'FIELD WRIT';
       this.briefingPage = 0;
+      this.briefingNextPrompt = 'ENTER: CONTINUE';
+      this.briefingLastPrompt = 'ENTER: ENTER THE CHAPEL';
+      this.briefingSkipPrompt = 'ESC: SKIP';
+      this.briefingMarksIntro = true;
     }
     this.ready = true;
   }
@@ -400,8 +426,14 @@ export class Game {
   }
 
   #finishIntro() {
-    this.introSeen = true;
+    if (this.briefingMarksIntro) this.introSeen = true;
     this.briefing = null;
+    this.briefingTitle = null;
+    this.briefingPage = 0;
+    this.briefingNextPrompt = null;
+    this.briefingLastPrompt = null;
+    this.briefingSkipPrompt = null;
+    this.briefingMarksIntro = false;
     this.mode = 'explore';
   }
 
@@ -556,7 +588,7 @@ export class Game {
     }
   }
 
-  #interactWithObject(object) {
+  #interactWithObject(object, { bypassSearch = false } = {}) {
     if (object?.kind === GROUND_ITEM_KIND || object?.interact?.type === 'ground-item') {
       this.#pickupGroundItem(object);
       return;
@@ -567,6 +599,10 @@ export class Game {
     }
     if (isDoorObject(object)) {
       this.#openDoorObject(object);
+      return;
+    }
+    if (!bypassSearch && this.#hasSearchChoices(object)) {
+      this.#openSearchDialogue(object);
       return;
     }
 
@@ -697,6 +733,7 @@ export class Game {
     });
     if (result.unlocked) unlockLinkedObjects(object, this.level?.interactables ?? []);
     for (const line of result.logs) this.#log(line);
+    if (result.unlocked) this.#applyLockToolWear(method, result.status);
 
     const didTransition = this.#applyEffects(result.effects);
     if (didTransition) return;
@@ -711,6 +748,127 @@ export class Game {
       return;
     }
     this.#openLockDialogue(object, result.logs);
+  }
+
+  #applyLockToolWear(method, status) {
+    if (!lockMethodUsesSecurityTool(method, status)) return;
+    if (securityToolSurvives(status)) return;
+    if (!this.inventory.remove(SECURITY_TOOL_ITEM, 1)) return;
+    this.#log(`${this.inventory.displayName(SECURITY_TOOL_ITEM)} bends past saving.`);
+    this.#clampInventorySelection();
+  }
+
+  #hasSearchChoices(object) {
+    const search = objectSearch(object);
+    if (!search || object?.consumed) return false;
+    return searchMethods(search)
+      .filter((method) => this.#meetsConditions(method.conditions))
+      .filter((method) => !searchMethodCompleted(object, method))
+      .some((method) => searchMethodStatus(method, {
+        inventory: this.inventory,
+        fieldRating: (fieldId) => this.#fieldRating(fieldId),
+        primaryRating: (primaryId) => this.#primaryRating(primaryId)
+      }).available);
+  }
+
+  #openSearchDialogue(object, leadLines = []) {
+    const search = objectSearch(object);
+    if (!search) return;
+
+    const bodyLines = [
+      ...[].concat(leadLines ?? []).filter(Boolean),
+      ...searchLines(search)
+    ];
+    const searchChoices = searchMethods(search)
+      .filter((method) => this.#meetsConditions(method.conditions))
+      .filter((method) => !searchMethodCompleted(object, method))
+      .map((method) => ({
+        method,
+        status: searchMethodStatus(method, {
+          inventory: this.inventory,
+          fieldRating: (fieldId) => this.#fieldRating(fieldId),
+          primaryRating: (primaryId) => this.#primaryRating(primaryId)
+        })
+      }))
+      .filter(({ status }) => status.available)
+      .slice(0, DIALOGUE_MAX_CHOICES - 2)
+      .map(({ method, status }) => ({
+        label: this.#searchChoiceLabel(method, status),
+        searchAction: { object, methodId: method.id },
+        close: false
+      }));
+
+    const choices = [
+      ...searchChoices,
+      {
+        label: this.#searchUseLabel(object, search),
+        searchAction: { object, useObject: true },
+        close: false
+      },
+      { label: this.#searchLeaveLabel(search), close: true }
+    ];
+
+    this.#setDialogueState({
+      id: '__search__',
+      title: searchTitle(search, this.#objectName(object)),
+      kind: 'search',
+      lines: bodyLines,
+      choices,
+      scroll: 0,
+      options: choices.map((choice, index) => `${index + 1}. ${choice.label}`)
+    });
+  }
+
+  #searchChoiceLabel(method, status) {
+    const base = method.label ?? 'Search';
+    const check = status?.check;
+    if (!check) return base;
+    const label = check.kind === 'primary'
+      ? this.#primaryLabel(check.id)
+      : this.#fieldLabel(check.id);
+    return `${base} (${label} ${check.rating} of ${check.dc})`;
+  }
+
+  #searchUseLabel(object, search) {
+    if (typeof search?.useLabel === 'string' && search.useLabel.trim() !== '') return search.useLabel;
+    const name = this.#objectName(object);
+    if (object?.interact?.type === 'container') return `Loot ${name}`;
+    if (object?.interact?.type === 'secret-entrance' || object?.interact?.type === 'secret-exit') return `Use ${name}`;
+    return `Inspect ${name}`;
+  }
+
+  #searchLeaveLabel(search) {
+    return typeof search?.leaveLabel === 'string' && search.leaveLabel.trim() !== ''
+      ? search.leaveLabel
+      : 'Leave it';
+  }
+
+  #chooseSearchOption(action) {
+    const object = action?.object;
+    if (!object) {
+      this.#closeUiScreen();
+      return;
+    }
+    if (action.useObject) {
+      this.#closeUiScreen();
+      this.#interactWithObject(object, { bypassSearch: true });
+      return;
+    }
+
+    const method = searchMethodById(objectSearch(object), action.methodId);
+    const result = resolveSearchMethod(method, {
+      inventory: this.inventory,
+      fieldRating: (fieldId) => this.#fieldRating(fieldId),
+      primaryRating: (primaryId) => this.#primaryRating(primaryId),
+      itemName: (itemId) => this.inventory.displayName(itemId)
+    });
+    if (result.completed) completeSearchMethod(object, method);
+    for (const line of result.logs) this.#log(line);
+
+    const didTransition = this.#applyEffects(result.effects);
+    if (didTransition) return;
+
+    this.#openSearchDialogue(object, result.logs);
   }
 
   // ---- UI screens --------------------------------------------------------
@@ -1190,6 +1348,10 @@ export class Game {
       this.#chooseLockOption(choice.lockAction);
       return;
     }
+    if (choice.searchAction) {
+      this.#chooseSearchOption(choice.searchAction);
+      return;
+    }
     const didTransition = this.#applyEffects(choice.effects);
     if (didTransition) return;
     const definition = this.dialogueDefs[this.dialogue.id];
@@ -1209,6 +1371,10 @@ export class Game {
     if (effects.xp !== undefined) this.#awardPlayerExperience(effects.xp);
     if (effects.kill) this.#silenceProp(effects.kill);
     if (effects.teleport) this.#teleportPlayer(effects.teleport);
+    if (effects.showBriefing) {
+      this.#showBriefing(effects.showBriefing);
+      return true;
+    }
     if (effects.startCombat) {
       const start = effects.startCombat;
       const encounter = typeof start === 'string' ? start : start.encounter;
@@ -1221,6 +1387,29 @@ export class Game {
       return true;
     }
     return false;
+  }
+
+  #showBriefing(effect) {
+    const pages = [];
+    const pushPage = (page) => {
+      const lines = [].concat(page ?? []).filter(Boolean);
+      if (lines.length) pages.push(lines);
+    };
+    for (const page of effect.pages ?? []) pushPage(page);
+    for (const entry of effect.conditionalPages ?? []) {
+      if (this.#meetsConditions(entry.conditions)) pushPage(entry.page);
+    }
+    if (!pages.length) return;
+
+    this.#closeUiScreen();
+    this.mode = 'intro';
+    this.briefing = pages;
+    this.briefingTitle = effect.title ?? 'FIELD WRIT';
+    this.briefingPage = 0;
+    this.briefingNextPrompt = effect.nextPrompt ?? 'ENTER: CONTINUE';
+    this.briefingLastPrompt = effect.lastPrompt ?? 'ENTER: CONTINUE';
+    this.briefingSkipPrompt = effect.skipPrompt ?? 'ESC: SKIP';
+    this.briefingMarksIntro = false;
   }
 
   #applyInventoryEffects(inventoryEffects) {
@@ -1471,9 +1660,9 @@ export class Game {
 
       this.mode = 'victory';
       this.#log(this.level.victoryLog ?? 'The area falls quiet. Nothing answers now.');
-      if (this.level.onVictory?.questUpdate && !this.appliedLevelEvents.has('victory')) {
+      if (this.level.onVictory && !this.appliedLevelEvents.has('victory')) {
         this.appliedLevelEvents.add('victory');
-        this.#applyQuestUpdate(this.level.onVictory?.questUpdate);
+        this.#applyEffects(this.level.onVictory);
       }
       this.#log('Explore on, or press R to begin again.');
     } else if (outcome === 'defeat') {
@@ -2094,6 +2283,12 @@ export class Game {
         .filter((object) => object.opened)
         .map((object) => this.#objectStateKey(object))
     );
+    const searchedObjects = new Map(
+      (this.level.interactables ?? [])
+        .map((object) => [this.#objectStateKey(object), searchCompletedIds(object)])
+        .filter(([, ids]) => ids.length > 0)
+        .map(([key, ids]) => [key, new Set(ids)])
+    );
     const groundItems = (this.groundItems ?? [])
       .map((item) => serializeGroundItem(item))
       .filter(Boolean);
@@ -2102,6 +2297,7 @@ export class Game {
       killedObjects,
       unlockedObjects,
       openedObjects,
+      searchedObjects,
       deadEnemies,
       clearedEncounters: new Set(this.clearedEncounters ?? []),
       groundItems
@@ -2114,6 +2310,9 @@ export class Game {
 
     for (const object of this.level.interactables ?? []) {
       const key = this.#objectStateKey(object);
+      if (state.searchedObjects?.has(key)) {
+        restoreSearchCompleted(object, [...state.searchedObjects.get(key)]);
+      }
       if (state.killedObjects?.has(key)) {
         object.killed = true;
         object.consumed = true;
@@ -2219,7 +2418,10 @@ export class Game {
         title: this.briefingTitle,
         page: this.briefing?.[this.briefingPage] ?? [],
         pageIndex: this.briefingPage,
-        pageCount: this.briefing?.length ?? 0
+        pageCount: this.briefing?.length ?? 0,
+        nextPrompt: this.briefingNextPrompt,
+        lastPrompt: this.briefingLastPrompt,
+        skipPrompt: this.briefingSkipPrompt
       });
       return;
     }

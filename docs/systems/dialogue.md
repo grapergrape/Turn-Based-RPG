@@ -2,10 +2,11 @@
 
 The first runtime dialogue pass exists for the Ash Chapel slice. It supports
 short readout scenes, up to five numbered choices, log effects, quest-stage
-updates, simple same-level teleport effects, and `loadLevel` effects for secret
-entrances that move to a separate JSON level. Story and dialogue authoring
-should still start in `docs/story/story-dialogue-workflow.md` before moving
-playable lines into `data/dialogue/`.
+updates, simple same-level teleport effects, `showBriefing` interlude effects,
+and `loadLevel` effects for secret entrances that move to a separate JSON level.
+Story and dialogue authoring should still start in
+`docs/story/story-dialogue-workflow.md` before moving playable lines into
+`data/dialogue/`.
 
 All dialogue lines are player-facing, so they must follow
 `anti_ai_slop_writing_skill/SKILL.md`: no em-dashes / `--` / `—`, no AI-tell
@@ -75,6 +76,12 @@ Current dialogue files contain:
 This shape is intentionally narrow. Add speakers, reputation, companion
 reactions, or skill checks only when a playable scene needs them. Conditional
 nodes and story flags already exist (see below).
+
+`showBriefing` opens the same full-screen black card renderer used by the
+opening writ. Use it for act cards or major field reports, not ordinary notes.
+Its `pages` array is always shown. Optional `conditionalPages` entries carry
+normal dialogue `conditions` plus a `page`, so personal outcome text only appears
+after the player has earned it.
 
 Ambient NPC lines are authored on enemy spawns as `ambient` arrays, not as full
 dialogue nodes. Use them for short overheard teachings, warnings, or routines

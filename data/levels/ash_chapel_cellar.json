@@ -184,9 +184,40 @@
       "interact": {
         "type": "container",
         "log": "A road warden's cache is tucked under a dry stair.",
+        "search": {
+          "title": "Warden Cache",
+          "lines": [
+            "The stair above the cache sits a finger-width higher than the others."
+          ],
+          "useLabel": "Loot the cache",
+          "methods": [
+            {
+              "id": "check-false-tread",
+              "label": "Check the false tread",
+              "dc": 40,
+              "successLog": "One stair tread lifts from its pins. A wrapped relic round waits in the dust.",
+              "failLog": "The dry stair gives you no clean edge to lift.",
+              "success": {
+                "inventory": {
+                  "add": [
+                    {
+                      "item": "relic-rounds",
+                      "count": 1
+                    }
+                  ]
+                },
+                "setFlag": "searched-warden-cache"
+              }
+            }
+          ]
+        },
         "loot": [
           {
             "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "censure-entry-roll",
             "count": 1
           },
           {

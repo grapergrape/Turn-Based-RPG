@@ -58,6 +58,10 @@
                 {
                   "item": "field-dressing",
                   "count": 1
+                },
+                {
+                  "item": "censure-entry-roll",
+                  "count": 1
                 }
               ]
             },
@@ -66,7 +70,7 @@
               "stage": "complete",
               "log": "Quest complete: Corin has his blue ball again."
             },
-            "log": "Hanne Rovik gives you a clean field dressing for bringing the ball back."
+            "log": "Corin gives you a Censure Entry Roll from his sleeve. Hanne adds a clean field dressing before you go."
           },
           "close": true
         },

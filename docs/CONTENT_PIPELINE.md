@@ -132,7 +132,7 @@ Shape:
     { "id": "nave-trigger", "encounter": "nave-rite", "x": 8, "y": 3, "radius": 2, "intro": ["A line shown when this encounter starts."] }
   ],
   "combatIntro": ["A line shown when combat starts."],
-  "onVictory": { "questUpdate": { "quest": "investigate-ash-chapel-cult", "stage": "complete" } },
+  "onVictory": { "questUpdate": { "quest": "investigate-ash-chapel-cult", "stage": "cult-broken" } },
   "objects": [
     { "kind": "broken-pew", "x": 6, "y": 5, "blocking": true },
     { "kind": "rusted-reliquary", "x": 2, "y": 4, "blocking": true,
@@ -172,9 +172,11 @@ Rules:
 - `interact.lock` can gate any interaction behind a deterministic fieldcraft
   panel. The runtime shows the lock through the normal dialogue UI, then resolves
   the selected method from item possession, a field rating, or a primary
-  attribute. No random roll is made. If the method succeeds and `unlocks` is not
-  `false`, the object is marked unlocked and the normal interaction runs. A
-  door opens when the lock succeeds and clears its blocking cell from pathing.
+  attribute. Opening the lock is deterministic. If the method succeeds and
+  `unlocks` is not `false`, the object is marked unlocked and the normal
+  interaction runs. A door opens when the lock succeeds and clears its blocking
+  cell from pathing. Successful Security picks can still make a separate
+  durability roll for the Censure Entry Roll.
 
 ```json
 {
@@ -201,6 +203,7 @@ Rules:
         {
           "id": "pick-keyway",
           "label": "Work the keyway",
+          "requiresItem": "censure-entry-roll",
           "field": "security",
           "dc": 50,
           "successLog": "You clear the grit and walk the pins open.",
@@ -230,6 +233,11 @@ Lock rules:
 - A method with `field` uses a field rating id from `src/core/Progression.js`
   and a `dc` from 0 to 100. A method with `primary` uses a primary id and a
   `dc` from 0 to 10.
+- Security lockpicking methods use `censure-entry-roll`. If a Security method
+  omits `requiresItem`, the runtime still treats the Censure Entry Roll as
+  required. After a successful Security pick, the current Security rating is
+  the percent chance that one roll survives. If the check breaks the tool, one
+  `censure-entry-roll` is removed from the pack.
 - Field and primary checks are deterministic. Current rating greater than or
   equal to `dc` succeeds. Lower rating fails and leaves the lock shut.
 - `successLog`, `failLog`, and `unavailableLog` are optional player-facing log
@@ -239,6 +247,57 @@ Lock rules:
 - Set `unlocks: false` for an inspection method that gives information without
   opening the object. Set `openOnSuccess: false` when the method should unlock
   the object but require a second click to use it.
+- `interact.search` adds an optional Search panel to an interactable object.
+  Search is for evidence, hidden loot, track reads, route hints, corpse checks,
+  and scene interpretation. It should not gate required quest progress.
+
+```json
+{
+  "kind": "corpse",
+  "x": 15,
+  "y": 24,
+  "name": "Dead Settlement Guard",
+  "interact": {
+    "type": "note",
+    "log": "A settlement guard lies beside the intake barricade.",
+    "search": {
+      "title": "Dead Settlement Guard",
+      "lines": ["The ash and blood still hold a readable edge."],
+      "useLabel": "Inspect the guard",
+      "methods": [
+        {
+          "id": "read-blood-trail",
+          "label": "Read the blood trail",
+          "dc": 40,
+          "successLog": "The blood under his shoulder is dragged backward.",
+          "failLog": "The dried blood gives you nothing useful.",
+          "success": { "setFlag": "searched-dead-guard" }
+        }
+      ]
+    }
+  }
+}
+```
+
+Search rules:
+
+- `methods` must contain one to three entries. The normal inspect, loot, or use
+  choice and the leave choice use the remaining dialogue slots.
+- A method defaults to the `search` field rating if it omits `field` and
+  `primary`. It may name another field rating with `field`, or one primary
+  attribute with `primary`.
+- Field checks use `dc` from 0 to 100. Primary checks use `dc` from 0 to 10.
+- Checks are deterministic. Current rating greater than or equal to `dc`
+  succeeds. Lower rating fails.
+- Successful methods are one-shot by default and stay complete while the run
+  preserves that level state. Use `repeat: true` only for safe informational
+  checks that do not grant repeatable rewards.
+- `successLog`, `failLog`, and `unavailableLog` are optional player-facing log
+  text. Keep them short and follow the writing rules at the top of this file.
+- `success` and `failure` use the same effect shape as dialogue choices, such
+  as `log`, `setFlag`, `inventory`, `questUpdate`, `xp`, or `startCombat`.
+- `useLabel` and `leaveLabel` can override the normal object-use choice and
+  close choice. If omitted, the runtime builds a label from the object type.
 - Doors use authored objects with `interact.type: "door"` and `blocking: true`.
   When opened, the runtime sets `opened`, starts `openedAt` for the prop
   animation, and removes the cell from the grid blocker set. Grouped door leaves
@@ -314,8 +373,10 @@ Lock rules:
   lines. Combat only activates living enemies in that encounter.
 - `combatIntro` is a fallback list of log lines shown when an encounter has no
   trigger-specific intro.
-- `onVictory.questUpdate` updates the active quest after all enemies in the
-  level are defeated.
+- `onVictory` uses the same effect shape as dialogue choices. At minimum this
+  slice keeps `onVictory.questUpdate` to advance the active quest after all
+  enemies in the level are defeated. It can also set story flags such as
+  `setFlag` for later dialogue gates.
 - Dialogue choice effects can use `loadLevel` to move to another level while
   preserving the run state:
 
@@ -338,6 +399,30 @@ Lock rules:
   "effects": {
     "log": "The entrance Choir spread apart and come at you.",
     "startCombat": "entrance-catechism"
+  }
+}
+```
+
+- Dialogue choice effects can use `showBriefing` to open a full-screen black
+  briefing or interlude card using the same renderer as the opening writ.
+  `pages` are always shown. `conditionalPages` add pages only when their
+  dialogue conditions pass:
+
+```json
+{
+  "effects": {
+    "showBriefing": {
+      "title": "ACT I: THE HALLOWFEN",
+      "pages": [["The bell answers above the ceiling."]],
+      "conditionalPages": [
+        {
+          "conditions": { "flag": "survivors-returning-chapel" },
+          "page": ["Selka starts counting people by name instead of by hiding place."]
+        }
+      ],
+      "lastPrompt": "ENTER: CONTINUE",
+      "skipPrompt": "ESC: CLOSE"
+    }
   }
 }
 ```

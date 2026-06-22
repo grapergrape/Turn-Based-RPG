@@ -51,6 +51,15 @@ function collectLockItemIds(lock, itemIds) {
   }
 }
 
+function collectSearchItemIds(search, itemIds) {
+  if (!search || typeof search !== 'object' || !Array.isArray(search.methods)) return;
+  for (const method of search.methods) {
+    if (method?.requiresItem) itemIds.add(method.requiresItem);
+    addInventoryEffectItems(method?.success, itemIds);
+    addInventoryEffectItems(method?.failure, itemIds);
+  }
+}
+
 // Map a non-walkable legend entry to a renderer prop kind. Any block kind the
 // sprite catalog knows (wall, wall-broken, wall-window, ...) passes straight
 // through; an unnamed entry falls back to a plain wall block.
@@ -154,6 +163,7 @@ export async function loadLevel(levelPath) {
   for (const object of interactables) {
     for (const entry of object.interact.loot ?? []) itemIds.add(entry.item);
     collectLockItemIds(object.interact.lock, itemIds);
+    collectSearchItemIds(object.interact.search, itemIds);
   }
   for (const entry of level.groundItems ?? []) {
     if (entry.item) itemIds.add(entry.item);

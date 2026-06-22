@@ -20,6 +20,7 @@
         {
           "label": "Cut it down",
           "effects": {
+            "setFlag": "cellar-victim-ended",
             "kill": "cellar-victim",
             "log": "You cut the ropes and end it before the cult can raise it. The cold gets a little colder, and a little quieter."
           },

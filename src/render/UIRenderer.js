@@ -144,8 +144,12 @@ export class UIRenderer {
     }
 
     const last = (data.pageIndex ?? 0) >= (data.pageCount ?? 1) - 1;
-    this.#text(ctx, last ? 'ENTER: ENTER THE CHAPEL' : 'ENTER: CONTINUE', left, H - 44, PALETTE.uiGood);
-    this.#text(ctx, 'ESC: SKIP', right - this.#textWidth('ESC: SKIP'), H - 44, PALETTE.uiDim);
+    const advanceText = last
+      ? (data.lastPrompt ?? 'ENTER: ENTER THE CHAPEL')
+      : (data.nextPrompt ?? 'ENTER: CONTINUE');
+    const skipText = data.skipPrompt ?? 'ESC: SKIP';
+    this.#text(ctx, advanceText, left, H - 44, PALETTE.uiGood);
+    if (skipText) this.#text(ctx, skipText, right - this.#textWidth(skipText), H - 44, PALETTE.uiDim);
   }
 
   #drawHud(ctx, ui) {

@@ -41,9 +41,7 @@
     },
     "cult-dead": {
       "conditions": {
-        "questStages": {
-          "investigate-ash-chapel-cult": "complete"
-        }
+        "flag": "ash-chapel-cult-broken"
       },
       "else": "hideout",
       "lines": [
