@@ -362,6 +362,11 @@ Search rules:
 - `dialogue` lists runtime dialogue ids loaded from `data/dialogue/`.
 - Enemy spawns can define `encounter` to group nearby enemies into one combat
   pull. If omitted, the spawn gets its own encounter.
+- Enemy and NPC spawns can define `appearance` to override the actor or enemy
+  file body, outfit, gear, or accent for that placed character. Use this to vary
+  repeated human cultists, guards, refugees, or townspeople without duplicating
+  their combat stats or dialogue data. `spriteId` still exists for fixed atlas
+  entries such as Host creatures and special hand-authored sprites.
 - NPC spawns live under `spawns.npcs` and reference actor ids from
   `data/actors/`. They render, block movement, speak ambient lines, and can be
   given dialogue, but they do not enter combat targeting or victory checks.
@@ -486,7 +491,7 @@ Rules:
 - `weight` is required and uses kilograms. It must be zero or greater.
 - `groundModel` is required so the item has drop and pickup art. Current models
   are `ball`, `boots`, `coat`, `hood`, `vest`, `ring`, `necklace`, `key`,
-  `token`, `chit`, `paper`, `vial`, `dressing`, `rounds`, and `shard`.
+  `token`, `chit`, `paper`, `vial`, `dressing`, `rounds`, `shard`, and `food`.
 - Equippable items define `equipment.slot`. Valid item slots are `clothes`,
   `armor`, `boots`, `helmet`, `trinket`, and `ring`.
 - Ring items can be worn in either actor slot, `ring1` or `ring2`.
@@ -508,6 +513,10 @@ Minimal actor shape:
   "id": "player",
   "name": "Unnamed Militia Scout",
   "type": "player",
+  "appearance": {
+    "bodyFrame": "feminine",
+    "anatomy": "vulva"
+  },
   "stats": {
     "hp": 24,
     "maxHp": 24,
@@ -557,6 +566,20 @@ Rules:
 - `id` is stable.
 - `name` is display text.
 - `type` tells systems how to treat the actor.
+- `spriteId` is optional. When present, it must match a key in
+  `src/render/SpriteAtlas.js`. When omitted, the actor id is used as the sprite
+  key.
+- `appearance` is optional sprite-baking metadata. For Mara and other equipment
+  aware adult actors, `bodyFrame` can be `feminine`, `masculine`, or
+  `androgynous`; `anatomy` can be `vulva`, `penis`, `smooth`, or `intersex`.
+  Those values are not gender identity.
+- Human NPCs and human enemies can also use composable appearance fields:
+  `body`, `outfit`, `gear`, and `accent`. These bake a unique sprite at level
+  load. Example: `{ "body": "broad", "outfit": "settlement-work-coat", "gear":
+  ["shoulder-plate", "rope-coil"], "accent": "bare-brown" }`.
+- `body` controls proportions, `outfit` controls the base clothing silhouette,
+  `gear` adds visible tools or carried items, and `accent` controls hair, hood,
+  or cowl treatment. Keep gear arrays short enough to read at map scale.
 - `progression` is optional. Player and companion actors can define the current
   character sheet here.
 - `progression.level` is an integer from 1 to the level cap in
@@ -612,6 +635,13 @@ Minimal enemy shape:
 Rules:
 
 - Enemies should express gameplay role through tags and stats.
+- `spriteId` is optional. When present, it must match a key in
+  `src/render/SpriteAtlas.js`. Use it for Host creatures and fixed special
+  sprites.
+- Human enemies can define `appearance` with the same `body`, `outfit`, `gear`,
+  and `accent` fields as actors. Repeated enemy placements can override
+  `appearance` in level `spawns.enemies[]` when one archetype needs several
+  human models.
 - `progression` is optional for enemies. If present, it can be compact:
   `level`, `build`, `complexity`, and optional `xpReward` are enough. If
   omitted, the loader supplies a level-one build from existing tags and combat

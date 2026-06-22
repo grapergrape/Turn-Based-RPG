@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Ash Chapel settler",
-  "spriteId": "settlement-oren",
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": ["scarred-face", "shoulder-plate", "rope-coil"],
+    "accent": "bare-brown"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,

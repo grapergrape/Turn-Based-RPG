@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Water keeper",
-  "spriteId": "settlement-nessa",
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-water-carrier",
+    "gear": ["water-jars"],
+    "accent": "blue-cloth"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,

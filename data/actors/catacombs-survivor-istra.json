@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Fence mender",
-  "spriteId": "settlement-istra",
+  "appearance": {
+    "body": "old-bent",
+    "outfit": "settlement-mender",
+    "gear": ["cane", "tool-roll"],
+    "accent": "bare-grey"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,

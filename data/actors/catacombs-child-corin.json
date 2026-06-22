@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Settlement child",
-  "spriteId": "settlement-corin",
+  "appearance": {
+    "body": "child",
+    "outfit": "settlement-child-blue",
+    "gear": ["child-token"],
+    "accent": "bare-light"
+  },
   "stats": {
     "hp": 4,
     "maxHp": 4,

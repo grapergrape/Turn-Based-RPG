@@ -18,6 +18,12 @@
           "next": "pale-bodies"
         },
         {
+          "label": "Trade for medicine",
+          "effects": {
+            "trade": "catacombs-survivor-hanne"
+          }
+        },
+        {
           "label": "Leave her to the bandages",
           "close": true
         }
@@ -46,6 +52,12 @@
         {
           "label": "Ask what she knows about the pale bodies",
           "next": "pale-bodies"
+        },
+        {
+          "label": "Trade for medicine",
+          "effects": {
+            "trade": "catacombs-survivor-hanne"
+          }
         },
         {
           "label": "Leave her to her work",

@@ -3,7 +3,12 @@
   "name": "Flesh-Eater",
   "type": "enemy",
   "faction": "choir-open-wound",
-  "spriteId": "choir-cultist",
+  "appearance": {
+    "body": "heavy",
+    "outfit": "choir-red-robe",
+    "gear": ["sacrament-flesh"],
+    "accent": "dark-cowl"
+  },
   "description": "A cult initiate carrying dried Host tissue as sacrament. He is still mostly human, which makes the practiced calm worse.",
   "stats": {
     "hp": 8,

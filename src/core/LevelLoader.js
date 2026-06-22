@@ -60,6 +60,19 @@ function collectSearchItemIds(search, itemIds) {
   }
 }
 
+function collectTradeItemIds(trade, itemIds) {
+  if (!trade || typeof trade !== 'object') return;
+  if (typeof trade.currency === 'string') itemIds.add(trade.currency);
+  for (const entry of trade.stock ?? []) {
+    if (entry?.item) itemIds.add(entry.item);
+  }
+}
+
+function mergeActorAppearance(base, override) {
+  if (!override) return base ?? null;
+  return { ...(base ?? {}), ...override };
+}
+
 // Map a non-walkable legend entry to a renderer prop kind. Any block kind the
 // sprite catalog knows (wall, wall-broken, wall-window, ...) passes straight
 // through; an unnamed entry falls back to a plain wall block.
@@ -117,6 +130,8 @@ export async function loadLevel(levelPath) {
   }
   const enemies = enemySpawns.map((spawn, index) => {
     const enemy = createActor(enemyDataById.get(spawn.id), { x: spawn.x, y: spawn.y });
+    if (spawn.spriteId) enemy.spriteId = spawn.spriteId;
+    enemy.appearance = mergeActorAppearance(enemy.appearance, spawn.appearance);
     enemy.spawnId = spawn.spawnId ?? `${spawn.id}-${index}`;
     enemy.encounter = spawn.encounter ?? enemy.spawnId;
     enemy.aggroRadius = spawn.aggroRadius ?? level.enemyAggroRadius ?? null;
@@ -144,6 +159,8 @@ export async function loadLevel(levelPath) {
   const npcs = npcSpawns.map((spawn, index) => {
     const actorId = spawn.actor ?? spawn.id;
     const npc = createActor(npcDataById.get(actorId), { x: spawn.x, y: spawn.y });
+    if (spawn.spriteId) npc.spriteId = spawn.spriteId;
+    npc.appearance = mergeActorAppearance(npc.appearance, spawn.appearance);
     npc.spawnId = spawn.spawnId ?? `${actorId}-${index}`;
     npc.dialogue = spawn.dialogue ?? null;
     npc.dialogueRepeat = spawn.dialogueRepeat !== false;
@@ -168,7 +185,9 @@ export async function loadLevel(levelPath) {
   }
   for (const data of enemyDataById.values()) {
     for (const entry of data.loot ?? []) itemIds.add(entry.item);
+    collectTradeItemIds(data.trade, itemIds);
   }
+  for (const data of npcDataById.values()) collectTradeItemIds(data.trade, itemIds);
   for (const spawn of enemySpawns) {
     for (const entry of spawn.loot ?? []) itemIds.add(entry.item);
   }

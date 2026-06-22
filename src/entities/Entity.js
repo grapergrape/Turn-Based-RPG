@@ -21,6 +21,8 @@ export class Entity {
     attacks = [],
     inspect = null,
     loot = [],
+    trade = null,
+    appearance = null,
     progression = null
   }) {
     this.id = id;
@@ -33,9 +35,11 @@ export class Entity {
     this.inspect = inspect;
     this.loot = Array.isArray(loot) ? loot.map((entry) => ({ ...entry })) : [];
     this.lootClaimed = false;
+    this.trade = trade ? JSON.parse(JSON.stringify(trade)) : null;
     this.tags = [...tags];
     this.position = { ...position };
     this.spriteId = spriteId ?? id;
+    this.appearance = appearance ? JSON.parse(JSON.stringify(appearance)) : null;
     this.attacks = attacks.map((attack) => ({ ...attack }));
     this.baseStats = { ...stats };
     this.progression = progression ? JSON.parse(JSON.stringify(progression)) : null;

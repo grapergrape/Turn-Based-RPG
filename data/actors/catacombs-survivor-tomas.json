@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Wall runner",
-  "spriteId": "settlement-tomas",
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-runner",
+    "gear": ["message-tube", "thin-pack"],
+    "accent": "dark-hood"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,

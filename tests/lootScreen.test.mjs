@@ -1,0 +1,158 @@
+import assert from 'node:assert/strict';
+
+import { Game } from '../src/core/Game.js';
+import { Inventory } from '../src/core/Inventory.js';
+import { Entity } from '../src/entities/Entity.js';
+
+function mockCanvas() {
+  return {
+    width: 640,
+    height: 480,
+    style: {},
+    addEventListener() {},
+    getBoundingClientRect() { return { left: 0, top: 0, width: 640, height: 480 }; },
+    getContext() { return mockCtx(); }
+  };
+}
+
+function mockCtx() {
+  return new Proxy({ imageSmoothingEnabled: false }, {
+    get(target, prop) {
+      if (prop in target) return target[prop];
+      return () => {};
+    },
+    set(target, prop, value) {
+      target[prop] = value;
+      return true;
+    }
+  });
+}
+
+globalThis.window = { addEventListener() {} };
+globalThis.document = { createElement: () => mockCanvas() };
+
+const itemDefs = {
+  ducat: { name: 'Ducat', type: 'currency', weight: 0, groundModel: 'chit', description: 'Stamped trade coin.' },
+  'field-dressing': { name: 'Field Dressing', type: 'consumable', weight: 0.2, groundModel: 'dressing', description: 'Sterile dressing.' }
+};
+
+function buildLootGame({ actions, loot }) {
+  const game = new Game({
+    canvas: mockCanvas(),
+    levelPath: './data/levels/ash_chapel_breach.json',
+    atlas: null,
+    statusElement: null,
+    bootOptions: { skipIntro: true }
+  });
+  const player = new Entity({
+    id: 'mara-vey',
+    name: 'Mara Vey',
+    type: 'player',
+    stats: { hp: 14, maxHp: 14, actionPoints: 6 },
+    attacks: [{ id: 'melee', name: 'Knife', apCost: 1, damage: 3, range: 1 }],
+    position: { x: 1, y: 1 },
+    progression: { level: 1, xp: 0, build: 'field-agent' }
+  });
+  const enemy = new Entity({
+    id: 'dead-guard',
+    name: 'Dead Guard',
+    type: 'enemy',
+    stats: { hp: 0, maxHp: 4, actionPoints: 0 },
+    position: { x: 1, y: 2 }
+  });
+  enemy.isDead = true;
+  enemy.loot = loot;
+
+  game.ready = true;
+  game.anim = { tick: 0, bob: 0, flicker: 0, pulse: 0 };
+  game.areaTitleTimer = 0;
+  game.effects = [];
+  game.speakingProps = [];
+  game.player = player;
+  game.enemies = [enemy];
+  game.npcs = [];
+  game.groundItems = [];
+  game.moving = null;
+  game.pathQueue = [];
+  game.pendingExploreTarget = null;
+  game.mode = 'explore';
+  game.uiScreen = 'loot';
+  game.loot = { title: enemy.name, sourceType: 'enemy', source: enemy };
+  game.lootIndex = 0;
+  game.dialogue = null;
+  game.log = [];
+  game.inventory = new Inventory(itemDefs, { maxCarryWeight: 10 });
+  game.inventoryOrder = [];
+  game.level = { name: 'Test Level', interactables: [], props: [], mood: null };
+  game.questDefs = {};
+  game.questStages = new Map();
+  game.questReached = new Map();
+  game.awardedQuestXp = new Set();
+  game.appliedLevelEvents = new Set();
+  game.clearedEncounters = new Set();
+  game.input = {
+    consume: () => actions.shift() ?? [],
+    consumeClick: () => null
+  };
+  return { game, enemy };
+}
+
+{
+  const { game, enemy } = buildLootGame({
+    actions: [['interact'], ['interact']],
+    loot: [{ item: 'ducat', count: 2 }, { item: 'field-dressing', count: 1 }]
+  });
+
+  game.update(0);
+  assert.equal(game.inventory.count('ducat'), 2);
+  assert.equal(enemy.loot[0].count, 0);
+  assert.equal(game.uiScreen, 'loot');
+
+  game.update(0);
+  assert.equal(game.inventory.count('field-dressing'), 1);
+  assert.equal(enemy.lootClaimed, true);
+  assert.equal(game.uiScreen, null);
+}
+
+{
+  const { game, enemy } = buildLootGame({
+    actions: [['left']],
+    loot: [{ item: 'ducat', count: 3 }, { item: 'field-dressing', count: 1 }]
+  });
+
+  game.update(0);
+  assert.equal(game.inventory.count('ducat'), 3);
+  assert.equal(game.inventory.count('field-dressing'), 1);
+  assert.equal(enemy.lootClaimed, true);
+  assert.equal(game.uiScreen, null);
+}
+
+{
+  const { game, enemy } = buildLootGame({
+    actions: [['down'], ['interact']],
+    loot: [{ item: 'ducat', count: 3 }, { item: 'field-dressing', count: 1 }]
+  });
+
+  game.update(0);
+  assert.equal(game.lootIndex, 1);
+
+  game.update(0);
+  assert.equal(game.inventory.count('ducat'), 0);
+  assert.equal(game.inventory.count('field-dressing'), 1);
+  assert.equal(enemy.loot[0].count, 3);
+  assert.equal(enemy.loot[1].count, 0);
+  assert.equal(game.uiScreen, 'loot');
+}
+
+{
+  const { game, enemy } = buildLootGame({
+    actions: [['space']],
+    loot: [{ item: 'ducat', count: 3 }]
+  });
+
+  game.update(0);
+  assert.equal(game.inventory.count('ducat'), 0);
+  assert.equal(enemy.loot[0].count, 3);
+  assert.equal(enemy.lootClaimed, false);
+  assert.equal(game.uiScreen, null);
+}

@@ -3,7 +3,12 @@
   "name": "Candle-Bearer",
   "type": "enemy",
   "faction": "choir-open-wound",
-  "spriteId": "choir-cultist",
+  "appearance": {
+    "body": "average",
+    "outfit": "choir-red-robe",
+    "gear": ["candle-tray"],
+    "accent": "bone-cowl"
+  },
   "description": "A hooded cultist with chapel wax on both sleeves and a hooked rite knife hidden under the candle tray.",
   "stats": {
     "hp": 5,

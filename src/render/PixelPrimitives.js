@@ -787,6 +787,9 @@ function drawGroundItemModel(ctx, model = 'token', cx, cy, seed, back = false) {
     case 'dressing':
       drawGroundDressing(ctx, cx, cy, back);
       break;
+    case 'food':
+      drawGroundFood(ctx, cx, cy, back);
+      break;
     case 'rounds':
       drawGroundRounds(ctx, cx, cy, back);
       break;
@@ -867,6 +870,17 @@ function drawGroundDressing(ctx, cx, cy, back) {
   px(ctx, cx - 8, cy - 6, cloth, 16, 6);
   px(ctx, cx - 1, cy - 7, PALETTE.clothTan, 2, 8);
   px(ctx, cx - 8, cy - 3, PALETTE.clothTan, 16, 1);
+}
+
+function drawGroundFood(ctx, cx, cy, back) {
+  const tin = back ? PALETTE.stoneMid : PALETTE.stoneLight;
+  const label = back ? PALETTE.rustDark : PALETTE.clothTan;
+  px(ctx, cx - 7, cy - 10, PALETTE.outline, 14, 12);
+  px(ctx, cx - 6, cy - 9, tin, 12, 10);
+  px(ctx, cx - 6, cy - 9, PALETTE.hostBone, 10, 1);
+  px(ctx, cx - 6, cy - 5, label, 12, 4);
+  px(ctx, cx - 3, cy - 4, PALETTE.rustDark, 6, 1);
+  px(ctx, cx + 4, cy - 8, PALETTE.stoneDark, 1, 8);
 }
 
 function drawGroundRounds(ctx, cx, cy, back) {

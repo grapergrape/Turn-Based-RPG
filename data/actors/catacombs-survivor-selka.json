@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Settlement matron",
-  "spriteId": "settlement-selka",
+  "appearance": {
+    "body": "heavy",
+    "outfit": "settlement-shawl",
+    "gear": ["ledger"],
+    "accent": "bare-grey"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,

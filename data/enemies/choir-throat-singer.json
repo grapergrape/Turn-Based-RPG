@@ -3,7 +3,12 @@
   "name": "Throat-Singer",
   "type": "enemy",
   "faction": "choir-open-wound",
-  "spriteId": "choir-cultist",
+  "appearance": {
+    "body": "lean",
+    "outfit": "choir-dark-robe",
+    "gear": ["throat-glass", "thin-pack"],
+    "accent": "dark-cowl"
+  },
   "description": "A thin-voiced Choir scout who fights at reach with thrown relic glass and half-sung catechism.",
   "stats": {
     "hp": 6,

@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Cook",
-  "spriteId": "settlement-runa",
+  "appearance": {
+    "body": "sturdy",
+    "outfit": "settlement-cook",
+    "gear": ["long-apron"],
+    "accent": "bare-light"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,

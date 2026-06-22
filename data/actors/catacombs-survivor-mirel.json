@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Seamstress and quartermaster",
-  "spriteId": "settlement-mirel",
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": ["ledger", "tool-roll"],
+    "accent": "bare-brown"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,
