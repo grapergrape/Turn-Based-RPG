@@ -1862,6 +1862,30 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
   const doorFace = wallRunFace(ctx, cx, cy, { plane: wallPlane, side: wallSide, span: 2 });
   const lerp = (a, b, t) => a + (b - a) * t;
 
+  // When the door is recessed on the far face, the wall has visible thickness:
+  // draw the stone reveal (the inner surfaces of the opening between the near
+  // wall edge and the recessed door) so the wall reads as a deep doorway over
+  // the door instead of leaving a see-through gap to the room behind.
+  const nearFace = wallSide === 'far'
+    ? wallRunFace(ctx, cx, cy, { plane: wallPlane, side: 'near', span: 2 })
+    : null;
+  const drawWallReveal = () => {
+    if (!nearFace) return;
+    const F = (u, v) => doorFace.point(u, v);
+    const N = (u, v) => nearFace.point(u, v);
+    const top = [F(0, 0), F(1, 0), N(1, 0), N(0, 0)];
+    const left = [F(0, 1), F(0, 0), N(0, 0), N(0, 1)];
+    const right = [F(1, 0), F(1, 1), N(1, 1), N(1, 0)];
+    poly(ctx, PALETTE.stoneDark, right);
+    poly(ctx, PALETTE.stoneDark, left);
+    poly(ctx, PALETTE.stoneMid, top);
+    // Crisp cut-stone lip on the near edge of the opening.
+    const e = (a, b, color, size) => linePx(ctx, a[0], a[1], b[0], b[1], color, size);
+    e(N(0, 0), N(1, 0), PALETTE.stoneLight, 1);
+    e(N(1, 0), N(1, 1), PALETTE.outline, 2);
+    e(N(0, 0), N(0, 1), PALETTE.outline, 2);
+  };
+
   const drawBolt = (face, u, v, color = PALETTE.hostGold) => {
     const p = face.point(u, v);
     px(ctx, p[0] - 1, p[1] - 1, color, 2, 2);
@@ -1920,6 +1944,7 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
   if (!opened || frame === 0) {
     if (leaf === 'south') return;
     drawClosedDoor(doorFace);
+    drawWallReveal();
     return;
   }
 
@@ -1989,6 +2014,7 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
   drawOpeningFrame();
   drawDoorWing('left', swing);
   drawDoorWing('right', swing);
+  drawWallReveal();
 }
 
 export function drawCampfire(ctx, cx, cy, seed, flicker = 0) {
@@ -2042,6 +2068,25 @@ export function drawBrokenBell(ctx, cx, cy, seed) {
   px(ctx, cx + 3, cy - 13, PALETTE.void, 10, 7);
   px(ctx, cx - 2, cy - 19, PALETTE.hostGold, 5, 5);
   drawNoisePixels(ctx, cx - 18, cy - 27, 36, 20, [PALETTE.rustDark, PALETTE.stoneDark], 0.07, seed);
+}
+
+export function drawBellRope(ctx, cx, cy, seed) {
+  const sway = (seed & 1) ? 1 : 0;
+  drawShadowBlob(ctx, cx, cy + 4, 18, 7);
+  px(ctx, cx - 13, cy - 84, PALETTE.outline, 26, 6);
+  px(ctx, cx - 10, cy - 83, PALETTE.stoneDark, 20, 3);
+  px(ctx, cx - 2 + sway, cy - 84, PALETTE.woodDark, 4, 76);
+  px(ctx, cx - 1 + sway, cy - 82, PALETTE.clothTan, 1, 69);
+  for (let y = cy - 78, i = 0; y < cy - 16; y += 8, i += 1) {
+    px(ctx, cx - 3 + sway, y, PALETTE.woodMid, 2, 3);
+    px(ctx, cx + 2 + sway + (i % 2), y + 3, PALETTE.woodMid, 2, 3);
+  }
+  px(ctx, cx - 5 + sway, cy - 16, PALETTE.outline, 10, 8);
+  px(ctx, cx - 4 + sway, cy - 15, PALETTE.woodDark, 8, 6);
+  px(ctx, cx - 2 + sway, cy - 14, PALETTE.clothTan, 3, 4);
+  px(ctx, cx - 7 + sway, cy - 7, PALETTE.woodDark, 14, 4);
+  px(ctx, cx - 5 + sway, cy - 6, PALETTE.clothTan, 9, 1);
+  drawNoisePixels(ctx, cx - 12, cy - 18, 24, 18, [PALETTE.stoneDark, PALETTE.woodDark], 0.05, seed);
 }
 
 export function drawPrayerLectern(ctx, cx, cy, seed) {

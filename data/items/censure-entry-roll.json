@@ -1,0 +1,8 @@
+{
+  "id": "censure-entry-roll",
+  "name": "Censure Entry Roll",
+  "type": "tool",
+  "weight": 0.3,
+  "groundModel": "key",
+  "description": "A waxed leather roll of Censure hooks and tension strips. It opens old doors better than it explains why a field agent carries it."
+}

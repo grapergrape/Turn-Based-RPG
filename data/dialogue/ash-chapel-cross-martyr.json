@@ -21,6 +21,7 @@
         {
           "label": "Cut him down",
           "effects": {
+            "setFlag": "nave-cross-martyr-ended",
             "kill": "nave-cross-martyr",
             "log": "You cut him loose. The body tears off the spikes and drops to the stone, and the whispering stops."
           },

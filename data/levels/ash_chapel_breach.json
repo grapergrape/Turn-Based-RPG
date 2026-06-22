@@ -50,6 +50,7 @@
     "ash-chapel-warden-safe",
     "ash-chapel-warden-safe-locked",
     "ash-chapel-choir-sigil",
+    "ash-chapel-bell-rope",
     "ash-chapel-cult-victim",
     "ash-chapel-dead-guard",
     "ash-chapel-penitent-corpse",
@@ -116,10 +117,11 @@
     "The cultists break from prayer into violence."
   ],
   "onVictory": {
+    "setFlag": "ash-chapel-cult-broken",
     "questUpdate": {
       "quest": "investigate-ash-chapel-cult",
-      "stage": "complete",
-      "log": "Quest complete: the Ash Chapel cell is broken. Their teachings point down the road to the Hallowfen wall."
+      "stage": "cult-broken",
+      "log": "Quest updated: the Ash Chapel cell is broken. Ring the chapel bell before you follow the wall road."
     }
   },
   "codex": [
@@ -195,11 +197,11 @@
   "tiles": [
     "##############W##W##W##W##W#############",
     "############................############",
-    "############................############",
-    "############................############",
-    "############................############",
-    "############................############",
-    "############................############",
+    "############................###.....####",
+    "############........................####",
+    "############................###.....####",
+    "############................###.....####",
+    "############................###.....####",
     "############rrrrrrr..rrrrrrr############",
     "#########......................#########",
     "#########......................#......##",
@@ -590,6 +592,32 @@
       "x": 27,
       "y": 1,
       "blocking": true
+    },
+    {
+      "kind": "bell-rope",
+      "x": 33,
+      "y": 4,
+      "name": "Bell Rope",
+      "interact": {
+        "type": "bell",
+        "dialogue": "ash-chapel-bell-rope",
+        "log": "The rope drops from a square of black ceiling above the bell chamber."
+      }
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 31,
+      "y": 5
+    },
+    {
+      "kind": "floor-crack",
+      "x": 32,
+      "y": 3
+    },
+    {
+      "kind": "dust",
+      "x": 35,
+      "y": 5
     },
     {
       "kind": "ritual-bowl",
@@ -1101,7 +1129,26 @@
       "interact": {
         "type": "secret-entrance",
         "dialogue": "ash-chapel-barrel-ladder",
-        "log": "The barrel is nailed to the floor. The boards beneath it sound hollow."
+        "log": "The barrel is nailed to the floor. The boards beneath it sound hollow.",
+        "search": {
+          "title": "Split Barrel",
+          "lines": [
+            "Fresh scrapes ring the nails at the barrel base."
+          ],
+          "useLabel": "Use the barrel ladder",
+          "methods": [
+            {
+              "id": "read-barrel-scrapes",
+              "label": "Read the fresh scrapes",
+              "dc": 25,
+              "successLog": "The nail heads are bright where metal bit them recently. Someone opened this way after the chapel went quiet.",
+              "failLog": "The barrel is too scored to tell old work from new.",
+              "success": {
+                "setFlag": "searched-barrel-ladder"
+              }
+            }
+          ]
+        }
       }
     },
     {
@@ -1203,7 +1250,43 @@
       "interact": {
         "type": "note",
         "dialogue": "ash-chapel-dead-guard",
-        "log": "A settlement guard lies beside the intake barricade, one hand still closed around a broken chapel key."
+        "log": "A settlement guard lies beside the intake barricade, one hand still closed around a broken chapel key.",
+        "search": {
+          "title": "Dead Settlement Guard",
+          "lines": [
+            "Dried blood, road grit, and boot scuffs crowd the floor around him."
+          ],
+          "useLabel": "Inspect the guard",
+          "methods": [
+            {
+              "id": "read-blood-trail",
+              "label": "Read the blood trail",
+              "dc": 40,
+              "successLog": "The blood under his shoulder smears backward. He was dragged to the barricade after the key broke.",
+              "failLog": "The dried blood gives you nothing useful.",
+              "success": {
+                "setFlag": "searched-dead-guard"
+              }
+            },
+            {
+              "id": "check-boot-seam",
+              "label": "Check his boot seam",
+              "dc": 55,
+              "successLog": "A Censure Entry Roll is stitched into the boot tongue, flat and dry.",
+              "failLog": "The boot seams are stiff with blood. If he hid anything there, it stays hidden.",
+              "success": {
+                "inventory": {
+                  "add": [
+                    {
+                      "item": "censure-entry-roll",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
       }
     },
     {
@@ -1273,7 +1356,26 @@
       "interact": {
         "type": "note",
         "dialogue": "ash-chapel-engine-rut",
-        "log": "Black oil, a heavy tread, and a single shed rivet."
+        "log": "Black oil, a heavy tread, and a single shed rivet.",
+        "search": {
+          "title": "Oil and Tread",
+          "lines": [
+            "The ash still holds the machine's weight."
+          ],
+          "useLabel": "Inspect the tread",
+          "methods": [
+            {
+              "id": "read-return-print",
+              "label": "Read the return print",
+              "dc": 40,
+              "successLog": "The return tread cuts deeper than the approach. It backed away in haste, not on patrol.",
+              "failLog": "The ash is too churned to tell why the machine turned back.",
+              "success": {
+                "setFlag": "searched-engine-rut"
+              }
+            }
+          ]
+        }
       }
     },
     {
@@ -1486,6 +1588,7 @@
             {
               "id": "pick-hasp",
               "label": "Pick the Censure hasp",
+              "requiresItem": "censure-entry-roll",
               "field": "security",
               "dc": 35,
               "successLog": "The hasp gives. Both doors swing outward on dry hinges.",
@@ -1520,6 +1623,7 @@
             {
               "id": "pick-hasp",
               "label": "Pick the Censure hasp",
+              "requiresItem": "censure-entry-roll",
               "field": "security",
               "dc": 35,
               "successLog": "The hasp gives. Both doors swing outward on dry hinges.",
@@ -1555,6 +1659,7 @@
             {
               "id": "pick-keyway",
               "label": "Work the keyway",
+              "requiresItem": "censure-entry-roll",
               "field": "security",
               "dc": 50,
               "successLog": "You clear the grit and walk the pins open.",

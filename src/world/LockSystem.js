@@ -1,12 +1,23 @@
 // Data-driven fieldcraft locks for interactable world objects. This module
 // resolves lock methods without knowing what the locked object means in lore.
 
+export const SECURITY_TOOL_ITEM = 'censure-entry-roll';
+
 function lines(value) {
   return [].concat(value ?? []).filter((line) => typeof line === 'string' && line.trim() !== '');
 }
 
 function numeric(value, fallback) {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback;
+}
+
+function clampPercent(value) {
+  return Math.max(0, Math.min(100, numeric(value, 0)));
+}
+
+function methodRequiredItem(method) {
+  const authored = typeof method?.requiresItem === 'string' ? method.requiresItem : null;
+  return authored ?? (method?.field === 'security' ? SECURITY_TOOL_ITEM : null);
 }
 
 export function objectLock(object) {
@@ -39,12 +50,25 @@ export function lockMethodById(lock, methodId) {
   return lockMethods(lock).find((method) => method.id === methodId) ?? null;
 }
 
+export function lockMethodUsesSecurityTool(method, status = null) {
+  const check = status?.check;
+  return method?.field === 'security'
+    && (status?.requiredItem ?? methodRequiredItem(method)) === SECURITY_TOOL_ITEM
+    && check?.kind === 'field'
+    && check.id === 'security';
+}
+
+export function securityToolSurvives(status, roll = Math.random()) {
+  const survivalChance = clampPercent(status?.check?.rating) / 100;
+  return roll < survivalChance;
+}
+
 export function lockMethodStatus(method, { inventory, fieldRating, primaryRating } = {}) {
   if (!method) {
     return { available: false, reason: 'missing-method', check: null, success: false };
   }
 
-  const requiredItem = typeof method.requiresItem === 'string' ? method.requiresItem : null;
+  const requiredItem = methodRequiredItem(method);
   if (requiredItem && !inventory?.has(requiredItem)) {
     return {
       available: false,

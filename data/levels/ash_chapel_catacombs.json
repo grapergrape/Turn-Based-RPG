@@ -3599,6 +3599,25 @@
       "interact": {
         "type": "container",
         "log": "The blue ball rests under an ossuary shelf, tooth-scored and cold with dust.",
+        "search": {
+          "title": "Ossuary Shelf",
+          "lines": [
+            "Loose teeth, candle stubs, and old finger bones crowd the shelf."
+          ],
+          "useLabel": "Take the blue ball",
+          "methods": [
+            {
+              "id": "spot-blue-under-shelf",
+              "label": "Search under the shelf",
+              "dc": 25,
+              "successLog": "A rim of blue shows beneath the back shelf, too round and clean to be bone.",
+              "failLog": "The shelf is crowded with bones and dust.",
+              "success": {
+                "setFlag": "searched-corins-ball"
+              }
+            }
+          ]
+        },
         "loot": [
           {
             "item": "blue-ball",

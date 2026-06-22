@@ -107,6 +107,7 @@ export const SPRITE_CATALOG = {
   'stone-tomb': simple(P.drawStoneTomb, CATEGORY.STRUCTURE),
   'quarantine-barricade': simple(P.drawQuarantineBarricade, CATEGORY.STRUCTURE),
   'broken-bell': simple(P.drawBrokenBell, CATEGORY.STRUCTURE),
+  'bell-rope': simple(P.drawBellRope, CATEGORY.STRUCTURE),
   'quarantine-sign': simple(P.drawQuarantineSign, CATEGORY.STRUCTURE),
   'chapel-double-door': {
     category: CATEGORY.STRUCTURE, layer: 18,

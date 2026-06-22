@@ -1,0 +1,132 @@
+{
+  "id": "ash-chapel-bell-rope",
+  "title": "Bell Rope",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "ash-chapel-bell-rung"
+      },
+      "else": "ready",
+      "lines": [
+        "The rope hangs slack in your hand.",
+        "Above the ceiling, the bell has already spent its warning."
+      ],
+      "choices": [
+        {
+          "label": "Leave it still",
+          "close": true
+        }
+      ]
+    },
+    "ready": {
+      "conditions": {
+        "flag": "ash-chapel-cult-broken"
+      },
+      "else": "not-clear",
+      "lines": [
+        "The rope hangs alone in a narrow bell chamber northeast of the nave.",
+        "Its upper length vanishes into a square of black ceiling. The old bell above it cannot be seen, only guessed by the weight in the rope.",
+        "One pull will tell the Remnant that Ash Chapel can be entered."
+      ],
+      "choices": [
+        {
+          "label": "Ring the bell",
+          "effects": {
+            "setFlag": "ash-chapel-bell-rung",
+            "log": "You haul the bell rope. High above the ceiling, the old metal answers.",
+            "questUpdate": {
+              "quest": "investigate-ash-chapel-cult",
+              "stage": "hallowfen-checkpoints",
+              "log": "Quest updated: the Remnant will hear the chapel bell. The Hallowfen checkpoints still have not answered."
+            },
+            "showBriefing": {
+              "title": "ACT I: THE HALLOWFEN",
+              "pages": [
+                [
+                  "The rope bites into your hands. Above the ceiling, iron wakes after years of dust.",
+                  "The sound leaves Ash Chapel in slow waves. It crosses the broken garden, the wall road, the catacomb stair, every room where someone is trying not to listen.",
+                  "The Remnant will know the chapel is safe enough to enter. Your writ is not finished."
+                ],
+                [
+                  "You broke one cell, not the hand that sent it here.",
+                  "The Hallowfen checkpoints stopped answering before the Choir reached this house. No bell from the wall. No runner on the road. No mistake large enough to be innocent.",
+                  "Follow the Hallowfen road. Find who silenced the towers."
+                ]
+              ],
+              "conditionalPages": [
+                {
+                  "conditions": {
+                    "flag": "survivors-returning-chapel"
+                  },
+                  "page": [
+                    "Below, Selka starts counting people by name instead of by hiding place. The broom in her hands sounds too small for the work, and still she keeps at it.",
+                    "One child asks whether safe means forever. No one lies quickly enough."
+                  ]
+                },
+                {
+                  "conditions": {
+                    "questStages": {
+                      "retrieve-blue-ball": "complete"
+                    }
+                  },
+                  "page": [
+                    "Corin keeps both arms around the blue ball, as if color itself might need guarding.",
+                    "Eda watches from the chalk marks and tries to look bored instead of relieved."
+                  ]
+                },
+                {
+                  "conditions": {
+                    "questStages": {
+                      "carry-lucky-necklace": "charm-received"
+                    }
+                  },
+                  "page": [
+                    "Mirel's tin saint rides in your pack, warm from her hand.",
+                    "Jarik went toward Hallowfen for wall pay. If he is alive, the road has him."
+                  ]
+                },
+                {
+                  "conditions": {
+                    "flag": "nave-cross-martyr-ended"
+                  },
+                  "page": [
+                    "The cross behind the altar no longer whispers.",
+                    "Mercy made no speech when it left him, only weight on the stone and a silence that did not feel clean."
+                  ]
+                },
+                {
+                  "conditions": {
+                    "flag": "cellar-victim-ended"
+                  },
+                  "page": [
+                    "In the cellar, the bound guard does not have to learn the cult's next word.",
+                    "The post stands empty in the cold."
+                  ]
+                }
+              ],
+              "lastPrompt": "ENTER: FOLLOW THE HALLOWFEN ROAD",
+              "skipPrompt": "ESC: CLOSE"
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Leave it still",
+          "close": true
+        }
+      ]
+    },
+    "not-clear": {
+      "lines": [
+        "The rope hangs alone in a narrow bell chamber northeast of the nave.",
+        "If the bell rings now, it calls people into a chapel that still has knives in it."
+      ],
+      "choices": [
+        {
+          "label": "Leave it still",
+          "close": true
+        }
+      ]
+    }
+  }
+}
