@@ -9,7 +9,7 @@
       "else": "ready",
       "lines": [
         "The rope hangs slack in your hand.",
-        "Above the ceiling, the bell has already spent its warning."
+        "The basement bell has already spent its warning."
       ],
       "choices": [
         {
@@ -24,27 +24,27 @@
       },
       "else": "not-clear",
       "lines": [
-        "The rope hangs alone in a narrow bell chamber northeast of the nave.",
-        "Its upper length vanishes into a square of black ceiling. The old bell above it cannot be seen, only guessed by the weight in the rope.",
-        "One pull will tell the Remnant that Ash Chapel can be entered."
+        "The basement rope hangs beside a bell set low in the east service hall.",
+        "Ringing it will tell the Remnant that Ash Chapel is safe enough to enter and that the settlement can be restored.",
+        "This ends the Chapel tutorial and moves you onto the Hallowfen road. Are you sure?"
       ],
       "choices": [
         {
-          "label": "Ring the bell",
+          "label": "Yes. Ring the bell",
           "effects": {
             "setFlag": "ash-chapel-bell-rung",
-            "log": "You haul the bell rope. High above the ceiling, the old metal answers.",
+            "log": "You haul the basement rope. Iron answers under the chapel.",
             "questUpdate": {
               "quest": "investigate-ash-chapel-cult",
               "stage": "hallowfen-checkpoints",
-              "log": "Quest updated: the Remnant will hear the chapel bell. The Hallowfen checkpoints still have not answered."
+              "log": "Quest updated: the Remnant will hear the basement bell. The Hallowfen checkpoints still have not answered."
             },
             "showBriefing": {
               "title": "ACT I: THE HALLOWFEN",
               "pages": [
                 [
-                  "The rope bites into your hands. Above the ceiling, iron wakes after years of dust.",
-                  "The sound leaves Ash Chapel in slow waves. It crosses the broken garden, the wall road, the catacomb stair, every room where someone is trying not to listen.",
+                  "The rope bites into your hands. In the basement wall, iron wakes after years of dust.",
+                  "The sound climbs through Ash Chapel in slow waves. It crosses the broken garden, the wall road, the catacomb stair, every room where someone is trying not to listen.",
                   "The Remnant will know the chapel is safe enough to enter. Your writ is not finished."
                 ],
                 [
@@ -111,14 +111,14 @@
           "close": true
         },
         {
-          "label": "Leave it still",
+          "label": "No. Explore this area",
           "close": true
         }
       ]
     },
     "not-clear": {
       "lines": [
-        "The rope hangs alone in a narrow bell chamber northeast of the nave.",
+        "The basement rope hangs beside a bell set low in the east service hall.",
         "If the bell rings now, it calls people into a chapel that still has knives in it."
       ],
       "choices": [

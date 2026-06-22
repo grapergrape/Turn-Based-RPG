@@ -6,6 +6,6 @@
   "scripts": {
     "dev": "node scripts/serve.mjs",
     "check": "node scripts/check-content.mjs",
-    "test": "node tests/interactionTargeting.test.mjs && node tests/interactionSystem.test.mjs && node tests/groundItems.test.mjs && node tests/lockSystem.test.mjs && node tests/searchSystem.test.mjs && node tests/doorSystem.test.mjs && node tests/progression.test.mjs && node tests/xpRuntime.test.mjs && node tests/journalUi.test.mjs && node tests/inventoryUi.test.mjs && node tests/inventoryActions.test.mjs && node tests/lootScreen.test.mjs && node tests/tradeScreen.test.mjs && node tests/maraEquipmentSprite.test.mjs && node tests/humanModels.test.mjs"
+    "test": "node tests/interactionTargeting.test.mjs && node tests/interactionSystem.test.mjs && node tests/groundItems.test.mjs && node tests/lockSystem.test.mjs && node tests/searchSystem.test.mjs && node tests/doorSystem.test.mjs && node tests/perceptionSystem.test.mjs && node tests/progression.test.mjs && node tests/xpRuntime.test.mjs && node tests/journalUi.test.mjs && node tests/inventoryUi.test.mjs && node tests/inventoryActions.test.mjs && node tests/lootScreen.test.mjs && node tests/tradeScreen.test.mjs && node tests/maraEquipmentSprite.test.mjs && node tests/humanModels.test.mjs"
   }
 }

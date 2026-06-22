@@ -11,6 +11,7 @@
   "dialogue": [
     "ash-chapel-cellar-corpse",
     "ash-chapel-cellar-ladder",
+    "ash-chapel-bell-rope",
     "ash-chapel-cellar-victim",
     "ash-chapel-cellar-penitents",
     "ash-chapel-choir-sigil",
@@ -37,9 +38,9 @@
     "#......................#",
     "#......................#",
     "#......................#",
+    "#..................#...#",
     "#......................#",
-    "#......................#",
-    "#......................#",
+    "#..................#...#",
     "########################"
   ],
   "legend": {
@@ -282,6 +283,28 @@
       "x": 20,
       "y": 11,
       "blocking": true
+    },
+    {
+      "kind": "broken-bell",
+      "x": 20,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "bell-rope",
+      "x": 22,
+      "y": 13,
+      "name": "Basement Bell Rope",
+      "interact": {
+        "type": "bell",
+        "dialogue": "ash-chapel-bell-rope",
+        "log": "The rope drops beside the basement bell, dry and dark with old hands."
+      }
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 22,
+      "y": 12
     },
     {
       "kind": "rusted-barrel",

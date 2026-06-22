@@ -19,6 +19,11 @@ import {
 import { getSprite } from '../src/render/spriteCatalog.js';
 import { Grid } from '../src/world/Grid.js';
 import { findPathToAdjacent } from '../src/world/Pathfinder.js';
+import {
+  PATROL_MODES,
+  PERCEPTION_FACINGS,
+  SUSPICION_SEVERITY
+} from '../src/world/PerceptionSystem.js';
 
 const root = process.cwd();
 const dataRoot = join(root, 'data');
@@ -69,6 +74,9 @@ const WALL_PLANES = new Set(['sw', 'se']);
 const WALL_SIDES = new Set(['near', 'far']); // Which face of an opening a wall fixture mounts on.
 // Iso facings for orientation-aware props (mirrors ORIENTS in PixelPrimitives.js).
 const PROP_ORIENTS = new Set(['se', 'sw', 'nw', 'ne']);
+const PERCEPTION_FACING_IDS = new Set(PERCEPTION_FACINGS);
+const PATROL_MODE_IDS = new Set(PATROL_MODES);
+const SUSPICION_SEVERITY_IDS = new Set(Object.values(SUSPICION_SEVERITY));
 const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
 const ACTOR_BODY_FRAMES = new Set(['feminine', 'masculine', 'androgynous']);
 const ACTOR_ANATOMY = new Set(['vulva', 'penis', 'smooth', 'intersex']);
@@ -251,6 +259,7 @@ function validateMap(filePath, data) {
   requireNumber(name, data.height, 'height');
   requireNumber(name, data.tileSize, 'tileSize');
   validateTiles(name, data);
+  validateLevelPerception(name, data);
 
   if (!data.spawns?.player) {
     errors.push(`${name}: missing spawns.player.`);
@@ -308,6 +317,8 @@ function validateLevel(filePath, data) {
     if (point.talkRadius !== undefined) {
       requireNumber(name, point.talkRadius, 'spawns.enemies[].talkRadius');
     }
+    validateSpawnPerception(name, data, point, 'spawns.enemies[]');
+    validateSpawnPatrol(name, data, point, 'spawns.enemies[]');
     validateLoot(name, point.loot, 'spawns.enemies[].loot');
   }
   for (const point of npcs) {
@@ -359,6 +370,7 @@ function validateLevel(filePath, data) {
     validateDoorObject(name, object);
   }
   validateHiddenRegions(name, data, objects);
+  validateEnemyPatrolReachability(name, data, enemies, objects);
   if (data.groundItems !== undefined) {
     if (!Array.isArray(data.groundItems)) {
       errors.push(`${name}: groundItems must be an array.`);
@@ -431,6 +443,128 @@ function validateTalkableNpcReachability(name, data, npcs, objects) {
     if (path === null) {
       errors.push(`${name}: talkable npc "${actorId}" at (${target.x}, ${target.y}) has no reachable adjacent talk tile from player start.`);
     }
+  }
+}
+
+function validateLevelPerception(name, data) {
+  if (data.enemyVisionRadius !== undefined) {
+    requireNumber(name, data.enemyVisionRadius, 'enemyVisionRadius');
+    if (typeof data.enemyVisionRadius === 'number' && data.enemyVisionRadius <= 0) {
+      errors.push(`${name}: enemyVisionRadius must be greater than zero.`);
+    }
+  }
+  if (data.enemyVisionCone !== undefined) {
+    requireNumber(name, data.enemyVisionCone, 'enemyVisionCone');
+    validateDegrees(name, data.enemyVisionCone, 'enemyVisionCone');
+  }
+  validateHearingRadius(name, data.enemyHearingRadius, 'enemyHearingRadius');
+}
+
+function validateSpawnPerception(name, data, spawn, fieldName) {
+  if (spawn.facing !== undefined) {
+    requireString(name, spawn.facing, `${fieldName}.facing`);
+    if (typeof spawn.facing === 'string' && !PERCEPTION_FACING_IDS.has(spawn.facing)) {
+      errors.push(`${name}: ${fieldName}.facing must be one of ${[...PERCEPTION_FACING_IDS].join(', ')}.`);
+    }
+  }
+  if (spawn.perception === undefined) return;
+  const perception = spawn.perception;
+  if (!perception || typeof perception !== 'object' || Array.isArray(perception)) {
+    errors.push(`${name}: ${fieldName}.perception must be an object.`);
+    return;
+  }
+  if (perception.visionRadius !== undefined) {
+    requireNumber(name, perception.visionRadius, `${fieldName}.perception.visionRadius`);
+    if (typeof perception.visionRadius === 'number' && perception.visionRadius <= 0) {
+      errors.push(`${name}: ${fieldName}.perception.visionRadius must be greater than zero.`);
+    }
+  }
+  if (perception.coneDegrees !== undefined) {
+    requireNumber(name, perception.coneDegrees, `${fieldName}.perception.coneDegrees`);
+    validateDegrees(name, perception.coneDegrees, `${fieldName}.perception.coneDegrees`);
+  }
+  if (perception.dcBonus !== undefined) {
+    requireNumber(name, perception.dcBonus, `${fieldName}.perception.dcBonus`);
+  }
+  if (perception.ratingBonus !== undefined) {
+    requireNumber(name, perception.ratingBonus, `${fieldName}.perception.ratingBonus`);
+  }
+  validateHearingRadius(name, perception.hearingRadius, `${fieldName}.perception.hearingRadius`);
+}
+
+function validateSpawnPatrol(name, data, spawn, fieldName) {
+  if (spawn.patrol === undefined) return;
+  const patrol = Array.isArray(spawn.patrol) ? { path: spawn.patrol } : spawn.patrol;
+  if (!patrol || typeof patrol !== 'object' || Array.isArray(patrol)) {
+    errors.push(`${name}: ${fieldName}.patrol must be an object or path array.`);
+    return;
+  }
+  if (patrol.mode !== undefined) {
+    requireString(name, patrol.mode, `${fieldName}.patrol.mode`);
+    if (typeof patrol.mode === 'string' && !PATROL_MODE_IDS.has(patrol.mode)) {
+      errors.push(`${name}: ${fieldName}.patrol.mode must be one of ${[...PATROL_MODE_IDS].join(', ')}.`);
+    }
+  }
+  if (patrol.delay !== undefined) {
+    requireNumber(name, patrol.delay, `${fieldName}.patrol.delay`);
+    if (typeof patrol.delay === 'number' && patrol.delay <= 0) {
+      errors.push(`${name}: ${fieldName}.patrol.delay must be greater than zero.`);
+    }
+  }
+  if (!Array.isArray(patrol.path) || patrol.path.length < 2) {
+    errors.push(`${name}: ${fieldName}.patrol.path must contain at least two points.`);
+    return;
+  }
+  for (const [index, point] of patrol.path.entries()) {
+    if (!inBounds(data, point)) {
+      errors.push(`${name}: ${fieldName}.patrol.path[${index}] (${point?.x}, ${point?.y}) is out of bounds.`);
+    }
+  }
+}
+
+function validateEnemyPatrolReachability(name, data, enemies, objects) {
+  const patrolEnemies = enemies.filter((enemy) => enemy.patrol !== undefined);
+  if (patrolEnemies.length === 0) return;
+  const grid = new Grid(data);
+  for (const object of objects) {
+    if (object.blocking && inBounds(data, object)) grid.addBlocked(object.x, object.y);
+  }
+  for (const spawn of patrolEnemies) {
+    const patrol = Array.isArray(spawn.patrol) ? { path: spawn.patrol } : spawn.patrol;
+    for (const [index, point] of (patrol?.path ?? []).entries()) {
+      if (!inBounds(data, point)) continue;
+      if (!grid.isWalkable(point.x, point.y)) {
+        errors.push(`${name}: enemy "${spawn.id}" patrol.path[${index}] (${point.x}, ${point.y}) must be walkable.`);
+      }
+    }
+  }
+}
+
+function validateHearingRadius(name, value, fieldName) {
+  if (value === undefined) return;
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value) || value <= 0) errors.push(`${name}: ${fieldName} must be greater than zero.`);
+    return;
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    errors.push(`${name}: ${fieldName} must be a number or severity object.`);
+    return;
+  }
+  for (const [severity, radius] of Object.entries(value)) {
+    if (!SUSPICION_SEVERITY_IDS.has(severity)) {
+      errors.push(`${name}: ${fieldName}.${severity} must be one of ${[...SUSPICION_SEVERITY_IDS].join(', ')}.`);
+      continue;
+    }
+    requireNumber(name, radius, `${fieldName}.${severity}`);
+    if (typeof radius === 'number' && radius <= 0) {
+      errors.push(`${name}: ${fieldName}.${severity} must be greater than zero.`);
+    }
+  }
+}
+
+function validateDegrees(name, value, fieldName) {
+  if (typeof value === 'number' && (value <= 0 || value > 360)) {
+    errors.push(`${name}: ${fieldName} must be greater than zero and no more than 360.`);
   }
 }
 
