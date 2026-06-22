@@ -165,10 +165,13 @@ Rules:
 - `blocking: true` makes the object's tile impassable (collision uses the same
   rule in explore and combat).
 - `interact` (optional) can mark a loot container (`type: "container"` with
-  `loot`), the altar (`type: "altar"` with `triggersCombat`), a readable note
-  (`type: "note"`), a passable door (`type: "door"`), or a hidden ladder
+  `loot`), a dead body (`type: "corpse"` with optional `loot`), the altar
+  (`type: "altar"` with `triggersCombat`), a readable note (`type: "note"`), a
+  passable door (`type: "door"`), or a hidden ladder
   (`type: "secret-entrance"` / `type: "secret-exit"`). Interactions can
   reference `dialogue` by id and apply a `questUpdate`.
+- Corpse loot uses the same inventory and carry-weight rules as containers, but
+  the body stays visible and can still open its inspect dialogue after looting.
 - `interact.lock` can gate any interaction behind a deterministic fieldcraft
   panel. The runtime shows the lock through the normal dialogue UI, then resolves
   the selected method from item possession, a field rating, or a primary
@@ -258,8 +261,9 @@ Lock rules:
   "y": 24,
   "name": "Dead Settlement Guard",
   "interact": {
-    "type": "note",
+    "type": "corpse",
     "log": "A settlement guard lies beside the intake barricade.",
+    "loot": [{ "item": "ducat", "count": 2 }],
     "search": {
       "title": "Dead Settlement Guard",
       "lines": ["The ash and blood still hold a readable edge."],
@@ -294,6 +298,8 @@ Search rules:
   checks that do not grant repeatable rewards.
 - `successLog`, `failLog`, and `unavailableLog` are optional player-facing log
   text. Keep them short and follow the writing rules at the top of this file.
+- Runtime Search results prefix successful checks with `SUCCESS:` and failed
+  checks with `FAILED:`. Do not include those labels in JSON logs.
 - `success` and `failure` use the same effect shape as dialogue choices, such
   as `log`, `setFlag`, `inventory`, `questUpdate`, `xp`, or `startCombat`.
 - `useLabel` and `leaveLabel` can override the normal object-use choice and
@@ -484,7 +490,10 @@ Rules:
 - Equippable items define `equipment.slot`. Valid item slots are `clothes`,
   `armor`, `boots`, `helmet`, `trinket`, and `ring`.
 - Ring items can be worn in either actor slot, `ring1` or `ring2`.
-- Loot in level objects references items by `id`.
+- `type: "currency"` items such as `ducat` are ordinary stackable inventory
+  items with `weight: 0`. Traders should price goods in ducats.
+- Loot in level objects, corpse objects, enemy files, and enemy spawns
+  references items by `id`.
 - Optional level `groundItems` entries can place an item directly on a walkable
   tile: `{ "item": "field-dressing", "count": 1, "x": 10, "y": 8 }`.
 
@@ -611,6 +620,9 @@ Rules:
 - Enemy complexity ids are defined in `src/core/Progression.js`: `minion`,
   `standard`, `hardened`, `elite`, and `boss`.
 - `xpReward` overrides the default encounter XP reward for that enemy.
+- `loot` is optional on an enemy file. A spawn in `spawns.enemies[]` can also
+  define `loot` to override the file default for that placed enemy. Dead enemies
+  can be looted once, then their corpse remains inspectable if it has `inspect`.
 - Lore-heavy descriptions can be added as `description`, but keep them concise.
 - Host enemies must follow the Vale Imprint rules in `docs/LORE_INTEGRATION.md`.
 

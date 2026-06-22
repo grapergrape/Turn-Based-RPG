@@ -64,6 +64,13 @@ const oriented = (fn, category, layer = 2) => ({
 // A flat ground decal that takes (ctx, cx, cy, seed).
 const decal = (fn) => ({ category: CATEGORY.DECAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed) });
 
+function barrelShowsLadder(prop) {
+  const type = prop?.interact?.type;
+  if (type === 'secret-exit') return true;
+  if (type !== 'secret-entrance') return false;
+  return Boolean(prop.revealed || prop.opened || prop.unlocked);
+}
+
 export const SPRITE_CATALOG = {
   // --- Terrain blocks (tile-driven walls) --------------------------------
   'wall': {
@@ -155,7 +162,7 @@ export const SPRITE_CATALOG = {
   'rusted-barrel': {
     category: CATEGORY.FURNITURE, layer: 2,
     draw: (ctx, x, y, seed, c) => P.drawRustedBarrel(ctx, x, y, seed, {
-      ladder: c.prop.interact?.type === 'secret-exit' || c.prop.interact?.type === 'secret-entrance'
+      ladder: barrelShowsLadder(c.prop)
     })
   },
 

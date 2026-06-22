@@ -33,6 +33,7 @@ const REQUIRED_MAIN_ENEMY_IDS = [
 ];
 const REQUIRED_INTERACTABLE_KINDS = ['rusted-reliquary', 'field-satchel', 'damaged-altar', 'rusted-barrel'];
 const REQUIRED_ITEM_IDS = [
+  'ducat',
   'relic-rounds',
   'field-dressing',
   'tarnished-saint-token',
@@ -291,6 +292,7 @@ function validateLevel(filePath, data) {
     if (point.talkRadius !== undefined) {
       requireNumber(name, point.talkRadius, 'spawns.enemies[].talkRadius');
     }
+    validateLoot(name, point.loot, 'spawns.enemies[].loot');
   }
   for (const point of npcs) {
     if (!inBounds(data, point)) {
@@ -598,6 +600,7 @@ function validateEnemy(filePath, data) {
   requireString(name, data.type, 'type');
   requireString(name, data.faction, 'faction');
   validateStats(name, data.stats);
+  validateLoot(name, data.loot);
   validateActorProgression(name, data.progression);
 
   if (data.faction === 'the-host') {

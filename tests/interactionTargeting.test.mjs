@@ -81,6 +81,26 @@ const player = { name: 'Mara Vey', x: 2, y: 2, position: { x: 2, y: 2 } };
 }
 
 {
+  const corpse = {
+    name: 'Choir Cutthroat',
+    x: 2,
+    y: 3,
+    position: { x: 2, y: 3 },
+    isDead: true,
+    loot: [{ item: 'ducat', count: 1 }]
+  };
+  const target = resolveInteractionTargetAtCell({
+    cell: { x: 2, y: 3 },
+    grid: grid(),
+    player,
+    actors: [player],
+    enemies: [corpse]
+  });
+  assert.equal(target.type, 'corpse');
+  assert.equal(target.enemy, corpse);
+}
+
+{
   const target = resolveInteractionTargetAtCell({
     cell: { x: 9, y: 9 },
     grid: grid(),

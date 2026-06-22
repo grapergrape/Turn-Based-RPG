@@ -29,7 +29,12 @@ function inventory(items = []) {
 }
 
 {
-  const method = { id: 'ash-read', label: 'Read the ash', dc: 40 };
+  const method = {
+    id: 'ash-read',
+    label: 'Read the ash',
+    dc: 40,
+    successLog: 'The ash reads clean.'
+  };
   const status = searchMethodStatus(method, {
     inventory: inventory(),
     fieldRating: (fieldId) => fieldId === 'search' ? 47 : 0
@@ -44,6 +49,7 @@ function inventory(items = []) {
   });
   assert.equal(result.outcome, 'success');
   assert.equal(result.completed, true);
+  assert.deepEqual(result.logs, ['SUCCESS: The ash reads clean.']);
 }
 
 {
@@ -60,7 +66,7 @@ function inventory(items = []) {
   });
   assert.equal(result.outcome, 'failure');
   assert.equal(result.completed, false);
-  assert.deepEqual(result.logs, ['The slab holds.']);
+  assert.deepEqual(result.logs, ['FAILED: The slab holds.']);
 }
 
 {

@@ -14,5 +14,11 @@
   "attacks": [
     { "id": "rake", "name": "Thorned Hands", "apCost": 3, "damage": 3, "range": 1 }
   ],
+  "loot": [
+    {
+      "item": "penitent-gear-scrap",
+      "count": 1
+    }
+  ],
   "tags": ["host", "vale-imprint", "penitent", "penitent-engine"]
 }
