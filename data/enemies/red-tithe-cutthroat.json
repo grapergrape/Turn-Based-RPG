@@ -3,6 +3,12 @@
   "name": "Red Tithe Cutthroat",
   "type": "enemy",
   "faction": "ash-cartel",
+  "appearance": {
+    "body": "broad",
+    "outfit": "red-tithe-leathers",
+    "gear": ["shoulder-plate", "raider-cleaver"],
+    "accent": "rust-cowl"
+  },
   "description": "An Ash Cartel knife-man of the Red Tithe, picking through chapel relics for anything the road will pay for.",
   "stats": {
     "hp": 9,

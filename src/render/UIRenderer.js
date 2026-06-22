@@ -15,12 +15,35 @@ import {
   buildDialogueLayout,
   wrapUiText
 } from '../ui/dialogueLayout.js';
+import {
+  INVENTORY_ACTION_BOXES,
+  INVENTORY_BOX,
+  INVENTORY_GRID,
+  INVENTORY_PANELS,
+  INVENTORY_SPLIT_BOX,
+  inventoryActionBox,
+  inventoryActionMenuActions,
+  inventoryActionMenuBox,
+  inventoryCapacity,
+  inventoryGearBox,
+  inventorySlotBox
+} from '../ui/inventoryLayout.js';
 import { JOURNAL_ARROW_BOXES, JOURNAL_BOOK } from '../ui/journalLayout.js';
+import {
+  TRADE_BOX,
+  TRADE_BUTTONS,
+  TRADE_PANELS,
+  TRADE_ROW,
+  tradePlayerRowBox,
+  tradeTraderRowBox
+} from '../ui/tradeLayout.js';
 
 const LOG_BOX = { x: 8, y: UI_PANEL.y + 7, w: 328, h: UI_PANEL.height - 14 };
 const STATUS_BOX = { x: 342, y: UI_PANEL.y + 7, w: 138, h: UI_PANEL.height - 14 };
 const COMMAND_BOX = { x: 486, y: UI_PANEL.y + 7, w: 146, h: UI_PANEL.height - 14 };
-const INVENTORY_BOX = { x: 54, y: 42, w: 532, h: 296 };
+const LOOT_BOX = { x: 104, y: 54, w: 432, h: 270 };
+const LOOT_LIST_BOX = { x: LOOT_BOX.x + 16, y: LOOT_BOX.y + 32, w: 222, h: 164 };
+const LOOT_DETAIL_BOX = { x: LOOT_BOX.x + 252, y: LOOT_BOX.y + 32, w: 148, h: 164 };
 const OUTCOME_PREFIXES = [
   { text: 'SUCCESS:', color: PALETTE.uiSuccess },
   { text: 'FAILED:', color: PALETTE.uiFailure }
@@ -109,6 +132,8 @@ export class UIRenderer {
     ctx.imageSmoothingEnabled = false;
 
     if (ui.screen === 'inventory') this.#drawInventory(ctx, ui);
+    if (ui.screen === 'loot') this.#drawLoot(ctx, ui);
+    if (ui.screen === 'trade') this.#drawTrade(ctx, ui);
     if (ui.screen === 'journal') this.#drawJournal(ctx, ui);
     this.#drawHud(ctx, ui);
     if (ui.screen === 'dialogue') this.#drawDialogue(ctx, ui);
@@ -259,36 +284,36 @@ export class UIRenderer {
     const carry = `CARRY ${this.#formatWeight(ui.carryWeight ?? 0)}/${this.#formatWeight(ui.maxCarryWeight ?? 0)} KG`;
     this.#text(ctx, carry, INVENTORY_BOX.x + INVENTORY_BOX.w - this.#textWidth(carry) - 14, INVENTORY_BOX.y + 6, PALETTE.uiDim);
 
-    const left = { x: INVENTORY_BOX.x + 14, y: INVENTORY_BOX.y + 28, w: 202, h: 171 };
-    const figure = { x: INVENTORY_BOX.x + 224, y: INVENTORY_BOX.y + 28, w: 118, h: 171 };
-    const right = { x: INVENTORY_BOX.x + 350, y: INVENTORY_BOX.y + 28, w: 168, h: 171 };
-    const detail = { x: INVENTORY_BOX.x + 14, y: INVENTORY_BOX.y + 206, w: 504, h: 58 };
-    this.#inset(ctx, left);
+    const itemsBox = INVENTORY_PANELS.items;
+    const figure = INVENTORY_PANELS.figure;
+    const gear = INVENTORY_PANELS.gear;
+    const detail = INVENTORY_PANELS.detail;
+    this.#inset(ctx, itemsBox);
     this.#inset(ctx, figure);
-    this.#inset(ctx, right);
+    this.#inset(ctx, gear);
     this.#inset(ctx, detail);
 
     const items = ui.inventoryItems ?? [];
     const selectedIndex = Math.max(0, Math.min(items.length - 1, ui.inventoryIndex ?? 0));
     const focusItems = ui.inventoryFocus !== 'gear';
-    this.#text(ctx, 'ITEMS', left.x + 8, left.y + 8, focusItems ? PALETTE.uiText : PALETTE.uiBorderLight);
+    const movingIndex = Number.isInteger(ui.inventoryMoveIndex) ? ui.inventoryMoveIndex : null;
+    this.#text(ctx, 'ITEMS', itemsBox.x + 8, itemsBox.y + 8, focusItems ? PALETTE.uiText : PALETTE.uiBorderLight);
+    const ducats = `DUCATS ${ui.ducats ?? 0}`;
+    this.#text(ctx, ducats, itemsBox.x + itemsBox.w - this.#textWidth(ducats) - 8, itemsBox.y + 8, PALETTE.uiWarn);
+    this.#text(ctx, movingIndex !== null ? 'PLACE ITEM' : 'CLICK SAME SLOT TO MOVE', itemsBox.x + 8, itemsBox.y + 20, movingIndex !== null ? PALETTE.uiWarn : PALETTE.uiDim);
+
+    for (let i = 0; i < inventoryCapacity(); i += 1) {
+      this.#drawInventorySlot(ctx, inventorySlotBox(i), items[i] ?? null, {
+        selected: focusItems && i === selectedIndex,
+        moving: movingIndex === i
+      });
+    }
     if (items.length === 0) {
-      this.#text(ctx, 'PACK EMPTY', left.x + 8, left.y + 25, PALETTE.uiDim);
-    } else {
-      let y = left.y + 25;
-      for (let i = 0; i < items.length; i += 1) {
-        const item = items[i];
-        const selected = focusItems && i === selectedIndex;
-        const color = selected ? PALETTE.uiText : PALETTE.uiDim;
-        if (selected) this.#rect(ctx, left.x + 5, y - 2, left.w - 10, 10, PALETTE.uiDark);
-        const worn = item.equippedCount > 0 ? '*' : ' ';
-        const marker = selected ? '>' : worn;
-        const name = this.#clip(item.name, 19);
-        this.#text(ctx, `${marker} ${item.count}X ${name}`, left.x + 8, y, color);
-        const wt = `${this.#formatWeight(item.totalWeight)}KG`;
-        this.#text(ctx, wt, left.x + left.w - this.#textWidth(wt) - 8, y, PALETTE.uiDim);
-        y += 11;
-      }
+      this.#text(ctx, 'PACK EMPTY', itemsBox.x + 8, itemsBox.y + itemsBox.h - 14, PALETTE.uiDim);
+    }
+    if (items.length > inventoryCapacity()) {
+      const more = `+${items.length - inventoryCapacity()} MORE`;
+      this.#text(ctx, more, itemsBox.x + itemsBox.w - this.#textWidth(more) - 8, itemsBox.y + itemsBox.h - 14, PALETTE.uiWarn);
     }
 
     this.#drawPaperDoll(ctx, figure, ui.figureSpriteId ?? 'mara-vey', ui.actorName ?? 'MARA VEY');
@@ -296,16 +321,15 @@ export class UIRenderer {
     const slots = ui.equipmentSlots ?? [];
     const slotIndex = Math.max(0, Math.min(slots.length - 1, ui.equipmentIndex ?? 0));
     const focusGear = ui.inventoryFocus === 'gear';
-    this.#text(ctx, 'GEAR', right.x + 8, right.y + 8, focusGear ? PALETTE.uiText : PALETTE.uiBorderLight);
-    let sy = right.y + 24;
+    this.#text(ctx, 'GEAR', gear.x + 8, gear.y + 8, focusGear ? PALETTE.uiText : PALETTE.uiBorderLight);
     for (let i = 0; i < slots.length; i += 1) {
       const slot = slots[i];
       const selected = focusGear && i === slotIndex;
-      if (selected) this.#rect(ctx, right.x + 5, sy - 2, right.w - 10, 18, PALETTE.uiDark);
+      const slotBox = inventoryGearBox(i);
+      if (selected) this.#rect(ctx, slotBox.x, slotBox.y, slotBox.w, slotBox.h, PALETTE.uiDark);
       const color = selected ? PALETTE.uiText : PALETTE.uiDim;
-      this.#text(ctx, `${selected ? '>' : ' '} ${this.#clip(slot.label, 8)}`, right.x + 8, sy, color);
-      this.#text(ctx, this.#clip(slot.name, 19), right.x + 17, sy + 9, slot.empty ? PALETTE.uiBorderDark : PALETTE.uiDim);
-      sy += 21;
+      this.#text(ctx, `${selected ? '>' : ' '} ${this.#clip(slot.label, 8)}`, slotBox.x + 3, slotBox.y + 3, color);
+      this.#text(ctx, this.#clip(slot.name, 16), slotBox.x + 12, slotBox.y + 12, slot.empty ? PALETTE.uiBorderDark : PALETTE.uiDim);
     }
 
     const slotSelection = slots[slotIndex] ?? null;
@@ -314,8 +338,194 @@ export class UIRenderer {
       : items[selectedIndex] ?? null;
     this.#drawInventoryDetail(ctx, detail, detailItem, focusGear ? slotSelection : null);
 
-    const footer = 'UP/DN SELECT  LEFT/RIGHT PANEL  1 EQUIP  2 REMOVE  3 DROP  H DRESS  ESC CLOSE';
+    const footer = 'CLICK SELECT  RIGHT CLICK ACTIONS  SHIFT SORT  CTRL SPLIT  ESC CLOSE';
     this.#text(ctx, footer, INVENTORY_BOX.x + 14, INVENTORY_BOX.y + INVENTORY_BOX.h - 22, PALETTE.uiText);
+    this.#drawInventoryActionButton(ctx, INVENTORY_ACTION_BOXES.sort, 'SORT');
+    if (ui.inventoryActionMenu) this.#drawInventoryActionMenu(ctx, ui.inventoryActionMenu);
+    if (ui.inventorySplit) this.#drawInventorySplit(ctx, ui.inventorySplit);
+  }
+
+  #drawInventorySlot(ctx, box, item, state = {}) {
+    if (!box) return;
+    this.#rect(ctx, box.x, box.y, box.w, box.h, PALETTE.outline);
+    this.#rect(ctx, box.x + 1, box.y + 1, box.w - 2, box.h - 2, PALETTE.uiPanel);
+    this.#rect(ctx, box.x + 2, box.y + 2, box.w - 4, 1, PALETTE.uiBorderDark);
+    this.#rect(ctx, box.x + 2, box.y + box.h - 3, box.w - 4, 1, PALETTE.uiDark);
+    if (state.selected) {
+      this.#rect(ctx, box.x + 1, box.y + 1, box.w - 2, 1, PALETTE.uiText);
+      this.#rect(ctx, box.x + 1, box.y + 1, 1, box.h - 2, PALETTE.uiText);
+      this.#rect(ctx, box.x + box.w - 2, box.y + 1, 1, box.h - 2, PALETTE.uiBorderLight);
+      this.#rect(ctx, box.x + 1, box.y + box.h - 2, box.w - 2, 1, PALETTE.uiBorderLight);
+    }
+    if (state.moving) {
+      this.#rect(ctx, box.x + 4, box.y + 4, box.w - 8, 1, PALETTE.uiWarn);
+      this.#rect(ctx, box.x + 4, box.y + box.h - 5, box.w - 8, 1, PALETTE.uiWarn);
+    }
+    if (!item) return;
+
+    this.#drawItemIcon(ctx, item, box);
+    if (item.equippedCount > 0) this.#text(ctx, '*', box.x + 4, box.y + 4, PALETTE.uiWarn);
+    if (item.count > 1) {
+      const label = item.count > 99 ? '99+' : String(item.count);
+      const tx = box.x + box.w - this.#textWidth(label) - 3;
+      const ty = box.y + box.h - 10;
+      this.#rect(ctx, tx - 1, ty - 1, this.#textWidth(label) + 2, 9, PALETTE.outline);
+      this.#text(ctx, label, tx, ty, PALETTE.uiText);
+    }
+  }
+
+  #drawItemIcon(ctx, item, box) {
+    const model = item.groundModel ?? item.type ?? 'item';
+    const cx = box.x + Math.floor(box.w / 2);
+    const cy = box.y + Math.floor(box.h / 2);
+
+    if (model === 'dressing') {
+      this.#rect(ctx, cx - 10, cy - 8, 20, 16, PALETTE.outline);
+      this.#rect(ctx, cx - 9, cy - 7, 18, 14, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 8, cy - 6, 16, 12, PALETTE.clothTan);
+      this.#rect(ctx, cx - 7, cy - 5, 14, 2, PALETTE.hostBone);
+      this.#rect(ctx, cx - 2, cy - 6, 4, 12, PALETTE.uiText);
+      this.#rect(ctx, cx - 8, cy - 1, 16, 4, PALETTE.uiText);
+      this.#rect(ctx, cx - 5, cy - 6, 1, 12, PALETTE.uiBorderDark);
+      this.#rect(ctx, cx + 5, cy - 6, 1, 12, PALETTE.uiBorderDark);
+    } else if (model === 'food') {
+      this.#rect(ctx, cx - 8, cy - 10, 16, 20, PALETTE.outline);
+      this.#rect(ctx, cx - 7, cy - 9, 14, 3, PALETTE.hostBone);
+      this.#rect(ctx, cx - 7, cy - 6, 14, 14, PALETTE.stoneLight);
+      this.#rect(ctx, cx - 6, cy + 8, 12, 2, PALETTE.stoneDark);
+      this.#rect(ctx, cx - 7, cy - 2, 14, 7, PALETTE.clothTan);
+      this.#rect(ctx, cx - 4, cy, 8, 1, PALETTE.rustDark);
+      this.#rect(ctx, cx + 5, cy - 5, 1, 12, PALETTE.stoneDark);
+      this.#rect(ctx, cx - 5, cy - 7, 4, 1, PALETTE.uiText);
+    } else if (model === 'rounds') {
+      for (let i = 0; i < 4; i += 1) {
+        const x = cx - 10 + i * 6;
+        this.#rect(ctx, x, cy - 8, 4, 13, PALETTE.uiBorderDark);
+        this.#rect(ctx, x + 1, cy - 9, 2, 2, PALETTE.uiWarn);
+        this.#rect(ctx, x + 1, cy - 6, 2, 9, PALETTE.uiBorderLight);
+      }
+    } else if (model === 'key') {
+      this.#rect(ctx, cx - 10, cy - 2, 17, 3, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx + 4, cy + 1, 3, 5, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx + 8, cy + 1, 3, 3, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 12, cy - 5, 7, 9, PALETTE.uiBorderDark);
+      this.#rect(ctx, cx - 10, cy - 3, 3, 5, PALETTE.uiDark);
+    } else if (model === 'paper') {
+      this.#rect(ctx, cx - 8, cy - 10, 16, 19, PALETTE.uiText);
+      this.#rect(ctx, cx - 6, cy - 8, 12, 15, PALETTE.clothTan);
+      this.#rect(ctx, cx + 3, cy - 8, 3, 3, PALETTE.uiBorderDark);
+      this.#rect(ctx, cx - 4, cy - 3, 8, 1, PALETTE.uiBorderDark);
+      this.#rect(ctx, cx - 4, cy + 1, 7, 1, PALETTE.uiBorderDark);
+    } else if (model === 'vial') {
+      this.#rect(ctx, cx - 4, cy - 10, 8, 3, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 6, cy - 7, 12, 17, PALETTE.outline);
+      this.#rect(ctx, cx - 5, cy - 6, 10, 15, PALETTE.clothBlueDark);
+      this.#rect(ctx, cx - 4, cy + 1, 8, 7, PALETTE.clothBlue);
+      this.#rect(ctx, cx - 3, cy - 4, 2, 5, PALETTE.uiText);
+    } else if (model === 'shard') {
+      this.#rect(ctx, cx - 3, cy - 12, 6, 4, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 6, cy - 8, 11, 6, PALETTE.stoneDust);
+      this.#rect(ctx, cx - 9, cy - 2, 13, 7, PALETTE.hostGold);
+      this.#rect(ctx, cx - 11, cy + 5, 9, 5, PALETTE.stoneMid);
+    } else if (model === 'ball') {
+      this.#rect(ctx, cx - 6, cy - 8, 12, 2, PALETTE.clothBlueDark);
+      this.#rect(ctx, cx - 9, cy - 6, 18, 12, PALETTE.clothBlue);
+      this.#rect(ctx, cx - 6, cy + 6, 12, 2, PALETTE.clothBlueDark);
+      this.#rect(ctx, cx - 4, cy - 3, 4, 2, PALETTE.uiBorderLight);
+    } else if (model === 'boots') {
+      this.#rect(ctx, cx - 10, cy - 6, 7, 15, PALETTE.woodDark);
+      this.#rect(ctx, cx + 2, cy - 6, 7, 15, PALETTE.woodDark);
+      this.#rect(ctx, cx - 12, cy + 7, 12, 4, PALETTE.outline);
+      this.#rect(ctx, cx, cy + 7, 12, 4, PALETTE.outline);
+    } else if (model === 'coat') {
+      this.#rect(ctx, cx - 8, cy - 10, 16, 20, PALETTE.clothDark);
+      this.#rect(ctx, cx - 6, cy - 8, 12, 18, PALETTE.woodDark);
+      this.#rect(ctx, cx - 1, cy - 7, 2, 17, PALETTE.outline);
+      this.#rect(ctx, cx - 9, cy - 2, 4, 10, PALETTE.clothDark);
+      this.#rect(ctx, cx + 5, cy - 2, 4, 10, PALETTE.clothDark);
+    } else if (model === 'hood') {
+      this.#rect(ctx, cx - 8, cy - 6, 16, 13, PALETTE.clothDark);
+      this.#rect(ctx, cx - 6, cy - 10, 12, 7, PALETTE.woodDark);
+      this.#rect(ctx, cx - 4, cy - 4, 8, 6, PALETTE.outline);
+    } else if (model === 'vest') {
+      this.#rect(ctx, cx - 8, cy - 9, 16, 18, PALETTE.woodDark);
+      this.#rect(ctx, cx - 6, cy - 7, 5, 14, PALETTE.rustDark);
+      this.#rect(ctx, cx + 1, cy - 7, 5, 14, PALETTE.rustDark);
+      this.#rect(ctx, cx - 1, cy - 8, 2, 16, PALETTE.outline);
+    } else if (model === 'ring') {
+      this.#rect(ctx, cx - 6, cy - 8, 12, 4, PALETTE.uiBorderDark);
+      this.#rect(ctx, cx - 9, cy - 4, 18, 8, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 6, cy + 4, 12, 4, PALETTE.uiBorderDark);
+      this.#rect(ctx, cx - 4, cy - 2, 8, 4, PALETTE.uiDark);
+    } else if (model === 'necklace') {
+      this.#rect(ctx, cx - 8, cy - 8, 3, 3, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx + 5, cy - 8, 3, 3, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 6, cy - 5, 2, 7, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx + 4, cy - 5, 2, 7, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 3, cy + 4, 6, 8, PALETTE.uiWarn);
+      this.#rect(ctx, cx - 1, cy + 6, 2, 4, PALETTE.uiBorderDark);
+    } else {
+      this.#rect(ctx, cx - 7, cy - 7, 14, 14, PALETTE.uiBorderDark);
+      this.#rect(ctx, cx - 5, cy - 9, 10, 18, PALETTE.uiBorderLight);
+      this.#rect(ctx, cx - 4, cy - 4, 8, 8, PALETTE.uiWarn);
+      this.#rect(ctx, cx - 2, cy - 2, 4, 4, PALETTE.uiDark);
+    }
+  }
+
+  #drawInventoryActionButton(ctx, box, label, options = {}) {
+    const disabled = Boolean(options.disabled);
+    this.#rect(ctx, box.x, box.y, box.w, box.h, PALETTE.outline);
+    this.#rect(ctx, box.x + 1, box.y + 1, box.w - 2, box.h - 2, disabled ? PALETTE.uiDark : PALETTE.uiPanel);
+    this.#rect(ctx, box.x + 2, box.y + 2, box.w - 4, 1, disabled ? PALETTE.uiBorderDark : PALETTE.uiBorderLight);
+    this.#rect(ctx, box.x + 2, box.y + box.h - 3, box.w - 4, 1, PALETTE.uiBorderDark);
+    const text = this.#clip(label, Math.max(1, Math.floor((box.w - 8) / 6)));
+    this.#text(ctx, text, box.x + Math.floor((box.w - this.#textWidth(text)) / 2), box.y + 4, disabled ? PALETTE.uiDim : PALETTE.uiText);
+  }
+
+  #drawInventoryActionMenu(ctx, actionMenu) {
+    const menu = inventoryActionMenuBox(actionMenu.anchor, actionMenu);
+    if (!menu) return;
+    this.#rect(ctx, menu.x - 1, menu.y - 1, menu.w + 2, menu.h + 2, PALETTE.outline);
+    this.#rect(ctx, menu.x, menu.y, menu.w, menu.h, PALETTE.uiDark);
+    this.#rect(ctx, menu.x + 1, menu.y + 1, menu.w - 2, 1, PALETTE.uiBorderDark);
+    this.#rect(ctx, menu.x + 1, menu.y + menu.h - 2, menu.w - 2, 1, PALETTE.uiBorderDark);
+
+    for (const action of inventoryActionMenuActions(actionMenu)) {
+      const box = inventoryActionBox(action, actionMenu.anchor, actionMenu);
+      const label = action === 'equip'
+        ? (actionMenu.canUnequip ? 'UNEQUIP' : 'EQUIP')
+        : action.toUpperCase();
+      this.#rect(ctx, box.x, box.y, box.w, box.h, PALETTE.uiPanel);
+      this.#rect(ctx, box.x, box.y, box.w, 1, PALETTE.uiBorderDark);
+      this.#text(ctx, label, box.x + 6, box.y + 4, PALETTE.uiText);
+    }
+  }
+
+  #drawInventorySplit(ctx, split) {
+    const modal = INVENTORY_SPLIT_BOX.box;
+    this.#rect(ctx, modal.x - 4, modal.y - 4, modal.w + 8, modal.h + 8, 'rgba(5, 5, 5, 0.62)');
+    this.#window(ctx, modal, 'SPLIT STACK');
+    const item = split.item ?? {};
+    this.#text(ctx, this.#clip(item.name ?? 'ITEM', 30), modal.x + 12, modal.y + 27, PALETTE.uiBorderLight);
+    const count = `DROP ${split.amount ?? 1} OF ${split.max ?? 1}`;
+    this.#text(ctx, count, modal.x + 12, modal.y + 42, PALETTE.uiText);
+
+    const slider = INVENTORY_SPLIT_BOX.slider;
+    const max = Math.max(1, split.max ?? 1);
+    const amount = Math.max(1, Math.min(max, split.amount ?? 1));
+    const ratio = max <= 1 ? 0 : (amount - 1) / (max - 1);
+    const fill = Math.round(slider.w * ratio);
+    this.#rect(ctx, slider.x, slider.y, slider.w, slider.h, PALETTE.outline);
+    this.#rect(ctx, slider.x + 1, slider.y + 3, slider.w - 2, 4, PALETTE.uiDark);
+    this.#rect(ctx, slider.x + 1, slider.y + 3, Math.max(1, fill - 2), 4, PALETTE.uiWarn);
+    const knobX = slider.x + Math.round((slider.w - 5) * ratio);
+    this.#rect(ctx, knobX, slider.y - 3, 5, slider.h + 6, PALETTE.uiBorderLight);
+
+    this.#drawInventoryActionButton(ctx, INVENTORY_SPLIT_BOX.minus, '<');
+    this.#drawInventoryActionButton(ctx, INVENTORY_SPLIT_BOX.plus, '>');
+    this.#drawInventoryActionButton(ctx, INVENTORY_SPLIT_BOX.confirm, 'DROP');
+    this.#drawInventoryActionButton(ctx, INVENTORY_SPLIT_BOX.cancel, 'BACK');
+    this.#text(ctx, 'LEFT RIGHT COUNT  ENTER DROP  ESC BACK', modal.x + 15, modal.y + modal.h - 15, PALETTE.uiDim);
   }
 
   #drawInventoryDetail(ctx, box, item, slot) {
@@ -326,16 +536,170 @@ export class UIRenderer {
     }
 
     const title = slot ? `${slot.label}: ${item.name}` : item.name;
-    this.#text(ctx, this.#clip(title, 46), box.x + 8, box.y + 8, PALETTE.uiBorderLight);
+    const textCols = Math.max(20, Math.floor((box.w - 16) / 6));
+    this.#text(ctx, this.#clip(title, textCols), box.x + 8, box.y + 8, PALETTE.uiBorderLight);
     const parts = [`TYPE ${item.type || 'item'}`, `WT ${this.#formatWeight(item.weight ?? item.totalWeight ?? 0)} KG`];
     if (item.equipmentSlot) parts.push(item.equipmentSlot === 'ring' ? 'GEAR RING' : `GEAR ${item.equipmentSlot}`);
     if (Array.isArray(item.wornSlots) && item.wornSlots.length > 0) parts.push(`WORN ${item.wornSlots.join(', ')}`);
-    this.#text(ctx, this.#clip(parts.join('  '), 79), box.x + 8, box.y + 20, PALETTE.uiGood);
+    this.#text(ctx, this.#clip(parts.join('  '), textCols), box.x + 8, box.y + 20, PALETTE.uiGood);
 
     let y = box.y + 34;
-    for (const line of this.#wrap(item.description || 'NO DESCRIPTION.', 80).slice(0, 2)) {
+    for (const line of this.#wrap(item.description || 'NO DESCRIPTION.', textCols).slice(0, 3)) {
       this.#text(ctx, line, box.x + 8, y, PALETTE.uiDim);
       y += 9;
+    }
+  }
+
+  #drawLoot(ctx, ui) {
+    this.#screenBackdrop(ctx);
+    const loot = ui.loot ?? { title: 'Loot', entries: [], index: 0 };
+    this.#window(ctx, LOOT_BOX, `LOOT: ${loot.title ?? 'CACHE'}`);
+    this.#inset(ctx, LOOT_LIST_BOX);
+    this.#inset(ctx, LOOT_DETAIL_BOX);
+
+    const entries = loot.entries ?? [];
+    const selectedIndex = Math.max(0, Math.min(entries.length - 1, loot.index ?? 0));
+    this.#text(ctx, 'MARKED', LOOT_LIST_BOX.x + 8, LOOT_LIST_BOX.y + 8, PALETTE.uiBorderLight);
+
+    if (!entries.length) {
+      this.#text(ctx, 'NOTHING USEFUL', LOOT_LIST_BOX.x + 8, LOOT_LIST_BOX.y + 28, PALETTE.uiDim);
+    }
+    let y = LOOT_LIST_BOX.y + 25;
+    for (let i = 0; i < Math.min(entries.length, 6); i += 1) {
+      const entry = entries[i];
+      const selected = i === selectedIndex;
+      if (selected) this.#rect(ctx, LOOT_LIST_BOX.x + 5, y - 3, LOOT_LIST_BOX.w - 10, 24, PALETTE.uiDark);
+      const iconBox = { x: LOOT_LIST_BOX.x + 8, y: y - 5, w: 24, h: 24 };
+      this.#drawInventorySlot(ctx, iconBox, entry, { selected: false, moving: false });
+      const color = selected ? PALETTE.uiText : PALETTE.uiDim;
+      this.#text(ctx, `${selected ? '>' : ' '} ${entry.count}X`, LOOT_LIST_BOX.x + 38, y, color);
+      this.#text(ctx, this.#clip(entry.name, 24), LOOT_LIST_BOX.x + 38, y + 10, color);
+      y += 26;
+    }
+
+    const selected = entries[selectedIndex] ?? null;
+    if (selected) {
+      this.#text(ctx, this.#clip(selected.name, 20), LOOT_DETAIL_BOX.x + 8, LOOT_DETAIL_BOX.y + 8, PALETTE.uiBorderLight);
+      const wt = `WT ${this.#formatWeight(selected.totalWeight ?? selected.weight ?? 0)} KG`;
+      this.#text(ctx, wt, LOOT_DETAIL_BOX.x + 8, LOOT_DETAIL_BOX.y + 21, PALETTE.uiGood);
+      let dy = LOOT_DETAIL_BOX.y + 38;
+      for (const line of this.#wrap(selected.description || 'NO DESCRIPTION.', 21).slice(0, 9)) {
+        this.#text(ctx, line, LOOT_DETAIL_BOX.x + 8, dy, PALETTE.uiDim);
+        dy += 9;
+      }
+    }
+
+    this.#text(ctx, 'UP DN MARK', LOOT_BOX.x + 20, LOOT_BOX.y + LOOT_BOX.h - 39, PALETTE.uiDim);
+    this.#text(ctx, 'E PICK ITEM', LOOT_BOX.x + 142, LOOT_BOX.y + LOOT_BOX.h - 39, PALETTE.uiText);
+    this.#text(ctx, 'A PICK ALL', LOOT_BOX.x + 264, LOOT_BOX.y + LOOT_BOX.h - 39, PALETTE.uiText);
+    this.#text(ctx, 'SPACE LEAVE', LOOT_BOX.x + 144, LOOT_BOX.y + LOOT_BOX.h - 22, PALETTE.uiDim);
+  }
+
+  #drawTrade(ctx, ui) {
+    this.#screenBackdrop(ctx);
+    const trade = ui.trade ?? { traderName: 'Trader', traderItems: [], playerItems: [], stockIndex: 0, playerIndex: 0 };
+    this.#window(ctx, TRADE_BOX, trade.title ?? `TRADE: ${trade.traderName ?? 'TRADER'}`);
+    this.#inset(ctx, TRADE_PANELS.trader);
+    this.#inset(ctx, TRADE_PANELS.player);
+    this.#inset(ctx, TRADE_PANELS.detail);
+
+    const traderItems = trade.traderItems ?? [];
+    const playerItems = trade.playerItems ?? [];
+    const stockIndex = Math.max(0, Math.min(traderItems.length - 1, trade.stockIndex ?? 0));
+    const playerIndex = Math.max(0, Math.min(playerItems.length - 1, trade.playerIndex ?? 0));
+    const focusStock = trade.focus !== 'player';
+
+    const stockLabel = this.#clip(`${trade.traderName ?? 'TRADER'} STOCK`, 22);
+    this.#text(ctx, stockLabel, TRADE_PANELS.trader.x + 8, TRADE_PANELS.trader.y + 8, focusStock ? PALETTE.uiText : PALETTE.uiBorderLight);
+    this.#text(ctx, 'PRICE', TRADE_PANELS.trader.x + TRADE_PANELS.trader.w - 45, TRADE_PANELS.trader.y + 8, PALETTE.uiDim);
+    this.#text(ctx, `YOUR DUCATS ${trade.ducats ?? 0}`, TRADE_PANELS.player.x + 8, TRADE_PANELS.player.y + 8, PALETTE.uiWarn);
+    this.#text(ctx, 'YOUR PACK', TRADE_PANELS.player.x + 8, TRADE_PANELS.player.y + 20, focusStock ? PALETTE.uiBorderLight : PALETTE.uiText);
+    this.#text(ctx, 'WT', TRADE_PANELS.player.x + TRADE_PANELS.player.w - 27, TRADE_PANELS.player.y + 20, PALETTE.uiDim);
+    this.#rect(ctx, TRADE_PANELS.trader.x + 8, TRADE_PANELS.trader.y + 20, TRADE_PANELS.trader.w - 16, 1, PALETTE.uiBorderDark);
+    this.#rect(ctx, TRADE_PANELS.player.x + 8, TRADE_PANELS.player.y + 32, TRADE_PANELS.player.w - 16, 1, PALETTE.uiBorderDark);
+
+    for (let i = 0; i < TRADE_ROW.visible; i += 1) {
+      this.#drawTradeStockRow(ctx, tradeTraderRowBox(i), traderItems[i] ?? null, {
+        selected: focusStock && i === stockIndex
+      });
+      this.#drawTradePackRow(ctx, tradePlayerRowBox(i), playerItems[i] ?? null, {
+        selected: !focusStock && i === playerIndex
+      });
+    }
+
+    const selected = focusStock ? traderItems[stockIndex] : playerItems[playerIndex];
+    this.#drawTradeDetail(ctx, trade, selected, focusStock);
+    this.#drawInventoryActionButton(ctx, TRADE_BUTTONS.buy, 'BUY', { disabled: !focusStock || !trade.canBuy });
+    this.#drawInventoryActionButton(ctx, TRADE_BUTTONS.close, 'CLOSE');
+    this.#text(ctx, 'UP DN SELECT  A D SIDE  E BUY  ESC CLOSE', TRADE_BOX.x + 18, TRADE_BOX.y + TRADE_BOX.h - 43, PALETTE.uiDim);
+  }
+
+  #drawTradeStockRow(ctx, box, item, state = {}) {
+    if (!box) return;
+    if (state.selected) {
+      this.#rect(ctx, box.x, box.y, box.w, box.h, PALETTE.uiDark);
+      this.#rect(ctx, box.x, box.y, 3, box.h, item?.affordable === false ? PALETTE.uiFailure : PALETTE.uiWarn);
+      this.#rect(ctx, box.x + 3, box.y, box.w - 3, 1, PALETTE.uiBorderDark);
+      this.#rect(ctx, box.x + 3, box.y + box.h - 1, box.w - 3, 1, PALETTE.uiBorderDark);
+    }
+    if (!item) return;
+    const iconBox = { x: box.x + 5, y: box.y + 1, w: 18, h: 18 };
+    this.#drawInventorySlot(ctx, iconBox, item, { selected: false });
+    const sold = item.count <= 0;
+    const blocked = !sold && item.affordable === false;
+    const color = sold ? PALETTE.uiBorderDark : (state.selected ? PALETTE.uiText : PALETTE.uiDim);
+    const priceColor = sold ? PALETTE.uiBorderDark : (blocked ? PALETTE.uiFailure : PALETTE.uiWarn);
+    const count = item.count > 0 ? `${item.count}X` : 'SOLD';
+    const price = `${item.price ?? 0}D`;
+    const priceW = this.#textWidth(price) + 8;
+    const priceX = box.x + box.w - priceW - 4;
+    this.#text(ctx, this.#clip(item.name, 18), box.x + 29, box.y + 3, color);
+    this.#text(ctx, count, box.x + 29, box.y + 12, priceColor);
+    this.#rect(ctx, priceX, box.y + 4, priceW, 12, PALETTE.outline);
+    this.#rect(ctx, priceX + 1, box.y + 5, priceW - 2, 10, blocked || sold ? PALETTE.uiDark : PALETTE.uiPanel);
+    this.#text(ctx, price, priceX + 4, box.y + 7, priceColor);
+  }
+
+  #drawTradePackRow(ctx, box, item, state = {}) {
+    if (!box) return;
+    if (state.selected) {
+      this.#rect(ctx, box.x, box.y, box.w, box.h, PALETTE.uiDark);
+      this.#rect(ctx, box.x, box.y, 3, box.h, PALETTE.uiGood);
+      this.#rect(ctx, box.x + 3, box.y, box.w - 3, 1, PALETTE.uiBorderDark);
+      this.#rect(ctx, box.x + 3, box.y + box.h - 1, box.w - 3, 1, PALETTE.uiBorderDark);
+    }
+    if (!item) return;
+    const iconBox = { x: box.x + 5, y: box.y + 1, w: 18, h: 18 };
+    this.#drawInventorySlot(ctx, iconBox, item, { selected: false });
+    const color = state.selected ? PALETTE.uiText : PALETTE.uiDim;
+    const weight = `WT ${this.#formatWeight(item.totalWeight ?? item.weight ?? 0)}`;
+    this.#text(ctx, this.#clip(item.name, 19), box.x + 29, box.y + 3, color);
+    this.#text(ctx, `${item.count}X`, box.x + 29, box.y + 12, PALETTE.uiGood);
+    this.#text(ctx, weight, box.x + box.w - this.#textWidth(weight) - 5, box.y + 12, PALETTE.uiGood);
+  }
+
+  #drawTradeDetail(ctx, trade, item, focusStock) {
+    const box = TRADE_PANELS.detail;
+    if (!item) {
+      this.#text(ctx, focusStock ? 'NO STOCK SELECTED' : 'PACK EMPTY', box.x + 8, box.y + 8, PALETTE.uiBorderLight);
+      return;
+    }
+    this.#text(ctx, this.#clip(item.name, 36), box.x + 8, box.y + 8, PALETTE.uiBorderLight);
+    const ask = focusStock
+      ? `PRICE ${item.price ?? 0} DUCATS  STOCK ${item.count ?? 0}`
+      : `COUNT ${item.count ?? 0}  WT ${this.#formatWeight(item.totalWeight ?? item.weight ?? 0)} KG`;
+    this.#text(ctx, ask, box.x + 8, box.y + 20, focusStock ? PALETTE.uiWarn : PALETTE.uiGood);
+    const status = focusStock
+      ? item.count <= 0
+        ? 'SOLD OUT'
+        : (trade.canBuy ? 'E BUY: TAKE 1' : trade.buyHint ?? 'NOT ENOUGH DUCATS')
+      : this.#clip(item.description || 'NO DESCRIPTION.', 58);
+    const statusColor = focusStock && item.count > 0
+      ? (trade.canBuy ? PALETTE.uiGood : PALETTE.uiFailure)
+      : PALETTE.uiDim;
+    this.#text(ctx, this.#clip(status, 58), box.x + 8, box.y + 32, statusColor);
+    if (focusStock) {
+      this.#text(ctx, this.#clip(item.description || 'NO DESCRIPTION.', 58), box.x + 8, box.y + 44, PALETTE.uiDim);
     }
   }
 

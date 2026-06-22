@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Settlement child",
-  "spriteId": "settlement-eda",
+  "appearance": {
+    "body": "child",
+    "outfit": "settlement-child-chalk",
+    "gear": ["child-token"],
+    "accent": "bare-brown"
+  },
   "stats": {
     "hp": 4,
     "maxHp": 4,

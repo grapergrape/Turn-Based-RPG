@@ -4,7 +4,12 @@
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Chapel hand",
-  "spriteId": "settlement-dalia",
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-chapel-hand",
+    "gear": ["prayer-cord"],
+    "accent": "bare-light"
+  },
   "stats": {
     "hp": 6,
     "maxHp": 6,

@@ -73,11 +73,25 @@ import {
   resolveInteractionTargetAtCell
 } from '../world/InteractionTargeting.js';
 import { IsometricRenderer } from '../render/IsometricRenderer.js';
-import { bakeMara } from '../render/SpriteAtlas.js';
+import { bakeHumanAppearance, bakeMara, isHumanAppearance, spriteIdForHumanAppearance } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
 import { DEBUG_GRID_DEFAULT, VIEWPORT_HEIGHT } from '../render/renderConfig.js';
 import { DIALOGUE_MAX_CHOICES, buildDialogueLayout } from '../ui/dialogueLayout.js';
+import {
+  inventoryActionAt,
+  inventoryGearBox,
+  inventoryGearAt,
+  inventorySlotAt,
+  inventorySlotBox,
+  inventorySplitActionAt,
+  inventorySplitAmountAt
+} from '../ui/inventoryLayout.js';
 import { journalArrowAt } from '../ui/journalLayout.js';
+import {
+  tradeActionAt,
+  tradePlayerIndexAt,
+  tradeTraderIndexAt
+} from '../ui/tradeLayout.js';
 
 const STEP_DURATION = 0.64;
 const ENEMY_ACTION_DELAY = 0.2;
@@ -185,6 +199,9 @@ export class Game {
     }
 
     const previousInventory = bootOptions.preserveRun ? this.inventory : null;
+    const previousInventoryOrder = bootOptions.preserveRun && Array.isArray(this.inventoryOrder)
+      ? [...this.inventoryOrder]
+      : [];
     const previousQuestStages = bootOptions.preserveRun && this.questStages
       ? new Map(this.questStages)
       : null;
@@ -221,6 +238,7 @@ export class Game {
     this.enemies = level.enemies;
     if (bootOptions.noCombat) this.enemies = [];
     this.npcs = (level.npcs ?? []).filter((npc) => this.#meetsConditions(npc.conditions));
+    this.#refreshActorAppearances([...this.enemies, ...this.npcs]);
     this.groundItems = level.groundItems ?? [];
     this.groundItemSeq = previousGroundItemSeq;
     if (previousPlayer) {
@@ -240,6 +258,7 @@ export class Game {
     } else {
       this.#loadStartingInventory(level.playerLoadout);
     }
+    this.#syncInventoryOrder();
     // Bake the player sprite to match the loaded equipment so the world figure
     // and inventory paper doll reflect what Mara is actually wearing.
     this.#refreshPlayerAppearance();
@@ -284,6 +303,16 @@ export class Game {
     this.inventoryFocus = 'items';
     this.inventoryIndex = 0;
     this.equipmentIndex = 0;
+    this.inventoryOrder = previousInventoryOrder;
+    this.inventoryMoveIndex = null;
+    this.inventoryActionMenu = null;
+    this.inventorySplit = null;
+    this.loot = null;
+    this.lootIndex = 0;
+    this.trade = null;
+    this.tradeFocus = 'trader';
+    this.tradeStockIndex = 0;
+    this.tradePlayerIndex = 0;
     this.dialogue = null;
     this.briefing = null;
     this.briefingTitle = null;
@@ -414,7 +443,7 @@ export class Game {
         this.#finishIntro();
         return;
       }
-      if (action === 'confirm' || action === 'interact' || action === 'down') {
+      if (this.#isConfirmAction(action) || action === 'interact' || action === 'down') {
         advance();
         return;
       }
@@ -465,6 +494,8 @@ export class Game {
           break;
         case 'dressing':
           this.#log(this.inventory.useFieldDressing(this.player));
+          this.#syncInventoryOrder();
+          this.#clampInventorySelection();
           break;
         case 'restart':
           this.boot();
@@ -497,13 +528,14 @@ export class Game {
       return;
     }
 
+    const sortAfterLoot = Boolean(click.shiftKey);
     if (isTargetInReach(this.player, target)) {
-      this.#executeExploreTarget(target);
+      this.#executeExploreTarget(target, { sortAfterLoot });
       return;
     }
 
     const path = this.#pathToExploreTarget(target);
-    this.pendingExploreTarget = path && path.length ? target : null;
+    this.pendingExploreTarget = path && path.length ? { ...target, sortAfterLoot } : null;
     this.pathQueue = path && path.length ? path : [];
   }
 
@@ -552,7 +584,7 @@ export class Game {
       return;
     }
     if (isTargetInReach(this.player, target)) {
-      this.#executeExploreTarget(target);
+      this.#executeExploreTarget(target, { sortAfterLoot: target.sortAfterLoot });
     }
   }
 
@@ -572,19 +604,28 @@ export class Game {
     return false;
   }
 
-  #executeExploreTarget(target) {
+  #executeExploreTarget(target, options = {}) {
     this.pendingExploreTarget = null;
     this.pathQueue = [];
+    const beforeInventory = options.sortAfterLoot ? this.#inventoryFingerprint() : null;
+    const finish = () => {
+      if (beforeInventory !== null && this.#inventoryFingerprint() !== beforeInventory) {
+        this.#sortInventory();
+      }
+    };
     if (target.type === 'talk') {
       this.#openEnemyDialogue(target.actor);
+      finish();
       return;
     }
     if (target.type === 'corpse') {
       this.#interactWithCorpse(target.enemy);
+      finish();
       return;
     }
     if (target.type === 'object') {
       this.#interactWithObject(target.object);
+      finish();
     }
   }
 
@@ -594,12 +635,6 @@ export class Game {
 
   #enemyHasUnclaimedLoot(enemy) {
     return this.#enemyHasLoot(enemy) && !enemy.lootClaimed;
-  }
-
-  #lootSummary(loot) {
-    return (loot ?? [])
-      .map((entry) => `${entry.count ?? 1}x ${this.inventory.displayName(entry.item)}`)
-      .join(', ');
   }
 
   #logCarryFailure(carry) {
@@ -612,34 +647,15 @@ export class Game {
 
   #interactWithCorpse(enemy) {
     if (!enemy) return;
-    const loot = Array.isArray(enemy.loot) ? enemy.loot : [];
-    const panelLines = [];
-
-    if (loot.length && !enemy.lootClaimed) {
-      const carry = this.inventory.canAddLoot(loot);
-      if (!carry.ok) {
-        this.#logCarryFailure(carry);
-        panelLines.push('Too much to carry.');
-        if (enemy.inspect) this.#openDialogueById(enemy.inspect);
-        else this.#openDialogue(enemy.name, panelLines, 'corpse');
-        return;
-      }
-      for (const entry of loot) this.inventory.add(entry.item, entry.count ?? 1);
-      enemy.lootClaimed = true;
-      const summary = this.#lootSummary(loot);
-      if (summary) {
-        const line = `Recovered: ${summary}.`;
-        this.#log(line);
-        panelLines.push(line);
-      }
-    } else if (loot.length && enemy.lootClaimed && !enemy.inspect) {
-      panelLines.push('Nothing useful remains.');
+    if (this.#lootSourceHasItems({ sourceType: 'enemy', source: enemy })) {
+      this.#openLootScreen({ title: enemy.name, sourceType: 'enemy', source: enemy });
+      return;
     }
 
     if (enemy.inspect) {
       this.#openDialogueById(enemy.inspect);
-    } else if (panelLines.length) {
-      this.#openDialogue(enemy.name, panelLines, 'corpse');
+    } else if (this.#enemyHasLoot(enemy) && enemy.lootClaimed) {
+      this.#openDialogue(enemy.name, ['Nothing useful remains.'], 'corpse');
     }
   }
 
@@ -660,8 +676,13 @@ export class Game {
       this.#openSearchDialogue(object);
       return;
     }
+    if (this.#objectShouldOpenLoot(object)) {
+      this.#openObjectLootScreen(object);
+      return;
+    }
 
     const result = this.interactions.interact(object, this.inventory);
+    this.#syncInventoryOrder();
     for (const line of result.logs) this.#log(line);
     this.#applyQuestUpdate(result.questUpdate);
     if (result.dialogueId) {
@@ -711,6 +732,7 @@ export class Game {
     item.pickupStart = this.anim.tick;
     const label = `${count}x ${item.name ?? this.inventory.displayName(item.itemId)}`;
     this.#log(`Picked up: ${label}.`);
+    this.#syncInventoryOrder();
     this.#clampInventorySelection();
   }
 
@@ -810,6 +832,7 @@ export class Game {
     if (securityToolSurvives(status)) return;
     if (!this.inventory.remove(SECURITY_TOOL_ITEM, 1)) return;
     this.#log(`${this.inventory.displayName(SECURITY_TOOL_ITEM)} bends past saving.`);
+    this.#syncInventoryOrder();
     this.#clampInventorySelection();
   }
 
@@ -933,17 +956,26 @@ export class Game {
       this.#handleJournalScreen(actions, click);
       return;
     }
-    if (click) return;
     if (this.uiScreen === 'dialogue') {
+      if (click) return;
       this.#handleDialogueScreen(actions);
       return;
     }
-    if (this.uiScreen === 'inventory') {
-      this.#handleInventoryScreen(actions);
+    if (this.uiScreen === 'loot') {
+      this.#handleLootScreen(actions, click);
       return;
     }
+    if (this.uiScreen === 'trade') {
+      this.#handleTradeScreen(actions, click);
+      return;
+    }
+    if (this.uiScreen === 'inventory') {
+      this.#handleInventoryScreen(actions, click);
+      return;
+    }
+    if (click) return;
     for (const action of actions) {
-      if (action === 'cancel' || action === 'confirm' || action === 'interact') {
+      if (action === 'cancel' || this.#isConfirmAction(action) || action === 'interact') {
         this.#closeUiScreen();
         return;
       }
@@ -957,6 +989,8 @@ export class Game {
       }
       if (action === 'dressing') {
         this.#log(this.inventory.useFieldDressing(this.player));
+        this.#syncInventoryOrder();
+        this.#clampInventorySelection();
         return;
       }
       if (action === 'restart') {
@@ -1041,8 +1075,459 @@ export class Game {
     this.journalFactionIndex = Math.max(0, Math.min(known.length - 1, (this.journalFactionIndex ?? 0) + delta));
   }
 
-  #handleInventoryScreen(actions) {
+  #handleLootScreen(actions, click = null) {
+    if (click) return;
+    const entries = this.#currentLootEntries();
+    if (!entries.length) {
+      this.#finalizeLootIfEmpty();
+      return;
+    }
+    this.lootIndex = Math.max(0, Math.min(entries.length - 1, this.lootIndex ?? 0));
+
+    for (const action of actions) {
+      if (action === 'cancel' || action === 'space') {
+        this.#closeUiScreen();
+        return;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') {
+        this.debugGrid = !this.debugGrid;
+        continue;
+      }
+      if (action === 'up' || action === 'down') {
+        this.lootIndex = Math.max(0, Math.min(entries.length - 1, this.lootIndex + (action === 'down' ? 1 : -1)));
+        continue;
+      }
+      if (action === 'left') {
+        this.#takeAllLoot();
+        return;
+      }
+      if (action === 'interact') {
+        this.#takeMarkedLoot();
+        return;
+      }
+    }
+  }
+
+  #objectShouldOpenLoot(object) {
+    const descriptor = object?.interact ?? {};
+    if (descriptor.type !== 'container' && descriptor.type !== 'corpse') return false;
+    if (descriptor.type === 'container' && descriptor.requiresItem && !this.inventory.has(descriptor.requiresItem)) {
+      return false;
+    }
+    if (descriptor.type === 'container' && object.consumed) return false;
+    if (descriptor.type === 'corpse' && object.looted) return false;
+    return this.#lootSourceHasItems({ sourceType: 'object', source: object });
+  }
+
+  #openObjectLootScreen(object) {
+    const descriptor = object?.interact ?? {};
+    for (const line of [].concat(descriptor.log ?? []).filter(Boolean)) this.#log(line);
+    this.#openLootScreen({
+      title: this.#objectName(object),
+      sourceType: 'object',
+      source: object
+    });
+  }
+
+  #openLootScreen({ title, sourceType, source }) {
+    this.uiScreen = 'loot';
+    this.dialogue = null;
+    this.inventoryActionMenu = null;
+    this.inventorySplit = null;
+    this.loot = {
+      title: title ?? 'Loot',
+      sourceType,
+      source
+    };
+    this.lootIndex = 0;
+  }
+
+  #lootSourceHasItems(loot) {
+    return this.#lootEntriesForSource(loot).some((entry) => entry.count > 0);
+  }
+
+  #lootEntriesForSource(loot = this.loot) {
+    if (!loot?.source) return [];
+    if (loot.sourceType === 'enemy') return Array.isArray(loot.source.loot) && !loot.source.lootClaimed ? loot.source.loot : [];
+    const descriptor = loot.source.interact ?? {};
+    if (loot.sourceType === 'object') {
+      if (descriptor.type === 'container' && loot.source.consumed) return [];
+      if (descriptor.type === 'corpse' && loot.source.looted) return [];
+      return Array.isArray(descriptor.loot) ? descriptor.loot : [];
+    }
+    return [];
+  }
+
+  #currentLootEntries() {
+    return this.#lootEntriesForSource()
+      .map((entry, rawIndex) => {
+        const itemId = entry.item;
+        const count = Math.max(0, Math.floor(Number(entry.count ?? 1) || 0));
+        if (!itemId || count <= 0) return null;
+        const itemDef = this.inventory.itemDefs[itemId] ?? {};
+        return {
+          rawIndex,
+          id: itemId,
+          itemId,
+          count,
+          name: this.inventory.displayName(itemId),
+          type: itemDef.type ?? 'item',
+          groundModel: itemDef.groundModel ?? null,
+          description: itemDef.description ?? '',
+          weight: this.inventory.itemWeight(itemId),
+          totalWeight: this.inventory.weightOf(itemId, count),
+          canEquip: Boolean(itemDef.equipment?.slot),
+          equipmentSlot: itemDef.equipment?.slot ?? null
+        };
+      })
+      .filter(Boolean);
+  }
+
+  #takeMarkedLoot() {
+    const entries = this.#currentLootEntries();
+    const entry = entries[this.lootIndex ?? 0];
+    if (!entry) {
+      this.#finalizeLootIfEmpty();
+      return;
+    }
+    this.#takeLootEntry(entry.rawIndex, entry.count);
+  }
+
+  #takeAllLoot() {
+    const entries = this.#currentLootEntries();
+    if (!entries.length) {
+      this.#finalizeLootIfEmpty();
+      return;
+    }
+    const carry = this.inventory.canAddLoot(entries.map((entry) => ({ item: entry.itemId, count: entry.count })));
+    if (!carry.ok) {
+      this.#logCarryFailure(carry);
+      return;
+    }
+    const summary = entries.map((entry) => `${entry.count}x ${entry.name}`).join(', ');
+    for (const entry of entries) {
+      this.inventory.add(entry.itemId, entry.count);
+      this.#setLootEntryCount(entry.rawIndex, 0);
+    }
+    this.#syncInventoryOrder();
+    if (summary) this.#log(`Recovered: ${summary}.`);
+    this.#finalizeLootIfEmpty();
+  }
+
+  #takeLootEntry(rawIndex, count) {
+    const rawEntries = this.#lootEntriesForSource();
+    const raw = rawEntries[rawIndex];
+    if (!raw?.item) return false;
+    const amount = Math.max(1, Math.min(Math.floor(Number(count) || 1), Math.floor(Number(raw.count ?? 1) || 1)));
+    const carry = this.inventory.canAdd(raw.item, amount);
+    if (!carry.ok) {
+      this.#logCarryFailure(carry);
+      return false;
+    }
+    const result = this.inventory.add(raw.item, amount);
+    if (!result.ok) {
+      this.#log(`No room for ${this.inventory.displayName(raw.item)}.`);
+      return false;
+    }
+    this.#setLootEntryCount(rawIndex, Math.max(0, (raw.count ?? 1) - amount));
+    this.#syncInventoryOrder();
+    this.#log(`Recovered: ${amount}x ${this.inventory.displayName(raw.item)}.`);
+    this.#finalizeLootIfEmpty();
+    return true;
+  }
+
+  #setLootEntryCount(rawIndex, count) {
+    const rawEntries = this.#lootEntriesForSource();
+    const raw = rawEntries[rawIndex];
+    if (!raw) return;
+    raw.count = Math.max(0, Math.floor(Number(count) || 0));
+  }
+
+  #finalizeLootIfEmpty() {
+    if (!this.loot) return false;
+    const entries = this.#currentLootEntries();
+    if (entries.length) {
+      this.lootIndex = Math.max(0, Math.min(entries.length - 1, this.lootIndex ?? 0));
+      return false;
+    }
+
+    const { sourceType, source } = this.loot;
+    this.loot = null;
+    this.lootIndex = 0;
+    this.uiScreen = null;
+
+    if (sourceType === 'enemy' && source) {
+      source.lootClaimed = true;
+      if (source.inspect) this.#openDialogueById(source.inspect);
+      return true;
+    }
+    if (sourceType === 'object' && source) {
+      const descriptor = source.interact ?? {};
+      source.opened = true;
+      if (descriptor.type === 'container') {
+        source.consumed = true;
+        syncObjectPassability(source, this.grid);
+      } else if (descriptor.type === 'corpse') {
+        source.looted = true;
+      }
+      if (descriptor.questUpdate) this.#applyQuestUpdate(descriptor.questUpdate);
+      if (descriptor.dialogue) this.#openDialogueById(descriptor.dialogue);
+      return true;
+    }
+    return true;
+  }
+
+  #handleTradeScreen(actions, click = null) {
+    this.#syncInventoryOrder();
+    this.#clampTradeSelection();
+
+    if (click) {
+      const action = tradeActionAt(click);
+      if (action === 'close') {
+        this.#closeUiScreen();
+        return;
+      }
+      if (action === 'buy') {
+        this.tradeFocus = 'trader';
+        this.#buySelectedTradeItem();
+        return;
+      }
+
+      const stockIndex = tradeTraderIndexAt(click, this.#tradeStockEntries().length);
+      if (stockIndex !== null) {
+        this.tradeFocus = 'trader';
+        this.tradeStockIndex = stockIndex;
+        this.#clampTradeSelection();
+        return;
+      }
+
+      const playerIndex = tradePlayerIndexAt(click, this.#tradePlayerEntries().length);
+      if (playerIndex !== null) {
+        this.tradeFocus = 'player';
+        this.tradePlayerIndex = playerIndex;
+        this.#clampTradeSelection();
+      }
+      return;
+    }
+
+    for (const action of actions) {
+      if (action === 'cancel') {
+        this.#closeUiScreen();
+        return;
+      }
+      if (action === 'inventory') {
+        this.#closeUiScreen();
+        this.#toggleInventory();
+        return;
+      }
+      if (action === 'journal') {
+        this.#closeUiScreen();
+        this.#toggleJournal();
+        return;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') {
+        this.debugGrid = !this.debugGrid;
+        continue;
+      }
+      if (action === 'left' || action === 'right' || action === 'cycle') {
+        this.tradeFocus = this.tradeFocus === 'player' ? 'trader' : 'player';
+        this.#clampTradeSelection();
+        continue;
+      }
+      if (action === 'up' || action === 'down') {
+        this.#moveTradeSelection(action === 'down' ? 1 : -1);
+        continue;
+      }
+      if (action === 'interact' || this.#isConfirmAction(action)) {
+        if (this.tradeFocus === 'player') {
+          this.tradeFocus = 'trader';
+          this.#clampTradeSelection();
+          continue;
+        }
+        this.#buySelectedTradeItem();
+      }
+    }
+  }
+
+  #openTradeScreen(targetId) {
+    const trader = this.#findTradeActor(targetId);
+    if (!trader?.trade) {
+      this.#log('No trade stock.');
+      return false;
+    }
+
+    this.uiScreen = 'trade';
+    this.dialogue = null;
+    this.inventoryActionMenu = null;
+    this.inventorySplit = null;
+    this.loot = null;
+    this.trade = { trader };
+    this.tradeFocus = 'trader';
+    this.tradeStockIndex = 0;
+    this.tradePlayerIndex = 0;
+    this.#clampTradeSelection();
+    return true;
+  }
+
+  #findTradeActor(targetId) {
+    const id = typeof targetId === 'string'
+      ? targetId
+      : targetId?.actor ?? targetId?.id ?? targetId?.spawnId;
+    if (!id) return null;
+    return [...(this.npcs ?? []), ...(this.enemies ?? [])].find((actor) =>
+      actor.id === id || actor.spawnId === id
+    ) ?? null;
+  }
+
+  #tradeStockEntries() {
+    const stock = this.trade?.trader?.trade?.stock ?? [];
+    const currency = this.#tradeCurrency();
+    const ducats = this.inventory.count(currency);
+    return stock
+      .map((entry, rawIndex) => {
+        const itemId = entry?.item;
+        if (!itemId) return null;
+        const count = Math.max(0, Math.floor(Number(entry.count ?? 1) || 0));
+        const price = Math.max(0, Math.floor(Number(entry.price) || 0));
+        const carry = this.inventory.canAdd(itemId, 1);
+        const canAfford = ducats >= price;
+        const itemDef = this.inventory.itemDefs[itemId] ?? {};
+        return {
+          rawIndex,
+          id: itemId,
+          itemId,
+          count,
+          price,
+          affordable: count > 0 && canAfford && carry.ok,
+          buyHint: count <= 0
+            ? 'SOLD OUT'
+            : (!canAfford ? `NEED ${price} DUCATS` : (!carry.ok ? 'PACK TOO HEAVY' : 'E BUY: TAKE 1')),
+          name: this.inventory.displayName(itemId),
+          type: itemDef.type ?? 'item',
+          groundModel: itemDef.groundModel ?? null,
+          description: itemDef.description ?? '',
+          weight: this.inventory.itemWeight(itemId),
+          totalWeight: this.inventory.weightOf(itemId, Math.max(1, count)),
+          canEquip: Boolean(itemDef.equipment?.slot),
+          equipmentSlot: itemDef.equipment?.slot ?? null,
+          canUse: this.inventory.canUse(itemId)
+        };
+      })
+      .filter(Boolean);
+  }
+
+  #tradePlayerEntries() {
+    return this.#inventoryEntries();
+  }
+
+  #tradeCurrency() {
+    return this.trade?.trader?.trade?.currency ?? 'ducat';
+  }
+
+  #clampTradeSelection() {
+    const stockEntries = this.#tradeStockEntries();
+    const playerEntries = this.#tradePlayerEntries();
+    this.tradeStockIndex = stockEntries.length
+      ? Math.max(0, Math.min(stockEntries.length - 1, this.tradeStockIndex ?? 0))
+      : 0;
+    this.tradePlayerIndex = playerEntries.length
+      ? Math.max(0, Math.min(playerEntries.length - 1, this.tradePlayerIndex ?? 0))
+      : 0;
+    if (this.tradeFocus !== 'player') this.tradeFocus = 'trader';
+  }
+
+  #moveTradeSelection(delta) {
+    const entries = this.tradeFocus === 'player'
+      ? this.#tradePlayerEntries()
+      : this.#tradeStockEntries();
+    if (!entries.length) return;
+    if (this.tradeFocus === 'player') {
+      this.tradePlayerIndex = Math.max(0, Math.min(entries.length - 1, (this.tradePlayerIndex ?? 0) + delta));
+    } else {
+      this.tradeStockIndex = Math.max(0, Math.min(entries.length - 1, (this.tradeStockIndex ?? 0) + delta));
+    }
+  }
+
+  #tradeBuyStatus(entry) {
+    if (!entry) return { ok: false, hint: 'NO STOCK' };
+    if (entry.count <= 0) return { ok: false, hint: 'SOLD OUT' };
+    const currency = this.#tradeCurrency();
+    if (this.inventory.count(currency) < entry.price) {
+      return { ok: false, hint: `NEED ${entry.price} DUCATS` };
+    }
+    const carry = this.inventory.canAdd(entry.itemId, 1);
+    if (!carry.ok) return { ok: false, hint: 'PACK TOO HEAVY', carry };
+    return { ok: true, hint: 'E BUY: TAKE 1' };
+  }
+
+  #buySelectedTradeItem() {
+    const entry = this.#tradeStockEntries()[this.tradeStockIndex ?? 0];
+    const status = this.#tradeBuyStatus(entry);
+    if (!status.ok) {
+      if (status.carry) this.#logCarryFailure(status.carry);
+      else this.#log(status.hint);
+      return false;
+    }
+
+    const currency = this.#tradeCurrency();
+    if (entry.price > 0 && !this.inventory.remove(currency, entry.price)) {
+      this.#log(`Need ${entry.price} ducats.`);
+      return false;
+    }
+
+    const result = this.inventory.add(entry.itemId, 1);
+    if (!result.ok) {
+      if (entry.price > 0) this.inventory.add(currency, entry.price, { ignoreCapacity: true });
+      this.#logCarryFailure(result);
+      return false;
+    }
+
+    const raw = this.trade?.trader?.trade?.stock?.[entry.rawIndex];
+    if (raw) raw.count = Math.max(0, Math.floor(Number(raw.count ?? 1) || 0) - 1);
+    this.#syncInventoryOrder();
+    this.#clampTradeSelection();
+    this.#log(`Bought: ${entry.name} for ${entry.price} ducats.`);
+    return true;
+  }
+
+  #buildTradeUi() {
+    const stockEntries = this.#tradeStockEntries();
+    const playerEntries = this.#tradePlayerEntries();
+    const selected = stockEntries[this.tradeStockIndex ?? 0] ?? null;
+    const status = this.#tradeBuyStatus(selected);
+    return {
+      title: this.trade?.trader?.trade?.title ?? 'Trade',
+      traderName: this.trade?.trader?.name ?? 'Trader',
+      traderItems: stockEntries,
+      playerItems: playerEntries,
+      stockIndex: this.tradeStockIndex ?? 0,
+      playerIndex: this.tradePlayerIndex ?? 0,
+      focus: this.tradeFocus ?? 'trader',
+      ducats: this.inventory.count(this.#tradeCurrency()),
+      canBuy: status.ok,
+      buyHint: status.hint
+    };
+  }
+
+  #handleInventoryScreen(actions, click = null) {
+    this.#syncInventoryOrder();
     this.#clampInventorySelection();
+    if (this.inventorySplit) {
+      this.#handleInventorySplit(actions, click);
+      return;
+    }
+    if (click) {
+      this.#handleInventoryClick(click);
+      return;
+    }
     for (const action of actions) {
       if (action === 'cancel' || action === 'inventory') {
         this.#closeUiScreen();
@@ -1058,18 +1543,23 @@ export class Game {
       }
       if (action === 'dressing') {
         this.#log(this.inventory.useFieldDressing(this.player));
+        this.#syncInventoryOrder();
+        this.#clampInventorySelection();
         continue;
       }
       if (action === 'left' || action === 'right' || action === 'cycle') {
         this.inventoryFocus = this.inventoryFocus === 'gear' ? 'items' : 'gear';
+        this.inventoryMoveIndex = null;
         this.#clampInventorySelection();
         continue;
       }
       if (action === 'up' || action === 'down') {
+        this.inventoryMoveIndex = null;
         this.#moveInventorySelection(action === 'down' ? 1 : -1);
         continue;
       }
-      if (action === 'melee' || action === 'confirm' || action === 'interact') {
+      if (action === 'melee' || this.#isConfirmAction(action) || action === 'interact') {
+        this.inventoryMoveIndex = null;
         if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
         else this.#equipSelectedInventoryItem();
         this.#refreshPlayerAppearance();
@@ -1077,6 +1567,7 @@ export class Game {
         continue;
       }
       if (action === 'sidearm') {
+        this.inventoryMoveIndex = null;
         if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
         else this.#unequipSelectedInventoryItem();
         this.#refreshPlayerAppearance();
@@ -1084,11 +1575,403 @@ export class Game {
         continue;
       }
       if (action === 'choice3') {
+        this.inventoryMoveIndex = null;
         this.#dropSelectedInventoryItem();
         this.#refreshPlayerAppearance();
         this.#clampInventorySelection();
       }
     }
+  }
+
+  #handleInventoryClick(click) {
+    const currentMenu = this.#currentInventoryActionMenu();
+    const action = inventoryActionAt(click, currentMenu);
+    if (action) {
+      this.#handleInventoryAction(action);
+      return;
+    }
+
+    if (click.button === 2) {
+      this.#openInventoryActionMenuAt(click);
+      return;
+    }
+
+    const gearIndex = inventoryGearAt(click, this.inventory.equipmentEntries().length);
+    if (gearIndex !== null) {
+      this.inventoryFocus = 'gear';
+      this.equipmentIndex = gearIndex;
+      this.inventoryMoveIndex = null;
+      this.inventoryActionMenu = null;
+      this.#clampInventorySelection();
+      return;
+    }
+
+    const slotIndex = inventorySlotAt(click);
+    if (slotIndex === null) return;
+    if (click.shiftKey) {
+      this.#sortInventory();
+      return;
+    }
+
+    const items = this.#inventoryEntries();
+    if (this.inventoryMoveIndex !== null) {
+      this.inventoryActionMenu = null;
+      this.#moveInventoryOrder(this.inventoryMoveIndex, slotIndex);
+      return;
+    }
+
+    const item = items[slotIndex] ?? null;
+    this.inventoryFocus = 'items';
+    if (!item) {
+      this.inventoryMoveIndex = null;
+      this.inventoryActionMenu = null;
+      this.#clampInventorySelection();
+      return;
+    }
+
+    const wasSelected = this.inventoryIndex === slotIndex;
+    this.inventoryIndex = slotIndex;
+    if (click.ctrlKey) {
+      this.inventoryActionMenu = null;
+      this.#openInventorySplit(item.id);
+      return;
+    }
+
+    this.inventoryMoveIndex = wasSelected ? slotIndex : null;
+    this.inventoryActionMenu = null;
+    this.#clampInventorySelection();
+  }
+
+  #handleInventoryAction(action) {
+    if (action === 'sort') {
+      this.inventoryMoveIndex = null;
+      this.inventoryActionMenu = null;
+      this.#sortInventory();
+      return;
+    }
+    const menu = this.#currentInventoryActionMenu();
+    if (!menu) {
+      this.#log('Right click an item first.');
+      return;
+    }
+    this.#selectInventoryActionMenuTarget(menu);
+    this.inventoryMoveIndex = null;
+    if (action === 'use') {
+      this.#useSelectedInventoryItem();
+      this.inventoryActionMenu = null;
+      this.#clampInventorySelection();
+      return;
+    }
+    if (action === 'equip') {
+      if (menu.canUnequip) {
+        if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
+        else this.#unequipSelectedInventoryItem();
+      } else {
+        this.#equipSelectedInventoryItem();
+      }
+      this.#refreshPlayerAppearance();
+      this.#clampInventorySelection();
+      return;
+    }
+    if (action === 'remove') {
+      if (this.inventoryFocus === 'gear') this.#unequipSelectedGear();
+      else this.#unequipSelectedInventoryItem();
+      this.#refreshPlayerAppearance();
+      this.#clampInventorySelection();
+      return;
+    }
+    if (action === 'drop') {
+      this.#dropSelectedInventoryItem();
+      this.#refreshPlayerAppearance();
+      this.inventoryActionMenu = null;
+      this.#clampInventorySelection();
+      return;
+    }
+    if (action === 'split') this.#openSelectedInventorySplit();
+  }
+
+  #openInventoryActionMenuAt(click) {
+    const gearIndex = inventoryGearAt(click, this.inventory.equipmentEntries().length);
+    if (gearIndex !== null) {
+      const slot = this.inventory.equipmentEntries()[gearIndex];
+      this.inventoryFocus = 'gear';
+      this.equipmentIndex = gearIndex;
+      this.inventoryMoveIndex = null;
+      this.inventoryActionMenu = slot?.itemId
+        ? { focus: 'gear', slot: slot.slot, itemId: slot.itemId, anchor: inventoryGearBox(gearIndex) }
+        : null;
+      this.#clampInventorySelection();
+      return;
+    }
+
+    const slotIndex = inventorySlotAt(click);
+    const item = slotIndex !== null ? this.#inventoryEntries()[slotIndex] : null;
+    this.inventoryFocus = 'items';
+    this.inventoryMoveIndex = null;
+    if (item) {
+      this.inventoryIndex = slotIndex;
+      this.inventoryActionMenu = { focus: 'items', itemId: item.id, anchor: inventorySlotBox(slotIndex) };
+    } else {
+      this.inventoryActionMenu = null;
+    }
+    this.#clampInventorySelection();
+  }
+
+  #currentInventoryActionMenu() {
+    const menu = this.inventoryActionMenu;
+    if (!menu?.itemId) return null;
+    if (menu.focus === 'gear') {
+      const slotIndex = this.inventory.equipmentEntries().findIndex((entry) =>
+        entry.slot === menu.slot && entry.itemId === menu.itemId
+      );
+      if (slotIndex < 0) {
+        this.inventoryActionMenu = null;
+        return null;
+      }
+      const slot = this.inventory.equipmentEntries()[slotIndex];
+      return {
+        ...menu,
+        slotIndex,
+        anchor: inventoryGearBox(slotIndex),
+        item: slot,
+        canEquip: false,
+        canUse: false,
+        canUnequip: true,
+        canSplit: this.inventory.count(menu.itemId) > 1
+      };
+    }
+
+    const itemIndex = this.#inventoryEntries().findIndex((entry) => entry.id === menu.itemId);
+    if (itemIndex < 0) {
+      this.inventoryActionMenu = null;
+      return null;
+    }
+    const item = this.#inventoryEntries()[itemIndex];
+    return {
+      ...menu,
+      itemIndex,
+      anchor: inventorySlotBox(itemIndex),
+      item,
+      canEquip: Boolean(item.equipmentSlot),
+      canUse: Boolean(item.canUse),
+      canUnequip: item.equippedCount > 0,
+      canSplit: item.count > 1
+    };
+  }
+
+  #selectInventoryActionMenuTarget(menu) {
+    if (menu.focus === 'gear') {
+      this.inventoryFocus = 'gear';
+      this.equipmentIndex = menu.slotIndex;
+      return;
+    }
+    this.inventoryFocus = 'items';
+    this.inventoryIndex = menu.itemIndex;
+  }
+
+  #handleInventorySplit(actions, click = null) {
+    const split = this.#currentInventorySplit();
+    if (!split) return;
+
+    if (click) {
+      const action = inventorySplitActionAt(click);
+      if (action === 'cancel') {
+        this.inventorySplit = null;
+        return;
+      }
+      if (this.#isConfirmAction(action)) {
+        this.#confirmInventorySplitDrop();
+        return;
+      }
+      if (action === 'minus') {
+        this.#adjustInventorySplit(-1);
+        return;
+      }
+      if (action === 'plus') {
+        this.#adjustInventorySplit(1);
+        return;
+      }
+      if (action === 'slider') {
+        const amount = inventorySplitAmountAt(click, split.max);
+        if (amount !== null) this.inventorySplit.amount = amount;
+      }
+      return;
+    }
+
+    for (const action of actions) {
+      if (action === 'cancel' || action === 'inventory') {
+        this.inventorySplit = null;
+        return;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') {
+        this.debugGrid = !this.debugGrid;
+        continue;
+      }
+      if (action === 'left' || action === 'down') {
+        this.#adjustInventorySplit(-1);
+        continue;
+      }
+      if (action === 'right' || action === 'up') {
+        this.#adjustInventorySplit(1);
+        continue;
+      }
+      if (this.#isConfirmAction(action) || action === 'interact' || action === 'choice3') {
+        this.#confirmInventorySplitDrop();
+        return;
+      }
+    }
+  }
+
+  #openSelectedInventorySplit() {
+    if (this.inventoryFocus === 'gear') {
+      const slot = this.inventory.equipmentEntries()[this.equipmentIndex];
+      if (!slot || !slot.itemId) {
+        this.#log(slot?.empty ? `${slot.label} is empty.` : 'No gear selected.');
+        return;
+      }
+      this.#openInventorySplit(slot.itemId);
+      return;
+    }
+
+    const item = this.#selectedInventoryItem();
+    if (!item) {
+      this.#log('Pack is empty.');
+      return;
+    }
+    this.#openInventorySplit(item.id);
+  }
+
+  #openInventorySplit(itemId) {
+    const item = this.#inventoryEntries().find((entry) => entry.id === itemId);
+    if (!item) return;
+    if (item.count <= 1) {
+      this.#log('Only one item in stack.');
+      return;
+    }
+    this.inventorySplit = {
+      itemId,
+      amount: Math.min(item.count, Math.max(1, Math.ceil(item.count / 2)))
+    };
+    this.inventoryMoveIndex = null;
+  }
+
+  #currentInventorySplit() {
+    if (!this.inventorySplit?.itemId) {
+      this.inventorySplit = null;
+      return null;
+    }
+    const item = this.#inventoryEntries().find((entry) => entry.id === this.inventorySplit.itemId);
+    if (!item || item.count <= 1) {
+      this.inventorySplit = null;
+      return null;
+    }
+    const max = item.count;
+    const amount = Math.max(1, Math.min(max, Math.floor(Number(this.inventorySplit.amount) || 1)));
+    this.inventorySplit.amount = amount;
+    return { ...this.inventorySplit, amount, max, item };
+  }
+
+  #adjustInventorySplit(delta) {
+    const split = this.#currentInventorySplit();
+    if (!split) return;
+    this.inventorySplit.amount = Math.max(1, Math.min(split.max, split.amount + delta));
+  }
+
+  #confirmInventorySplitDrop() {
+    const split = this.#currentInventorySplit();
+    if (!split) return;
+    const amount = Math.max(1, Math.min(split.max, split.amount));
+    if (this.#dropItemFromInventory(split.itemId, { count: amount })) {
+      this.inventorySplit = null;
+      this.#refreshPlayerAppearance();
+      this.#clampInventorySelection();
+    }
+  }
+
+  #inventoryEntries() {
+    const entries = this.inventory?.entries() ?? [];
+    this.#syncInventoryOrder(entries);
+    const byId = new Map(entries.map((entry) => [entry.id, entry]));
+    return (this.inventoryOrder ?? []).map((id) => byId.get(id)).filter(Boolean);
+  }
+
+  #selectedInventoryItem() {
+    return this.#inventoryEntries()[this.inventoryIndex] ?? null;
+  }
+
+  #inventoryFingerprint() {
+    return (this.inventory?.entries() ?? [])
+      .map((entry) => `${entry.id}:${entry.count}`)
+      .sort()
+      .join('|');
+  }
+
+  #syncInventoryOrder(entries = null) {
+    const current = entries ?? this.inventory?.entries() ?? [];
+    const present = new Set(current.map((entry) => entry.id));
+    const next = [];
+    for (const itemId of this.inventoryOrder ?? []) {
+      if (present.has(itemId) && !next.includes(itemId)) next.push(itemId);
+    }
+    for (const entry of current) {
+      if (!next.includes(entry.id)) next.push(entry.id);
+    }
+    this.inventoryOrder = next;
+    if (this.inventoryMoveIndex !== null && this.inventoryMoveIndex >= next.length) {
+      this.inventoryMoveIndex = null;
+    }
+  }
+
+  #sortInventory() {
+    const rank = {
+      currency: 0,
+      consumable: 1,
+      ammo: 2,
+      tool: 3,
+      key: 3,
+      quest: 4,
+      evidence: 4,
+      clothes: 5,
+      armor: 5,
+      boots: 5,
+      helmet: 5,
+      ring: 5,
+      trinket: 5,
+      salvage: 6,
+      contraband: 7
+    };
+    this.inventoryOrder = this.inventory.entries()
+      .sort((a, b) => {
+        const ar = rank[a.type] ?? 9;
+        const br = rank[b.type] ?? 9;
+        if (ar !== br) return ar - br;
+        return a.name.localeCompare(b.name);
+      })
+      .map((entry) => entry.id);
+    this.inventoryMoveIndex = null;
+    this.#clampInventorySelection();
+    this.#log('Pack sorted.');
+  }
+
+  #moveInventoryOrder(fromIndex, targetIndex) {
+    this.#syncInventoryOrder();
+    const order = [...(this.inventoryOrder ?? [])];
+    if (fromIndex < 0 || fromIndex >= order.length) {
+      this.inventoryMoveIndex = null;
+      return;
+    }
+    const [itemId] = order.splice(fromIndex, 1);
+    const insertAt = Math.max(0, Math.min(targetIndex, order.length));
+    order.splice(insertAt, 0, itemId);
+    this.inventoryOrder = order;
+    this.inventoryFocus = 'items';
+    this.inventoryIndex = insertAt;
+    this.inventoryMoveIndex = null;
+    this.#clampInventorySelection();
   }
 
   #moveInventorySelection(delta) {
@@ -1097,22 +1980,37 @@ export class Game {
       this.equipmentIndex = Math.max(0, Math.min(slots.length - 1, this.equipmentIndex + delta));
       return;
     }
-    const items = this.inventory.entries();
+    const items = this.#inventoryEntries();
     this.inventoryIndex = Math.max(0, Math.min(items.length - 1, this.inventoryIndex + delta));
   }
 
   #equipSelectedInventoryItem() {
-    const item = this.inventory.entries()[this.inventoryIndex];
+    const item = this.#selectedInventoryItem();
     if (!item) {
       this.#log('Pack is empty.');
+      return;
+    }
+    if (item.canUse && !item.equipmentSlot) {
+      this.#useSelectedInventoryItem();
       return;
     }
     const result = this.inventory.equip(item.id);
     this.#log(result.message);
   }
 
+  #useSelectedInventoryItem() {
+    const item = this.#selectedInventoryItem();
+    if (!item) {
+      this.#log('Pack is empty.');
+      return;
+    }
+    this.#log(this.inventory.useItem(this.player, item.id));
+    this.#syncInventoryOrder();
+    this.#clampInventorySelection();
+  }
+
   #unequipSelectedInventoryItem() {
-    const item = this.inventory.entries()[this.inventoryIndex];
+    const item = this.#selectedInventoryItem();
     if (!item) {
       this.#log('Pack is empty.');
       return;
@@ -1142,7 +2040,7 @@ export class Game {
       return;
     }
 
-    const item = this.inventory.entries()[this.inventoryIndex];
+    const item = this.#selectedInventoryItem();
     if (!item) {
       this.#log('Pack is empty.');
       return;
@@ -1153,6 +2051,8 @@ export class Game {
   #dropItemFromInventory(itemId, options = {}) {
     const itemDef = this.inventory.itemDefs[itemId] ?? {};
     const name = this.inventory.displayName(itemId);
+    const amount = options.slot ? 1 : Math.max(1, Math.floor(Number(options.count) || 1));
+    const count = Math.min(amount, this.inventory.count(itemId));
     if (options.slot) {
       const result = this.inventory.unequip(options.slot);
       if (!result.ok) {
@@ -1160,7 +2060,7 @@ export class Game {
         return false;
       }
     }
-    if (!this.inventory.remove(itemId, 1)) {
+    if (count <= 0 || !this.inventory.remove(itemId, count)) {
       this.#log(`${name} is not in the pack.`);
       return false;
     }
@@ -1170,32 +2070,44 @@ export class Game {
       id: `${this.level?.id ?? 'level'}-drop-${this.groundItemSeq}`,
       itemId,
       itemDef,
-      count: 1,
+      count,
       x: this.player.x,
       y: this.player.y,
       tick: this.anim.tick,
       source: 'player'
     });
     if (!groundItem) {
-      this.inventory.add(itemId, 1, { ignoreCapacity: true });
+      this.inventory.add(itemId, count, { ignoreCapacity: true });
       this.#log(`Could not drop ${name}.`);
       return false;
     }
 
     this.groundItems.push(groundItem);
-    this.#log(`Dropped: ${name}.`);
+    this.#syncInventoryOrder();
+    this.#log(count === 1 ? `Dropped: ${name}.` : `Dropped: ${count}x ${name}.`);
     return true;
+  }
+
+  #refreshActorAppearances(actors) {
+    if (!this.atlas) return;
+    for (const actor of actors ?? []) {
+      if (!isHumanAppearance(actor?.appearance)) continue;
+      const spriteId = spriteIdForHumanAppearance(actor.appearance);
+      actor.spriteId = spriteId;
+      if (!this.atlas[spriteId]) this.atlas[spriteId] = bakeHumanAppearance(actor.appearance);
+    }
   }
 
   // Re-bake the player sprite from the current equipment. The new atlas entry
   // replaces the old one in the shared atlas, so both the world renderer and the
-  // inventory paper doll (which read the same atlas) update together. Only the
-  // equipment-aware player sprite is rebaked; enemy sprites are left untouched.
+  // inventory paper doll (which read the same atlas) update together. NPC and
+  // enemy appearance composites are handled once when the level loads.
   #refreshPlayerAppearance() {
     if (!this.atlas || this.player?.spriteId !== 'mara-vey') return;
     this.atlas[this.player.spriteId] = bakeMara(
       this.inventory.equipmentSnapshot(),
-      this.inventory.itemDefs
+      this.inventory.itemDefs,
+      this.player.appearance ?? null
     );
   }
 
@@ -1353,7 +2265,7 @@ export class Game {
           this.#chooseDialogueOption(choiceIndex);
           return;
         }
-        if (action === 'confirm' || action === 'interact') {
+        if (this.#isConfirmAction(action) || action === 'interact') {
           this.#chooseDialogueOption(0);
           return;
         }
@@ -1361,7 +2273,7 @@ export class Game {
           this.#closeUiScreen();
           return;
         }
-      } else if (action === 'cancel' || action === 'confirm' || action === 'interact') {
+      } else if (action === 'cancel' || this.#isConfirmAction(action) || action === 'interact') {
         this.#closeUiScreen();
         return;
       }
@@ -1381,6 +2293,8 @@ export class Game {
       }
       if (action === 'dressing') {
         this.#log(this.inventory.useFieldDressing(this.player));
+        this.#syncInventoryOrder();
+        this.#clampInventorySelection();
         return;
       }
       if (action === 'restart') {
@@ -1426,6 +2340,9 @@ export class Game {
     if (effects.xp !== undefined) this.#awardPlayerExperience(effects.xp);
     if (effects.kill) this.#silenceProp(effects.kill);
     if (effects.teleport) this.#teleportPlayer(effects.teleport);
+    if (effects.trade) {
+      return this.#openTradeScreen(effects.trade);
+    }
     if (effects.showBriefing) {
       this.#showBriefing(effects.showBriefing);
       return true;
@@ -1486,6 +2403,8 @@ export class Game {
       }
       this.#log(`Received: ${count}x ${this.inventory.displayName(entry.item)}.`);
     }
+    this.#syncInventoryOrder();
+    this.#clampInventorySelection();
   }
 
   // End a still-living staged victim (the crucified Opened Saint, or its cellar
@@ -1528,6 +2447,18 @@ export class Game {
   #closeUiScreen() {
     this.uiScreen = null;
     this.dialogue = null;
+    this.inventoryActionMenu = null;
+    this.inventorySplit = null;
+    this.loot = null;
+    this.lootIndex = 0;
+    this.trade = null;
+    this.tradeFocus = 'trader';
+    this.tradeStockIndex = 0;
+    this.tradePlayerIndex = 0;
+  }
+
+  #isConfirmAction(action) {
+    return action === 'confirm' || action === 'space';
   }
 
   // ---- Combat mode -------------------------------------------------------
@@ -1567,6 +2498,7 @@ export class Game {
           this.#cycleTarget();
           break;
         case 'confirm':
+        case 'space':
           this.#playerAttack();
           break;
         case 'interact': // E = end turn in combat
@@ -1574,6 +2506,8 @@ export class Game {
           return;
         case 'dressing':
           this.#log(this.inventory.useFieldDressing(this.player));
+          this.#syncInventoryOrder();
+          this.#clampInventorySelection();
           break;
         case 'inventory':
           this.#toggleInventory();
@@ -2137,8 +3071,9 @@ export class Game {
   }
 
   #clampInventorySelection() {
+    this.#syncInventoryOrder();
     this.inventoryFocus = this.inventoryFocus === 'gear' ? 'gear' : 'items';
-    const itemCount = this.inventory?.entries().length ?? 0;
+    const itemCount = this.#inventoryEntries().length ?? 0;
     const slotCount = this.inventory?.equipmentEntries().length ?? 0;
     this.inventoryIndex = Math.max(0, Math.min(Math.max(0, itemCount - 1), this.inventoryIndex ?? 0));
     this.equipmentIndex = Math.max(0, Math.min(Math.max(0, slotCount - 1), this.equipmentIndex ?? 0));
@@ -2362,6 +3297,14 @@ export class Game {
     const groundItems = (this.groundItems ?? [])
       .map((item) => serializeGroundItem(item))
       .filter(Boolean);
+    const tradeStockByActor = new Map(
+      [...(this.npcs ?? []), ...(this.enemies ?? [])]
+        .filter((actor) => Array.isArray(actor.trade?.stock))
+        .map((actor) => [
+          actor.spawnId ?? actor.id,
+          actor.trade.stock.map((entry) => ({ ...entry }))
+        ])
+    );
     this.levelStateByPath.set(this.levelPath, {
       consumedObjects,
       killedObjects,
@@ -2373,6 +3316,7 @@ export class Game {
       deadEnemies,
       lootedEnemies,
       clearedEncounters: new Set(this.clearedEncounters ?? []),
+      tradeStockByActor,
       groundItems
     });
   }
@@ -2426,6 +3370,13 @@ export class Game {
       this.groundItems = state.groundItems
         .map((item) => hydrateGroundItem(item))
         .filter(Boolean);
+    }
+    for (const actor of [...(this.npcs ?? []), ...(this.enemies ?? [])]) {
+      const key = actor.spawnId ?? actor.id;
+      const stock = state.tradeStockByActor?.get(key);
+      if (Array.isArray(stock) && actor.trade) {
+        actor.trade.stock = stock.map((entry) => ({ ...entry }));
+      }
     }
     this.clearedEncounters = new Set(state.clearedEncounters ?? []);
   }
@@ -2688,7 +3639,13 @@ export class Game {
         ? ['Up/Dn Select', 'A/D Turn Page', 'J/Esc Close']
         : ['A/D Turn Page', 'J/Esc Close'];
     } else if (this.uiScreen === 'inventory') {
-      controls = ['Up/Dn Select', 'Left/Right Panel', '1/Enter Equip', '2 Remove', '3 Drop', 'H Dress', 'Esc Close'];
+      controls = this.inventorySplit
+        ? ['Left/Right Count', 'Enter Drop', 'Esc Back']
+        : ['Click Select', 'Right Menu', 'Shift Sort', 'Ctrl Split', 'Esc Close'];
+    } else if (this.uiScreen === 'loot') {
+      controls = ['Up/Dn Mark', 'E Pick Item', 'A Pick All', 'Space Leave'];
+    } else if (this.uiScreen === 'trade') {
+      controls = ['Up/Dn Select', 'A/D Side', 'E Buy', 'Esc Close'];
     } else if (this.uiScreen === 'dialogue' && this.dialogue?.choices?.length) {
       const choiceMax = Math.min(this.dialogue.choices.length, DIALOGUE_MAX_CHOICES);
       const choiceHelp = choiceMax === 1 ? '1 Choose' : `1 TO ${choiceMax} Choose`;
@@ -2717,9 +3674,13 @@ export class Game {
       action: attack ? attack.name : '-',
       target: target ? `${this.#shortName(target.name)} ${target.hp}/${target.maxHp}` : '-',
       inventory: this.inventory.summary(),
-      inventoryItems: this.inventory.entries(),
+      inventoryItems: this.#inventoryEntries(),
       inventoryIndex: this.inventoryIndex ?? 0,
       inventoryFocus: this.inventoryFocus ?? 'items',
+      inventoryMoveIndex: this.inventoryMoveIndex,
+      inventoryActionMenu: this.#currentInventoryActionMenu(),
+      inventorySplit: this.#currentInventorySplit(),
+      ducats: this.inventory.count('ducat'),
       figureSpriteId: this.player.spriteId,
       equipmentSlots: this.inventory.equipmentEntries(),
       equipmentIndex: this.equipmentIndex ?? 0,
@@ -2729,6 +3690,12 @@ export class Game {
         ? { text: this.areaTitle, ttl: this.areaTitleTimer, duration: AREA_TITLE_DURATION }
         : null,
       screen: this.uiScreen,
+      loot: this.uiScreen === 'loot' ? {
+        title: this.loot?.title ?? 'Loot',
+        entries: this.#currentLootEntries(),
+        index: this.lootIndex ?? 0
+      } : null,
+      trade: this.uiScreen === 'trade' ? this.#buildTradeUi() : null,
       journal: this.uiScreen === 'journal' ? this.#buildJournal() : null,
       dialogue: this.dialogue,
       hoverText: cursor?.text ?? null,

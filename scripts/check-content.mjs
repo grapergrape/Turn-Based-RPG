@@ -9,6 +9,13 @@ import {
   PRIMARY_ATTRIBUTES,
   TRACE_STAGES
 } from '../src/core/Progression.js';
+import {
+  HUMAN_ACCENT_IDS,
+  HUMAN_BODY_IDS,
+  HUMAN_GEAR_IDS,
+  HUMAN_OUTFIT_IDS,
+  SPRITE_ATLAS_IDS
+} from '../src/render/SpriteAtlas.js';
 import { getSprite } from '../src/render/spriteCatalog.js';
 import { Grid } from '../src/world/Grid.js';
 import { findPathToAdjacent } from '../src/world/Pathfinder.js';
@@ -54,7 +61,7 @@ const DECAL_KINDS = new Set([
 const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring']);
 const ITEM_GROUND_MODELS = new Set([
   'ball', 'boots', 'coat', 'hood', 'vest', 'ring', 'necklace', 'key',
-  'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard'
+  'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard', 'food'
 ]);
 const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
 const DOOR_LEAVES = new Set(['north', 'south']);
@@ -63,6 +70,13 @@ const WALL_SIDES = new Set(['near', 'far']); // Which face of an opening a wall 
 // Iso facings for orientation-aware props (mirrors ORIENTS in PixelPrimitives.js).
 const PROP_ORIENTS = new Set(['se', 'sw', 'nw', 'ne']);
 const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
+const ACTOR_BODY_FRAMES = new Set(['feminine', 'masculine', 'androgynous']);
+const ACTOR_ANATOMY = new Set(['vulva', 'penis', 'smooth', 'intersex']);
+const ACTOR_SPRITE_IDS = new Set(SPRITE_ATLAS_IDS);
+const HUMAN_BODY_ID_SET = new Set(HUMAN_BODY_IDS);
+const HUMAN_OUTFIT_ID_SET = new Set(HUMAN_OUTFIT_IDS);
+const HUMAN_GEAR_ID_SET = new Set(HUMAN_GEAR_IDS);
+const HUMAN_ACCENT_ID_SET = new Set(HUMAN_ACCENT_IDS);
 const PRIMARY_ATTRIBUTE_IDS = new Set(PRIMARY_ATTRIBUTES.map((primary) => primary.id));
 const FIELD_RATING_IDS = new Set(FIELD_RATINGS.map((field) => field.id));
 const TRACE_STAGE_VALUES = new Set(TRACE_STAGES.map((stage) => stage.value));
@@ -280,6 +294,8 @@ function validateLevel(filePath, data) {
     if (!inBounds(data, point)) {
       errors.push(`${name}: enemy spawn (${point.x}, ${point.y}) is out of bounds.`);
     }
+    validateActorSpriteId(name, point.spriteId, 'spawns.enemies[].spriteId');
+    validateActorAppearance(name, point.appearance, 'spawns.enemies[].appearance');
     if (point.dialogue !== undefined) {
       validateDialogueReference(name, point.dialogue, 'spawns.enemies[].dialogue');
       if (typeof point.dialogue === 'string' && !levelDialogue.has(point.dialogue)) {
@@ -301,6 +317,8 @@ function validateLevel(filePath, data) {
     const actorId = point.actor ?? point.id;
     requireString(name, actorId, 'spawns.npcs[].actor');
     if (typeof actorId === 'string') referencedActorIds.add(actorId);
+    validateActorSpriteId(name, point.spriteId, 'spawns.npcs[].spriteId');
+    validateActorAppearance(name, point.appearance, 'spawns.npcs[].appearance');
     if (point.dialogue !== undefined) {
       validateDialogueReference(name, point.dialogue, 'spawns.npcs[].dialogue');
       if (typeof point.dialogue === 'string' && !levelDialogue.has(point.dialogue)) {
@@ -588,7 +606,10 @@ function validateActor(filePath, data) {
   requireString(name, data.name, 'name');
   requireString(name, data.type, 'type');
   if (typeof data.id === 'string') seenActorIds.add(data.id);
+  validateActorSpriteId(name, data.spriteId, 'spriteId');
   validateStats(name, data.stats);
+  validateActorAppearance(name, data.appearance);
+  validateActorTrade(name, data.trade);
   validateActorInventory(name, data.inventory);
   validateActorProgression(name, data.progression);
 }
@@ -599,8 +620,11 @@ function validateEnemy(filePath, data) {
   requireString(name, data.name, 'name');
   requireString(name, data.type, 'type');
   requireString(name, data.faction, 'faction');
+  validateActorSpriteId(name, data.spriteId, 'spriteId');
   validateStats(name, data.stats);
   validateLoot(name, data.loot);
+  validateActorAppearance(name, data.appearance);
+  validateActorTrade(name, data.trade);
   validateActorProgression(name, data.progression);
 
   if (data.faction === 'the-host') {
@@ -632,6 +656,100 @@ function validateItem(filePath, data) {
     }
   }
   if (typeof data.id === 'string') seenItemIds.add(data.id);
+}
+
+function validateActorAppearance(name, appearance, fieldName = 'appearance') {
+  if (appearance === undefined) return;
+  if (!appearance || typeof appearance !== 'object' || Array.isArray(appearance)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  if (appearance.bodyFrame !== undefined) {
+    requireString(name, appearance.bodyFrame, `${fieldName}.bodyFrame`);
+    if (typeof appearance.bodyFrame === 'string' && !ACTOR_BODY_FRAMES.has(appearance.bodyFrame)) {
+      errors.push(`${name}: ${fieldName}.bodyFrame must be one of ${[...ACTOR_BODY_FRAMES].join(', ')}.`);
+    }
+  }
+  if (appearance.anatomy !== undefined) {
+    requireString(name, appearance.anatomy, `${fieldName}.anatomy`);
+    if (typeof appearance.anatomy === 'string' && !ACTOR_ANATOMY.has(appearance.anatomy)) {
+      errors.push(`${name}: ${fieldName}.anatomy must be one of ${[...ACTOR_ANATOMY].join(', ')}.`);
+    }
+  }
+  if (appearance.body !== undefined) {
+    requireString(name, appearance.body, `${fieldName}.body`);
+    if (typeof appearance.body === 'string' && !HUMAN_BODY_ID_SET.has(appearance.body)) {
+      errors.push(`${name}: ${fieldName}.body must be one of ${[...HUMAN_BODY_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.outfit !== undefined) {
+    requireString(name, appearance.outfit, `${fieldName}.outfit`);
+    if (typeof appearance.outfit === 'string' && !HUMAN_OUTFIT_ID_SET.has(appearance.outfit)) {
+      errors.push(`${name}: ${fieldName}.outfit must be one of ${[...HUMAN_OUTFIT_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.accent !== undefined) {
+    requireString(name, appearance.accent, `${fieldName}.accent`);
+    if (typeof appearance.accent === 'string' && !HUMAN_ACCENT_ID_SET.has(appearance.accent)) {
+      errors.push(`${name}: ${fieldName}.accent must be one of ${[...HUMAN_ACCENT_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.gear !== undefined) {
+    if (!Array.isArray(appearance.gear)) {
+      errors.push(`${name}: ${fieldName}.gear must be an array.`);
+    } else {
+      const seenGear = new Set();
+      for (const [index, gearId] of appearance.gear.entries()) {
+        requireString(name, gearId, `${fieldName}.gear[${index}]`);
+        if (typeof gearId !== 'string') continue;
+        if (!HUMAN_GEAR_ID_SET.has(gearId)) {
+          errors.push(`${name}: ${fieldName}.gear[${index}] must be one of ${[...HUMAN_GEAR_ID_SET].join(', ')}.`);
+        } else if (seenGear.has(gearId)) {
+          errors.push(`${name}: ${fieldName}.gear contains duplicate "${gearId}".`);
+        }
+        seenGear.add(gearId);
+      }
+    }
+  }
+}
+
+function validateActorSpriteId(name, spriteId, fieldName) {
+  if (spriteId === undefined) return;
+  requireString(name, spriteId, fieldName);
+  if (typeof spriteId === 'string' && !ACTOR_SPRITE_IDS.has(spriteId)) {
+    errors.push(`${name}: ${fieldName} "${spriteId}" is not registered in the sprite atlas.`);
+  }
+}
+
+function validateActorTrade(name, trade) {
+  if (trade === undefined) return;
+  if (!trade || typeof trade !== 'object' || Array.isArray(trade)) {
+    errors.push(`${name}: trade must be an object.`);
+    return;
+  }
+  if (trade.title !== undefined) requireString(name, trade.title, 'trade.title');
+  if (trade.currency !== undefined) {
+    requireString(name, trade.currency, 'trade.currency');
+    if (typeof trade.currency === 'string') referencedItemIds.add(trade.currency);
+  }
+  if (!Array.isArray(trade.stock) || trade.stock.length === 0) {
+    errors.push(`${name}: trade.stock must be a non-empty array.`);
+    return;
+  }
+  for (const [index, entry] of trade.stock.entries()) {
+    requireString(name, entry?.item, `trade.stock[${index}].item`);
+    if (typeof entry?.item === 'string') referencedItemIds.add(entry.item);
+    requireNumber(name, entry?.price, `trade.stock[${index}].price`);
+    if (typeof entry?.price === 'number' && entry.price < 0) {
+      errors.push(`${name}: trade.stock[${index}].price must be zero or greater.`);
+    }
+    if (entry?.count !== undefined) {
+      requireNumber(name, entry.count, `trade.stock[${index}].count`);
+      if (typeof entry.count === 'number' && entry.count <= 0) {
+        errors.push(`${name}: trade.stock[${index}].count must be greater than zero.`);
+      }
+    }
+  }
 }
 
 function validateActorInventory(name, inventory) {

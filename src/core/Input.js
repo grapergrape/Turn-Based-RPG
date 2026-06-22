@@ -16,7 +16,7 @@ const KEY_TOKENS = {
   arrowright: 'right',
   d: 'right',
   enter: 'confirm',
-  ' ': 'confirm',
+  ' ': 'space',
   escape: 'cancel',
   e: 'interact',
   i: 'inventory',
@@ -78,7 +78,14 @@ export class Input {
   #onMouseDown(event) {
     event.preventDefault();
     const point = this.#toInternal(event);
-    if (point) this.pendingClick = { ...point, button: event.button };
+    if (point) {
+      this.pendingClick = {
+        ...point,
+        button: event.button,
+        shiftKey: event.shiftKey,
+        ctrlKey: event.ctrlKey || event.metaKey
+      };
+    }
   }
 
   #toInternal(event) {

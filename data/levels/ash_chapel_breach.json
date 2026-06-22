@@ -259,6 +259,12 @@
     "enemies": [
       {
         "id": "choir-throat-singer",
+        "appearance": {
+          "body": "lean",
+          "outfit": "choir-dark-robe",
+          "gear": ["throat-glass", "thin-pack"],
+          "accent": "dark-cowl"
+        },
         "x": 19,
         "y": 24,
         "spawnId": "entrance-throat-singer",
@@ -283,6 +289,12 @@
       },
       {
         "id": "choir-candle-bearer",
+        "appearance": {
+          "body": "average",
+          "outfit": "choir-red-robe",
+          "gear": ["candle-tray"],
+          "accent": "bone-cowl"
+        },
         "x": 21,
         "y": 24,
         "spawnId": "entrance-candle-bearer",
@@ -303,6 +315,12 @@
       },
       {
         "id": "choir-flesh-eater",
+        "appearance": {
+          "body": "heavy",
+          "outfit": "choir-red-robe",
+          "gear": ["sacrament-flesh"],
+          "accent": "dark-cowl"
+        },
         "x": 18,
         "y": 5,
         "encounter": "nave-rite",
@@ -320,6 +338,12 @@
       },
       {
         "id": "choir-candle-bearer",
+        "appearance": {
+          "body": "average",
+          "outfit": "choir-red-robe",
+          "gear": ["veil", "prayer-cord"],
+          "accent": "dark-cowl"
+        },
         "x": 22,
         "y": 5,
         "encounter": "nave-rite",
@@ -331,6 +355,12 @@
       },
       {
         "id": "choir-throat-singer",
+        "appearance": {
+          "body": "average",
+          "outfit": "choir-red-robe",
+          "gear": ["tally-tags", "bone-scroll"],
+          "accent": "bone-cowl"
+        },
         "x": 4,
         "y": 14,
         "encounter": "west-camp",
@@ -342,6 +372,12 @@
       },
       {
         "id": "choir-candle-bearer",
+        "appearance": {
+          "body": "broad",
+          "outfit": "choir-dark-robe",
+          "gear": ["rope-coil", "chain"],
+          "accent": "dark-cowl"
+        },
         "x": 5,
         "y": 16,
         "encounter": "west-camp",
@@ -353,6 +389,12 @@
       },
       {
         "id": "choir-throat-singer",
+        "appearance": {
+          "body": "old-stooped",
+          "outfit": "choir-dark-robe",
+          "gear": ["bone-scroll", "confessor-staff"],
+          "accent": "dark-cowl"
+        },
         "x": 33,
         "y": 10,
         "encounter": "east-watch",

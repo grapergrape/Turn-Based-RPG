@@ -190,6 +190,7 @@ export class Inventory {
         itemId,
         name: itemId ? this.displayName(itemId) : 'Empty',
         type: itemId ? this.itemDefs[itemId]?.type ?? 'item' : '',
+        groundModel: itemId ? this.itemDefs[itemId]?.groundModel ?? null : null,
         description: itemId ? this.itemDefs[itemId]?.description ?? '' : '',
         weight: itemId ? this.itemWeight(itemId) : 0,
         equipmentSlot: itemId ? this.equipmentSlotFor(itemId) : null,
@@ -226,28 +227,57 @@ export class Inventory {
       count,
       name: this.displayName(id),
       type: this.itemDefs[id]?.type ?? 'item',
+      groundModel: this.itemDefs[id]?.groundModel ?? null,
       description: this.itemDefs[id]?.description ?? '',
       weight: this.itemWeight(id),
       totalWeight: this.weightOf(id, count),
       equipmentSlot: this.equipmentSlotFor(id),
       canEquip: this.canEquip(id),
+      canUse: this.canUse(id),
       equippedCount: this.equippedCount(id),
       wornSlots: this.wornSlots(id)
     }));
   }
 
+  canUse(itemId) {
+    const itemDef = this.itemDefs[itemId] ?? {};
+    return this.has(itemId) && (itemDef.type === 'food' || itemDef.use?.effect === 'heal');
+  }
+
+  useItem(actor, itemId) {
+    if (!itemId || !this.has(itemId)) {
+      return `${this.displayName(itemId)} is not in the pack.`;
+    }
+    const itemDef = this.itemDefs[itemId] ?? {};
+    if (!this.canUse(itemId)) {
+      return `${this.displayName(itemId)} cannot be used.`;
+    }
+    if (!actor || actor.hp >= actor.maxHp) {
+      return 'No wounds need it.';
+    }
+
+    if (itemDef.type === 'food') {
+      const healed = actor.heal(1);
+      this.remove(itemId, 1);
+      return `You eat ${this.displayName(itemId)}. +${healed} HP (${actor.hp}/${actor.maxHp}).`;
+    }
+
+    if (itemDef.use?.effect === 'heal') {
+      const amount = Math.max(0, Math.floor(Number(itemDef.use.amount) || 0));
+      if (amount <= 0) return `${this.displayName(itemId)} has no clear use.`;
+      const healed = actor.heal(amount);
+      this.remove(itemId, 1);
+      return `You bind the wound. +${healed} HP (${actor.hp}/${actor.maxHp}).`;
+    }
+
+    return `${this.displayName(itemId)} cannot be used.`;
+  }
+
   // Use a Field Dressing on `actor`: restores 4 HP, consumed, capped at maxHp.
   // Returns a log line describing what happened (or why it could not be used).
   useFieldDressing(actor) {
-    if (!this.has('field-dressing')) {
-      return 'No field dressing in the pack.';
-    }
-    if (actor.hp >= actor.maxHp) {
-      return 'No wounds to dress.';
-    }
-    const healed = actor.heal(4);
-    this.remove('field-dressing', 1);
-    return `You bind the wound. +${healed} HP (${actor.hp}/${actor.maxHp}).`;
+    if (!this.has('field-dressing')) return 'No field dressing in the pack.';
+    return this.useItem(actor, 'field-dressing');
   }
 
   // Compact one-line summary for the status panel.

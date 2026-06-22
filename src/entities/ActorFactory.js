@@ -20,6 +20,8 @@ export function createActor(data, position) {
     attacks: data.attacks ?? [],
     inspect: data.inspect ?? null,
     loot: data.loot ?? [],
+    trade: data.trade ?? null,
+    appearance: data.appearance ?? null,
     progression: data.progression ?? defaultProgressionFor(data),
     position
   });

@@ -5,6 +5,10 @@
   "faction": "holy-remnant",
   "role": "Cult-Breaker, Ashen Censure",
   "background": "A field agent of the Ashen Censure, the Holy Remnant's quiet office for hunting and burning blasphemous Host-cults along the ash roads. Years of it now: find the cell, end it, bury whoever the Censure sent with you last time, move on. No one thanks a cult-breaker, and the cults never stop coming. Lately there are more of them than there should be, and no one in the Office will say why.",
+  "appearance": {
+    "bodyFrame": "feminine",
+    "anatomy": "vulva"
+  },
   "progression": {
     "level": 1,
     "xp": 0,

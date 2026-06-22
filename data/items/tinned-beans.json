@@ -1,0 +1,9 @@
+{
+  "id": "tinned-beans",
+  "name": "Tinned Beans",
+  "type": "food",
+  "weight": 0.3,
+  "groundModel": "food",
+  "description": "A dented tin from a road store. Restores 1 HP. Consumed on use.",
+  "use": { "effect": "heal", "amount": 1 }
+}

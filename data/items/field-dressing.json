@@ -4,6 +4,6 @@
   "type": "consumable",
   "weight": 0.2,
   "groundModel": "dressing",
-  "description": "A sealed sterile dressing. Press H to bind a wound and restore 4 HP. Consumed on use.",
+  "description": "A sealed sterile dressing. Restores 4 HP. Consumed on use.",
   "use": { "effect": "heal", "amount": 4 }
 }
