@@ -32,6 +32,8 @@ const KEY_TOKENS = {
   j: 'journal'
 };
 
+const MOVE_TOKENS = new Set(['up', 'down', 'left', 'right']);
+
 export class Input {
   constructor(canvas) {
     this.canvas = canvas;
@@ -68,7 +70,7 @@ export class Input {
     if (!token) return;
     event.preventDefault();
     this.keys.add(event.key.toLowerCase());
-    this.actions.push(token);
+    this.actions.push(event.shiftKey && MOVE_TOKENS.has(token) ? `sprint-${token}` : token);
   }
 
   #onMouseMove(event) {

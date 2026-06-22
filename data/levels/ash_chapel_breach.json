@@ -50,7 +50,6 @@
     "ash-chapel-warden-safe",
     "ash-chapel-warden-safe-locked",
     "ash-chapel-choir-sigil",
-    "ash-chapel-bell-rope",
     "ash-chapel-cult-victim",
     "ash-chapel-dead-guard",
     "ash-chapel-penitent-corpse",
@@ -68,6 +67,13 @@
     "ash-chapel-catacombs-eda"
   ],
   "enemyAggroRadius": 2,
+  "enemyVisionRadius": 7,
+  "enemyVisionCone": 110,
+  "enemyHearingRadius": {
+    "low": 3,
+    "medium": 5,
+    "high": 10
+  },
   "combatTriggers": [
     {
       "id": "nave-rite-trigger",
@@ -121,7 +127,7 @@
     "questUpdate": {
       "quest": "investigate-ash-chapel-cult",
       "stage": "cult-broken",
-      "log": "Quest updated: the Ash Chapel cell is broken. Ring the chapel bell before you follow the wall road."
+      "log": "Quest updated: the Ash Chapel cell is broken. Ring the basement bell before you follow the wall road."
     }
   },
   "codex": [
@@ -197,11 +203,11 @@
   "tiles": [
     "##############W##W##W##W##W#############",
     "############................############",
-    "############................###.....####",
-    "############........................####",
-    "############................###.....####",
-    "############................###.....####",
-    "############................###.....####",
+    "############................############",
+    "############...................#########",
+    "############................############",
+    "############................############",
+    "############................############",
     "############rrrrrrr..rrrrrrr############",
     "#########......................#########",
     "#########......................#......##",
@@ -363,7 +369,23 @@
         },
         "x": 4,
         "y": 14,
+        "facing": "ne",
         "encounter": "west-camp",
+        "perception": {
+          "visionRadius": 8,
+          "coneDegrees": 115,
+          "ratingBonus": 8
+        },
+        "patrol": {
+          "mode": "loop",
+          "delay": 1.4,
+          "path": [
+            { "x": 4, "y": 14 },
+            { "x": 5, "y": 13 },
+            { "x": 6, "y": 12 },
+            { "x": 5, "y": 13 }
+          ]
+        },
         "ambient": [
           "The wall bells have gone quiet. Quiet gates hear better.",
           "Sing low, or the road wardens hear us.",
@@ -380,7 +402,12 @@
         },
         "x": 5,
         "y": 16,
+        "facing": "nw",
         "encounter": "west-camp",
+        "perception": {
+          "visionRadius": 6,
+          "coneDegrees": 110
+        },
         "ambient": [
           "Hold the bowl with both hands.",
           "The fire is never warm enough down here.",
@@ -658,32 +685,6 @@
       "blocking": true
     },
     {
-      "kind": "bell-rope",
-      "x": 33,
-      "y": 4,
-      "name": "Bell Rope",
-      "interact": {
-        "type": "bell",
-        "dialogue": "ash-chapel-bell-rope",
-        "log": "The rope drops from a square of black ceiling above the bell chamber."
-      }
-    },
-    {
-      "kind": "candle-cluster",
-      "x": 31,
-      "y": 5
-    },
-    {
-      "kind": "floor-crack",
-      "x": 32,
-      "y": 3
-    },
-    {
-      "kind": "dust",
-      "x": 35,
-      "y": 5
-    },
-    {
       "kind": "ritual-bowl",
       "x": 18,
       "y": 3
@@ -795,12 +796,6 @@
         "dialogue": "ash-chapel-confession-scratch",
         "log": "Someone has scratched words into the column, under the old whitewash."
       }
-    },
-    {
-      "kind": "broken-bell",
-      "x": 11,
-      "y": 8,
-      "blocking": true
     },
     {
       "kind": "saint-statue",

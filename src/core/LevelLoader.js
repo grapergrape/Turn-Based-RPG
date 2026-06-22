@@ -73,6 +73,27 @@ function mergeActorAppearance(base, override) {
   return { ...(base ?? {}), ...override };
 }
 
+function clonePoint(point) {
+  return { x: point.x, y: point.y };
+}
+
+function normalizePatrol(spawn, index) {
+  const authored = Array.isArray(spawn.patrol)
+    ? { path: spawn.patrol }
+    : spawn.patrol;
+  if (!authored || typeof authored !== 'object' || !Array.isArray(authored.path) || authored.path.length < 2) {
+    return null;
+  }
+  return {
+    path: authored.path.map(clonePoint),
+    mode: authored.mode ?? 'loop',
+    delay: authored.delay ?? 1.6,
+    index: 0,
+    direction: 1,
+    timer: (authored.delay ?? 1.6) + (index % 3) * 0.35
+  };
+}
+
 // Map a non-walkable legend entry to a renderer prop kind. Any block kind the
 // sprite catalog knows (wall, wall-broken, wall-window, ...) passes straight
 // through; an unnamed entry falls back to a plain wall block.
@@ -135,6 +156,9 @@ export async function loadLevel(levelPath) {
     enemy.spawnId = spawn.spawnId ?? `${spawn.id}-${index}`;
     enemy.encounter = spawn.encounter ?? enemy.spawnId;
     enemy.aggroRadius = spawn.aggroRadius ?? level.enemyAggroRadius ?? null;
+    enemy.facing = spawn.facing ?? enemy.facing;
+    enemy.perception = spawn.perception ? JSON.parse(JSON.stringify(spawn.perception)) : null;
+    enemy.patrol = normalizePatrol(spawn, index);
     enemy.dialogue = spawn.dialogue ?? null;
     enemy.dialogueRepeat = Boolean(spawn.dialogueRepeat);
     enemy.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
@@ -236,6 +260,9 @@ export async function loadLevel(levelPath) {
     codex: Array.isArray(level.codex) ? level.codex : [],
     journalNotes: Array.isArray(level.journalNotes) ? level.journalNotes : [],
     hiddenRegions: Array.isArray(level.hiddenRegions) ? level.hiddenRegions : [],
+    enemyVisionRadius: level.enemyVisionRadius ?? null,
+    enemyVisionCone: level.enemyVisionCone ?? null,
+    enemyHearingRadius: level.enemyHearingRadius ?? null,
     combatIntro: level.combatIntro ?? [],
     combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
     victoryLog: level.victoryLog ?? null,

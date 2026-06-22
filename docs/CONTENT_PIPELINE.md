@@ -374,6 +374,47 @@ Search rules:
   `flagsAbsent` to show NPCs only after a run-state change.
 - Enemy spawns can define `ambient` as short overheard lines. These draw as
   subtitles above the NPC during exploration when the player is nearby.
+- Enemy spawns can define `facing`, `perception`, and `patrol` for exploration
+  awareness. Facing uses the eight actor facings: `e`, `se`, `s`, `sw`, `w`,
+  `nw`, `n`, and `ne`. `perception.visionRadius` is measured in tiles,
+  `perception.coneDegrees` sets the forward vision cone, and sight uses the same
+  blocking rules as movement, so walls, closed doors, and blocking props stop
+  vision. Suspicious actions use the player's Stealth field against a DC derived
+  from the action severity and the observer's Search rating. Low suspicion starts
+  near 50, medium near 60, and high near 75 before observer bonuses. Optional
+  `perception.ratingBonus`, `perception.dcBonus`, and `perception.hearingRadius`
+  tune special guards without changing the engine. A level can set defaults with
+  `enemyVisionRadius`, `enemyVisionCone`, and `enemyHearingRadius`.
+
+```json
+{
+  "id": "choir-throat-singer",
+  "x": 4,
+  "y": 14,
+  "facing": "ne",
+  "encounter": "west-camp",
+  "perception": {
+    "visionRadius": 8,
+    "coneDegrees": 115,
+    "ratingBonus": 8
+  },
+  "patrol": {
+    "mode": "loop",
+    "delay": 1.4,
+    "path": [
+      { "x": 4, "y": 14 },
+      { "x": 5, "y": 13 },
+      { "x": 6, "y": 12 },
+      { "x": 5, "y": 13 }
+    ]
+  }
+}
+```
+
+- `patrol.path` needs at least two walkable points. `mode` can be `loop` or
+  `pingpong`; `delay` is seconds between patrol steps. Investigation uses the
+  same movement pathing toward the last suspicious tile, then the enemy resumes
+  the authored patrol.
 - Enemy spawns can define `dialogue` to make a living enemy talkable in explore
   mode. The id must also appear in the level `dialogue` list so the loader brings
   the scene in. Optional `talkRadius` controls manual E/Enter reach, and optional

@@ -72,6 +72,16 @@ import {
   isTargetInReach,
   resolveInteractionTargetAtCell
 } from '../world/InteractionTargeting.js';
+import {
+  SUSPICION_SEVERITY,
+  SUSPICION_STATES,
+  hasLineOfSight,
+  nextSuspicionState,
+  noticeSuspiciousAction,
+  resolveStealthCheck,
+  suspicionStateRank,
+  tileDistance
+} from '../world/PerceptionSystem.js';
 import { IsometricRenderer } from '../render/IsometricRenderer.js';
 import { bakeHumanAppearance, bakeMara, isHumanAppearance, spriteIdForHumanAppearance } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
@@ -111,6 +121,9 @@ const WALK_FRAMES = 8;
 const ATTACK_FRAMES = 6;
 const HIT_FRAMES = 4;
 const DEATH_FRAMES = 10;
+const PATROL_STEP_DELAY = 1.6;
+const INVESTIGATE_STEP_DELAY = 0.7;
+const SPRINT_PREFIX = 'sprint-';
 
 const DIRS = {
   up: { x: 0, y: -1 },
@@ -345,7 +358,8 @@ export class Game {
     this.areaTitleTimer = AREA_TITLE_DURATION;
     this.#log(level.intro || level.name);
     this.#startQuests(previousQuestStages, previousQuestReached);
-    this.#log('Explore the chapel. Click to move or inspect. I pack, J journal, H bind wounds.');
+    this.#log('Explore the chapel. Click to move or inspect. Shift with movement sprints.');
+    this.#log('I pack, J journal, H bind wounds.');
     if (bootOptions.skipIntro) this.introSeen = true;
 
     // The opening writ plays once, on a fresh start (not on level transitions
@@ -424,7 +438,10 @@ export class Game {
     }
 
     // Continue walking a queued click-to-move path when otherwise idle.
-    if (!this.moving) this.#stepAlongPath();
+    if (!this.moving) {
+      this.#stepAlongPath();
+      if (!this.moving) this.#advanceEnemyPatrols(dt);
+    }
   }
 
   // ---- Opening writ (intro) ----------------------------------------------
@@ -479,10 +496,15 @@ export class Game {
   #handleExplore(actions, click) {
     if (click) this.#handleExploreClick(click);
     for (const action of actions) {
-      if (DIRS[action]) {
+      const movement = this.#movementAction(action);
+      if (movement) {
         this.pendingExploreTarget = null;
         this.pathQueue = []; // manual step overrides any click path
-        this.#tryStep(this.player, DIRS[action], { logBlock: true });
+        if (this.#tryStep(this.player, movement.dir, { logBlock: true })) {
+          this.player.pendingSuspicionSeverity = movement.sprint
+            ? SUSPICION_SEVERITY.MEDIUM
+            : SUSPICION_SEVERITY.LOW;
+        }
         return; // one step per update; trigger check runs on completion
       }
       switch (action) {
@@ -648,6 +670,8 @@ export class Game {
   #interactWithCorpse(enemy) {
     if (!enemy) return;
     if (this.#lootSourceHasItems({ sourceType: 'enemy', source: enemy })) {
+      this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
+      if (this.mode !== 'explore') return;
       this.#openLootScreen({ title: enemy.name, sourceType: 'enemy', source: enemy });
       return;
     }
@@ -1126,6 +1150,12 @@ export class Game {
   #openObjectLootScreen(object) {
     const descriptor = object?.interact ?? {};
     for (const line of [].concat(descriptor.log ?? []).filter(Boolean)) this.#log(line);
+    if (descriptor.type === 'container') {
+      this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'opening-container');
+    } else if (descriptor.type === 'corpse') {
+      this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
+    }
+    if (this.mode !== 'explore') return;
     this.#openLootScreen({
       title: this.#objectName(object),
       sourceType: 'object',
@@ -1215,6 +1245,8 @@ export class Game {
     }
     this.#syncInventoryOrder();
     if (summary) this.#log(`Recovered: ${summary}.`);
+    this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
+    if (this.mode !== 'explore') return;
     this.#finalizeLootIfEmpty();
   }
 
@@ -1236,6 +1268,8 @@ export class Game {
     this.#setLootEntryCount(rawIndex, Math.max(0, (raw.count ?? 1) - amount));
     this.#syncInventoryOrder();
     this.#log(`Recovered: ${amount}x ${this.inventory.displayName(raw.item)}.`);
+    this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
+    if (this.mode !== 'explore') return true;
     this.#finalizeLootIfEmpty();
     return true;
   }
@@ -2474,10 +2508,11 @@ export class Game {
   #handlePlayerCombat(actions, click) {
     if (click) this.#handleClickMove(click, true);
     for (const action of actions) {
-      if (DIRS[action]) {
+      const movement = this.#movementAction(action);
+      if (movement) {
         this.pathQueue = [];
         if (this.player.ap >= this.player.moveCost) {
-          const moved = this.#tryStep(this.player, DIRS[action], { logBlock: false });
+          const moved = this.#tryStep(this.player, movement.dir, { logBlock: false });
           if (moved) {
             this.player.ap -= this.player.moveCost;
             return;
@@ -2560,6 +2595,7 @@ export class Game {
       this.#log('Target is out of range.');
       return;
     }
+    if (attack.range > 1) this.#registerSuspiciousAction(SUSPICION_SEVERITY.HIGH, 'firing');
     this.#faceToward(this.player, target.position);
     const result = this.combat.performAttack(this.player, target, attack);
     for (const line of result.logs) this.#log(line);
@@ -2829,8 +2865,15 @@ export class Game {
 
   #onStepComplete(actor) {
     if (actor === this.player && this.mode === 'explore') {
+      const severity = this.player.pendingSuspicionSeverity ?? SUSPICION_SEVERITY.LOW;
+      this.player.pendingSuspicionSeverity = null;
+      this.#registerSuspiciousAction(severity, 'movement');
+      if (this.mode !== 'explore') return;
       this.#checkCombatProximity();
+      if (this.mode !== 'explore') return;
       this.#tryCompletePendingExploreTarget();
+    } else if (actor?.type === 'enemy' && this.mode === 'explore') {
+      this.#registerSuspiciousAction(SUSPICION_SEVERITY.MEDIUM, 'patrol');
     }
   }
 
@@ -2856,11 +2899,206 @@ export class Game {
       if (enemy.isDead || this.clearedEncounters.has(encounterId)) continue;
       if (this.#isCellHidden(enemy.position.x, enemy.position.y)) continue;
       const radius = enemy.aggroRadius ?? TRIGGER_RADIUS;
-      if (manhattan(this.player.position, enemy.position) <= radius) {
+      if (radius > 0 && manhattan(this.player.position, enemy.position) <= radius && this.#enemyAggroLineClear(enemy)) {
         this.#startCombat(encounterId);
         return;
       }
     }
+  }
+
+  #registerSuspiciousAction(severity = SUSPICION_SEVERITY.LOW, action = 'movement') {
+    const canAlertInCombat = this.mode === 'combat' && action === 'firing';
+    if ((this.mode !== 'explore' && !canAlertInCombat) || !this.player || this.player.isDead) return false;
+    const notices = [];
+    for (const enemy of this.enemies) {
+      if (!this.#canEnemyNoticeSuspicion(enemy)) continue;
+      const notice = noticeSuspiciousAction(enemy, this.player, {
+        severity,
+        grid: this.grid,
+        hiddenTiles: this.hiddenTiles,
+        defaults: this.#perceptionDefaults()
+      });
+      if (!notice.noticed) continue;
+      notices.push({ enemy, notice });
+    }
+    if (!notices.length) return false;
+
+    notices.sort((a, b) =>
+      (a.notice.reason === 'seen' ? 0 : 1) - (b.notice.reason === 'seen' ? 0 : 1) ||
+      a.notice.distance - b.notice.distance ||
+      suspicionStateRank(b.enemy.suspicionState) - suspicionStateRank(a.enemy.suspicionState)
+    );
+
+    const stealthRating = this.#fieldRating('stealth');
+    for (const { enemy, notice } of notices) {
+      const observerRating = this.#enemyPerceptionRating(enemy, notice.perception);
+      const check = resolveStealthCheck({
+        severity,
+        stealthRating,
+        observerRating,
+        perception: notice.perception
+      });
+      const nextState = nextSuspicionState({
+        severity,
+        success: check.success,
+        currentState: enemy.suspicionState
+      });
+      if (!check.success) this.#faceToward(enemy, this.player.position);
+      if (this.#applySuspicionState(enemy, nextState, { action, severity, notice, check })) {
+        return true;
+      }
+    }
+    return true;
+  }
+
+  #canEnemyNoticeSuspicion(enemy) {
+    if (!enemy || enemy.isDead) return false;
+    const encounterId = this.#resolveEncounterId(enemy.encounter);
+    if (this.mode === 'combat' && this.activeEncounter && encounterId === this.#resolveEncounterId(this.activeEncounter)) {
+      return false;
+    }
+    if (this.clearedEncounters.has(encounterId)) return false;
+    if (this.#isCellHidden(enemy.position.x, enemy.position.y)) return false;
+    if (enemy.aggroRadius === 0 && enemy.dialogue && !enemy.perception) return false;
+    return true;
+  }
+
+  #applySuspicionState(enemy, nextState, { action, notice } = {}) {
+    const previous = enemy.suspicionState ?? SUSPICION_STATES.CALM;
+    if (suspicionStateRank(nextState) <= suspicionStateRank(previous)) {
+      if (nextState === SUSPICION_STATES.INVESTIGATING) {
+        enemy.investigationTarget = { ...this.player.position };
+      }
+      return false;
+    }
+
+    enemy.suspicionState = nextState;
+    enemy.suspicionAction = action;
+    enemy.suspicionReason = notice?.reason ?? null;
+    if (nextState === SUSPICION_STATES.WATCHING) {
+      enemy.investigationTarget = { ...this.player.position };
+      this.#log(`${enemy.name} pauses and listens.`);
+      return false;
+    }
+    if (nextState === SUSPICION_STATES.INVESTIGATING) {
+      enemy.investigationTarget = { ...this.player.position };
+      enemy.patrolTimer = 0;
+      this.#log(`${enemy.name} moves to check the noise.`);
+      return false;
+    }
+    if (nextState === SUSPICION_STATES.ALERTED) {
+      this.#log(`${enemy.name} raises the alarm.`);
+      this.#alertEnemy(enemy);
+      return true;
+    }
+    return false;
+  }
+
+  #alertEnemy(enemy) {
+    if (this.mode === 'combat' && this.activeEncounter) {
+      const active = this.#resolveEncounterId(this.activeEncounter);
+      if (this.#resolveEncounterId(enemy.encounter) !== active) {
+        enemy.encounter = active;
+        if (!this.turnManager.order.includes(enemy)) {
+          enemy.resetAp();
+          this.turnManager.order.push(enemy);
+        }
+        this.#log(`${enemy.name} joins the fight.`);
+      }
+      return;
+    }
+    this.#closeUiScreen();
+    this.#startCombat(enemy.encounter);
+  }
+
+  #enemyPerceptionRating(enemy, perception = null) {
+    const field = FIELD_RATINGS.find((entry) => entry.id === 'search');
+    const base = field ? calculateFieldRating(normalizeProgression(enemy.progression), field) : 0;
+    return base + (perception?.ratingBonus ?? 0);
+  }
+
+  #perceptionDefaults() {
+    return {
+      visionRadius: this.level?.enemyVisionRadius ?? null,
+      coneDegrees: this.level?.enemyVisionCone ?? null,
+      hearingRadius: this.level?.enemyHearingRadius ?? null
+    };
+  }
+
+  #enemyAggroLineClear(enemy) {
+    if (this.#isCellHidden(this.player.position.x, this.player.position.y)) return false;
+    return hasLineOfSight(enemy.position, this.player.position, { grid: this.grid });
+  }
+
+  #advanceEnemyPatrols(dt) {
+    if (this.mode !== 'explore' || this.uiScreen || this.moving || this.pathQueue.length > 0) return;
+    for (const enemy of this.enemies) {
+      if (enemy.isDead || this.#isCellHidden(enemy.position.x, enemy.position.y)) continue;
+      const moveTarget = this.#enemyExploreMoveTarget(enemy);
+      if (!moveTarget) continue;
+
+      const delay = moveTarget.delay ?? PATROL_STEP_DELAY;
+      enemy.patrolTimer = (enemy.patrolTimer ?? enemy.patrol?.timer ?? delay) - dt;
+      if (enemy.patrolTimer > 0) continue;
+
+      if (this.#moveEnemyTowardExploreTarget(enemy, moveTarget)) {
+        enemy.patrolTimer = delay;
+        return;
+      }
+      enemy.patrolTimer = delay;
+    }
+  }
+
+  #enemyExploreMoveTarget(enemy) {
+    if (enemy.suspicionState === SUSPICION_STATES.INVESTIGATING && enemy.investigationTarget) {
+      const target = enemy.investigationTarget;
+      if (tileDistance(enemy.position, target) <= 1) {
+        enemy.suspicionState = SUSPICION_STATES.WATCHING;
+        enemy.investigationTarget = null;
+        return null;
+      }
+      return { target, adjacent: true, delay: INVESTIGATE_STEP_DELAY };
+    }
+
+    const patrol = enemy.patrol;
+    if (!patrol || !Array.isArray(patrol.path) || patrol.path.length < 2) return null;
+    let target = patrol.path[patrol.index ?? 0];
+    if (target && enemy.position.x === target.x && enemy.position.y === target.y) {
+      this.#advancePatrolIndex(enemy);
+      target = patrol.path[patrol.index ?? 0];
+    }
+    if (!target) return null;
+    return { target, adjacent: false, delay: patrol.delay ?? PATROL_STEP_DELAY };
+  }
+
+  #advancePatrolIndex(enemy) {
+    const patrol = enemy.patrol;
+    if (!patrol || !Array.isArray(patrol.path) || patrol.path.length < 2) return;
+    if (patrol.mode === 'pingpong') {
+      const direction = patrol.direction === -1 ? -1 : 1;
+      let next = (patrol.index ?? 0) + direction;
+      if (next >= patrol.path.length || next < 0) {
+        patrol.direction = direction * -1;
+        next = (patrol.index ?? 0) + patrol.direction;
+      }
+      patrol.index = Math.max(0, Math.min(patrol.path.length - 1, next));
+      return;
+    }
+    patrol.index = ((patrol.index ?? 0) + 1) % patrol.path.length;
+  }
+
+  #moveEnemyTowardExploreTarget(enemy, moveTarget) {
+    const occupied = this.#occupiedSet(enemy);
+    const path = moveTarget.adjacent
+      ? findPathToAdjacent(this.grid, enemy.position, moveTarget.target, occupied)
+      : findPath(this.grid, enemy.position, moveTarget.target, occupied);
+    if (!path || path.length === 0) return false;
+    const step = path[0];
+    const dir = {
+      x: Math.sign(step.x - enemy.position.x),
+      y: Math.sign(step.y - enemy.position.y)
+    };
+    return this.#tryStep(enemy, dir, { logBlock: false });
   }
 
   // ---- Animation & effects ----------------------------------------------
@@ -2984,6 +3222,15 @@ export class Game {
   }
 
   // ---- Helpers -----------------------------------------------------------
+
+  #movementAction(action) {
+    if (DIRS[action]) return { dir: DIRS[action], sprint: false };
+    if (typeof action === 'string' && action.startsWith(SPRINT_PREFIX)) {
+      const base = action.slice(SPRINT_PREFIX.length);
+      if (DIRS[base]) return { dir: DIRS[base], sprint: true };
+    }
+    return null;
+  }
 
   #isOccupied(x, y, exclude) {
     return this.actors.some(
