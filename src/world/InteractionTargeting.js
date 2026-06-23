@@ -16,6 +16,10 @@ function canSearchCorpse(enemy) {
   return Boolean(enemy?.isDead && (enemy.inspect || (Array.isArray(enemy.loot) && enemy.loot.length > 0)));
 }
 
+function isHostileActor(actor, enemies) {
+  return actor?.type === 'enemy' || enemies.includes(actor);
+}
+
 function groundItemAt(interactables, cell) {
   return interactables.find((entry) =>
     !entry.consumed && entry.interact?.type === 'ground-item' && sameCell(entry, cell)
@@ -49,6 +53,7 @@ export function resolveInteractionTargetAtCell({
     if (actor === player) return { type: 'self', actor, cell };
     if (mode === 'combat') return { type: 'combatant', actor, cell };
     if (canTalk(actor)) return { type: 'talk', actor, cell };
+    if (isHostileActor(actor, enemies)) return { type: 'hostile', actor, cell };
     return { type: 'actor', actor, cell };
   }
 

@@ -21,12 +21,14 @@ export class CombatSystem {
   }
 
   // Apply an attack. Returns { logs, effect } describing what happened.
-  performAttack(attacker, target, attack) {
-    attacker.ap -= attack.apCost;
+  performAttack(attacker, target, attack, options = {}) {
+    if (options.spendAp !== false) attacker.ap -= attack.apCost;
     attacker.render.state = 'attack';
     attacker.render.timer = 0;
 
-    const killed = target.takeDamage(attack.damage);
+    const multiplier = Number.isFinite(options.damageMultiplier) ? options.damageMultiplier : 1;
+    const damage = Math.max(0, Math.round(attack.damage * multiplier));
+    const killed = target.takeDamage(damage);
     target.render.state = killed ? 'dead' : 'hit';
     target.render.timer = 0;
 
@@ -36,12 +38,13 @@ export class CombatSystem {
       x: target.position.x,
       y: target.position.y,
       age: 0,
-      text: `-${attack.damage}`
+      text: `-${damage}`
     };
 
-    const logs = [
-      `${attacker.name} ${ranged ? 'fires' : 'strikes'}: ${attack.damage} damage to ${target.name}.`
-    ];
+    const verb = ranged ? 'fires' : 'strikes';
+    const logs = options.opening === 'sneak'
+      ? [`Sneak attack: ${attacker.name} ${verb} for ${damage} damage to ${target.name}.`]
+      : [`${attacker.name} ${verb}: ${damage} damage to ${target.name}.`];
     if (killed) logs.push(`${target.name} falls.`);
 
     return { logs, effect };

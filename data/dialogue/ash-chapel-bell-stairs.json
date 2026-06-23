@@ -1,0 +1,32 @@
+{
+  "id": "ash-chapel-bell-stairs",
+  "title": "Bell Stair Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The service door is narrow enough to make armor scrape stone. Cold air moves down the stair with dust in it.",
+        "Above, the chapel bell hangs quiet."
+      ],
+      "choices": [
+        {
+          "label": "Climb to the bell room",
+          "effects": {
+            "log": "You climb the wall stair toward the bell room.",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_bell_room.json",
+              "player": { "x": 7, "y": 8 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in the chapel",
+          "effects": {
+            "log": "You leave the bell stair alone."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

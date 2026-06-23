@@ -17,6 +17,22 @@
           "next": "road"
         },
         {
+          "label": "Ask about bell repairs",
+          "conditions": {
+            "flag": "ash-chapel-cult-broken",
+            "notFlag": "ash-chapel-bell-repaired"
+          },
+          "effects": {
+            "setFlag": "tomas-bell-repair-known",
+            "questUpdate": {
+              "quest": "investigate-ash-chapel-cult",
+              "stage": "bell-hand-known",
+              "log": "Quest updated: Tomas can repair the chapel bell if you bring him to the frame."
+            }
+          },
+          "next": "bell-repair"
+        },
+        {
           "label": "Ask why he listened to Selka",
           "next": "selka"
         },
@@ -76,6 +92,105 @@
         {
           "label": "Leave",
           "close": true
+        }
+      ]
+    },
+    "bell-repair": {
+      "conditions": {
+        "flag": "tomas-at-bell"
+      },
+      "else": "bell-repair-before",
+      "effects": {
+        "setFlag": "tomas-bell-repair-known"
+      },
+      "lines": [
+        "\"Give me room at the frame. The old pin split clean, which means some tidy monster wanted this bell quiet.\"",
+        "\"Let me set it before you pull that rope. If it tears loose, it takes fingers with it.\""
+      ],
+      "choices": [
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "bell-repair-before": {
+      "effects": {
+        "setFlag": "tomas-bell-repair-known"
+      },
+      "lines": [
+        "\"I kept the gate pulleys alive when the wardens still paid in soup and threats.\"",
+        "\"Find me at the bell frame once the stair is safe. If the clapper pin is missing, I can make old iron remember its job.\""
+      ],
+      "choices": [
+        {
+          "label": "Come fix it now",
+          "conditions": {
+            "flags": [
+              "ash-chapel-cult-broken",
+              "survivors-returning-chapel"
+            ],
+            "flagsAbsent": [
+              "ash-chapel-bell-repaired",
+              "tomas-heading-to-bell",
+              "tomas-at-bell"
+            ]
+          },
+          "effects": {
+            "setFlag": "tomas-bell-repair-known",
+            "questUpdate": {
+              "quest": "investigate-ash-chapel-cult",
+              "stage": "bell-hand-known",
+              "log": "Quest updated: Tomas can repair the chapel bell if you bring him to the frame."
+            }
+          },
+          "next": "send-to-bell"
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "send-to-bell": {
+      "lines": [
+        "\"You cleared the stair? Then stop asking politely. Show me the old frame.\"",
+        "\"If it is only pin and wedge, I can make it answer. If it bites me, tell Selka I was useful once.\""
+      ],
+      "choices": [
+        {
+          "label": "Bring him to the bell",
+          "effects": {
+            "setFlag": "tomas-heading-to-bell",
+            "log": "Tomas grabs his tool roll and runs for the wall stair.",
+            "moveActor": {
+              "target": "speaker",
+              "path": [
+                {
+                  "x": 29,
+                  "y": 3
+                }
+              ],
+              "removeOnComplete": true,
+              "onComplete": {
+                "setFlag": "tomas-reached-bell-stair",
+                "log": "Tomas reaches the bell stair and disappears upward."
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Wait",
+          "next": "start"
         }
       ]
     },
@@ -167,6 +282,26 @@
       ]
     },
     "next-run": {
+      "conditions": {
+        "flag": "ash-chapel-bell-repaired"
+      },
+      "else": "next-run-before",
+      "lines": [
+        "\"Hallowfen checkpoint is the next bad mile.\"",
+        "\"If the wall still has honest ears, make them listen before the Choir does. Good luck, cult-breaker.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true
+        },
+        {
+          "label": "Back to other questions",
+          "next": "start"
+        }
+      ]
+    },
+    "next-run-before": {
       "lines": [
         "\"If Selka lets me, I watch the road by daylight and mark what is missing.\"",
         "\"If she does not, I will watch it anyway from somewhere she cannot see. I remain a fool. I am only becoming a supervised one.\""

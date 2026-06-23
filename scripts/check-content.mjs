@@ -275,6 +275,7 @@ function validateLevel(filePath, data) {
   requireNumber(name, data.height, 'height');
   requireNumber(name, data.tileSize, 'tileSize');
   validateTiles(name, data);
+  validateBarkCollection(name, data.combatStartBarks, 'combatStartBarks');
 
   const player = data.spawns?.player;
   if (!player) {
@@ -342,6 +343,7 @@ function validateLevel(filePath, data) {
     if (point.talkRadius !== undefined) {
       requireNumber(name, point.talkRadius, 'spawns.npcs[].talkRadius');
     }
+    validateSpawnPatrol(name, data, point, 'spawns.npcs[]');
   }
 
   for (const id of REQUIRED_QUEST_IDS) {
@@ -370,7 +372,10 @@ function validateLevel(filePath, data) {
     validateDoorObject(name, object);
   }
   validateHiddenRegions(name, data, objects);
-  validateEnemyPatrolReachability(name, data, enemies, objects);
+  validatePatrolReachability(name, data, [
+    ...enemies.map((spawn) => ({ spawn, label: `enemy "${spawn.id}"` })),
+    ...npcs.map((spawn) => ({ spawn, label: `npc "${spawn.actor ?? spawn.id}"` }))
+  ], objects);
   if (data.groundItems !== undefined) {
     if (!Array.isArray(data.groundItems)) {
       errors.push(`${name}: groundItems must be an array.`);
@@ -506,11 +511,24 @@ function validateSpawnPatrol(name, data, spawn, fieldName) {
     }
   }
   if (patrol.delay !== undefined) {
-    requireNumber(name, patrol.delay, `${fieldName}.patrol.delay`);
-    if (typeof patrol.delay === 'number' && patrol.delay <= 0) {
-      errors.push(`${name}: ${fieldName}.patrol.delay must be greater than zero.`);
+    validatePatrolDelay(name, patrol.delay, `${fieldName}.patrol.delay`);
+  }
+  if (patrol.startDelay !== undefined) {
+    requireNumber(name, patrol.startDelay, `${fieldName}.patrol.startDelay`);
+    if (typeof patrol.startDelay === 'number' && patrol.startDelay < 0) {
+      errors.push(`${name}: ${fieldName}.patrol.startDelay must be zero or greater.`);
     }
   }
+  if (patrol.timer !== undefined) {
+    requireNumber(name, patrol.timer, `${fieldName}.patrol.timer`);
+    if (typeof patrol.timer === 'number' && patrol.timer < 0) {
+      errors.push(`${name}: ${fieldName}.patrol.timer must be zero or greater.`);
+    }
+  }
+  validateOptionalBoolean(name, patrol.removeOnComplete, `${fieldName}.patrol.removeOnComplete`);
+  validateOptionalBoolean(name, patrol.remove, `${fieldName}.patrol.remove`);
+  validateOptionalBoolean(name, patrol.hideOnComplete, `${fieldName}.patrol.hideOnComplete`);
+  validateDialogueEffects(name, patrol.onComplete ?? patrol.complete ?? patrol.arrival, `${fieldName}.patrol.onComplete`);
   if (!Array.isArray(patrol.path) || patrol.path.length < 2) {
     errors.push(`${name}: ${fieldName}.patrol.path must contain at least two points.`);
     return;
@@ -522,19 +540,49 @@ function validateSpawnPatrol(name, data, spawn, fieldName) {
   }
 }
 
-function validateEnemyPatrolReachability(name, data, enemies, objects) {
-  const patrolEnemies = enemies.filter((enemy) => enemy.patrol !== undefined);
-  if (patrolEnemies.length === 0) return;
+function validatePatrolDelay(name, delay, fieldName) {
+  if (typeof delay === 'number') {
+    if (delay <= 0) errors.push(`${name}: ${fieldName} must be greater than zero.`);
+    return;
+  }
+  if (Array.isArray(delay)) {
+    if (delay.length < 2) {
+      errors.push(`${name}: ${fieldName} range must contain min and max.`);
+      return;
+    }
+    for (const [index, value] of delay.entries()) {
+      requireNumber(name, value, `${fieldName}[${index}]`);
+      if (typeof value === 'number' && value <= 0) {
+        errors.push(`${name}: ${fieldName}[${index}] must be greater than zero.`);
+      }
+    }
+    return;
+  }
+  if (delay && typeof delay === 'object') {
+    const min = delay.min ?? delay.low;
+    const max = delay.max ?? delay.high;
+    requireNumber(name, min, `${fieldName}.min`);
+    requireNumber(name, max, `${fieldName}.max`);
+    if (typeof min === 'number' && min <= 0) errors.push(`${name}: ${fieldName}.min must be greater than zero.`);
+    if (typeof max === 'number' && max <= 0) errors.push(`${name}: ${fieldName}.max must be greater than zero.`);
+    return;
+  }
+  errors.push(`${name}: ${fieldName} must be a number, range array, or range object.`);
+}
+
+function validatePatrolReachability(name, data, actors, objects) {
+  const patrollers = actors.filter((entry) => entry.spawn.patrol !== undefined);
+  if (patrollers.length === 0) return;
   const grid = new Grid(data);
   for (const object of objects) {
     if (object.blocking && inBounds(data, object)) grid.addBlocked(object.x, object.y);
   }
-  for (const spawn of patrolEnemies) {
+  for (const { spawn, label } of patrollers) {
     const patrol = Array.isArray(spawn.patrol) ? { path: spawn.patrol } : spawn.patrol;
     for (const [index, point] of (patrol?.path ?? []).entries()) {
       if (!inBounds(data, point)) continue;
       if (!grid.isWalkable(point.x, point.y)) {
-        errors.push(`${name}: enemy "${spawn.id}" patrol.path[${index}] (${point.x}, ${point.y}) must be walkable.`);
+        errors.push(`${name}: ${label} patrol.path[${index}] (${point.x}, ${point.y}) must be walkable.`);
       }
     }
   }
@@ -634,6 +682,7 @@ function validateAshChapelMain(name, data, enemies, objects) {
       if (!Array.isArray(trigger.intro) || trigger.intro.length === 0) {
         errors.push(`${name}: combat trigger "${trigger.id ?? trigger.encounter}" must define intro lines.`);
       }
+      validateBarkCollection(name, trigger.combatStartBarks, `combatTriggers.${trigger.id ?? trigger.encounter ?? 'unknown'}.combatStartBarks`);
     }
   }
 
@@ -1451,6 +1500,22 @@ function validateStringList(name, value, fieldName) {
   requireString(name, value, fieldName);
 }
 
+function validateBarkCollection(name, value, fieldName, max = 12) {
+  if (value === undefined) return;
+  if (!Array.isArray(value)) {
+    errors.push(`${name}: ${fieldName} must be an array of strings.`);
+    return;
+  }
+  if (value.length === 0) {
+    errors.push(`${name}: ${fieldName} must contain at least one line when defined.`);
+    return;
+  }
+  if (value.length > max) {
+    errors.push(`${name}: ${fieldName} must contain no more than ${max} lines.`);
+  }
+  value.forEach((line, index) => requireString(name, line, `${fieldName}[${index}]`));
+}
+
 function validateTraceCondition(name, value, fieldName) {
   if (value === undefined) return;
   requireNumber(name, value, fieldName);
@@ -1520,6 +1585,7 @@ function validateDialogueEffects(name, effects, fieldName) {
 
   validateInventoryEffects(name, effects.inventory, `${fieldName}.inventory`);
   validateXpNumber(name, effects.xp, `${fieldName}.xp`);
+  validateMoveActorEffects(name, effects.moveActor, `${fieldName}.moveActor`);
 
   const startCombat = effects.startCombat;
   if (startCombat !== undefined) {
@@ -1532,6 +1598,72 @@ function validateDialogueEffects(name, effects, fieldName) {
     }
   }
   validateShowBriefing(name, effects.showBriefing, `${fieldName}.showBriefing`);
+}
+
+function validateMoveActorEffects(name, moveActor, fieldName) {
+  if (moveActor === undefined) return;
+  const entries = Array.isArray(moveActor) ? moveActor : [moveActor];
+  if (entries.length === 0) {
+    errors.push(`${name}: ${fieldName} must contain at least one movement spec.`);
+    return;
+  }
+  entries.forEach((spec, index) => {
+    const specName = `${fieldName}${Array.isArray(moveActor) ? `[${index}]` : ''}`;
+    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) {
+      errors.push(`${name}: ${specName} must be an object.`);
+      return;
+    }
+    if (spec.target !== undefined) requireString(name, spec.target, `${specName}.target`);
+    if (spec.actor !== undefined) requireString(name, spec.actor, `${specName}.actor`);
+    if (spec.id !== undefined) requireString(name, spec.id, `${specName}.id`);
+    if (spec.startDelay !== undefined) {
+      requireNumber(name, spec.startDelay, `${specName}.startDelay`);
+      if (typeof spec.startDelay === 'number' && spec.startDelay < 0) {
+        errors.push(`${name}: ${specName}.startDelay must be zero or greater.`);
+      }
+    }
+    if (spec.timer !== undefined) {
+      requireNumber(name, spec.timer, `${specName}.timer`);
+      if (typeof spec.timer === 'number' && spec.timer < 0) {
+        errors.push(`${name}: ${specName}.timer must be zero or greater.`);
+      }
+    }
+    validateOptionalBoolean(name, spec.removeOnComplete, `${specName}.removeOnComplete`);
+    validateOptionalBoolean(name, spec.remove, `${specName}.remove`);
+    validateOptionalBoolean(name, spec.hideOnComplete, `${specName}.hideOnComplete`);
+    const hasPath = spec.path !== undefined;
+    const hasTargetPoint = spec.to !== undefined || spec.targetCell !== undefined;
+    if (!hasPath && !hasTargetPoint) {
+      errors.push(`${name}: ${specName} must define path, to, or targetCell.`);
+    }
+    if (hasPath) {
+      if (!Array.isArray(spec.path) || spec.path.length === 0) {
+        errors.push(`${name}: ${specName}.path must contain at least one point.`);
+      } else {
+        spec.path.forEach((point, pointIndex) => {
+          validateGridPoint(name, point, `${specName}.path[${pointIndex}]`);
+        });
+      }
+    }
+    if (spec.to !== undefined) validateGridPoint(name, spec.to, `${specName}.to`);
+    if (spec.targetCell !== undefined) validateGridPoint(name, spec.targetCell, `${specName}.targetCell`);
+    validateDialogueEffects(name, spec.onComplete ?? spec.complete ?? spec.arrival, `${specName}.onComplete`);
+  });
+}
+
+function validateGridPoint(name, point, fieldName) {
+  if (!point || typeof point !== 'object' || Array.isArray(point)) {
+    errors.push(`${name}: ${fieldName} must be an object with x and y.`);
+    return;
+  }
+  requireNumber(name, point.x, `${fieldName}.x`);
+  requireNumber(name, point.y, `${fieldName}.y`);
+  if (typeof point.x === 'number' && !Number.isInteger(point.x)) {
+    errors.push(`${name}: ${fieldName}.x must be an integer.`);
+  }
+  if (typeof point.y === 'number' && !Number.isInteger(point.y)) {
+    errors.push(`${name}: ${fieldName}.y must be an integer.`);
+  }
 }
 
 function validateInventoryEffects(name, inventory, fieldName) {

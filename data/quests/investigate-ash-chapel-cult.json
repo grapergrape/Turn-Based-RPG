@@ -5,7 +5,7 @@
   "objectives": [
     { "text": "Search the chapel settlement. Learn who they are and what they preach.", "stage": "evidence-found" },
     { "text": "Break the cult that has taken the chapel.", "stage": "cult-broken" },
-    { "text": "Ring the basement bell so the Remnant knows the road house is safe enough to enter.", "stage": "hallowfen-checkpoints", "reveal": "cult-broken" },
+    { "text": "Ring the upper chapel bell so the Remnant knows the road house is safe enough to enter.", "stage": "hallowfen-checkpoints", "reveal": "cult-broken" },
     { "text": "Investigate why the Hallowfen checkpoints stopped answering.", "lead": true, "reveal": "hallowfen-checkpoints" }
   ],
   "stages": [
@@ -34,14 +34,19 @@
     },
     {
       "id": "cult-broken",
-      "task": "Ring the basement bell",
+      "task": "Ring the chapel bell",
       "xp": 100,
-      "description": "The chapel cell is broken. Ring the basement bell so the road office knows the house is safe enough to enter."
+      "description": "The chapel cell is broken. The upper bell still needs to ring before the road office knows the house is safe enough to enter."
+    },
+    {
+      "id": "bell-hand-known",
+      "task": "Bring Tomas to the bell",
+      "description": "Tomas Vek knows the old bell frame. Bring him to the upper bell before you trust the rope."
     },
     {
       "id": "hallowfen-checkpoints",
       "task": "Investigate Hallowfen",
-      "description": "The Remnant will hear the basement bell, but Hallowfen's checkpoints still do not answer. Follow the wall road and find who silenced them."
+      "description": "The Remnant will hear the chapel bell, but Hallowfen's checkpoints still do not answer. Follow the wall road and find who silenced them."
     }
   ]
 }

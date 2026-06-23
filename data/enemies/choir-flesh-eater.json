@@ -10,6 +10,10 @@
     "accent": "dark-cowl"
   },
   "description": "A cult initiate carrying dried Host tissue as sacrament. He is still mostly human, which makes the practiced calm worse.",
+  "aggro": [
+    "Keep her skin closed for the lesson.",
+    "She has road ash on her hands."
+  ],
   "stats": {
     "hp": 8,
     "maxHp": 8,

@@ -7,8 +7,11 @@
         "The ledger is written as lessons, not confession, in a careful teaching hand. At the head of the first page, underlined twice: THE CHOIR OF THE OPEN WOUND. You have broken cults the length of the ash roads, and you have never once seen that name. That unsettles you more than the lessons do.",
         "Lesson one: a body that stays whole is only a locked chapel. Open it, and the door is always the same door. They do not call this infection. They call it confession, and they name the opened ones icons, not monsters.",
         "Lesson two: feed the opened flesh of the saint to the closed-flesh living, and the living open faster. Cut slow. Let the saint grow back between meals.",
-        "A later hand keeps stock below the lessons: 'Two guards dead at intake. Two guards good for opening: one crossed in the nave, one held below for after. Women and children moved before dawn. Keep the chapel quiet until the wall road closes.' Then a travel note, different ink: 'The Hallowfen wall has stopped answering its tower bells. Carry witness before the checkpoints are sealed.'"
-      ]
+        "A later hand keeps stock below the lessons: 'Two guards dead at intake. Two guards good for opening: one crossed in the nave, one held below for after. Women and children moved before dawn. Keep the chapel quiet until the wall road closes.' A narrower sheet is pinned behind it, titled GATE MOTHER'S ROAD ORDER: 'The Hallowfen wall has stopped answering its tower bells. Carry witness before the checkpoints are sealed.'"
+      ],
+      "effects": {
+        "setFlag": "ash-chapel-choir-named"
+      }
     }
   }
 }

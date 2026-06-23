@@ -36,6 +36,7 @@
   "dialogue": [
     "ash-chapel-altar-rite",
     "ash-chapel-barrel-ladder",
+    "ash-chapel-bell-stairs",
     "ash-chapel-cult-ledger",
     "ash-chapel-entrance-catechism",
     "ash-chapel-cross-martyr",
@@ -74,6 +75,13 @@
     "medium": 5,
     "high": 10
   },
+  "combatStartBarks": [
+    "Keep the intruder breathing. The wound needs a witness.",
+    "Close the doors. Let the house learn this one.",
+    "No clean hands leave the chapel.",
+    "The body came shut. Open it.",
+    "Hold the aisle. The lesson has teeth."
+  ],
   "combatTriggers": [
     {
       "id": "nave-rite-trigger",
@@ -127,7 +135,7 @@
     "questUpdate": {
       "quest": "investigate-ash-chapel-cult",
       "stage": "cult-broken",
-      "log": "Quest updated: the Ash Chapel cell is broken. Ring the basement bell before you follow the wall road."
+      "log": "Quest updated: the Ash Chapel cell is broken. Ring the upper bell before you follow the wall road."
     }
   },
   "codex": [
@@ -329,6 +337,7 @@
         },
         "x": 18,
         "y": 5,
+        "facing": "s",
         "encounter": "nave-rite",
         "ambient": [
           "Chew slow. Let the lesson find the throat.",
@@ -352,6 +361,7 @@
         },
         "x": 22,
         "y": 5,
+        "facing": "sw",
         "encounter": "nave-rite",
         "ambient": [
           "Wonder how the guard in the cellar tastes.",
@@ -378,7 +388,7 @@
         },
         "patrol": {
           "mode": "loop",
-          "delay": 1.4,
+          "delay": [1.0, 2.1],
           "path": [
             { "x": 4, "y": 14 },
             { "x": 5, "y": 13 },
@@ -424,6 +434,7 @@
         },
         "x": 33,
         "y": 10,
+        "facing": "s",
         "encounter": "east-watch",
         "ambient": [
           "The old saints kept their mouths shut. We will not.",
@@ -435,6 +446,7 @@
         "id": "host-touched-penitent",
         "x": 35,
         "y": 12,
+        "facing": "w",
         "encounter": "east-watch",
         "aggroRadius": 1
       }
@@ -490,10 +502,55 @@
         "dialogueRepeat": true,
         "talkRadius": 1,
         "conditions": {
-          "flag": "survivors-returning-chapel"
+          "flag": "survivors-returning-chapel",
+          "flagsAbsent": [
+            "tomas-heading-to-bell",
+            "tomas-at-bell"
+          ]
         },
         "ambient": [
           "The wall road is still quiet. Worse after seeing the chapel again."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-tomas",
+        "x": 25,
+        "y": 24,
+        "dialogue": "ash-chapel-catacombs-tomas",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flags": [
+            "survivors-returning-chapel",
+            "tomas-heading-to-bell"
+          ],
+          "flagsAbsent": [
+            "tomas-reached-bell-stair",
+            "tomas-at-bell",
+            "ash-chapel-bell-repaired"
+          ]
+        },
+        "patrol": {
+          "mode": "once",
+          "startDelay": 0,
+          "path": [
+            {
+              "x": 25,
+              "y": 24
+            },
+            {
+              "x": 29,
+              "y": 3
+            }
+          ],
+          "removeOnComplete": true,
+          "onComplete": {
+            "setFlag": "tomas-reached-bell-stair",
+            "log": "Tomas reaches the bell stair and disappears upward."
+          }
+        },
+        "ambient": [
+          "No time for shutters now."
         ]
       },
       {
@@ -1283,6 +1340,10 @@
           {
             "item": "field-dressing",
             "count": 1
+          },
+          {
+            "item": "censure-entry-roll",
+            "count": 1
           }
         ]
       }
@@ -1816,6 +1877,30 @@
             "count": 1
           }
         ]
+      }
+    },
+    {
+      "kind": "wall-stair-door",
+      "x": 31,
+      "y": 3,
+      "blocking": true,
+      "name": "Bell Stair Door",
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "ash-chapel-bell-stairs",
+        "log": "A narrow service door is cut into the chapel wall. Behind it, stone steps climb toward the bell chamber."
+      }
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 30,
+      "y": 3,
+      "blocking": true,
+      "name": "Bell Stair Landing",
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "ash-chapel-bell-stairs",
+        "log": "A worn landing stone points into the narrow stair cut through the chapel wall."
       }
     },
     {

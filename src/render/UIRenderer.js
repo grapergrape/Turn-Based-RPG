@@ -250,7 +250,12 @@ export class UIRenderer {
     this.#bar(ctx, x, y + 9, 94, 6, hpRatio, hpColor);
     y += 20;
 
-    this.#text(ctx, `MODE ${ui.mode ?? '-'}`, x, y, PALETTE.uiDim);
+    this.#text(ctx, `MODE ${ui.mode ?? '-'}`, x, y, ui.sneakMode ? PALETTE.uiSuccess : PALETTE.uiDim);
+    if (ui.sneakMode) {
+      this.#rect(ctx, x + 92, y + 6, 22, 1, PALETTE.uiSuccess);
+      this.#rect(ctx, x + 94, y + 4, 8, 1, PALETTE.uiSuccess);
+      this.#rect(ctx, x + 104, y + 5, 8, 1, PALETTE.uiBorderLight);
+    }
     y += 10;
     if (ui.mode === 'COMBAT') {
       this.#text(ctx, `AP ${ui.ap}/${ui.maxAp}`, x, y, PALETTE.uiGood);

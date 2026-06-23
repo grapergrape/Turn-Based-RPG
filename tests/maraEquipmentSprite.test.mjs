@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 
 import { createActor } from '../src/entities/ActorFactory.js';
 import { PALETTE } from '../src/render/palette.js';
-import { deriveMaraStyle } from '../src/render/SpriteAtlas.js';
+import { SPRITE_POSE_FRAME_COUNTS, deriveMaraStyle } from '../src/render/SpriteAtlas.js';
 
 const naked = deriveMaraStyle({});
 
@@ -95,3 +95,7 @@ assert.deepEqual(actor.appearance, {
   bodyFrame: 'masculine',
   anatomy: 'vulva'
 });
+
+assert.equal(SPRITE_POSE_FRAME_COUNTS.sneak, 8);
+assert.equal(SPRITE_POSE_FRAME_COUNTS.sneakIdle, 4);
+assert.equal(SPRITE_POSE_FRAME_COUNTS.walk, 8);

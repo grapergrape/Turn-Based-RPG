@@ -17,7 +17,9 @@ const KEY_TOKENS = {
   d: 'right',
   enter: 'confirm',
   ' ': 'space',
+  spacebar: 'space',
   escape: 'cancel',
+  c: 'toggle-sneak',
   e: 'interact',
   i: 'inventory',
   h: 'dressing',
@@ -32,7 +34,10 @@ const KEY_TOKENS = {
   j: 'journal'
 };
 
-const MOVE_TOKENS = new Set(['up', 'down', 'left', 'right']);
+const KEY_CODE_TOKENS = {
+  KeyC: 'toggle-sneak',
+  Space: 'space'
+};
 
 export class Input {
   constructor(canvas) {
@@ -65,12 +70,22 @@ export class Input {
     return click;
   }
 
+  isHeld(key) {
+    return this.keys.has(String(key).toLowerCase());
+  }
+
   #onKeyDown(event) {
-    const token = KEY_TOKENS[event.key.toLowerCase()];
+    const key = event.key.toLowerCase();
+    if (key === 'shift') {
+      this.keys.add(key);
+      return;
+    }
+    const token = KEY_TOKENS[key] ?? KEY_CODE_TOKENS[event.code];
     if (!token) return;
     event.preventDefault();
-    this.keys.add(event.key.toLowerCase());
-    this.actions.push(event.shiftKey && MOVE_TOKENS.has(token) ? `sprint-${token}` : token);
+    if (token === 'toggle-sneak' && (event.repeat || this.keys.has(key))) return;
+    this.keys.add(key);
+    this.actions.push(token);
   }
 
   #onMouseMove(event) {
