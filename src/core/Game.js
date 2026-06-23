@@ -14,13 +14,22 @@ import {
   FIELD_RATINGS,
   PRIMARY_ATTRIBUTES,
   awardExperience,
-  buildCharacterSheet,
   calculateFieldRating,
   experienceRewardForEncounter,
   normalizeProgression,
   questStageExperience,
   questStageExperienceKey
 } from './Progression.js';
+import { meetsDialogueConditions } from './DialogueConditions.js';
+import { DialogueEffects } from './DialogueEffects.js';
+import {
+  JOURNAL_SECTIONS,
+  JOURNAL_TURN_DURATION,
+  buildJournalState,
+  journalConditionMet
+} from './JournalState.js';
+import { LootSession, enemyHasLoot, enemyHasUnclaimedLoot } from './LootSession.js';
+import { TradeSession } from './TradeSession.js';
 import { TurnManager } from '../combat/TurnManager.js';
 import { CombatSystem, manhattan, chebyshev } from '../combat/CombatSystem.js';
 import { chooseCombatStartBark, combatStartBarkLines } from '../combat/CombatBarks.js';
@@ -77,13 +86,10 @@ import {
   SUSPICION_SEVERITY,
   SUSPICION_STATES,
   canSeeActor,
-  nextSuspicionState,
-  noticeSuspiciousAction,
-  resolveStealthCheck,
   suspicionStateRank,
-  tileDistance,
-  visionConeCells
 } from '../world/PerceptionSystem.js';
+import { PatrolSystem } from '../world/PatrolSystem.js';
+import { StealthRuntime } from '../world/StealthRuntime.js';
 import { IsometricRenderer } from '../render/IsometricRenderer.js';
 import { bakeHumanAppearance, bakeMara, isHumanAppearance, spriteIdForHumanAppearance } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
@@ -121,14 +127,11 @@ const AMBIENT_SPEECH_COOLDOWN = 7.5;
 const AMBIENT_ACTOR_DELAY = 18;
 const AMBIENT_PROP_DELAY = 12;
 const AREA_TITLE_DURATION = 2.35;
-const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS'];
-const JOURNAL_TURN_DURATION = 0.46;
 const MAX_LOG = 8;
 const WALK_FRAMES = 8;
 const ATTACK_FRAMES = 6;
 const HIT_FRAMES = 4;
 const DEATH_FRAMES = 10;
-const INVESTIGATE_STEP_DELAY = 0.7;
 
 const DIRS = {
   up: { x: 0, y: -1 },
@@ -136,24 +139,6 @@ const DIRS = {
   left: { x: -1, y: 0 },
   right: { x: 1, y: 0 }
 };
-
-function cloneEffect(effect) {
-  if (!effect || typeof effect !== 'object' || Array.isArray(effect)) return null;
-  return JSON.parse(JSON.stringify(effect));
-}
-
-function normalizeEffectPoint(point) {
-  if (!point || typeof point !== 'object') return null;
-  const x = Number(point.x);
-  const y = Number(point.y);
-  if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
-  return { x: Math.round(x), y: Math.round(y) };
-}
-
-function normalizeEffectPath(value) {
-  const raw = Array.isArray(value) ? value : [value];
-  return raw.map(normalizeEffectPoint).filter(Boolean);
-}
 
 const OBJECT_NAMES = {
   'broken-pew': 'Broken Pew',
@@ -209,6 +194,54 @@ export class Game {
     this.renderer = new IsometricRenderer(canvas, atlas);
     this.combat = new CombatSystem();
     this.turnManager = new TurnManager();
+    this.lootSession = new LootSession(this, {
+      log: (message) => this.#log(message),
+      logCarryFailure: (carry) => this.#logCarryFailure(carry),
+      objectName: (object) => this.#objectName(object),
+      openDialogueById: (dialogueId) => this.#openDialogueById(dialogueId),
+      openDialogue: (title, lines, kind) => this.#openDialogue(title, lines, kind),
+      applyQuestUpdate: (update) => this.#applyQuestUpdate(update),
+      registerSuspiciousAction: (severity, action, options) => this.#registerSuspiciousAction(severity, action, options),
+      syncInventoryOrder: () => this.#syncInventoryOrder()
+    });
+    this.tradeSession = new TradeSession(this, {
+      inventoryEntries: () => this.#inventoryEntries(),
+      log: (message) => this.#log(message),
+      logCarryFailure: (carry) => this.#logCarryFailure(carry),
+      syncInventoryOrder: () => this.#syncInventoryOrder()
+    });
+    this.dialogueEffects = new DialogueEffects(this, {
+      log: (message) => this.#log(message),
+      applyQuestUpdate: (update) => this.#applyQuestUpdate(update),
+      awardPlayerExperience: (amount) => this.#awardPlayerExperience(amount),
+      silenceProp: (propId) => this.#silenceProp(propId),
+      teleportPlayer: (point) => this.#teleportPlayer(point),
+      openTradeScreen: (targetId) => this.#openTradeScreen(targetId),
+      closeUiScreen: () => this.#closeUiScreen(),
+      startCombat: (encounterId, options) => this.#startCombat(encounterId, options),
+      transitionLevel: (effect) => this.#transitionLevel(effect),
+      meetsConditions: (conditions) => this.#meetsConditions(conditions),
+      syncInventoryOrder: () => this.#syncInventoryOrder(),
+      clampInventorySelection: () => this.#clampInventorySelection()
+    });
+    this.stealthRuntime = new StealthRuntime(this, {
+      resolveEncounterId: (encounterId) => this.#resolveEncounterId(encounterId),
+      isCellHidden: (x, y) => this.#isCellHidden(x, y),
+      fieldRating: (fieldId) => this.#fieldRating(fieldId),
+      enemyPerceptionRating: (enemy, perception) => this.#enemyPerceptionRating(enemy, perception),
+      faceToward: (actor, target) => this.#faceToward(actor, target),
+      log: (message) => this.#log(message),
+      closeUiScreen: () => this.#closeUiScreen(),
+      startCombat: (encounterId) => this.#startCombat(encounterId)
+    });
+    this.patrolSystem = new PatrolSystem(this, {
+      applyEffects: (effects) => this.#applyEffects(effects),
+      removeActorFromLevel: (actor) => this.#removeActorFromLevel(actor),
+      isCellHidden: (x, y) => this.#isCellHidden(x, y),
+      occupiedSet: (exclude) => this.#occupiedSet(exclude),
+      tryStep: (actor, dir, options) => this.#tryStep(actor, dir, options),
+      randomPatrolDelay
+    });
 
     this.debugGridDefault = debugGrid ?? DEBUG_GRID_DEFAULT;
     this.debugGrid = this.debugGridDefault;
@@ -674,7 +707,7 @@ export class Game {
     return !canSeeActor(target, this.player, {
       grid: this.grid,
       hiddenTiles: this.hiddenTiles,
-      defaults: this.#perceptionDefaults()
+      defaults: this.stealthRuntime.perceptionDefaults()
     }).canSee;
   }
 
@@ -769,11 +802,11 @@ export class Game {
   }
 
   #enemyHasLoot(enemy) {
-    return Array.isArray(enemy?.loot) && enemy.loot.length > 0;
+    return enemyHasLoot(enemy);
   }
 
   #enemyHasUnclaimedLoot(enemy) {
-    return this.#enemyHasLoot(enemy) && !enemy.lootClaimed;
+    return enemyHasUnclaimedLoot(enemy);
   }
 
   #logCarryFailure(carry) {
@@ -1218,7 +1251,12 @@ export class Game {
   }
 
   #moveJournalFaction(delta) {
-    const known = (this.codexDefs ?? []).filter((entry) => !entry.unlockedBy || this.#journalConditionMet(entry.unlockedBy));
+    const known = (this.codexDefs ?? []).filter((entry) =>
+      !entry.unlockedBy || journalConditionMet(entry.unlockedBy, {
+        flags: this.flags,
+        questReached: this.questReached
+      })
+    );
     if (!known.length) { this.journalFactionIndex = 0; return; }
     this.journalFactionIndex = Math.max(0, Math.min(known.length - 1, (this.journalFactionIndex ?? 0) + delta));
   }
@@ -1261,209 +1299,43 @@ export class Game {
   }
 
   #objectShouldOpenLoot(object) {
-    const descriptor = object?.interact ?? {};
-    if (descriptor.type !== 'container' && descriptor.type !== 'corpse') return false;
-    if (descriptor.type === 'container' && descriptor.requiresItem && !this.inventory.has(descriptor.requiresItem)) {
-      return false;
-    }
-    if (descriptor.type === 'container' && object.consumed) return false;
-    if (descriptor.type === 'corpse' && object.looted) return false;
-    return this.#lootSourceHasItems({ sourceType: 'object', source: object });
+    return this.lootSession.objectShouldOpen(object);
   }
 
   #objectShouldShowTextBeforeLoot(object) {
-    if (!this.#objectShouldOpenLoot(object)) return false;
-    const descriptor = object?.interact ?? {};
-    return Boolean(descriptor.dialogue || [].concat(descriptor.log ?? []).some(Boolean));
+    return this.lootSession.objectShouldShowTextBeforeLoot(object);
   }
 
   #openObjectTextBeforeLoot(object) {
-    const descriptor = object?.interact ?? {};
-    const logLines = [].concat(descriptor.log ?? []).filter(Boolean);
-    for (const line of logLines) this.#log(line);
-
-    this.pendingLootAfterDialogue = { sourceType: 'object', source: object };
-    if (descriptor.dialogue) {
-      this.#openDialogueById(descriptor.dialogue);
-      if (this.uiScreen === 'dialogue') return true;
-    }
-    if (logLines.length) {
-      this.#openDialogue(this.#objectName(object), logLines, descriptor.type ?? 'inspect');
-      if (this.uiScreen === 'dialogue') return true;
-    }
-    this.pendingLootAfterDialogue = null;
-    return false;
+    return this.lootSession.openObjectTextBeforeLoot(object);
   }
 
   #openObjectLootScreen(object, { log = true } = {}) {
-    const descriptor = object?.interact ?? {};
-    if (log) {
-      for (const line of [].concat(descriptor.log ?? []).filter(Boolean)) this.#log(line);
-    }
-    if (descriptor.type === 'container') {
-      this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'opening-container');
-    } else if (descriptor.type === 'corpse') {
-      this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
-    }
-    if (this.mode !== 'explore') return;
-    this.#openLootScreen({
-      title: this.#objectName(object),
-      sourceType: 'object',
-      source: object
-    });
+    this.lootSession.openObjectLootScreen(object, { log });
   }
 
   #openLootScreen({ title, sourceType, source }) {
-    this.uiScreen = 'loot';
-    this.dialogue = null;
-    this.pendingLootAfterDialogue = null;
-    this.inventoryActionMenu = null;
-    this.inventorySplit = null;
-    this.loot = {
-      title: title ?? 'Loot',
-      sourceType,
-      source
-    };
-    this.lootIndex = 0;
+    this.lootSession.open({ title, sourceType, source });
   }
 
   #lootSourceHasItems(loot) {
-    return this.#lootEntriesForSource(loot).some((entry) => entry.count > 0);
-  }
-
-  #lootEntriesForSource(loot = this.loot) {
-    if (!loot?.source) return [];
-    if (loot.sourceType === 'enemy') return Array.isArray(loot.source.loot) && !loot.source.lootClaimed ? loot.source.loot : [];
-    const descriptor = loot.source.interact ?? {};
-    if (loot.sourceType === 'object') {
-      if (descriptor.type === 'container' && loot.source.consumed) return [];
-      if (descriptor.type === 'corpse' && loot.source.looted) return [];
-      return Array.isArray(descriptor.loot) ? descriptor.loot : [];
-    }
-    return [];
+    return this.lootSession.sourceHasItems(loot);
   }
 
   #currentLootEntries() {
-    return this.#lootEntriesForSource()
-      .map((entry, rawIndex) => {
-        const itemId = entry.item;
-        const count = Math.max(0, Math.floor(Number(entry.count ?? 1) || 0));
-        if (!itemId || count <= 0) return null;
-        const itemDef = this.inventory.itemDefs[itemId] ?? {};
-        return {
-          rawIndex,
-          id: itemId,
-          itemId,
-          count,
-          name: this.inventory.displayName(itemId),
-          type: itemDef.type ?? 'item',
-          groundModel: itemDef.groundModel ?? null,
-          description: itemDef.description ?? '',
-          weight: this.inventory.itemWeight(itemId),
-          totalWeight: this.inventory.weightOf(itemId, count),
-          canEquip: Boolean(itemDef.equipment?.slot),
-          equipmentSlot: itemDef.equipment?.slot ?? null
-        };
-      })
-      .filter(Boolean);
+    return this.lootSession.currentEntries();
   }
 
   #takeMarkedLoot() {
-    const entries = this.#currentLootEntries();
-    const entry = entries[this.lootIndex ?? 0];
-    if (!entry) {
-      this.#finalizeLootIfEmpty();
-      return;
-    }
-    this.#takeLootEntry(entry.rawIndex, entry.count);
+    this.lootSession.takeMarked();
   }
 
   #takeAllLoot() {
-    const entries = this.#currentLootEntries();
-    if (!entries.length) {
-      this.#finalizeLootIfEmpty();
-      return;
-    }
-    const carry = this.inventory.canAddLoot(entries.map((entry) => ({ item: entry.itemId, count: entry.count })));
-    if (!carry.ok) {
-      this.#logCarryFailure(carry);
-      return;
-    }
-    const summary = entries.map((entry) => `${entry.count}x ${entry.name}`).join(', ');
-    for (const entry of entries) {
-      this.inventory.add(entry.itemId, entry.count);
-      this.#setLootEntryCount(entry.rawIndex, 0);
-    }
-    this.#syncInventoryOrder();
-    if (summary) this.#log(`Recovered: ${summary}.`);
-    this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
-    if (this.mode !== 'explore') return;
-    this.#finalizeLootIfEmpty();
-  }
-
-  #takeLootEntry(rawIndex, count) {
-    const rawEntries = this.#lootEntriesForSource();
-    const raw = rawEntries[rawIndex];
-    if (!raw?.item) return false;
-    const amount = Math.max(1, Math.min(Math.floor(Number(count) || 1), Math.floor(Number(raw.count ?? 1) || 1)));
-    const carry = this.inventory.canAdd(raw.item, amount);
-    if (!carry.ok) {
-      this.#logCarryFailure(carry);
-      return false;
-    }
-    const result = this.inventory.add(raw.item, amount);
-    if (!result.ok) {
-      this.#log(`No room for ${this.inventory.displayName(raw.item)}.`);
-      return false;
-    }
-    this.#setLootEntryCount(rawIndex, Math.max(0, (raw.count ?? 1) - amount));
-    this.#syncInventoryOrder();
-    this.#log(`Recovered: ${amount}x ${this.inventory.displayName(raw.item)}.`);
-    this.#registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
-    if (this.mode !== 'explore') return true;
-    this.#finalizeLootIfEmpty();
-    return true;
-  }
-
-  #setLootEntryCount(rawIndex, count) {
-    const rawEntries = this.#lootEntriesForSource();
-    const raw = rawEntries[rawIndex];
-    if (!raw) return;
-    raw.count = Math.max(0, Math.floor(Number(count) || 0));
+    this.lootSession.takeAll();
   }
 
   #finalizeLootIfEmpty() {
-    if (!this.loot) return false;
-    const entries = this.#currentLootEntries();
-    if (entries.length) {
-      this.lootIndex = Math.max(0, Math.min(entries.length - 1, this.lootIndex ?? 0));
-      return false;
-    }
-
-    const { sourceType, source } = this.loot;
-    this.loot = null;
-    this.lootIndex = 0;
-    this.uiScreen = null;
-
-    if (sourceType === 'enemy' && source) {
-      source.lootClaimed = true;
-      if (source.inspect) this.#openDialogueById(source.inspect);
-      return true;
-    }
-    if (sourceType === 'object' && source) {
-      const descriptor = source.interact ?? {};
-      source.opened = true;
-      if (descriptor.type === 'container') {
-        source.consumed = true;
-        syncObjectPassability(source, this.grid);
-      } else if (descriptor.type === 'corpse') {
-        source.looted = true;
-      }
-      if (descriptor.questUpdate) this.#applyQuestUpdate(descriptor.questUpdate);
-      if (descriptor.dialogue && !source.dialogueShownBeforeLoot) this.#openDialogueById(descriptor.dialogue);
-      return true;
-    }
-    return true;
+    return this.lootSession.finalizeIfEmpty();
   }
 
   #handleTradeScreen(actions, click = null) {
@@ -1543,164 +1415,31 @@ export class Game {
   }
 
   #openTradeScreen(targetId) {
-    const trader = this.#findTradeActor(targetId);
-    if (!trader?.trade) {
-      this.#log('No trade stock.');
-      return false;
-    }
-
-    this.uiScreen = 'trade';
-    this.dialogue = null;
-    this.pendingLootAfterDialogue = null;
-    this.inventoryActionMenu = null;
-    this.inventorySplit = null;
-    this.loot = null;
-    this.trade = { trader };
-    this.tradeFocus = 'trader';
-    this.tradeStockIndex = 0;
-    this.tradePlayerIndex = 0;
-    this.#clampTradeSelection();
-    return true;
-  }
-
-  #findTradeActor(targetId) {
-    const id = typeof targetId === 'string'
-      ? targetId
-      : targetId?.actor ?? targetId?.id ?? targetId?.spawnId;
-    if (!id) return null;
-    return [...(this.npcs ?? []), ...(this.enemies ?? [])].find((actor) =>
-      actor.id === id || actor.spawnId === id
-    ) ?? null;
+    return this.tradeSession.open(targetId);
   }
 
   #tradeStockEntries() {
-    const stock = this.trade?.trader?.trade?.stock ?? [];
-    const currency = this.#tradeCurrency();
-    const ducats = this.inventory.count(currency);
-    return stock
-      .map((entry, rawIndex) => {
-        const itemId = entry?.item;
-        if (!itemId) return null;
-        const count = Math.max(0, Math.floor(Number(entry.count ?? 1) || 0));
-        const price = Math.max(0, Math.floor(Number(entry.price) || 0));
-        const carry = this.inventory.canAdd(itemId, 1);
-        const canAfford = ducats >= price;
-        const itemDef = this.inventory.itemDefs[itemId] ?? {};
-        return {
-          rawIndex,
-          id: itemId,
-          itemId,
-          count,
-          price,
-          affordable: count > 0 && canAfford && carry.ok,
-          buyHint: count <= 0
-            ? 'SOLD OUT'
-            : (!canAfford ? `NEED ${price} DUCATS` : (!carry.ok ? 'PACK TOO HEAVY' : 'E BUY: TAKE 1')),
-          name: this.inventory.displayName(itemId),
-          type: itemDef.type ?? 'item',
-          groundModel: itemDef.groundModel ?? null,
-          description: itemDef.description ?? '',
-          weight: this.inventory.itemWeight(itemId),
-          totalWeight: this.inventory.weightOf(itemId, Math.max(1, count)),
-          canEquip: Boolean(itemDef.equipment?.slot),
-          equipmentSlot: itemDef.equipment?.slot ?? null,
-          canUse: this.inventory.canUse(itemId)
-        };
-      })
-      .filter(Boolean);
+    return this.tradeSession.stockEntries();
   }
 
   #tradePlayerEntries() {
-    return this.#inventoryEntries();
-  }
-
-  #tradeCurrency() {
-    return this.trade?.trader?.trade?.currency ?? 'ducat';
+    return this.tradeSession.playerEntries();
   }
 
   #clampTradeSelection() {
-    const stockEntries = this.#tradeStockEntries();
-    const playerEntries = this.#tradePlayerEntries();
-    this.tradeStockIndex = stockEntries.length
-      ? Math.max(0, Math.min(stockEntries.length - 1, this.tradeStockIndex ?? 0))
-      : 0;
-    this.tradePlayerIndex = playerEntries.length
-      ? Math.max(0, Math.min(playerEntries.length - 1, this.tradePlayerIndex ?? 0))
-      : 0;
-    if (this.tradeFocus !== 'player') this.tradeFocus = 'trader';
+    this.tradeSession.clampSelection();
   }
 
   #moveTradeSelection(delta) {
-    const entries = this.tradeFocus === 'player'
-      ? this.#tradePlayerEntries()
-      : this.#tradeStockEntries();
-    if (!entries.length) return;
-    if (this.tradeFocus === 'player') {
-      this.tradePlayerIndex = Math.max(0, Math.min(entries.length - 1, (this.tradePlayerIndex ?? 0) + delta));
-    } else {
-      this.tradeStockIndex = Math.max(0, Math.min(entries.length - 1, (this.tradeStockIndex ?? 0) + delta));
-    }
-  }
-
-  #tradeBuyStatus(entry) {
-    if (!entry) return { ok: false, hint: 'NO STOCK' };
-    if (entry.count <= 0) return { ok: false, hint: 'SOLD OUT' };
-    const currency = this.#tradeCurrency();
-    if (this.inventory.count(currency) < entry.price) {
-      return { ok: false, hint: `NEED ${entry.price} DUCATS` };
-    }
-    const carry = this.inventory.canAdd(entry.itemId, 1);
-    if (!carry.ok) return { ok: false, hint: 'PACK TOO HEAVY', carry };
-    return { ok: true, hint: 'E BUY: TAKE 1' };
+    this.tradeSession.moveSelection(delta);
   }
 
   #buySelectedTradeItem() {
-    const entry = this.#tradeStockEntries()[this.tradeStockIndex ?? 0];
-    const status = this.#tradeBuyStatus(entry);
-    if (!status.ok) {
-      if (status.carry) this.#logCarryFailure(status.carry);
-      else this.#log(status.hint);
-      return false;
-    }
-
-    const currency = this.#tradeCurrency();
-    if (entry.price > 0 && !this.inventory.remove(currency, entry.price)) {
-      this.#log(`Need ${entry.price} ducats.`);
-      return false;
-    }
-
-    const result = this.inventory.add(entry.itemId, 1);
-    if (!result.ok) {
-      if (entry.price > 0) this.inventory.add(currency, entry.price, { ignoreCapacity: true });
-      this.#logCarryFailure(result);
-      return false;
-    }
-
-    const raw = this.trade?.trader?.trade?.stock?.[entry.rawIndex];
-    if (raw) raw.count = Math.max(0, Math.floor(Number(raw.count ?? 1) || 0) - 1);
-    this.#syncInventoryOrder();
-    this.#clampTradeSelection();
-    this.#log(`Bought: ${entry.name} for ${entry.price} ducats.`);
-    return true;
+    return this.tradeSession.buySelectedItem();
   }
 
   #buildTradeUi() {
-    const stockEntries = this.#tradeStockEntries();
-    const playerEntries = this.#tradePlayerEntries();
-    const selected = stockEntries[this.tradeStockIndex ?? 0] ?? null;
-    const status = this.#tradeBuyStatus(selected);
-    return {
-      title: this.trade?.trader?.trade?.title ?? 'Trade',
-      traderName: this.trade?.trader?.name ?? 'Trader',
-      traderItems: stockEntries,
-      playerItems: playerEntries,
-      stockIndex: this.tradeStockIndex ?? 0,
-      playerIndex: this.tradePlayerIndex ?? 0,
-      focus: this.tradeFocus ?? 'trader',
-      ducats: this.inventory.count(this.#tradeCurrency()),
-      canBuy: status.ok,
-      buyHint: status.hint
-    };
+    return this.tradeSession.buildUi();
   }
 
   #handleInventoryScreen(actions, click = null) {
@@ -2375,31 +2114,13 @@ export class Game {
 
   // True when every flag, quest, scar, Trace, and field-rating gate is satisfied.
   #meetsConditions(conditions) {
-    if (!conditions) return true;
-    for (const flag of [].concat(conditions.flag ?? [], conditions.flags ?? [])) {
-      if (!this.flags.has(flag)) return false;
-    }
-    for (const flag of [].concat(conditions.notFlag ?? [], conditions.flagsAbsent ?? [])) {
-      if (this.flags.has(flag)) return false;
-    }
-    for (const [questId, stage] of Object.entries(conditions.questStages ?? {})) {
-      if (this.questStages?.get(questId) !== stage) return false;
-    }
-    for (const scarId of [].concat(conditions.scar ?? [], conditions.scars ?? [])) {
-      if (!this.#hasScar(scarId)) return false;
-    }
-    for (const scarId of [].concat(conditions.notScar ?? [], conditions.scarsAbsent ?? [])) {
-      if (this.#hasScar(scarId)) return false;
-    }
-    for (const [scarId, rank] of Object.entries(conditions.scarRanks ?? {})) {
-      if (!this.#hasScar(scarId, rank)) return false;
-    }
-    for (const [fieldId, minimum] of Object.entries(conditions.fieldRatings ?? {})) {
-      if (typeof minimum !== 'number' || this.#fieldRating(fieldId) < minimum) return false;
-    }
-    if (conditions.traceMin !== undefined && this.#traceValue() < conditions.traceMin) return false;
-    if (conditions.traceMax !== undefined && this.#traceValue() > conditions.traceMax) return false;
-    return true;
+    return meetsDialogueConditions(conditions, {
+      flags: this.flags,
+      questStages: this.questStages,
+      hasScar: (scarId, rank) => this.#hasScar(scarId, rank),
+      fieldRating: (fieldId) => this.#fieldRating(fieldId),
+      traceValue: () => this.#traceValue()
+    });
   }
 
   #playerProgression() {
@@ -2523,120 +2244,7 @@ export class Game {
   }
 
   #applyEffects(effects) {
-    if (!effects) return false;
-    for (const line of [].concat(effects.log ?? [])) this.#log(line);
-    for (const flag of [].concat(effects.setFlag ?? [])) this.flags.add(flag);
-    this.#applyInventoryEffects(effects.inventory);
-    this.#applyQuestUpdate(effects.questUpdate);
-    if (effects.xp !== undefined) this.#awardPlayerExperience(effects.xp);
-    if (effects.kill) this.#silenceProp(effects.kill);
-    if (effects.teleport) this.#teleportPlayer(effects.teleport);
-    this.#applyMoveActorEffects(effects.moveActor);
-    if (effects.trade) {
-      return this.#openTradeScreen(effects.trade);
-    }
-    if (effects.showBriefing) {
-      this.#showBriefing(effects.showBriefing);
-      return true;
-    }
-    if (effects.startCombat) {
-      const start = effects.startCombat;
-      const encounter = typeof start === 'string' ? start : start.encounter;
-      this.#closeUiScreen();
-      this.#startCombat(encounter ?? true, { fromAltar: Boolean(start.fromAltar) });
-      return true;
-    }
-    if (effects.loadLevel) {
-      void this.#transitionLevel(effects.loadLevel);
-      return true;
-    }
-    return false;
-  }
-
-  #applyMoveActorEffects(effect) {
-    if (effect === undefined) return;
-    for (const spec of [].concat(effect)) this.#applyMoveActorEffect(spec);
-  }
-
-  #applyMoveActorEffect(spec) {
-    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) return;
-    const actor = this.#effectActor(spec.target ?? spec.actor ?? spec.id ?? 'speaker');
-    if (!actor || actor.isDead) return;
-    const path = normalizeEffectPath(spec.path ?? spec.to ?? spec.targetCell);
-    if (path.length === 0) return;
-    const route = [{ x: actor.position.x, y: actor.position.y }, ...path]
-      .filter((point, index, points) => index === 0 || point.x !== points[index - 1].x || point.y !== points[index - 1].y);
-    if (route.length < 2) return;
-    actor.patrol = {
-      path: route,
-      mode: 'once',
-      delay: { min: 0, max: 0 },
-      index: 0,
-      direction: 1,
-      timer: Math.max(0, Number(spec.startDelay ?? spec.timer ?? 0) || 0),
-      onComplete: cloneEffect(spec.onComplete ?? spec.complete ?? spec.arrival),
-      removeOnComplete: Boolean(spec.removeOnComplete ?? spec.remove ?? spec.hideOnComplete)
-    };
-    actor.patrolTimer = actor.patrol.timer;
-    actor.suspicionState = actor.suspicionState === SUSPICION_STATES.INVESTIGATING
-      ? SUSPICION_STATES.WATCHING
-      : actor.suspicionState;
-    actor.investigationTarget = null;
-  }
-
-  #effectActor(target) {
-    if (!target || target === 'speaker' || target === 'source') return this.dialogueActor;
-    if (target === 'player') return this.player;
-    if (typeof target !== 'string') return null;
-    return [this.player, ...(this.npcs ?? []), ...(this.enemies ?? [])].find((actor) =>
-      actor && (actor.spawnId === target || actor.id === target || actor.name === target)
-    ) ?? null;
-  }
-
-  #showBriefing(effect) {
-    const pages = [];
-    const pushPage = (page) => {
-      const lines = [].concat(page ?? []).filter(Boolean);
-      if (lines.length) pages.push(lines);
-    };
-    for (const page of effect.pages ?? []) pushPage(page);
-    for (const entry of effect.conditionalPages ?? []) {
-      if (this.#meetsConditions(entry.conditions)) pushPage(entry.page);
-    }
-    if (!pages.length) return;
-
-    this.#closeUiScreen();
-    this.mode = 'intro';
-    this.briefing = pages;
-    this.briefingTitle = effect.title ?? 'FIELD WRIT';
-    this.briefingPage = 0;
-    this.briefingNextPrompt = effect.nextPrompt ?? 'ENTER: CONTINUE';
-    this.briefingLastPrompt = effect.lastPrompt ?? 'ENTER: CONTINUE';
-    this.briefingSkipPrompt = effect.skipPrompt ?? 'ESC: SKIP';
-    this.briefingMarksIntro = false;
-  }
-
-  #applyInventoryEffects(inventoryEffects) {
-    if (!inventoryEffects) return;
-    for (const entry of [].concat(inventoryEffects.remove ?? [])) {
-      if (!entry?.item) continue;
-      const count = entry.count ?? 1;
-      if (!this.inventory.remove(entry.item, count)) {
-        this.#log(`${this.inventory.displayName(entry.item)} is not in the pack.`);
-      }
-    }
-    for (const entry of [].concat(inventoryEffects.add ?? [])) {
-      if (!entry?.item) continue;
-      const count = entry.count ?? 1;
-      const result = this.inventory.add(entry.item, count);
-      if (!result.ok) {
-        this.#log(`No room for ${this.inventory.displayName(entry.item)}.`);
-        continue;
-      }
-      this.#log(`Received: ${count}x ${this.inventory.displayName(entry.item)}.`);
-    }
-    this.#syncInventoryOrder();
-    this.#clampInventorySelection();
+    return this.dialogueEffects.apply(effects);
   }
 
   // End a still-living staged victim (the crucified Opened Saint, or its cellar
@@ -3195,19 +2803,7 @@ export class Game {
   }
 
   #handlePatrolArrival(actor) {
-    const patrol = actor?.patrol;
-    if (!patrol || patrol.complete || !Array.isArray(patrol.path)) return;
-    const index = patrol.index ?? 0;
-    const point = patrol.path[index];
-    if (!point || actor.position.x !== point.x || actor.position.y !== point.y) return;
-    if (patrol.mode !== 'once' || index < patrol.path.length - 1) return;
-    patrol.complete = true;
-    actor.patrolTimer = 0;
-    if (!patrol.completedEffects && patrol.onComplete) {
-      patrol.completedEffects = true;
-      this.#applyEffects(patrol.onComplete);
-    }
-    if (patrol.removeOnComplete) this.#removeActorFromLevel(actor);
+    this.patrolSystem.handleArrival(actor);
   }
 
   #removeActorFromLevel(actor) {
@@ -3240,140 +2836,11 @@ export class Game {
   }
 
   #registerSuspiciousAction(severity = SUSPICION_SEVERITY.LOW, action = 'movement', options = {}) {
-    const requireSight = options.requireSight ?? action !== 'firing';
-    const encounterFilter = options.encounterId != null
-      ? this.#resolveEncounterId(options.encounterId)
-      : null;
-    const canAlertInCombat = this.mode === 'combat' && (action === 'firing' || action === 'attack');
-    if ((this.mode !== 'explore' && !canAlertInCombat) || !this.player || this.player.isDead) return false;
-    const notices = [];
-    for (const enemy of this.enemies) {
-      if (!this.#canEnemyNoticeSuspicion(enemy)) continue;
-      if (options.observer && enemy !== options.observer) continue;
-      if (encounterFilter && this.#resolveEncounterId(enemy.encounter) !== encounterFilter) continue;
-      if (requireSight) {
-        const sight = canSeeActor(enemy, this.player, {
-          grid: this.grid,
-          hiddenTiles: this.hiddenTiles,
-          defaults: this.#perceptionDefaults()
-        });
-        if (!sight.canSee) continue;
-        notices.push({ enemy, notice: { noticed: true, reason: 'seen', ...sight } });
-      } else {
-        const notice = noticeSuspiciousAction(enemy, this.player, {
-          severity,
-          grid: this.grid,
-          hiddenTiles: this.hiddenTiles,
-          defaults: this.#perceptionDefaults()
-        });
-        if (!notice.noticed) continue;
-        notices.push({ enemy, notice });
-      }
-    }
-    if (!notices.length) return false;
-
-    notices.sort((a, b) =>
-      (a.notice.reason === 'seen' ? 0 : 1) - (b.notice.reason === 'seen' ? 0 : 1) ||
-      a.notice.distance - b.notice.distance ||
-      suspicionStateRank(b.enemy.suspicionState) - suspicionStateRank(a.enemy.suspicionState)
-    );
-
-    const stealthRating = this.#fieldRating('stealth');
-    for (const { enemy, notice } of notices) {
-      const observerRating = this.#enemyPerceptionRating(enemy, notice.perception);
-      const check = resolveStealthCheck({
-        severity,
-        stealthRating,
-        observerRating,
-        perception: notice.perception
-      });
-      const nextState = nextSuspicionState({
-        severity,
-        success: check.success,
-        currentState: enemy.suspicionState
-      });
-      if (!check.success) this.#faceToward(enemy, this.player.position);
-      if (this.#applySuspicionState(enemy, nextState, { action, severity, notice, check })) {
-        return true;
-      }
-    }
-    return true;
-  }
-
-  #canEnemyNoticeSuspicion(enemy) {
-    if (!enemy || enemy.isDead) return false;
-    const encounterId = this.#resolveEncounterId(enemy.encounter);
-    if (this.mode === 'combat' && this.activeEncounter && encounterId === this.#resolveEncounterId(this.activeEncounter)) {
-      return false;
-    }
-    if (this.clearedEncounters.has(encounterId)) return false;
-    if (this.#isCellHidden(enemy.position.x, enemy.position.y)) return false;
-    if (enemy.aggroRadius === 0 && enemy.dialogue && !enemy.perception) return false;
-    return true;
-  }
-
-  #applySuspicionState(enemy, nextState, { action, notice } = {}) {
-    const previous = enemy.suspicionState ?? SUSPICION_STATES.CALM;
-    if (suspicionStateRank(nextState) <= suspicionStateRank(previous)) {
-      if (nextState === SUSPICION_STATES.INVESTIGATING) {
-        enemy.investigationTarget = { ...this.player.position };
-      }
-      return false;
-    }
-
-    enemy.suspicionState = nextState;
-    enemy.suspicionAction = action;
-    enemy.suspicionReason = notice?.reason ?? null;
-    if (nextState === SUSPICION_STATES.WATCHING) {
-      enemy.investigationTarget = { ...this.player.position };
-      this.#log(notice?.reason === 'seen'
-        ? `${enemy.name} catches movement.`
-        : `${enemy.name} pauses and listens.`);
-      return false;
-    }
-    if (nextState === SUSPICION_STATES.INVESTIGATING) {
-      enemy.investigationTarget = { ...this.player.position };
-      enemy.patrolTimer = 0;
-      this.#log(notice?.reason === 'seen'
-        ? `${enemy.name} moves to check the aisle.`
-        : `${enemy.name} moves to check the noise.`);
-      return false;
-    }
-    if (nextState === SUSPICION_STATES.ALERTED) {
-      this.#speakAggroLine(enemy);
-      this.#log(`${enemy.name} raises the alarm.`);
-      this.#alertEnemy(enemy);
-      return true;
-    }
-    return false;
+    return this.stealthRuntime.registerSuspiciousAction(severity, action, options);
   }
 
   #speakAggroLine(enemy) {
-    if (!enemy || enemy.isDead || !Array.isArray(enemy.aggro) || enemy.aggro.length === 0) return;
-    const index = enemy.aggroIndex ?? 0;
-    enemy.speech = {
-      text: enemy.aggro[index % enemy.aggro.length],
-      ttl: AGGRO_SPEECH_LIFE,
-      kind: 'aggro'
-    };
-    enemy.aggroIndex = index + 1;
-  }
-
-  #alertEnemy(enemy) {
-    if (this.mode === 'combat' && this.activeEncounter) {
-      const active = this.#resolveEncounterId(this.activeEncounter);
-      if (this.#resolveEncounterId(enemy.encounter) !== active) {
-        enemy.encounter = active;
-        if (!this.turnManager.order.includes(enemy)) {
-          enemy.resetAp();
-          this.turnManager.order.push(enemy);
-        }
-        this.#log(`${enemy.name} joins the fight.`);
-      }
-      return;
-    }
-    this.#closeUiScreen();
-    this.#startCombat(enemy.encounter);
+    this.stealthRuntime.speakAggroLine(enemy);
   }
 
   #enemyPerceptionRating(enemy, perception = null) {
@@ -3382,112 +2849,8 @@ export class Game {
     return base + (perception?.ratingBonus ?? 0);
   }
 
-  #perceptionDefaults() {
-    return {
-      visionRadius: this.level?.enemyVisionRadius ?? null,
-      coneDegrees: this.level?.enemyVisionCone ?? null,
-      hearingRadius: this.level?.enemyHearingRadius ?? null
-    };
-  }
-
   #advanceExplorePatrols(dt) {
-    if (this.mode !== 'explore' || this.uiScreen || this.moving || this.pathQueue.length > 0) return;
-    for (const actor of [...this.enemies, ...this.npcs]) {
-      if (actor.isDead || this.#isCellHidden(actor.position.x, actor.position.y)) continue;
-      const moveTarget = this.#exploreActorMoveTarget(actor, dt);
-      if (!moveTarget) continue;
-
-      if (moveTarget.delay != null) {
-        actor.patrolTimer = (actor.patrolTimer ?? moveTarget.delay) - dt;
-        if (actor.patrolTimer > 0) continue;
-      }
-
-      const moveResult = this.#moveActorTowardExploreTarget(actor, moveTarget);
-      if (moveResult.moved) {
-        actor.patrolTimer = moveTarget.delay ?? this.#patrolWaitAfterMove(actor, moveResult);
-        return;
-      }
-      actor.patrolTimer = moveTarget.delay ?? this.#patrolWaitAfterMove(actor, { reachedTarget: true });
-    }
-  }
-
-  #patrolWaitAfterMove(actor, moveResult) {
-    if (!moveResult?.reachedTarget) return 0;
-    if (actor.patrol?.mode === 'once') return 0;
-    return randomPatrolDelay(actor.patrol);
-  }
-
-  #exploreActorMoveTarget(actor, dt) {
-    if (actor.type === 'enemy' && actor.suspicionState === SUSPICION_STATES.INVESTIGATING && actor.investigationTarget) {
-      const target = actor.investigationTarget;
-      if (tileDistance(actor.position, target) <= 1) {
-        actor.suspicionState = SUSPICION_STATES.WATCHING;
-        actor.investigationTarget = null;
-        return null;
-      }
-      return { target, adjacent: true, delay: INVESTIGATE_STEP_DELAY };
-    }
-
-    const patrol = actor.patrol;
-    if (!patrol || patrol.complete || !Array.isArray(patrol.path) || patrol.path.length < 2) return null;
-    let target = patrol.path[patrol.index ?? 0];
-    if (target && actor.position.x === target.x && actor.position.y === target.y) {
-      if (patrol.mode === 'once' && (patrol.index ?? 0) >= patrol.path.length - 1) return null;
-      this.#advancePatrolIndex(actor);
-      if (patrol.complete) return null;
-      target = patrol.path[patrol.index ?? 0];
-      actor.patrolTimer = actor.patrolTimer ?? patrol.timer ?? randomPatrolDelay(patrol);
-    }
-    actor.patrolTimer = (actor.patrolTimer ?? 0) - dt;
-    if (actor.patrolTimer > 0) return null;
-    actor.patrolTimer = 0;
-    if (target && actor.position.x === target.x && actor.position.y === target.y) {
-      this.#advancePatrolIndex(actor);
-      if (patrol.complete) return null;
-      target = patrol.path[patrol.index ?? 0];
-    }
-    if (!target) return null;
-    return { target, adjacent: false };
-  }
-
-  #advancePatrolIndex(actor) {
-    const patrol = actor.patrol;
-    if (!patrol || !Array.isArray(patrol.path) || patrol.path.length < 2) return;
-    if (patrol.mode === 'once') {
-      const next = (patrol.index ?? 0) + 1;
-      if (next >= patrol.path.length) {
-        patrol.complete = true;
-        return;
-      }
-      patrol.index = next;
-      return;
-    }
-    if (patrol.mode === 'pingpong') {
-      const direction = patrol.direction === -1 ? -1 : 1;
-      let next = (patrol.index ?? 0) + direction;
-      if (next >= patrol.path.length || next < 0) {
-        patrol.direction = direction * -1;
-        next = (patrol.index ?? 0) + patrol.direction;
-      }
-      patrol.index = Math.max(0, Math.min(patrol.path.length - 1, next));
-      return;
-    }
-    patrol.index = ((patrol.index ?? 0) + 1) % patrol.path.length;
-  }
-
-  #moveActorTowardExploreTarget(actor, moveTarget) {
-    const occupied = this.#occupiedSet(actor);
-    const path = moveTarget.adjacent
-      ? findPathToAdjacent(this.grid, actor.position, moveTarget.target, occupied)
-      : findPath(this.grid, actor.position, moveTarget.target, occupied);
-    if (!path || path.length === 0) return { moved: false, reachedTarget: false };
-    const step = path[0];
-    const dir = {
-      x: Math.sign(step.x - actor.position.x),
-      y: Math.sign(step.y - actor.position.y)
-    };
-    const moved = this.#tryStep(actor, dir, { logBlock: false });
-    return { moved, reachedTarget: moved && path.length === 1 };
+    this.patrolSystem.advanceExplore(dt);
   }
 
   // ---- Animation & effects ----------------------------------------------
@@ -3789,106 +3152,18 @@ export class Game {
   // findings log that grows as the player discovers things, and the faction
   // codex whose cult entries unlock as the investigation advances.
   #buildJournal() {
-    return {
+    return buildJournalState({
       section: this.journalSection ?? 0,
-      sections: JOURNAL_SECTIONS,
-      turn: this.#journalTurnState(),
+      turn: this.journalTurn,
       factionIndex: this.journalFactionIndex ?? 0,
-      quests: this.#journalQuests(),
-      findings: this.#journalFindings(),
-      factions: this.#journalFactions(),
-      character: this.#journalCharacter()
-    };
-  }
-
-  #journalTurnState() {
-    if (!this.journalTurn) return null;
-    const duration = this.journalTurn.duration || JOURNAL_TURN_DURATION;
-    return {
-      from: this.journalTurn.from,
-      to: this.journalTurn.to,
-      direction: this.journalTurn.direction,
-      progress: Math.max(0, Math.min(1, this.journalTurn.age / duration))
-    };
-  }
-
-  #journalCharacter() {
-    return buildCharacterSheet(this.player);
-  }
-
-  #journalQuests() {
-    const quests = [];
-    for (const quest of Object.values(this.questDefs)) {
-      const stages = quest.stages ?? [];
-      const reached = this.questReached.get(quest.id) ?? new Set();
-      const currentStage = this.questStages.get(quest.id);
-      const isComplete = reached.has('complete') || currentStage === 'complete';
-      let bestIdx = -1;
-      stages.forEach((stage, i) => { if (reached.has(stage.id)) bestIdx = Math.max(bestIdx, i); });
-      const headStage = stages[bestIdx] ?? stages.find((stage) => stage.id === currentStage) ?? stages[0] ?? null;
-      const objectives = (quest.objectives ?? [])
-        .filter((obj) => !obj.reveal || reached.has(obj.reveal))
-        .map((obj) => {
-          if (obj.lead) return { text: obj.text, done: false, active: false, lead: true };
-          const done = isComplete || (obj.stage ? reached.has(obj.stage) : false);
-          return { text: obj.text, done, active: false, lead: false };
-        });
-      const firstOpen = objectives.find((obj) => !obj.lead && !obj.done);
-      if (firstOpen) {
-        firstOpen.active = true;
-      } else {
-        const lead = objectives.find((obj) => obj.lead);
-        if (lead) lead.active = true;
-      }
-      quests.push({
-        title: quest.title ?? quest.id,
-        task: headStage?.task ?? null,
-        note: headStage?.description ?? '',
-        complete: isComplete,
-        objectives
-      });
-    }
-    return quests;
-  }
-
-  // Findings accumulate: each reached quest stage logs its note, and each
-  // flag-gated field note appears once the player has actually seen the thing.
-  #journalFindings() {
-    const findings = [];
-    for (const quest of Object.values(this.questDefs)) {
-      const reached = this.questReached.get(quest.id) ?? new Set();
-      for (const stage of quest.stages ?? []) {
-        if (reached.has(stage.id) && stage.description) findings.push(stage.description);
-      }
-    }
-    for (const note of this.journalNotes ?? []) {
-      if (note.text && this.#journalConditionMet(note)) findings.push(note.text);
-    }
-    return findings;
-  }
-
-  #journalFactions() {
-    return (this.codexDefs ?? []).map((entry) => ({
-      name: entry.name,
-      kind: entry.kind ?? '',
-      summary: entry.summary ?? '',
-      facts: entry.facts ?? [],
-      known: !entry.unlockedBy || this.#journalConditionMet(entry.unlockedBy)
-    }));
-  }
-
-  // A flag/quest-stage gate shared by codex entries and field notes. A note may
-  // carry the condition inline; a codex entry nests it under `unlockedBy`.
-  #journalConditionMet(spec) {
-    if (!spec) return true;
-    if (spec.flag && this.flags.has(spec.flag)) return true;
-    if (spec.questStage) {
-      for (const [questId, stageId] of Object.entries(spec.questStage)) {
-        if ((this.questReached.get(questId) ?? new Set()).has(stageId)) return true;
-      }
-    }
-    if (!spec.flag && !spec.questStage) return true;
-    return false;
+      questDefs: this.questDefs,
+      questStages: this.questStages,
+      questReached: this.questReached,
+      journalNotes: this.journalNotes,
+      codexDefs: this.codexDefs,
+      flags: this.flags,
+      player: this.player
+    });
   }
 
   #snapshotLevelState() {
@@ -4160,19 +3435,7 @@ export class Game {
   }
 
   #enemyVisionCones() {
-    const defaults = this.#perceptionDefaults();
-    return this.enemies
-      .filter((enemy) => this.#canEnemyNoticeSuspicion(enemy))
-      .map((enemy) => ({
-        enemyId: enemy.spawnId ?? enemy.id,
-        state: enemy.suspicionState ?? SUSPICION_STATES.CALM,
-        cells: visionConeCells(enemy, {
-          grid: this.grid,
-          hiddenTiles: this.hiddenTiles,
-          defaults
-        }).map((cell) => cell.key)
-      }))
-      .filter((cone) => cone.cells.length > 0);
+    return this.stealthRuntime.visionCones();
   }
 
   #hoverTile() {
