@@ -875,3 +875,8 @@ npm run check
 The current validator parses JSON files and checks map, level, actor, enemy,
 item, dialogue, and quest shape. Expand it whenever new required data formats
 are added.
+
+`scripts/check-content.mjs` is the entry point. Focused validators live under
+`scripts/validation/` so level shape, dialogue shape, item shape, render catalog
+checks, and text rules can grow without turning the entry point into the whole
+pipeline.

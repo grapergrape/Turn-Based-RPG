@@ -144,8 +144,17 @@ Examples:
 - `Input.js`
 - `AssetLoader.js`
 - `ContentLoader.js`
+- `DialogueConditions.js`
+- `DialogueEffects.js`
+- `JournalState.js`
+- `LootSession.js`
+- `TradeSession.js`
 
 The core layer coordinates systems but should not contain setting-specific lore.
+`Game.js` remains the coordinator for input, mode changes, combat flow, level
+state, and render-state building. Reusable runtime rules that do not need to own
+the whole game instance belong in focused modules such as loot, trade, journal,
+dialogue conditions, and dialogue effects.
 
 ### `src/render/`
 
@@ -157,12 +166,21 @@ Examples:
 - `Camera.js`
 - `SpriteSheet.js`
 - `Animation.js`
+- `UIRenderer.js`
+- `PixelPrimitives.js`
+- `SpriteAtlas.js`
 
 Rules:
 
 - Renderer receives world/entity state and draws it.
 - Renderer should not decide game rules.
 - Renderer should not mutate combat outcomes.
+
+Large render surfaces can keep public facade modules when that keeps imports
+stable. `UIRenderer.js` delegates panel drawing to `src/render/ui/`;
+`PixelPrimitives.js` re-exports category modules under
+`src/render/primitives/`; and `SpriteAtlas.js` assembles sprite baking from
+modules under `src/render/sprites/`.
 
 ### `src/world/`
 
@@ -174,6 +192,8 @@ Examples:
 - `MapState.js`
 - `Pathfinder.js`
 - `Zone.js`
+- `PatrolSystem.js`
+- `StealthRuntime.js`
 
 Rules:
 
