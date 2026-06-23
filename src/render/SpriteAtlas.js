@@ -37,6 +37,22 @@ const POSES = {
     { bob: 1, legA: 0, legB: 0, armA: 0, armB: 0, cloth: -1 },
     { bob: 0, legA: -2, legB: 2, armA: 1, armB: -1, cloth: 0 }
   ],
+  sneakIdle: [
+    { bob: 0, armA: 3, armB: 4, cloth: -1, lean: 2, sneak: 14 },
+    { bob: 0, armA: 4, armB: 3, cloth: 0, lean: 2, sneak: 14 },
+    { bob: 1, armA: 4, armB: 2, cloth: 1, lean: 3, sneak: 15 },
+    { bob: 0, armA: 4, armB: 3, cloth: 0, lean: 2, sneak: 14 }
+  ],
+  sneak: [
+    { bob: 0, legA: -2, legB: 2, armA: 3, armB: 4, cloth: -1, lean: 2, sneak: 14 },
+    { bob: 0, legA: -1, legB: 1, armA: 4, armB: 3, cloth: 0, lean: 2, sneak: 14 },
+    { bob: 1, legA: 0, legB: 0, armA: 4, armB: 2, cloth: 1, lean: 3, sneak: 15 },
+    { bob: 0, legA: 1, legB: -1, armA: 3, armB: 3, cloth: 1, lean: 2, sneak: 14 },
+    { bob: 0, legA: 2, legB: -2, armA: 2, armB: 4, cloth: 0, lean: 2, sneak: 14 },
+    { bob: 0, legA: 1, legB: -1, armA: 3, armB: 3, cloth: -1, lean: 2, sneak: 14 },
+    { bob: 1, legA: 0, legB: 0, armA: 4, armB: 2, cloth: -1, lean: 3, sneak: 15 },
+    { bob: 0, legA: -1, legB: 1, armA: 4, armB: 3, cloth: 0, lean: 2, sneak: 14 }
+  ],
   attack: [
     { bob: 0, attack: 0, lean: -1 },
     { bob: 0, attack: 2, lean: -1 },
@@ -60,6 +76,10 @@ const POSES = {
     { bob: 0, reach: 0, lean: 0 }
   ]
 };
+
+export const SPRITE_POSE_FRAME_COUNTS = Object.freeze(
+  Object.fromEntries(Object.entries(POSES).map(([state, poses]) => [state, poses.length]))
+);
 
 function createCanvas(w, h) {
   const canvas = document.createElement('canvas');
@@ -319,15 +339,16 @@ function drawActorBase(ctx, w, h, facing, pose, style) {
   const cx = Math.floor(w / 2);
   const footY = h - 4;
   const bob = pose.bob ?? 0;
-  const hunch = style.hunch ?? 0;
-  const hipY = footY - style.legLength + bob + Math.floor(hunch * 0.4);
-  const shoulderY = hipY - style.torsoLength + Math.floor(hunch * 0.55);
-  const headY = shoulderY - style.headHeight + Math.floor(hunch * 0.25);
+  const sneak = pose.sneak ?? 0;
+  const baseHunch = style.hunch ?? 0;
+  const hipY = footY - style.legLength + bob + Math.floor(baseHunch * 0.4) + Math.floor(sneak * 0.62);
+  const shoulderY = hipY - style.torsoLength + Math.floor(baseHunch * 0.55) + Math.floor(sneak * 0.72);
+  const headY = shoulderY - style.headHeight + Math.floor(baseHunch * 0.25) + Math.floor(sneak * 0.32);
 
   const pants = ramp(style, 'pants');
   const coat = ramp(style, 'coat');
   const skin = ramp(style, 'skin');
-  const legSpread = meta.view === 'side' ? 2 : Math.max(3, Math.round(5 * scale));
+  const legSpread = meta.view === 'side' ? 2 : Math.max(3, Math.round(5 * scale) + Math.floor(sneak * 0.08));
   const legA = pose.legA ?? 0;
   const legB = pose.legB ?? 0;
   const armA = pose.armA ?? 0;
@@ -337,12 +358,12 @@ function drawActorBase(ctx, w, h, facing, pose, style) {
 
   const farLeg = {
     hip: { x: cx - legSpread - Math.round(meta.bodyTurn), y: hipY },
-    knee: { x: cx - legSpread + Math.round(legA * 0.45), y: hipY + Math.floor(style.legLength * 0.46) },
+    knee: { x: cx - legSpread + Math.round(legA * 0.45), y: hipY + Math.floor(style.legLength * 0.46) + Math.floor(sneak * 0.2) },
     foot: { x: cx - legSpread - 1 + Math.round(legA * 0.9), y: footY }
   };
   const nearLeg = {
     hip: { x: cx + legSpread - Math.round(meta.bodyTurn), y: hipY },
-    knee: { x: cx + legSpread + Math.round(legB * 0.45), y: hipY + Math.floor(style.legLength * 0.48) },
+    knee: { x: cx + legSpread + Math.round(legB * 0.45), y: hipY + Math.floor(style.legLength * 0.48) + Math.floor(sneak * 0.22) },
     foot: { x: cx + legSpread + 1 + Math.round(legB * 0.9), y: footY }
   };
 

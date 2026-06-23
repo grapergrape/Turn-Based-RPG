@@ -9,7 +9,7 @@
       "else": "ready",
       "lines": [
         "The rope hangs slack in your hand.",
-        "The basement bell has already spent its warning."
+        "The chapel bell has already spent its warning."
       ],
       "choices": [
         {
@@ -20,12 +20,16 @@
     },
     "ready": {
       "conditions": {
-        "flag": "ash-chapel-cult-broken"
+        "flags": [
+          "ash-chapel-bell-repaired",
+          "survivors-returning-chapel",
+          "ash-chapel-cult-broken"
+        ]
       },
       "else": "not-clear",
       "lines": [
-        "The basement rope hangs beside a bell set low in the east service hall.",
-        "Ringing it will tell the Remnant that Ash Chapel is safe enough to enter and that the settlement can be restored.",
+        "The repaired rope runs through the scored pulley and into the bell crown above you.",
+        "Ringing it will tell the Remnant that Ash Chapel is safe enough to enter and that the families can leave the dark.",
         "This ends the Chapel tutorial and moves you onto the Hallowfen road. Are you sure?"
       ],
       "choices": [
@@ -33,34 +37,43 @@
           "label": "Yes. Ring the bell",
           "effects": {
             "setFlag": "ash-chapel-bell-rung",
-            "log": "You haul the basement rope. Iron answers under the chapel.",
+            "log": "You haul the bell rope. Iron answers over Ash Chapel.",
             "questUpdate": {
               "quest": "investigate-ash-chapel-cult",
               "stage": "hallowfen-checkpoints",
-              "log": "Quest updated: the Remnant will hear the basement bell. The Hallowfen checkpoints still have not answered."
+              "log": "Quest updated: the chapel bell has rung. The Hallowfen checkpoints still have not answered."
             },
             "showBriefing": {
               "title": "ACT I: THE HALLOWFEN",
               "pages": [
                 [
-                  "The rope bites into your hands. In the basement wall, iron wakes after years of dust.",
-                  "The sound climbs through Ash Chapel in slow waves. It crosses the broken garden, the wall road, the catacomb stair, every room where someone is trying not to listen.",
+                  "The rope bites into your hands. Above the nave, old iron wakes after years of dust.",
+                  "The sound rolls through the bell room, down the wall stair, across the broken garden, and into every room where someone is trying not to listen.",
                   "The Remnant will know the chapel is safe enough to enter. Your writ is not finished."
                 ],
                 [
                   "You broke one cell, not the hand that sent it here.",
-                  "The Hallowfen checkpoints stopped answering before the Choir reached this house. No bell from the wall. No runner on the road. No mistake large enough to be innocent.",
+                  "The Hallowfen checkpoints stopped answering before this cult reached the house. No bell from the wall. No runner on the road. No mistake large enough to be innocent.",
                   "Follow the Hallowfen road. Find who silenced the towers."
                 ]
               ],
               "conditionalPages": [
                 {
                   "conditions": {
+                    "flag": "ash-chapel-choir-named"
+                  },
+                  "page": [
+                    "The ledger gave the cell its name: the Choir of the Open Wound.",
+                    "A Gate Mother's road order put Hallowfen in their path before the chapel went quiet. Whoever writes those orders knew the wall bells had stopped."
+                  ]
+                },
+                {
+                  "conditions": {
                     "flag": "survivors-returning-chapel"
                   },
                   "page": [
                     "Below, Selka starts counting people by name instead of by hiding place. The broom in her hands sounds too small for the work, and still she keeps at it.",
-                    "One child asks whether safe means forever. No one lies quickly enough."
+                    "Tomas stays beside the frame until the last vibration leaves the iron. He gives you one short nod toward the Hallowfen road."
                   ]
                 },
                 {
@@ -111,15 +124,50 @@
           "close": true
         },
         {
-          "label": "No. Explore this area",
+          "label": "No. Stay by the bell",
           "close": true
         }
       ]
     },
     "not-clear": {
+      "conditions": {
+        "flags": [
+          "ash-chapel-bell-repaired",
+          "survivors-returning-chapel"
+        ]
+      },
+      "else": "not-repaired",
       "lines": [
-        "The basement rope hangs beside a bell set low in the east service hall.",
-        "If the bell rings now, it calls people into a chapel that still has knives in it."
+        "The bell can ring now.",
+        "If it rings before the last cultists are dead, it calls people into a chapel that still has knives in it."
+      ],
+      "choices": [
+        {
+          "label": "Leave it still",
+          "close": true
+        }
+      ]
+    },
+    "not-repaired": {
+      "conditions": {
+        "flag": "tomas-bell-repair-known"
+      },
+      "else": "not-repaired-unknown",
+      "lines": [
+        "The rope pulls against a dead weight.",
+        "The bell frame is still sabotaged. Tomas Vek can set the missing pin once you bring him to the frame."
+      ],
+      "choices": [
+        {
+          "label": "Leave it still",
+          "close": true
+        }
+      ]
+    },
+    "not-repaired-unknown": {
+      "lines": [
+        "The rope pulls against a dead weight.",
+        "The bell frame is still sabotaged. Someone who knows old frames could set the missing pin."
       ],
       "choices": [
         {

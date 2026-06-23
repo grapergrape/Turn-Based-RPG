@@ -374,17 +374,27 @@ Search rules:
   `flagsAbsent` to show NPCs only after a run-state change.
 - Enemy spawns can define `ambient` as short overheard lines. These draw as
   subtitles above the NPC during exploration when the player is nearby.
+- Enemy files or spawns can define `aggro` as short alert barks. When that enemy
+  starts combat or raises an alarm, the runtime shows one bark above the actor.
+  A spawn `aggro` list overrides the enemy file list.
 - Enemy spawns can define `facing`, `perception`, and `patrol` for exploration
   awareness. Facing uses the eight actor facings: `e`, `se`, `s`, `sw`, `w`,
   `nw`, `n`, and `ne`. `perception.visionRadius` is measured in tiles,
   `perception.coneDegrees` sets the forward vision cone, and sight uses the same
   blocking rules as movement, so walls, closed doors, and blocking props stop
-  vision. Suspicious actions use the player's Stealth field against a DC derived
-  from the action severity and the observer's Search rating. Low suspicion starts
-  near 50, medium near 60, and high near 75 before observer bonuses. Optional
-  `perception.ratingBonus`, `perception.dcBonus`, and `perception.hearingRadius`
-  tune special guards without changing the engine. A level can set defaults with
-  `enemyVisionRadius`, `enemyVisionCone`, and `enemyHearingRadius`.
+  vision and cut the red cone overlay. The player presses `C` to crouch into
+  sneak mode. Red vision cones are shown only while crouched. Click and keyboard
+  movement use the crouched sneak animation while sneak mode is active. Holding
+  `Shift` during any active move step makes that step sprint until Shift is
+  released, including click-to-move paths already in progress. Movement does not
+  roll unless the player is inside an enemy's visible cone. When a roll is
+  needed, the player's Stealth field checks against a DC derived from the action
+  severity and the observer's Search rating. Sneaking is low suspicion, walking
+  is medium suspicion, and sprinting is high suspicion. Loud actions such as
+  gunfire can still use hearing. Optional `perception.ratingBonus`,
+  `perception.dcBonus`, and `perception.hearingRadius` tune special guards
+  without changing the engine. A level can set defaults with `enemyVisionRadius`,
+  `enemyVisionCone`, and `enemyHearingRadius`.
 
 ```json
 {
@@ -398,9 +408,13 @@ Search rules:
     "coneDegrees": 115,
     "ratingBonus": 8
   },
+  "aggro": [
+    "There. Breath in the aisle.",
+    "Close the road door."
+  ],
   "patrol": {
     "mode": "loop",
-    "delay": 1.4,
+    "delay": [1.0, 2.1],
     "path": [
       { "x": 4, "y": 14 },
       { "x": 5, "y": 13 },
@@ -411,18 +425,37 @@ Search rules:
 }
 ```
 
-- `patrol.path` needs at least two walkable points. `mode` can be `loop` or
-  `pingpong`; `delay` is seconds between patrol steps. Investigation uses the
-  same movement pathing toward the last suspicious tile, then the enemy resumes
-  the authored patrol.
+- Enemy and NPC spawns can define `patrol`. A bare array is treated as
+  `patrol.path`. A missing patrol, empty path, or one-point path means the actor
+  stands still. `patrol.path` needs at least two walkable route points. `mode`
+  can be `loop`, `pingpong`, or `once`. `delay` controls the random pause at each
+  route point before the actor walks toward the next point. Patrol dwell is
+  clamped to a minimum of 2.4 seconds so guards do not pace back and forth too
+  quickly. Use a number for a small random range around that average, `[min,
+  max]` for an explicit range, or `{ "min": 2.4, "max": 4.0 }`. `startDelay`
+  sets the initial wait and can be zero. `onComplete` uses the normal dialogue
+  effect shape when a `once` patrol reaches its final route point.
+  `removeOnComplete: true` removes the actor from the current level after those
+  effects fire, useful for someone exiting through a stair or door. Actors walk
+  tile by tile toward the next route point without waiting between every tile.
+  Investigation uses the same movement pathing toward the last suspicious tile,
+  then the enemy resumes the authored patrol.
 - Enemy spawns can define `dialogue` to make a living enemy talkable in explore
   mode. The id must also appear in the level `dialogue` list so the loader brings
   the scene in. Optional `talkRadius` controls manual E/Enter reach, and optional
   `dialogueTriggerRadius` opens the dialogue automatically when the player steps
   close enough. Use `aggroRadius: 0` when dialogue should happen before combat.
-- `combatTriggers` defines authored trigger zones. Each trigger should name an
-  `encounter`, use grid coordinates, set a `radius`, and include short `intro`
-  lines. Combat only activates living enemies in that encounter.
+- A level can define `combatStartBarks` as a compact array of spoken lines for
+  combat entry. When combat begins and no enemy has already barked an alarm, the
+  runtime picks one living enemy from that encounter and one line from the
+  collection. A `combatTrigger` can define its own `combatStartBarks` to override
+  the level collection for that encounter. Keep collections small and voice-safe:
+  the validator caps each collection at 12 lines.
+- `combatTriggers` defines authored encounter zones and intro text. Each trigger
+  should name an `encounter`, use grid coordinates, set a `radius`, and include
+  short `intro` lines. Stealth now owns normal enemy aggro, so these zones do not
+  force combat by default. Set `forceCombat: true` only for a scripted fight that
+  must start even when the player is outside all enemy cones.
 - `combatIntro` is a fallback list of log lines shown when an encounter has no
   trigger-specific intro.
 - `onVictory` uses the same effect shape as dialogue choices. At minimum this
@@ -498,6 +531,29 @@ Search rules:
 {
   "effects": {
     "xp": 50
+  }
+}
+```
+
+- Dialogue choice effects can use `moveActor` to send the current dialogue
+  speaker or a named actor along a one-shot route. `target: "speaker"` is the
+  default. The route is authored as grid points after the actor's current
+  position. Optional `onComplete` fires normal effects when the actor reaches the
+  last point. Use `removeOnComplete: true` when the actor should leave the
+  current level after arriving:
+
+```json
+{
+  "effects": {
+    "moveActor": {
+      "target": "speaker",
+      "path": [{ "x": 30, "y": 3 }],
+      "removeOnComplete": true,
+      "onComplete": {
+        "setFlag": "runner-at-stair",
+        "log": "The runner reaches the stair."
+      }
+    }
   }
 }
 ```

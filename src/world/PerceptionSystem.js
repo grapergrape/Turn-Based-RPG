@@ -27,7 +27,7 @@ export const SUSPICION_STATES = Object.freeze({
 });
 
 export const PERCEPTION_FACINGS = Object.freeze(['e', 'se', 's', 'sw', 'w', 'nw', 'n', 'ne']);
-export const PATROL_MODES = Object.freeze(['loop', 'pingpong']);
+export const PATROL_MODES = Object.freeze(['loop', 'pingpong', 'once']);
 
 const FACING_VECTORS = Object.freeze({
   e: { x: 1, y: 0 },
@@ -90,6 +90,31 @@ export function canSeeActor(observer, target, { grid, hiddenTiles = null, defaul
     return { canSee: false, reason: 'blocked', distance, perception };
   }
   return { canSee: true, reason: 'seen', distance, perception };
+}
+
+export function visionConeCells(observer, { grid, hiddenTiles = null, defaults = {} } = {}) {
+  const observerPoint = pointFor(observer);
+  if (!observerPoint || !grid?.isInside?.(observerPoint.x, observerPoint.y)) return [];
+  if (isHidden(observerPoint, hiddenTiles)) return [];
+
+  const perception = normalizePerception(observer, defaults);
+  const radius = Math.ceil(perception.visionRadius);
+  const cells = [];
+  for (let y = observerPoint.y - radius; y <= observerPoint.y + radius; y += 1) {
+    for (let x = observerPoint.x - radius; x <= observerPoint.x + radius; x += 1) {
+      if (x === observerPoint.x && y === observerPoint.y) continue;
+      if (!grid.isInside(x, y)) continue;
+      const targetPoint = { x, y };
+      if (isHidden(targetPoint, hiddenTiles)) continue;
+      const distance = tileDistance(observerPoint, targetPoint);
+      if (distance > perception.visionRadius) continue;
+      if (!isInsideFacingCone(observer, targetPoint, perception.coneDegrees)) continue;
+      if (!hasLineOfSight(observerPoint, targetPoint, { grid })) continue;
+      cells.push({ x, y, key: `${x},${y}`, distance });
+    }
+  }
+  cells.sort((a, b) => a.distance - b.distance || a.y - b.y || a.x - b.x);
+  return cells;
 }
 
 export function noticeSuspiciousAction(observer, target, { severity = SUSPICION_SEVERITY.LOW, grid, hiddenTiles = null, defaults = {} } = {}) {

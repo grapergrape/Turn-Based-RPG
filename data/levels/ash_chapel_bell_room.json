@@ -1,0 +1,236 @@
+{
+  "id": "ash-chapel-bell-room",
+  "name": "Ash Chapel Bell Room",
+  "intro": "The wall stair opens into a cramped bell room above the chapel. Wind threads through split shutters. The bell waits in its frame, muted by careful sabotage.",
+  "width": 14,
+  "height": 11,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "ash-chapel-bell-room-stairs",
+    "ash-chapel-bell-rope",
+    "ash-chapel-catacombs-tomas"
+  ],
+  "mood": {
+    "floorShade": "#14100e",
+    "floorShadeAlpha": 0.45,
+    "ambient": "#10161e",
+    "ambientAlpha": 0.12,
+    "vignette": 1.35
+  },
+  "tiles": [
+    "##############",
+    "#####W##W#####",
+    "###........###",
+    "##..........##",
+    "##..........##",
+    "##..........##",
+    "##..........##",
+    "##..........##",
+    "###........###",
+    "#####....#####",
+    "##############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    "W": {
+      "kind": "wall-window",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 7,
+      "y": 8
+    },
+    "enemies": [],
+    "npcs": [
+      {
+        "actor": "catacombs-survivor-tomas",
+        "x": 6,
+        "y": 8,
+        "dialogue": "ash-chapel-catacombs-tomas",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flags": [
+            "tomas-heading-to-bell"
+          ],
+          "flagsAbsent": [
+            "tomas-at-bell",
+            "ash-chapel-bell-repaired"
+          ]
+        },
+        "patrol": {
+          "mode": "once",
+          "startDelay": 0,
+          "path": [
+            {
+              "x": 6,
+              "y": 8
+            },
+            {
+              "x": 7,
+              "y": 4
+            }
+          ],
+          "onComplete": {
+            "setFlag": "tomas-at-bell",
+            "log": "Tomas reaches the bell frame and unrolls his tools."
+          }
+        },
+        "ambient": [
+          "Hold the rope still. I need the pin, not your hand."
+        ]
+      },
+      {
+        "actor": "catacombs-survivor-tomas",
+        "x": 7,
+        "y": 4,
+        "dialogue": "ash-chapel-catacombs-tomas",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "tomas-at-bell",
+          "flagsAbsent": [
+            "ash-chapel-bell-rung"
+          ]
+        },
+        "ambient": [
+          "The old frame is insulted, not dead."
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "kind": "wall-stair-door",
+      "x": 4,
+      "y": 9,
+      "blocking": true,
+      "name": "Bell Room Stair Door",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "ash-chapel-bell-room-stairs",
+        "log": "The stair drops through the chapel wall, steep and close."
+      }
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 5,
+      "y": 9,
+      "blocking": true,
+      "name": "Bell Room Stair Landing",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "ash-chapel-bell-room-stairs",
+        "log": "A worn landing stone drops toward the stair hidden in the chapel wall."
+      }
+    },
+    {
+      "kind": "broken-bell",
+      "x": 6,
+      "y": 3,
+      "blocking": true,
+      "name": "Sabotaged Bell"
+    },
+    {
+      "kind": "bell-rope",
+      "x": 7,
+      "y": 5,
+      "name": "Bell Rope",
+      "interact": {
+        "type": "bell",
+        "log": "The rope hangs from a scored pulley. It will not wake the bell until the sabotaged pin is set right.",
+        "lock": {
+          "id": "ash-chapel-bell-sabotage",
+          "title": "Sabotaged Bell",
+          "lines": [
+            "The cultists cut the clapper pin and jammed a wedge under the crown. The rope pulls weight, not sound.",
+            "This needs a hand that knows old bell frames. Guesswork will cost fingers."
+          ],
+          "methods": [
+            {
+              "id": "tomas-repairs-bell",
+              "label": "Let Tomas set the pin",
+              "conditions": {
+                "flag": "tomas-at-bell"
+              },
+              "successLog": "Tomas sets the clapper pin, kicks the wedge loose, and tests the rope with two sharp tugs.",
+              "success": {
+                "setFlag": [
+                  "ash-chapel-bell-repaired",
+                  "tomas-fixed-bell"
+                ],
+                "log": "Tomas leaves the bell ready under your hand. \"Hallowfen checkpoint next, then. Keep your head low, cult-breaker.\""
+              }
+            }
+          ]
+        },
+        "dialogue": "ash-chapel-bell-rope"
+      }
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 4,
+      "y": 4
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 9,
+      "y": 4
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 3,
+      "y": 7
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 10,
+      "y": 7,
+      "blocking": true,
+      "name": "Bell Keeper's Crate",
+      "interact": {
+        "type": "container",
+        "log": "The crate holds spare rope fiber, cracked oil tins, and one dry field dressing.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "floor-crack",
+      "x": 6,
+      "y": 6
+    },
+    {
+      "kind": "glass-debris",
+      "x": 8,
+      "y": 4
+    },
+    {
+      "kind": "dust",
+      "x": 5,
+      "y": 7
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 8,
+      "y": 6
+    }
+  ]
+}

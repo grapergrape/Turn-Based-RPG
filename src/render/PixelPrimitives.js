@@ -1712,6 +1712,130 @@ export function drawRustedBarrel(ctx, cx, cy, seed, opts = {}) {
   }
 }
 
+export function drawStoneStairwell(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 59, seed * 7 + 13));
+  drawShadowBlob(ctx, cx, cy + 10, 72, 26);
+
+  const topY = cy - 15;
+  const ovalHalf = (rx, ry, dy) => Math.max(0, Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy * dy) / (ry * ry)))));
+
+  // Dropped stone skirt under the round stair-head. It gives the opening weight
+  // without turning it back into a rectangular block.
+  for (let dy = 3; dy <= 20; dy += 1) {
+    const half = ovalHalf(35, 16, dy - 3);
+    if (half < 4) continue;
+    const y = topY + dy;
+    px(ctx, cx - half - 2, y, PALETTE.outline, half * 2 + 4, 1);
+    px(ctx, cx - half, y, PALETTE.stoneMid, half, 1);
+    px(ctx, cx, y, PALETTE.stoneDark, half, 1);
+    if (dy % 5 === 0) px(ctx, cx - half + 5, y, PALETTE.stoneDust, 4, 1);
+  }
+
+  // Stepped oval rim: a broken masonry ring around the stair void.
+  for (let dy = -15; dy <= 15; dy += 1) {
+    const half = ovalHalf(37, 15, dy);
+    if (half < 4) continue;
+    const y = topY + dy;
+    const leftTone = dy < -6 ? PALETTE.stoneDust : dy < 4 ? PALETTE.stoneMid : PALETTE.stoneLight;
+    const rightTone = dy < 0 ? PALETTE.stoneMid : PALETTE.stoneDark;
+    px(ctx, cx - half - 2, y, PALETTE.outline, half * 2 + 4, 1);
+    px(ctx, cx - half, y, leftTone, half, 1);
+    px(ctx, cx, y, rightTone, half, 1);
+  }
+  for (let dy = -10; dy <= 12; dy += 1) {
+    const half = ovalHalf(26, 11, dy);
+    if (half < 3) continue;
+    const y = topY + dy;
+    px(ctx, cx - half - 2, y, PALETTE.outline, half * 2 + 4, 1);
+    px(ctx, cx - half, y, PALETTE.void, half * 2, 1);
+    if (dy < -5) px(ctx, cx - half, y, PALETTE.stoneDark, Math.max(4, Math.floor(half * 0.45)), 1);
+  }
+
+  // Curving treads, bright near the entry and fading into the stairwell.
+  for (let i = 0; i < 8; i += 1) {
+    const y = topY - 7 + i * 4;
+    const w = 41 - i * 4;
+    const lean = i < 4 ? i * 2 : 8 - i;
+    const tone = i < 2 ? PALETTE.stoneDust : i < 5 ? PALETTE.stoneMid : PALETTE.stoneDark;
+    linePx(ctx, cx - Math.floor(w / 2) + lean, y + 1, cx + Math.floor(w / 2) - lean, y - 3, PALETTE.outline, 2);
+    linePx(ctx, cx - Math.floor(w / 2) + lean + 2, y, cx + Math.floor(w / 2) - lean - 2, y - 3, tone, 1);
+  }
+  linePx(ctx, cx + 9, topY - 8, cx - 5, topY + 12, PALETTE.outline, 2);
+  linePx(ctx, cx + 8, topY - 9, cx - 6, topY + 11, PALETTE.rustMid, 1);
+
+  const rail = (points, color, size = 1) => {
+    for (let i = 1; i < points.length; i += 1) {
+      linePx(ctx, points[i - 1][0], points[i - 1][1], points[i][0], points[i][1], color, size);
+    }
+  };
+  const shifted = (points, y) => points.map((point) => [point[0], point[1] + y]);
+  const post = (x, baseY, height, lit = false) => {
+    px(ctx, x - 2, baseY - height, PALETTE.outline, 5, height + 3);
+    px(ctx, x - 1, baseY - height + 1, PALETTE.rustDark, 3, height);
+    px(ctx, x, baseY - height + 1, lit ? PALETTE.stoneLight : PALETTE.rustMid, 1, height - 2);
+    px(ctx, x - 4, baseY + 1, PALETTE.outline, 9, 3);
+    px(ctx, x - 3, baseY + 1, PALETTE.rustDark, 7, 1);
+  };
+
+  const backArc = [
+    [cx - 34, topY - 25],
+    [cx - 24, topY - 33],
+    [cx - 8, topY - 37],
+    [cx + 9, topY - 37],
+    [cx + 25, topY - 33],
+    [cx + 34, topY - 25]
+  ];
+  const leftArc = [
+    [cx - 34, topY - 25],
+    [cx - 38, topY - 14],
+    [cx - 35, topY - 2],
+    [cx - 25, topY + 6]
+  ];
+  const rightArc = [
+    [cx + 34, topY - 25],
+    [cx + 38, topY - 14],
+    [cx + 35, topY - 2],
+    [cx + 25, topY + 6]
+  ];
+
+  rail(shifted(backArc, 12), PALETTE.outline, 2);
+  rail(shifted(backArc, 12), PALETTE.rustDark, 1);
+  rail(shifted(leftArc, 11), PALETTE.outline, 2);
+  rail(shifted(leftArc, 11), PALETTE.rustDark, 1);
+  rail(shifted(rightArc, 11), PALETTE.outline, 2);
+  rail(shifted(rightArc, 11), PALETTE.rustDark, 1);
+
+  for (const spec of [
+    [cx - 31, topY - 1, 31, true],
+    [cx - 10, topY - 12, 27, true],
+    [cx + 11, topY - 12, 27, false],
+    [cx + 31, topY - 1, 31, false],
+    [cx - 24, topY + 15, 42, true],
+    [cx + 24, topY + 15, 42, false]
+  ]) post(spec[0], spec[1], spec[2], spec[3]);
+
+  rail(backArc, PALETTE.outline, 3);
+  rail(backArc, PALETTE.rustDark, 2);
+  rail(backArc.slice(0, 4), PALETTE.stoneLight, 1);
+  rail(leftArc, PALETTE.outline, 3);
+  rail(leftArc, PALETTE.rustDark, 2);
+  rail(leftArc.slice(0, 3), PALETTE.stoneLight, 1);
+  rail(rightArc, PALETTE.outline, 3);
+  rail(rightArc, PALETTE.rustDark, 2);
+  rail(rightArc, PALETTE.rustMid, 1);
+
+  // Short entry rails sell the spiral route down through the gap.
+  linePx(ctx, cx - 10, topY + 5, cx - 1, topY + 17, PALETTE.outline, 3);
+  linePx(ctx, cx - 9, topY + 5, cx, topY + 16, PALETTE.rustMid, 1);
+  linePx(ctx, cx + 11, topY + 5, cx + 2, topY + 17, PALETTE.outline, 3);
+  linePx(ctx, cx + 10, topY + 5, cx + 1, topY + 16, PALETTE.rustDark, 1);
+
+  drawNoisePixels(ctx, cx - 34, topY - 13, 68, 35, [PALETTE.stoneDark, PALETTE.stoneDust], 0.045, seed);
+  for (let i = 0; i < 5; i += 1) {
+    px(ctx, cx - 26 + Math.floor(rng() * 52), topY - 10 + Math.floor(rng() * 24), PALETTE.void, 1, 1);
+  }
+}
+
 export function drawPaperScraps(ctx, cx, cy, seed) {
   ctx.save();
   ctx.globalAlpha = 0.9;
@@ -2069,38 +2193,102 @@ export function drawChapelBanner(ctx, cx, cy, seed) {
 }
 
 export function drawBrokenBell(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 8, 54, 20);
-  drawIsoPrism(ctx, cx, cy + 1, 48, 24, 16, {
-    top: PALETTE.rustLight,
-    left: PALETTE.rustMid,
-    right: PALETTE.rustDark,
-    outline: PALETTE.outline
-  });
-  px(ctx, cx - 18, cy - 15, PALETTE.stoneDark, 37, 4);
-  px(ctx, cx - 14, cy - 26, PALETTE.rustDark, 29, 15);
-  px(ctx, cx - 11, cy - 27, PALETTE.rustLight, 21, 3);
-  px(ctx, cx + 3, cy - 13, PALETTE.void, 10, 7);
-  px(ctx, cx - 2, cy - 19, PALETTE.hostGold, 5, 5);
-  drawNoisePixels(ctx, cx - 18, cy - 27, 36, 20, [PALETTE.rustDark, PALETTE.stoneDark], 0.07, seed);
+  const rng = rngFrom(hash2D(seed + 23, seed * 5 + 3));
+  drawShadowBlob(ctx, cx, cy + 8, 72, 25);
+
+  // Heavy keeper frame. The upper beam makes the bell read as hanging in a
+  // tower room, while the skewed brace sells cult sabotage rather than age.
+  px(ctx, cx - 31, cy - 66, PALETTE.outline, 9, 70);
+  px(ctx, cx + 22, cy - 66, PALETTE.outline, 9, 70);
+  px(ctx, cx - 29, cy - 65, PALETTE.woodDark, 5, 67);
+  px(ctx, cx + 24, cy - 65, PALETTE.woodDark, 5, 67);
+  px(ctx, cx - 28, cy - 64, PALETTE.woodMid, 2, 64);
+  px(ctx, cx + 25, cy - 64, PALETTE.woodMid, 2, 64);
+  px(ctx, cx - 35, cy - 72, PALETTE.outline, 71, 9);
+  px(ctx, cx - 33, cy - 70, PALETTE.woodDark, 67, 5);
+  px(ctx, cx - 31, cy - 70, PALETTE.woodLight, 28, 1);
+  linePx(ctx, cx - 28, cy - 60, cx + 24, cy - 15, PALETTE.outline, 4);
+  linePx(ctx, cx - 27, cy - 60, cx + 22, cy - 16, PALETTE.woodDark, 2);
+
+  // Crown and hanger, with the cut pin socket called out in brass.
+  px(ctx, cx - 9, cy - 66, PALETTE.outline, 19, 10);
+  px(ctx, cx - 7, cy - 65, PALETTE.rustDark, 15, 7);
+  px(ctx, cx - 5, cy - 64, PALETTE.rustLight, 6, 2);
+  px(ctx, cx + 6, cy - 62, PALETTE.hostGold, 4, 3);
+  px(ctx, cx + 9, cy - 61, PALETTE.void, 5, 2);
+
+  // Bell body: stepped rows, wider at the mouth, lit on the upper-left.
+  for (let row = 0; row < 36; row += 1) {
+    const t = row / 35;
+    const half = Math.round(12 + t * 19 + (row > 27 ? 3 : 0));
+    const y = cy - 55 + row;
+    px(ctx, cx - half - 1, y, PALETTE.outline, half * 2 + 2, 1);
+    px(ctx, cx - half, y, row < 5 ? PALETTE.rustLight : PALETTE.rustMid, half, 1);
+    px(ctx, cx, y, row < 6 ? PALETTE.rustMid : PALETTE.rustDark, half, 1);
+    if (row % 7 === 1) px(ctx, cx - half + 4, y, PALETTE.rustLight, 4, 1);
+  }
+  px(ctx, cx - 32, cy - 18, PALETTE.outline, 65, 6);
+  px(ctx, cx - 29, cy - 17, PALETTE.rustLight, 24, 2);
+  px(ctx, cx - 3, cy - 17, PALETTE.rustDark, 31, 2);
+  px(ctx, cx - 13, cy - 16, PALETTE.void, 27, 3);
+
+  // Jagged crack, missing clapper, and wooden wedge jammed under the crown.
+  linePx(ctx, cx + 5, cy - 49, cx - 1, cy - 39, PALETTE.void, 2);
+  linePx(ctx, cx - 1, cy - 39, cx + 8, cy - 31, PALETTE.void, 2);
+  linePx(ctx, cx + 8, cy - 31, cx + 2, cy - 22, PALETTE.void, 2);
+  px(ctx, cx + 1, cy - 40, PALETTE.hostGold, 2, 1);
+  px(ctx, cx - 11, cy - 60, PALETTE.woodDark, 22, 5);
+  px(ctx, cx - 9, cy - 59, PALETTE.woodMid, 17, 2);
+  px(ctx, cx - 4, cy - 24, PALETTE.outline, 9, 5);
+  px(ctx, cx - 2, cy - 23, PALETTE.rustDark, 5, 3);
+
+  for (let i = 0; i < 11; i += 1) {
+    px(ctx, cx - 28 + Math.floor(rng() * 56), cy - 52 + Math.floor(rng() * 36), rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark, 1, 1);
+  }
+  drawNoisePixels(ctx, cx - 30, cy - 56, 60, 39, [PALETTE.rustDark, PALETTE.stoneDark], 0.045, seed);
 }
 
-export function drawBellRope(ctx, cx, cy, seed) {
-  const sway = (seed & 1) ? 1 : 0;
-  drawShadowBlob(ctx, cx, cy + 4, 18, 7);
-  px(ctx, cx - 13, cy - 84, PALETTE.outline, 26, 6);
-  px(ctx, cx - 10, cy - 83, PALETTE.stoneDark, 20, 3);
-  px(ctx, cx - 2 + sway, cy - 84, PALETTE.woodDark, 4, 76);
-  px(ctx, cx - 1 + sway, cy - 82, PALETTE.clothTan, 1, 69);
-  for (let y = cy - 78, i = 0; y < cy - 16; y += 8, i += 1) {
-    px(ctx, cx - 3 + sway, y, PALETTE.woodMid, 2, 3);
-    px(ctx, cx + 2 + sway + (i % 2), y + 3, PALETTE.woodMid, 2, 3);
+export function drawBellRope(ctx, cx, cy, seed, opts = {}) {
+  const repaired = Boolean(opts.repaired);
+  const sway = repaired ? 0 : ((seed & 1) ? 1 : -1);
+  drawShadowBlob(ctx, cx, cy + 4, repaired ? 18 : 23, 8);
+
+  // Pulley bracket and grooved wheel.
+  px(ctx, cx - 15, cy - 91, PALETTE.outline, 31, 7);
+  px(ctx, cx - 12, cy - 90, PALETTE.stoneDark, 25, 4);
+  px(ctx, cx - 6, cy - 95, PALETTE.outline, 13, 12);
+  px(ctx, cx - 4, cy - 93, PALETTE.rustDark, 9, 8);
+  px(ctx, cx - 2, cy - 91, PALETTE.rustLight, 5, 2);
+  px(ctx, cx, cy - 90, PALETTE.void, 2, 2);
+
+  const ropeX = cx + sway;
+  const ropeTop = cy - 84;
+  const ropeBot = cy - 14;
+  px(ctx, ropeX - 2, ropeTop, PALETTE.woodDark, 5, ropeBot - ropeTop);
+  px(ctx, ropeX - 1, ropeTop + 1, PALETTE.clothTan, 1, ropeBot - ropeTop - 5);
+  for (let y = ropeTop + 5, i = 0; y < ropeBot - 2; y += 8, i += 1) {
+    px(ctx, ropeX - 3, y, PALETTE.woodMid, 2, 3);
+    px(ctx, ropeX + 2 + (i % 2), y + 3, PALETTE.woodMid, 2, 3);
   }
-  px(ctx, cx - 5 + sway, cy - 16, PALETTE.outline, 10, 8);
-  px(ctx, cx - 4 + sway, cy - 15, PALETTE.woodDark, 8, 6);
-  px(ctx, cx - 2 + sway, cy - 14, PALETTE.clothTan, 3, 4);
-  px(ctx, cx - 7 + sway, cy - 7, PALETTE.woodDark, 14, 4);
-  px(ctx, cx - 5 + sway, cy - 6, PALETTE.clothTan, 9, 1);
-  drawNoisePixels(ctx, cx - 12, cy - 18, 24, 18, [PALETTE.stoneDark, PALETTE.woodDark], 0.05, seed);
+
+  if (repaired) {
+    px(ctx, ropeX - 5, cy - 19, PALETTE.outline, 11, 8);
+    px(ctx, ropeX - 4, cy - 18, PALETTE.woodDark, 9, 5);
+    px(ctx, ropeX - 2, cy - 17, PALETTE.clothTan, 4, 3);
+    px(ctx, ropeX - 7, cy - 9, PALETTE.outline, 15, 5);
+    px(ctx, ropeX - 5, cy - 8, PALETTE.clothTan, 10, 2);
+    px(ctx, ropeX + 3, cy - 83, PALETTE.hostGold, 4, 3);
+  } else {
+    px(ctx, ropeX - 7, cy - 20, PALETTE.outline, 13, 7);
+    px(ctx, ropeX - 5, cy - 19, PALETTE.woodDark, 9, 4);
+    for (const fray of [-6, -2, 3, 6]) {
+      linePx(ctx, ropeX + fray, cy - 14, ropeX + fray + Math.sign(fray || 1) * 4, cy - 7, PALETTE.clothTan, 1);
+      px(ctx, ropeX + fray, cy - 14, PALETTE.woodDark, 1, 5);
+    }
+    px(ctx, ropeX - 10, cy - 87, PALETTE.woodDark, 21, 4);
+    px(ctx, ropeX - 8, cy - 86, PALETTE.woodMid, 15, 1);
+  }
+  drawNoisePixels(ctx, cx - 14, cy - 21, 28, 19, [PALETTE.stoneDark, PALETTE.woodDark], 0.05, seed);
 }
 
 export function drawPrayerLectern(ctx, cx, cy, seed) {
@@ -2890,12 +3078,28 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
 // Host only (sick pallor, a few black-gold veins, a bud of bone), gagged and
 // roped. opts: { pulse, flicker, killed, dim }
 export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
+  const rng = rngFrom(hash2D(seed + 129, seed * 5 + 31));
   const pulse = opts.pulse ?? 0;
   const flicker = opts.flicker ?? 0;
   const killed = Boolean(opts.killed);
   const dim = Boolean(opts.dim);
-  const topY = cy - 56;
+  const side = (seed & 1) ? 1 : -1;
+  const lean = side * (1 + Math.floor(rng() * 2));
+  const topY = cy - 58;
   const footY = cy - 4;
+  const barY = topY + 7;
+  const shoulderY = topY + 20 + (killed ? 2 : 0);
+  const chestY = shoulderY + 5;
+  const hipY = footY - 19;
+  const kneeY = footY - 10;
+  const headX = cx + lean + side;
+  const headY = topY + 11 + (killed ? 3 : 0);
+
+  const limb = (x0, y0, x1, y1, mid, hi = null) => {
+    linePx(ctx, x0, y0, x1, y1, PALETTE.outline, 3);
+    linePx(ctx, x0, y0, x1, y1, mid, 2);
+    if (hi) linePx(ctx, x0, y0, x1, y1 - 1, hi, 1);
+  };
 
   drawShadowBlob(ctx, cx, cy + 2, 28, 12);
 
@@ -2912,58 +3116,109 @@ export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
     ctx.restore();
   }
 
-  // The post + a short bar near the top to lash the wrists to.
-  px(ctx, cx - 2, topY, PALETTE.outline, 6, footY - topY + 2);
-  px(ctx, cx - 1, topY, PALETTE.woodDark, 4, footY - topY);
+  // Post and wrist bar, rough enough to read as a lash-up, not a clean sign.
+  px(ctx, cx - 3, topY - 1, PALETTE.outline, 7, footY - topY + 4);
+  px(ctx, cx - 2, topY, PALETTE.woodDark, 5, footY - topY + 1);
   px(ctx, cx - 1, topY, PALETTE.woodMid, 2, footY - topY);
-  px(ctx, cx - 10, topY + 6, PALETTE.outline, 21, 4);
-  px(ctx, cx - 9, topY + 7, PALETTE.woodDark, 19, 2);
-  px(ctx, cx - 9, topY + 7, PALETTE.woodMid, 19, 1);
+  px(ctx, cx + 2, topY + 4, PALETTE.woodLight, 1, 19);
+  px(ctx, cx - 13, barY - 1, PALETTE.outline, 28, 5);
+  px(ctx, cx - 12, barY, PALETTE.woodDark, 26, 3);
+  px(ctx, cx - 11, barY, PALETTE.woodMid, 22, 1);
+  px(ctx, cx - 7, barY + 3, PALETTE.woodLight, 4, 1);
+  px(ctx, cx + 8, barY + 3, PALETTE.woodLight, 3, 1);
 
-  // Wrists wrenched up to the bar and roped.
-  px(ctx, cx - 9, topY + 9, PALETTE.skinDark, 4, 2);
-  px(ctx, cx + 6, topY + 9, PALETTE.skinDark, 4, 2);
-  px(ctx, cx - 11, topY + 7, PALETTE.clothTan, 4, 2);
-  px(ctx, cx + 8, topY + 7, PALETTE.clothTan, 4, 2);
+  const leftWrist = { x: cx - 10, y: barY + 4 };
+  const rightWrist = { x: cx + 9, y: barY + 3 };
+  const leftElbow = { x: cx + lean - 7, y: shoulderY - 5 };
+  const rightElbow = { x: cx + lean + 8, y: shoulderY - 7 };
+  const leftShoulder = { x: cx + lean - 5, y: shoulderY };
+  const rightShoulder = { x: cx + lean + 6, y: shoulderY - 1 };
 
-  // Head, lolling forward, gagged.
-  const hy = topY + 11 + (killed ? 3 : 0);
-  px(ctx, cx - 4, hy, PALETTE.outline, 9, 9);
-  px(ctx, cx - 3, hy, PALETTE.skinMid, 7, 8);
-  px(ctx, cx - 3, hy, PALETTE.skinDark, 7, 2);
-  if (!killed) {
-    px(ctx, cx - 2, hy + 3, PALETTE.void, 1, 1); // hollow eyes
-    px(ctx, cx + 1, hy + 3, PALETTE.void, 1, 1);
-    px(ctx, cx - 2, hy + 5, PALETTE.clothDark, 5, 2); // a gag
-    px(ctx, cx, hy, PALETTE.hostBone, 2, 1); // a first bud of bone at the temple
-  } else {
-    px(ctx, cx - 3, hy + 6, PALETTE.skinDark, 7, 1);
+  // Arms are pulled high but bent at the joints, with swollen hands at the rope.
+  limb(leftWrist.x, leftWrist.y, leftElbow.x, leftElbow.y, PALETTE.skinDark, PALETTE.skinMid);
+  limb(leftElbow.x, leftElbow.y, leftShoulder.x, leftShoulder.y, PALETTE.skinMid, PALETTE.skinLight);
+  limb(rightWrist.x, rightWrist.y, rightElbow.x, rightElbow.y, PALETTE.skinDark, PALETTE.skinMid);
+  limb(rightElbow.x, rightElbow.y, rightShoulder.x, rightShoulder.y, PALETTE.skinMid, PALETTE.skinLight);
+  for (const w of [leftWrist, rightWrist]) {
+    px(ctx, w.x - 2, w.y - 1, PALETTE.clothTan, 6, 2);
+    px(ctx, w.x - 1, w.y + 1, PALETTE.rustDark, 4, 1);
+    px(ctx, w.x + (w === leftWrist ? -2 : 2), w.y + 2, PALETTE.skinDark, 2, 2);
   }
-  px(ctx, cx - 3, hy + 8, PALETTE.clothTan, 7, 1); // a roped collar to the post
 
-  // Torso, sagging in a torn shift -- whole, NOT opened.
-  const tTop = hy + 9;
-  const tBot = footY - 12;
-  for (let row = 0; row <= tBot - tTop; row += 1) {
-    const w = 11 - Math.floor(row / 6);
-    px(ctx, cx - Math.floor(w / 2), tTop + row, PALETTE.clothDark, w, 1);
+  // Bowed, gagged human head. No readable eyes or smile at this scale.
+  const headRows = [
+    [3, 1, PALETTE.skinDark],
+    [6, 0, PALETTE.skinMid],
+    [8, 0, PALETTE.skinMid],
+    [8, 1, PALETTE.skinMid],
+    [7, 1, PALETTE.skinDark],
+    [5, 2, PALETTE.skinDark],
+    [3, 2, PALETTE.skinMid]
+  ];
+  for (let row = 0; row < headRows.length; row += 1) {
+    const [w, off, color] = headRows[row];
+    const x = headX - Math.floor(w / 2) + off;
+    const y = headY + row;
+    px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y, color, w, 1);
+    if (row < 4) px(ctx, x, y, PALETTE.skinLight, 1, 1);
   }
-  px(ctx, cx - 5, tTop, PALETTE.skinDark, 1, tBot - tTop); // a sliver of pale skin
-  // Early black-gold creeping up, and a small forming wound (a bud, not a cavity).
-  px(ctx, cx - 1, tTop + 1, PALETTE.hostGold, 1, 8);
-  px(ctx, cx + 2, tTop + 4, PALETTE.hostGold, 1, 6);
-  if (!killed) px(ctx, cx, tTop + 5, pulse ? PALETTE.hostGlow : PALETTE.hostGold, 1, 2);
-  px(ctx, cx - 5, tBot - 2, PALETTE.clothTan, 11, 1); // rope around the waist to the post
+  px(ctx, headX - 4, headY + 2, PALETTE.hostBlack, 7, 1); // shadowed brow, not cartoon eyes
+  px(ctx, headX - 3, headY + 5, PALETTE.clothDark, 8, 2); // gag strap
+  px(ctx, headX - 2, headY + 5, PALETTE.clothTan, 5, 1);
+  px(ctx, headX + side * 4, headY + 1, PALETTE.hostBone, 2, 2); // first temple bone bud
+  px(ctx, headX + side * 6, headY, PALETTE.outline, 1, 2);
+  if (killed) px(ctx, headX - 3, headY + 6, PALETTE.void, 6, 1);
 
-  // Legs, slack and bound.
-  const lTop = tBot + 1;
-  for (let row = 0; row < footY - lTop; row += 1) {
-    const w = 6 - Math.floor(row / 5);
-    px(ctx, cx - Math.floor(w / 2), lTop + row, PALETTE.clothDark, w, 1);
+  // Collar and throat tie pull the head back into the post.
+  px(ctx, cx + lean - 5, shoulderY - 4, PALETTE.clothTan, 11, 2);
+  linePx(ctx, cx + lean + side * 2, shoulderY - 3, cx + side * 6, topY + 19, PALETTE.rustDark, 1);
+  px(ctx, cx + side * 6 - 1, topY + 18, PALETTE.stoneDark, 3, 2);
+
+  // A slumped, torn body. The rows drift so the silhouette stops reading as a box.
+  for (let y = shoulderY; y <= hipY; y += 1) {
+    const t = (y - shoulderY) / Math.max(1, hipY - shoulderY);
+    const w = Math.round(13 - t * 4);
+    const drift = Math.round(lean * (1 - t) + side * Math.sin(t * Math.PI) * 2);
+    const lx = cx + drift - Math.floor(w / 2);
+    const tone = y < chestY + 2 ? PALETTE.skinMid : y < hipY - 3 ? PALETTE.clothDark : PALETTE.stoneDark;
+    px(ctx, lx - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, lx, y, tone, w, 1);
+    px(ctx, lx, y, y < chestY + 5 ? PALETTE.skinLight : PALETTE.clothTan, 1, 1);
+    px(ctx, lx + w - 1, y, y < chestY + 5 ? PALETTE.skinDark : PALETTE.void, 1, 1);
+    if (y === chestY + 7 || y === hipY - 3) px(ctx, lx - 1, y, PALETTE.clothTan, w + 2, 1);
   }
-  px(ctx, cx - 4, footY - 2, PALETTE.stoneDark, 9, 2); // bound ankles
-  // Old blood at the base from being held a while -- but no carving gore.
-  drawNoisePixels(ctx, cx - 8, cy - 3, 16, 8, [PALETTE.hostRed, PALETTE.rustDark], 0.05, seed);
+
+  // Torn-open shirt edge, early black-gold seams, and one small living wound.
+  linePx(ctx, cx + lean - 2, chestY - 1, cx + lean - 4, hipY - 6, PALETTE.hostBlack, 1);
+  linePx(ctx, cx + lean - 1, chestY, cx + lean - 3, hipY - 7, PALETTE.hostGold, 1);
+  linePx(ctx, cx + lean + 3, chestY + 3, cx + lean + 1, hipY - 8, PALETTE.hostGold, 1);
+  px(ctx, cx + lean - 1, chestY + 6, killed ? PALETTE.hostBlack : (pulse ? PALETTE.hostGlow : PALETTE.hostGold), 2, 2);
+  px(ctx, cx + lean + side * 6, shoulderY + 1, PALETTE.hostBone, 2, 3);
+  px(ctx, cx + lean + side * 8, shoulderY, PALETTE.outline, 1, 2);
+  px(ctx, cx + lean - side * 5, chestY + 2, PALETTE.rustDark, 5, 1);
+  px(ctx, cx + lean + side * 2, chestY + 9, PALETTE.hostRed, 2, 1);
+
+  // Slack legs, still human and thin, with one knee folding inward.
+  const leftHip = { x: cx + lean - 3, y: hipY };
+  const rightHip = { x: cx + lean + 4, y: hipY - 1 };
+  const leftKnee = { x: cx + lean - 5 - side, y: kneeY };
+  const rightKnee = { x: cx + lean + 3 + side, y: kneeY - 1 };
+  const leftAnkle = { x: cx - 4, y: footY - 2 };
+  const rightAnkle = { x: cx + 5, y: footY - 3 };
+  limb(leftHip.x, leftHip.y, leftKnee.x, leftKnee.y, PALETTE.clothDark, PALETTE.stoneMid);
+  limb(leftKnee.x, leftKnee.y, leftAnkle.x, leftAnkle.y, PALETTE.clothDark);
+  limb(rightHip.x, rightHip.y, rightKnee.x, rightKnee.y, PALETTE.clothDark, PALETTE.stoneMid);
+  limb(rightKnee.x, rightKnee.y, rightAnkle.x, rightAnkle.y, PALETTE.clothDark);
+  px(ctx, leftAnkle.x - 2, leftAnkle.y, PALETTE.stoneDark, 5, 2);
+  px(ctx, rightAnkle.x - 2, rightAnkle.y, PALETTE.stoneDark, 6, 2);
+  px(ctx, cx - 5, footY - 4, PALETTE.clothTan, 12, 1);
+  px(ctx, cx - 3, footY - 3, PALETTE.rustDark, 8, 1);
+
+  // Old blood and Host seep at the base from being held here, not carved open.
+  drawIsoDiamond(ctx, cx + 1, cy + 1, 18, 8, PALETTE.rustDark);
+  drawNoisePixels(ctx, cx - 10, cy - 4, 22, 9, [PALETTE.hostRed, PALETTE.rustDark, PALETTE.hostBlack], 0.06, seed);
+  px(ctx, cx + lean - 1, footY, PALETTE.hostGold, 2, 1);
 }
 
 // A Choir blood-sigil daubed on the floor: an inverted cross in a rough ring.
@@ -3318,6 +3573,49 @@ export function drawWallStash(ctx, cx, cy, seed, opts = {}) {
     px(ctx, xR - 1, gy, PALETTE.hostGold, 2, 1); // a pale gleam from the dark gap
   }
   drawNoisePixels(ctx, xL, Math.round(swFaceTop(cx, cy, xL) + topPad), xR - xL, 12, [PALETTE.stoneDark, PALETTE.stoneDust], 0.05, seed);
+}
+
+export function drawWallStairDoor(ctx, cx, cy, seed) {
+  const xL = cx - 30;
+  const xR = cx + 2;
+  const topPad = 7;
+  const botPad = 3;
+
+  // A cut-through stair mouth set into the wall. Darker than the wall block,
+  // framed with lit cut-stone so the entrance reads at map scale.
+  faceBand(ctx, cx, cy, xL - 3, xR + 3, topPad - 3, botPad - 2, PALETTE.outline);
+  faceBand(ctx, cx, cy, xL, xR, topPad, botPad, PALETTE.void);
+  faceBand(ctx, cx, cy, xL - 1, xL + 3, topPad - 1, botPad + 2, PALETTE.stoneMid);
+  faceBand(ctx, cx, cy, xL + 3, xL + 7, topPad + 1, botPad + 4, PALETTE.stoneLight);
+  faceBand(ctx, cx, cy, xR - 7, xR - 3, topPad + 1, botPad + 4, PALETTE.stoneDark);
+  faceBand(ctx, cx, cy, xR - 3, xR + 1, topPad - 1, botPad + 2, PALETTE.stoneDark);
+
+  // Lintel and old latch plate.
+  for (let x = xL - 2; x <= xR + 2; x += 1) {
+    const y = Math.round(swFaceTop(cx, cy, x) + topPad - 2);
+    px(ctx, x, y, PALETTE.stoneDust, 1, 3);
+  }
+  const latchX = xR - 8;
+  const latchY = Math.round((swFaceTop(cx, cy, latchX) + swFaceBot(cx, cy, latchX)) / 2);
+  px(ctx, latchX - 1, latchY - 4, PALETTE.outline, 5, 8);
+  px(ctx, latchX, latchY - 3, PALETTE.rustDark, 3, 6);
+  px(ctx, latchX + 1, latchY - 1, PALETTE.hostGold, 2, 1);
+
+  // Visible stair treads vanishing upward into black.
+  for (let i = 0; i < 4; i += 1) {
+    const left = xL + 6 + i * 2;
+    const right = xR - 7 - i * 2;
+    if (right <= left) continue;
+    for (let x = left; x <= right; x += 1) {
+      const y = Math.round(swFaceBot(cx, cy, x) - botPad - 4 - i * 5);
+      px(ctx, x, y, i < 2 ? PALETTE.stoneMid : PALETTE.stoneDark, 1, 2);
+    }
+  }
+  for (let x = xL + 5; x <= xR - 5; x += 1) {
+    const y = Math.round(swFaceBot(cx, cy, x) - botPad + 1);
+    px(ctx, x, y, x % 2 ? PALETTE.stoneMid : PALETTE.stoneDust, 1, 2);
+  }
+  drawNoisePixels(ctx, xL, Math.round(swFaceTop(cx, cy, xL) + topPad), xR - xL, 31, [PALETTE.void, PALETTE.stoneDark], 0.05, seed);
 }
 
 // A Remnant believer the Choir knifed and marked: on his back in a wide blood

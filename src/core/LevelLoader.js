@@ -8,6 +8,11 @@ import { Grid } from '../world/Grid.js';
 import { createActor } from '../entities/ActorFactory.js';
 import { isPassableWhenOpen } from '../world/DoorSystem.js';
 import { createGroundItem } from '../world/GroundItems.js';
+import { PATROL_MODES } from '../world/PerceptionSystem.js';
+
+export const PATROL_MIN_DWELL = 2.4;
+const PATROL_MIN_VARIANCE = 0.6;
+const PATROL_STEP_DELAY = 3.0;
 
 async function loadJson(path) {
   const response = await fetch(path);
@@ -77,20 +82,74 @@ function clonePoint(point) {
   return { x: point.x, y: point.y };
 }
 
-function normalizePatrol(spawn, index) {
+function cloneEffect(effect) {
+  if (!effect || typeof effect !== 'object' || Array.isArray(effect)) return null;
+  return JSON.parse(JSON.stringify(effect));
+}
+
+function positiveNumber(value, fallback) {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : fallback;
+}
+
+function nonNegativeNumber(value, fallback) {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : fallback;
+}
+
+function sortedDelay(min, max, fallback = 1.6) {
+  const a = positiveNumber(min, fallback);
+  const b = positiveNumber(max, a);
+  const rawMin = Math.max(0.1, Math.min(a, b));
+  const rawMax = Math.max(0.1, Math.max(a, b));
+  const normalizedMin = Math.max(PATROL_MIN_DWELL, rawMin);
+  let normalizedMax = Math.max(normalizedMin, rawMax);
+  if (rawMin < PATROL_MIN_DWELL && normalizedMax - normalizedMin < PATROL_MIN_VARIANCE) {
+    normalizedMax = normalizedMin + PATROL_MIN_VARIANCE;
+  }
+  return {
+    min: normalizedMin,
+    max: normalizedMax
+  };
+}
+
+export function normalizePatrolDelay(value, fallback = PATROL_STEP_DELAY) {
+  if (Array.isArray(value) && value.length >= 2) return sortedDelay(value[0], value[1], fallback);
+  if (value && typeof value === 'object') {
+    return sortedDelay(value.min ?? value.low, value.max ?? value.high, fallback);
+  }
+  const base = positiveNumber(value, fallback);
+  return sortedDelay(base * 0.75, base * 1.25, fallback);
+}
+
+export function randomPatrolDelay(patrol) {
+  const delay = patrol?.delay ?? normalizePatrolDelay(PATROL_STEP_DELAY);
+  return delay.min + Math.random() * (delay.max - delay.min);
+}
+
+function initialPatrolTimer(delay, index) {
+  const spread = delay.max - delay.min;
+  if (spread <= 0) return delay.min;
+  return delay.min + ((index % 4) / 3) * spread;
+}
+
+export function normalizePatrol(spawn, index = 0) {
   const authored = Array.isArray(spawn.patrol)
     ? { path: spawn.patrol }
     : spawn.patrol;
   if (!authored || typeof authored !== 'object' || !Array.isArray(authored.path) || authored.path.length < 2) {
     return null;
   }
+  const delay = normalizePatrolDelay(authored.delay ?? authored.wait ?? authored.pause ?? PATROL_STEP_DELAY);
+  const mode = PATROL_MODES.includes(authored.mode) ? authored.mode : 'loop';
+  const timer = nonNegativeNumber(authored.startDelay ?? authored.timer, initialPatrolTimer(delay, index));
   return {
     path: authored.path.map(clonePoint),
-    mode: authored.mode ?? 'loop',
-    delay: authored.delay ?? 1.6,
+    mode,
+    delay,
     index: 0,
     direction: 1,
-    timer: (authored.delay ?? 1.6) + (index % 3) * 0.35
+    timer,
+    onComplete: cloneEffect(authored.onComplete ?? authored.complete ?? authored.arrival),
+    removeOnComplete: Boolean(authored.removeOnComplete ?? authored.remove ?? authored.hideOnComplete)
   };
 }
 
@@ -150,7 +209,8 @@ export async function loadLevel(levelPath) {
     }
   }
   const enemies = enemySpawns.map((spawn, index) => {
-    const enemy = createActor(enemyDataById.get(spawn.id), { x: spawn.x, y: spawn.y });
+    const enemyData = enemyDataById.get(spawn.id);
+    const enemy = createActor(enemyData, { x: spawn.x, y: spawn.y });
     if (spawn.spriteId) enemy.spriteId = spawn.spriteId;
     enemy.appearance = mergeActorAppearance(enemy.appearance, spawn.appearance);
     enemy.spawnId = spawn.spawnId ?? `${spawn.id}-${index}`;
@@ -165,6 +225,12 @@ export async function loadLevel(levelPath) {
     enemy.talkRadius = spawn.talkRadius ?? 1;
     if (Array.isArray(spawn.loot)) enemy.loot = spawn.loot.map((entry) => ({ ...entry }));
     enemy.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
+    enemy.aggro = Array.isArray(spawn.aggro)
+      ? [...spawn.aggro]
+      : Array.isArray(enemyData.aggro)
+        ? [...enemyData.aggro]
+        : [];
+    enemy.aggroIndex = 0;
     enemy.ambientIndex = 0;
     enemy.ambientTimer = 3 + (index % 3) * 2.4;
     return enemy;
@@ -186,6 +252,8 @@ export async function loadLevel(levelPath) {
     if (spawn.spriteId) npc.spriteId = spawn.spriteId;
     npc.appearance = mergeActorAppearance(npc.appearance, spawn.appearance);
     npc.spawnId = spawn.spawnId ?? `${actorId}-${index}`;
+    npc.facing = spawn.facing ?? npc.facing;
+    npc.patrol = normalizePatrol(spawn, index);
     npc.dialogue = spawn.dialogue ?? null;
     npc.dialogueRepeat = spawn.dialogueRepeat !== false;
     npc.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
@@ -263,6 +331,7 @@ export async function loadLevel(levelPath) {
     enemyVisionRadius: level.enemyVisionRadius ?? null,
     enemyVisionCone: level.enemyVisionCone ?? null,
     enemyHearingRadius: level.enemyHearingRadius ?? null,
+    combatStartBarks: level.combatStartBarks ?? [],
     combatIntro: level.combatIntro ?? [],
     combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
     victoryLog: level.victoryLog ?? null,

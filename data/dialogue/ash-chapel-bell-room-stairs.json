@@ -1,0 +1,31 @@
+{
+  "id": "ash-chapel-bell-room-stairs",
+  "title": "Bell Room Stair",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The stair drops back through the wall toward the chapel floor below."
+      ],
+      "choices": [
+        {
+          "label": "Return to the chapel",
+          "effects": {
+            "log": "You climb back down into Ash Chapel.",
+            "loadLevel": {
+              "path": "./data/levels/ash_chapel_breach.json",
+              "player": { "x": 29, "y": 3 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay by the bell",
+          "effects": {
+            "log": "You stay in the bell room."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

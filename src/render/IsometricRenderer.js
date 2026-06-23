@@ -148,6 +148,7 @@ export class IsometricRenderer {
     ctx.drawImage(this.scene, -this.camera.x, -this.camera.y);
 
     if (state.overlay?.debugGrid) this.#drawDebugGrid(ctx);
+    this.#drawVisionCones(ctx, state.overlay?.enemyVisionCones ?? []);
     this.#drawDepthSorted(ctx, state);
     this.#drawPlayerVisibilityHalo(ctx, state);
     // Actors and ambient props (e.g. the whispering cross) share one speech pass.
@@ -261,7 +262,7 @@ export class IsometricRenderer {
 
     const stateName = actor.render?.state ?? 'idle';
     let frameIndex = actor.render?.frameIndex ?? 0;
-    if (stateName === 'idle') {
+    if (stateName === 'idle' || stateName === 'sneakIdle') {
       frameIndex = anim.idleFrame ?? anim.bob ?? frameIndex; // breathing
     }
 
@@ -438,7 +439,37 @@ export class IsometricRenderer {
     } else {
       if (overlay.footTile && !this.#isHiddenKey(overlay.footTile)) this.#footMarker(ctx, overlay.footTile, 0.32);
       if (overlay.hoverTile && !this.#isHiddenKey(overlay.hoverTile)) this.#footMarker(ctx, overlay.hoverTile, 0.18);
+      if (overlay.targetTile && !this.#isHiddenKey(overlay.targetTile)) this.#targetBracket(ctx, overlay.targetTile);
     }
+  }
+
+  #drawVisionCones(ctx, cones) {
+    if (!Array.isArray(cones) || cones.length === 0) return;
+    for (const cone of cones) {
+      const alpha = cone.state === 'alerted' ? 0.2 : cone.state === 'investigating' ? 0.16 : 0.12;
+      for (const key of cone.cells ?? []) {
+        if (!this.#isHiddenKey(key)) this.#visionTile(ctx, key, alpha);
+      }
+    }
+  }
+
+  #visionTile(ctx, key, alpha) {
+    const s = this.#keyToScreen(key);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = PALETTE.uiFailure;
+    ctx.beginPath();
+    ctx.moveTo(s.x, s.y - TILE_HEIGHT / 2);
+    ctx.lineTo(s.x + TILE_WIDTH / 2, s.y);
+    ctx.lineTo(s.x, s.y + TILE_HEIGHT / 2);
+    ctx.lineTo(s.x - TILE_WIDTH / 2, s.y);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = Math.min(0.24, alpha + 0.06);
+    ctx.strokeStyle = PALETTE.uiBad;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
   }
 
   #keyToScreen(key) {

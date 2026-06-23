@@ -107,14 +107,30 @@ export const SPRITE_CATALOG = {
       P.drawWallStash(ctx, x, y, seed, { opened: c.prop.opened || c.prop.consumed });
     }
   },
+  'wall-stair-door': {
+    category: CATEGORY.FIXTURE, layer: 0, block: true,
+    draw: (ctx, x, y, seed, c) => {
+      P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed);
+      P.drawWallStairDoor(ctx, x, y, seed);
+    }
+  },
 
   // --- Structures (free-standing architecture) ---------------------------
   'cracked-column': simple(P.drawCrackedColumn, CATEGORY.STRUCTURE),
   'saint-statue': simple(P.drawSaintStatue, CATEGORY.STRUCTURE),
   'stone-tomb': simple(P.drawStoneTomb, CATEGORY.STRUCTURE),
+  'stone-stairwell': {
+    category: CATEGORY.STRUCTURE, layer: 18,
+    draw: (ctx, x, y, seed) => P.drawStoneStairwell(ctx, x, y, seed)
+  },
   'quarantine-barricade': simple(P.drawQuarantineBarricade, CATEGORY.STRUCTURE),
   'broken-bell': simple(P.drawBrokenBell, CATEGORY.STRUCTURE),
-  'bell-rope': simple(P.drawBellRope, CATEGORY.STRUCTURE),
+  'bell-rope': {
+    category: CATEGORY.STRUCTURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawBellRope(ctx, x, y, seed, {
+      repaired: Boolean(c.prop.unlocked || c.prop.opened)
+    })
+  },
   'quarantine-sign': simple(P.drawQuarantineSign, CATEGORY.STRUCTURE),
   'chapel-double-door': {
     category: CATEGORY.STRUCTURE, layer: 18,

@@ -8,7 +8,8 @@ import {
   nextSuspicionState,
   noticeSuspiciousAction,
   resolveStealthCheck,
-  suspicionDc
+  suspicionDc,
+  visionConeCells
 } from '../src/world/PerceptionSystem.js';
 
 const level = {
@@ -52,6 +53,17 @@ const level = {
 
   grid.removeBlocked(2, 1);
   assert.equal(canSeeActor(observer, target, { grid }).canSee, true);
+}
+
+{
+  const grid = new Grid(level);
+  const observer = { position: { x: 1, y: 2 }, facing: 'e', perception: { visionRadius: 5, coneDegrees: 100 } };
+  grid.addBlocked(3, 2);
+
+  const cone = new Set(visionConeCells(observer, { grid }).map((cell) => cell.key));
+  assert.equal(cone.has('2,2'), true);
+  assert.equal(cone.has('3,2'), true);
+  assert.equal(cone.has('4,2'), false);
 }
 
 {

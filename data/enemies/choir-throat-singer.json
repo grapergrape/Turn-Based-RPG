@@ -10,6 +10,10 @@
     "accent": "dark-cowl"
   },
   "description": "A thin-voiced Choir scout who fights at reach with thrown relic glass and half-sung catechism.",
+  "aggro": [
+    "There. Breath in the aisle.",
+    "Close the road door."
+  ],
   "stats": {
     "hp": 6,
     "maxHp": 6,

@@ -68,6 +68,20 @@ const player = { name: 'Mara Vey', x: 2, y: 2, position: { x: 2, y: 2 } };
 }
 
 {
+  const enemy = { name: 'Cutthroat', type: 'enemy', x: 3, y: 2, position: { x: 3, y: 2 } };
+  const target = resolveInteractionTargetAtCell({
+    cell: { x: 3, y: 2 },
+    grid: grid(),
+    player,
+    actors: [player, enemy],
+    enemies: [enemy],
+    mode: 'explore'
+  });
+  assert.equal(target.type, 'hostile');
+  assert.equal(target.actor, enemy);
+}
+
+{
   const corpse = { name: 'Host-Touched Penitent', x: 2, y: 3, position: { x: 2, y: 3 }, isDead: true, inspect: 'penitent-corpse' };
   const target = resolveInteractionTargetAtCell({
     cell: { x: 2, y: 3 },

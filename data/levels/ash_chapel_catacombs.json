@@ -5,6 +5,13 @@
   "width": 40,
   "height": 50,
   "tileSize": 64,
+  "enemyVisionRadius": 5,
+  "enemyVisionCone": 105,
+  "enemyHearingRadius": {
+    "low": 2,
+    "medium": 4,
+    "high": 8
+  },
   "quests": [
     "investigate-ash-chapel-cult",
     "retrieve-blue-ball",
@@ -122,6 +129,14 @@
         "conditions": {
           "flagsAbsent": [
             "survivors-returning-chapel"
+          ]
+        },
+        "patrol": {
+          "mode": "pingpong",
+          "delay": [1.2, 2.4],
+          "path": [
+            { "x": 18, "y": 4 },
+            { "x": 19, "y": 4 }
           ]
         },
         "ambient": [
@@ -294,6 +309,7 @@
         "id": "host-rat-sixlegs",
         "x": 5,
         "y": 22,
+        "facing": "e",
         "encounter": "catacomb-west-rats",
         "aggroRadius": 2,
         "ambient": [
@@ -304,6 +320,7 @@
         "id": "host-rat-throat-maw",
         "x": 13,
         "y": 23,
+        "facing": "e",
         "encounter": "catacomb-west-rats",
         "aggroRadius": 2
       },
@@ -311,6 +328,7 @@
         "id": "host-rat-tendril-walker",
         "x": 8,
         "y": 24,
+        "facing": "e",
         "encounter": "catacomb-west-rats",
         "aggroRadius": 2
       },
@@ -318,6 +336,7 @@
         "id": "host-rat-throat-maw",
         "x": 26,
         "y": 22,
+        "facing": "w",
         "encounter": "catacomb-east-rats",
         "aggroRadius": 2,
         "ambient": [
@@ -328,6 +347,7 @@
         "id": "host-rat-sixlegs",
         "x": 34,
         "y": 23,
+        "facing": "w",
         "encounter": "catacomb-east-rats",
         "aggroRadius": 2
       },
@@ -335,6 +355,7 @@
         "id": "host-rat-tendril-walker",
         "x": 28,
         "y": 24,
+        "facing": "w",
         "encounter": "catacomb-east-rats",
         "aggroRadius": 2
       },
@@ -342,6 +363,7 @@
         "id": "host-rat-sixlegs",
         "x": 15,
         "y": 31,
+        "facing": "se",
         "encounter": "catacomb-deep-rats",
         "aggroRadius": 2
       },
@@ -349,6 +371,7 @@
         "id": "host-rat-throat-maw",
         "x": 25,
         "y": 31,
+        "facing": "sw",
         "encounter": "catacomb-deep-rats",
         "aggroRadius": 2
       },
@@ -356,6 +379,7 @@
         "id": "host-rat-tendril-walker",
         "x": 21,
         "y": 32,
+        "facing": "s",
         "encounter": "catacomb-deep-rats",
         "aggroRadius": 2,
         "ambient": [
@@ -366,6 +390,7 @@
         "id": "host-rat-sixlegs",
         "x": 17,
         "y": 42,
+        "facing": "se",
         "encounter": "catacomb-shrine-rats",
         "aggroRadius": 2
       },
@@ -373,6 +398,7 @@
         "id": "host-rat-throat-maw",
         "x": 25,
         "y": 44,
+        "facing": "sw",
         "encounter": "catacomb-shrine-rats",
         "aggroRadius": 2
       },
@@ -380,6 +406,7 @@
         "id": "host-rat-tendril-walker",
         "x": 22,
         "y": 46,
+        "facing": "n",
         "encounter": "catacomb-shrine-rats",
         "aggroRadius": 2
       }

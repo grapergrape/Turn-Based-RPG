@@ -10,6 +10,10 @@
     "accent": "bone-cowl"
   },
   "description": "A hooded cultist with chapel wax on both sleeves and a hooked rite knife hidden under the candle tray.",
+  "aggro": [
+    "Lift the tray. The witness moves.",
+    "Do not let her reach the door."
+  ],
   "stats": {
     "hp": 5,
     "maxHp": 5,
