@@ -37,8 +37,11 @@ export const TRACE_STAGES = Object.freeze([
   { value: 5, label: 'Blooming' }
 ]);
 
-export const LEVEL_CAP = 20;
-export const PRIMARY_POINTS_PER_LEVEL = 1;
+export const LEVEL_CAP = null;
+export const PRIMARY_REWARD_INTERVAL = 5;
+export const PRIMARY_POINTS_PER_REWARD_LEVEL = 2;
+export const ACTIVE_TECHNIQUE_POINTS_PER_EVEN_LEVEL = 1;
+export const PASSIVE_TECHNIQUE_POINTS_PER_ODD_LEVEL = 1;
 
 export const ENEMY_COMPLEXITIES = Object.freeze([
   { id: 'minion', label: 'Minion', multiplier: 0.6 },
@@ -139,14 +142,13 @@ export function normalizeProgression(progression = {}) {
   const xp = clampWholeNumber(progression?.xp, xpForLevel(baseLevel));
   const level = Math.max(baseLevel, levelFromXp(xp));
   const primaryBonuses = normalizePrimaryBonuses(progression?.primaryBonuses);
-  const buildBonuses = buildPrimaryBonuses(build, level);
   const primaries = {};
   const basePrimaries = {};
   const sourcePrimaries = progression?.basePrimaries ?? progression?.primaries ?? {};
   for (const primary of PRIMARY_ATTRIBUTES) {
     basePrimaries[primary.id] = clampPrimary(sourcePrimaries[primary.id]);
     primaries[primary.id] = clampPrimary(
-      basePrimaries[primary.id] + (primaryBonuses[primary.id] ?? 0) + (buildBonuses[primary.id] ?? 0)
+      basePrimaries[primary.id] + (primaryBonuses[primary.id] ?? 0)
     );
   }
 
@@ -155,6 +157,9 @@ export function normalizeProgression(progression = {}) {
     xp,
     build,
     primaryPoints: clampWholeNumber(progression?.primaryPoints, 0),
+    activeTechniquePoints: clampWholeNumber(progression?.activeTechniquePoints, 0),
+    passiveTechniquePoints: clampWholeNumber(progression?.passiveTechniquePoints, 0),
+    techniques: normalizeTechniqueIds(progression?.techniques),
     primaryBonuses,
     basePrimaries,
     primaries,
@@ -198,6 +203,9 @@ export function buildCharacterSheet(actor = {}) {
     xp,
     build: progression.build,
     primaryPoints: progression.primaryPoints,
+    activeTechniquePoints: progression.activeTechniquePoints,
+    passiveTechniquePoints: progression.passiveTechniquePoints,
+    techniques: progression.techniques,
     primaries: PRIMARY_ATTRIBUTES.map((primary) => ({
       ...primary,
       value: progression.primaries[primary.id]
@@ -214,6 +222,33 @@ export function buildCharacterSheet(actor = {}) {
   };
 }
 
+export function progressionRewardsForLevel(level) {
+  const clamped = clampLevel(level);
+  if (clamped <= 1) {
+    return { primaryPoints: 0, activeTechniquePoints: 0, passiveTechniquePoints: 0 };
+  }
+  return {
+    primaryPoints: PRIMARY_REWARD_INTERVAL > 0 && clamped % PRIMARY_REWARD_INTERVAL === 0
+      ? PRIMARY_POINTS_PER_REWARD_LEVEL
+      : 0,
+    activeTechniquePoints: clamped % 2 === 0 ? ACTIVE_TECHNIQUE_POINTS_PER_EVEN_LEVEL : 0,
+    passiveTechniquePoints: clamped % 2 === 1 ? PASSIVE_TECHNIQUE_POINTS_PER_ODD_LEVEL : 0
+  };
+}
+
+export function progressionRewardsBetween(fromLevel, toLevel) {
+  const start = clampLevel(fromLevel);
+  const end = clampLevel(toLevel);
+  const rewards = { primaryPoints: 0, activeTechniquePoints: 0, passiveTechniquePoints: 0 };
+  for (let level = start + 1; level <= end; level += 1) {
+    const levelRewards = progressionRewardsForLevel(level);
+    rewards.primaryPoints += levelRewards.primaryPoints;
+    rewards.activeTechniquePoints += levelRewards.activeTechniquePoints;
+    rewards.passiveTechniquePoints += levelRewards.passiveTechniquePoints;
+  }
+  return rewards;
+}
+
 export function xpForLevel(level) {
   const clamped = clampLevel(level);
   if (clamped <= 1) return 0;
@@ -222,15 +257,19 @@ export function xpForLevel(level) {
 
 export function levelFromXp(xp) {
   const value = clampWholeNumber(xp, 0);
-  let level = 1;
-  while (level < LEVEL_CAP && value >= xpForLevel(level + 1)) level += 1;
-  return level;
+  const cap = configuredLevelCap();
+  let level = Math.max(1, Math.floor((1 + Math.sqrt(1 + (4 * value) / 50)) / 2));
+  if (cap !== null) level = Math.min(level, cap);
+  while ((cap === null || level < cap) && value >= xpForLevel(level + 1)) level += 1;
+  while (level > 1 && value < xpForLevel(level)) level -= 1;
+  return cap === null ? level : Math.min(level, cap);
 }
 
 export function experienceProgress(progression = {}) {
   const sheet = isNormalizedProgression(progression) ? progression : normalizeProgression(progression);
   const levelStart = xpForLevel(sheet.level);
-  if (sheet.level >= LEVEL_CAP) {
+  const cap = configuredLevelCap();
+  if (cap !== null && sheet.level >= cap) {
     return {
       current: sheet.xp,
       levelStart,
@@ -264,9 +303,12 @@ export function grantExperience(progression, amount) {
   if (gained <= 0) return base;
   base.xp = Math.max(0, before.xp + gained);
   const nextLevel = levelFromXp(base.xp);
-  const levelDelta = Math.max(0, nextLevel - before.level);
+  const rewards = progressionRewardsBetween(before.level, nextLevel);
   base.level = Math.max(before.level, nextLevel);
-  base.primaryPoints = before.primaryPoints + (levelDelta * PRIMARY_POINTS_PER_LEVEL);
+  base.primaryPoints = before.primaryPoints + rewards.primaryPoints;
+  base.activeTechniquePoints = before.activeTechniquePoints + rewards.activeTechniquePoints;
+  base.passiveTechniquePoints = before.passiveTechniquePoints + rewards.passiveTechniquePoints;
+  base.techniques = [...before.techniques];
   return base;
 }
 
@@ -281,8 +323,28 @@ export function awardExperience(actor, amount) {
     beforeLevel: before.level,
     level: after.level,
     levelDelta: Math.max(0, after.level - before.level),
-    primaryPoints: after.primaryPoints
+    primaryPoints: after.primaryPoints,
+    activeTechniquePoints: after.activeTechniquePoints,
+    passiveTechniquePoints: after.passiveTechniquePoints
   };
+}
+
+export function spendPrimaryPoint(progression, primaryId) {
+  const base = progression && typeof progression === 'object' && !Array.isArray(progression)
+    ? JSON.parse(JSON.stringify(progression))
+    : {};
+  const before = normalizeProgression(base);
+  const primary = PRIMARY_ATTRIBUTES.find((entry) => entry.id === primaryId);
+  if (!primary) return { ok: false, reason: 'Unknown primary.', progression: base };
+  if (before.primaryPoints <= 0) return { ok: false, reason: 'No primary points available.', progression: base };
+  if ((before.primaries[primaryId] ?? DEFAULT_PRIMARY) >= PRIMARY_MAX) {
+    return { ok: false, reason: `${primary.label} is already capped.`, progression: base };
+  }
+  const primaryBonuses = { ...before.primaryBonuses };
+  primaryBonuses[primaryId] = (primaryBonuses[primaryId] ?? 0) + 1;
+  base.primaryBonuses = primaryBonuses;
+  base.primaryPoints = before.primaryPoints - 1;
+  return { ok: true, reason: '', progression: base };
 }
 
 export function experienceRewardForActor(actor = {}) {
@@ -369,12 +431,15 @@ function normalizePrimaryBonuses(bonuses) {
   return out;
 }
 
-function buildPrimaryBonuses(build, level) {
-  const out = {};
-  const steps = Math.floor(Math.max(0, level - 1) / 2);
-  for (let i = 0; i < steps; i += 1) {
-    const primaryId = build.primaryGrowth[i % build.primaryGrowth.length];
-    out[primaryId] = (out[primaryId] ?? 0) + 1;
+function normalizeTechniqueIds(techniques) {
+  if (!Array.isArray(techniques)) return [];
+  const seen = new Set();
+  const out = [];
+  for (const technique of techniques) {
+    const id = typeof technique === 'string' ? technique : technique?.id;
+    if (typeof id !== 'string' || !id.trim() || seen.has(id)) continue;
+    seen.add(id);
+    out.push(id);
   }
   return out;
 }
@@ -427,7 +492,12 @@ function clampTrace(value) {
 }
 
 function clampLevel(value) {
-  return clampWholeNumber(value, 1, LEVEL_CAP);
+  const cap = configuredLevelCap();
+  return clampWholeNumber(value, 1, cap ?? Number.POSITIVE_INFINITY);
+}
+
+export function configuredLevelCap() {
+  return Number.isInteger(LEVEL_CAP) && LEVEL_CAP >= 1 ? LEVEL_CAP : null;
 }
 
 function clampWholeNumber(value, min, max = Number.POSITIVE_INFINITY) {

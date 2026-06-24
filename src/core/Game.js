@@ -9,7 +9,25 @@
 import { GameLoop } from './GameLoop.js';
 import { Input } from './Input.js';
 import { Inventory } from './Inventory.js';
+import { mapLoadingProgress, normalizeLoadingState } from './LoadingProgress.js';
 import { loadLevel, randomPatrolDelay } from './LevelLoader.js';
+import { buildContextActionsForTarget } from './ContextActions.js';
+import {
+  PRIMARY_ASSIGNMENT_FLAG,
+  applyCustomizationText,
+  changeCustomizationOption,
+  changePrimaryAssignmentValue,
+  createCustomizationState,
+  createPrimaryAssignmentState,
+  currentCustomizationRows,
+  customizationCanConfirm,
+  customizationResult,
+  moveCustomizationSelection,
+  movePrimaryAssignmentSelection,
+  primaryAssignmentCanConfirm,
+  primaryAssignmentResult,
+  primaryAssignmentRows
+} from './CharacterCreation.js';
 import {
   FIELD_RATINGS,
   PRIMARY_ATTRIBUTES,
@@ -18,8 +36,10 @@ import {
   experienceRewardForEncounter,
   normalizeProgression,
   questStageExperience,
-  questStageExperienceKey
+  questStageExperienceKey,
+  spendPrimaryPoint
 } from './Progression.js';
+import { learnTechnique, techniqueList } from './TechniqueSystem.js';
 import { meetsDialogueConditions } from './DialogueConditions.js';
 import { DialogueEffects } from './DialogueEffects.js';
 import {
@@ -91,7 +111,7 @@ import {
 import { PatrolSystem } from '../world/PatrolSystem.js';
 import { StealthRuntime } from '../world/StealthRuntime.js';
 import { IsometricRenderer } from '../render/IsometricRenderer.js';
-import { bakeHumanAppearance, bakeMara, isHumanAppearance, spriteIdForHumanAppearance } from '../render/SpriteAtlas.js';
+import { bakeHumanAppearance, bakePlayerCharacter, isHumanAppearance, spriteIdForHumanAppearance } from '../render/SpriteAtlas.js';
 import { gridToScreen, screenFacing } from '../render/isoMath.js';
 import { DEBUG_GRID_DEFAULT, VIEWPORT_HEIGHT } from '../render/renderConfig.js';
 import { DIALOGUE_MAX_CHOICES, buildDialogueLayout } from '../ui/dialogueLayout.js';
@@ -104,6 +124,7 @@ import {
   inventorySplitActionAt,
   inventorySplitAmountAt
 } from '../ui/inventoryLayout.js';
+import { contextActionAt } from '../ui/contextActionLayout.js';
 import { journalArrowAt } from '../ui/journalLayout.js';
 import {
   tradeActionAt,
@@ -132,6 +153,7 @@ const WALK_FRAMES = 8;
 const ATTACK_FRAMES = 6;
 const HIT_FRAMES = 4;
 const DEATH_FRAMES = 10;
+const PLAYER_CUSTOM_PREVIEW_SPRITE_ID = 'player-custom-preview';
 
 const DIRS = {
   up: { x: 0, y: -1 },
@@ -252,12 +274,17 @@ export class Game {
       render: () => this.render()
     });
     this.ready = false;
+    this.loadingState = null;
     this.areaTitle = null;
     this.areaTitleTimer = 0;
     this.pendingExploreTarget = null;
     this.preCombatTarget = null;
     this.dialogueActor = null;
     this.pendingLootAfterDialogue = null;
+    this.characterCreation = null;
+    this.primaryAssignment = null;
+    this.briefingAfter = null;
+    this.pendingPrimaryAssignmentTransition = null;
   }
 
   // (Re)load the level and reset runtime state. Level transitions preserve the
@@ -265,6 +292,8 @@ export class Game {
   async boot(options = {}) {
     const bootOptions = this.#bootOptions(options);
     this.ready = false;
+    this.#renderLoading(0.03, 'Preparing field load');
+    await this.#loadingFrame();
     if (!bootOptions.preserveRun) {
       this.levelStateByPath = new Map();
       this.debugGrid = this.debugGridDefault;
@@ -291,6 +320,8 @@ export class Game {
       : null;
     const previousPlayer = bootOptions.preserveRun && this.player
       ? {
+          name: this.player.name,
+          appearance: this.player.appearance ? JSON.parse(JSON.stringify(this.player.appearance)) : null,
           hp: this.player.hp,
           maxHp: this.player.maxHp,
           progression: this.player.progression ? JSON.parse(JSON.stringify(this.player.progression)) : null
@@ -298,10 +329,19 @@ export class Game {
       : null;
     const previousGroundItemSeq = bootOptions.preserveRun ? this.groundItemSeq ?? 0 : 0;
 
-    const level = await loadLevel(this.levelPath);
+    const level = await loadLevel(this.levelPath, {
+      onProgress: (state) => this.#renderLoading({
+        ...state,
+        progress: mapLoadingProgress(state.progress, 0.12, 0.68)
+      })
+    });
+    this.#renderLoading(0.7, 'Restoring run state');
+    await this.#loadingFrame();
     this.level = level;
     this.grid = level.grid;
     this.player = level.player;
+    if (previousPlayer?.name) this.player.name = previousPlayer.name;
+    if (previousPlayer?.appearance) this.player.appearance = JSON.parse(JSON.stringify(previousPlayer.appearance));
     if (previousPlayer?.progression) {
       this.player.progression = JSON.parse(JSON.stringify(previousPlayer.progression));
       if (typeof this.player.refreshProgressionStats === 'function') this.player.refreshProgressionStats();
@@ -332,8 +372,10 @@ export class Game {
     }
     this.#syncInventoryOrder();
     // Bake the player sprite to match the loaded equipment so the world figure
-    // and inventory paper doll reflect what Mara is actually wearing.
+    // and inventory paper doll reflect the customized actor.
+    this.#renderLoading(0.78, 'Baking player model');
     this.#refreshPlayerAppearance();
+    await this.#loadingFrame();
     this.interactions = new InteractionSystem(level.interactables);
     // Props that murmur on their own (e.g. the crucified Opened Saint) get the
     // same ambient-speech treatment as enemies, on a staggered timer.
@@ -347,6 +389,7 @@ export class Game {
     }
     this.ambientSpeechCooldown = 2.5;
     this.dialogueDefs = level.dialogueDefs ?? {};
+    this.techniqueDefs = level.techniqueDefs ?? {};
     this.questDefs = { ...(previousQuestDefs ?? {}), ...(level.questDefs ?? {}) };
     // Static journal sources: faction/cult codex and flag-gated field notes.
     this.codexDefs = level.codex ?? [];
@@ -370,8 +413,14 @@ export class Game {
     this.pendingExploreTarget = null;
     this.sneakMode = false;
     this.uiScreen = null;
+    this.characterCreation = null;
+    this.primaryAssignment = null;
+    this.briefingAfter = null;
+    this.pendingPrimaryAssignmentTransition = null;
     this.journalSection = 0;
     this.journalFactionIndex = 0;
+    this.journalPrimaryIndex = 0;
+    this.journalTechniqueIndex = 0;
     this.journalTurn = null;
     this.inventoryFocus = 'items';
     this.inventoryIndex = 0;
@@ -379,6 +428,7 @@ export class Game {
     this.inventoryOrder = previousInventoryOrder;
     this.inventoryMoveIndex = null;
     this.inventoryActionMenu = null;
+    this.contextActionMenu = null;
     this.inventorySplit = null;
     this.loot = null;
     this.lootIndex = 0;
@@ -410,12 +460,16 @@ export class Game {
     this.#restoreLevelState();
     if (bootOptions.player) this.#teleportPlayer(bootOptions.player);
     this.#refreshHiddenTiles();
+    this.#renderLoading(0.88, 'Baking field view');
+    await this.#loadingFrame();
     this.renderer.rebuildStaticScene({
       grid: this.grid,
       props: this.level.props,
       mood: this.level.mood,
       hiddenTiles: this.hiddenTiles
     });
+    this.#renderLoading(0.96, 'Entering field');
+    await this.#loadingFrame();
 
     this.areaTitle = level.name;
     this.areaTitleTimer = AREA_TITLE_DURATION;
@@ -436,8 +490,12 @@ export class Game {
       this.briefingLastPrompt = 'ENTER: ENTER THE CHAPEL';
       this.briefingSkipPrompt = 'ESC: SKIP';
       this.briefingMarksIntro = true;
+      this.briefingAfter = { openScreen: 'character-customization' };
     }
+    this.#renderLoading(1, 'Load complete');
     this.ready = true;
+    this.loadingState = null;
+    if (this.statusElement) this.statusElement.textContent = '';
   }
 
   start() {
@@ -456,6 +514,19 @@ export class Game {
       };
     }
     return { ...this.startupOptions, ...options };
+  }
+
+  #renderLoading(progressOrState, message = '', detail = '') {
+    const state = typeof progressOrState === 'object' && progressOrState !== null
+      ? normalizeLoadingState(progressOrState)
+      : normalizeLoadingState({ progress: progressOrState, message, detail });
+    this.loadingState = state;
+    this.renderer.renderLoading(state);
+  }
+
+  async #loadingFrame() {
+    if (typeof window === 'undefined' || typeof window.requestAnimationFrame !== 'function') return;
+    await new Promise((resolve) => window.requestAnimationFrame(() => resolve()));
   }
 
   // ---- Main update -------------------------------------------------------
@@ -481,6 +552,7 @@ export class Game {
 
     const actions = this.input.consume();
     const click = this.input.consumeClick();
+    const textInput = typeof this.input.consumeText === 'function' ? this.input.consumeText() : [];
 
     if (this.mode === 'intro') {
       this.#handleIntro(actions, click);
@@ -488,7 +560,7 @@ export class Game {
     }
 
     if (this.uiScreen) {
-      this.#handleUiScreen(actions, click);
+      this.#handleUiScreen(actions, click, textInput);
       return;
     }
 
@@ -535,6 +607,7 @@ export class Game {
   }
 
   #finishIntro() {
+    const after = this.briefingAfter;
     if (this.briefingMarksIntro) this.introSeen = true;
     this.briefing = null;
     this.briefingTitle = null;
@@ -543,11 +616,68 @@ export class Game {
     this.briefingLastPrompt = null;
     this.briefingSkipPrompt = null;
     this.briefingMarksIntro = false;
+    this.briefingAfter = null;
+    if (this.#runPostBriefingAction(after)) return;
     this.mode = 'explore';
+  }
+
+  #runPostBriefingAction(action) {
+    if (!action) return false;
+    const normalized = typeof action === 'string' ? { openScreen: action } : action;
+    const screen = normalized.openScreen ?? normalized.screen ?? normalized.type;
+    const loadLevel = normalized.loadLevel ?? normalized.thenLoadLevel ?? null;
+
+    if (screen === 'character-customization') {
+      this.#openCharacterCustomization();
+      return true;
+    }
+    if (screen === 'primary-assignment') {
+      this.pendingPrimaryAssignmentTransition = loadLevel ? JSON.parse(JSON.stringify(loadLevel)) : null;
+      this.#openPrimaryAssignment();
+      return true;
+    }
+    if (loadLevel) {
+      void this.#transitionLevel(loadLevel);
+      return true;
+    }
+    return false;
+  }
+
+  #openCharacterCustomization() {
+    this.mode = 'explore';
+    this.uiScreen = 'character-customization';
+    this.contextActionMenu = null;
+    this.characterCreation = createCustomizationState(this.player);
+    this.#refreshCharacterPreview();
+  }
+
+  #openPrimaryAssignment() {
+    this.mode = 'explore';
+    if (this.flags?.has(PRIMARY_ASSIGNMENT_FLAG)) {
+      const transition = this.pendingPrimaryAssignmentTransition;
+      this.pendingPrimaryAssignmentTransition = null;
+      if (transition) void this.#transitionLevel(transition);
+      return;
+    }
+    this.uiScreen = 'primary-assignment';
+    this.contextActionMenu = null;
+    this.primaryAssignment = createPrimaryAssignmentState(this.player);
+  }
+
+  #refreshCharacterPreview() {
+    if (!this.atlas || !this.characterCreation) return;
+    const equipment = this.inventory?.equipmentSnapshot?.() ?? {};
+    const bareHeadEquipment = { ...equipment, helmet: null };
+    this.atlas[PLAYER_CUSTOM_PREVIEW_SPRITE_ID] = bakePlayerCharacter(
+      bareHeadEquipment,
+      this.inventory?.itemDefs ?? {},
+      this.characterCreation.appearance
+    );
   }
 
   #drainBlockingInput() {
     // Still honour persistent toggles and restart/debug while animating.
+    if (typeof this.input.consumeText === 'function') this.input.consumeText();
     for (const action of this.input.consume()) {
       if (action === 'restart') this.boot();
       else if (action === 'debug') this.debugGrid = !this.debugGrid;
@@ -1128,7 +1258,15 @@ export class Game {
 
   // ---- UI screens --------------------------------------------------------
 
-  #handleUiScreen(actions, click) {
+  #handleUiScreen(actions, click, textInput = []) {
+    if (this.uiScreen === 'character-customization') {
+      this.#handleCharacterCustomizationScreen(actions, textInput);
+      return;
+    }
+    if (this.uiScreen === 'primary-assignment') {
+      this.#handlePrimaryAssignmentScreen(actions);
+      return;
+    }
     if (this.uiScreen === 'journal') {
       this.#handleJournalScreen(actions, click);
       return;
@@ -1178,6 +1316,111 @@ export class Game {
     }
   }
 
+  #handleCharacterCustomizationScreen(actions, textInput = []) {
+    if (!this.characterCreation) this.characterCreation = createCustomizationState(this.player);
+    const selected = this.characterCreation.selectedIndex ?? 0;
+    const selectedField = currentCustomizationRows(this.characterCreation)[selected];
+    if (selectedField?.kind === 'name' && textInput.length > 0) {
+      this.characterCreation = applyCustomizationText(this.characterCreation, textInput);
+      this.#refreshCharacterPreview();
+      return;
+    }
+
+    for (const action of actions) {
+      if (action === 'up') {
+        this.characterCreation = moveCustomizationSelection(this.characterCreation, -1);
+        continue;
+      }
+      if (action === 'down') {
+        this.characterCreation = moveCustomizationSelection(this.characterCreation, 1);
+        continue;
+      }
+      if (action === 'left' || action === 'right') {
+        this.characterCreation = changeCustomizationOption(this.characterCreation, action === 'right' ? 1 : -1);
+        this.#refreshCharacterPreview();
+        continue;
+      }
+      if (this.#isConfirmAction(action) || action === 'interact') {
+        if (!customizationCanConfirm(this.characterCreation)) continue;
+        const result = customizationResult(this.characterCreation);
+        this.player.name = result.name;
+        this.player.appearance = result.appearance;
+        this.#refreshPlayerAppearance();
+        this.characterCreation = null;
+        this.uiScreen = null;
+        this.mode = 'explore';
+        continue;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') this.debugGrid = !this.debugGrid;
+    }
+  }
+
+  #handlePrimaryAssignmentScreen(actions) {
+    if (!this.primaryAssignment) this.primaryAssignment = createPrimaryAssignmentState(this.player);
+    for (const action of actions) {
+      if (action === 'up') {
+        this.primaryAssignment = movePrimaryAssignmentSelection(this.primaryAssignment, -1);
+        continue;
+      }
+      if (action === 'down') {
+        this.primaryAssignment = movePrimaryAssignmentSelection(this.primaryAssignment, 1);
+        continue;
+      }
+      if (action === 'left' || action === 'right') {
+        this.primaryAssignment = changePrimaryAssignmentValue(this.primaryAssignment, action === 'right' ? 1 : -1);
+        continue;
+      }
+      if (this.#isConfirmAction(action) || action === 'interact') {
+        if (!primaryAssignmentCanConfirm(this.primaryAssignment)) continue;
+        this.#confirmPrimaryAssignment();
+        return;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') this.debugGrid = !this.debugGrid;
+    }
+  }
+
+  #confirmPrimaryAssignment() {
+    const values = primaryAssignmentResult(this.primaryAssignment);
+    const progression = normalizeProgression(this.player?.progression);
+    this.player.progression = {
+      ...this.player.progression,
+      level: progression.level,
+      xp: progression.xp,
+      build: progression.build.id,
+      primaryPoints: progression.primaryPoints,
+      activeTechniquePoints: progression.activeTechniquePoints,
+      passiveTechniquePoints: progression.passiveTechniquePoints,
+      techniques: [...progression.techniques],
+      basePrimaries: { ...values },
+      primaries: { ...values },
+      primaryBonuses: {},
+      trace: progression.trace,
+      iconRisk: progression.iconRisk,
+      scarPoints: progression.scarPoints,
+      scars: progression.scars,
+      fieldModifiers: progression.fieldModifiers
+    };
+    if (typeof this.player.refreshProgressionStats === 'function') this.player.refreshProgressionStats();
+    this.flags.add(PRIMARY_ASSIGNMENT_FLAG);
+    this.primaryAssignment = null;
+    this.uiScreen = null;
+    const transition = this.pendingPrimaryAssignmentTransition;
+    this.pendingPrimaryAssignmentTransition = null;
+    if (transition) {
+      void this.#transitionLevel(transition);
+      return;
+    }
+    this.mode = 'explore';
+  }
+
   #toggleInventory() {
     if (this.uiScreen === 'inventory') {
       this.#closeUiScreen();
@@ -1187,6 +1430,7 @@ export class Game {
     this.dialogue = null;
     this.dialogueActor = null;
     this.pendingLootAfterDialogue = null;
+    this.contextActionMenu = null;
     this.#clampInventorySelection();
   }
 
@@ -1198,10 +1442,13 @@ export class Game {
     this.uiScreen = 'journal';
     this.journalSection = 0;
     this.journalFactionIndex = 0;
+    this.journalPrimaryIndex = 0;
+    this.journalTechniqueIndex = 0;
     this.journalTurn = null;
     this.dialogue = null;
     this.dialogueActor = null;
     this.pendingLootAfterDialogue = null;
+    this.contextActionMenu = null;
   }
 
   #handleJournalScreen(actions, click = null) {
@@ -1218,8 +1465,9 @@ export class Game {
       }
       if (action === 'left' || action === 'cycle') this.#cycleJournalSection(-1);
       else if (action === 'right') this.#cycleJournalSection(1);
-      else if (action === 'up') { if (this.journalSection === 2) this.#moveJournalFaction(-1); }
-      else if (action === 'down') { if (this.journalSection === 2) this.#moveJournalFaction(1); }
+      else if (action === 'up') this.#moveJournalSelection(-1);
+      else if (action === 'down') this.#moveJournalSelection(1);
+      else if (action === 'confirm') this.#confirmJournalSelection();
       else if (action === 'inventory') { this.#toggleInventory(); return; }
       else if (action === 'restart') { this.boot(); return; }
       else if (action === 'debug') this.debugGrid = !this.debugGrid;
@@ -1259,6 +1507,54 @@ export class Game {
     );
     if (!known.length) { this.journalFactionIndex = 0; return; }
     this.journalFactionIndex = Math.max(0, Math.min(known.length - 1, (this.journalFactionIndex ?? 0) + delta));
+  }
+
+  #moveJournalSelection(delta) {
+    if (this.journalSection === 2) this.#moveJournalFaction(delta);
+    else if (this.journalSection === 3) this.#moveJournalPrimary(delta);
+    else if (this.journalSection === 5) this.#moveJournalTechnique(delta);
+  }
+
+  #moveJournalPrimary(delta) {
+    const count = PRIMARY_ATTRIBUTES.length;
+    this.journalPrimaryIndex = Math.max(0, Math.min(count - 1, (this.journalPrimaryIndex ?? 0) + delta));
+  }
+
+  #moveJournalTechnique(delta) {
+    const count = techniqueList(this.techniqueDefs).length;
+    if (count <= 0) { this.journalTechniqueIndex = 0; return; }
+    this.journalTechniqueIndex = Math.max(0, Math.min(count - 1, (this.journalTechniqueIndex ?? 0) + delta));
+  }
+
+  #confirmJournalSelection() {
+    if (this.journalSection === 3) this.#spendSelectedPrimary();
+    else if (this.journalSection === 5) this.#learnSelectedTechnique();
+  }
+
+  #spendSelectedPrimary() {
+    const primary = PRIMARY_ATTRIBUTES[this.journalPrimaryIndex ?? 0];
+    if (!primary) return;
+    const result = spendPrimaryPoint(this.player?.progression, primary.id);
+    if (!result.ok) {
+      if (result.reason) this.#log(result.reason);
+      return;
+    }
+    this.player.progression = result.progression;
+    if (typeof this.player.refreshProgressionStats === 'function') this.player.refreshProgressionStats();
+    this.#log(`${primary.label} improved.`);
+  }
+
+  #learnSelectedTechnique() {
+    const technique = techniqueList(this.techniqueDefs)[this.journalTechniqueIndex ?? 0];
+    if (!technique) return;
+    const result = learnTechnique(this.player?.progression, technique.id, this.techniqueDefs, this.#techniqueContext());
+    if (!result.ok) {
+      if (result.reason) this.#log(result.reason);
+      return;
+    }
+    this.player.progression = result.progression;
+    if (typeof this.player.refreshProgressionStats === 'function') this.player.refreshProgressionStats();
+    this.#log(`${technique.name} learned.`);
   }
 
   #handleLootScreen(actions, click = null) {
@@ -2023,13 +2319,11 @@ export class Game {
     }
   }
 
-  // Re-bake the player sprite from the current equipment. The new atlas entry
-  // replaces the old one in the shared atlas, so both the world renderer and the
-  // inventory paper doll (which read the same atlas) update together. NPC and
-  // enemy appearance composites are handled once when the level loads.
+  // Re-bake the player sprite from the current equipment and appearance. The
+  // atlas entry is replaced in place so the world renderer and paper doll match.
   #refreshPlayerAppearance() {
     if (!this.atlas || this.player?.spriteId !== 'mara-vey') return;
-    this.atlas[this.player.spriteId] = bakeMara(
+    this.atlas[this.player.spriteId] = bakePlayerCharacter(
       this.inventory.equipmentSnapshot(),
       this.inventory.itemDefs,
       this.player.appearance ?? null
@@ -2286,11 +2580,14 @@ export class Game {
 
   #closeUiScreen() {
     this.uiScreen = null;
+    this.characterCreation = null;
+    this.primaryAssignment = null;
     this.dialogue = null;
     this.dialogueActor = null;
     this.pendingLootAfterDialogue = null;
     this.inventoryActionMenu = null;
     this.inventorySplit = null;
+    this.contextActionMenu = null;
     this.loot = null;
     this.lootIndex = 0;
     this.trade = null;
@@ -2324,8 +2621,21 @@ export class Game {
   }
 
   #handlePlayerCombat(actions, click) {
-    if (click) this.#handleClickMove(click, true);
+    if (click) {
+      if (this.#handleContextActionClick(click)) return;
+      if (click.button === 2) {
+        this.#openContextActionMenuAt(click);
+        return;
+      }
+      this.contextActionMenu = null;
+      this.#handleClickMove(click, true);
+    }
     for (const action of actions) {
+      if (this.contextActionMenu && action === 'cancel') {
+        this.contextActionMenu = null;
+        return;
+      }
+      this.contextActionMenu = null;
       const movement = this.#movementAction(action);
       if (movement) {
         this.pathQueue = [];
@@ -2378,6 +2688,122 @@ export class Game {
           break;
       }
     }
+  }
+
+  #handleContextActionClick(click) {
+    if (!this.contextActionMenu) return false;
+    const action = contextActionAt(click, this.contextActionMenu);
+    if (!action) {
+      this.contextActionMenu = null;
+      return true;
+    }
+    this.contextActionMenu = null;
+    this.#executeContextAction(action);
+    return true;
+  }
+
+  #openContextActionMenuAt(click) {
+    if (click.y >= VIEWPORT_HEIGHT) {
+      this.contextActionMenu = null;
+      return;
+    }
+    const cell = this.renderer.toGrid(click.x, click.y);
+    if (!this.grid.isInside(cell.x, cell.y)) {
+      this.contextActionMenu = null;
+      return;
+    }
+    const target = this.#interactionTargetAtCell(cell, 'combat');
+    const actions = this.#contextActionsForTarget(target);
+    this.contextActionMenu = actions.length > 0
+      ? { anchor: { x: click.x, y: click.y }, target, actions }
+      : null;
+  }
+
+  #contextActionsForTarget(target) {
+    return buildContextActionsForTarget({
+      player: this.player,
+      target,
+      enemies: this.enemies,
+      grid: this.grid,
+      occupied: this.#occupiedSet(this.player),
+      techniqueDefs: this.techniqueDefs,
+      inventory: this.inventory,
+      objectName: (object) => this.#objectName(object)
+    });
+  }
+
+  #attackActionState(attack, target, extraAp = 0) {
+    if (!attack) return { enabled: false, reason: 'No attack' };
+    if (!target || target.isDead) return { enabled: false, reason: 'No target' };
+    if (chebyshev(this.player.position, target.position) > attack.range) {
+      return { enabled: false, reason: 'Out of range' };
+    }
+    const cost = attack.apCost + extraAp;
+    if (this.player.ap < cost) return { enabled: false, reason: `Need ${cost} AP` };
+    return { enabled: true, reason: '' };
+  }
+
+  #executeContextAction(action) {
+    if (action.enabled === false) {
+      if (action.reason) this.#log(action.reason);
+      return;
+    }
+    if (action.kind === 'attack') {
+      this.#setCombatTarget(action.target);
+      this.selectedAttackId = action.attackId;
+      this.#playerAttack();
+      return;
+    }
+    if (action.kind === 'technique') {
+      this.#executeTechniqueAction(action);
+      return;
+    }
+    if (action.kind === 'move') {
+      const path = findPath(this.grid, this.player.position, action.cell, this.#occupiedSet(this.player));
+      this.pathQueue = path && path.length ? path : [];
+      return;
+    }
+    if (action.kind === 'bind-wounds') {
+      this.#log(this.inventory.useFieldDressing(this.player));
+      this.#syncInventoryOrder();
+      this.#clampInventorySelection();
+      return;
+    }
+    if (action.kind === 'reload') {
+      this.#log(action.reason || 'No reload needed.');
+    }
+  }
+
+  #executeTechniqueAction(action) {
+    if (action.techniqueId !== 'aimed-shot') {
+      this.#log('Technique is not ready yet.');
+      return;
+    }
+    const attack = this.player.getAttack(action.attackId);
+    const target = action.target;
+    const state = this.#attackActionState(attack, target, action.extraAp ?? 0);
+    if (!state.enabled) {
+      if (state.reason) this.#log(state.reason);
+      return;
+    }
+    this.#setCombatTarget(target);
+    this.selectedAttackId = attack.id;
+    this.player.ap -= attack.apCost + (action.extraAp ?? 0);
+    this.#registerSuspiciousAction(SUSPICION_SEVERITY.HIGH, 'firing');
+    this.#faceToward(this.player, target.position);
+    this.#log('Aimed Shot.');
+    const result = this.combat.performAttack(this.player, target, attack, {
+      damageMultiplier: action.damageMultiplier ?? 1,
+      spendAp: false
+    });
+    for (const line of result.logs) this.#log(line);
+    this.#pushEffect(result.effect);
+    this.#checkOutcome();
+  }
+
+  #setCombatTarget(target) {
+    const idx = this.#livingEnemies().indexOf(target);
+    if (idx >= 0) this.targetIndex = idx;
   }
 
   #selectAttack(id) {
@@ -2520,7 +2946,7 @@ export class Game {
       this.mode = 'defeat';
       this.turnManager.active = false;
       this.player.render.state = 'dead';
-      this.#log('Mara Vey falls on the chapel stone. Press R to try again.');
+      this.#log(`${this.player.name} falls on the chapel stone. Press R to try again.`);
     }
   }
 
@@ -3162,8 +3588,19 @@ export class Game {
       journalNotes: this.journalNotes,
       codexDefs: this.codexDefs,
       flags: this.flags,
-      player: this.player
+      player: this.player,
+      techniqueDefs: this.techniqueDefs,
+      techniqueContext: this.#techniqueContext(),
+      primaryIndex: this.journalPrimaryIndex ?? 0,
+      techniqueIndex: this.journalTechniqueIndex ?? 0
     });
+  }
+
+  #techniqueContext() {
+    return {
+      itemIds: new Set(this.inventory?.counts?.keys?.() ?? []),
+      equipment: this.inventory?.equipmentSnapshot?.() ?? {}
+    };
   }
 
   #snapshotLevelState() {
@@ -3365,7 +3802,10 @@ export class Game {
   // ---- Render ------------------------------------------------------------
 
   render() {
-    if (!this.ready) return;
+    if (!this.ready) {
+      if (this.loadingState) this.renderer.renderLoading(this.loadingState);
+      return;
+    }
     if (this.mode === 'intro') {
       this.renderer.renderBriefing({
         title: this.briefingTitle,
@@ -3489,6 +3929,9 @@ export class Game {
   #cursorInfo() {
     const mouse = this.input.mouse;
     if (!mouse) return null;
+    if (this.uiScreen === 'character-customization' || this.uiScreen === 'primary-assignment') {
+      return { x: mouse.x, y: mouse.y, state: 'ui', text: null };
+    }
     if (this.uiScreen === 'journal') {
       const arrow = journalArrowAt(mouse);
       const text = arrow === 'prev' ? 'PREV PAGE' : arrow === 'next' ? 'NEXT PAGE' : null;
@@ -3575,10 +4018,14 @@ export class Game {
     const crouchControl = this.sneakMode ? 'C Stand' : 'C Crouch';
 
     let controls;
-    if (this.uiScreen === 'journal') {
-      controls = this.journalSection === 2
-        ? ['Up/Dn Select', 'A/D Turn Page', 'J/Esc Close']
-        : ['A/D Turn Page', 'J/Esc Close'];
+    if (this.uiScreen === 'character-customization') {
+      controls = ['Type Name', 'Arrows Select', 'Enter Confirm'];
+    } else if (this.uiScreen === 'primary-assignment') {
+      controls = ['Arrows Assign', 'Enter Confirm'];
+    } else if (this.uiScreen === 'journal') {
+      if (this.journalSection === 2) controls = ['Up/Dn Select', 'A/D Turn Page', 'J/Esc Close'];
+      else if (this.journalSection === 3 || this.journalSection === 5) controls = ['Up/Dn Select', 'Enter Confirm', 'A/D Turn Page', 'J/Esc Close'];
+      else controls = ['A/D Turn Page', 'J/Esc Close'];
     } else if (this.uiScreen === 'inventory') {
       controls = this.inventorySplit
         ? ['Left/Right Count', 'Enter Drop', 'Esc Back']
@@ -3640,8 +4087,21 @@ export class Game {
         index: this.lootIndex ?? 0
       } : null,
       trade: this.uiScreen === 'trade' ? this.#buildTradeUi() : null,
+      characterCreation: this.uiScreen === 'character-customization' ? {
+        name: this.characterCreation?.name ?? this.player.name,
+        rows: currentCustomizationRows(this.characterCreation ?? createCustomizationState(this.player)),
+        canConfirm: customizationCanConfirm(this.characterCreation ?? createCustomizationState(this.player)),
+        error: this.characterCreation?.error ?? '',
+        previewSpriteId: PLAYER_CUSTOM_PREVIEW_SPRITE_ID
+      } : null,
+      primaryAssignment: this.uiScreen === 'primary-assignment' ? {
+        rows: primaryAssignmentRows(this.primaryAssignment ?? createPrimaryAssignmentState(this.player)),
+        pointsRemaining: this.primaryAssignment?.pointsRemaining ?? 0,
+        canConfirm: primaryAssignmentCanConfirm(this.primaryAssignment ?? createPrimaryAssignmentState(this.player))
+      } : null,
       journal: this.uiScreen === 'journal' ? this.#buildJournal() : null,
       dialogue: this.dialogue,
+      contextActionMenu: this.contextActionMenu,
       hoverText: cursor?.text ?? null,
       cursor,
       log: this.log,

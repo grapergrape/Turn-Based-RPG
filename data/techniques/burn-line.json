@@ -1,0 +1,12 @@
+{
+  "id": "burn-line",
+  "name": "Burn Line",
+  "type": "active",
+  "targets": ["tile"],
+  "requirements": {
+    "fieldRatings": {
+      "purgationTools": 45
+    }
+  },
+  "summary": "Lay fire across a short path. Host tissue hates crossing clean flame."
+}

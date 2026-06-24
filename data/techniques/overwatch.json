@@ -1,0 +1,12 @@
+{
+  "id": "overwatch",
+  "name": "Overwatch",
+  "type": "active",
+  "targets": ["enemy", "tile"],
+  "requirements": {
+    "fieldRatings": {
+      "firearms": 55
+    }
+  },
+  "summary": "Hold a firing lane and punish the first hostile who crosses it."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "study-target",
+  "name": "Study Target",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "anyFieldRatings": {
+      "search": 45,
+      "hostSigns": 45
+    }
+  },
+  "summary": "Read an enemy before striking. Good eyes turn one weakness into a target."
+}

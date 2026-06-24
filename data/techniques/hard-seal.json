@@ -1,0 +1,12 @@
+{
+  "id": "hard-seal",
+  "name": "Hard Seal",
+  "type": "passive",
+  "targets": ["self"],
+  "requirements": {
+    "fieldRatings": {
+      "containment": 45
+    }
+  },
+  "summary": "Your containment work holds longer under pressure."
+}

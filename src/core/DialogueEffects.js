@@ -38,7 +38,11 @@ export class DialogueEffects {
       return this.callbacks.openTradeScreen?.(effects.trade) ?? false;
     }
     if (effects.showBriefing) {
-      this.showBriefing(effects.showBriefing);
+      const briefing = cloneEffect(effects.showBriefing) ?? {};
+      if (effects.loadLevel && !briefing.afterBriefing) {
+        briefing.afterBriefing = { loadLevel: cloneEffect(effects.loadLevel) };
+      }
+      this.showBriefing(briefing);
       return true;
     }
     if (effects.startCombat) {
@@ -116,6 +120,7 @@ export class DialogueEffects {
     this.game.briefingLastPrompt = effect.lastPrompt ?? 'ENTER: CONTINUE';
     this.game.briefingSkipPrompt = effect.skipPrompt ?? 'ESC: SKIP';
     this.game.briefingMarksIntro = false;
+    this.game.briefingAfter = cloneEffect(effect.afterBriefing);
   }
 
   applyInventoryEffects(inventoryEffects) {

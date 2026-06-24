@@ -14,6 +14,12 @@ import {
   HUMAN_BODY_IDS,
   HUMAN_GEAR_IDS,
   HUMAN_OUTFIT_IDS,
+  PLAYER_BODY_TYPE_IDS,
+  PLAYER_FACIAL_HAIR_IDS,
+  PLAYER_GENDER_MODEL_IDS,
+  PLAYER_HAIR_COLOR_IDS,
+  PLAYER_HAIR_STYLE_IDS,
+  PLAYER_SKIN_TONE_IDS,
   SPRITE_ATLAS_IDS
 } from '../../src/render/SpriteAtlas.js';
 import { getSprite } from '../../src/render/spriteCatalog.js';
@@ -24,6 +30,7 @@ import {
   PERCEPTION_FACINGS,
   SUSPICION_SEVERITY
 } from '../../src/world/PerceptionSystem.js';
+import { TECHNIQUE_TYPES } from '../../src/core/TechniqueSystem.js';
 
 export const root = process.cwd();
 export const dataRoot = join(root, 'data');
@@ -81,6 +88,12 @@ export const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helm
 export const ACTOR_BODY_FRAMES = new Set(['feminine', 'masculine', 'androgynous']);
 export const ACTOR_ANATOMY = new Set(['vulva', 'penis', 'smooth', 'intersex']);
 export const ACTOR_SPRITE_IDS = new Set(SPRITE_ATLAS_IDS);
+export const PLAYER_GENDER_MODEL_ID_SET = new Set(PLAYER_GENDER_MODEL_IDS);
+export const PLAYER_BODY_TYPE_ID_SET = new Set(PLAYER_BODY_TYPE_IDS);
+export const PLAYER_SKIN_TONE_ID_SET = new Set(PLAYER_SKIN_TONE_IDS);
+export const PLAYER_HAIR_COLOR_ID_SET = new Set(PLAYER_HAIR_COLOR_IDS);
+export const PLAYER_HAIR_STYLE_ID_SET = new Set(PLAYER_HAIR_STYLE_IDS);
+export const PLAYER_FACIAL_HAIR_ID_SET = new Set(PLAYER_FACIAL_HAIR_IDS);
 export const HUMAN_BODY_ID_SET = new Set(HUMAN_BODY_IDS);
 export const HUMAN_OUTFIT_ID_SET = new Set(HUMAN_OUTFIT_IDS);
 export const HUMAN_GEAR_ID_SET = new Set(HUMAN_GEAR_IDS);
@@ -90,14 +103,18 @@ export const FIELD_RATING_IDS = new Set(FIELD_RATINGS.map((field) => field.id));
 export const TRACE_STAGE_VALUES = new Set(TRACE_STAGES.map((stage) => stage.value));
 export const BUILD_PROFILE_IDS = new Set(BUILD_PROFILES.map((profile) => profile.id));
 export const ENEMY_COMPLEXITY_IDS = new Set(ENEMY_COMPLEXITIES.map((profile) => profile.id));
+export const TECHNIQUE_TYPE_IDS = new Set(TECHNIQUE_TYPES);
+export const TECHNIQUE_TARGET_IDS = new Set(['enemy', 'self', 'tile', 'object']);
 
 export const seenItemIds = new Set();
 export const seenActorIds = new Set();
 export const seenQuestIds = new Set();
 export const seenDialogueIds = new Set();
+export const seenTechniqueIds = new Set();
 export const referencedItemIds = new Set();
 export const referencedActorIds = new Set();
 export const referencedDialogueIds = new Set();
+export const referencedTechniqueIds = new Set();
 
 export function matchDir(filePath, dir) {
   return filePath.includes(`/${dir}/`) || filePath.includes(`\\${dir}\\`);

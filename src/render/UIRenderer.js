@@ -1,8 +1,11 @@
 // Low-resolution CRPG interface renderer facade.
 
 import { drawDialogue } from './ui/DialogueRenderer.js';
+import { drawContextActionMenu } from './ui/ContextActionRenderer.js';
+import { drawCharacterCreation, drawPrimaryAssignment } from './ui/CreationRenderer.js';
 import { drawHud } from './ui/HudRenderer.js';
 import { drawJournal } from './ui/JournalRenderer.js';
+import { drawLoadingScreen } from './ui/LoadingRenderer.js';
 import {
   drawInventory,
   drawInventoryActionButton as drawInventoryActionButtonPrimitive,
@@ -41,6 +44,18 @@ export class UIRenderer {
     ctx.imageSmoothingEnabled = false;
 
     const tools = this.#uiTools();
+    if (ui.screen === 'character-customization') {
+      drawCharacterCreation(ctx, ui, tools);
+      drawCursor(ctx, ui.cursor);
+      ctx.restore();
+      return;
+    }
+    if (ui.screen === 'primary-assignment') {
+      drawPrimaryAssignment(ctx, ui, tools);
+      drawCursor(ctx, ui.cursor);
+      ctx.restore();
+      return;
+    }
     if (ui.screen === 'inventory') drawInventory(ctx, ui, tools);
     if (ui.screen === 'loot') drawLoot(ctx, ui, tools);
     if (ui.screen === 'trade') drawTrade(ctx, ui, tools);
@@ -49,6 +64,7 @@ export class UIRenderer {
     if (ui.screen === 'dialogue') drawDialogue(ctx, ui, tools);
     if (ui.areaTitle && !ui.screen) drawAreaTitle(ctx, ui.areaTitle);
     if (ui.hoverText && !ui.screen) drawHoverText(ctx, ui.hoverText);
+    if (ui.contextActionMenu && !ui.screen) drawContextActionMenu(ctx, ui.contextActionMenu, tools);
     drawCursor(ctx, ui.cursor);
 
     ctx.restore();
@@ -56,6 +72,10 @@ export class UIRenderer {
 
   drawBriefing(ctx, data) {
     drawBriefingPrimitive(ctx, data);
+  }
+
+  drawLoading(ctx, data) {
+    drawLoadingScreen(ctx, data);
   }
 
   #uiTools() {

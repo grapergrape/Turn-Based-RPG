@@ -64,17 +64,26 @@ const baseUi = {
 
 const renderer = new UIRenderer();
 
-for (let section = 0; section < 5; section += 1) {
+const journalSections = ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS', 'TECHNIQUES'];
+
+for (let section = 0; section < journalSections.length; section += 1) {
   renderer.draw(mockCtx(), {
     ...baseUi,
     journal: {
       section,
-      sections: ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS'],
+      sections: journalSections,
       factionIndex: 0,
+      primaryIndex: 0,
       quests: [],
       findings: [],
       factions: [],
-      character
+      character,
+      techniques: {
+        activePoints: 0,
+        passivePoints: 0,
+        selectedIndex: 0,
+        entries: []
+      }
     }
   });
 }
@@ -83,13 +92,19 @@ renderer.draw(mockCtx(), {
   ...baseUi,
   journal: {
     section: 4,
-    sections: ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS'],
+    sections: journalSections,
     turn: { from: 3, to: 4, direction: 1, progress: 0.5 },
     factionIndex: 0,
     quests: [],
     findings: [],
     factions: [],
-    character
+    character,
+    techniques: {
+      activePoints: 0,
+      passivePoints: 0,
+      selectedIndex: 0,
+      entries: []
+    }
   }
 });
 

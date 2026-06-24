@@ -6,22 +6,29 @@
   "role": "Cult-Breaker, Ashen Censure",
   "background": "A field agent of the Ashen Censure, the Holy Remnant's quiet office for hunting and burning blasphemous Host-cults along the ash roads. Years of it now: find the cell, end it, bury whoever the Censure sent with you last time, move on. No one thanks a cult-breaker, and the cults never stop coming. Lately there are more of them than there should be, and no one in the Office will say why.",
   "appearance": {
-    "bodyFrame": "feminine",
-    "anatomy": "vulva"
+    "genderModel": "female",
+    "bodyType": "medium",
+    "skinTone": "tan",
+    "hairColor": "brown",
+    "hairStyle": "cropped",
+    "facialHair": "none"
   },
   "progression": {
     "level": 1,
     "xp": 0,
     "build": "field-agent",
     "primaryPoints": 0,
+    "activeTechniquePoints": 0,
+    "passiveTechniquePoints": 0,
+    "techniques": [],
     "primaries": {
-      "body": 5,
-      "agility": 6,
-      "eye": 6,
-      "intelligence": 4,
-      "religion": 5,
-      "voice": 4,
-      "nerve": 6
+      "body": 3,
+      "agility": 3,
+      "eye": 3,
+      "intelligence": 3,
+      "religion": 3,
+      "voice": 3,
+      "nerve": 3
     },
     "trace": 0,
     "iconRisk": "not-assessed",

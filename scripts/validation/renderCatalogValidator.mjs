@@ -24,6 +24,18 @@ import {
 
   LEVEL_CAP,
 
+  PLAYER_BODY_TYPE_ID_SET,
+
+  PLAYER_FACIAL_HAIR_ID_SET,
+
+  PLAYER_GENDER_MODEL_ID_SET,
+
+  PLAYER_HAIR_COLOR_ID_SET,
+
+  PLAYER_HAIR_STYLE_ID_SET,
+
+  PLAYER_SKIN_TONE_ID_SET,
+
   PRIMARY_ATTRIBUTES,
 
   PRIMARY_ATTRIBUTE_IDS,
@@ -33,6 +45,8 @@ import {
   errors,
 
   referencedItemIds,
+
+  referencedTechniqueIds,
 
   relative,
 
@@ -101,6 +115,42 @@ export function validateActorAppearance(name, appearance, fieldName = 'appearanc
     requireString(name, appearance.anatomy, `${fieldName}.anatomy`);
     if (typeof appearance.anatomy === 'string' && !ACTOR_ANATOMY.has(appearance.anatomy)) {
       errors.push(`${name}: ${fieldName}.anatomy must be one of ${[...ACTOR_ANATOMY].join(', ')}.`);
+    }
+  }
+  if (appearance.genderModel !== undefined) {
+    requireString(name, appearance.genderModel, `${fieldName}.genderModel`);
+    if (typeof appearance.genderModel === 'string' && !PLAYER_GENDER_MODEL_ID_SET.has(appearance.genderModel)) {
+      errors.push(`${name}: ${fieldName}.genderModel must be one of ${[...PLAYER_GENDER_MODEL_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.bodyType !== undefined) {
+    requireString(name, appearance.bodyType, `${fieldName}.bodyType`);
+    if (typeof appearance.bodyType === 'string' && !PLAYER_BODY_TYPE_ID_SET.has(appearance.bodyType)) {
+      errors.push(`${name}: ${fieldName}.bodyType must be one of ${[...PLAYER_BODY_TYPE_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.skinTone !== undefined) {
+    requireString(name, appearance.skinTone, `${fieldName}.skinTone`);
+    if (typeof appearance.skinTone === 'string' && !PLAYER_SKIN_TONE_ID_SET.has(appearance.skinTone)) {
+      errors.push(`${name}: ${fieldName}.skinTone must be one of ${[...PLAYER_SKIN_TONE_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.hairColor !== undefined) {
+    requireString(name, appearance.hairColor, `${fieldName}.hairColor`);
+    if (typeof appearance.hairColor === 'string' && !PLAYER_HAIR_COLOR_ID_SET.has(appearance.hairColor)) {
+      errors.push(`${name}: ${fieldName}.hairColor must be one of ${[...PLAYER_HAIR_COLOR_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.hairStyle !== undefined) {
+    requireString(name, appearance.hairStyle, `${fieldName}.hairStyle`);
+    if (typeof appearance.hairStyle === 'string' && !PLAYER_HAIR_STYLE_ID_SET.has(appearance.hairStyle)) {
+      errors.push(`${name}: ${fieldName}.hairStyle must be one of ${[...PLAYER_HAIR_STYLE_ID_SET].join(', ')}.`);
+    }
+  }
+  if (appearance.facialHair !== undefined) {
+    requireString(name, appearance.facialHair, `${fieldName}.facialHair`);
+    if (typeof appearance.facialHair === 'string' && !PLAYER_FACIAL_HAIR_ID_SET.has(appearance.facialHair)) {
+      errors.push(`${name}: ${fieldName}.facialHair must be one of ${[...PLAYER_FACIAL_HAIR_ID_SET].join(', ')}.`);
     }
   }
   if (appearance.body !== undefined) {
@@ -225,7 +275,10 @@ function validateActorProgression(name, progression) {
 
   if (progression.level !== undefined) {
     requireNumber(name, progression.level, 'progression.level');
-    if (typeof progression.level === 'number' && (!Number.isInteger(progression.level) || progression.level < 1 || progression.level > LEVEL_CAP)) {
+    const hasCap = Number.isInteger(LEVEL_CAP) && LEVEL_CAP >= 1;
+    if (typeof progression.level === 'number' && (!Number.isInteger(progression.level) || progression.level < 1)) {
+      errors.push(`${name}: progression.level must be an integer 1 or greater.`);
+    } else if (hasCap && typeof progression.level === 'number' && progression.level > LEVEL_CAP) {
       errors.push(`${name}: progression.level must be an integer from 1 to ${LEVEL_CAP}.`);
     }
   }
@@ -247,6 +300,32 @@ function validateActorProgression(name, progression) {
       errors.push(`${name}: progression.primaryPoints must be a zero or greater integer.`);
     }
   }
+  if (progression.activeTechniquePoints !== undefined) {
+    requireNumber(name, progression.activeTechniquePoints, 'progression.activeTechniquePoints');
+    if (typeof progression.activeTechniquePoints === 'number' && (!Number.isInteger(progression.activeTechniquePoints) || progression.activeTechniquePoints < 0)) {
+      errors.push(`${name}: progression.activeTechniquePoints must be a zero or greater integer.`);
+    }
+  }
+  if (progression.passiveTechniquePoints !== undefined) {
+    requireNumber(name, progression.passiveTechniquePoints, 'progression.passiveTechniquePoints');
+    if (typeof progression.passiveTechniquePoints === 'number' && (!Number.isInteger(progression.passiveTechniquePoints) || progression.passiveTechniquePoints < 0)) {
+      errors.push(`${name}: progression.passiveTechniquePoints must be a zero or greater integer.`);
+    }
+  }
+  if (progression.techniques !== undefined) {
+    if (!Array.isArray(progression.techniques)) {
+      errors.push(`${name}: progression.techniques must be an array.`);
+    } else {
+      const seen = new Set();
+      for (const [index, techniqueId] of progression.techniques.entries()) {
+        requireString(name, techniqueId, `progression.techniques[${index}]`);
+        if (typeof techniqueId !== 'string') continue;
+        if (seen.has(techniqueId)) errors.push(`${name}: progression.techniques contains duplicate "${techniqueId}".`);
+        seen.add(techniqueId);
+        referencedTechniqueIds.add(techniqueId);
+      }
+    }
+  }
   if (progression.build !== undefined) {
     requireString(name, progression.build, 'progression.build');
     if (typeof progression.build === 'string' && !BUILD_PROFILE_IDS.has(progression.build)) {
@@ -265,6 +344,14 @@ function validateActorProgression(name, progression) {
       errors.push(`${name}: progression.primaries must be an object.`);
     } else {
       validatePrimaryMap(name, progression.primaries, 'progression.primaries');
+    }
+  }
+
+  if (progression.basePrimaries !== undefined) {
+    if (!progression.basePrimaries || typeof progression.basePrimaries !== 'object' || Array.isArray(progression.basePrimaries)) {
+      errors.push(`${name}: progression.basePrimaries must be an object.`);
+    } else {
+      validatePrimaryMap(name, progression.basePrimaries, 'progression.basePrimaries');
     }
   }
 

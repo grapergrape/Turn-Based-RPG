@@ -14,7 +14,20 @@ import {
 import { bakeHostRat, drawSixLeggedRat, drawTendrilWalkerRat, drawThroatMawRat } from './sprites/ratCreatures.js';
 
 export { SPRITE_POSE_FRAME_COUNTS, getFrame } from './sprites/spriteBake.js';
-export { bakeMara, deriveMaraStyle } from './sprites/maraAppearance.js';
+export {
+  MARA_DEFAULT_APPEARANCE,
+  PLAYER_BODY_TYPE_IDS,
+  PLAYER_FACIAL_HAIR_IDS,
+  PLAYER_GENDER_MODEL_IDS,
+  PLAYER_HAIR_COLOR_IDS,
+  PLAYER_HAIR_STYLE_IDS,
+  PLAYER_SKIN_TONE_IDS,
+  bakeMara,
+  bakePlayerCharacter,
+  deriveMaraStyle,
+  derivePlayerStyle,
+  normalizePlayerAppearance
+} from './sprites/maraAppearance.js';
 export {
   HUMAN_ACCENT_IDS,
   HUMAN_BODY_IDS,

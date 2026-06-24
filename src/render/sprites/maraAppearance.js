@@ -77,15 +77,15 @@ const MARA_BODY = {
   headHeight: 9,
   legSize: 2,
   armSize: 2,
-  coatHi: PALETTE.skinLight,
-  coat: PALETTE.skinMid,
-  coatLo: PALETTE.skinDark,
-  coatDk: PALETTE.clothDark,
-  coatTail: 0,
-  pantsHi: PALETTE.skinLight,
-  pants: PALETTE.skinMid,
-  pantsLo: PALETTE.skinDark,
-  pantsDk: PALETTE.clothDark,
+  coatHi: PALETTE.stoneDark,
+  coat: PALETTE.clothDark,
+  coatLo: PALETTE.clothDark,
+  coatDk: PALETTE.stoneDark,
+  coatTail: 5,
+  pantsHi: PALETTE.stoneDark,
+  pants: PALETTE.clothDark,
+  pantsLo: PALETTE.stoneDark,
+  pantsDk: PALETTE.stoneDark,
   skinHi: PALETTE.skinLight,
   skin: PALETTE.skinMid,
   skinLo: PALETTE.skinDark,
@@ -94,25 +94,65 @@ const MARA_BODY = {
   hairHi: PALETTE.woodLight,
   hood: PALETTE.clothDark,
   hoodHi: PALETTE.stoneDark,
-  belt: null,
+  belt: PALETTE.rustDark,
   weapon: PALETTE.stoneLight,
   bareFeet: true,
   fieldHarness: false,
   anatomy: 'vulva',
-  anatomyVisible: true,
+  anatomyVisible: false,
   hunch: 0,
   decorate: drawMaraDetails
 };
 
 export const MARA_DEFAULT_APPEARANCE = Object.freeze({
+  genderModel: 'female',
+  bodyType: 'medium',
+  skinTone: 'tan',
+  hairColor: 'brown',
+  hairStyle: 'cropped',
+  facialHair: 'none',
   bodyFrame: 'feminine',
   anatomy: 'vulva'
+});
+
+export const PLAYER_GENDER_MODEL_IDS = Object.freeze(['female', 'male', 'androgynous']);
+export const PLAYER_BODY_TYPE_IDS = Object.freeze(['skinny', 'medium', 'fat', 'buff']);
+export const PLAYER_SKIN_TONE_IDS = Object.freeze(['light', 'tan', 'brown', 'dark']);
+export const PLAYER_HAIR_COLOR_IDS = Object.freeze(['black', 'brown', 'blond', 'grey']);
+export const PLAYER_HAIR_STYLE_IDS = Object.freeze(['cropped', 'loose', 'shaved', 'hooded']);
+export const PLAYER_FACIAL_HAIR_IDS = Object.freeze(['none', 'stubble', 'beard']);
+
+const PLAYER_GENDER_MODELS = Object.freeze({
+  female: Object.freeze({ bodyFrame: 'feminine', anatomy: 'vulva', shoulders: 15, waist: 9, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
+  male: Object.freeze({ bodyFrame: 'masculine', anatomy: 'penis', shoulders: 17, waist: 10, torsoLength: 17, legLength: 24, legSize: 2, armSize: 2 }),
+  androgynous: Object.freeze({ bodyFrame: 'androgynous', anatomy: 'smooth', shoulders: 15, waist: 8, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
 });
 
 const MARA_BODY_FRAMES = Object.freeze({
   feminine: Object.freeze({ shoulders: 15, waist: 9, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
   masculine: Object.freeze({ shoulders: 17, waist: 10, torsoLength: 17, legLength: 24, legSize: 2, armSize: 2 }),
   androgynous: Object.freeze({ shoulders: 15, waist: 8, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
+});
+
+const BODY_TYPE_OVERLAYS = Object.freeze({
+  skinny: Object.freeze({ shoulders: -2, waist: -2, torsoLength: 0, legLength: 1, legSize: 1, armSize: 1, coatTailMin: 5 }),
+  medium: Object.freeze({}),
+  fat: Object.freeze({ shoulders: 1, waist: 4, torsoLength: 1, legLength: -2, legSize: 2, armSize: 2, coatTailMin: 8 }),
+  buff: Object.freeze({ shoulders: 4, waist: 2, torsoLength: 1, legLength: 0, legSize: 2, armSize: 3, coatTailMin: 7 })
+});
+
+const SKIN_TONE_RAMPS = Object.freeze({
+  light: Object.freeze({ hi: PALETTE.hostBone, mid: PALETTE.skinLight, lo: PALETTE.skinMid, dk: PALETTE.skinDark }),
+  tan: Object.freeze({ hi: PALETTE.skinLight, mid: PALETTE.skinMid, lo: PALETTE.skinDark, dk: PALETTE.clothDark }),
+  brown: Object.freeze({ hi: PALETTE.skinMid, mid: PALETTE.woodMid, lo: PALETTE.woodDark, dk: PALETTE.clothDark }),
+  dark: Object.freeze({ hi: PALETTE.woodMid, mid: PALETTE.woodDark, lo: PALETTE.clothDark, dk: PALETTE.void })
+});
+
+const HAIR_COLOR_RAMPS = Object.freeze({
+  black: Object.freeze({ mid: PALETTE.clothDark, hi: PALETTE.stoneDark }),
+  brown: Object.freeze({ mid: PALETTE.woodMid, hi: PALETTE.woodLight }),
+  blond: Object.freeze({ mid: PALETTE.clothTan, hi: PALETTE.hostBone }),
+  grey: Object.freeze({ mid: PALETTE.stoneMid, hi: PALETTE.stoneDust })
 });
 
 const MARA_ITEM_VISUALS = {
@@ -148,6 +188,12 @@ export const MARA_DEFAULT_EQUIPMENT = {
 };
 
 const MARA_ANATOMY_IDS = new Set(['vulva', 'penis', 'smooth', 'intersex']);
+const PLAYER_GENDER_MODEL_ID_SET = new Set(PLAYER_GENDER_MODEL_IDS);
+const PLAYER_BODY_TYPE_ID_SET = new Set(PLAYER_BODY_TYPE_IDS);
+const PLAYER_SKIN_TONE_ID_SET = new Set(PLAYER_SKIN_TONE_IDS);
+const PLAYER_HAIR_COLOR_ID_SET = new Set(PLAYER_HAIR_COLOR_IDS);
+const PLAYER_HAIR_STYLE_ID_SET = new Set(PLAYER_HAIR_STYLE_IDS);
+const PLAYER_FACIAL_HAIR_ID_SET = new Set(PLAYER_FACIAL_HAIR_IDS);
 
 function pal(ref, fallback) {
   if (ref == null) return fallback;
@@ -165,14 +211,39 @@ function resolveVest(vest) {
   };
 }
 
-function normalizeMaraAppearance(appearance = {}) {
-  const bodyFrame = typeof appearance.bodyFrame === 'string' && MARA_BODY_FRAMES[appearance.bodyFrame]
+function genderModelForBodyFrame(bodyFrame) {
+  if (bodyFrame === 'masculine') return 'male';
+  if (bodyFrame === 'androgynous') return 'androgynous';
+  return 'female';
+}
+
+export function normalizePlayerAppearance(appearance = {}) {
+  const genderModel = typeof appearance?.genderModel === 'string' && PLAYER_GENDER_MODEL_ID_SET.has(appearance.genderModel)
+    ? appearance.genderModel
+    : genderModelForBodyFrame(appearance?.bodyFrame);
+  const model = PLAYER_GENDER_MODELS[genderModel] ?? PLAYER_GENDER_MODELS.female;
+  const bodyType = typeof appearance?.bodyType === 'string' && PLAYER_BODY_TYPE_ID_SET.has(appearance.bodyType)
+    ? appearance.bodyType
+    : MARA_DEFAULT_APPEARANCE.bodyType;
+  const skinTone = typeof appearance?.skinTone === 'string' && PLAYER_SKIN_TONE_ID_SET.has(appearance.skinTone)
+    ? appearance.skinTone
+    : MARA_DEFAULT_APPEARANCE.skinTone;
+  const hairColor = typeof appearance?.hairColor === 'string' && PLAYER_HAIR_COLOR_ID_SET.has(appearance.hairColor)
+    ? appearance.hairColor
+    : MARA_DEFAULT_APPEARANCE.hairColor;
+  const hairStyle = typeof appearance?.hairStyle === 'string' && PLAYER_HAIR_STYLE_ID_SET.has(appearance.hairStyle)
+    ? appearance.hairStyle
+    : MARA_DEFAULT_APPEARANCE.hairStyle;
+  const facialHair = typeof appearance?.facialHair === 'string' && PLAYER_FACIAL_HAIR_ID_SET.has(appearance.facialHair)
+    ? appearance.facialHair
+    : MARA_DEFAULT_APPEARANCE.facialHair;
+  const bodyFrame = typeof appearance?.bodyFrame === 'string' && MARA_BODY_FRAMES[appearance.bodyFrame]
     ? appearance.bodyFrame
-    : MARA_DEFAULT_APPEARANCE.bodyFrame;
-  const anatomy = typeof appearance.anatomy === 'string' && MARA_ANATOMY_IDS.has(appearance.anatomy)
+    : model.bodyFrame;
+  const anatomy = typeof appearance?.anatomy === 'string' && MARA_ANATOMY_IDS.has(appearance.anatomy)
     ? appearance.anatomy
-    : MARA_DEFAULT_APPEARANCE.anatomy;
-  return { bodyFrame, anatomy };
+    : model.anatomy;
+  return { genderModel, bodyType, skinTone, hairColor, hairStyle, facialHair, bodyFrame, anatomy };
 }
 
 function genericVisualForSlot(slot) {
@@ -200,11 +271,23 @@ function genericVisualForSlot(slot) {
 
 function composeMaraStyle(visuals, appearance = {}) {
   const style = { ...MARA_BODY };
-  const normalizedAppearance = normalizeMaraAppearance(appearance);
+  const normalizedAppearance = normalizePlayerAppearance(appearance);
+  const model = PLAYER_GENDER_MODELS[normalizedAppearance.genderModel] ?? PLAYER_GENDER_MODELS.female;
+  Object.assign(style, model);
+  applyBodyType(style, normalizedAppearance.bodyType);
+  applySkinTone(style, normalizedAppearance.skinTone);
+  applyHair(style, normalizedAppearance.hairColor, normalizedAppearance.hairStyle, normalizedAppearance.facialHair);
   Object.assign(style, MARA_BODY_FRAMES[normalizedAppearance.bodyFrame]);
+  applyBodyType(style, normalizedAppearance.bodyType);
   style.bodyFrame = normalizedAppearance.bodyFrame;
+  style.genderModel = normalizedAppearance.genderModel;
+  style.bodyType = normalizedAppearance.bodyType;
+  style.skinTone = normalizedAppearance.skinTone;
+  style.hairColor = normalizedAppearance.hairColor;
+  style.hairStyle = normalizedAppearance.hairStyle;
+  style.facialHair = normalizedAppearance.facialHair;
   style.anatomy = normalizedAppearance.anatomy;
-  style.anatomyVisible = true;
+  style.anatomyVisible = false;
 
   const clothes = visuals.clothes;
   if (clothes) {
@@ -219,7 +302,6 @@ function composeMaraStyle(visuals, appearance = {}) {
     style.pantsDk = pal(clothes.pantsDk, PALETTE.void);
     style.belt = pal(clothes.belt, PALETTE.rustDark);
     style.fieldHarness = clothes.fieldHarness !== false;
-    style.anatomyVisible = false;
   }
 
   style.vest = visuals.armor ? resolveVest(visuals.armor.vest ?? visuals.armor) : null;
@@ -242,8 +324,35 @@ function composeMaraStyle(visuals, appearance = {}) {
   }
 
   style.pendant = visuals.trinket ? pal(visuals.trinket.pendant, PALETTE.hostGold) : null;
+  const overlay = BODY_TYPE_OVERLAYS[normalizedAppearance.bodyType] ?? BODY_TYPE_OVERLAYS.medium;
+  if (overlay.coatTailMin) style.coatTail = Math.max(style.coatTail ?? 0, overlay.coatTailMin);
 
   return style;
+}
+
+function applyBodyType(style, bodyType) {
+  const overlay = BODY_TYPE_OVERLAYS[bodyType] ?? BODY_TYPE_OVERLAYS.medium;
+  for (const key of ['shoulders', 'waist', 'torsoLength', 'legLength']) {
+    if (typeof overlay[key] === 'number') style[key] = Math.max(1, style[key] + overlay[key]);
+  }
+  if (typeof overlay.legSize === 'number') style.legSize = Math.max(1, overlay.legSize);
+  if (typeof overlay.armSize === 'number') style.armSize = Math.max(1, overlay.armSize);
+}
+
+function applySkinTone(style, skinTone) {
+  const skin = SKIN_TONE_RAMPS[skinTone] ?? SKIN_TONE_RAMPS.tan;
+  style.skinHi = skin.hi;
+  style.skin = skin.mid;
+  style.skinLo = skin.lo;
+  style.skinDk = skin.dk;
+}
+
+function applyHair(style, hairColor, hairStyle, facialHair) {
+  const hair = HAIR_COLOR_RAMPS[hairColor] ?? HAIR_COLOR_RAMPS.brown;
+  style.hair = hair.mid;
+  style.hairHi = hair.hi;
+  style.hairStyle = hairStyle;
+  style.facialHair = facialHair;
 }
 
 export function deriveMaraStyle(equipment = {}, itemDefs = {}, appearance = {}) {
@@ -259,4 +368,12 @@ export function deriveMaraStyle(equipment = {}, itemDefs = {}, appearance = {}) 
 
 export function bakeMara(equipment = MARA_DEFAULT_EQUIPMENT, itemDefs = {}, appearance = MARA_DEFAULT_APPEARANCE) {
   return bakeActor(42, 62, deriveMaraStyle(equipment, itemDefs, appearance));
+}
+
+export function derivePlayerStyle(equipment = {}, itemDefs = {}, appearance = {}) {
+  return deriveMaraStyle(equipment, itemDefs, appearance);
+}
+
+export function bakePlayerCharacter(equipment = MARA_DEFAULT_EQUIPMENT, itemDefs = {}, appearance = MARA_DEFAULT_APPEARANCE) {
+  return bakeMara(equipment, itemDefs, appearance);
 }

@@ -1,0 +1,13 @@
+{
+  "id": "trip-mine",
+  "name": "Trip Mine",
+  "type": "active",
+  "targets": ["tile"],
+  "requirements": {
+    "anyFieldRatings": {
+      "engineering": 45,
+      "security": 45
+    }
+  },
+  "summary": "Set a crude charge or snare on a nearby tile before the fight reaches you."
+}

@@ -206,6 +206,14 @@
     {
       "flag": "inspected-engine-rut",
       "text": "A Penitent Engine stood in the doorway, then turned and left without coming inside. They do not abandon a route for nothing."
+    },
+    {
+      "flag": "dalia-heard-choir-name",
+      "text": "Dalia Mor heard one attacker correct another: 'Choir. We are the Choir of the Open Wound.' She counted the name because it frightened her."
+    },
+    {
+      "flag": "read-gate-mother-order",
+      "text": "The order pinned over the old quarantine writ names the attackers as the Choir of the Open Wound. It says they were holding the chapel until the Hallowfen road went silent."
     }
   ],
   "tiles": [

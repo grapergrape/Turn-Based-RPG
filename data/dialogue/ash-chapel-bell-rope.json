@@ -117,6 +117,9 @@
                   ]
                 }
               ],
+              "afterBriefing": {
+                "openScreen": "primary-assignment"
+              },
               "lastPrompt": "ENTER: FOLLOW THE HALLOWFEN ROAD",
               "skipPrompt": "ESC: CLOSE"
             }

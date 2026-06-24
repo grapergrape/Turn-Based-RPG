@@ -11,15 +11,18 @@ import {
   referencedActorIds,
   referencedDialogueIds,
   referencedItemIds,
+  referencedTechniqueIds,
   seenActorIds,
   seenDialogueIds,
   seenItemIds,
-  seenQuestIds
+  seenQuestIds,
+  seenTechniqueIds
 } from './validation/validationContext.mjs';
 import { validateDialogue, validateQuest } from './validation/dialogueValidator.mjs';
 import { validateItem } from './validation/itemValidator.mjs';
 import { validateLevel, validateMap } from './validation/levelValidator.mjs';
 import { validateActor, validateEnemy } from './validation/renderCatalogValidator.mjs';
+import { validateTechnique } from './validation/techniqueValidator.mjs';
 
 async function main() {
   await checkRenderConfig();
@@ -37,6 +40,7 @@ async function main() {
     if (matchDir(filePath, 'items')) validateItem(filePath, data);
     if (matchDir(filePath, 'quests')) validateQuest(filePath, data);
     if (matchDir(filePath, 'dialogue')) validateDialogue(filePath, data);
+    if (matchDir(filePath, 'techniques')) validateTechnique(filePath, data);
   }
 
   for (const id of REQUIRED_ITEM_IDS) {
@@ -67,6 +71,11 @@ async function main() {
   for (const id of referencedDialogueIds) {
     if (!seenDialogueIds.has(id)) {
       errors.push(`data/dialogue: referenced dialogue "${id}" is missing.`);
+    }
+  }
+  for (const id of referencedTechniqueIds) {
+    if (!seenTechniqueIds.has(id)) {
+      errors.push(`data/techniques: referenced technique "${id}" is missing.`);
     }
   }
 

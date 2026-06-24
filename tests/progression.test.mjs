@@ -10,6 +10,7 @@ import {
   experienceRewardForActor,
   levelFromXp,
   normalizeProgression,
+  progressionRewardsForLevel,
   questStageExperience,
   questStageExperienceKey,
   scaleStatsForProgression,
@@ -91,7 +92,7 @@ const hostSigns = FIELD_RATINGS.find((field) => field.id === 'hostSigns');
     }
   });
   assert.equal(progression.level, 3);
-  assert.equal(progression.primaries.eye, 4);
+  assert.equal(progression.primaries.eye, 3);
   assert.equal(progression.build.label, 'Gunhand');
 }
 
@@ -122,8 +123,50 @@ const hostSigns = FIELD_RATINGS.find((field) => field.id === 'hostSigns');
   };
   const result = awardExperience(actor, 100);
   assert.equal(result.level, 2);
-  assert.equal(result.primaryPoints, 1);
+  assert.equal(result.primaryPoints, 0);
+  assert.equal(result.activeTechniquePoints, 1);
+  assert.equal(result.passiveTechniquePoints, 0);
   assert.equal(refreshed, true);
+}
+
+{
+  assert.deepEqual(progressionRewardsForLevel(2), {
+    primaryPoints: 0,
+    activeTechniquePoints: 1,
+    passiveTechniquePoints: 0
+  });
+  assert.deepEqual(progressionRewardsForLevel(3), {
+    primaryPoints: 0,
+    activeTechniquePoints: 0,
+    passiveTechniquePoints: 1
+  });
+  assert.deepEqual(progressionRewardsForLevel(5), {
+    primaryPoints: 2,
+    activeTechniquePoints: 0,
+    passiveTechniquePoints: 1
+  });
+  assert.deepEqual(progressionRewardsForLevel(10), {
+    primaryPoints: 2,
+    activeTechniquePoints: 1,
+    passiveTechniquePoints: 0
+  });
+  assert.deepEqual(progressionRewardsForLevel(25), {
+    primaryPoints: 2,
+    activeTechniquePoints: 0,
+    passiveTechniquePoints: 1
+  });
+  assert.equal(progressionRewardsForLevel(4).primaryPoints, 0);
+}
+
+{
+  const actor = {
+    progression: { level: 1, xp: 0, build: 'field-agent' }
+  };
+  const result = awardExperience(actor, xpForLevel(5));
+  assert.equal(result.level, 5);
+  assert.equal(result.primaryPoints, 2);
+  assert.equal(result.activeTechniquePoints, 2);
+  assert.equal(result.passiveTechniquePoints, 2);
 }
 
 {
@@ -161,4 +204,11 @@ const hostSigns = FIELD_RATINGS.find((field) => field.id === 'hostSigns');
   assert.equal(questStageExperience(quest, 'found'), 25);
   assert.equal(questStageExperience(quest, 'complete'), 75);
   assert.equal(questStageExperienceKey('test-quest', 'found'), 'test-quest:found');
+}
+
+{
+  const level = 26;
+  const xp = xpForLevel(level);
+  assert.equal(levelFromXp(xp), level);
+  assert.equal(experienceProgress({ level, xp, build: 'field-agent' }).atCap, false);
 }

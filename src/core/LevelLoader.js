@@ -9,6 +9,7 @@ import { createActor } from '../entities/ActorFactory.js';
 import { isPassableWhenOpen } from '../world/DoorSystem.js';
 import { createGroundItem } from '../world/GroundItems.js';
 import { PATROL_MODES } from '../world/PerceptionSystem.js';
+import { clampLoadingProgress } from './LoadingProgress.js';
 
 export const PATROL_MIN_DWELL = 2.4;
 const PATROL_MIN_VARIANCE = 0.6;
@@ -22,11 +23,34 @@ async function loadJson(path) {
   return response.json();
 }
 
-async function loadContentById(ids, folder) {
+function reportLoadProgress(onProgress, progress, message, detail = '') {
+  if (typeof onProgress !== 'function') return;
+  onProgress({ progress: clampLoadingProgress(progress), message, detail });
+}
+
+function collectionProgress(index, total, start, end) {
+  if (total <= 0) return end;
+  return start + (end - start) * (index / total);
+}
+
+async function loadContentById(ids, folder, options = {}) {
+  const list = ids ?? [];
   const entries = {};
-  for (const id of ids ?? []) {
+  if (list.length === 0) {
+    reportLoadProgress(options.onProgress, options.end ?? 1, options.message ?? 'Loading content');
+    return entries;
+  }
+
+  for (const [index, id] of list.entries()) {
+    reportLoadProgress(
+      options.onProgress,
+      collectionProgress(index, list.length, options.start ?? 0, options.end ?? 1),
+      options.message ?? 'Loading content',
+      `${index + 1} of ${list.length}`
+    );
     entries[id] = await loadJson(`./data/${folder}/${id}.json`);
   }
+  reportLoadProgress(options.onProgress, options.end ?? 1, options.message ?? 'Loading content', `${list.length} of ${list.length}`);
   return entries;
 }
 
@@ -160,8 +184,11 @@ function wallKindFor(def) {
   return typeof def?.kind === 'string' ? def.kind : 'wall';
 }
 
-export async function loadLevel(levelPath) {
+export async function loadLevel(levelPath, options = {}) {
+  const onProgress = options.onProgress;
+  reportLoadProgress(onProgress, 0.02, 'Reading level record');
   const level = await loadJson(levelPath);
+  reportLoadProgress(onProgress, 0.08, 'Building map grid');
   const grid = new Grid(level);
 
   const props = [];
@@ -195,19 +222,25 @@ export async function loadLevel(levelPath) {
   }
 
   // Player.
+  reportLoadProgress(onProgress, 0.18, 'Loading player record');
   const playerSpawn = level.spawns.player;
   const playerData = await loadJson(`./data/actors/${playerSpawn.actor ?? 'mara-vey'}.json`);
   const player = createActor(playerData, { x: playerSpawn.x, y: playerSpawn.y });
   const playerLoadout = playerData.inventory ?? null;
 
   // Enemies (load each unique enemy id once).
+  reportLoadProgress(onProgress, 0.25, 'Loading enemy records');
   const enemySpawns = level.spawns.enemies ?? [];
   const enemyDataById = new Map();
-  for (const spawn of enemySpawns) {
+  const uniqueEnemyIds = [...new Set(enemySpawns.map((spawn) => spawn.id).filter(Boolean))];
+  for (const [index, enemyId] of uniqueEnemyIds.entries()) {
+    reportLoadProgress(onProgress, collectionProgress(index, Math.max(1, uniqueEnemyIds.length), 0.25, 0.34), 'Loading enemy records', `${index + 1} of ${uniqueEnemyIds.length}`);
+    const spawn = enemySpawns.find((entry) => entry.id === enemyId);
     if (!enemyDataById.has(spawn.id)) {
       enemyDataById.set(spawn.id, await loadJson(`./data/enemies/${spawn.id}.json`));
     }
   }
+  reportLoadProgress(onProgress, 0.34, 'Loading enemy records', `${uniqueEnemyIds.length} of ${uniqueEnemyIds.length}`);
   const enemies = enemySpawns.map((spawn, index) => {
     const enemyData = enemyDataById.get(spawn.id);
     const enemy = createActor(enemyData, { x: spawn.x, y: spawn.y });
@@ -238,14 +271,17 @@ export async function loadLevel(levelPath) {
 
   // Neutral NPCs use actor data and the same render/dialogue/ambient plumbing as
   // enemies, but Game keeps them out of combat targeting and victory checks.
+  reportLoadProgress(onProgress, 0.36, 'Loading survivor records');
   const npcSpawns = level.spawns.npcs ?? [];
   const npcDataById = new Map();
-  for (const spawn of npcSpawns) {
-    const actorId = spawn.actor ?? spawn.id;
+  const uniqueNpcIds = [...new Set(npcSpawns.map((spawn) => spawn.actor ?? spawn.id).filter(Boolean))];
+  for (const [index, actorId] of uniqueNpcIds.entries()) {
+    reportLoadProgress(onProgress, collectionProgress(index, Math.max(1, uniqueNpcIds.length), 0.36, 0.42), 'Loading survivor records', `${index + 1} of ${uniqueNpcIds.length}`);
     if (!npcDataById.has(actorId)) {
       npcDataById.set(actorId, await loadJson(`./data/actors/${actorId}.json`));
     }
   }
+  reportLoadProgress(onProgress, 0.42, 'Loading survivor records', `${uniqueNpcIds.length} of ${uniqueNpcIds.length}`);
   const npcs = npcSpawns.map((spawn, index) => {
     const actorId = spawn.actor ?? spawn.id;
     const npc = createActor(npcDataById.get(actorId), { x: spawn.x, y: spawn.y });
@@ -265,10 +301,29 @@ export async function loadLevel(levelPath) {
     return npc;
   });
 
-  const dialogueDefs = await loadContentById(level.dialogue ?? [], 'dialogue');
-  const questDefs = await loadContentById(level.quests ?? [], 'quests');
+  const dialogueDefs = await loadContentById(level.dialogue ?? [], 'dialogue', {
+    onProgress,
+    start: 0.44,
+    end: 0.58,
+    message: 'Loading dialogue'
+  });
+  const questDefs = await loadContentById(level.quests ?? [], 'quests', {
+    onProgress,
+    start: 0.58,
+    end: 0.64,
+    message: 'Loading quests'
+  });
+  reportLoadProgress(onProgress, 0.66, 'Loading technique index');
+  const techniqueIndex = await loadJson('./data/techniques/index.json');
+  const techniqueDefs = await loadContentById(techniqueIndex.ids ?? [], 'techniques', {
+    onProgress,
+    start: 0.68,
+    end: 0.76,
+    message: 'Loading techniques'
+  });
 
   // Item definitions referenced by loot.
+  reportLoadProgress(onProgress, 0.78, 'Finding gear records');
   const itemIds = new Set();
   for (const object of interactables) {
     for (const entry of object.interact.loot ?? []) itemIds.add(entry.item);
@@ -290,10 +345,14 @@ export async function loadLevel(levelPath) {
   for (const itemId of Object.values(playerLoadout?.equipment ?? {})) itemIds.add(itemId);
   collectDialogueItemIds(dialogueDefs, itemIds);
   const itemDefs = {};
-  for (const id of itemIds) {
+  const itemList = [...itemIds];
+  for (const [index, id] of itemList.entries()) {
+    reportLoadProgress(onProgress, collectionProgress(index, Math.max(1, itemList.length), 0.82, 0.94), 'Loading gear records', `${index + 1} of ${itemList.length}`);
     itemDefs[id] = await loadJson(`./data/items/${id}.json`);
   }
+  reportLoadProgress(onProgress, 0.94, 'Loading gear records', `${itemList.length} of ${itemList.length}`);
 
+  reportLoadProgress(onProgress, 0.97, 'Assembling level');
   const groundItems = (level.groundItems ?? [])
     .map((entry, index) => createGroundItem({
       id: entry.id ?? `${level.id}-ground-${index}`,
@@ -307,6 +366,7 @@ export async function loadLevel(levelPath) {
     }))
     .filter(Boolean);
 
+  reportLoadProgress(onProgress, 1, 'Level ready');
   return {
     id: level.id,
     name: level.name,
@@ -322,6 +382,7 @@ export async function loadLevel(levelPath) {
     npcs,
     groundItems,
     itemDefs,
+    techniqueDefs,
     playerLoadout,
     dialogueDefs,
     questDefs,

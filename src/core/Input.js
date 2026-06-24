@@ -43,6 +43,7 @@ export class Input {
   constructor(canvas) {
     this.canvas = canvas;
     this.actions = [];
+    this.textInput = [];
     this.keys = new Set();
     this.mouse = null;
     this.pendingClick = null;
@@ -70,6 +71,12 @@ export class Input {
     return click;
   }
 
+  consumeText() {
+    const textInput = this.textInput;
+    this.textInput = [];
+    return textInput;
+  }
+
   isHeld(key) {
     return this.keys.has(String(key).toLowerCase());
   }
@@ -80,8 +87,15 @@ export class Input {
       this.keys.add(key);
       return;
     }
+    if (!event.ctrlKey && !event.metaKey && !event.altKey) {
+      if (event.key === 'Backspace') this.textInput.push({ type: 'backspace' });
+      else if (event.key.length === 1) this.textInput.push({ type: 'char', value: event.key });
+    }
     const token = KEY_TOKENS[key] ?? KEY_CODE_TOKENS[event.code];
-    if (!token) return;
+    if (!token) {
+      if (event.key === 'Backspace') event.preventDefault();
+      return;
+    }
     event.preventDefault();
     if (token === 'toggle-sneak' && (event.repeat || this.keys.has(key))) return;
     this.keys.add(key);

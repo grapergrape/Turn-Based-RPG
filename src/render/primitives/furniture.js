@@ -30,6 +30,7 @@ import {
   rngFrom,
   wallRunFace
 } from './basePixels.js';
+import { drawRustedCrate } from './props.js';
 
 // Furniture and settlement structure primitives.
 
