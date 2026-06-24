@@ -4,6 +4,7 @@ export * from './primitives/basePixels.js';
 export * from './primitives/terrain.js';
 export * from './primitives/furniture.js';
 export * from './primitives/props.js';
+export * from './primitives/plants.js';
 export * from './primitives/wallFixtures.js';
 export * from './primitives/rituals.js';
 export * from './primitives/gore.js';

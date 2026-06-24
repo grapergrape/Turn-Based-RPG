@@ -83,6 +83,11 @@ Rules:
 - Every tile character must exist in `legend`.
 - Coordinates are grid coordinates, not pixels.
 - Do not put rendering colors in map files long term. The current demo may use simple colors until art exists.
+- Level legend entries can optionally set `floor` to select a baked outdoor or
+  indoor floor style while keeping the usual `kind` and `walkable` fields. If
+  omitted, the renderer uses the original ruined stone style. Current floor
+  styles are `stone`, `ash-dirt`, `ash-road`, `road-shoulder`, `wheat-field`,
+  `furrow-field`, and `forest-floor`.
 
 ## Level data
 
@@ -336,6 +341,14 @@ Search rules:
   new kind orientation-aware, give its draw function an `opts.orient` and build
   it on the `isoFrame` / `orientedBox` helpers in `PixelPrimitives.js`, then
   register it with `oriented(...)` (see `game_art_skill/SKILL.md`, Section 5).
+- Tall cover props use catalog canopy metadata instead of extra collision cells.
+  For example, `ash-tree` is a single `blocking: true` object at the trunk tile.
+  Its drawn canopy spreads over nearby floor cells, and the renderer fades that
+  tree when the player is inside its cataloged canopy radius. `wheat-clump` uses
+  the same fade path as walkable waist-high field cover, but it does not set
+  `blocking`. Do not block every canopy-covered or wheat-covered cell unless
+  the trunk, stump, fence, wall, or another grounded object should actually stop
+  movement.
 - `hiddenRegions` is a top-level array for rooms or cells that should stay
   unseen until a grouped door opens. Each entry needs an `id`, a `doorGroup`, and
   a rectangular grid area via `x`, `y`, `width`, and `height`. While hidden, the

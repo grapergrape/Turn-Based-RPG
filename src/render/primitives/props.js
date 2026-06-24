@@ -582,3 +582,110 @@ export function drawCobweb(ctx, cx, cy, seed) {
   }
   ctx.restore();
 }
+
+export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const a = frame.point(-0.42, 0, 0);
+  const b = frame.point(0.42, 0, 0);
+  const posts = [a, b];
+  drawShadowBlob(ctx, cx, cy + 2, 42, 10);
+  for (const p of posts) {
+    px(ctx, p[0] - 3, p[1] - 24, PALETTE.outline, 7, 27);
+    px(ctx, p[0] - 2, p[1] - 23, PALETTE.woodDark, 5, 24);
+    px(ctx, p[0] - 2, p[1] - 23, PALETTE.woodMid, 2, 21);
+    px(ctx, p[0] - 2, p[1] - 28, PALETTE.outline, 7, 6);
+    px(ctx, p[0] - 1, p[1] - 27, PALETTE.stoneDust, 5, 3);
+  }
+  for (const lift of [12, 20]) {
+    linePx(ctx, a[0], a[1] - lift, b[0], b[1] - lift + ((seed + lift) & 1), PALETTE.outline, 5);
+    linePx(ctx, a[0], a[1] - lift - 1, b[0], b[1] - lift - 1 + ((seed + lift) & 1), PALETTE.woodMid, 2);
+    linePx(ctx, a[0], a[1] - lift + 1, b[0], b[1] - lift + 1 + ((seed + lift) & 1), PALETTE.woodDark, 1);
+  }
+  if ((seed & 3) === 0) {
+    linePx(ctx, cx - 8, cy - 5, cx + 7, cy - 28, PALETTE.outline, 3);
+    linePx(ctx, cx - 7, cy - 6, cx + 6, cy - 27, PALETTE.woodDark, 1);
+  }
+}
+
+export function drawFarmBuildingBlock(ctx, cx, cy, seed) {
+  const roof = (seed & 1) ? PALETTE.rustDark : PALETTE.woodDark;
+  drawShadowBlob(ctx, cx, cy + 5, 54, 18);
+  drawIsoPrism(ctx, cx, cy, 58, 28, 18, {
+    top: PALETTE.woodMid,
+    left: PALETTE.woodDark,
+    right: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+  drawIsoPrism(ctx, cx, cy - 18, 60, 30, 12, {
+    top: PALETTE.rustMid,
+    left: roof,
+    right: PALETTE.rustDark,
+    outline: PALETTE.outline
+  });
+  px(ctx, cx - 18, cy - 25, PALETTE.woodLight, 7, 2);
+  px(ctx, cx + 8, cy - 20, PALETTE.hostBlack, 9, 8);
+  px(ctx, cx + 9, cy - 19, PALETTE.stoneDark, 7, 6);
+  px(ctx, cx - 26, cy - 8, PALETTE.woodLight, 2, 10);
+  px(ctx, cx - 16, cy - 13, PALETTE.woodLight, 2, 15);
+  px(ctx, cx - 4, cy - 18, PALETTE.woodLight, 2, 17);
+  drawNoisePixels(ctx, cx - 28, cy - 30, 56, 34, [PALETTE.stoneDark, PALETTE.rustDark], 0.04, seed);
+}
+
+export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  drawShadowBlob(ctx, cx, cy + 5, 48, 17);
+  const box = orientedBox(ctx, frame, 0.68, 0.36, 12, {
+    top: PALETTE.woodLight,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.woodDark,
+    outline: PALETTE.outline
+  });
+  const leftWheel = frame.point(-0.32, 0.22, 1);
+  const rightWheel = frame.point(0.32, 0.22, 1);
+  for (const wh of [leftWheel, rightWheel]) {
+    px(ctx, wh[0] - 5, wh[1] - 7, PALETTE.outline, 10, 10);
+    px(ctx, wh[0] - 4, wh[1] - 6, PALETTE.rustDark, 8, 8);
+    px(ctx, wh[0] - 2, wh[1] - 4, PALETTE.woodMid, 4, 4);
+    px(ctx, wh[0] - 1, wh[1] - 3, PALETTE.void, 2, 2);
+  }
+  const tongueA = frame.point(0.42, -0.12, 8);
+  const tongueB = frame.point(0.78, -0.12, 2);
+  linePx(ctx, tongueA[0], tongueA[1], tongueB[0], tongueB[1], PALETTE.outline, 4);
+  linePx(ctx, tongueA[0], tongueA[1], tongueB[0], tongueB[1], PALETTE.woodMid, 2);
+  px(ctx, box.cap.left[0] + 2, box.cap.left[1] - 1, PALETTE.stoneDust, 18, 2);
+  drawNoisePixels(ctx, cx - 22, cy - 18, 44, 26, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
+}
+
+export function drawHayRick(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 83, seed * 5 + 21));
+  drawShadowBlob(ctx, cx, cy + 4, 42, 15);
+  for (let row = 0; row < 18; row += 1) {
+    const t = row / 17;
+    const half = Math.round(7 + Math.sin(t * Math.PI) * 16);
+    const y = cy - 18 + row;
+    px(ctx, cx - half - 1, y, PALETTE.outline, half * 2 + 2, 1);
+    px(ctx, cx - half, y, row < 4 ? PALETTE.hostBone : PALETTE.clothTan, half, 1);
+    px(ctx, cx, y, row < 5 ? PALETTE.clothTan : PALETTE.hostGold, half, 1);
+    if (row % 4 === 0) px(ctx, cx - half + 3, y, PALETTE.woodDark, Math.max(3, half * 2 - 6), 1);
+  }
+  for (let i = 0; i < 10; i += 1) {
+    const x = cx - 18 + Math.floor(rng() * 37);
+    const y = cy - 17 + Math.floor(rng() * 19);
+    px(ctx, x, y, rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
+  }
+}
+
+export function drawRoadSignPost(ctx, cx, cy, seed) {
+  const side = (seed & 1) ? 1 : -1;
+  drawShadowBlob(ctx, cx, cy + 4, 24, 9);
+  px(ctx, cx - 3, cy - 46, PALETTE.outline, 7, 49);
+  px(ctx, cx - 2, cy - 45, PALETTE.woodDark, 5, 46);
+  px(ctx, cx - 1, cy - 45, PALETTE.woodMid, 2, 42);
+  px(ctx, cx - 18 * side, cy - 42, PALETTE.outline, 36, 12);
+  px(ctx, cx - 17 * side, cy - 41, PALETTE.woodDark, 33, 10);
+  px(ctx, cx - 16 * side, cy - 40, PALETTE.woodMid, 28, 2);
+  px(ctx, cx - 12 * side, cy - 36, PALETTE.stoneDust, 15, 1);
+  px(ctx, cx - 10 * side, cy - 33, PALETTE.stoneDark, 12, 1);
+  px(ctx, cx + side * 15, cy - 38, PALETTE.outline, 4, 4);
+  px(ctx, cx + side * 16, cy - 37, PALETTE.woodDark, 3, 2);
+}

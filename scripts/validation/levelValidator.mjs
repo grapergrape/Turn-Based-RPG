@@ -8,6 +8,8 @@ import {
 
   FIELD_RATING_IDS,
 
+  FLOOR_STYLE_ID_SET,
+
   GROUND_ITEM_PICKUP_POLICIES,
 
   MAIN_LEVEL_ID,
@@ -255,6 +257,13 @@ export function validateLevel(filePath, data) {
   for (const [tileChar, def] of Object.entries(data.legend ?? {})) {
     if (def && def.walkable === false && !getSprite(def.kind)) {
       errors.push(`${name}: legend "${tileChar}" kind "${def.kind}" is not a renderable block in the sprite catalog.`);
+    }
+    if (def?.floor !== undefined) {
+      if (typeof def.floor !== 'string' || def.floor.trim() === '') {
+        errors.push(`${name}: legend "${tileChar}" floor must be a non-empty string.`);
+      } else if (!FLOOR_STYLE_ID_SET.has(def.floor)) {
+        errors.push(`${name}: legend "${tileChar}" floor "${def.floor}" must be one of ${[...FLOOR_STYLE_ID_SET].join(', ')}.`);
+      }
     }
   }
 

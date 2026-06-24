@@ -256,6 +256,8 @@ const [
   assert.ok(ringBell.effects.showBriefing.pages.length >= 2);
   assert.ok(ringBell.effects.showBriefing.conditionalPages.length >= 1);
   assert.equal(ringBell.effects.showBriefing.afterBriefing.openScreen, 'primary-assignment');
+  assert.equal(ringBell.effects.showBriefing.afterBriefing.loadLevel.path, './data/levels/long_ash_road_approach.json');
+  assert.deepEqual(ringBell.effects.showBriefing.afterBriefing.loadLevel.player, { x: 142, y: 68 });
 }
 
 {

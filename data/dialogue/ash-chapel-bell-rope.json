@@ -118,7 +118,14 @@
                 }
               ],
               "afterBriefing": {
-                "openScreen": "primary-assignment"
+                "openScreen": "primary-assignment",
+                "loadLevel": {
+                  "path": "./data/levels/long_ash_road_approach.json",
+                  "player": {
+                    "x": 142,
+                    "y": 68
+                  }
+                }
               },
               "lastPrompt": "ENTER: FOLLOW THE HALLOWFEN ROAD",
               "skipPrompt": "ESC: CLOSE"
