@@ -41,7 +41,9 @@ const [
   cellarLadder,
   bellStairs,
   bellRope,
-  tomas
+  tomas,
+  dalia,
+  wardenOrders
 ] = await Promise.all([
   readJson('../data/actors/mara-vey.json'),
   readJson('../data/levels/ash_chapel_breach.json'),
@@ -51,7 +53,9 @@ const [
   readJson('../data/dialogue/ash-chapel-cellar-ladder.json'),
   readJson('../data/dialogue/ash-chapel-bell-stairs.json'),
   readJson('../data/dialogue/ash-chapel-bell-rope.json'),
-  readJson('../data/dialogue/ash-chapel-catacombs-tomas.json')
+  readJson('../data/dialogue/ash-chapel-catacombs-tomas.json'),
+  readJson('../data/dialogue/ash-chapel-catacombs-dalia.json'),
+  readJson('../data/dialogue/ash-chapel-warden-orders.json')
 ]);
 
 {
@@ -135,6 +139,27 @@ const [
 }
 
 {
+  const voices = dalia.nodes.voices;
+  assert.equal(voices.effects.setFlag, 'dalia-heard-choir-name');
+  assert.ok(voices.lines.join(' ').includes('Choir of the Open Wound'));
+
+  const orders = wardenOrders.nodes.start;
+  assert.equal(orders.effects.setFlag, 'read-gate-mother-order');
+  assert.ok(orders.lines.join(' ').includes("GATE MOTHER'S GENERAL ORDER"));
+  assert.ok(orders.lines.join(' ').includes('Choir of the Open Wound'));
+
+  assert.ok(breach.journalNotes.some((note) =>
+    note.flag === 'dalia-heard-choir-name'
+    && note.text.includes('Dalia Mor')
+    && note.text.includes('Choir of the Open Wound')
+  ));
+  assert.ok(breach.journalNotes.some((note) =>
+    note.flag === 'read-gate-mother-order'
+    && note.text.includes('Hallowfen road went silent')
+  ));
+}
+
+{
   const askRepairs = findChoice(tomas.nodes.start, 'Ask about bell repairs');
   assert.equal(askRepairs.conditions.flag, 'ash-chapel-cult-broken');
   assert.equal(askRepairs.effects.setFlag, 'tomas-bell-repair-known');
@@ -187,6 +212,7 @@ const [
   assert.equal(ringBell.effects.showBriefing.title, 'ACT I: THE HALLOWFEN');
   assert.ok(ringBell.effects.showBriefing.pages.length >= 2);
   assert.ok(ringBell.effects.showBriefing.conditionalPages.length >= 1);
+  assert.equal(ringBell.effects.showBriefing.afterBriefing.openScreen, 'primary-assignment');
 }
 
 {

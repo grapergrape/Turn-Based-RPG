@@ -1,6 +1,6 @@
 # Progression System
 
-Design status: selected character-sheet direction with a first runtime slice implemented for actor JSON, derived ratings, validation, and journal display. Player creation remains deferred until after the Ash Chapel opening.
+Design status: selected character-sheet direction with a runtime slice implemented for actor JSON, derived ratings, validation, journal display, character customization, and level 1 primary assignment.
 
 The player is not choosing a class or profession. The playable premise is fixed: an Ashen Censure field agent sent to find, judge, and destroy blasphemous Host-cults. Character creation defines the agent's aptitude, upbringing pressure, and scars. It does not redefine the job.
 
@@ -454,26 +454,37 @@ Icon Risk should create fear and story pressure, not force one predetermined end
 
 ## Progression Rewards
 
-Use two reward tracks:
+Use three reward tracks:
 
-- **Level progression:** major objectives, quest completion, discoveries. Grants rare Primary Points or technique choices.
+- **Level progression:** major objectives, quest completion, discoveries, and combat encounter clearance.
+- **Technique progression:** active and passive technique points awarded on alternating levels.
 - **Scar progression:** hard consequences and personal damage. Grants Scar Points.
 
-Use this initial tuning:
+The current level-up economy is:
 
 ```text
-Start primaries: 3 in every attribute
-Creation primary points: 14
-Creation cap: 7
-Starting Scar Points: 3
-Starting scar cap: rank 2
-Level-up reward: 1 Primary Point
-Major consequence reward: 1 Scar Point
+Level 2: 1 Active Technique Point
+Level 3: 1 Passive Technique Point
+Level 4: 1 Active Technique Point
+Level 5: 1 Passive Technique Point and 2 Primary Points
+Even levels: 1 Active Technique Point
+Odd levels above 1: 1 Passive Technique Point
++2 Primary Points every 5 levels
+Ordinary levels: no Primary Points
 ```
 
-Technique choices should come from field-rating thresholds, gear training, faction training, scars, and quest rewards. Do not attach a generic technique pick to every level by default.
+Starting primaries remain a 3/10 baseline in the system. After Ash Chapel and
+the Act I briefing, the level 1 assignment screen gives 14 creation assignment
+points with a starting cap of 7/10. This does not consume level-up Primary
+Points.
 
-Do not let the player grind Scar Points. Scars should come from decisions and consequences, not repetition.
+Do not let the player grind Scar Points. Scars should come from decisions and
+consequences, not repetition.
+
+Technique points buy techniques that have already been unlocked by stat gates,
+gear, scars, or faction access. They are not class picks. An Active Technique
+Point buys an active technique. A Passive Technique Point buys a passive
+technique.
 
 ## XP, Levels, and Builds
 
@@ -487,19 +498,22 @@ Level 3: 300 XP
 Level 4: 600 XP
 ```
 
-The cap is level 20 for now. Level-ups grant Primary Points, but the game does
-not expose a spending UI at the start of the campaign. That choice belongs after
-the Ash Chapel opening, when the player has earned the character-creation moment.
+If a level cap exists, it comes from progression configuration. If no cap is
+configured, valid levels are any integer 1 or greater. Level-ups grant active
+technique points, passive technique points, and rare Primary Points. The journal
+now exposes a progression path for spending Primary Points on primaries and
+technique points on eligible techniques.
 
-Build profiles are growth plans, not professions. The profession is already
-fixed by the premise. A build says how a character tends to harden over levels:
+Build profiles are guidance labels, not classes. The profession is already
+fixed by the premise. A build says what a character is likely growing toward:
 gunhand, purifier, engineer, investigator, field confessor, road ghost, plague
-surgeon, breaker, or Host threat. Builds currently affect HP/AP scaling and add
-a slow automatic primary drift every two levels so authored NPCs and enemies can
-scale without every JSON file needing manual stat edits.
+surgeon, breaker, or Host threat. Builds do not grant exclusive actions and do
+not lock abilities. Runtime player progression no longer applies automatic
+primary drift from build profiles. Enemy and NPC scaling can still use authored
+levels, stats, build HP/AP scaling, complexity, and explicit bonuses.
 
-Use authored `primaryBonuses` when a quest, training scene, or later creation UI
-spends Primary Points. Do not edit field ratings directly.
+Use authored or spent `primaryBonuses` when a quest, training scene, or player
+spending raises a primary. Do not edit field ratings directly.
 
 Tasks award XP through quest stages. A stage in `data/quests/*.json` can define
 `xp`; the game pays it once when that stage is reached by a quest update. Initial
@@ -524,6 +538,71 @@ boss x4
 Enemy JSON can override the calculated reward with `progression.xpReward`, but
 use that sparingly. Prefer level plus complexity so rewards stay predictable.
 
+## Techniques and Context Actions
+
+The game has no classes. Gunhand, Purifier, Engineer, Investigator, Field
+Confessor, Road Ghost, Plague Surgeon, and Breaker are build directions only.
+They describe likely primary growth and technique choices. They never grant
+exclusive attacks, and they never stop another build from learning a technique
+when requirements are met.
+
+Damage comes from tools and actions:
+
+- Firearms deal ranged weapon damage through basic shoot actions and firearm techniques.
+- Melee weapons deal close damage through basic melee actions and melee techniques.
+- Purgation tools deal fire, sealant, caustic, or hazard damage through special techniques.
+- Engineering and Security deal damage through traps, deployables, mines, and prepared devices.
+- Search and Host Signs improve targeting, weak-point reads, ambush discovery, and safer setup.
+- Medicine prevents defeat and handles status pressure more than it deals direct damage.
+- Speech, Command, Doctrine, and Guile change who fights, when they fight, and under what pressure.
+
+Basic gear actions are free. They do not require techniques:
+
+- shoot with an equipped firearm,
+- melee attack with an equipped melee weapon,
+- reload,
+- move,
+- crouch,
+- use item,
+- bind wounds.
+
+Techniques are special active actions or passive upgrades. They live in
+`data/techniques/` and define:
+
+```text
+id
+name
+type: active or passive
+targets
+requirements
+summary
+```
+
+Active techniques become context actions when known and relevant to the clicked
+target. Passive techniques apply modifiers or conditional effects later and do
+not appear as combat commands unless a future passive needs a toggle.
+
+Right-click contextual menu rules:
+
+- Right-click an enemy: show known offensive actions and basic attacks.
+- Right-click self: show reload, healing, and known self actions.
+- Right-click a tile: show movement and known setup or deploy actions.
+- Right-click an object: reserve use, search, sabotage, and similar actions for later.
+- Known but temporarily unavailable actions are shown greyed out with a reason.
+- Unknown or unlearned techniques are hidden in combat.
+
+Examples:
+
+```text
+Aimed Shot: active. Requires Firearms. Uses a firearm for a stronger shot.
+Overwatch: active. Requires Firearms. Holds a lane for reaction fire later.
+Burn Line: active. Requires Purgation Tools. Claims a short path with fire later.
+Study Target: active. Requires Search or Host Signs. Reads a weakness later.
+Trip Mine: active. Requires Engineering or Security. Places a trap later.
+Steady Hands: passive. Requires Firearms and Nerve support.
+Hard Seal: passive. Requires Containment.
+```
+
 ## Runtime Data Direction
 
 Do not implement every edge of this system until a playable slice needs it.
@@ -532,9 +611,14 @@ Current runtime slice:
 
 - `src/core/Progression.js` defines primary attributes, field ratings, Trace stages, and the derived rating formula.
 - `src/core/Progression.js` also defines XP thresholds, build profiles, XP rewards, and HP/AP stat scaling.
+- `src/core/Progression.js` awards alternating Active and Passive Technique Points plus rare Primary Points.
+- `src/core/TechniqueSystem.js` evaluates technique requirements and spends technique points.
+- `data/techniques/*.json` defines active and passive techniques. `data/techniques/index.json` lists loadable definitions.
 - `data/actors/*.json` and `data/enemies/*.json` can carry authored progression data.
-- `scripts/check-content.mjs` validates actor and enemy progression data.
-- The journal Character tab shows level, build, XP, Primary Points, Trace, scars, and field ratings. It does not let the player spend points.
+- `scripts/check-content.mjs` validates actor, enemy, and technique progression data.
+- The journal Character tab shows level, build, XP, Primary Points, Technique Points, Trace, scars, and field ratings.
+- The journal Techniques tab shows known, available, and locked techniques and lets the player learn eligible techniques.
+- The combat right-click menu shows basic gear actions and learned active techniques by target type.
 - Quest stage updates award stage XP once, and combat victory awards summed enemy XP once per cleared encounter. Dialogue effects may grant explicit XP with `effects.xp`.
 - Dialogue nodes and choices can gate on scars, scar ranks, Trace, and field rating minimums.
 
@@ -559,7 +643,10 @@ Keep UI compact:
 
 ## Implementation Decisions
 
-- The first character sheet screen shows seven primaries, current Trace, active scars, and the derived field ratings in the journal.
+- The first character sheet screen shows seven primaries, current Trace, active scars, technique point pools, and the derived field ratings in the journal.
+- Primary Point spending happens from the Character page. Technique spending happens from the Techniques page.
+- Active techniques are combat commands. Passive techniques are persistent or conditional upgrades.
+- Build profiles are not classes and do not unlock abilities by themselves.
 - Companions use the same primaries, field ratings, scars, Trace, and Icon Risk, but their sheets are authored. Players do not spend creation points for companions.
 - Icon Risk is hinted at Trace 2, partially named at Trace 3, and visible at Trace 4 unless a story scene reveals it earlier.
 - Creation scars should come from upbringing, pre-game injury, old debts, and early Censure service. Earned scars should come from campaign consequences.

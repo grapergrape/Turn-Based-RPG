@@ -304,15 +304,15 @@ export function textWidth(str, scale = 1) {
 }
 
 export function outcomeText(ctx, str, x, y, baseColor = PALETTE.uiText, scale = 1) {
-  const text = normalize(str);
-  const outcome = OUTCOME_PREFIXES.find((entry) => text.startsWith(entry.text));
+  const rendered = normalize(str);
+  const outcome = OUTCOME_PREFIXES.find((entry) => rendered.startsWith(entry.text));
   if (!outcome) {
-    text(ctx, text, x, y, baseColor, scale);
+    text(ctx, rendered, x, y, baseColor, scale);
     return;
   }
 
   text(ctx, outcome.text, x, y, outcome.color, scale);
-  const rest = text.slice(outcome.text.length);
+  const rest = rendered.slice(outcome.text.length);
   if (rest) {
     text(ctx, rest, x + textWidth(outcome.text, scale), y, baseColor, scale);
   }

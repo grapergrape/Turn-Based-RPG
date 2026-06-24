@@ -1,6 +1,7 @@
 import { buildCharacterSheet } from './Progression.js';
+import { buildTechniqueSheet } from './TechniqueSystem.js';
 
-export const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS'];
+export const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS', 'TECHNIQUES'];
 export const JOURNAL_TURN_DURATION = 0.46;
 
 export function buildJournalState({
@@ -13,8 +14,14 @@ export function buildJournalState({
   journalNotes = [],
   codexDefs = [],
   flags = new Set(),
-  player = null
+  player = null,
+  techniqueDefs = {},
+  techniqueContext = {},
+  primaryIndex = 0,
+  techniqueIndex = 0
 } = {}) {
+  const character = buildCharacterSheet(player);
+  const techniques = buildTechniqueSheet(player?.progression, techniqueDefs, techniqueContext);
   return {
     section,
     sections: JOURNAL_SECTIONS,
@@ -23,7 +30,14 @@ export function buildJournalState({
     quests: journalQuests({ questDefs, questStages, questReached }),
     findings: journalFindings({ questDefs, questReached, journalNotes, flags }),
     factions: journalFactions({ codexDefs, flags, questReached }),
-    character: buildCharacterSheet(player)
+    character,
+    primaryIndex,
+    techniques: {
+      activePoints: character.activeTechniquePoints ?? 0,
+      passivePoints: character.passiveTechniquePoints ?? 0,
+      selectedIndex: techniqueIndex,
+      entries: techniques
+    }
   };
 }
 

@@ -83,9 +83,10 @@ export function drawJournal(ctx, ui, tools) {
 function journalContent(ctx, left, right, section, journal, tools) {
   if (section === 1) journalNotesPage(ctx, left, right, journal.findings ?? [], tools);
   else if (section === 2) journalFactionsPage(ctx, left, right, journal.factions ?? [], journal.factionIndex ?? 0, tools);
-  else if (section === 3) journalCharacterPage(ctx, left, right, journal.character ?? {}, tools);
+  else if (section === 3) journalCharacterPage(ctx, left, right, journal.character ?? {}, journal.primaryIndex ?? 0, tools);
   else if (section === 4) journalScarsPage(ctx, left, right, journal.character ?? {}, tools);
-  else journalQuestsPage(ctx, left, right, journal.quests ?? [], tools);
+  else if (section === 5) journalTechniquesPage(ctx, left, right, journal.techniques ?? {}, tools);
+  else journalQuestsPage(ctx, left, right, journal.quests ?? [], journal.character ?? {}, tools);
 }
 
 function journalCoverWear(ctx, B, noise, tools) {
@@ -200,7 +201,7 @@ function journalHeader(ctx, page, label, tools) {
   return page.y + 26;
 }
 
-function journalSeal(ctx, page, tools) {
+function journalSeal(ctx, page, tools, character = {}) {
   const sx = page.x + page.w - 42;
   const sy = page.y + page.h - 38;
   journalDisc(ctx, sx, sy, 13, PALETTE.hostRed, tools);
@@ -208,11 +209,11 @@ function journalSeal(ctx, page, tools) {
   tools.rect(ctx, sx - 1, sy - 8, 2, 16, PALETTE.hostGold);
   tools.rect(ctx, sx - 8, sy - 1, 16, 2, PALETTE.hostGold);
   tools.rect(ctx, sx - 1, sy - 1, 2, 2, PALETTE.uiWarn);
-  tools.text(ctx, 'MARA VEY', page.x + 12, page.y + page.h - 24, PARCHMENT.inkDim);
-  tools.text(ctx, 'ASHEN CENSURE', page.x + 12, page.y + page.h - 14, PARCHMENT.inkDim);
+  tools.text(ctx, tools.clip(character.name ?? 'UNKNOWN AGENT', 30), page.x + 12, page.y + page.h - 24, PARCHMENT.inkDim);
+  tools.text(ctx, tools.clip(character.role ?? 'ASHEN CENSURE', 30), page.x + 12, page.y + page.h - 14, PARCHMENT.inkDim);
 }
 
-function journalQuestsPage(ctx, left, right, quests, tools) {
+function journalQuestsPage(ctx, left, right, quests, character, tools) {
   const C = PARCHMENT;
   const INK_RED = PALETTE.clothRed;
   const lx = left.x + 12;
@@ -254,7 +255,7 @@ function journalQuestsPage(ctx, left, right, quests, tools) {
   } else {
     tools.text(ctx, 'NOTHING SET DOWN YET.', rx, ry, C.inkDim);
   }
-  journalSeal(ctx, right, tools);
+  journalSeal(ctx, right, tools, character);
 }
 
 function journalNotesPage(ctx, left, right, findings, tools) {
@@ -327,7 +328,7 @@ function journalFactionsPage(ctx, left, right, factions, selected, tools) {
   }
 }
 
-function journalCharacterPage(ctx, left, right, character, tools) {
+function journalCharacterPage(ctx, left, right, character, selectedPrimary, tools) {
   const C = PARCHMENT;
   const lx = left.x + 12;
   let y = journalHeader(ctx, left, 'CHARACTER SHEET', tools);
@@ -347,6 +348,8 @@ function journalCharacterPage(ctx, left, right, character, tools) {
   y += 13;
   tools.text(ctx, `PRIMARY POINTS ${character.primaryPoints ?? 0}`, lx, y, C.inkDim);
   y += 18;
+  tools.text(ctx, `ACTIVE TP ${character.activeTechniquePoints ?? 0}   PASSIVE TP ${character.passiveTechniquePoints ?? 0}`, lx, y, C.inkDim);
+  y += 14;
 
   tools.text(ctx, `TRACE ${character.trace?.label ?? 'CLEAN'}`, lx, y, C.ink);
   y += 13;
@@ -355,12 +358,19 @@ function journalCharacterPage(ctx, left, right, character, tools) {
 
   tools.text(ctx, 'PRIMARY ATTRIBUTES', lx, y, C.inkDim);
   y += 13;
-  for (const primary of character.primaries ?? []) {
-    tools.text(ctx, tools.clip(primary.label, 13), lx, y, C.ink);
+  const primaries = character.primaries ?? [];
+  const sel = Math.max(0, Math.min(primaries.length - 1, selectedPrimary));
+  for (let i = 0; i < primaries.length; i += 1) {
+    const primary = primaries[i];
+    const on = i === sel;
+    if (on) tools.rect(ctx, left.x + 6, y - 2, left.w - 12, 12, C.hi);
+    tools.text(ctx, on ? '>' : ' ', lx, y, PALETTE.clothRed);
+    tools.text(ctx, tools.clip(primary.label, 13), lx + 10, y, C.ink);
     tools.text(ctx, `${primary.value ?? 0}/10`, lx + 90, y, C.inkDim);
     journalValueBar(ctx, lx + 121, y + 2, 72, 5, primary.value ?? 0, 10, PALETTE.clothRed, C.rule, tools);
     y += 13;
   }
+  if ((character.primaryPoints ?? 0) > 0) tools.text(ctx, 'ENTER SPENDS PRIMARY POINT', lx, left.y + left.h - 15, C.inkDim);
 
   let ry = journalHeader(ctx, right, 'FIELD RATINGS', tools);
   const fields = character.fields ?? [];
@@ -369,7 +379,62 @@ function journalCharacterPage(ctx, left, right, character, tools) {
   const rightFields = fields.slice(Math.ceil(fields.length / 2));
   journalFieldColumn(ctx, right.x + 12, ry, leftFields, topFields, 100, tools);
   journalFieldColumn(ctx, right.x + 124, ry, rightFields, topFields, 92, tools);
-  journalSeal(ctx, right, tools);
+  journalSeal(ctx, right, tools, character);
+}
+
+function journalTechniquesPage(ctx, left, right, techniques, tools) {
+  const C = PARCHMENT;
+  const entries = techniques.entries ?? [];
+  const selected = Math.max(0, Math.min(entries.length - 1, techniques.selectedIndex ?? 0));
+  const lx = left.x + 12;
+  let y = journalHeader(ctx, left, 'TECHNIQUES', tools);
+  tools.text(ctx, `ACTIVE POINTS ${techniques.activePoints ?? 0}`, lx, y, C.inkDim);
+  y += 12;
+  tools.text(ctx, `PASSIVE POINTS ${techniques.passivePoints ?? 0}`, lx, y, C.inkDim);
+  y += 18;
+
+  if (!entries.length) {
+    tools.text(ctx, 'NO TECHNIQUES FILED.', lx, y, C.inkDim);
+  }
+  for (let i = 0; i < entries.length && i < 14; i += 1) {
+    const entry = entries[i];
+    const on = i === selected;
+    const known = entry.known;
+    const available = entry.canLearn;
+    const color = known ? PALETTE.clothRed : available ? C.ink : C.inkDim;
+    if (on) tools.rect(ctx, left.x + 6, y - 2, left.w - 12, 12, C.hi);
+    tools.text(ctx, on ? '>' : ' ', lx, y, PALETTE.clothRed);
+    tools.text(ctx, tools.clip(entry.name ?? entry.id ?? 'TECHNIQUE', 23), lx + 10, y, color);
+    tools.text(ctx, entry.type === 'passive' ? 'P' : 'A', left.x + left.w - 25, y, C.inkDim);
+    y += 13;
+  }
+
+  let ry = journalHeader(ctx, right, 'DETAIL', tools);
+  const rx = right.x + 12;
+  const entry = entries[selected];
+  if (!entry) {
+    tools.text(ctx, 'NOTHING SELECTED.', rx, ry, C.inkDim);
+    return;
+  }
+  tools.text(ctx, tools.clip(entry.name ?? 'TECHNIQUE', 30), rx, ry, C.ink);
+  tools.text(ctx, entry.type === 'passive' ? 'PASSIVE' : 'ACTIVE', right.x + right.w - 62, ry, PALETTE.clothRed);
+  ry += 14;
+  for (const line of tools.wrap(entry.summary ?? '', 36).slice(0, 4)) {
+    tools.text(ctx, line, rx, ry, C.inkDim);
+    ry += 10;
+  }
+  ry += 6;
+  tools.text(ctx, 'REQUIRES', rx, ry, C.ink);
+  ry += 12;
+  for (const line of tools.wrap(entry.requirementText ?? 'No requirements', 36).slice(0, 4)) {
+    tools.text(ctx, line, rx, ry, C.inkDim);
+    ry += 10;
+  }
+  ry += 7;
+  if (entry.known) tools.text(ctx, 'KNOWN', rx, ry, PALETTE.clothRed);
+  else if (entry.canLearn) tools.text(ctx, 'READY TO LEARN', rx, ry, PALETTE.clothRed);
+  else tools.text(ctx, tools.clip(entry.disabledReason ?? 'LOCKED', 32), rx, ry, C.inkDim);
+  if (entry.canLearn) tools.text(ctx, 'ENTER LEARNS TECHNIQUE', rx, right.y + right.h - 15, C.inkDim);
 }
 
 function journalScarsPage(ctx, left, right, character, tools) {
@@ -418,7 +483,7 @@ function journalScarsPage(ctx, left, right, character, tools) {
     }
     ry += 5;
   }
-  journalSeal(ctx, right, tools);
+  journalSeal(ctx, right, tools, character);
 }
 
 function journalFieldColumn(ctx, x, y, fields, topFields, barW, tools) {

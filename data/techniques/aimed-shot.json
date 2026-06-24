@@ -1,0 +1,12 @@
+{
+  "id": "aimed-shot",
+  "name": "Aimed Shot",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "firearms": 45
+    }
+  },
+  "summary": "Spend extra care on one firearm attack. Accuracy matters more than speed."
+}

@@ -51,7 +51,7 @@ export function drawInventory(ctx, ui, tools) {
     tools.text(ctx, more, itemsBox.x + itemsBox.w - tools.textWidth(more) - 8, itemsBox.y + itemsBox.h - 14, PALETTE.uiWarn);
   }
 
-  drawPaperDoll(ctx, figure, ui.figureSpriteId ?? 'mara-vey', ui.actorName ?? 'MARA VEY', tools);
+  drawPaperDoll(ctx, figure, ui.figureSpriteId ?? 'mara-vey', ui.actorName ?? 'AGENT', tools);
 
   const slots = ui.equipmentSlots ?? [];
   const slotIndex = Math.max(0, Math.min(slots.length - 1, ui.equipmentIndex ?? 0));

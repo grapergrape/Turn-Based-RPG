@@ -174,6 +174,7 @@ function validateShowBriefing(name, showBriefing, fieldName) {
   if (showBriefing.nextPrompt !== undefined) requireString(name, showBriefing.nextPrompt, `${fieldName}.nextPrompt`);
   if (showBriefing.lastPrompt !== undefined) requireString(name, showBriefing.lastPrompt, `${fieldName}.lastPrompt`);
   if (showBriefing.skipPrompt !== undefined) requireString(name, showBriefing.skipPrompt, `${fieldName}.skipPrompt`);
+  validateAfterBriefing(name, showBriefing.afterBriefing, `${fieldName}.afterBriefing`);
 
   if (!Array.isArray(showBriefing.pages) || showBriefing.pages.length === 0) {
     errors.push(`${name}: ${fieldName}.pages must be a non-empty array of pages.`);
@@ -197,6 +198,30 @@ function validateShowBriefing(name, showBriefing, fieldName) {
     validateDialogueConditions(name, entry.conditions, `${entryName}.conditions`);
     validateBriefingPage(name, entry.page, `${entryName}.page`);
   });
+}
+
+function validateAfterBriefing(name, afterBriefing, fieldName) {
+  if (afterBriefing === undefined) return;
+  if (!afterBriefing || typeof afterBriefing !== 'object' || Array.isArray(afterBriefing)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  if (afterBriefing.openScreen !== undefined) {
+    requireString(name, afterBriefing.openScreen, `${fieldName}.openScreen`);
+    if (typeof afterBriefing.openScreen === 'string' &&
+        !['character-customization', 'primary-assignment'].includes(afterBriefing.openScreen)) {
+      errors.push(`${name}: ${fieldName}.openScreen must be character-customization or primary-assignment.`);
+    }
+  }
+  const loadLevel = afterBriefing.loadLevel ?? afterBriefing.thenLoadLevel;
+  if (loadLevel !== undefined) {
+    if (!loadLevel || typeof loadLevel !== 'object' || Array.isArray(loadLevel)) {
+      errors.push(`${name}: ${fieldName}.loadLevel must be an object.`);
+    } else {
+      if (loadLevel.path !== undefined) requireString(name, loadLevel.path, `${fieldName}.loadLevel.path`);
+      if (loadLevel.player !== undefined) validateGridPoint(name, loadLevel.player, `${fieldName}.loadLevel.player`);
+    }
+  }
 }
 
 export function validateDialogueEffects(name, effects, fieldName) {

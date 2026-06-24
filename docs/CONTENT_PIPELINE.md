@@ -29,6 +29,7 @@ data/
 ├── enemies/
 ├── items/
 ├── dialogue/
+├── techniques/
 └── quests/
 ```
 
@@ -36,7 +37,6 @@ Future folders can include:
 
 ```text
 data/
-├── abilities/
 ├── encounters/
 ├── factions/
 └── status-effects/
@@ -611,8 +611,12 @@ Minimal actor shape:
   "name": "Unnamed Militia Scout",
   "type": "player",
   "appearance": {
-    "bodyFrame": "feminine",
-    "anatomy": "vulva"
+    "genderModel": "female",
+    "bodyType": "medium",
+    "skinTone": "tan",
+    "hairColor": "brown",
+    "hairStyle": "cropped",
+    "facialHair": "none"
   },
   "stats": {
     "hp": 24,
@@ -624,14 +628,17 @@ Minimal actor shape:
     "xp": 0,
     "build": "field-agent",
     "primaryPoints": 0,
+    "activeTechniquePoints": 0,
+    "passiveTechniquePoints": 0,
+    "techniques": [],
     "primaries": {
-      "body": 5,
-      "agility": 6,
-      "eye": 6,
-      "intelligence": 4,
-      "religion": 5,
-      "voice": 4,
-      "nerve": 6
+      "body": 3,
+      "agility": 3,
+      "eye": 3,
+      "intelligence": 3,
+      "religion": 3,
+      "voice": 3,
+      "nerve": 3
     },
     "trace": 0,
     "iconRisk": "not-assessed",
@@ -666,10 +673,13 @@ Rules:
 - `spriteId` is optional. When present, it must match a key in
   `src/render/SpriteAtlas.js`. When omitted, the actor id is used as the sprite
   key.
-- `appearance` is optional sprite-baking metadata. For Mara and other equipment
-  aware adult actors, `bodyFrame` can be `feminine`, `masculine`, or
-  `androgynous`; `anatomy` can be `vulva`, `penis`, `smooth`, or `intersex`.
-  Those values are not gender identity.
+- Player `appearance` is optional sprite-baking metadata. Character creation
+  writes `genderModel`, `bodyType`, `skinTone`, `hairColor`, `hairStyle`, and
+  `facialHair`. `genderModel` is visual model selection, not a pronoun field.
+  It changes the baked animated player model family. Legacy `bodyFrame` and
+  `anatomy` values still load for old data, but `anatomy` is compatibility
+  metadata only and is not rendered onto player sprites. New player data should
+  use the explicit customization fields.
 - Human NPCs and human enemies can also use composable appearance fields:
   `body`, `outfit`, `gear`, and `accent`. These bake a unique sprite at level
   load. Example: `{ "body": "broad", "outfit": "settlement-work-coat", "gear":
@@ -679,13 +689,18 @@ Rules:
   or cowl treatment. Keep gear arrays short enough to read at map scale.
 - `progression` is optional. Player and companion actors can define the current
   character sheet here.
-- `progression.level` is an integer from 1 to the level cap in
-  `src/core/Progression.js`. `progression.xp` is cumulative.
+- `progression.level` is an integer 1 or greater unless progression
+  configuration defines a cap. `progression.xp` is cumulative.
 - `progression.build` must match a build profile id from
   `src/core/Progression.js`. If omitted, runtime actors get a small default
   build based on actor type and tags.
-- `progression.primaryPoints` stores unspent level-up Primary Points. There is
-  no start-of-game spending UI.
+- `progression.primaryPoints` stores unspent level-up Primary Points. The level
+  1 primary assignment screen writes starting primaries from a 3/10 baseline
+  with 14 assignment points and a 7/10 starting cap. It does not consume
+  `primaryPoints`.
+- `progression.activeTechniquePoints` and `progression.passiveTechniquePoints`
+  store unspent technique points.
+- `progression.techniques` stores learned technique ids from `data/techniques/`.
 - `progression.primaries` uses all seven primary ids from
   `src/core/Progression.js`, each rated from 0 to 10.
 - `progression.primaryBonuses` can store spent Primary Point bonuses later. Do
@@ -699,8 +714,49 @@ Rules:
 - Actor equipment slots are `clothes`, `armor`, `boots`, `helmet`, `trinket`,
   `ring1`, and `ring2`.
 - Avoid putting long dialogue or lore paragraphs inside actor stat files. Use dialogue/lore files later.
-- Do not add start-of-game character customization here. The current plan is to
-  introduce player creation after the Ash Chapel opening.
+- Character customization opens after the opening briefing. The level 1 primary
+  assignment gate opens after the chapel bell and Act I briefing.
+
+## Technique data
+
+Runtime techniques live in `data/techniques/`, one file per technique plus
+`data/techniques/index.json` for the load manifest.
+
+Minimal technique shape:
+
+```json
+{
+  "id": "aimed-shot",
+  "name": "Aimed Shot",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "firearms": 45
+    }
+  },
+  "summary": "Spend extra care on one firearm attack. Accuracy matters more than speed."
+}
+```
+
+Rules:
+
+- `id`, `name`, `type`, `requirements`, and `summary` are required.
+- `type` must be `active` or `passive`.
+- `targets` can include `enemy`, `self`, `tile`, and `object`.
+- `requirements.primaries` maps primary ids to minimum 1 to 10 values.
+- `requirements.fieldRatings` maps field ids to required 0 to 100 ratings. All
+  listed fields must pass.
+- `requirements.anyFieldRatings` maps field ids to required 0 to 100 ratings.
+  At least one listed field must pass.
+- `requirements.items` references item ids from `data/items/`.
+- `requirements.equipmentSlots` references actor equipment slots.
+- `requirements.scars` references scar ids or scar tags.
+- Active techniques appear in the right-click contextual combat menu only when
+  learned and relevant to the clicked target. Unknown techniques are hidden.
+- Passive techniques are learned from the journal and apply later as modifiers
+  or conditional effects.
+- Builds do not grant or lock techniques. Requirements do.
 
 ## Enemy data
 
@@ -873,10 +929,10 @@ npm run check
 ```
 
 The current validator parses JSON files and checks map, level, actor, enemy,
-item, dialogue, and quest shape. Expand it whenever new required data formats
-are added.
+item, dialogue, quest, and technique shape. Expand it whenever new required data
+formats are added.
 
 `scripts/check-content.mjs` is the entry point. Focused validators live under
-`scripts/validation/` so level shape, dialogue shape, item shape, render catalog
-checks, and text rules can grow without turning the entry point into the whole
-pipeline.
+`scripts/validation/` so level shape, dialogue shape, item shape, technique
+shape, render catalog checks, and text rules can grow without turning the entry
+point into the whole pipeline.

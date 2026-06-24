@@ -32,7 +32,7 @@ function drawLog(ctx, ui, tools) {
 function drawStatus(ctx, ui, tools) {
   let y = STATUS_BOX.y + 19;
   const x = STATUS_BOX.x + 9;
-  tools.text(ctx, tools.clip(ui.actorName ?? 'MARA VEY', 21), x, y, PALETTE.uiText);
+  tools.text(ctx, tools.clip(ui.actorName ?? 'AGENT', 21), x, y, PALETTE.uiText);
   y += 9;
   if (ui.role) {
     tools.text(ctx, tools.clip(ui.role.split(',')[0], 21), x, y, PALETTE.uiDim);

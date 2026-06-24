@@ -3,10 +3,14 @@
   "title": "Quarantine House Orders",
   "nodes": {
     "start": {
+      "effects": {
+        "setFlag": "read-gate-mother-order"
+      },
       "lines": [
         "A Remnant writ nailed to a board, gone soft with damp. The seal is a sun-cross pressed in red wax, cracked across the middle.",
         "'Standing Orders, Quarantine House Seventeen. The afflicted are to be collared on arrival and set to the litany. Prayer is to be continuous, kept in shifts, day into night. A body that prays cannot panic, and a body that does not panic opens slower. Wardens will log every hour kept.'",
-        "A later hand has nailed an amendment over the lower third, in fresher ink. 'By order of the diocese, this house will also hold those who trouble the peace of the roads. Doubt is its own contagion. Treat the loud as you treat the sick. They pray until they are quiet.'"
+        "A later hand has nailed an amendment over the lower third, in fresher ink. 'By order of the diocese, this house will also hold those who trouble the peace of the roads. Doubt is its own contagion. Treat the loud as you treat the sick. They pray until they are quiet.'",
+        "A third sheet is not Remnant paper. Its heading reads GATE MOTHER'S GENERAL ORDER, in the same teaching hand as the cult ledger: 'The Choir of the Open Wound will hold Quarantine House Seventeen until the Hallowfen road goes silent. Move the families before dawn. Keep one opened body above and one below.'"
       ]
     }
   }

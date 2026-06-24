@@ -132,6 +132,13 @@ export class IsometricRenderer {
     this.ui.drawBriefing(ctx, data);
   }
 
+  renderLoading(data) {
+    const ctx = this.ctx;
+    ctx.fillStyle = PALETTE.void;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ui.drawLoading(ctx, data);
+  }
+
   renderFrame(state) {
     const ctx = this.ctx;
     if (state.hiddenTiles) this.hiddenTiles = state.hiddenTiles;

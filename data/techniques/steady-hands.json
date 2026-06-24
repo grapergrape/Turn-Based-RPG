@@ -1,0 +1,15 @@
+{
+  "id": "steady-hands",
+  "name": "Steady Hands",
+  "type": "passive",
+  "targets": ["self"],
+  "requirements": {
+    "anyFieldRatings": {
+      "firearms": 45
+    },
+    "primaries": {
+      "nerve": 5
+    }
+  },
+  "summary": "Wounds and fear shake your aim less while you keep breathing."
+}

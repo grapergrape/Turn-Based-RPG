@@ -56,8 +56,12 @@
       ]
     },
     "voices": {
+      "effects": {
+        "setFlag": "dalia-heard-choir-name"
+      },
       "lines": [
         "\"Two laughed. One prayed. One sounded younger than the rest and kept asking where the women were.\"",
+        "\"One corrected another when he said cult. He said, 'Choir. We are the Choir of the Open Wound.' I counted the words because they frightened me.\"",
         "\"Polite cruelty wears a clean shirt. I remember the collar.\""
       ],
       "choices": [
