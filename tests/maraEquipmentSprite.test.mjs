@@ -9,12 +9,24 @@ import {
   bakeMara,
   deriveMaraStyle
 } from '../src/render/SpriteAtlas.js';
+import { drawAdultAnatomy, drawAdultChest } from '../src/render/sprites/spriteBake.js';
 
 function createMockContext() {
   return {
     imageSmoothingEnabled: false,
     fillStyle: '#000000',
     fillRect() {}
+  };
+}
+
+function createRecordingContext() {
+  return {
+    imageSmoothingEnabled: false,
+    fillStyle: '#000000',
+    calls: [],
+    fillRect(x, y, w, h) {
+      this.calls.push({ x, y, w, h, color: this.fillStyle });
+    }
   };
 }
 
@@ -34,24 +46,24 @@ globalThis.document = {
 
 const naked = deriveMaraStyle({});
 
-assert.equal(naked.coat, PALETTE.clothDark);
-assert.equal(naked.coatHi, PALETTE.stoneDark);
-assert.equal(naked.coatLo, PALETTE.clothDark);
-assert.equal(naked.coatDk, PALETTE.stoneDark);
-assert.equal(naked.pants, PALETTE.clothDark);
-assert.equal(naked.pantsHi, PALETTE.stoneDark);
-assert.equal(naked.pantsLo, PALETTE.stoneDark);
-assert.equal(naked.pantsDk, PALETTE.stoneDark);
-assert.equal(naked.belt, PALETTE.rustDark);
+assert.equal(naked.coat, naked.skin);
+assert.equal(naked.coatHi, naked.skinHi);
+assert.equal(naked.coatLo, naked.skinLo);
+assert.equal(naked.coatDk, naked.skinDk);
+assert.equal(naked.pants, naked.skin);
+assert.equal(naked.pantsHi, naked.skinHi);
+assert.equal(naked.pantsLo, naked.skinLo);
+assert.equal(naked.pantsDk, naked.skinDk);
+assert.equal(naked.belt, null);
 assert.equal(naked.bareFeet, true);
 assert.equal(naked.bareHead, true);
 assert.equal(naked.fieldHarness, false);
 assert.equal(naked.vest, null);
 assert.equal(naked.bodyFrame, 'feminine');
 assert.equal(naked.anatomy, 'vulva');
-assert.equal(naked.anatomyVisible, false);
-assert.notEqual(naked.coat, naked.skin);
-assert.notEqual(naked.pants, naked.skin);
+assert.equal(naked.breastSize, 5);
+assert.equal(naked.penisSize, 0);
+assert.equal(naked.anatomyVisible, true);
 
 const dressed = deriveMaraStyle({
   clothes: 'censure-field-coat',
@@ -75,8 +87,19 @@ const masculineModel = deriveMaraStyle({}, {}, {
 
 assert.equal(masculineModel.bodyFrame, 'masculine');
 assert.equal(masculineModel.anatomy, 'penis');
-assert.equal(masculineModel.anatomyVisible, false);
+assert.equal(masculineModel.breastSize, 1);
+assert.equal(masculineModel.penisSize, 5);
+assert.equal(masculineModel.anatomyVisible, true);
 assert.ok(masculineModel.shoulders > naked.shoulders);
+
+const customSizes = deriveMaraStyle({}, {}, {
+  genderModel: 'female',
+  breastSize: 9,
+  penisSize: 3
+});
+
+assert.equal(customSizes.breastSize, 9);
+assert.equal(customSizes.penisSize, 3);
 
 const feminineWithPenis = deriveMaraStyle({}, {}, {
   bodyFrame: 'feminine',
@@ -85,7 +108,7 @@ const feminineWithPenis = deriveMaraStyle({}, {}, {
 
 assert.equal(feminineWithPenis.bodyFrame, 'feminine');
 assert.equal(feminineWithPenis.anatomy, 'penis');
-assert.equal(feminineWithPenis.anatomyVisible, false);
+assert.equal(feminineWithPenis.anatomyVisible, true);
 assert.equal(feminineWithPenis.shoulders, naked.shoulders);
 
 const masculineWithVulva = deriveMaraStyle({}, {}, {
@@ -95,7 +118,7 @@ const masculineWithVulva = deriveMaraStyle({}, {}, {
 
 assert.equal(masculineWithVulva.bodyFrame, 'masculine');
 assert.equal(masculineWithVulva.anatomy, 'vulva');
-assert.equal(masculineWithVulva.anatomyVisible, false);
+assert.equal(masculineWithVulva.anatomyVisible, true);
 
 const androgynousSmooth = deriveMaraStyle({}, {}, {
   genderModel: 'androgynous'
@@ -103,7 +126,7 @@ const androgynousSmooth = deriveMaraStyle({}, {}, {
 
 assert.equal(androgynousSmooth.bodyFrame, 'androgynous');
 assert.equal(androgynousSmooth.anatomy, 'smooth');
-assert.equal(androgynousSmooth.anatomyVisible, false);
+assert.equal(androgynousSmooth.anatomyVisible, true);
 assert.ok(androgynousSmooth.waist < masculineModel.waist);
 
 const buffMale = deriveMaraStyle({}, {}, {
@@ -129,7 +152,46 @@ const intersex = deriveMaraStyle({}, {}, {
 });
 
 assert.equal(intersex.anatomy, 'intersex');
-assert.equal(intersex.anatomyVisible, false);
+assert.equal(intersex.anatomyVisible, true);
+
+{
+  const ctx = createRecordingContext();
+  drawAdultAnatomy(ctx, { bodyCx: 20 }, 30, { view: 'front', back: false, side: 0, bodyTurn: 0 }, {}, naked);
+  assert.ok(ctx.calls.some((call) => call.color === naked.skinDk && call.w === 1 && call.h === 2));
+  assert.equal(ctx.calls.some((call) => call.color === naked.skinDk && call.w === 1 && call.h === 3), false);
+}
+
+{
+  const ctx = createRecordingContext();
+  drawAdultAnatomy(ctx, { bodyCx: 20 }, 30, { view: 'front', back: false, side: 0, bodyTurn: 0 }, {}, dressed);
+  assert.equal(ctx.calls.length, 0);
+}
+
+{
+  const ctx = createRecordingContext();
+  drawAdultAnatomy(ctx, { bodyCx: 20, waistW: 8 }, 30, { view: 'front', back: false, side: 0, bodyTurn: 0 }, {}, customSizes);
+  assert.ok(ctx.calls.some((call) => call.color === customSizes.skinLo && call.w >= 2));
+}
+
+{
+  const small = deriveMaraStyle({}, {}, { genderModel: 'male', penisSize: 2 });
+  const large = deriveMaraStyle({}, {}, { genderModel: 'male', penisSize: 9 });
+  const smallCtx = createRecordingContext();
+  const largeCtx = createRecordingContext();
+  drawAdultAnatomy(smallCtx, { bodyCx: 20, waistW: 8 }, 30, { view: 'front', back: false, side: 0, bodyTurn: 0 }, {}, small);
+  drawAdultAnatomy(largeCtx, { bodyCx: 20, waistW: 8 }, 30, { view: 'front', back: false, side: 0, bodyTurn: 0 }, {}, large);
+  const skinLoArea = (calls, color) => calls
+    .filter((call) => call.color === color)
+    .reduce((total, call) => total + call.w * call.h, 0);
+  assert.ok(skinLoArea(largeCtx.calls, large.skinLo) > skinLoArea(smallCtx.calls, small.skinLo));
+}
+
+{
+  const ctx = createRecordingContext();
+  drawAdultChest(ctx, { bodyCx: 20, waistW: 9 }, 18, { view: 'front', back: false, side: 0, bodyTurn: 0 }, {}, naked);
+  assert.ok(ctx.calls.length > 0);
+  assert.ok(ctx.calls.some((call) => call.color === naked.skinLo));
+}
 
 const actor = createActor({
   id: 'test-player',
@@ -161,9 +223,9 @@ for (const genderModel of PLAYER_GENDER_MODEL_IDS) {
       hairStyle: 'cropped',
       facialHair: genderModel === 'male' ? 'stubble' : 'none'
     });
-    assert.equal(style.anatomyVisible, false);
-    assert.notEqual(style.coat, style.skin);
-    assert.notEqual(style.pants, style.skin);
+    assert.equal(style.anatomyVisible, true);
+    assert.equal(style.coat, style.skin);
+    assert.equal(style.pants, style.skin);
 
     const sprite = bakeMara({}, {}, {
       genderModel,

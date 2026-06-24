@@ -7,6 +7,8 @@ import {
   lockMethodUsesSecurityTool,
   securityToolSurvives
 } from '../src/world/LockSystem.js';
+import { buildCharacterSheet } from '../src/core/Progression.js';
+import { searchMethodStatus } from '../src/world/SearchSystem.js';
 
 async function readJson(path) {
   return JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
@@ -30,6 +32,16 @@ function hasItem(entries, item, count = 1) {
 
 function includesAll(values, expected) {
   return expected.every((value) => values.includes(value));
+}
+
+function levelOneRatings() {
+  const sheet = buildCharacterSheet(mara);
+  const fields = new Map(sheet.fields.map((field) => [field.id, field.value]));
+  const primaries = new Map(sheet.primaries.map((primary) => [primary.id, primary.value]));
+  return {
+    fieldRating: (fieldId) => fields.get(fieldId) ?? 0,
+    primaryRating: (primaryId) => primaries.get(primaryId) ?? 0
+  };
 }
 
 const [
@@ -72,13 +84,44 @@ const [
 
   const status = lockMethodStatus(pickMethod, {
     inventory: { has: (itemId) => itemId === SECURITY_TOOL_ITEM },
-    fieldRating: (fieldId) => (fieldId === 'security' ? 50 : 0)
+    ...levelOneRatings()
   });
 
   assert.equal(status.available, true);
   assert.equal(status.success, true);
   assert.equal(lockMethodUsesSecurityTool(pickMethod, status), true);
   assert.equal(securityToolSurvives(status, 0.999), false);
+}
+
+{
+  const ratings = levelOneRatings();
+  const inventory = { has: (itemId) => itemId === SECURITY_TOOL_ITEM };
+  const lockObjects = [
+    findObject(breach, (object) => object.id === 'warden-wall-safe', 'warden wall safe'),
+    findObject(breach, (object) => object.id === 'east-watch-double-door-north', 'east watch north door'),
+    findObject(breach, (object) => object.id === 'east-watch-double-door-south', 'east watch south door')
+  ];
+  for (const object of lockObjects) {
+    for (const method of object.interact.lock.methods.filter((entry) => entry.dc !== undefined)) {
+      const status = lockMethodStatus(method, { inventory, ...ratings });
+      assert.equal(status.available, true, `${object.name} ${method.id} is available`);
+      assert.equal(status.success, true, `${object.name} ${method.id} passes at level 1 baseline`);
+    }
+  }
+
+  const searchObjects = [
+    findObject(breach, (object) => object.name === 'Split Barrel', 'split barrel'),
+    findObject(breach, (object) => object.name === 'Dead Settlement Guard', 'dead settlement guard'),
+    findObject(breach, (object) => object.name === 'Oil and Tread', 'oil and tread'),
+    findObject(cellar, (object) => object.name === 'Warden Cache', 'warden cache')
+  ];
+  for (const object of searchObjects) {
+    for (const method of object.interact.search.methods) {
+      const status = searchMethodStatus(method, { inventory, ...ratings });
+      assert.equal(status.available, true, `${object.name} ${method.id} is available`);
+      assert.equal(status.success, true, `${object.name} ${method.id} passes at level 1 baseline`);
+    }
+  }
 }
 
 {

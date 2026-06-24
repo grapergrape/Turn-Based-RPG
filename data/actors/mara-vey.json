@@ -11,7 +11,9 @@
     "skinTone": "tan",
     "hairColor": "brown",
     "hairStyle": "cropped",
-    "facialHair": "none"
+    "facialHair": "none",
+    "breastSize": 5,
+    "penisSize": 0
   },
   "progression": {
     "level": 1,

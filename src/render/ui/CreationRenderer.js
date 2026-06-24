@@ -17,7 +17,7 @@ export function drawCharacterCreation(ctx, ui, tools) {
   let y = LIST_BOX.y + 30;
   for (const row of creation.rows ?? []) {
     drawOptionRow(ctx, tools, row, LIST_BOX.x + 10, y, LIST_BOX.w - 20);
-    y += 25;
+    y += 22;
   }
 
   drawPlayerPreview(ctx, tools, PREVIEW_BOX, creation.previewSpriteId ?? ui.figureSpriteId ?? 'mara-vey');
@@ -70,6 +70,15 @@ function drawOptionRow(ctx, tools, row, x, y, w) {
   }
   tools.text(ctx, selected ? '>' : ' ', x, y, selected ? PALETTE.uiText : PALETTE.uiDim);
   tools.text(ctx, tools.clip(row.label ?? '', 17), x + 12, y, selected ? PALETTE.uiText : PALETTE.uiDim);
+  if (row.kind === 'range') {
+    const min = row.min ?? 0;
+    const max = row.max ?? 10;
+    const value = Math.max(min, Math.min(max, Number(row.value) || 0));
+    const ratio = max > min ? (value - min) / (max - min) : 0;
+    tools.bar(ctx, x + 138, y + 4, 74, 5, ratio, selected ? PALETTE.uiWarn : PALETTE.uiBorderLight);
+    tools.text(ctx, `${value}/${max}`, x + 220, y, selected ? PALETTE.uiWarn : PALETTE.uiBorderLight);
+    return;
+  }
   const value = row.kind === 'name' && selected ? `${row.value ?? ''}*` : row.value ?? '';
   tools.text(ctx, tools.clip(value, 20), x + 138, y, selected ? PALETTE.uiWarn : PALETTE.uiBorderLight);
 }

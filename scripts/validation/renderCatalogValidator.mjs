@@ -153,6 +153,13 @@ export function validateActorAppearance(name, appearance, fieldName = 'appearanc
       errors.push(`${name}: ${fieldName}.facialHair must be one of ${[...PLAYER_FACIAL_HAIR_ID_SET].join(', ')}.`);
     }
   }
+  for (const key of ['breastSize', 'penisSize']) {
+    if (appearance[key] === undefined) continue;
+    requireNumber(name, appearance[key], `${fieldName}.${key}`);
+    if (typeof appearance[key] === 'number' && (!Number.isInteger(appearance[key]) || appearance[key] < 0 || appearance[key] > 10)) {
+      errors.push(`${name}: ${fieldName}.${key} must be an integer from 0 to 10.`);
+    }
+  }
   if (appearance.body !== undefined) {
     requireString(name, appearance.body, `${fieldName}.body`);
     if (typeof appearance.body === 'string' && !HUMAN_BODY_ID_SET.has(appearance.body)) {

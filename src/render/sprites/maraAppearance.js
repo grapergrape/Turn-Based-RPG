@@ -112,7 +112,9 @@ export const MARA_DEFAULT_APPEARANCE = Object.freeze({
   hairStyle: 'cropped',
   facialHair: 'none',
   bodyFrame: 'feminine',
-  anatomy: 'vulva'
+  anatomy: 'vulva',
+  breastSize: 5,
+  penisSize: 0
 });
 
 export const PLAYER_GENDER_MODEL_IDS = Object.freeze(['female', 'male', 'androgynous']);
@@ -123,9 +125,9 @@ export const PLAYER_HAIR_STYLE_IDS = Object.freeze(['cropped', 'loose', 'shaved'
 export const PLAYER_FACIAL_HAIR_IDS = Object.freeze(['none', 'stubble', 'beard']);
 
 const PLAYER_GENDER_MODELS = Object.freeze({
-  female: Object.freeze({ bodyFrame: 'feminine', anatomy: 'vulva', shoulders: 15, waist: 9, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
-  male: Object.freeze({ bodyFrame: 'masculine', anatomy: 'penis', shoulders: 17, waist: 10, torsoLength: 17, legLength: 24, legSize: 2, armSize: 2 }),
-  androgynous: Object.freeze({ bodyFrame: 'androgynous', anatomy: 'smooth', shoulders: 15, waist: 8, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
+  female: Object.freeze({ bodyFrame: 'feminine', anatomy: 'vulva', breastSize: 5, penisSize: 0, shoulders: 15, waist: 9, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
+  male: Object.freeze({ bodyFrame: 'masculine', anatomy: 'penis', breastSize: 1, penisSize: 5, shoulders: 17, waist: 10, torsoLength: 17, legLength: 24, legSize: 2, armSize: 2 }),
+  androgynous: Object.freeze({ bodyFrame: 'androgynous', anatomy: 'smooth', breastSize: 2, penisSize: 0, shoulders: 15, waist: 8, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
 });
 
 const MARA_BODY_FRAMES = Object.freeze({
@@ -217,6 +219,11 @@ function genderModelForBodyFrame(bodyFrame) {
   return 'female';
 }
 
+function clampBodyFeatureSize(value, fallback) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.max(0, Math.min(10, Math.round(value)));
+}
+
 export function normalizePlayerAppearance(appearance = {}) {
   const genderModel = typeof appearance?.genderModel === 'string' && PLAYER_GENDER_MODEL_ID_SET.has(appearance.genderModel)
     ? appearance.genderModel
@@ -243,7 +250,9 @@ export function normalizePlayerAppearance(appearance = {}) {
   const anatomy = typeof appearance?.anatomy === 'string' && MARA_ANATOMY_IDS.has(appearance.anatomy)
     ? appearance.anatomy
     : model.anatomy;
-  return { genderModel, bodyType, skinTone, hairColor, hairStyle, facialHair, bodyFrame, anatomy };
+  const breastSize = clampBodyFeatureSize(appearance?.breastSize, model.breastSize ?? MARA_DEFAULT_APPEARANCE.breastSize);
+  const penisSize = clampBodyFeatureSize(appearance?.penisSize, model.penisSize ?? MARA_DEFAULT_APPEARANCE.penisSize);
+  return { genderModel, bodyType, skinTone, hairColor, hairStyle, facialHair, bodyFrame, anatomy, breastSize, penisSize };
 }
 
 function genericVisualForSlot(slot) {
@@ -287,10 +296,24 @@ function composeMaraStyle(visuals, appearance = {}) {
   style.hairStyle = normalizedAppearance.hairStyle;
   style.facialHair = normalizedAppearance.facialHair;
   style.anatomy = normalizedAppearance.anatomy;
-  style.anatomyVisible = false;
+  style.breastSize = normalizedAppearance.breastSize;
+  style.penisSize = normalizedAppearance.penisSize;
+  style.anatomyVisible = !visuals.clothes;
 
   const clothes = visuals.clothes;
-  if (clothes) {
+  if (!clothes) {
+    style.coatHi = style.skinHi;
+    style.coat = style.skin;
+    style.coatLo = style.skinLo;
+    style.coatDk = style.skinDk;
+    style.pantsHi = style.skinHi;
+    style.pants = style.skin;
+    style.pantsLo = style.skinLo;
+    style.pantsDk = style.skinDk;
+    style.coatTail = 0;
+    style.belt = null;
+    style.fieldHarness = false;
+  } else {
     style.coat = pal(clothes.coat, PALETTE.stoneDust);
     style.coatHi = pal(clothes.coatHi, style.coat);
     style.coatLo = pal(clothes.coatLo, style.coat);
@@ -325,7 +348,7 @@ function composeMaraStyle(visuals, appearance = {}) {
 
   style.pendant = visuals.trinket ? pal(visuals.trinket.pendant, PALETTE.hostGold) : null;
   const overlay = BODY_TYPE_OVERLAYS[normalizedAppearance.bodyType] ?? BODY_TYPE_OVERLAYS.medium;
-  if (overlay.coatTailMin) style.coatTail = Math.max(style.coatTail ?? 0, overlay.coatTailMin);
+  if (clothes && overlay.coatTailMin) style.coatTail = Math.max(style.coatTail ?? 0, overlay.coatTailMin);
 
   return style;
 }

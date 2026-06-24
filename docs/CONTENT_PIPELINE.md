@@ -616,7 +616,9 @@ Minimal actor shape:
     "skinTone": "tan",
     "hairColor": "brown",
     "hairStyle": "cropped",
-    "facialHair": "none"
+    "facialHair": "none",
+    "breastSize": 5,
+    "penisSize": 0
   },
   "stats": {
     "hp": 24,
@@ -675,10 +677,11 @@ Rules:
   key.
 - Player `appearance` is optional sprite-baking metadata. Character creation
   writes `genderModel`, `bodyType`, `skinTone`, `hairColor`, `hairStyle`, and
-  `facialHair`. `genderModel` is visual model selection, not a pronoun field.
-  It changes the baked animated player model family. Legacy `bodyFrame` and
-  `anatomy` values still load for old data, but `anatomy` is compatibility
-  metadata only and is not rendered onto player sprites. New player data should
+  `facialHair`, plus `breastSize` and `penisSize` as 0 to 10 values.
+  `genderModel` is visual model selection, not a pronoun field. It changes the
+  baked animated player model family. Legacy `bodyFrame` and `anatomy` values
+  still load for old data. Anatomy and breast detail render only when the player
+  has no clothes equipped; equipped clothes cover them. New player data should
   use the explicit customization fields.
 - Human NPCs and human enemies can also use composable appearance fields:
   `body`, `outfit`, `gear`, and `accent`. These bake a unique sprite at level

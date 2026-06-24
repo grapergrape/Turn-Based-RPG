@@ -194,7 +194,7 @@
             {
               "id": "check-false-tread",
               "label": "Check the false tread",
-              "dc": 40,
+              "dc": 25,
               "successLog": "One stair tread lifts from its pins. A wrapped relic round waits in the dust.",
               "failLog": "The dry stair gives you no clean edge to lift.",
               "success": {

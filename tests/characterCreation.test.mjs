@@ -1,11 +1,13 @@
 import assert from 'node:assert/strict';
 
 import {
+  CHARACTER_CUSTOMIZATION_FIELDS,
   PRIMARY_ASSIGNMENT_BASE,
   PRIMARY_ASSIGNMENT_CAP,
   PRIMARY_ASSIGNMENT_FLAG,
   PRIMARY_ASSIGNMENT_POINTS,
   applyCustomizationText,
+  changeCustomizationOption,
   changePrimaryAssignmentValue,
   characterNameIsValid,
   createCustomizationState,
@@ -111,6 +113,28 @@ function buildGateGame() {
   assert.equal(result.name, 'Jo Vey');
   assert.equal(result.appearance.genderModel, 'female');
   assert.equal(result.appearance.bodyType, 'medium');
+  assert.equal(result.appearance.breastSize, 5);
+  assert.equal(result.appearance.penisSize, 0);
+}
+
+{
+  let state = createCustomizationState({ name: 'Mara Vey' });
+  state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === 'breastSize');
+  state = changeCustomizationOption(state, 1);
+  assert.equal(state.appearance.breastSize, 6);
+  state = changeCustomizationOption(state, -10);
+  assert.equal(state.appearance.breastSize, 0);
+  const result = customizationResult(state);
+  assert.equal(result.appearance.breastSize, 0);
+}
+
+{
+  let state = createCustomizationState({ name: 'Mara Vey' });
+  state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === 'genderModel');
+  state = changeCustomizationOption(state, 1);
+  assert.equal(state.appearance.genderModel, 'male');
+  assert.equal(state.appearance.breastSize, 1);
+  assert.equal(state.appearance.penisSize, 5);
 }
 
 {

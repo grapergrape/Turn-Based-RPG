@@ -667,9 +667,9 @@ export class Game {
   #refreshCharacterPreview() {
     if (!this.atlas || !this.characterCreation) return;
     const equipment = this.inventory?.equipmentSnapshot?.() ?? {};
-    const bareHeadEquipment = { ...equipment, helmet: null };
+    const bareBodyEquipment = { ...equipment, clothes: null, armor: null, boots: null, helmet: null };
     this.atlas[PLAYER_CUSTOM_PREVIEW_SPRITE_ID] = bakePlayerCharacter(
-      bareHeadEquipment,
+      bareBodyEquipment,
       this.inventory?.itemDefs ?? {},
       this.characterCreation.appearance
     );
