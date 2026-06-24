@@ -1401,7 +1401,7 @@
             {
               "id": "read-blood-trail",
               "label": "Read the blood trail",
-              "dc": 40,
+              "dc": 25,
               "successLog": "The blood under his shoulder smears backward. He was dragged to the barricade after the key broke.",
               "failLog": "The dried blood gives you nothing useful.",
               "success": {
@@ -1411,7 +1411,7 @@
             {
               "id": "check-boot-seam",
               "label": "Check his boot seam",
-              "dc": 55,
+              "dc": 27,
               "successLog": "A Censure Entry Roll is stitched into the boot tongue, flat and dry.",
               "failLog": "The boot seams are stiff with blood. If he hid anything there, it stays hidden.",
               "success": {
@@ -1507,7 +1507,7 @@
             {
               "id": "read-return-print",
               "label": "Read the return print",
-              "dc": 40,
+              "dc": 25,
               "successLog": "The return tread cuts deeper than the approach. It backed away in haste, not on patrol.",
               "failLog": "The ash is too churned to tell why the machine turned back.",
               "success": {
@@ -1730,7 +1730,7 @@
               "label": "Pick the Censure hasp",
               "requiresItem": "censure-entry-roll",
               "field": "security",
-              "dc": 35,
+              "dc": 25,
               "successLog": "The hasp gives. Both doors swing outward on dry hinges.",
               "failLog": "The pick slips and the hasp stays shut."
             }
@@ -1765,7 +1765,7 @@
               "label": "Pick the Censure hasp",
               "requiresItem": "censure-entry-roll",
               "field": "security",
-              "dc": 35,
+              "dc": 25,
               "successLog": "The hasp gives. Both doors swing outward on dry hinges.",
               "failLog": "The pick slips and the hasp stays shut."
             }
@@ -1801,7 +1801,7 @@
               "label": "Work the keyway",
               "requiresItem": "censure-entry-roll",
               "field": "security",
-              "dc": 50,
+              "dc": 27,
               "successLog": "You clear the grit and walk the pins open.",
               "failLog": "The pins hold. Another hard try may chew the keyway."
             },
@@ -1809,7 +1809,7 @@
               "id": "read-seal",
               "label": "Read the warden seal",
               "field": "doctrine",
-              "dc": 40,
+              "dc": 25,
               "unlocks": false,
               "successLog": "The plate marks diocesan pay, not a reliquary ward. This was a warden's box, not a priest's.",
               "failLog": "The seal is too worn to read past the sun-cross."
@@ -1818,7 +1818,7 @@
               "id": "pry-hinge",
               "label": "Pry the hinge",
               "primary": "body",
-              "dc": 7,
+              "dc": 3,
               "successLog": "The hinge gives with a cracked metal groan.",
               "failLog": "The hinge holds. The noise travels through the stone.",
               "failure": {

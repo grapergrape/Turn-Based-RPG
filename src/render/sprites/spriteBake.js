@@ -347,11 +347,106 @@ export function drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style) {
 
   px(ctx, bodyCx - Math.floor(shoulderW / 2), shoulderY, coat.hi, Math.max(3, shoulderW - 2), 1);
   px(ctx, bodyCx + Math.floor(shoulderW / 2), shoulderY + 2, coat.dk, 1, bodyH - 3);
-  dither(ctx, bodyCx - Math.floor(shoulderW / 2) + 2, shoulderY + 3, Math.max(4, shoulderW - 4), bodyH - 4, coat.lo, pose.cloth ?? 0);
+  if (!style.anatomyVisible) {
+    dither(ctx, bodyCx - Math.floor(shoulderW / 2) + 2, shoulderY + 3, Math.max(4, shoulderW - 4), bodyH - 4, coat.lo, pose.cloth ?? 0);
+  }
   return { bodyCx, shoulderW, waistW, lean };
 }
 
-export function drawAdultAnatomy() {}
+function bodyFeatureSize(value, fallback = 0) {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.max(0, Math.min(10, Math.round(value)));
+}
+
+export function drawAdultChest(ctx, torso, shoulderY, meta, pose, style) {
+  if (!style.anatomyVisible || meta.back) return;
+  const size = bodyFeatureSize(style.breastSize);
+  if (size <= 0) return;
+  const skin = ramp(style, 'skin');
+  const side = directionSide(meta);
+  const chestY = shoulderY + 6 + Math.floor((pose.bob ?? 0) * 0.5);
+  const lobeW = size >= 8 ? 4 : size >= 5 ? 3 : size >= 2 ? 2 : 1;
+  const lobeH = size >= 8 ? 4 : size >= 5 ? 3 : 2;
+  const shadowH = Math.max(1, Math.min(2, lobeH - 1));
+
+  if (meta.view === 'side') {
+    const x = torso.bodyCx + side * Math.max(2, Math.round((torso.waistW ?? 8) * 0.32));
+    px(ctx, x, chestY, skin.hi, Math.max(1, lobeW - 1), 1);
+    px(ctx, x, chestY + 1, skin.mid, lobeW, lobeH - 1);
+    px(ctx, x + side * Math.max(1, lobeW - 1), chestY + lobeH - 1, skin.lo, 1, shadowH);
+    return;
+  }
+
+  const offset = size >= 7 ? 4 : 3;
+  const nearExtra = meta.view === 'three' ? 1 : 0;
+  const farW = meta.view === 'three' ? Math.max(1, lobeW - 1) : lobeW;
+  const nearW = Math.min(4, lobeW + nearExtra);
+  const leftX = torso.bodyCx - offset - Math.floor(farW / 2);
+  const rightX = torso.bodyCx + offset - Math.floor(nearW / 2);
+  px(ctx, leftX, chestY, skin.hi, Math.max(1, farW - 1), 1);
+  px(ctx, leftX, chestY + 1, skin.mid, farW, lobeH - 1);
+  px(ctx, leftX, chestY + lobeH - 1, skin.lo, farW, shadowH);
+  px(ctx, rightX, chestY, skin.hi, Math.max(1, nearW - 1), 1);
+  px(ctx, rightX, chestY + 1, skin.mid, nearW, lobeH - 1);
+  px(ctx, rightX, chestY + lobeH - 1, skin.lo, nearW, shadowH);
+}
+
+export function drawAdultAnatomy(ctx, torso, hipY, meta, pose, style) {
+  if (!style.anatomyVisible || meta.back || !style.anatomy) return;
+  const skin = ramp(style, 'skin');
+  const side = directionSide(meta);
+  const bob = pose.bob ?? 0;
+  const x = torso.bodyCx + Math.round(meta.bodyTurn * 0.5);
+  const y = hipY + 1 + Math.floor(bob * 0.5);
+  const penisSize = bodyFeatureSize(style.penisSize, style.anatomy === 'penis' || style.anatomy === 'intersex' ? 5 : 0);
+  const drawPenis = penisSize > 0;
+  if (style.anatomy === 'smooth' && !drawPenis) return;
+  const pelvisW = meta.view === 'side' ? 4 : Math.max(4, Math.round((torso.waistW ?? 8) * 0.58));
+  const pelvisX = x - Math.floor(pelvisW / 2);
+  px(ctx, pelvisX, hipY - 1, skin.mid, pelvisW, 5);
+  px(ctx, pelvisX, hipY - 1, skin.hi, Math.max(2, pelvisW - 1), 1);
+  px(ctx, pelvisX + pelvisW - 1, hipY, skin.lo, 1, 4);
+  px(ctx, pelvisX + 1, hipY + 4, skin.dk, Math.max(2, pelvisW - 2), 1);
+
+  if (style.anatomy === 'vulva' && !drawPenis) {
+    if (meta.view === 'side') {
+      px(ctx, x + side, y + 2, skin.dk, 1, 1);
+      px(ctx, x, y + 1, skin.lo, 1, 1);
+      return;
+    }
+    px(ctx, x, y + 1, skin.lo, 1, 1);
+    px(ctx, x, y + 2, skin.dk, 1, 2);
+    return;
+  }
+
+  if (style.anatomy === 'intersex') {
+    const length = penisSize >= 8 ? 3 : penisSize >= 4 ? 2 : 1;
+    if (meta.view === 'side') {
+      px(ctx, x + side, y, skin.lo, length + 1, 1);
+      px(ctx, x + side, y + 1, skin.mid, length, 1);
+      px(ctx, x + side * Math.max(1, length), y + 2, skin.dk, 1, 1);
+      return;
+    }
+    px(ctx, x - 1, y, skin.lo, Math.max(2, length + 1), 1);
+    px(ctx, x, y + 1, skin.mid, Math.max(1, length), 1);
+    px(ctx, x, y + 2, skin.dk, 1, Math.max(1, Math.min(2, length)));
+    px(ctx, x - 1, y + 2, skin.dk, 1, 1);
+    return;
+  }
+
+  if (style.anatomy === 'penis' || drawPenis) {
+    const width = penisSize >= 8 ? 4 : penisSize >= 4 ? 3 : 2;
+    const length = penisSize >= 8 ? 4 : penisSize >= 4 ? 3 : 2;
+    if (meta.view === 'side') {
+      px(ctx, x + side, y, skin.lo, length, 2);
+      px(ctx, x + side * Math.max(1, length - 1), y + 1, skin.dk, 2, 1);
+      return;
+    }
+    px(ctx, x - Math.floor(width / 2), y, skin.lo, width, 2);
+    px(ctx, x, y + 2, skin.lo, Math.max(1, Math.floor(width / 2)), length - 1);
+    px(ctx, x + Math.floor(width / 2) - 1, y + length, skin.dk, 1, 1);
+  }
+}
 
 export function drawActorBase(ctx, w, h, facing, pose, style) {
   const meta = FACING_META[facing] ?? FACING_META.se;
@@ -403,6 +498,8 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
   drawBoot(ctx, nearLeg.foot.x, nearLeg.foot.y, side, style, false);
 
   const torso = drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style);
+  drawAdultChest(ctx, torso, shoulderY, meta, pose, style);
+  drawAdultAnatomy(ctx, torso, hipY, meta, pose, style);
   const shoulderHalf = Math.floor(torso.shoulderW / 2);
   const farShoulder = { x: torso.bodyCx - shoulderHalf, y: shoulderY + 3 };
   const nearShoulder = { x: torso.bodyCx + shoulderHalf, y: shoulderY + 3 };
