@@ -23,6 +23,7 @@ import {
   SPRITE_ATLAS_IDS
 } from '../../src/render/SpriteAtlas.js';
 import { getSprite } from '../../src/render/spriteCatalog.js';
+import { FLOOR_STYLE_IDS } from '../../src/render/primitives/terrain.js';
 import { Grid } from '../../src/world/Grid.js';
 import { findPathToAdjacent } from '../../src/world/Pathfinder.js';
 import {
@@ -81,6 +82,7 @@ export const WALL_PLANES = new Set(['sw', 'se']);
 export const WALL_SIDES = new Set(['near', 'far']); // Which face of an opening a wall fixture mounts on.
 // Iso facings for orientation-aware props (mirrors ORIENTS in PixelPrimitives.js).
 export const PROP_ORIENTS = new Set(['se', 'sw', 'nw', 'ne']);
+export const FLOOR_STYLE_ID_SET = new Set(FLOOR_STYLE_IDS);
 export const PERCEPTION_FACING_IDS = new Set(PERCEPTION_FACINGS);
 export const PATROL_MODE_IDS = new Set(PATROL_MODES);
 export const SUSPICION_SEVERITY_IDS = new Set(Object.values(SUSPICION_SEVERITY));

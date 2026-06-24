@@ -74,7 +74,7 @@ export class IsometricRenderer {
         if (!def || def.kind === 'wall') continue;
         if (this.#isHiddenCell(x, y)) continue;
         const s = gridToScreen(x, y, 0, this.sceneOrigin);
-        P.drawRuinedStoneFloorCell(ctx, s.x, s.y, x, y);
+        P.drawStyledFloorCell(ctx, s.x, s.y, x, y, def.floor ?? 'stone');
         const wallPressure = this.#wallPressure(x, y);
         if (wallPressure > 0) {
           P.drawFloorGrime(ctx, s.x, s.y, P.hash2D(x + 33, y + 41), Math.min(1.35, 0.55 + wallPressure * 0.22));
@@ -226,6 +226,11 @@ export class IsometricRenderer {
     if (!player || player.isDead) return 1;
     const dx = Math.abs(prop.x - player.x);
     const dy = Math.abs(prop.y - player.y);
+    const entry = getSprite(prop.kind);
+    const canopyRadius = entry?.canopyRadius ?? 0;
+    if (canopyRadius > 0 && Math.max(dx, dy) <= canopyRadius) {
+      return entry.canopyAlpha ?? 0.4;
+    }
     if (Math.max(dx, dy) > 1) return 1;
     if (prop.x + prop.y < player.x + player.y) return 1; // behind the player
     return prop.kind === 'wall' ? 0.4 : 0.5;

@@ -153,6 +153,12 @@ export const SPRITE_CATALOG = {
     category: CATEGORY.STRUCTURE, layer: 2,
     draw: (ctx, x, y, seed, c) => P.drawDamagedAltar(ctx, x, y, seed, c.pulse)
   },
+  'farm-building-block': {
+    category: CATEGORY.STRUCTURE, layer: 0, block: true,
+    draw: (ctx, x, y, seed) => P.drawFarmBuildingBlock(ctx, x, y, seed)
+  },
+  'farm-fence': oriented(P.drawFarmFence, CATEGORY.STRUCTURE),
+  'road-sign-post': simple(P.drawRoadSignPost, CATEGORY.STRUCTURE),
 
   // --- Furniture (placed objects) ----------------------------------------
   'broken-pew': simple(P.drawBrokenPew, CATEGORY.FURNITURE),
@@ -181,6 +187,8 @@ export const SPRITE_CATALOG = {
       ladder: barrelShowsLadder(c.prop)
     })
   },
+  'field-cart': oriented(P.drawFieldCart, CATEGORY.FURNITURE),
+  'hay-rick': simple(P.drawHayRick, CATEGORY.FURNITURE),
 
   // --- Props (misc small props, caches) ----------------------------------
   'rubble-pile': simple(P.drawRubblePile, CATEGORY.PROP),
@@ -215,6 +223,20 @@ export const SPRITE_CATALOG = {
     }
   },
 
+  // --- Plants -------------------------------------------------------------
+  'ash-tree': {
+    category: CATEGORY.PLANT, layer: 4, canopyRadius: 2, canopyAlpha: 0.38,
+    draw: (ctx, x, y, seed) => P.drawAshTree(ctx, x, y, seed)
+  },
+  'ash-tree-stump': simple(P.drawAshTreeStump, CATEGORY.PLANT),
+  'scrub-bush': simple(P.drawScrubBush, CATEGORY.PLANT),
+  'wheat-clump': {
+    category: CATEGORY.PLANT, layer: 4, canopyRadius: 1, canopyAlpha: 0.32,
+    draw: (ctx, x, y, seed, c) => P.drawWheatClump(ctx, x, y, seed, {
+      density: c.prop.density
+    })
+  },
+
   // --- Lights (emissive props) -------------------------------------------
   'candle-cluster': {
     category: CATEGORY.LIGHT, layer: 2,
@@ -241,6 +263,7 @@ export const SPRITE_CATALOG = {
   'corpse': simple(P.drawCorpseSilhouette, CATEGORY.GORE),
   'cult-victim': simple(P.drawCultVictim, CATEGORY.GORE),
   'skeleton': simple(P.drawSkeleton, CATEGORY.GORE),
+  'dead-cultist': simple(P.drawDeadCultist, CATEGORY.GORE),
 
   // --- Creatures (Host victims / monsters rendered as world props) -------
   'cross-martyr': {
@@ -264,6 +287,10 @@ export const SPRITE_CATALOG = {
     })
   },
   'calcified-penitent': simple(P.drawCalcifiedPenitent, CATEGORY.CREATURE),
+  'calcified-grave-marker': simple(P.drawCalcifiedGraveMarker, CATEGORY.CREATURE),
+  'dead-host-wolf-spider': simple(P.drawDeadHostWolfSpider, CATEGORY.CREATURE),
+  'dead-host-wolf-maw': simple(P.drawDeadHostWolfMaw, CATEGORY.CREATURE),
+  'dead-host-wolf-ribsplit': simple(P.drawDeadHostWolfRibsplit, CATEGORY.CREATURE),
 
   // --- Ritual imagery ----------------------------------------------------
   'choir-pentagram': simple(P.drawChoirPentagram, CATEGORY.RITUAL), // wall-mounted, but drawn as a prop overlay
