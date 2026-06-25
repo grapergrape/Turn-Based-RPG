@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-barn-door",
+  "title": "Barn Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The barn door is wide enough for a cart. Chaff and dried mud cling to the lower track."
+      ],
+      "choices": [
+        {
+          "label": "Enter the barn",
+          "effects": {
+            "log": "You step into the barn.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_barn_interior.json",
+              "player": { "x": 8, "y": 10 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay in the farmyard."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

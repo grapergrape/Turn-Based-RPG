@@ -10,6 +10,131 @@ const WIDTH = 160;
 const HEIGHT = 70;
 const START = { x: 142, y: 68 };
 const GRAVEYARD = { x0: 127, x1: 140, y0: 52, y1: 59 };
+const FARM_DOOR_DIALOGUES = [
+  'long-ash-farmhouse-door',
+  'long-ash-barn-door',
+  'long-ash-storage-shed-door',
+  'long-ash-grain-shed-door',
+  'long-ash-tool-shed-door'
+];
+const GRAVEYARD_BODIES = [
+  {
+    id: 'grave-eren-voss',
+    name: 'Eren Voss',
+    variant: 'kneeling-fused-hands',
+    x: 129,
+    y: 54,
+    log: 'Eren Voss kneels in the ash with both hands fused under his chin. The stone kept the prayer and lost the man.'
+  },
+  {
+    id: 'grave-sister-maud-arel',
+    name: 'Sister Maud Arel',
+    variant: 'broken-halo',
+    x: 132,
+    y: 54,
+    log: 'Sister Maud Arel went pale around a broken ring of bone. Half the halo lies in chips at her feet.'
+  },
+  {
+    id: 'grave-toma-kest',
+    name: 'Toma Kest',
+    variant: 'rib-open-chest',
+    x: 135,
+    y: 54,
+    log: 'Toma Kest stands with his ribs opened like little chapel doors. The cavity behind them is dry stone.'
+  },
+  {
+    id: 'grave-iven-rusk',
+    name: 'Iven Rusk',
+    variant: 'reaching-arm',
+    x: 138,
+    y: 54,
+    log: 'Iven Rusk reaches toward the fence with one stone hand. The other arm is folded into his chest.'
+  },
+  {
+    id: 'grave-nara-vell',
+    name: 'Nara Vell',
+    variant: 'goat-skull',
+    x: 128,
+    y: 56,
+    log: 'Nara Vell has a long goat skull where her face should be. One horn curls whole, the other snapped at the root.'
+  },
+  {
+    id: 'grave-brother-senn-kade',
+    name: 'Brother Senn Kade',
+    variant: 'thorned-back',
+    x: 131,
+    y: 56,
+    log: 'Brother Senn Kade is bent forward under pale thorns. They broke through his back and froze there.'
+  },
+  {
+    id: 'grave-lysa-orm',
+    name: 'Lysa Orm',
+    variant: 'bell-jaw',
+    x: 134,
+    y: 56,
+    log: 'Lysa Orm has a jaw pulled wide into a bell shape. Nothing rings when the wind passes through it.'
+  },
+  {
+    id: 'grave-arno-pell',
+    name: 'Arno Pell',
+    variant: 'half-prayer-twist',
+    x: 137,
+    y: 56,
+    log: 'Arno Pell is twisted halfway into prayer, one palm sealed to the chest and one elbow cracked backward.'
+  },
+  {
+    id: 'grave-ilyen-marr',
+    name: 'Ilyen Marr',
+    variant: 'collapsed-shoulder',
+    x: 130,
+    y: 58,
+    log: 'Ilyen Marr slumps under one collapsed shoulder. The ash at his feet has been packed smoother than the rest.',
+    search: {
+      title: "Ilyen Marr's Grave",
+      lines: [
+        'A narrow seam runs below the packed ash, too straight for weather.'
+      ],
+      useLabel: "Inspect Ilyen's grave",
+      methods: [
+        {
+          id: 'read-disturbed-ash',
+          label: 'Read the disturbed ash',
+          field: 'search',
+          dc: 40,
+          successLog: 'A crawl space opens under the roots. A black mourning ring is tied there in waxed thread.',
+          failLog: 'The roots and loose ash give you no clean read.',
+          success: {
+            setFlag: 'looted-ilyen-marr-grave',
+            inventory: {
+              add: [
+                {
+                  item: 'mourning-ring',
+                  count: 1
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    id: 'grave-vel-sarec',
+    name: 'Vel Sarec',
+    variant: 'buried-lower-body',
+    x: 133,
+    y: 58,
+    log: 'Vel Sarec rises only from the waist. The rest is buried in a hard swell of ash and root.'
+  },
+  {
+    id: 'grave-otta-fen',
+    name: 'Otta Fen',
+    variant: 'split-face',
+    x: 136,
+    y: 58,
+    log: 'Otta Fen split down the face before the Stilling took him. One side is smooth as chalk, the other all dark seam.'
+  }
+];
 
 const ROAD_MAIN = [
   { x: 142, y: 68 },
@@ -191,19 +316,20 @@ function paintFarm() {
   }
 
   // Farm compound and outbuildings.
-  paintRect(18, 44, 23, 50, 'B');
-  paintRect(14, 48, 16, 55, 'B');
-  paintRect(24, 54, 28, 58, 'B');
-  paintRect(30, 47, 32, 50, 'B');
-  paintRect(33, 56, 35, 59, 'B');
+  paintRect(17, 43, 25, 51, 'B');
+  paintRect(28, 43, 36, 50, 'B');
+  paintRect(14, 54, 20, 60, 'B');
+  paintRect(23, 56, 28, 60, 'B');
+  paintRect(31, 56, 36, 60, 'B');
 }
 
 function placeFarmObjects() {
+  const bottomFenceGaps = new Set([18, 19, 20, 21, 25, 33]);
   for (let x = 12; x <= 37; x += 1) {
     if (x !== 24 && x !== 25) {
       addObject('farm-fence', x, 42, { blocking: true, orient: 'se', seed: hash(x, 42, 41) });
     }
-    if (x < 18 || x > 21) {
+    if (!bottomFenceGaps.has(x)) {
       addObject('farm-fence', x, 61, { blocking: true, orient: 'se', seed: hash(x, 61, 41) });
     }
   }
@@ -215,11 +341,98 @@ function placeFarmObjects() {
       addObject('farm-fence', 37, y, { blocking: true, orient: 'sw', seed: hash(37, y, 43) });
     }
   }
-  addObject('field-cart', 28, 47, { blocking: true, orient: 'sw', seed: hash(28, 47, 47) });
-  addObject('field-cart', 19, 58, { blocking: true, orient: 'se', seed: hash(19, 58, 47) });
+
+  addFarmDoor('farmhouse-door', 'Farmhouse Door', 21, 51, 'long-ash-farmhouse-door', 'The farmhouse door is thumb-polished around the latch.', { wallPlane: 'sw' });
+  addFarmDoor('barn-door', 'Barn Door', 36, 50, 'long-ash-barn-door', 'The barn door rides low on its track, with chaff pressed into the groove.', { wallPlane: 'sw' });
+  addFarmDoor('storage-shed-door', 'Storage Shed Door', 25, 60, 'long-ash-storage-shed-door', 'The storage shed door has a ring pull worn bright at the bottom edge.', { wallPlane: 'sw' });
+  addFarmDoor('grain-shed-door', 'Grain Shed Door', 33, 60, 'long-ash-grain-shed-door', 'Dry seed husks are packed under the grain shed door.', { wallPlane: 'sw' });
+  addFarmDoor('tool-shed-door', 'Tool Shed Door', 20, 57, 'long-ash-tool-shed-door', 'The tool shed door gives after the hasp is worked loose.', {
+    wallPlane: 'se',
+    lock: {
+      id: 'long-ash-tool-shed-lock',
+      title: 'Tool Shed Lock',
+      lines: [
+        'A bent hasp holds the tool shed shut. Fresh scratches cut through the rust around it.'
+      ],
+      methods: [
+        {
+          id: 'pick-hasp',
+          label: 'Pick the hasp',
+          field: 'security',
+          dc: 35,
+          successLog: 'The hasp gives. The shed door can be worked open.',
+          failLog: 'The hasp holds, and the entry roll flexes against the rust.'
+        },
+        {
+          id: 'force-frame',
+          label: 'Force the frame',
+          primary: 'body',
+          dc: 3,
+          successLog: 'The frame cracks at the latch. The shed door pulls loose.',
+          failLog: 'The old frame groans, but the latch stays set.'
+        }
+      ]
+    }
+  });
+
+  addObject('field-cart', 26, 47, { blocking: true, orient: 'sw', seed: hash(26, 47, 47) });
+  addObject('field-cart', 13, 58, { blocking: true, orient: 'se', seed: hash(13, 58, 47) });
   addObject('hay-rick', 11, 65, { blocking: true, seed: hash(11, 65, 53) });
   addObject('hay-rick', 52, 51, { blocking: true, seed: hash(52, 51, 53) });
   addObject('hay-rick', 70, 58, { blocking: true, seed: hash(70, 58, 53) });
+}
+
+function addFarmDoor(id, name, x, y, dialogue, log, extraInteract = {}) {
+  const { wallPlane, ...interactExtras } = extraInteract;
+  const object = {
+    id,
+    blocking: true,
+    name,
+    seed: hash(x, y, 44),
+    interact: {
+      type: 'secret-entrance',
+      dialogue,
+      log,
+      ...interactExtras
+    }
+  };
+  if (wallPlane) object.wallPlane = wallPlane;
+  addObject('farm-door', x, y, object);
+}
+
+function placeFarmMachinery() {
+  // Yard machinery from the planning map compound: clustered around the house
+  // and barns, leaving the fence gates and building footprints clear.
+  addObject('water-pump', 15, 52, { blocking: true, seed: hash(15, 52, 45) });
+  addObject('feed-trough', 18, 53, { blocking: true, orient: 'se', seed: hash(18, 53, 45) });
+  addObject('field-plow', 23, 52, { blocking: true, orient: 'sw', seed: hash(23, 52, 45) });
+  addObject('field-harrow', 26, 50, { blocking: true, orient: 'sw', seed: hash(26, 50, 45) });
+  addObject('tool-rack', 34, 53, { blocking: true, seed: hash(34, 53, 45) });
+  addObject('woodpile', 29, 57, { blocking: true, seed: hash(29, 57, 45) });
+  addObject('field-plow', 21, 59, { blocking: true, orient: 'se', seed: hash(21, 59, 45) });
+  addObject('field-harrow', 30, 55, { blocking: true, orient: 'sw', seed: hash(30, 55, 45) });
+  addObject('feed-trough', 22, 59, { blocking: true, orient: 'sw', seed: hash(22, 59, 45) });
+  addObject('wagon-wheel', 26, 52, { blocking: true, seed: hash(26, 52, 45) });
+}
+
+function placeFarmVictims() {
+  const victims = [
+    { x: 27, y: 51, member: 'father' },
+    { x: 29, y: 51, member: 'mother' },
+    { x: 31, y: 51, member: 'grandparent' },
+    { x: 33, y: 51, member: 'older-child' },
+    { x: 35, y: 51, member: 'younger-child' }
+  ];
+  for (const victim of victims) {
+    addObject('blood-stain', victim.x, victim.y, { seed: hash(victim.x, victim.y, 147) });
+    addObject('farm-cross-victim', victim.x, victim.y, {
+      blocking: true,
+      member: victim.member,
+      seed: hash(victim.x, victim.y, 149)
+    });
+  }
+  addObject('blood-sigil', 29, 53, { seed: hash(29, 53, 151) });
+  addObject('blood-sigil', 35, 54, { seed: hash(35, 54, 151) });
 }
 
 function placeGraveyard() {
@@ -232,13 +445,19 @@ function placeGraveyard() {
     if (y % 2 === 0) addObject('farm-fence', GRAVEYARD.x0 - 1, y, { blocking: true, orient: 'sw', seed: hash(GRAVEYARD.x0 - 1, y, 63) });
     if (y % 2 === 1) addObject('farm-fence', GRAVEYARD.x1 + 1, y, { blocking: true, orient: 'sw', seed: hash(GRAVEYARD.x1 + 1, y, 63) });
   }
-  const markers = [
-    [129, 54], [132, 54], [135, 54], [138, 54],
-    [128, 56], [131, 56], [134, 56], [137, 56],
-    [130, 58], [133, 58], [136, 58]
-  ];
-  for (const [x, y] of markers) {
-    addObject('calcified-grave-marker', x, y, { blocking: true, seed: hash(x, y, 67) });
+  for (const body of GRAVEYARD_BODIES) {
+    addObject('calcified-grave-body', body.x, body.y, {
+      id: body.id,
+      blocking: true,
+      name: body.name,
+      variant: body.variant,
+      seed: hash(body.x, body.y, 67),
+      interact: {
+        type: 'note',
+        log: body.log,
+        ...(body.search ? { search: body.search } : {})
+      }
+    });
   }
 }
 
@@ -345,6 +564,8 @@ placeRoadDressing();
 scatterForest();
 placeMapEdges();
 placeWheatModels();
+placeFarmMachinery();
+placeFarmVictims();
 
 objects.sort((a, b) => (a.y - b.y) || (a.x - b.x) || a.kind.localeCompare(b.kind));
 
@@ -356,7 +577,7 @@ const level = {
   height: HEIGHT,
   tileSize: 64,
   quests: ['investigate-ash-chapel-cult'],
-  dialogue: [],
+  dialogue: FARM_DOOR_DIALOGUES,
   tiles: tiles.map((row) => row.join('')),
   legend: {
     '.': { kind: 'floor', floor: 'ash-dirt', walkable: true },

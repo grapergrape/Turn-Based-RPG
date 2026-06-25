@@ -109,7 +109,7 @@ function drawOutdoorFloorCell(ctx, cx, cy, gx, gy, colors, detail = {}) {
   const seed = hash2D(gx + 17, gy + 29);
   const r = rngFrom(seed);
   const zone = hash2D((gx >> 1) + 5, (gy >> 1) + 7);
-  const base = zone % 5 === 0 ? colors.alt : colors.base;
+  const base = zone % (detail.altModulo ?? 5) === 0 ? colors.alt : colors.base;
   drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
 
   if (detail.patch !== false && r() < (detail.patchRate ?? 0.55)) {
@@ -167,34 +167,39 @@ function drawOutdoorFloorCell(ctx, cx, cy, gx, gy, colors, detail = {}) {
 function drawRoadSurfaceCell(ctx, cx, cy, gx, gy) {
   const seed = hash2D(gx + 71, gy + 113);
   const r = rngFrom(seed);
-  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, PALETTE.stoneDust);
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, PALETTE.stoneMid);
 
   ctx.save();
-  ctx.globalAlpha = 0.22;
-  drawIsoDiamond(ctx, cx, cy - 1, TILE_WIDTH - 12, TILE_HEIGHT - 6, PALETTE.stoneLight);
-  ctx.globalAlpha = 0.16;
-  drawIsoDiamond(ctx, cx + Math.floor((r() - 0.5) * 7), cy + Math.floor((r() - 0.5) * 4), 38, 17, PALETTE.hostBone);
+  ctx.globalAlpha = 0.055;
+  drawIsoDiamond(ctx, cx, cy - 1, TILE_WIDTH - 14, TILE_HEIGHT - 7, PALETTE.stoneLight);
+  ctx.globalAlpha = 0.07;
+  drawIsoDiamond(ctx, cx + Math.floor((r() - 0.5) * 10), cy + Math.floor((r() - 0.5) * 5), 22, 10, r() < 0.5 ? PALETTE.stoneDust : PALETTE.stoneDark);
   ctx.restore();
 
   const d = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
-  ctx.save();
-  ctx.globalAlpha = 0.26;
-  ctx.strokeStyle = PALETTE.stoneMid;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  if ((gx + gy + (seed & 1)) % 4 === 0) {
-    ctx.moveTo(d.left[0] + 8, d.left[1] + 1);
-    ctx.lineTo(d.bottom[0], d.bottom[1] - 4);
-    ctx.lineTo(d.right[0] - 8, d.right[1] + 1);
-  } else {
-    ctx.moveTo(d.top[0], d.top[1] + 4);
-    ctx.lineTo(d.bottom[0], d.bottom[1] - 4);
+  if ((gx + gy + (seed & 3)) % 3 !== 0) {
+    ctx.save();
+    ctx.globalAlpha = 0.16;
+    ctx.strokeStyle = PALETTE.stoneDark;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    if ((gx + gy + (seed & 1)) % 4 === 0) {
+      ctx.moveTo(d.left[0] + 10, d.left[1] + 1);
+      ctx.lineTo(d.bottom[0], d.bottom[1] - 5);
+      ctx.lineTo(d.right[0] - 10, d.right[1] + 1);
+    } else {
+      ctx.moveTo(d.top[0], d.top[1] + 5);
+      ctx.lineTo(d.bottom[0], d.bottom[1] - 5);
+    }
+    ctx.stroke();
+    ctx.restore();
   }
-  ctx.stroke();
-  ctx.restore();
 
   if (seed % 9 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 16), cy, seed, 2);
-  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.stoneMid, PALETTE.stoneLight, PALETTE.rustDark], 0.018, seed);
+  if (r() < 0.42) {
+    px(ctx, cx - 21 + Math.floor(r() * 42), cy - 4 + Math.floor(r() * 8), PALETTE.rustDark, 8 + Math.floor(r() * 12), 1);
+  }
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.stoneDark, PALETTE.stoneDust, PALETTE.rustDark], 0.028, seed);
 }
 
 function drawRoadShoulderCell(ctx, cx, cy, gx, gy) {
@@ -204,20 +209,24 @@ function drawRoadShoulderCell(ctx, cx, cy, gx, gy) {
   drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, PALETTE.woodDark);
   drawNoisePixels(ctx, cx - 30, cy - 12, 60, 24, [PALETTE.rustDark, PALETTE.stoneDark], 0.04, seed);
 
-  drawIsoDiamond(ctx, cx, cy - 1, TILE_WIDTH - 8, TILE_HEIGHT - 4, PALETTE.stoneMid);
-  drawIsoDiamond(ctx, cx, cy - 2, TILE_WIDTH - 18, TILE_HEIGHT - 9, (seed & 1) ? PALETTE.stoneDust : PALETTE.stoneLight);
+  ctx.save();
+  ctx.globalAlpha = 0.9;
+  drawIsoDiamond(ctx, cx, cy - 1, TILE_WIDTH - 10, TILE_HEIGHT - 5, (seed & 1) ? PALETTE.stoneDark : PALETTE.stoneMid);
+  ctx.globalAlpha = 0.2;
+  drawIsoDiamond(ctx, cx + Math.floor((r() - 0.5) * 9), cy - 2 + Math.floor((r() - 0.5) * 4), TILE_WIDTH - 24, TILE_HEIGHT - 12, PALETTE.stoneDust);
+  ctx.restore();
 
   const d = diamond(cx, cy, TILE_WIDTH - 8, TILE_HEIGHT - 4);
   ctx.save();
-  ctx.globalAlpha = 0.55;
-  ctx.strokeStyle = PALETTE.hostBone;
+  ctx.globalAlpha = 0.28;
+  ctx.strokeStyle = PALETTE.stoneDust;
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(d.left[0] + 2, d.left[1]);
   ctx.lineTo(d.top[0], d.top[1] + 1);
   ctx.lineTo(d.right[0] - 2, d.right[1]);
   ctx.stroke();
-  ctx.globalAlpha = 0.5;
+  ctx.globalAlpha = 0.42;
   ctx.strokeStyle = PALETTE.stoneDark;
   ctx.beginPath();
   ctx.moveTo(d.left[0] + 3, d.left[1] + 2);
@@ -250,22 +259,22 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
     case 'wheat-field':
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
         base: PALETTE.hostGold,
-        alt: PALETTE.clothTan,
-        hi: PALETTE.hostBone,
+        alt: PALETTE.woodLight,
+        hi: PALETTE.clothTan,
         lo: PALETTE.woodDark,
         row: PALETTE.woodDark,
         stalk: PALETTE.clothTan
-      }, { noise: 0.035, rows: true, rowStep: 3, rowAlpha: 0.22, stalks: true, crackEvery: 23 });
+      }, { noise: 0.022, rows: true, rowStep: 3, rowAlpha: 0.13, stalks: true, patchRate: 0.18, patchAlpha: 0.05, altModulo: 8, crackEvery: 23 });
       return;
     case 'furrow-field':
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
         base: PALETTE.woodMid,
-        alt: PALETTE.rustDark,
+        alt: PALETTE.woodDark,
         hi: PALETTE.clothTan,
         lo: PALETTE.woodDark,
-        row: PALETTE.stoneDark,
+        row: PALETTE.rustDark,
         stalk: PALETTE.hostGold
-      }, { noise: 0.038, rows: true, rowStep: 2, rowAlpha: 0.34, stalks: true, crackEvery: 19 });
+      }, { noise: 0.032, rows: true, rowStep: 2, rowAlpha: 0.26, stalks: true, patchRate: 0.28, patchAlpha: 0.08, crackEvery: 19 });
       return;
     case 'forest-floor':
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {

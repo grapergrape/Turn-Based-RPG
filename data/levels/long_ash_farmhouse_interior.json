@@ -1,0 +1,135 @@
+{
+  "id": "long-ash-farmhouse-interior",
+  "name": "Long Ash Farmhouse",
+  "intro": "The farmhouse is one room of work-worn timber: table, hearth, pantry shelves, and the grit of field boots at the door.",
+  "width": 14,
+  "height": 11,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "long-ash-farmhouse-exit"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.34,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.13,
+    "vignette": 1.35
+  },
+  "tiles": [
+    "##############",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "##############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 7,
+      "y": 8
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "objects": [
+    {
+      "kind": "farm-door",
+      "x": 7,
+      "y": 9,
+      "blocking": true,
+      "id": "farmhouse-exit-door",
+      "name": "Farmhouse Door",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "long-ash-farmhouse-exit",
+        "log": "The farmhouse door opens back into the yard."
+      }
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 2,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "kitchen-hearth",
+      "x": 11,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 7,
+      "y": 3
+    },
+    {
+      "kind": "dining-bench",
+      "x": 6,
+      "y": 4,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-table",
+      "x": 6,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 6,
+      "y": 6,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "kitchen-counter",
+      "x": 10,
+      "y": 5,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "wash-tub",
+      "x": 3,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 9,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "blood-stain",
+      "x": 10,
+      "y": 8
+    },
+    {
+      "kind": "floor-crack",
+      "x": 4,
+      "y": 8
+    }
+  ]
+}

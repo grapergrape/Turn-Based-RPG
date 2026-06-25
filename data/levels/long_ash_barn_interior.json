@@ -1,0 +1,130 @@
+{
+  "id": "long-ash-barn-interior",
+  "name": "Long Ash Barn",
+  "intro": "The barn smells of chaff, old animal sweat, and cold iron. The floor is swept clear where a cart used to stand.",
+  "width": 16,
+  "height": 13,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "long-ash-barn-exit"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.31,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.14,
+    "vignette": 1.35
+  },
+  "tiles": [
+    "################",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "#..............#",
+    "################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 8,
+      "y": 10
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "objects": [
+    {
+      "kind": "farm-door",
+      "x": 8,
+      "y": 11,
+      "blocking": true,
+      "id": "barn-exit-door",
+      "name": "Barn Door",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "long-ash-barn-exit",
+        "log": "The barn door opens back into the yard."
+      }
+    },
+    {
+      "kind": "hay-rick",
+      "x": 3,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "hay-rick",
+      "x": 12,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 8,
+      "y": 3
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 3,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "feed-trough",
+      "x": 8,
+      "y": 6,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "field-cart",
+      "x": 12,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "field-plow",
+      "x": 6,
+      "y": 9,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "hay-rick",
+      "x": 4,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 9
+    },
+    {
+      "kind": "floor-crack",
+      "x": 13,
+      "y": 10
+    }
+  ]
+}

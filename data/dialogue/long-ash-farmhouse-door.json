@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-farmhouse-door",
+  "title": "Farmhouse Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The latch is thumb-polished below a smear of old soot. Boot grit gathers along the threshold."
+      ],
+      "choices": [
+        {
+          "label": "Enter the farmhouse",
+          "effects": {
+            "log": "You step into the farmhouse.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_farmhouse_interior.json",
+              "player": { "x": 7, "y": 8 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay in the farmyard."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

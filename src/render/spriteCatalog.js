@@ -155,7 +155,18 @@ export const SPRITE_CATALOG = {
   },
   'farm-building-block': {
     category: CATEGORY.STRUCTURE, layer: 0, block: true,
-    draw: (ctx, x, y, seed) => P.drawFarmBuildingBlock(ctx, x, y, seed)
+    draw: (ctx, x, y, seed, c) => P.drawFarmBuildingBlock(ctx, x, y, seed, {
+      connected: c.prop.connected
+    })
+  },
+  'farm-door': {
+    category: CATEGORY.STRUCTURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawFarmDoor(ctx, x, y, seed, {
+      locked: Boolean(c.prop.interact?.lock && !c.prop.unlocked),
+      unlocked: Boolean(c.prop.unlocked),
+      revealed: Boolean(c.prop.revealed),
+      wallPlane: c.prop.wallPlane
+    })
   },
   'farm-fence': oriented(P.drawFarmFence, CATEGORY.STRUCTURE),
   'road-sign-post': simple(P.drawRoadSignPost, CATEGORY.STRUCTURE),
@@ -189,6 +200,13 @@ export const SPRITE_CATALOG = {
   },
   'field-cart': oriented(P.drawFieldCart, CATEGORY.FURNITURE),
   'hay-rick': simple(P.drawHayRick, CATEGORY.FURNITURE),
+  'field-plow': oriented(P.drawFieldPlow, CATEGORY.FURNITURE),
+  'field-harrow': oriented(P.drawFieldHarrow, CATEGORY.FURNITURE),
+  'feed-trough': oriented(P.drawFeedTrough, CATEGORY.FURNITURE),
+  'water-pump': simple(P.drawWaterPump, CATEGORY.FURNITURE),
+  'tool-rack': simple(P.drawToolRack, CATEGORY.FURNITURE),
+  'wagon-wheel': simple(P.drawWagonWheel, CATEGORY.FURNITURE),
+  'woodpile': simple(P.drawWoodpile, CATEGORY.FURNITURE),
 
   // --- Props (misc small props, caches) ----------------------------------
   'rubble-pile': simple(P.drawRubblePile, CATEGORY.PROP),
@@ -262,6 +280,10 @@ export const SPRITE_CATALOG = {
   // --- Gore (corpses, blood bodies) --------------------------------------
   'corpse': simple(P.drawCorpseSilhouette, CATEGORY.GORE),
   'cult-victim': simple(P.drawCultVictim, CATEGORY.GORE),
+  'farm-cross-victim': {
+    category: CATEGORY.GORE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawFarmCrossVictim(ctx, x, y, seed, { member: c.prop.member })
+  },
   'skeleton': simple(P.drawSkeleton, CATEGORY.GORE),
   'dead-cultist': simple(P.drawDeadCultist, CATEGORY.GORE),
 
@@ -287,7 +309,12 @@ export const SPRITE_CATALOG = {
     })
   },
   'calcified-penitent': simple(P.drawCalcifiedPenitent, CATEGORY.CREATURE),
-  'calcified-grave-marker': simple(P.drawCalcifiedGraveMarker, CATEGORY.CREATURE),
+  'calcified-grave-body': {
+    category: CATEGORY.CREATURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawCalcifiedGraveBody(ctx, x, y, seed, {
+      variant: c.prop.variant
+    })
+  },
   'dead-host-wolf-spider': simple(P.drawDeadHostWolfSpider, CATEGORY.CREATURE),
   'dead-host-wolf-maw': simple(P.drawDeadHostWolfMaw, CATEGORY.CREATURE),
   'dead-host-wolf-ribsplit': simple(P.drawDeadHostWolfRibsplit, CATEGORY.CREATURE),

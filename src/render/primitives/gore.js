@@ -580,6 +580,336 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 2, footY, wet, 6, 2);
 }
 
+function victimRamp(hi, mid, lo, dk = lo) {
+  return { hi, mid, lo, dk };
+}
+
+function drawVictimTaperedSpan(ctx, cx, y, topW, bottomW, h, colors, lean = 0, phase = 0) {
+  const span = Math.max(1, h - 1);
+  for (let row = 0; row < h; row += 1) {
+    const t = row / span;
+    const w = Math.max(3, Math.round(topW + (bottomW - topW) * t));
+    const bx = cx + Math.round(lean * (t - 0.35));
+    const x = bx - Math.floor(w / 2);
+    const yRow = y + row;
+    const tone = row < 2 ? colors.hi : row > h - 4 ? colors.lo : colors.mid;
+    px(ctx, x - 1, yRow, PALETTE.outline, w + 2, 1);
+    px(ctx, x, yRow, tone, w, 1);
+    px(ctx, x, yRow, colors.hi, 1, 1);
+    px(ctx, x + w - 1, yRow, colors.lo, 1, 1);
+    if (w > 6 && row > 2 && row < h - 2 && ((row + phase) % 5 === 0)) {
+      px(ctx, x + 2, yRow, colors.dk, Math.max(1, w - 5), 1);
+    }
+  }
+}
+
+function drawVictimJointedLimb(ctx, points, colors, size = 2, far = false) {
+  const main = far ? colors.lo : colors.mid;
+  const hi = far ? colors.mid : colors.hi;
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const a = points[i];
+    const b = points[i + 1];
+    linePx(ctx, a.x, a.y, b.x, b.y, PALETTE.outline, size + 2);
+    linePx(ctx, a.x, a.y, b.x, b.y, main, size);
+    if (size > 1) linePx(ctx, a.x, a.y - 1, b.x, b.y - 1, hi, 1);
+  }
+  for (let i = 1; i < points.length - 1; i += 1) {
+    const p = points[i];
+    px(ctx, p.x - 1, p.y - 1, PALETTE.outline, 3, 3);
+    px(ctx, p.x - 1, p.y - 1, main, 2, 2);
+    px(ctx, p.x - 1, p.y - 1, hi, 1, 1);
+  }
+}
+
+function drawVictimBoot(ctx, x, y, side, colors, far = false) {
+  const w = far ? 5 : 6;
+  const x0 = x - Math.floor(w / 2) + side;
+  px(ctx, x0 - 1, y - 3, PALETTE.outline, w + 2, 4);
+  px(ctx, x0, y - 2, far ? colors.lo : colors.mid, w, 2);
+  px(ctx, x0, y - 3, colors.hi, Math.max(2, w - 2), 1);
+  px(ctx, x0 + w - 1, y - 1, colors.dk, 1, 2);
+}
+
+function drawVictimHandAndNail(ctx, wrist, skin, blood, darkBlood) {
+  px(ctx, wrist.x - 2, wrist.y - 3, PALETTE.stoneDust, 4, 2);
+  px(ctx, wrist.x - 1, wrist.y - 1, PALETTE.stoneLight, 2, 3);
+  px(ctx, wrist.x - 2, wrist.y + 1, darkBlood, 4, 1);
+  px(ctx, wrist.x - 1, wrist.y + 2, blood, 2, 1);
+  px(ctx, wrist.x - 1, wrist.y + 3, skin.mid, 3, 3);
+  px(ctx, wrist.x - 1, wrist.y + 3, skin.hi, 1, 1);
+}
+
+function drawVictimHead(ctx, cx, y, member, seed, blood, bloodDark) {
+  const headH = member.headHeight;
+  const headW = member.headWidth ?? Math.max(6, Math.round(member.shoulders * 0.56));
+  const tilt = member.headTilt ?? 0;
+  const skin = member.skin;
+  const hair = member.hair;
+  const span = Math.max(1, headH - 1);
+
+  for (let row = 0; row < headH; row += 1) {
+    const t = row / span;
+    const rowLean = Math.round(tilt * (t - 0.35));
+    const w = row < 2 ? headW - 2 : row > headH - 3 ? headW - 1 : headW;
+    const x = cx + rowLean - Math.floor(w / 2);
+    const bowedFace = row >= Math.floor(headH * 0.42) && row <= headH - 3;
+    const tone = row < 5 ? hair.mid : bowedFace ? skin.dk : row > headH - 3 ? skin.lo : skin.mid;
+    px(ctx, x - 1, y + row, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y + row, tone, w, 1);
+    px(ctx, x, y + row, row < 2 ? hair.hi : skin.hi, 1, 1);
+    px(ctx, x + w - 1, y + row, row < 2 ? hair.dk : skin.dk, 1, 1);
+  }
+
+  // The faces hang forward after death: hair and brow shadow hide the eyes.
+  px(ctx, cx - Math.floor(headW / 2), y - 1, PALETTE.outline, headW, 1);
+  px(ctx, cx - Math.floor(headW / 2) + 1, y - 1, hair.hi, Math.max(2, headW - 2), 1);
+  px(ctx, cx - Math.floor(headW / 2) - 1, y + 3, PALETTE.outline, headW + 2, 1);
+  px(ctx, cx - Math.floor(headW / 2), y + 2, hair.dk, headW, 4);
+  px(ctx, cx - Math.floor(headW / 2) + 1, y + 5, PALETTE.void, Math.max(3, headW - 2), 3);
+  px(ctx, cx - 2 + Math.round(tilt * 0.35), y + headH - 2, skin.lo, 4, 1);
+  px(ctx, cx - 1 + Math.round(tilt * 0.45), y + headH - 1, bloodDark, 3, 1);
+  px(ctx, cx + Math.round(tilt * 0.45), y + headH, (seed & 1) === 0 ? bloodDark : blood, 1, 4);
+}
+
+const FARM_CROSS_VICTIM_MEMBERS = {
+  father: {
+    shoulders: 15,
+    waist: 9,
+    torsoLength: 16,
+    legLength: 24,
+    headHeight: 9,
+    armSize: 2,
+    legSize: 2,
+    coatTail: 5,
+    lean: -1,
+    headTilt: -1,
+    headDrop: 5,
+    coat: victimRamp(PALETTE.stoneDark, PALETTE.clothDark, PALETTE.stoneDark, PALETTE.void),
+    pants: victimRamp(PALETTE.stoneMid, PALETTE.stoneDark, PALETTE.clothDark, PALETTE.void),
+    skin: victimRamp(PALETTE.skinLight, PALETTE.skinMid, PALETTE.skinDark, PALETTE.clothDark),
+    hair: victimRamp(PALETTE.woodLight, PALETTE.woodDark, PALETTE.clothDark, PALETTE.void),
+    boot: victimRamp(PALETTE.rustMid, PALETTE.rustDark, PALETTE.void, PALETTE.void),
+    belt: PALETTE.rustDark,
+    accent: PALETTE.rustLight
+  },
+  mother: {
+    shoulders: 13,
+    waist: 8,
+    torsoLength: 17,
+    legLength: 23,
+    headHeight: 9,
+    armSize: 2,
+    legSize: 2,
+    coatTail: 9,
+    skirt: true,
+    lean: 1,
+    headTilt: 1,
+    headDrop: 6,
+    coat: victimRamp(PALETTE.hostBone, PALETTE.clothTan, PALETTE.stoneDust, PALETTE.stoneMid),
+    pants: victimRamp(PALETTE.stoneMid, PALETTE.clothDark, PALETTE.stoneDark, PALETTE.void),
+    skin: victimRamp(PALETTE.hostBone, PALETTE.skinLight, PALETTE.skinMid, PALETTE.skinDark),
+    hair: victimRamp(PALETTE.rustLight, PALETTE.rustMid, PALETTE.rustDark, PALETTE.clothDark),
+    boot: victimRamp(PALETTE.rustMid, PALETTE.rustDark, PALETTE.void, PALETTE.void),
+    belt: PALETTE.clothRed,
+    accent: PALETTE.clothRed
+  },
+  grandparent: {
+    shoulders: 14,
+    waist: 8,
+    torsoLength: 16,
+    legLength: 22,
+    headHeight: 9,
+    armSize: 2,
+    legSize: 2,
+    coatTail: 6,
+    hunch: 2,
+    lean: -2,
+    headTilt: -2,
+    headDrop: 6,
+    coat: victimRamp(PALETTE.hostBone, PALETTE.stoneDust, PALETTE.stoneMid, PALETTE.stoneDark),
+    pants: victimRamp(PALETTE.stoneMid, PALETTE.stoneDark, PALETTE.clothDark, PALETTE.void),
+    skin: victimRamp(PALETTE.hostBone, PALETTE.skinLight, PALETTE.skinMid, PALETTE.skinDark),
+    hair: victimRamp(PALETTE.hostBone, PALETTE.stoneDust, PALETTE.stoneMid, PALETTE.stoneDark),
+    boot: victimRamp(PALETTE.rustMid, PALETTE.rustDark, PALETTE.void, PALETTE.void),
+    belt: PALETTE.clothTan,
+    accent: PALETTE.clothTan
+  },
+  'older-child': {
+    shoulders: 11,
+    waist: 7,
+    torsoLength: 14,
+    legLength: 19,
+    headHeight: 9,
+    headWidth: 7,
+    armSize: 1,
+    legSize: 1,
+    coatTail: 5,
+    lean: 1,
+    headTilt: 1,
+    headDrop: 5,
+    coat: victimRamp(PALETTE.clothBlue, PALETTE.clothBlueDark, PALETTE.clothDark, PALETTE.void),
+    pants: victimRamp(PALETTE.stoneMid, PALETTE.clothDark, PALETTE.stoneDark, PALETTE.void),
+    skin: victimRamp(PALETTE.skinLight, PALETTE.skinMid, PALETTE.skinDark, PALETTE.clothDark),
+    hair: victimRamp(PALETTE.woodLight, PALETTE.woodDark, PALETTE.clothDark, PALETTE.void),
+    boot: victimRamp(PALETTE.rustMid, PALETTE.rustDark, PALETTE.void, PALETTE.void),
+    belt: PALETTE.rustDark,
+    accent: PALETTE.clothTan
+  },
+  'younger-child': {
+    shoulders: 10,
+    waist: 7,
+    torsoLength: 13,
+    legLength: 17,
+    headHeight: 9,
+    headWidth: 7,
+    armSize: 1,
+    legSize: 1,
+    coatTail: 7,
+    skirt: true,
+    lean: 0,
+    headTilt: 0,
+    headDrop: 5,
+    coat: victimRamp(PALETTE.hostBone, PALETTE.clothTan, PALETTE.stoneDust, PALETTE.stoneMid),
+    pants: victimRamp(PALETTE.clothBlue, PALETTE.clothBlueDark, PALETTE.clothDark, PALETTE.void),
+    skin: victimRamp(PALETTE.hostBone, PALETTE.skinLight, PALETTE.skinMid, PALETTE.skinDark),
+    hair: victimRamp(PALETTE.rustLight, PALETTE.rustDark, PALETTE.clothDark, PALETTE.void),
+    boot: victimRamp(PALETTE.rustMid, PALETTE.rustDark, PALETTE.void, PALETTE.void),
+    belt: PALETTE.clothBlue,
+    accent: PALETTE.clothBlue
+  }
+};
+
+export function drawFarmCrossVictim(ctx, cx, cy, seed, opts = {}) {
+  const member = FARM_CROSS_VICTIM_MEMBERS[opts.member] ?? FARM_CROSS_VICTIM_MEMBERS.father;
+  const rng = rngFrom(hash2D(seed + 257, seed * 7 + 19));
+  const jitter = Math.round((rng() - 0.5) * 2);
+  const lean = member.lean + jitter;
+  const stature = Math.max(0.68, member.legLength / 24);
+  const footY = cy - 4;
+  const hipY = footY - member.legLength;
+  const shoulderY = hipY - member.torsoLength + Math.floor((member.hunch ?? 0) * 0.55);
+  const headY = shoulderY - member.headHeight + Math.floor((member.hunch ?? 0) * 0.25);
+  const barY = shoulderY - Math.round(5 * stature);
+  const topY = headY - Math.round(14 * stature);
+  const beamHalf = Math.max(15, Math.round(member.shoulders * 1.45 + 4));
+  const postW = Math.max(5, Math.round(6 * stature));
+  const blood = PALETTE.hostRed;
+  const darkBlood = PALETTE.rustDark;
+
+  drawShadowBlob(ctx, cx, cy + 4, Math.round(32 * stature), Math.round(13 * stature));
+  ctx.save();
+  ctx.globalAlpha = 0.86;
+  drawIsoDiamond(ctx, cx + 1, cy + 3, Math.round(32 * stature), Math.round(14 * stature), darkBlood);
+  ctx.globalAlpha = 0.62;
+  drawIsoDiamond(ctx, cx - 2, cy + 2, Math.round(20 * stature), Math.round(9 * stature), blood);
+  ctx.globalAlpha = 0.5;
+  drawIsoDiamond(ctx, cx + 5, cy + 6, Math.round(15 * stature), Math.round(6 * stature), darkBlood);
+  ctx.restore();
+  drawNoisePixels(ctx, cx - 18, cy - 9, 36, 17, [blood, darkBlood], 0.075, seed);
+
+  // Rough farm timber, assembled by the cult from fence rails and shed planks.
+  px(ctx, cx - Math.floor(postW / 2) - 1, topY - 1, PALETTE.outline, postW + 2, footY - topY + 5);
+  px(ctx, cx - Math.floor(postW / 2), topY, PALETTE.woodDark, postW, footY - topY + 3);
+  px(ctx, cx - Math.floor(postW / 2), topY, PALETTE.woodMid, Math.max(2, Math.round(postW * 0.35)), footY - topY + 1);
+  px(ctx, cx + Math.floor(postW / 2) - 1, topY + 7, PALETTE.woodLight, 1, Math.round(28 * stature));
+  px(ctx, cx - beamHalf - 1, barY - 3, PALETTE.outline, beamHalf * 2 + 3, Math.max(6, Math.round(8 * stature)));
+  px(ctx, cx - beamHalf, barY - 2, PALETTE.woodDark, beamHalf * 2 + 1, Math.max(4, Math.round(6 * stature)));
+  px(ctx, cx - beamHalf + 2, barY - 2, PALETTE.woodMid, beamHalf * 2 - 3, 2);
+  px(ctx, cx - beamHalf + 4, barY + 3, darkBlood, 2, Math.round(6 * stature));
+  px(ctx, cx + beamHalf - 5, barY + 2, darkBlood, 2, Math.round(6 * stature));
+  px(ctx, cx - 1, shoulderY + 5, darkBlood, 2, footY - shoulderY - 5);
+
+  // Wrists are nailed wide to the beam, with the dead weight pulling the arms down.
+  const wristL = { x: cx - beamHalf + 2, y: barY + 2 };
+  const wristR = { x: cx + beamHalf - 3, y: barY + 2 };
+  const shoulderHalf = Math.floor(member.shoulders / 2);
+  const shL = { x: cx - shoulderHalf + lean, y: shoulderY + 3 };
+  const shR = { x: cx + shoulderHalf + lean, y: shoulderY + 3 };
+  const elbowL = {
+    x: Math.round((wristL.x + shL.x) / 2) - 1,
+    y: barY + Math.round(8 * stature)
+  };
+  const elbowR = {
+    x: Math.round((wristR.x + shR.x) / 2) + 1,
+    y: barY + Math.round(8 * stature)
+  };
+  drawVictimJointedLimb(ctx, [wristL, elbowL, shL], member.coat, member.armSize, true);
+  drawVictimJointedLimb(ctx, [wristR, elbowR, shR], member.coat, member.armSize, false);
+  drawVictimHandAndNail(ctx, wristL, member.skin, blood, darkBlood);
+  drawVictimHandAndNail(ctx, wristR, member.skin, blood, darkBlood);
+
+  const neckX = cx + lean;
+  const neckY = shoulderY - 5;
+  px(ctx, neckX - 2, neckY - 2, PALETTE.outline, 5, Math.max(5, Math.round(6 * stature)));
+  px(ctx, neckX - 1, neckY - 1, member.skin.mid, 3, 5);
+  px(ctx, neckX - 2, neckY - 2, member.skin.hi, 1, 5);
+
+  // The throat cut stays small and dark so the actor silhouette remains readable.
+  px(ctx, neckX - 5, neckY + 1, darkBlood, 10, 2);
+  px(ctx, neckX - 3, neckY + 1, blood, 6, 1);
+  px(ctx, neckX - 1, neckY + 3, darkBlood, 2, 9);
+  px(ctx, neckX + 2, neckY + 5, blood, 1, 7);
+
+  const legSpread = Math.max(3, Math.round(member.shoulders * 0.32));
+  const kneeY = hipY + Math.round(member.legLength * 0.5);
+  const farLeg = [
+    { x: cx + lean - legSpread, y: hipY },
+    { x: cx + lean - legSpread - 1, y: kneeY },
+    { x: cx - 3, y: footY - 1 }
+  ];
+  const nearLeg = [
+    { x: cx + lean + legSpread, y: hipY },
+    { x: cx + lean + legSpread + 1, y: kneeY + 1 },
+    { x: cx + 3, y: footY }
+  ];
+  drawVictimJointedLimb(ctx, farLeg, member.pants, member.legSize, true);
+  drawVictimBoot(ctx, farLeg[2].x, farLeg[2].y, -1, member.boot, true);
+  drawVictimJointedLimb(ctx, nearLeg, member.pants, member.legSize, false);
+  drawVictimBoot(ctx, nearLeg[2].x, nearLeg[2].y, 1, member.boot, false);
+
+  // Torso clothing varies by family member so the five bodies read as a household.
+  const torsoTop = shoulderY - 1;
+  const torsoH = Math.max(12, hipY - torsoTop + 1);
+  drawVictimTaperedSpan(ctx, cx + lean, torsoTop, member.shoulders, member.waist, torsoH, member.coat, lean, seed % 5);
+  px(ctx, cx + lean - Math.floor(member.shoulders / 2) + 1, shoulderY + 2, member.accent, 2, Math.max(6, torsoH - 4));
+  linePx(ctx, cx + lean - 5, shoulderY + 4, cx + lean + 4, hipY - 3, member.belt, 1);
+  px(ctx, cx + lean - Math.floor(member.waist / 2) - 1, hipY - 2, PALETTE.outline, member.waist + 2, 3);
+  px(ctx, cx + lean - Math.floor(member.waist / 2), hipY - 2, member.belt, member.waist, 1);
+
+  const tailH = member.coatTail ?? 0;
+  for (let row = 0; row < tailH; row += 1) {
+    const widen = member.skirt ? row : Math.floor(row * 0.45);
+    const w = Math.max(member.waist + 1, member.waist + widen);
+    const x = cx + lean - Math.floor(w / 2);
+    const y = hipY + row - 1;
+    px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y, row < 2 ? member.coat.mid : member.coat.lo, w, 1);
+    px(ctx, x, y, member.coat.hi, 1, 1);
+    if (row % 3 === 1) px(ctx, x + w - 2, y, member.coat.dk, 1, 1);
+  }
+
+  // Ordinary human head, sized and shaded like the actor sprites.
+  drawVictimHead(ctx, cx + lean, headY + (member.headDrop ?? 3), member, seed, blood, darkBlood);
+  // Foreground wound pass: all five are dead from opened throats, not living captives.
+  px(ctx, neckX - 6, neckY + 2, PALETTE.outline, 12, 1);
+  px(ctx, neckX - 5, neckY + 2, darkBlood, 10, 2);
+  px(ctx, neckX - 3, neckY + 2, blood, 6, 1);
+  px(ctx, neckX - 1, neckY + 4, darkBlood, 2, 9);
+  px(ctx, neckX + 2, neckY + 6, blood, 1, 7);
+  px(ctx, cx - 5, footY - 4, PALETTE.outline, 11, 4);
+  px(ctx, cx - 4, footY - 3, PALETTE.stoneDust, 8, 2);
+  px(ctx, cx - 2, footY - 1, PALETTE.stoneLight, 5, 2);
+  px(ctx, cx - 7, footY - 1, darkBlood, 14, 3);
+  px(ctx, cx - 4, footY, blood, 8, 2);
+  px(ctx, cx - 1, footY + 2, darkBlood, 3, 3);
+
+  // Cult sign cut into the lower post, small but legible beside the blood sigils.
+  const markY = cy - Math.round(18 * stature);
+  px(ctx, cx, markY - 5, darkBlood, 1, 10);
+  px(ctx, cx - 3, markY + 2, darkBlood, 7, 1);
+  px(ctx, cx - 1, markY + 6, darkBlood, 3, 1);
+}
+
 export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 129, seed * 5 + 31));
   const pulse = opts.pulse ?? 0;
@@ -975,156 +1305,461 @@ export function drawCalcifiedGraveMarker(ctx, cx, cy, seed) {
   drawNoisePixels(ctx, cx - 13, cy - 5, 26, 10, [PALETTE.stoneDark, PALETTE.rustDark], 0.08, seed);
 }
 
+const GRAVE_BODY_VARIANTS = [
+  'kneeling-fused-hands',
+  'broken-halo',
+  'rib-open-chest',
+  'reaching-arm',
+  'goat-skull',
+  'thorned-back',
+  'bell-jaw',
+  'half-prayer-twist',
+  'collapsed-shoulder',
+  'buried-lower-body',
+  'split-face'
+];
+
+function calcifiedSegment(ctx, x0, y0, x1, y1, color, thick = 1) {
+  const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    px(ctx, Math.round(x0 + (x1 - x0) * t - Math.floor(thick / 2)), Math.round(y0 + (y1 - y0) - Math.floor(thick / 2)), color, thick, thick);
+  }
+}
+
+function drawGraveHalo(ctx, cx, cy, seed, opts = {}) {
+  const side = opts.side ?? 1;
+  const broken = opts.broken ?? false;
+  const bone = PALETTE.hostBone;
+  const dust = PALETTE.stoneDust;
+  for (let i = 0; i < 17; i += 1) {
+    if (broken && i > 8 && i < 13) continue;
+    const a = Math.PI * (0.08 + i * 0.052);
+    const x = cx + Math.round(Math.cos(a) * 12);
+    const y = cy - Math.round(Math.sin(a) * 9);
+    px(ctx, x, y, i % 3 === 0 ? bone : dust, i % 4 === 0 ? 2 : 1, 1);
+  }
+  if (broken) {
+    px(ctx, cx + side * 8, cy + 4, dust, 4, 1);
+    px(ctx, cx + side * 11, cy + 6, PALETTE.stoneDark, 3, 1);
+  }
+}
+
+function drawGraveHead(ctx, x, y, variant, side) {
+  const bone = PALETTE.hostBone;
+  const dust = PALETTE.stoneDust;
+  const shade = PALETTE.stoneDark;
+  if (variant === 'goat-skull') {
+    const rows = [[5, 0], [8, -1], [9, -1], [8, 0], [7, 1], [6, 1], [5, 2], [4, 3], [3, 4]];
+    for (let i = 0; i < rows.length; i += 1) {
+      const [w, off] = rows[i];
+      const lx = x - Math.floor(w / 2) + off;
+      px(ctx, lx - 1, y + i, PALETTE.outline, w + 2, 1);
+      px(ctx, lx, y + i, i < 3 ? bone : dust, w, 1);
+      px(ctx, lx, y + i, PALETTE.stoneLight, 1, 1);
+    }
+    px(ctx, x - 3, y + 4, PALETTE.void, 2, 3);
+    px(ctx, x + 3, y + 3, PALETTE.void, 2, 3);
+    px(ctx, x + side * 2, y + 8, PALETTE.void, 4, 2);
+    calcifiedSegment(ctx, x - 4, y, x - 10, y - 7, PALETTE.outline, 2);
+    calcifiedSegment(ctx, x - 4, y, x - 9, y - 7, bone, 1);
+    calcifiedSegment(ctx, x + 5, y + 1, x + 9, y - 4, PALETTE.outline, 2);
+    calcifiedSegment(ctx, x + 5, y + 1, x + 8, y - 4, dust, 1);
+    px(ctx, x + 9, y - 4, shade, 2, 2);
+    return;
+  }
+
+  const rows = variant === 'bell-jaw'
+    ? [[5, 0], [7, -1], [8, 0], [7, 1], [8, 1], [10, 0], [9, 1], [7, 2]]
+    : [[5, 0], [7, -1], [8, 0], [7, 0], [6, 1], [5, 1], [4, 2]];
+  for (let i = 0; i < rows.length; i += 1) {
+    const [w, off] = rows[i];
+    const lx = x - Math.floor(w / 2) + off;
+    px(ctx, lx - 1, y + i, PALETTE.outline, w + 2, 1);
+    px(ctx, lx, y + i, i < 2 ? bone : dust, w, 1);
+    px(ctx, lx, y + i, PALETTE.stoneLight, 1, 1);
+  }
+  px(ctx, x - 3, y + 3, PALETTE.void, 2, 2);
+  px(ctx, x + 2, y + 3, PALETTE.void, 2, 2);
+  if (variant === 'bell-jaw') {
+    px(ctx, x - 4, y + 7, PALETTE.void, 9, 4);
+    px(ctx, x - 5, y + 10, shade, 11, 1);
+  } else if (variant === 'split-face') {
+    px(ctx, x, y + 1, PALETTE.void, 1, 8);
+    px(ctx, x + 1, y + 2, shade, 3, 5);
+  } else {
+    px(ctx, x + side, y + 6, PALETTE.void, 3, 2);
+  }
+}
+
+function drawGraveRibCavity(ctx, cx, cy, side, wide = false) {
+  const w = wide ? 12 : 9;
+  const h = wide ? 13 : 10;
+  px(ctx, cx - Math.floor(w / 2), cy, PALETTE.void, w, h);
+  px(ctx, cx - Math.floor(w / 2) + 2, cy + 2, PALETTE.stoneDark, w - 4, h - 4);
+  for (const s of [-1, 1]) {
+    const baseX = cx + s * Math.floor(w / 2);
+    for (let r = 0; r < 4; r += 1) {
+      calcifiedSegment(ctx, baseX, cy + 2 + r * 2, baseX + s * (wide ? 7 - r : 5 - r), cy - 1 + r * 2, PALETTE.hostBone, 1);
+    }
+  }
+  px(ctx, cx + side, cy - 1, PALETTE.stoneDark, 1, h + 1);
+}
+
+export function drawCalcifiedGraveBody(ctx, cx, cy, seed, opts = {}) {
+  const variant = GRAVE_BODY_VARIANTS.includes(opts.variant) ? opts.variant : GRAVE_BODY_VARIANTS[seed % GRAVE_BODY_VARIANTS.length];
+  const variantIndex = GRAVE_BODY_VARIANTS.indexOf(variant);
+  const rng = rngFrom(hash2D(seed + 227, seed * 5 + 41));
+  const side = (seed & 1) ? 1 : -1;
+  const lean = Math.round((rng() - 0.5) * 5) + (variant === 'collapsed-shoulder' ? -side * 3 : 0);
+  const bone = PALETTE.hostBone;
+  const dust = PALETTE.stoneDust;
+  const shade = PALETTE.stoneDark;
+  const deadVein = PALETTE.stoneDark;
+  const cut = PALETTE.rustDark;
+  const buried = variant === 'buried-lower-body';
+
+  const footY = cy - 1;
+  const hipY = buried ? cy - 16 : cy - 20;
+  const chestY = hipY - 15;
+  const shoulderY = chestY - 10 + (variant === 'collapsed-shoulder' ? 3 : 0);
+  const headY = shoulderY - 12;
+
+  drawShadowBlob(ctx, cx, cy + 3, 31, 12);
+  ctx.save();
+  ctx.globalAlpha = 0.66;
+  drawIsoDiamond(ctx, cx, cy + 1, buried ? 38 : 28, buried ? 15 : 10, PALETTE.stoneDark);
+  ctx.restore();
+  drawNoisePixels(ctx, cx - 18, cy - 5, 36, 11, [PALETTE.stoneDark, PALETTE.rustDark], 0.08, seed);
+
+  if (!buried) {
+    const kneeY = Math.round((hipY + footY) / 2) + (variant === 'kneeling-fused-hands' ? 2 : 0);
+    calcifiedSegment(ctx, cx + lean - 4, hipY, cx - 8 - side, kneeY, PALETTE.outline, 4);
+    calcifiedSegment(ctx, cx + lean - 4, hipY, cx - 8 - side, kneeY, dust, 2);
+    calcifiedSegment(ctx, cx - 8 - side, kneeY, cx - 5, footY - 2, shade, 2);
+    calcifiedSegment(ctx, cx + lean + 4, hipY + 1, cx + 7 + side, kneeY + 1, PALETTE.outline, 4);
+    calcifiedSegment(ctx, cx + lean + 4, hipY + 1, cx + 7 + side, kneeY + 1, dust, 2);
+    calcifiedSegment(ctx, cx + 7 + side, kneeY + 1, cx + 5, footY - 1, shade, 2);
+    px(ctx, cx - 8, footY - 2, shade, 7, 2);
+    px(ctx, cx + 3, footY - 1, shade, 7, 2);
+  } else {
+    for (let row = 0; row < 7; row += 1) {
+      const w = 27 - row * 2;
+      px(ctx, cx - Math.floor(w / 2), cy - 11 + row, row < 2 ? PALETTE.stoneDust : PALETTE.stoneDark, w, 1);
+    }
+  }
+
+  // Torso: offset rows make each body read as a person frozen mid-turn.
+  for (let y = shoulderY; y <= hipY; y += 1) {
+    const t = (y - shoulderY) / Math.max(1, hipY - shoulderY);
+    const baseW = variant === 'collapsed-shoulder' && y < chestY ? 9 : 12;
+    const w = Math.max(5, Math.round(baseW - t * 4 + (variant === 'thorned-back' ? 1 : 0)));
+    const drift = Math.round(lean * (1 - t) + side * Math.sin(t * Math.PI) * (variant === 'half-prayer-twist' ? 5 : 3));
+    const lx = cx - Math.floor(w / 2) + drift;
+    px(ctx, lx - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, lx, y, y < chestY ? bone : dust, w, 1);
+    px(ctx, lx, y, PALETTE.stoneLight, 1, 1);
+    px(ctx, lx + w - 1, y, deadVein, 1, 1);
+    if ((y + variantIndex) % 6 === 0) px(ctx, lx + 2, y, shade, Math.max(2, w - 5), 1);
+  }
+
+  const headX = cx + lean + side * (variant === 'reaching-arm' ? 3 : 1);
+  if (variant === 'broken-halo') drawGraveHalo(ctx, headX, headY + 8, seed, { side, broken: true });
+  if (variant === 'kneeling-fused-hands') drawGraveHalo(ctx, headX, headY + 8, seed, { side, broken: false });
+  drawGraveHead(ctx, headX, headY, variant, side);
+
+  // Variant motifs.
+  if (variant === 'rib-open-chest') {
+    drawGraveRibCavity(ctx, cx + lean, chestY - 1, side, true);
+  } else if (variant === 'split-face') {
+    drawGraveRibCavity(ctx, cx + lean - side, chestY + 1, side, false);
+  } else {
+    px(ctx, cx + lean - 3, chestY + 2, PALETTE.void, 7, 8);
+    px(ctx, cx + lean - 1, chestY + 3, shade, 3, 5);
+  }
+
+  if (variant === 'kneeling-fused-hands' || variant === 'half-prayer-twist') {
+    const handY = chestY + (variant === 'half-prayer-twist' ? 5 : 2);
+    px(ctx, cx + lean - 3, handY, bone, 6, 7);
+    px(ctx, cx + lean, handY + 1, PALETTE.void, 1, 6);
+    if (variant === 'half-prayer-twist') calcifiedSegment(ctx, cx + lean + 4, shoulderY + 2, cx + lean + side * 9, chestY + 11, dust, 2);
+  } else if (variant === 'reaching-arm') {
+    calcifiedSegment(ctx, cx + lean + side * 5, shoulderY + 2, cx + side * 19, chestY + 1, PALETTE.outline, 4);
+    calcifiedSegment(ctx, cx + lean + side * 5, shoulderY + 2, cx + side * 19, chestY + 1, dust, 2);
+    px(ctx, cx + side * 20 - 1, chestY, bone, 4, 3);
+    calcifiedSegment(ctx, cx + lean - side * 4, shoulderY + 3, cx + lean - side * 5, chestY + 10, shade, 2);
+  } else {
+    calcifiedSegment(ctx, cx + lean - 5, shoulderY + 2, cx + lean - 9, chestY + 8, dust, 2);
+    calcifiedSegment(ctx, cx + lean + 5, shoulderY + 2, cx + lean + 7, chestY + 8, dust, 2);
+  }
+
+  if (variant === 'thorned-back') {
+    for (let i = 0; i < 5; i += 1) {
+      const bx = cx + lean - 8 + i * 4;
+      calcifiedSegment(ctx, bx, shoulderY + 4, bx + (i % 2 ? side : -side) * (3 + (i % 3)), shoulderY - 4 - (i % 2), bone, 1);
+      px(ctx, bx + (i % 2 ? side : -side) * 4, shoulderY - 6 - (i % 2), PALETTE.outline, 1, 1);
+    }
+  }
+  if (variant === 'collapsed-shoulder') {
+    px(ctx, cx + lean - side * 8, shoulderY + 1, shade, 8, 4);
+    calcifiedSegment(ctx, cx + lean - side * 6, shoulderY + 4, cx + lean - side * 13, chestY + 11, dust, 2);
+  }
+  if (variant === 'buried-lower-body') {
+    for (let i = 0; i < 5; i += 1) px(ctx, cx - 16 + i * 7, cy - 8 + (i % 2), dust, 3, 1);
+    calcifiedSegment(ctx, cx + lean + 4, chestY + 7, cx + lean + side * 11, cy - 10, shade, 2);
+  }
+
+  // Dead seams and old cuts. No glow: the Stilling left this hard and drained.
+  calcifiedSegment(ctx, cx + lean - side * 2, shoulderY + 5, cx + lean - side * 4, hipY - 2, deadVein, 1);
+  if (variantIndex % 2 === 0) px(ctx, cx + lean - 5, chestY + 10, cut, 9, 1);
+  if (variantIndex % 3 === 0) px(ctx, cx + lean + 2, hipY - 4, PALETTE.hostBlack, 2, 2);
+  drawNoisePixels(ctx, cx - 12, cy - 4, 24, 9, [cut, shade], 0.06, seed + variantIndex);
+}
+
 export function drawDeadCultist(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 151, seed * 5 + 9));
   const flip = (seed & 1) ? 1 : -1;
-  drawShadowBlob(ctx, cx, cy + 4, 46, 18);
+  const slump = Math.floor(rng() * 3) - 1;
+  drawShadowBlob(ctx, cx, cy + 4, 50, 19);
   ctx.save();
-  ctx.globalAlpha = 0.78;
-  drawIsoDiamond(ctx, cx + flip * 3, cy + 3, 36, 16, PALETTE.rustDark);
+  ctx.globalAlpha = 0.84;
+  drawIsoDiamond(ctx, cx + flip * 2, cy + 3, 41, 18, PALETTE.rustDark);
   ctx.restore();
-  drawNoisePixels(ctx, cx - 23, cy - 6, 47, 23, [PALETTE.hostRed, PALETTE.rustDark], 0.09, seed);
+  drawNoisePixels(ctx, cx - 26, cy - 8, 54, 25, [PALETTE.hostRed, PALETTE.rustDark, PALETTE.void], 0.08, seed);
 
-  // Robed human body, crumpled and smaller than the wolf corpses nearby.
-  for (let row = 0; row < 10; row += 1) {
-    const w = 25 - Math.abs(row - 5) * 2;
-    const x = cx - Math.floor(w / 2) + flip * Math.floor(row * 0.4);
-    const y = cy - 8 + row;
+  const headX = cx + flip * (16 + slump);
+  const headY = cy - 10 + slump;
+  const bootX = cx - flip * 18;
+
+  // Crumpled Choir body: cowl, robe, stole, knife, and belt all mirror the
+  // living cultist silhouette instead of a generic cloth lump.
+  for (let row = 0; row < 13; row += 1) {
+    const spread = row < 7 ? row : 12 - row;
+    const w = 20 + spread * 3;
+    const drag = flip * Math.floor(row * 0.35) - slump;
+    const x = cx - Math.floor(w / 2) + drag;
+    const y = cy - 11 + row;
+    const tone = row < 3 ? PALETTE.clothRed : row < 9 ? PALETTE.clothDark : PALETTE.rustDark;
     px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
-    px(ctx, x, y, row < 3 ? PALETTE.clothRed : PALETTE.clothDark, w, 1);
-    if (row < 7) px(ctx, x, y, PALETTE.rustMid, 1, 1);
+    px(ctx, x, y, tone, w, 1);
+    if (row < 8) px(ctx, x + 2, y, row % 2 ? PALETTE.rustMid : PALETTE.clothRed, 2, 1);
+    if (row === 4 || row === 8) px(ctx, x + w - 5, y, PALETTE.hostGold, 2, 1);
   }
-  px(ctx, cx + flip * 13 - 3, cy - 8, PALETTE.outline, 8, 8);
-  px(ctx, cx + flip * 13 - 2, cy - 7, PALETTE.skinDark, 6, 6);
-  px(ctx, cx + flip * 13 - 2, cy - 8, PALETTE.clothDark, 6, 2);
-  px(ctx, cx - flip * 17, cy - 2, PALETTE.stoneDark, 8, 3);
-  px(ctx, cx - 2, cy + 4, PALETTE.hostBone, 2, 5);
-  px(ctx, cx - 5, cy + 6, PALETTE.hostBone, 8, 1);
-  for (let i = 0; i < 5; i += 1) {
-    px(ctx, cx - 14 + Math.floor(rng() * 29), cy - 4 + Math.floor(rng() * 10), PALETTE.hostRed, 1, 1);
+
+  // Hooded head with a dark face slit and slack jaw.
+  px(ctx, headX - 5, headY - 2, PALETTE.outline, 12, 10);
+  px(ctx, headX - 4, headY - 1, PALETTE.clothDark, 10, 4);
+  px(ctx, headX - 3, headY + 2, PALETTE.skinDark, 7, 5);
+  px(ctx, headX - 3, headY + 2, PALETTE.void, 6, 2);
+  px(ctx, headX + flip * 1, headY + 6, PALETTE.hostRed, 4, 1);
+  px(ctx, headX - flip * 2, headY, PALETTE.hostBone, 1, 1);
+
+  // Stained stole crossing the torso, plus a small sacrament strip at the throat.
+  linePx(ctx, cx - flip * 8, cy - 10, cx + flip * 3, cy + 3, PALETTE.clothRed, 2);
+  linePx(ctx, cx - flip * 5, cy - 10, cx + flip * 7, cy + 2, PALETTE.hostRed, 1);
+  px(ctx, cx + flip * 5, cy - 4, PALETTE.hostGold, 1, 4);
+  px(ctx, cx - 9, cy - 1, PALETTE.rustMid, 18, 1);
+
+  // Outflung arms and real hands; the posture stays human and small.
+  linePx(ctx, cx + flip * 2, cy - 4, cx + flip * 20, cy + 2, PALETTE.outline, 4);
+  linePx(ctx, cx + flip * 2, cy - 4, cx + flip * 20, cy + 2, PALETTE.clothDark, 2);
+  px(ctx, cx + flip * 21, cy + 2, PALETTE.skinMid, 3, 2);
+  linePx(ctx, cx - flip * 2, cy - 3, cx - flip * 12, cy + 8, PALETTE.outline, 4);
+  linePx(ctx, cx - flip * 2, cy - 3, cx - flip * 12, cy + 8, PALETTE.rustDark, 2);
+  px(ctx, cx - flip * 12, cy + 8, PALETTE.skinDark, 2, 2);
+
+  // Boots, hooked rite knife, and small belt gear.
+  px(ctx, bootX - flip * 2, cy - 1, PALETTE.outline, 10, 4);
+  px(ctx, bootX - flip * 1, cy, PALETTE.stoneDark, 7, 2);
+  px(ctx, bootX - flip * 4, cy + 4, PALETTE.outline, 8, 4);
+  px(ctx, bootX - flip * 3, cy + 5, PALETTE.stoneDark, 6, 2);
+  linePx(ctx, cx - flip * 13, cy + 5, cx - flip * 3, cy + 8, PALETTE.hostBone, 1);
+  px(ctx, cx - flip * 14, cy + 5, PALETTE.stoneLight, 1, 2);
+  px(ctx, cx + flip * 9, cy - 1, PALETTE.rustMid, 4, 4);
+  px(ctx, cx + flip * 9, cy - 1, PALETTE.hostGold, 4, 1);
+
+  for (let i = 0; i < 7; i += 1) {
+    px(ctx, cx - 17 + Math.floor(rng() * 35), cy - 5 + Math.floor(rng() * 14), PALETTE.hostRed, 1, 1);
   }
 }
 
 function wolfBody(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 43, seed * 11 + 5));
   const flip = opts.flip ?? ((seed & 1) ? 1 : -1);
-  drawShadowBlob(ctx, cx, cy + 4, 54, 19);
+  const lift = opts.lift ?? 0;
+  drawShadowBlob(ctx, cx, cy + 4, 62, 21);
   ctx.save();
-  ctx.globalAlpha = 0.78;
-  drawIsoDiamond(ctx, cx + 2, cy + 4, 42, 18, PALETTE.rustDark);
+  ctx.globalAlpha = 0.82;
+  drawIsoDiamond(ctx, cx + flip * 2, cy + 5, 48, 20, PALETTE.rustDark);
   ctx.restore();
+  drawNoisePixels(ctx, cx - 25, cy - 5, 51, 19, [PALETTE.hostBlack, PALETTE.rustDark], 0.05, seed);
 
-  // Fallen wolf torso, long and low, with Host-black hide and bone-lit ribs.
-  for (let row = 0; row < 12; row += 1) {
-    const w = 35 - Math.abs(row - 5) * 3;
-    const x = cx - Math.floor(w / 2) - flip * 3;
-    const y = cy - 11 + row;
+  // Fallen wolf torso: long animal spine, low hips, black Host hide, and a
+  // still-readable canine body under the infection.
+  for (let row = 0; row < 15; row += 1) {
+    const core = row < 8 ? row : 14 - row;
+    const w = 25 + core * 4;
+    const x = cx - Math.floor(w / 2) - flip * 3 + (row > 9 ? flip * 2 : 0);
+    const y = cy - 14 + row - lift;
+    const tone = row < 4 ? PALETTE.stoneMid : row < 11 ? PALETTE.hostBlack : PALETTE.void;
     px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
-    px(ctx, x, y, row < 4 ? PALETTE.stoneDark : PALETTE.hostBlack, w, 1);
-    if (row < 5) px(ctx, x, y, PALETTE.stoneMid, 2, 1);
-    if (row > 5) px(ctx, x + w - 2, y, PALETTE.void, 2, 1);
+    px(ctx, x, y, tone, w, 1);
+    if (row < 5) px(ctx, x + 2, y, PALETTE.stoneDust, 3, 1);
+    if (row > 4 && row < 11 && row % 3 === 0) px(ctx, x + 7, y, PALETTE.hostGold, Math.max(2, w - 18), 1);
+    if (row === 6 || row === 9) px(ctx, x + w - 7, y, PALETTE.hostBone, 4, 1);
   }
-  // Legs and torn tail.
-  for (const leg of [-13, -4, 8, 16]) {
-    linePx(ctx, cx + leg, cy - 2, cx + leg + flip * (4 + Math.floor(rng() * 5)), cy + 9, PALETTE.outline, 4);
-    linePx(ctx, cx + leg, cy - 2, cx + leg + flip * (4 + Math.floor(rng() * 5)), cy + 9, PALETTE.stoneDark, 2);
-    px(ctx, cx + leg + flip * 5, cy + 8, PALETTE.hostBone, 4, 1);
-  }
-  linePx(ctx, cx - flip * 21, cy - 7, cx - flip * 35, cy - 13, PALETTE.outline, 4);
-  linePx(ctx, cx - flip * 21, cy - 7, cx - flip * 34, cy - 13, PALETTE.hostBlack, 2);
-  px(ctx, cx - flip * 36, cy - 15, PALETTE.hostBone, 2, 2);
 
-  return { flip, rng };
+  // Four original wolf legs, broken and slack under the body.
+  const legRoots = [-18, -8, 8, 18];
+  for (let i = 0; i < legRoots.length; i += 1) {
+    const leg = legRoots[i];
+    const kneeX = cx + leg + flip * (2 + Math.floor(rng() * 4));
+    const kneeY = cy - 3 + (i % 2) - lift;
+    const pawX = kneeX + flip * (5 + Math.floor(rng() * 6));
+    const pawY = cy + 9 + (i % 2);
+    linePx(ctx, cx + leg, cy - 7 - lift, kneeX, kneeY, PALETTE.outline, 4);
+    linePx(ctx, kneeX, kneeY, pawX, pawY, PALETTE.outline, 3);
+    linePx(ctx, cx + leg, cy - 7 - lift, kneeX, kneeY, i < 2 ? PALETTE.stoneDark : PALETTE.hostBlack, 2);
+    linePx(ctx, kneeX, kneeY, pawX, pawY, PALETTE.stoneDark, 1);
+    px(ctx, pawX - 1, pawY, PALETTE.hostBone, 4, 1);
+  }
+
+  // Torn tail and two limp tendrils. The dead body has no glow.
+  linePx(ctx, cx - flip * 24, cy - 10 - lift, cx - flip * 41, cy - 17 - lift, PALETTE.outline, 4);
+  linePx(ctx, cx - flip * 24, cy - 10 - lift, cx - flip * 40, cy - 17 - lift, PALETTE.hostBlack, 2);
+  px(ctx, cx - flip * 42, cy - 19 - lift, PALETTE.hostBone, 2, 2);
+  for (let i = 0; i < 2; i += 1) {
+    const rootX = cx - flip * (6 + i * 7);
+    const rootY = cy - 10 + i * 2 - lift;
+    const tipX = rootX - flip * (13 + i * 5);
+    const tipY = cy + 5 + i * 3;
+    linePx(ctx, rootX, rootY, tipX, tipY, PALETTE.outline, 3);
+    linePx(ctx, rootX, rootY, tipX, tipY, i ? PALETTE.hostRed : PALETTE.hostBlack, 1);
+    px(ctx, tipX, tipY, PALETTE.hostGold, 1, 1);
+  }
+
+  return {
+    flip,
+    rng,
+    headX: cx + flip * 22,
+    headY: cy - 17 - lift,
+    chestX: cx + flip * 2,
+    chestY: cy - 13 - lift
+  };
+}
+
+function drawDeadWolfSkull(ctx, hx, hy, flip, opts = {}) {
+  const openJaw = opts.openJaw ?? false;
+  const halo = opts.halo ?? false;
+
+  // Goat-wolf skull: long muzzle, deep socket, asymmetrical horns.
+  px(ctx, hx - 7, hy - 5, PALETTE.outline, 15, 10);
+  px(ctx, hx - 6, hy - 4, PALETTE.hostBone, 12, 8);
+  px(ctx, hx + flip * 3, hy - 2, PALETTE.void, 3, 3);
+  px(ctx, hx + flip * 5, hy + 1, PALETTE.hostBlack, 7, 3);
+  px(ctx, hx + flip * 8, hy + 2, PALETTE.hostBone, 5, 2);
+  px(ctx, hx + flip * 10, hy + 4, PALETTE.hostBlack, 4, 1);
+  if (openJaw) {
+    px(ctx, hx + flip * 5, hy + 5, PALETTE.outline, 10, 4);
+    px(ctx, hx + flip * 5, hy + 5, PALETTE.void, 8, 3);
+    for (let t = 0; t < 4; t += 1) px(ctx, hx + flip * (5 + t * 2), hy + 4, PALETTE.hostBone, 1, 3);
+  }
+
+  linePx(ctx, hx - flip * 4, hy - 6, hx - flip * 11, hy - 14, PALETTE.outline, 3);
+  linePx(ctx, hx - flip * 4, hy - 6, hx - flip * 10, hy - 13, PALETTE.hostBone, 1);
+  px(ctx, hx - flip * 8, hy - 10, PALETTE.stoneDust, 2, 1);
+  px(ctx, hx - flip * 11, hy - 13, PALETTE.hostBone, 2, 1);
+  linePx(ctx, hx + flip * 3, hy - 6, hx + flip * 8, hy - 9, PALETTE.outline, 3);
+  linePx(ctx, hx + flip * 3, hy - 6, hx + flip * 7, hy - 8, PALETTE.hostBone, 1);
+  px(ctx, hx + flip * 8, hy - 8, PALETTE.outline, 2, 1);
+  px(ctx, hx + flip * 1, hy, PALETTE.hostGold, 1, 1);
+
+  if (halo) {
+    for (let h = 0; h < 7; h += 1) {
+      const dx = -11 + h * 4;
+      if (h === 2 || h === 5) continue;
+      px(ctx, hx + dx, hy - 12 - (h % 2), h === 4 ? PALETTE.hostGold : PALETTE.hostBone, 2, 1);
+    }
+  }
 }
 
 export function drawDeadHostWolfSpider(ctx, cx, cy, seed) {
-  const { flip, rng } = wolfBody(ctx, cx, cy, seed, {});
-  const shoulderX = cx + flip * 16;
-  const shoulderY = cy - 12;
+  const { flip, rng, headX, headY } = wolfBody(ctx, cx, cy, seed, {});
+  drawDeadWolfSkull(ctx, headX, headY, flip, { halo: true });
 
-  // Wolf skull, split by a small broken halo.
-  px(ctx, shoulderX - 5, shoulderY - 5, PALETTE.outline, 14, 10);
-  px(ctx, shoulderX - 4, shoulderY - 4, PALETTE.hostBone, 11, 8);
-  px(ctx, shoulderX + flip * 4, shoulderY - 1, PALETTE.void, 5, 2);
-  px(ctx, shoulderX + flip * 7, shoulderY + 2, PALETTE.hostBlack, 6, 2);
-  px(ctx, shoulderX - flip * 7, shoulderY - 8, PALETTE.hostBone, 4, 2);
-  for (let h = 0; h < 5; h += 1) px(ctx, shoulderX - 9 + h * 4, shoulderY - 10 - (h % 2), h === 3 ? PALETTE.hostGold : PALETTE.hostBone, 2, 1);
-
-  // Spidering Host limbs erupted from the shoulders, dead and folded under.
+  // Spidering Host limbs erupted from the shoulders, then folded under after
+  // death. Every pair is uneven so the body does not read as a clean insect.
   for (let i = 0; i < 6; i += 1) {
     const side = i < 3 ? -1 : 1;
-    const baseX = cx - 4 + side * (5 + (i % 3) * 5);
-    const baseY = cy - 11 + (i % 3);
-    const kneeX = baseX + side * (13 + Math.floor(rng() * 6));
-    const kneeY = baseY - 8 - Math.floor(rng() * 7);
-    const tipX = kneeX + side * (10 + Math.floor(rng() * 6));
-    const tipY = kneeY + 13 + Math.floor(rng() * 6);
+    const baseX = cx + flip * 1 + side * (6 + (i % 3) * 5);
+    const baseY = cy - 14 + (i % 3);
+    const kneeX = baseX + side * (13 + Math.floor(rng() * 8));
+    const kneeY = baseY - 10 - Math.floor(rng() * 7);
+    const tipX = kneeX + side * (8 + Math.floor(rng() * 8));
+    const tipY = kneeY + 15 + Math.floor(rng() * 8);
     linePx(ctx, baseX, baseY, kneeX, kneeY, PALETTE.outline, 3);
     linePx(ctx, kneeX, kneeY, tipX, tipY, PALETTE.outline, 3);
-    linePx(ctx, baseX, baseY, kneeX, kneeY, PALETTE.hostBone, 1);
-    linePx(ctx, kneeX, kneeY, tipX, tipY, PALETTE.stoneDust, 1);
+    linePx(ctx, baseX, baseY, kneeX, kneeY, i % 2 ? PALETTE.hostBone : PALETTE.hostRed, 1);
+    linePx(ctx, kneeX, kneeY, tipX, tipY, i % 2 ? PALETTE.stoneDust : PALETTE.hostGold, 1);
     px(ctx, tipX, tipY, PALETTE.void, 2, 2);
   }
-  px(ctx, cx - 2, cy - 9, PALETTE.hostGold, 1, 8);
-  drawNoisePixels(ctx, cx - 26, cy - 11, 56, 23, [PALETTE.hostRed, PALETTE.rustDark], 0.08, seed);
+  px(ctx, cx - 3, cy - 11, PALETTE.hostRed, 7, 5);
+  px(ctx, cx - 1, cy - 10, PALETTE.hostGold, 1, 5);
+  drawNoisePixels(ctx, cx - 29, cy - 13, 60, 26, [PALETTE.hostRed, PALETTE.rustDark], 0.08, seed);
 }
 
 export function drawDeadHostWolfMaw(ctx, cx, cy, seed) {
-  const { flip } = wolfBody(ctx, cx, cy, seed, {});
-  const hx = cx + flip * 18;
-  const hy = cy - 12;
+  const { flip, rng, headX, headY } = wolfBody(ctx, cx, cy, seed, {});
+  const hx = headX;
+  const hy = headY;
 
-  // Head opened into a hellish mouth. It is dead, so the throat is black, not lit.
-  px(ctx, hx - 7, hy - 7, PALETTE.outline, 17, 13);
-  px(ctx, hx - 5, hy - 6, PALETTE.stoneDark, 13, 5);
-  px(ctx, hx - 6, hy - 1, PALETTE.hostBlack, 16, 7);
-  px(ctx, hx - 4, hy, PALETTE.void, 13, 5);
-  for (let t = 0; t < 7; t += 1) {
-    const tx = hx - 5 + t * 2;
-    px(ctx, tx, hy - 1, PALETTE.hostBone, 1, 3);
-    if (t < 6) px(ctx, tx + 1, hy + 4, PALETTE.hostBone, 1, 2);
+  // Head opened into a dead chapel-mouth. The throat is black, with bone teeth
+  // and a slack goat-wolf skull frame, not a bright living wound.
+  px(ctx, hx - 9, hy - 8, PALETTE.outline, 21, 16);
+  px(ctx, hx - 7, hy - 7, PALETTE.hostBone, 16, 6);
+  px(ctx, hx - 8, hy - 2, PALETTE.hostBlack, 20, 9);
+  px(ctx, hx - 6, hy - 1, PALETTE.void, 16, 7);
+  for (let t = 0; t < 9; t += 1) {
+    const tx = hx - 6 + t * 2;
+    px(ctx, tx, hy - 2 + (t % 2), PALETTE.hostBone, 1, 4);
+    if (t < 8) px(ctx, tx + 1, hy + 5 - (t % 2), PALETTE.hostBone, 1, 3);
   }
-  px(ctx, hx + flip * 8, hy - 4, PALETTE.hostBone, 5, 2);
-  px(ctx, hx + flip * 12, hy - 2, PALETTE.outline, 4, 2);
-  px(ctx, hx - flip * 9, hy - 10, PALETTE.hostBone, 2, 8);
-  px(ctx, hx - flip * 11, hy - 11, PALETTE.outline, 2, 5);
+  linePx(ctx, hx - flip * 5, hy - 9, hx - flip * 13, hy - 16, PALETTE.outline, 3);
+  linePx(ctx, hx - flip * 5, hy - 9, hx - flip * 12, hy - 15, PALETTE.hostBone, 1);
+  px(ctx, hx + flip * 5, hy - 9, PALETTE.hostBone, 4, 2);
+  px(ctx, hx + flip * 7, hy - 9, PALETTE.outline, 2, 1);
 
   // Prayer-fused forelegs caught against the opened throat.
-  linePx(ctx, cx + flip * 2, cy - 7, hx - flip * 2, hy + 5, PALETTE.outline, 4);
-  linePx(ctx, cx + flip * 2, cy - 7, hx - flip * 2, hy + 5, PALETTE.stoneDark, 2);
-  linePx(ctx, cx + flip * 5, cy - 3, hx - flip * 1, hy + 7, PALETTE.outline, 4);
-  linePx(ctx, cx + flip * 5, cy - 3, hx - flip * 1, hy + 7, PALETTE.hostBone, 1);
-  px(ctx, hx - flip * 3, hy + 7, PALETTE.hostGold, 1, 2);
-  drawNoisePixels(ctx, cx - 24, cy - 9, 52, 23, [PALETTE.hostRed, PALETTE.rustDark, PALETTE.hostBlack], 0.09, seed);
+  linePx(ctx, cx + flip * 1, cy - 8, hx - flip * 5, hy + 6, PALETTE.outline, 4);
+  linePx(ctx, cx + flip * 1, cy - 8, hx - flip * 5, hy + 6, PALETTE.stoneDark, 2);
+  linePx(ctx, cx + flip * 6, cy - 4, hx - flip * 1, hy + 8, PALETTE.outline, 4);
+  linePx(ctx, cx + flip * 6, cy - 4, hx - flip * 1, hy + 8, PALETTE.hostBone, 1);
+  px(ctx, hx - flip * 3, hy + 8, PALETTE.hostGold, 1, 2);
+  for (let i = 0; i < 4; i += 1) {
+    const tx = hx - flip * (1 + i * 3);
+    linePx(ctx, tx, hy + 6, tx - flip * (6 + i), hy + 12 + i, i % 2 ? PALETTE.hostRed : PALETTE.hostBlack, 1);
+    px(ctx, tx - flip * (7 + i), hy + 12 + i, PALETTE.hostGold, 1, 1);
+  }
+  drawNoisePixels(ctx, cx - 27, cy - 12, 58, 26, [PALETTE.hostRed, PALETTE.rustDark, PALETTE.hostBlack], 0.09, seed);
 }
 
 export function drawDeadHostWolfRibsplit(ctx, cx, cy, seed) {
-  const { flip } = wolfBody(ctx, cx, cy, seed, {});
-  const chestX = cx + 2;
-  const chestY = cy - 10;
+  const { flip, chestX, chestY, headX, headY } = wolfBody(ctx, cx, cy, seed, {});
 
   // Butterflied ribcage in the torso, readable as a Host sacrament gone animal.
-  px(ctx, chestX - 7, chestY - 1, PALETTE.void, 15, 9);
-  px(ctx, chestX - 5, chestY, PALETTE.hostBlack, 11, 7);
-  for (let r = 0; r < 5; r += 1) {
-    linePx(ctx, chestX - 2, chestY + r * 2, chestX - 15 - r, chestY - 5 + r, PALETTE.outline, 2);
-    linePx(ctx, chestX + 2, chestY + r * 2, chestX + 14 + r, chestY - 4 + r, PALETTE.outline, 2);
-    linePx(ctx, chestX - 2, chestY + r * 2, chestX - 14 - r, chestY - 5 + r, PALETTE.hostBone, 1);
-    linePx(ctx, chestX + 2, chestY + r * 2, chestX + 13 + r, chestY - 4 + r, PALETTE.stoneDust, 1);
+  px(ctx, chestX - 8, chestY - 2, PALETTE.void, 17, 10);
+  px(ctx, chestX - 6, chestY - 1, PALETTE.hostBlack, 13, 8);
+  for (let r = 0; r < 6; r += 1) {
+    linePx(ctx, chestX - 2, chestY + r * 2, chestX - 17 - r, chestY - 7 + r, PALETTE.outline, 2);
+    linePx(ctx, chestX + 2, chestY + r * 2, chestX + 16 + r, chestY - 5 + r, PALETTE.outline, 2);
+    linePx(ctx, chestX - 2, chestY + r * 2, chestX - 16 - r, chestY - 7 + r, PALETTE.hostBone, 1);
+    linePx(ctx, chestX + 2, chestY + r * 2, chestX + 15 + r, chestY - 5 + r, PALETTE.stoneDust, 1);
+    if (r % 2 === 0) px(ctx, chestX - 13 - r, chestY - 4 + r, PALETTE.hostGold, 1, 1);
   }
-  px(ctx, chestX, chestY - 2, PALETTE.hostGold, 1, 12);
-  px(ctx, chestX + 2, chestY + 3, PALETTE.rustDark, 2, 3);
+  px(ctx, chestX, chestY - 3, PALETTE.hostGold, 1, 13);
+  px(ctx, chestX + 2, chestY + 4, PALETTE.rustDark, 3, 3);
+  linePx(ctx, chestX + flip * 4, chestY + 4, cx - flip * 15, cy + 8, PALETTE.hostRed, 1);
 
-  // A cracked goat-like wolf skull, one horn intact and one snapped.
-  const hx = cx + flip * 19;
-  const hy = cy - 13;
-  px(ctx, hx - 5, hy - 5, PALETTE.outline, 13, 10);
-  px(ctx, hx - 4, hy - 4, PALETTE.hostBone, 10, 8);
-  px(ctx, hx + flip * 2, hy - 1, PALETTE.void, 3, 2);
-  px(ctx, hx + flip * 5, hy + 3, PALETTE.hostBlack, 6, 1);
-  linePx(ctx, hx - flip * 4, hy - 6, hx - flip * 11, hy - 13, PALETTE.outline, 3);
-  linePx(ctx, hx - flip * 4, hy - 6, hx - flip * 10, hy - 12, PALETTE.hostBone, 1);
-  px(ctx, hx + flip * 6, hy - 8, PALETTE.hostBone, 3, 2);
-  px(ctx, hx + flip * 8, hy - 8, PALETTE.outline, 2, 1);
-  drawNoisePixels(ctx, cx - 27, cy - 11, 56, 24, [PALETTE.hostRed, PALETTE.rustDark], 0.07, seed);
+  drawDeadWolfSkull(ctx, headX, headY, flip, { halo: true, openJaw: true });
+  drawNoisePixels(ctx, cx - 30, cy - 13, 62, 27, [PALETTE.hostRed, PALETTE.rustDark], 0.07, seed);
 }
