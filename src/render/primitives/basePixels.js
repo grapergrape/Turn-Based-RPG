@@ -240,6 +240,27 @@ export function drawShadowBlob(ctx, cx, cy, w, h) {
   ctx.restore();
 }
 
+export function drawDaylightCastShadow(ctx, cx, cy, opts = {}) {
+  const alpha = Math.max(0, Math.min(1, opts.alpha ?? 0.16));
+  if (alpha <= 0) return;
+
+  const w = Math.max(6, Math.round(opts.width ?? 48));
+  const h = Math.max(3, Math.round(opts.height ?? 16));
+  const offsetX = Math.round(opts.offsetX ?? 12);
+  const offsetY = Math.round(opts.offsetY ?? 6);
+  const x = Math.round(cx + offsetX);
+  const y = Math.round(cy + offsetY);
+
+  ctx.save();
+  ctx.globalAlpha = alpha * 0.6;
+  drawIsoDiamond(ctx, x, y, w + 6, h + 2, PALETTE.void);
+  ctx.globalAlpha = alpha;
+  drawIsoDiamond(ctx, x + 1, y, w, h, PALETTE.void);
+  ctx.globalAlpha = alpha * 0.38;
+  drawIsoDiamond(ctx, x + 3, y + 1, Math.max(6, w - 12), Math.max(3, h - 5), PALETTE.void);
+  ctx.restore();
+}
+
 export function drawPixelShadow(ctx, cx, cy, w, h) {
   drawShadowBlob(ctx, cx, cy, w, h);
 }

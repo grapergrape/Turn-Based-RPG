@@ -58,6 +58,7 @@
       "x": 8,
       "y": 11,
       "blocking": true,
+      "variant": "barn",
       "id": "barn-exit-door",
       "name": "Barn Door",
       "interact": {
@@ -125,6 +126,12 @@
       "kind": "floor-crack",
       "x": 13,
       "y": 10
+    },
+    {
+      "kind": "chaff-scatter",
+      "x": 8,
+      "y": 10,
+      "seed": 5519
     }
   ]
 }

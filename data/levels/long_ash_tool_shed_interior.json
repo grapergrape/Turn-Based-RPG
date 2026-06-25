@@ -55,6 +55,7 @@
       "x": 6,
       "y": 8,
       "blocking": true,
+      "variant": "tool-shed",
       "id": "tool-shed-exit-door",
       "name": "Tool Shed Door",
       "interact": {
@@ -104,6 +105,18 @@
       "kind": "floor-crack",
       "x": 4,
       "y": 7
+    },
+    {
+      "kind": "machine-oil",
+      "x": 7,
+      "y": 6,
+      "seed": 5811
+    },
+    {
+      "kind": "floor-crack",
+      "x": 5,
+      "y": 6,
+      "seed": 5813
     }
   ]
 }

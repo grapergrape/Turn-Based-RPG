@@ -56,6 +56,7 @@
       "x": 7,
       "y": 9,
       "blocking": true,
+      "variant": "farmhouse",
       "id": "farmhouse-exit-door",
       "name": "Farmhouse Door",
       "interact": {
@@ -130,6 +131,18 @@
       "kind": "floor-crack",
       "x": 4,
       "y": 8
+    },
+    {
+      "kind": "wax-stain",
+      "x": 7,
+      "y": 4,
+      "seed": 5411
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 5,
+      "y": 7,
+      "seed": 5413
     }
   ]
 }

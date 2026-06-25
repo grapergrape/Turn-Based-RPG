@@ -88,6 +88,12 @@ Rules:
   omitted, the renderer uses the original ruined stone style. Current floor
   styles are `stone`, `ash-dirt`, `ash-road`, `road-shoulder`, `wheat-field`,
   `furrow-field`, and `forest-floor`.
+- Levels can optionally set `mood` for scene-wide visual treatment. Existing
+  keys are `floorShade`, `floorShadeAlpha`, `ambient`, `ambientAlpha`, and
+  `vignette`. Outdoor daylight maps can also set `mood.sun.enabled: true` with
+  `shadowOffsetX`, `shadowOffsetY`, and `shadowAlpha` to add short hard-pixel
+  cast shadows from an upper-left sun. Omit `mood.sun` for the original
+  no-sun-shadow behavior.
 
 ## Level data
 
@@ -325,7 +331,18 @@ Search rules:
   face: match the plane to the wall the doorway is cut into. Use it so a door's
   rails, jambs, and opening frame follow the same plane as the surrounding wall.
   Exterior `farm-door` objects on farm building wall cells should define it;
-  interior exit `farm-door` objects omit it and keep the legacy floor-door art.
+  interior exit `farm-door` objects omit it and use the floor-door path.
+- Farm building exteriors on Long Ash Road use separate generator tile chars and
+  block kinds so each footprint has its own silhouette: `H` maps to
+  `farmhouse-building-block`, `B` maps to `barn-building-block`, `T` maps to
+  `tool-shed-building-block`, `S` maps to `storage-shed-building-block`, and
+  `G` maps to `grain-shed-building-block`. These are wall-grid blocks, not
+  authored objects. Keep the footprint source in `scripts/gen-long-ash-road.mjs`.
+- `farm-door.variant` selects both wall-mounted exterior door art and interior
+  floor-door art. Valid values are `"farmhouse"`, `"barn"`,
+  `"storage-shed"`, `"grain-shed"`, and `"tool-shed"`. Exterior doors usually
+  pair `variant` with `wallPlane`; interior exit doors keep the same `variant`
+  and omit `wallPlane`.
 - `wallSide` (optional, `"near"` default or `"far"`) picks which of the wall's
   two parallel faces the fixture hangs on. `"near"` is the camera-facing front;
   `"far"` is the back face one tile-thickness behind it, which is visible through
