@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-farmhouse-exit",
+  "title": "Farmhouse Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The farmyard waits outside, grey with ash dust and trampled straw."
+      ],
+      "choices": [
+        {
+          "label": "Return to the farmyard",
+          "effects": {
+            "log": "You step back into the farmyard.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": { "x": 21, "y": 52 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the farmhouse."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-grain-shed-door",
+  "title": "Grain Shed Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Dry seed husks are packed in the crack under the grain shed door."
+      ],
+      "choices": [
+        {
+          "label": "Enter the grain shed",
+          "effects": {
+            "log": "You step into the grain shed.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_grain_shed_interior.json",
+              "player": { "x": 6, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay in the farmyard."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

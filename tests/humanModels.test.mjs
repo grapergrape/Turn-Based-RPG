@@ -57,6 +57,11 @@ for (const id of HUMAN_MODEL_IDS) {
   assert.ok(atlasIds.has(id), `${id} is missing from SPRITE_ATLAS_IDS`);
 }
 
+const hostWolfIds = ['host-wolf-spider', 'host-wolf-maw', 'host-wolf-ribsplit'];
+for (const id of hostWolfIds) {
+  assert.ok(atlasIds.has(id), `${id} is missing from SPRITE_ATLAS_IDS`);
+}
+
 const survivorAppearance = {
   body: 'broad',
   outfit: 'settlement-work-coat',
@@ -93,6 +98,19 @@ for (const id of HUMAN_MODEL_IDS) {
   assert.ok(sprite.frames.idle.s.length > 0);
   assert.ok(sprite.frames.walk.se.length > 0);
   assert.ok(sprite.frames.attack.e.length > 0);
+}
+
+for (const id of hostWolfIds) {
+  const sprite = atlas[id];
+  assert.ok(sprite, `${id} was not baked into the atlas`);
+  assert.equal(sprite.width, 72);
+  assert.equal(sprite.height, 54);
+  assert.equal(sprite.death.length, 10);
+  assert.ok(sprite.frames.idle.s.length > 0);
+  assert.ok(sprite.frames.walk.se.length > 0);
+  assert.ok(sprite.frames.attack.e.length > 0);
+  assert.ok(sprite.frames.hit.nw.length > 0);
+  assert.ok(sprite.frames.interact.w.length > 0);
 }
 
 for (const appearance of [survivorAppearance, choirAppearance]) {

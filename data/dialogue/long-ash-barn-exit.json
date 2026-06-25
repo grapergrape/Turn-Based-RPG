@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-barn-exit",
+  "title": "Barn Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Grey daylight shows through the barn boards."
+      ],
+      "choices": [
+        {
+          "label": "Return to the farmyard",
+          "effects": {
+            "log": "You step back into the farmyard.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": { "x": 36, "y": 51 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the barn."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

@@ -184,6 +184,20 @@ function wallKindFor(def) {
   return typeof def?.kind === 'string' ? def.kind : 'wall';
 }
 
+function hasMatchingBlock(grid, x, y, kind) {
+  const def = grid.getTileDef(x, y);
+  return Boolean(def && !def.walkable && wallKindFor(def) === kind);
+}
+
+function connectedBlockEdges(grid, x, y, kind) {
+  return {
+    xMinus: hasMatchingBlock(grid, x - 1, y, kind),
+    xPlus: hasMatchingBlock(grid, x + 1, y, kind),
+    yMinus: hasMatchingBlock(grid, x, y - 1, kind),
+    yPlus: hasMatchingBlock(grid, x, y + 1, kind)
+  };
+}
+
 export async function loadLevel(levelPath, options = {}) {
   const onProgress = options.onProgress;
   reportLoadProgress(onProgress, 0.02, 'Reading level record');
@@ -208,7 +222,14 @@ export async function loadLevel(levelPath, options = {}) {
     for (let x = 0; x < grid.width; x += 1) {
       const def = grid.getTileDef(x, y);
       if (def && !def.walkable && !wallObjectCells.has(`${x},${y}`)) {
-        props.push({ kind: wallKindFor(def), x, y, height: def.height });
+        const kind = wallKindFor(def);
+        props.push({
+          kind,
+          x,
+          y,
+          height: def.height,
+          connected: connectedBlockEdges(grid, x, y, kind)
+        });
       }
     }
   }

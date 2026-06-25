@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-storage-shed-exit",
+  "title": "Storage Shed Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The shed door opens back toward the central yard."
+      ],
+      "choices": [
+        {
+          "label": "Return to the farmyard",
+          "effects": {
+            "log": "You step back into the farmyard.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": { "x": 25, "y": 61 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the storage shed."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

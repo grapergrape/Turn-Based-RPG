@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-grain-shed-exit",
+  "title": "Grain Shed Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A line of husks trails from the grain shed door into the yard."
+      ],
+      "choices": [
+        {
+          "label": "Return to the farmyard",
+          "effects": {
+            "log": "You step back into the farmyard.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": { "x": 33, "y": 61 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the grain shed."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

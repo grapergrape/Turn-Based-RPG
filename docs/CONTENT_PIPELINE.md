@@ -324,6 +324,8 @@ Search rules:
   the run direction, so a wall fixture can never come out as a flat horizontal
   face: match the plane to the wall the doorway is cut into. Use it so a door's
   rails, jambs, and opening frame follow the same plane as the surrounding wall.
+  Exterior `farm-door` objects on farm building wall cells should define it;
+  interior exit `farm-door` objects omit it and keep the legacy floor-door art.
 - `wallSide` (optional, `"near"` default or `"far"`) picks which of the wall's
   two parallel faces the fixture hangs on. `"near"` is the camera-facing front;
   `"far"` is the back face one tile-thickness behind it, which is visible through

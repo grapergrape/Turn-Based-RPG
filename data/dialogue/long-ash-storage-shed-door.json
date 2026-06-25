@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-storage-shed-door",
+  "title": "Storage Shed Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Someone stacked stones against the storage shed door to keep it from rattling in the wind."
+      ],
+      "choices": [
+        {
+          "label": "Enter the storage shed",
+          "effects": {
+            "log": "You step into the storage shed.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_storage_shed_interior.json",
+              "player": { "x": 6, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay in the farmyard."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

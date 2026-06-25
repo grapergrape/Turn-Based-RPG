@@ -11,6 +11,7 @@ import {
   SURVIVOR_VARIANTS,
   SURVIVOR_WOMAN_STYLE
 } from './sprites/humanModels.js';
+import { bakeHostWolf, drawHostWolfMaw, drawHostWolfRibsplit, drawHostWolfSpider } from './sprites/hostWolfCreatures.js';
 import { bakeHostRat, drawSixLeggedRat, drawTendrilWalkerRat, drawThroatMawRat } from './sprites/ratCreatures.js';
 
 export { SPRITE_POSE_FRAME_COUNTS, getFrame } from './sprites/spriteBake.js';
@@ -61,7 +62,10 @@ const BASE_SPRITE_ATLAS_IDS = Object.freeze([
   'host-touched-penitent',
   'host-rat-sixlegs',
   'host-rat-throat-maw',
-  'host-rat-tendril-walker'
+  'host-rat-tendril-walker',
+  'host-wolf-spider',
+  'host-wolf-maw',
+  'host-wolf-ribsplit'
 ]);
 
 export const SPRITE_ATLAS_IDS = Object.freeze([...BASE_SPRITE_ATLAS_IDS, ...HUMAN_MODEL_IDS]);
@@ -88,7 +92,10 @@ export function buildSpriteAtlas() {
     'host-touched-penitent': bakeActor(64, 92, PEN_STYLE),
     'host-rat-sixlegs': bakeHostRat('sixlegs', drawSixLeggedRat),
     'host-rat-throat-maw': bakeHostRat('maw', drawThroatMawRat),
-    'host-rat-tendril-walker': bakeHostRat('tendril', drawTendrilWalkerRat)
+    'host-rat-tendril-walker': bakeHostRat('tendril', drawTendrilWalkerRat),
+    'host-wolf-spider': bakeHostWolf('spider', drawHostWolfSpider),
+    'host-wolf-maw': bakeHostWolf('maw', drawHostWolfMaw),
+    'host-wolf-ribsplit': bakeHostWolf('ribsplit', drawHostWolfRibsplit)
   };
 
   for (const model of HUMAN_MODEL_DEFS) {

@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-tool-shed-door",
+  "title": "Tool Shed Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The shed opens into a narrow room of hanging iron and splintered handles. The air tastes of rust."
+      ],
+      "choices": [
+        {
+          "label": "Enter the tool shed",
+          "effects": {
+            "log": "You step into the tool shed.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_tool_shed_interior.json",
+              "player": { "x": 6, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay in the farmyard."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

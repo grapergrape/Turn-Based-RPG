@@ -1,0 +1,109 @@
+{
+  "id": "long-ash-tool-shed-interior",
+  "name": "Long Ash Tool Shed",
+  "intro": "The locked tool shed is narrow and crowded with iron teeth, splintered handles, and wheels pulled from farm machines.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "long-ash-tool-shed-exit"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.36,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.14,
+    "vignette": 1.35
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 6,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "objects": [
+    {
+      "kind": "farm-door",
+      "x": 6,
+      "y": 8,
+      "blocking": true,
+      "id": "tool-shed-exit-door",
+      "name": "Tool Shed Door",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "long-ash-tool-shed-exit",
+        "log": "The tool shed door opens back into the yard."
+      }
+    },
+    {
+      "kind": "tool-rack",
+      "x": 3,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "field-plow",
+      "x": 8,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "field-harrow",
+      "x": 7,
+      "y": 5,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "wagon-wheel",
+      "x": 3,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 8,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 5,
+      "y": 3
+    },
+    {
+      "kind": "floor-crack",
+      "x": 4,
+      "y": 7
+    }
+  ]
+}
