@@ -66,6 +66,12 @@ function adjacentWalkable(grid, cell) {
   return null;
 }
 
+function isFarmBuildingTile(level, x, y) {
+  const tile = level.tiles[y]?.[x];
+  const kind = level.legend?.[tile]?.kind;
+  return typeof kind === 'string' && kind.endsWith('building-block');
+}
+
 function buildingComponents(level) {
   const seen = new Set();
   const components = [];
@@ -77,7 +83,7 @@ function buildingComponents(level) {
   ];
   for (let y = 0; y < level.height; y += 1) {
     for (let x = 0; x < level.width; x += 1) {
-      if (level.tiles[y][x] !== 'B') continue;
+      if (!isFarmBuildingTile(level, x, y)) continue;
       const startKey = `${x},${y}`;
       if (seen.has(startKey)) continue;
       const queue = [{ x, y }];
@@ -95,7 +101,7 @@ function buildingComponents(level) {
             next.x >= level.width ||
             next.y >= level.height ||
             seen.has(key) ||
-            level.tiles[next.y][next.x] !== 'B'
+            !isFarmBuildingTile(level, next.x, next.y)
           ) {
             continue;
           }
@@ -109,6 +115,35 @@ function buildingComponents(level) {
   return components;
 }
 
+const FARM_BUILDING_SPECS = [
+  { tile: 'H', kind: 'farmhouse-building-block', x0: 17, x1: 25, y0: 43, y1: 51, count: 81 },
+  { tile: 'B', kind: 'barn-building-block', x0: 28, x1: 36, y0: 43, y1: 50, count: 72 },
+  { tile: 'T', kind: 'tool-shed-building-block', x0: 14, x1: 20, y0: 54, y1: 60, count: 49 },
+  { tile: 'S', kind: 'storage-shed-building-block', x0: 23, x1: 28, y0: 56, y1: 60, count: 30 },
+  { tile: 'G', kind: 'grain-shed-building-block', x0: 31, x1: 36, y0: 56, y1: 60, count: 30 }
+];
+
+function buildingCells(level, kind) {
+  const cells = [];
+  for (let y = 0; y < level.height; y += 1) {
+    for (let x = 0; x < level.width; x += 1) {
+      const tile = level.tiles[y]?.[x];
+      if (level.legend?.[tile]?.kind === kind) cells.push({ x, y });
+    }
+  }
+  return cells;
+}
+
+function expectedFootprintCells(spec) {
+  const cells = [];
+  for (let y = spec.y0; y <= spec.y1; y += 1) {
+    for (let x = spec.x0; x <= spec.x1; x += 1) {
+      cells.push({ x, y });
+    }
+  }
+  return cells;
+}
+
 const level = await readJson('../data/levels/long_ash_road_approach.json');
 const grid = new Grid(level);
 addBlockingObjects(grid, level.objects ?? []);
@@ -117,31 +152,42 @@ const farmInteriors = [
     key: 'farmhouse',
     level: await readJson('../data/levels/long_ash_farmhouse_interior.json'),
     exitDialogue: 'long-ash-farmhouse-exit',
-    requiredKinds: ['farm-door', 'dining-table', 'dining-bench', 'kitchen-hearth', 'kitchen-counter', 'pantry-shelf', 'wash-tub']
+    doorVariant: 'farmhouse',
+    requiredKinds: ['farm-door', 'dining-table', 'dining-bench', 'kitchen-hearth', 'kitchen-counter', 'pantry-shelf', 'wash-tub'],
+    dressingKinds: ['wax-stain', 'paper-scraps']
   },
   {
     key: 'barn',
     level: await readJson('../data/levels/long_ash_barn_interior.json'),
     exitDialogue: 'long-ash-barn-exit',
-    requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'field-cart', 'field-plow', 'rusted-barrel']
+    doorVariant: 'barn',
+    requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'field-cart', 'field-plow', 'rusted-barrel'],
+    dressingKinds: ['chaff-scatter']
   },
   {
     key: 'storage',
     level: await readJson('../data/levels/long_ash_storage_shed_interior.json'),
     exitDialogue: 'long-ash-storage-shed-exit',
-    requiredKinds: ['farm-door', 'sealed-storage-crate', 'rusted-crate', 'rusted-barrel', 'pantry-shelf']
+    doorVariant: 'storage-shed',
+    requiredKinds: ['farm-door', 'sealed-storage-crate', 'rusted-crate', 'rusted-barrel', 'pantry-shelf'],
+    dressingKinds: ['paper-scraps', 'cobweb']
   },
   {
     key: 'grain',
     level: await readJson('../data/levels/long_ash_grain_shed_interior.json'),
     exitDialogue: 'long-ash-grain-shed-exit',
-    requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'woodpile', 'rusted-barrel']
+    doorVariant: 'grain-shed',
+    requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'woodpile', 'rusted-barrel'],
+    dressingKinds: ['chaff-scatter']
   },
   {
     key: 'tool',
     level: await readJson('../data/levels/long_ash_tool_shed_interior.json'),
     exitDialogue: 'long-ash-tool-shed-exit',
-    requiredKinds: ['farm-door', 'tool-rack', 'field-plow', 'field-harrow', 'wagon-wheel', 'rusted-crate']
+    doorVariant: 'tool-shed',
+    requiredKinds: ['farm-door', 'tool-rack', 'field-plow', 'field-harrow', 'wagon-wheel', 'rusted-crate'],
+    dressingKinds: ['machine-oil', 'floor-crack'],
+    floorCrackMin: 2
   }
 ];
 const farmExitDialogues = new Map([
@@ -164,6 +210,22 @@ const farmExitDialogues = new Map([
 }
 
 {
+  assert.deepEqual(level.mood, {
+    floorShade: '#15130e',
+    floorShadeAlpha: 0.04,
+    ambient: '#b8aa83',
+    ambientAlpha: 0.05,
+    vignette: 0.35,
+    sun: {
+      enabled: true,
+      shadowOffsetX: 12,
+      shadowOffsetY: 6,
+      shadowAlpha: 0.16
+    }
+  }, 'Long Ash Road keeps the brighter midday outdoor lighting profile');
+}
+
+{
   const spawn = level.spawns.player;
   assert.deepEqual(spawn, { actor: 'mara-vey', x: 142, y: 68 });
   assert.equal(grid.isWalkable(spawn.x, spawn.y), true);
@@ -177,6 +239,36 @@ const farmExitDialogues = new Map([
   assert.equal(ashTree.category, 'plant');
   assert.equal(ashTree.canopyRadius, 2);
   assert.ok(ashTree.canopyAlpha > 0 && ashTree.canopyAlpha < 1);
+  for (const kind of ['ash-tree-stump', 'fallen-ash-log', 'ash-sapling', 'scrub-bush']) {
+    const sprite = getSprite(kind);
+    assert.ok(sprite, `${kind} is registered`);
+    assert.equal(sprite.category, 'plant', `${kind} is a plant`);
+  }
+
+  const forestCounts = level.objects.reduce((counts, object) => {
+    counts.set(object.kind, (counts.get(object.kind) ?? 0) + 1);
+    return counts;
+  }, new Map());
+  assert.ok((forestCounts.get('ash-tree') ?? 0) >= 250, 'forest keeps a strong ash-tree canopy presence');
+  assert.ok((forestCounts.get('ash-tree-stump') ?? 0) >= 40, 'forest includes stump silhouettes');
+  assert.ok((forestCounts.get('fallen-ash-log') ?? 0) >= 40, 'forest includes fallen log silhouettes');
+  assert.ok((forestCounts.get('ash-sapling') ?? 0) >= 30, 'forest includes saplings');
+
+  const saplings = level.objects.filter((object) => object.kind === 'ash-sapling');
+  assert.equal(saplings.every((object) => !object.blocking), true, 'ash saplings do not block movement');
+  assert.equal(
+    saplings.every((object) => level.tiles[object.y][object.x] === 'd'),
+    true,
+    'ash saplings stay on forest floor tiles'
+  );
+  assert.ok(
+    saplings.some((object) => grid.isWalkable(object.x, object.y)),
+    'player can walk through sapling cells'
+  );
+  assert.ok(
+    level.objects.some((object) => object.kind === 'fallen-ash-log' && object.blocking),
+    'fallen logs are used as grounded forest blockers'
+  );
 
   const tree = level.objects.find((object) => {
     if (object.kind !== 'ash-tree') return false;
@@ -226,29 +318,57 @@ const farmExitDialogues = new Map([
 
 {
   const farmRange = { x0: 12, x1: 37, y0: 42, y1: 61 };
-  const graveyardRange = { x0: 127, x1: 140, y0: 52, y1: 59 };
+  const graveyardRange = { x0: 126, x1: 148, y0: 47, y1: 59 };
   const killRange = { x0: 95, x1: 106, y0: 31, y1: 37 };
-  const farmBuilding = getSprite('farm-building-block');
-  assert.ok(farmBuilding, 'farm-building-block is registered');
-  assert.equal(farmBuilding.block, true, 'farm-building-block is a tile block');
+  const caveRange = { x0: 80, x1: 100, y0: 4, y1: 17 };
+  for (const { kind } of FARM_BUILDING_SPECS) {
+    const farmBuilding = getSprite(kind);
+    assert.ok(farmBuilding, `${kind} is registered`);
+    assert.equal(farmBuilding.block, true, `${kind} is a tile block`);
+    assert.equal(farmBuilding.category, 'structure', `${kind} is a structure`);
+  }
+  for (const spec of FARM_BUILDING_SPECS) {
+    assert.equal(level.legend?.[spec.tile]?.kind, spec.kind, `${spec.tile} maps to ${spec.kind}`);
+    assert.equal(level.legend?.[spec.tile]?.walkable, false, `${spec.kind} blocks movement through its tile`);
+    assert.deepEqual(
+      buildingCells(level, spec.kind),
+      expectedFootprintCells(spec),
+      `${spec.kind} uses its exact planned footprint`
+    );
+    assert.equal(buildingCells(level, spec.kind).length, spec.count, `${spec.kind} has its planned tile count`);
+  }
+  assert.equal(
+    Object.values(level.legend).some((entry) => entry.kind === 'farm-building-block'),
+    false,
+    'generic farm-building-block is not used by the road legend'
+  );
+  assert.equal(
+    level.objects.some((object) => object.kind === 'farm-building-block'),
+    false,
+    'generic farm-building-block has no generated road objects'
+  );
   assert.deepEqual(
     buildingComponents(level).sort((a, b) => a - b),
     [30, 30, 49, 72, 81],
     'farm compound keeps the five planned farmhouse, barn, and shed footprints'
   );
+  const chaffScatter = getSprite('chaff-scatter');
+  assert.ok(chaffScatter, 'chaff-scatter is registered');
+  assert.equal(chaffScatter.category, 'decal');
+  assert.equal(chaffScatter.flat, true, 'chaff-scatter is a flat decal');
   assert.ok(level.objects.some((object) => object.kind === 'farm-fence' && inRange(object, farmRange)));
   assert.ok(level.objects.some((object) => object.kind === 'field-cart' && inRange(object, farmRange)));
   const farmDoor = getSprite('farm-door');
   assert.ok(farmDoor, 'farm-door is registered');
   assert.equal(farmDoor.category, 'structure');
   const expectedFarmDoors = [
-    { id: 'farmhouse-door', x: 21, y: 51, wallPlane: 'sw', use: { x: 21, y: 52 }, dialogue: 'long-ash-farmhouse-door', returnDialogue: 'long-ash-farmhouse-exit', locked: false },
-    { id: 'barn-door', x: 36, y: 50, wallPlane: 'sw', use: { x: 36, y: 51 }, dialogue: 'long-ash-barn-door', returnDialogue: 'long-ash-barn-exit', locked: false },
-    { id: 'storage-shed-door', x: 25, y: 60, wallPlane: 'sw', use: { x: 25, y: 61 }, dialogue: 'long-ash-storage-shed-door', returnDialogue: 'long-ash-storage-shed-exit', locked: false },
-    { id: 'grain-shed-door', x: 33, y: 60, wallPlane: 'sw', use: { x: 33, y: 61 }, dialogue: 'long-ash-grain-shed-door', returnDialogue: 'long-ash-grain-shed-exit', locked: false },
-    { id: 'tool-shed-door', x: 20, y: 57, wallPlane: 'se', use: { x: 21, y: 57 }, dialogue: 'long-ash-tool-shed-door', returnDialogue: 'long-ash-tool-shed-exit', locked: true }
+    { id: 'farmhouse-door', x: 21, y: 51, tile: 'H', variant: 'farmhouse', wallPlane: 'sw', use: { x: 21, y: 52 }, dialogue: 'long-ash-farmhouse-door', returnDialogue: 'long-ash-farmhouse-exit', locked: false },
+    { id: 'barn-door', x: 36, y: 50, tile: 'B', variant: 'barn', wallPlane: 'sw', use: { x: 36, y: 51 }, dialogue: 'long-ash-barn-door', returnDialogue: 'long-ash-barn-exit', locked: false },
+    { id: 'storage-shed-door', x: 25, y: 60, tile: 'S', variant: 'storage-shed', wallPlane: 'sw', use: { x: 25, y: 61 }, dialogue: 'long-ash-storage-shed-door', returnDialogue: 'long-ash-storage-shed-exit', locked: false },
+    { id: 'grain-shed-door', x: 33, y: 60, tile: 'G', variant: 'grain-shed', wallPlane: 'sw', use: { x: 33, y: 61 }, dialogue: 'long-ash-grain-shed-door', returnDialogue: 'long-ash-grain-shed-exit', locked: false },
+    { id: 'tool-shed-door', x: 20, y: 57, tile: 'T', variant: 'tool-shed', wallPlane: 'se', use: { x: 21, y: 57 }, dialogue: 'long-ash-tool-shed-door', returnDialogue: 'long-ash-tool-shed-exit', locked: true }
   ];
-  const expectedDoorSnapshot = expectedFarmDoors.map(({ use, returnDialogue, ...door }) => door);
+  const expectedDoorSnapshot = expectedFarmDoors.map(({ use, returnDialogue, tile, ...door }) => door);
   assert.deepEqual(
     level.dialogue,
     expectedFarmDoors.map((door) => door.dialogue),
@@ -260,6 +380,7 @@ const farmExitDialogues = new Map([
       id: object.id,
       x: object.x,
       y: object.y,
+      variant: object.variant,
       wallPlane: object.wallPlane,
       dialogue: object.interact?.dialogue,
       locked: Boolean(object.interact?.lock)
@@ -280,7 +401,9 @@ const farmExitDialogues = new Map([
   for (const expectedDoor of expectedFarmDoors) {
     const door = level.objects.find((object) => object.id === expectedDoor.id);
     assert.ok(door, `${expectedDoor.id} is placed`);
-    assert.equal(level.tiles[door.y][door.x], 'B', `${door.id} is mounted on a farm building wall cell`);
+    assert.equal(level.tiles[door.y][door.x], expectedDoor.tile, `${door.id} sits on the expected building tile`);
+    assert.equal(door.variant, expectedDoor.variant, `${door.id} uses the expected farm-door variant`);
+    assert.equal(isFarmBuildingTile(level, door.x, door.y), true, `${door.id} is mounted on a farm building wall cell`);
     assert.equal(door.wallPlane, expectedDoor.wallPlane, `${door.id} defines its wall plane`);
     assert.equal(grid.isWalkable(expectedDoor.use.x, expectedDoor.use.y), true, `${door.id} has a walkable authored use tile`);
     assert.equal(
@@ -374,7 +497,7 @@ const farmExitDialogues = new Map([
     'farm family victims stay inside the farm fence'
   );
   assert.equal(
-    actualFarmVictims.every((object) => level.tiles[object.y][object.x] !== 'B'),
+    actualFarmVictims.every((object) => !isFarmBuildingTile(level, object.x, object.y)),
     true,
     'farm family victims stay out of building footprints'
   );
@@ -388,8 +511,49 @@ const farmExitDialogues = new Map([
     'cult blood sigils are placed inside the farm murder scene'
   );
   assert.ok(level.tiles.slice(farmRange.y0, farmRange.y1 + 1).some((row) =>
-    row.slice(farmRange.x0, farmRange.x1 + 1).includes('B')
+    [...row.slice(farmRange.x0, farmRange.x1 + 1)].some((tile) => level.legend?.[tile]?.kind?.endsWith('building-block'))
   ));
+  for (const [kind, category] of [
+    ['graveyard-wall', 'structure'],
+    ['calcified-grave-plot', 'structure'],
+    ['calcified-headstone', 'structure']
+  ]) {
+    const sprite = getSprite(kind);
+    assert.ok(sprite, `${kind} is registered`);
+    assert.equal(sprite.category, category, `${kind} is a ${category}`);
+  }
+  const graveyardObjects = level.objects.filter((object) => inRange(object, graveyardRange));
+  const graveyardWalls = graveyardObjects.filter((object) => object.kind === 'graveyard-wall');
+  const graveyardPlots = graveyardObjects.filter((object) => object.kind === 'calcified-grave-plot');
+  const graveyardHeadstones = graveyardObjects.filter((object) => object.kind === 'calcified-headstone');
+  assert.ok(graveyardWalls.length >= 60, 'expanded graveyard has a full low perimeter wall');
+  assert.ok(graveyardPlots.length >= 24, 'expanded graveyard has dense repeated grave plots');
+  assert.ok(graveyardHeadstones.length >= 24, 'expanded graveyard has upright repeated headstones');
+  assert.equal(graveyardWalls.every((object) => object.blocking === true), true, 'graveyard wall blocks its perimeter cells');
+  assert.equal(graveyardHeadstones.every((object) => object.blocking === true), true, 'headstones block their occupied cells');
+  assert.equal(graveyardPlots.every((object) => !object.blocking), true, 'grave plots are visual slabs, not path blockers');
+  assert.equal(graveyardPlots.every((object) => ['se', 'sw'].includes(object.orient)), true, 'grave plots use authored isometric orientation');
+  assert.equal(level.objects.filter((object) => object.kind === 'farm-fence' && inRange(object, graveyardRange)).length, 0, 'old farm-fence graveyard boundary is retired');
+  for (const aisle of [
+    { x: 126, y: 56 },
+    { x: 127, y: 56 },
+    { x: 142, y: 56 },
+    { x: 146, y: 56 },
+    { x: 130, y: 50 },
+    { x: 130, y: 54 },
+    { x: 130, y: 58 }
+  ]) {
+    assert.equal(grid.isWalkable(aisle.x, aisle.y), true, `graveyard aisle ${aisle.x},${aisle.y} is walkable`);
+    assert.equal(pathExists(grid, level.spawns.player, aisle), true, `start reaches graveyard aisle ${aisle.x},${aisle.y}`);
+  }
+  assert.ok(
+    level.objects.filter((object) => object.kind === 'candle-cluster' && inRange(object, graveyardRange)).length >= 3,
+    'graveyard includes candle offerings'
+  );
+  assert.ok(
+    level.objects.filter((object) => object.kind === 'rubble-decal' && inRange(object, graveyardRange)).length >= 5,
+    'graveyard includes broken stone debris'
+  );
   const graveBody = getSprite('calcified-grave-body');
   assert.ok(graveBody, 'calcified-grave-body is registered');
   assert.equal(graveBody.category, 'creature');
@@ -454,6 +618,40 @@ const farmExitDialogues = new Map([
   assert.deepEqual(ringMethod.success?.inventory?.add, [{ item: 'mourning-ring', count: 1 }]);
   assert.ok(level.objects.some((object) => object.kind === 'dead-cultist' && inRange(object, killRange)));
   assert.ok(level.objects.some((object) => object.kind.startsWith('dead-host-wolf-') && inRange(object, killRange)));
+
+  const caveSprite = getSprite('infected-cave-entrance');
+  assert.ok(caveSprite, 'infected-cave-entrance is registered');
+  assert.equal(caveSprite.category, 'structure');
+  const cave = level.objects.find((object) => object.id === 'infected-cave-entrance');
+  assert.ok(cave, 'infected cave entrance is placed');
+  assert.equal(cave.kind, 'infected-cave-entrance');
+  assert.equal(cave.name, 'Infected Cave');
+  assert.equal(cave.x, 90);
+  assert.equal(cave.y, 10);
+  assert.equal(cave.blocking, true);
+  assert.equal(cave.interact?.type, 'note');
+  assert.equal(level.tiles[cave.y][cave.x], 'd', 'infected cave sits on forest floor');
+  assert.equal(inRange(cave, caveRange), true, 'infected cave stays inside the authored forest clearing');
+  assert.equal(grid.isWalkable(cave.x, cave.y), false, 'infected cave mouth blocks its occupied tile');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 90, y: 11 }), true, 'start reaches the infected cave threshold');
+  assert.ok(
+    level.objects.filter((object) =>
+      object.kind === 'rubble-pile' && object.blocking === true && inRange(object, caveRange)
+    ).length >= 6,
+    'infected cave has blocking rock piles around the mouth'
+  );
+  const caveTarget = resolveInteractionTargetAtCell({
+    cell: { x: cave.x, y: cave.y },
+    grid,
+    player: { position: { x: 90, y: 11 } },
+    actors: [],
+    enemies: [],
+    interactables: level.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(caveTarget.type, 'object', 'infected cave resolves as an inspectable object');
+  assert.equal(caveTarget.object.id, cave.id);
+  assert.equal(isTargetInReach({ position: { x: 90, y: 11 } }, caveTarget), true, 'infected cave is inspectable from the threshold');
 }
 
 {
@@ -470,6 +668,7 @@ const farmExitDialogues = new Map([
     assert.ok(exit, `${spec.key} interior has a clickable exit door`);
     assert.equal(exit.blocking, true, `${spec.key} exit door blocks its tile`);
     assert.equal(exit.wallPlane ?? null, null, `${spec.key} interior keeps the legacy floor-door render mode`);
+    assert.equal(exit.variant, spec.doorVariant, `${spec.key} interior exit door uses the matching farm-door variant`);
     assert.equal(interior.tiles[exit.y][exit.x], '.', `${spec.key} interior exit door remains on a floor tile`);
     assert.equal(exit.interact?.type, 'secret-exit', `${spec.key} exit door returns to the farmyard`);
     assert.equal(
@@ -483,7 +682,21 @@ const farmExitDialogues = new Map([
       assert.ok(kinds.has(kind), `${spec.key} interior contains ${kind}`);
       assert.ok(getSprite(kind), `${kind} is registered for ${spec.key} interior`);
     }
+    for (const kind of spec.dressingKinds) {
+      assert.ok(kinds.has(kind), `${spec.key} interior contains ${kind} dressing`);
+      assert.ok(getSprite(kind), `${kind} is registered for ${spec.key} interior dressing`);
+    }
+    if (spec.floorCrackMin) {
+      assert.ok(
+        (interior.objects ?? []).filter((object) => object.kind === 'floor-crack').length >= spec.floorCrackMin,
+        `${spec.key} interior keeps its added floor crack dressing`
+      );
+    }
   }
+  const barnInterior = farmInteriors.find((spec) => spec.key === 'barn').level;
+  const grainInterior = farmInteriors.find((spec) => spec.key === 'grain').level;
+  assert.ok(barnInterior.objects.some((object) => object.kind === 'chaff-scatter'), 'barn interior uses chaff-scatter');
+  assert.ok(grainInterior.objects.some((object) => object.kind === 'chaff-scatter'), 'grain shed interior uses chaff-scatter');
 }
 
 {

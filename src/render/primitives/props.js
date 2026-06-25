@@ -211,6 +211,126 @@ export function drawRubblePile(ctx, cx, cy, seed) {
   drawNoisePixels(ctx, cx - 22, cy - 4, 44, 14, [PALETTE.stoneDust, PALETTE.stoneDark], 0.05, seed);
 }
 
+export function drawInfectedCaveEntrance(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 131, seed * 5 + 29));
+  const top = cy - 154;
+  const base = cy + 8;
+  const height = base - top;
+
+  drawShadowBlob(ctx, cx, cy + 13, 238, 50);
+  drawIsoDiamond(ctx, cx, cy + 14, 214, 58, PALETTE.outline);
+  drawIsoDiamond(ctx, cx, cy + 10, 196, 49, PALETTE.stoneDark);
+
+  // A broad cliff face grown out of the forest floor. The scanline bands keep
+  // the silhouette hard-pixel and oversized without needing a separate asset.
+  for (let row = 0; row <= height; row += 1) {
+    const t = row / height;
+    const jag = ((hash2D(seed + row * 3, seed + row * 11) >>> 0) % 9) - 4;
+    const shelf = row % 31 === 4 ? -5 : row % 23 === 0 ? 4 : 0;
+    const half = Math.max(22, Math.round(23 + Math.sin(t * Math.PI * 0.92) * 72 + t * 47 + jag + shelf));
+    const y = top + row;
+    const leftW = Math.max(10, Math.floor(half * 0.34));
+    const midW = Math.max(15, Math.floor(half * 0.43));
+    const rightW = Math.max(1, half * 2 - leftW - midW);
+    const lit = row < 31 ? PALETTE.stoneLight : row < 79 ? PALETTE.stoneDust : PALETTE.stoneMid;
+    const mid = row < 46 ? PALETTE.stoneDust : row < 118 ? PALETTE.stoneMid : PALETTE.stoneDark;
+
+    px(ctx, cx - half - 4, y, PALETTE.outline, half * 2 + 8, 1);
+    px(ctx, cx - half, y, lit, leftW, 1);
+    px(ctx, cx - half + leftW, y, mid, midW, 1);
+    px(ctx, cx - half + leftW + midW, y, PALETTE.stoneDark, rightW, 1);
+
+    if (row % 29 === 8) {
+      px(ctx, cx - half + 10, y, PALETTE.outline, Math.max(14, Math.floor(half * 0.62)), 1);
+      px(ctx, cx - half + 14, y + 1, PALETTE.stoneDark, Math.max(10, Math.floor(half * 0.44)), 1);
+    }
+  }
+
+  for (const slab of [
+    {
+      a: [[-126, -11], [-102, -67], [-53, -50], [-44, 2], [-92, 21], [-129, 7]],
+      b: [[-115, -9], [-98, -52], [-58, -39], [-51, -1], [-92, 13], [-117, 3]],
+      c: [[-115, -9], [-98, -52], [-74, -45], [-96, -20]],
+      d: [[-74, -45], [-58, -39], [-51, -1], [-92, 13], [-96, -20]]
+    },
+    {
+      a: [[126, -9], [101, -73], [54, -52], [43, 4], [94, 22], [130, 6]],
+      b: [[116, -7], [99, -55], [61, -40], [52, 0], [94, 14], [118, 2]],
+      c: [[99, -55], [82, -49], [61, -40], [89, -21]],
+      d: [[89, -21], [61, -40], [52, 0], [94, 14], [118, 2]]
+    }
+  ]) {
+    poly(ctx, PALETTE.outline, slab.a.map(([x, y]) => [cx + x, cy + y]));
+    poly(ctx, PALETTE.stoneMid, slab.b.map(([x, y]) => [cx + x, cy + y]));
+    poly(ctx, PALETTE.stoneDust, slab.c.map(([x, y]) => [cx + x, cy + y]));
+    poly(ctx, PALETTE.stoneDark, slab.d.map(([x, y]) => [cx + x, cy + y]));
+  }
+
+  drawNoisePixels(ctx, cx - 112, top + 9, 224, 151, [PALETTE.stoneDark, PALETTE.stoneDust, PALETTE.woodDark], 0.028, seed);
+
+  // The mouth is the visual priority: a tall black arch with a heavy rock lip.
+  const mouthTop = cy - 116;
+  const mouthHeight = 126;
+  for (let row = 0; row <= mouthHeight; row += 1) {
+    const t = row / mouthHeight;
+    const arch = Math.sin(t * Math.PI);
+    const half = Math.round(13 + arch * 58 + t * 38 + (row > 96 ? (row - 96) * 0.45 : 0));
+    const y = mouthTop + row;
+    const rim = row < 13 ? 6 : row < 34 ? 8 : 11;
+    const inner = Math.max(4, half - rim);
+    const innerColor = row < 12 ? PALETTE.hostBlack : row < 37 ? PALETTE.void : PALETTE.outline;
+
+    px(ctx, cx - half - 7, y, PALETTE.outline, half * 2 + 14, 1);
+    px(ctx, cx - half - 3, y, row < 32 ? PALETTE.stoneDark : PALETTE.outline, half * 2 + 6, 1);
+    px(ctx, cx - inner, y, innerColor, inner * 2, 1);
+    if (row > 45 && row < 109 && row % 13 === 5) {
+      px(ctx, cx - inner + 9, y, PALETTE.hostBlack, Math.max(18, Math.floor(inner * 0.86)), 1);
+    }
+  }
+
+  for (const crack of [
+    [[-58, -132], [-67, -105], [-61, -82], [-76, -57]],
+    [[-27, -144], [-36, -116], [-32, -93], [-44, -70]],
+    [[32, -138], [24, -111], [35, -91], [29, -65]],
+    [[74, -119], [62, -96], [70, -73], [60, -48]]
+  ]) {
+    for (let i = 0; i < crack.length - 1; i += 1) {
+      const a = crack[i];
+      const b = crack[i + 1];
+      linePx(ctx, cx + a[0], cy + a[1], cx + b[0], cy + b[1], PALETTE.outline, 2);
+      linePx(ctx, cx + a[0], cy + a[1], cx + b[0], cy + b[1], PALETTE.stoneDark, 1);
+    }
+  }
+
+  for (const root of [
+    [[-117, -72], [-99, -52], [-106, -27]],
+    [[-91, -94], [-82, -69], [-86, -42]],
+    [[93, -91], [81, -65], [88, -34]],
+    [[118, -65], [103, -44], [111, -17]]
+  ]) {
+    for (let i = 0; i < root.length - 1; i += 1) {
+      const a = root[i];
+      const b = root[i + 1];
+      linePx(ctx, cx + a[0], cy + a[1], cx + b[0], cy + b[1], PALETTE.outline, 3);
+      linePx(ctx, cx + a[0], cy + a[1], cx + b[0], cy + b[1], PALETTE.woodDark, 1);
+    }
+  }
+
+  for (const dx of [-47, -31, -14, 18, 39, 57]) {
+    linePx(ctx, cx + dx, cy - 45, cx + dx - 6, cy - 10, PALETTE.hostBlack, 1);
+  }
+  px(ctx, cx - 43, cy - 6, PALETTE.hostRed, 12, 2);
+  px(ctx, cx + 24, cy - 9, PALETTE.hostRed, 9, 2);
+  px(ctx, cx - 5, cy - 18, PALETTE.hostGold, 3, 1);
+  if (seed & 1) px(ctx, cx + 13, cy - 23, PALETTE.hostGold, 2, 2);
+
+  for (let i = 0; i < 24; i += 1) {
+    const chipX = cx - 104 + Math.floor(rng() * 208);
+    const chipY = cy - 7 + Math.floor(rng() * 21);
+    px(ctx, chipX, chipY, rng() < 0.58 ? PALETTE.stoneDust : PALETTE.stoneDark, 2 + Math.floor(rng() * 3), 1);
+  }
+}
+
 export function drawRustedCrate(ctx, cx, cy, seed) {
   drawShadowBlob(ctx, cx, cy + 6, 44, 18);
   const left = [
@@ -280,6 +400,25 @@ export function drawPaperScraps(ctx, cx, cy, seed) {
   px(ctx, cx - 8, cy, PALETTE.rustDark, 8, 1);
   px(ctx, cx + 3, cy + 1, PALETTE.stoneDark, 9, 1);
   drawNoisePixels(ctx, cx - 14, cy - 5, 28, 11, [PALETTE.stoneDust, PALETTE.rustDark], 0.04, seed);
+}
+
+export function drawChaffScatter(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 59, seed * 7 + 13));
+  ctx.save();
+  ctx.globalAlpha = 0.88;
+  for (let i = 0; i < 26; i += 1) {
+    const x = cx - 23 + Math.floor(rng() * 47);
+    const y = cy - 8 + Math.floor(rng() * 17);
+    const len = 2 + Math.floor(rng() * 5);
+    const col = rng() < 0.42 ? PALETTE.clothTan : rng() < 0.7 ? PALETTE.woodLight : PALETTE.hostGold;
+    if (rng() < 0.55) {
+      linePx(ctx, x, y, x + len, y + Math.floor(rng() * 3) - 1, col, 1);
+    } else {
+      px(ctx, x, y, col, len, 1);
+    }
+  }
+  drawNoisePixels(ctx, cx - 24, cy - 8, 48, 16, [PALETTE.stoneDust, PALETTE.woodDark], 0.03, seed + 31);
+  ctx.restore();
 }
 
 export function drawCrackedColumn(ctx, cx, cy, seed) {
@@ -607,14 +746,164 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
   }
 }
 
+const FARM_VARIANTS = new Set(['farmhouse', 'barn', 'storage-shed', 'grain-shed', 'tool-shed']);
+
+function normalizeFarmVariant(variant) {
+  return FARM_VARIANTS.has(variant) ? variant : 'farmhouse';
+}
+
+const FARM_BUILDING_STYLES = {
+  farmhouse: {
+    wallH: 44,
+    roofLift: 12,
+    roofW: 14,
+    roofH: 10,
+    wallLit: PALETTE.woodMid,
+    wallShade: PALETTE.woodDark,
+    trim: PALETTE.woodLight,
+    roof: PALETTE.rustMid,
+    roofShade: PALETTE.rustDark,
+    roofLight: PALETTE.rustLight
+  },
+  barn: {
+    wallH: 50,
+    roofLift: 15,
+    roofW: 24,
+    roofH: 14,
+    wallLit: PALETTE.woodDark,
+    wallShade: PALETTE.outline,
+    trim: PALETTE.rustLight,
+    roof: PALETTE.rustDark,
+    roofShade: PALETTE.woodDark,
+    roofLight: PALETTE.rustMid
+  },
+  'storage-shed': {
+    wallH: 35,
+    roofLift: 9,
+    roofW: 8,
+    roofH: 6,
+    wallLit: PALETTE.woodMid,
+    wallShade: PALETTE.stoneDark,
+    trim: PALETTE.rustLight,
+    roof: PALETTE.stoneDark,
+    roofShade: PALETTE.outline,
+    roofLight: PALETTE.rustMid
+  },
+  'grain-shed': {
+    wallH: 39,
+    roofLift: 13,
+    roofW: 6,
+    roofH: 16,
+    wallLit: PALETTE.clothTan,
+    wallShade: PALETTE.woodMid,
+    trim: PALETTE.stoneDust,
+    roof: PALETTE.woodDark,
+    roofShade: PALETTE.outline,
+    roofLight: PALETTE.woodMid
+  },
+  'tool-shed': {
+    wallH: 37,
+    roofLift: 8,
+    roofW: 2,
+    roofH: 4,
+    wallLit: PALETTE.woodDark,
+    wallShade: PALETTE.stoneDark,
+    trim: PALETTE.rustDark,
+    roof: PALETTE.rustDark,
+    roofShade: PALETTE.outline,
+    roofLight: PALETTE.rustMid
+  }
+};
+
+function farmBuildingStyle(variant) {
+  return FARM_BUILDING_STYLES[normalizeFarmVariant(variant)];
+}
+
+function drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wallTop, base, roof, roofLift) {
+  const faceFront = !connected.yPlus ? faceTools(ctx, wallTop.left, wallTop.bottom, base.bottom, base.left) : null;
+  const faceSide = !connected.xPlus ? faceTools(ctx, wallTop.bottom, wallTop.right, base.right, base.bottom) : null;
+
+  if (variant === 'farmhouse') {
+    if (faceFront) {
+      faceFront.rect(0.2, 0.28, 0.42, 0.5, PALETTE.outline);
+      faceFront.rect(0.24, 0.31, 0.38, 0.47, PALETTE.void);
+      faceFront.line(0.16, 0.3, 0.2, 0.51, PALETTE.woodLight, 1);
+      faceFront.line(0.43, 0.3, 0.47, 0.51, PALETTE.woodDark, 1);
+    }
+    if (faceSide) {
+      faceSide.rect(0.5, 0.3, 0.7, 0.5, PALETTE.outline);
+      faceSide.rect(0.54, 0.33, 0.67, 0.47, PALETTE.void);
+      faceSide.line(0.49, 0.31, 0.49, 0.5, PALETTE.woodMid, 1);
+      faceSide.line(0.71, 0.31, 0.71, 0.5, PALETTE.woodDark, 1);
+    }
+    if (!connected.xMinus && !connected.yMinus) {
+      px(ctx, cx - 7, cy - roofLift - 30, PALETTE.outline, 12, 19);
+      px(ctx, cx - 5, cy - roofLift - 29, PALETTE.stoneDark, 8, 17);
+      px(ctx, cx - 5, cy - roofLift - 29, PALETTE.stoneDust, 2, 15);
+      px(ctx, cx - 8, cy - roofLift - 32, PALETTE.outline, 14, 4);
+      px(ctx, cx - 6, cy - roofLift - 31, PALETTE.rustDark, 10, 2);
+    }
+    return;
+  }
+
+  if (variant === 'barn') {
+    if (faceFront) {
+      faceFront.rect(0.35, 0.18, 0.64, 0.38, PALETTE.outline);
+      faceFront.rect(0.39, 0.22, 0.6, 0.34, PALETTE.void);
+      faceFront.line(0.38, 0.28, 0.61, 0.28, PALETTE.rustLight, 1);
+      faceFront.line(0.5, 0.21, 0.5, 0.35, PALETTE.rustDark, 1);
+      faceFront.line(0.08, 0.82, 0.92, 0.82, PALETTE.outline, 2);
+      faceFront.line(0.1, 0.79, 0.9, 0.79, PALETTE.rustMid, 1);
+    }
+    if (faceSide) faceSide.line(0.14, 0.2, 0.86, 0.64, PALETTE.rustDark, 1);
+    return;
+  }
+
+  if (variant === 'storage-shed') {
+    for (const face of [faceFront, faceSide].filter(Boolean)) {
+      face.line(0.1, 0.25, 0.9, 0.25, PALETTE.outline, 2);
+      face.line(0.1, 0.55, 0.9, 0.55, PALETTE.outline, 2);
+      face.line(0.14, 0.2, 0.82, 0.78, PALETTE.rustDark, 1);
+      face.line(0.82, 0.2, 0.14, 0.78, PALETTE.woodDark, 1);
+    }
+    return;
+  }
+
+  if (variant === 'grain-shed') {
+    for (const face of [faceFront, faceSide].filter(Boolean)) {
+      for (const u of [0.18, 0.28, 0.38, 0.48, 0.58, 0.68, 0.78, 0.88]) {
+        face.line(u, 0.07, u, 0.95, PALETTE.woodDark, 1);
+      }
+      face.rect(0.52, 0.18, 0.75, 0.33, PALETTE.outline);
+      face.rect(0.56, 0.2, 0.72, 0.3, PALETTE.void);
+      face.line(0.05, 0.92, 0.96, 0.92, PALETTE.stoneDust, 2);
+    }
+    if (faceFront) {
+      const chute = faceFront.point(0.68, 0.62);
+      px(ctx, chute[0] - 4, chute[1] - 2, PALETTE.outline, 13, 7);
+      px(ctx, chute[0] - 3, chute[1] - 1, PALETTE.woodDark, 10, 4);
+    }
+    return;
+  }
+
+  for (const face of [faceFront, faceSide].filter(Boolean)) {
+    face.rect(0.2, 0.26, 0.48, 0.44, PALETTE.outline);
+    face.rect(0.24, 0.29, 0.45, 0.41, PALETTE.stoneDark);
+    face.line(0.15, 0.68, 0.42, 0.56, PALETTE.rustLight, 1);
+    face.line(0.5, 0.7, 0.82, 0.5, PALETTE.rustDark, 1);
+    face.line(0.36, 0.16, 0.7, 0.28, PALETTE.woodDark, 1);
+  }
+}
+
 export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
   const connected = opts.connected ?? {};
-  const wallH = 44;
-  const roofLift = wallH + 12;
+  const variant = normalizeFarmVariant(opts.variant);
+  const style = farmBuildingStyle(variant);
+  const wallH = style.wallH;
+  const roofLift = wallH + style.roofLift;
   const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
   const wallTop = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
-  const roof = diamond(cx, cy - roofLift, TILE_WIDTH + 14, TILE_HEIGHT + 10);
-  const roofCenter = [cx, cy - roofLift];
+  const roof = diamond(cx, cy - roofLift, TILE_WIDTH + style.roofW, TILE_HEIGHT + style.roofH);
 
   drawShadowBlob(ctx, cx, cy + 5, 66, 22);
 
@@ -643,90 +932,145 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
   };
 
   if (!connected.yPlus) {
-    poly(ctx, PALETTE.woodMid, [wallTop.left, wallTop.bottom, base.bottom, base.left]);
+    poly(ctx, style.wallLit, [wallTop.left, wallTop.bottom, base.bottom, base.left]);
     const face = faceTools(ctx, wallTop.left, wallTop.bottom, base.bottom, base.left);
-    for (const u of [0.18, 0.36, 0.55, 0.74, 0.9]) face.line(u, 0.06, u, 0.97, PALETTE.woodDark, 1);
-    face.line(0.04, 0.22, 0.94, 0.22, PALETTE.woodLight, 1);
-    face.line(0.04, 0.52, 0.94, 0.52, PALETTE.woodDark, 1);
-    face.line(0.04, 0.78, 0.94, 0.78, PALETTE.woodDark, 1);
+    for (const u of [0.18, 0.36, 0.55, 0.74, 0.9]) face.line(u, 0.06, u, 0.97, style.wallShade, 1);
+    face.line(0.04, 0.22, 0.94, 0.22, style.trim, 1);
+    face.line(0.04, 0.52, 0.94, 0.52, style.wallShade, 1);
+    face.line(0.04, 0.78, 0.94, 0.78, style.wallShade, 1);
     drawFaceDetail(face, 31);
   }
 
   if (!connected.xPlus) {
-    poly(ctx, PALETTE.woodDark, [wallTop.bottom, wallTop.right, base.right, base.bottom]);
+    poly(ctx, style.wallShade, [wallTop.bottom, wallTop.right, base.right, base.bottom]);
     const face = faceTools(ctx, wallTop.bottom, wallTop.right, base.right, base.bottom);
     for (const u of [0.2, 0.4, 0.6, 0.8]) face.line(u, 0.08, u, 0.96, PALETTE.stoneDark, 1);
-    face.line(0.07, 0.24, 0.91, 0.24, PALETTE.woodMid, 1);
+    face.line(0.07, 0.24, 0.91, 0.24, style.trim, 1);
     face.line(0.07, 0.55, 0.91, 0.55, PALETTE.outline, 1);
     face.line(0.07, 0.8, 0.91, 0.8, PALETTE.outline, 1);
     drawFaceDetail(face, 43);
   }
 
-  // Shared roof edges are omitted so connected `B` cells read as one farmhouse
-  // or barn footprint. The roof is mostly a single hard-pixel surface; the
-  // exposed eaves and sparse shingle bands carry the form without making a grid.
-  poly(ctx, PALETTE.rustMid, [roof.top, roof.right, roof.bottom, roof.left]);
+  // Shared roof edges are omitted so connected cells read as one structure.
+  poly(ctx, style.roof, [roof.top, roof.right, roof.bottom, roof.left]);
 
   const shadeA = mixPoint(roof.top, roof.right, 0.78);
   const shadeB = mixPoint(roof.bottom, roof.right, 0.78);
   const shadeC = mixPoint(roof.bottom, roof.left, 0.16);
   if (!connected.xPlus || !connected.yPlus) {
-    poly(ctx, PALETTE.rustDark, [shadeA, roof.right, roof.bottom, shadeC]);
-    linePx(ctx, shadeA[0], shadeA[1], shadeB[0], shadeB[1], PALETTE.woodDark, 1);
+    poly(ctx, style.roofShade, [shadeA, roof.right, roof.bottom, shadeC]);
+    linePx(ctx, shadeA[0], shadeA[1], shadeB[0], shadeB[1], style.wallShade, 1);
   }
 
   for (const t of [0.28, 0.5, 0.72]) {
     const a = mixPoint(roof.left, roof.top, t);
     const b = mixPoint(roof.bottom, roof.right, t);
-    linePx(ctx, a[0], a[1], b[0], b[1], (seed + Math.floor(t * 100)) & 1 ? PALETTE.woodDark : PALETTE.rustLight, 1);
+    linePx(ctx, a[0], a[1], b[0], b[1], (seed + Math.floor(t * 100)) & 1 ? style.wallShade : style.roofLight, 1);
   }
   for (const t of [0.36, 0.64]) {
     const a = mixPoint(roof.top, roof.right, t);
     const b = mixPoint(roof.left, roof.bottom, t);
-    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.rustDark, 1);
+    linePx(ctx, a[0], a[1], b[0], b[1], style.roofShade, 1);
   }
 
   if (!connected.yMinus) {
     linePx(ctx, roof.top[0], roof.top[1], roof.left[0], roof.left[1], PALETTE.outline, 2);
-    linePx(ctx, roof.top[0] - 1, roof.top[1], roof.left[0] - 1, roof.left[1], PALETTE.rustLight, 1);
+    linePx(ctx, roof.top[0] - 1, roof.top[1], roof.left[0] - 1, roof.left[1], style.roofLight, 1);
   }
   if (!connected.xMinus) {
     linePx(ctx, roof.top[0], roof.top[1], roof.right[0], roof.right[1], PALETTE.outline, 2);
-    linePx(ctx, roof.top[0] + 1, roof.top[1], roof.right[0] + 1, roof.right[1], PALETTE.rustLight, 1);
+    linePx(ctx, roof.top[0] + 1, roof.top[1], roof.right[0] + 1, roof.right[1], style.roofLight, 1);
   }
   if (!connected.yPlus) {
     linePx(ctx, roof.left[0], roof.left[1], roof.bottom[0], roof.bottom[1], PALETTE.outline, 2);
-    linePx(ctx, roof.left[0], roof.left[1] + 2, roof.bottom[0], roof.bottom[1] + 2, PALETTE.woodDark, 2);
+    linePx(ctx, roof.left[0], roof.left[1] + 2, roof.bottom[0], roof.bottom[1] + 2, style.wallShade, 2);
   }
   if (!connected.xPlus) {
     linePx(ctx, roof.bottom[0], roof.bottom[1], roof.right[0], roof.right[1], PALETTE.outline, 2);
-    linePx(ctx, roof.bottom[0], roof.bottom[1] + 2, roof.right[0], roof.right[1] + 2, PALETTE.woodDark, 2);
+    linePx(ctx, roof.bottom[0], roof.bottom[1] + 2, roof.right[0], roof.right[1] + 2, style.wallShade, 2);
   }
 
   for (const off of [-22, -9, 5, 18]) {
     const jitter = ((seed + off) & 3) - 1;
-    px(ctx, cx + off, cy - roofLift - 2 + jitter, PALETTE.rustLight, 5, 1);
-    px(ctx, cx + off + 2, cy - roofLift + 7 + jitter, PALETTE.woodDark, 7, 1);
+    px(ctx, cx + off, cy - roofLift - 2 + jitter, style.roofLight, 5, 1);
+    px(ctx, cx + off + 2, cy - roofLift + 7 + jitter, style.wallShade, 7, 1);
   }
-  drawNoisePixels(ctx, cx - 33, cy - roofLift - 14, 66, 36, [PALETTE.rustDark, PALETTE.woodDark], 0.018, seed);
+  drawNoisePixels(ctx, cx - 33, cy - roofLift - 14, 66, 36, [style.roofShade, style.wallShade], 0.018, seed);
+  drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wallTop, base, roof, roofLift);
+}
 
-  if (!connected.xMinus && !connected.yMinus && (seed % 3) === 0) {
-    px(ctx, cx - 7, cy - roofLift - 30, PALETTE.outline, 12, 19);
-    px(ctx, cx - 5, cy - roofLift - 29, PALETTE.stoneDark, 8, 17);
-    px(ctx, cx - 5, cy - roofLift - 29, PALETTE.stoneDust, 2, 15);
-    px(ctx, cx - 8, cy - roofLift - 32, PALETTE.outline, 14, 4);
-    px(ctx, cx - 6, cy - roofLift - 31, PALETTE.rustDark, 10, 2);
+const FARM_DOOR_STYLES = {
+  farmhouse: {
+    u0: 0.28,
+    u1: 0.72,
+    v0: 0.36,
+    floorWidth: 34,
+    floorHeight: 57,
+    base: PALETTE.woodMid,
+    shade: PALETTE.woodDark,
+    trim: PALETTE.woodLight,
+    metal: PALETTE.rustLight
+  },
+  barn: {
+    u0: 0.07,
+    u1: 0.93,
+    v0: 0.24,
+    floorWidth: 54,
+    floorHeight: 67,
+    base: PALETTE.woodDark,
+    shade: PALETTE.outline,
+    trim: PALETTE.rustMid,
+    metal: PALETTE.rustLight
+  },
+  'storage-shed': {
+    u0: 0.22,
+    u1: 0.78,
+    v0: 0.38,
+    floorWidth: 36,
+    floorHeight: 51,
+    base: PALETTE.woodMid,
+    shade: PALETTE.stoneDark,
+    trim: PALETTE.rustLight,
+    metal: PALETTE.hostGold
+  },
+  'grain-shed': {
+    u0: 0.2,
+    u1: 0.8,
+    v0: 0.34,
+    floorWidth: 37,
+    floorHeight: 55,
+    base: PALETTE.clothTan,
+    shade: PALETTE.woodMid,
+    trim: PALETTE.stoneDust,
+    metal: PALETTE.rustLight
+  },
+  'tool-shed': {
+    u0: 0.31,
+    u1: 0.69,
+    v0: 0.4,
+    floorWidth: 30,
+    floorHeight: 52,
+    base: PALETTE.woodDark,
+    shade: PALETTE.stoneDark,
+    trim: PALETTE.rustDark,
+    metal: PALETTE.rustLight
   }
+};
+
+function farmDoorStyle(variant) {
+  return FARM_DOOR_STYLES[normalizeFarmVariant(variant)];
 }
 
 function drawFarmWallDoor(ctx, cx, cy, seed, opts = {}) {
   const locked = Boolean(opts.locked);
   const unlocked = Boolean(opts.unlocked || opts.revealed);
+  const variant = normalizeFarmVariant(opts.variant);
+  const style = farmDoorStyle(variant);
   const wallPlane = opts.wallPlane === 'se' ? 'se' : 'sw';
   const wallFace = wallRunFace(ctx, cx, cy, { plane: wallPlane, side: 'near', span: 1 });
-  const u0 = 0.18;
-  const u1 = 0.82;
-  const v0 = 0.32;
+  const u0 = style.u0;
+  const u1 = style.u1;
+  const v0 = style.v0;
   const v1 = 0.985;
   const face = faceTools(
     ctx,
@@ -738,32 +1082,72 @@ function drawFarmWallDoor(ctx, cx, cy, seed, opts = {}) {
 
   face.rect(0, 0, 1, 1, PALETTE.outline);
   face.rect(0.045, 0.045, 0.955, 0.97, PALETTE.void);
-  face.rect(0.09, 0.08, 0.91, 0.94, PALETTE.woodDark);
-  face.rect(0.14, 0.1, 0.86, 0.91, PALETTE.woodMid);
-  face.rect(0.58, 0.1, 0.86, 0.91, PALETTE.woodDark);
-  face.line(0.04, 0.035, 0.96, 0.035, PALETTE.woodLight, 2);
+  face.rect(0.09, 0.08, 0.91, 0.94, style.shade);
+  face.rect(0.14, 0.1, 0.86, 0.91, style.base);
+  face.rect(0.58, 0.1, 0.86, 0.91, style.shade);
+  face.line(0.04, 0.035, 0.96, 0.035, style.trim, 2);
   face.line(0.04, 0.97, 0.96, 0.97, PALETTE.outline, 3);
-  face.line(0.06, 0.07, 0.06, 0.94, PALETTE.woodLight, 1);
+  face.line(0.06, 0.07, 0.06, 0.94, style.trim, 1);
   face.line(0.94, 0.07, 0.94, 0.94, PALETTE.outline, 2);
 
-  for (const u of [0.27, 0.43, 0.59, 0.75]) {
+  const plankLines = variant === 'grain-shed'
+    ? [0.18, 0.29, 0.4, 0.51, 0.62, 0.73, 0.84]
+    : variant === 'tool-shed'
+    ? [0.35, 0.53, 0.7]
+    : [0.27, 0.43, 0.59, 0.75];
+  for (const u of plankLines) {
     face.line(u, 0.12, u, 0.89, PALETTE.outline, 1);
-    face.line(u + 0.025, 0.13, u + 0.025, 0.88, PALETTE.woodDark, 1);
+    face.line(u + 0.025, 0.13, u + 0.025, 0.88, style.shade, 1);
   }
-  for (const v of [0.28, 0.62]) {
+  for (const v of variant === 'barn' ? [0.24, 0.48, 0.72] : [0.28, 0.62]) {
     face.line(0.1, v, 0.9, v, PALETTE.outline, 3);
-    face.line(0.14, v - 0.02, 0.86, v - 0.02, PALETTE.woodLight, 1);
-    face.line(0.14, v + 0.03, 0.86, v + 0.03, PALETTE.woodDark, 1);
+    face.line(0.14, v - 0.02, 0.86, v - 0.02, style.trim, 1);
+    face.line(0.14, v + 0.03, 0.86, v + 0.03, style.shade, 1);
   }
-  face.line(0.13, 0.19, 0.87, 0.48, PALETTE.outline, 3);
-  face.line(0.16, 0.2, 0.84, 0.47, PALETTE.woodDark, 1);
-  face.line(0.87, 0.54, 0.13, 0.82, PALETTE.outline, 3);
-  face.line(0.84, 0.55, 0.16, 0.81, PALETTE.woodDark, 1);
 
-  const pull = face.point(0.78, 0.54);
-  px(ctx, pull[0] - 4, pull[1] - 3, PALETTE.outline, 8, 6);
-  px(ctx, pull[0] - 3, pull[1] - 2, locked && !unlocked ? PALETTE.rustDark : PALETTE.rustLight, 6, 4);
-  px(ctx, pull[0], pull[1] - 1, PALETTE.hostGold, 2, 2);
+  if (variant === 'barn') {
+    face.line(0.5, 0.11, 0.5, 0.91, PALETTE.outline, 3);
+    face.line(0.12, 0.17, 0.48, 0.42, PALETTE.outline, 3);
+    face.line(0.15, 0.18, 0.46, 0.41, style.trim, 1);
+    face.line(0.88, 0.17, 0.52, 0.42, PALETTE.outline, 3);
+    face.line(0.85, 0.18, 0.54, 0.41, style.trim, 1);
+    face.line(0.12, 0.83, 0.48, 0.58, PALETTE.outline, 3);
+    face.line(0.88, 0.83, 0.52, 0.58, PALETTE.outline, 3);
+    face.line(0.04, 0.02, 0.96, 0.02, PALETTE.rustLight, 2);
+  } else if (variant === 'farmhouse') {
+    face.rect(0.2, 0.18, 0.8, 0.86, PALETTE.outline);
+    face.rect(0.24, 0.22, 0.76, 0.82, style.base);
+    face.line(0.5, 0.22, 0.5, 0.82, style.shade, 1);
+    face.line(0.27, 0.5, 0.73, 0.5, PALETTE.outline, 1);
+    face.rect(0.32, 0.28, 0.45, 0.42, PALETTE.void);
+    face.rect(0.55, 0.28, 0.68, 0.42, PALETTE.void);
+  } else if (variant === 'storage-shed') {
+    face.line(0.14, 0.18, 0.86, 0.77, PALETTE.outline, 2);
+    face.line(0.84, 0.18, 0.16, 0.77, PALETTE.outline, 2);
+    face.line(0.15, 0.24, 0.85, 0.24, style.trim, 1);
+    face.line(0.15, 0.72, 0.85, 0.72, style.shade, 1);
+  } else if (variant === 'grain-shed') {
+    face.rect(0.55, 0.16, 0.74, 0.29, PALETTE.outline);
+    face.rect(0.58, 0.18, 0.71, 0.27, PALETTE.void);
+    face.line(0.56, 0.62, 0.76, 0.57, PALETTE.outline, 2);
+    face.line(0.58, 0.6, 0.74, 0.56, style.shade, 1);
+  } else {
+    face.line(0.18, 0.2, 0.44, 0.32, PALETTE.rustLight, 1);
+    face.line(0.26, 0.7, 0.58, 0.54, PALETTE.rustDark, 1);
+    face.line(0.12, 0.84, 0.34, 0.76, PALETTE.stoneDust, 1);
+  }
+
+  const pullPoint = variant === 'storage-shed' ? [0.5, 0.56] : variant === 'barn' ? [0.49, 0.55] : [0.78, 0.54];
+  const pull = face.point(pullPoint[0], pullPoint[1]);
+  if (variant === 'storage-shed') {
+    px(ctx, pull[0] - 5, pull[1] - 5, PALETTE.outline, 10, 10);
+    px(ctx, pull[0] - 3, pull[1] - 3, style.metal, 6, 6);
+    px(ctx, pull[0] - 1, pull[1] - 1, PALETTE.void, 3, 3);
+  } else {
+    px(ctx, pull[0] - 4, pull[1] - 3, PALETTE.outline, 8, 6);
+    px(ctx, pull[0] - 3, pull[1] - 2, locked && !unlocked ? PALETTE.rustDark : style.metal, 6, 4);
+    px(ctx, pull[0], pull[1] - 1, PALETTE.hostGold, 2, 2);
+  }
 
   if (locked && !unlocked) {
     face.line(0.59, 0.56, 0.89, 0.56, PALETTE.outline, 3);
@@ -781,7 +1165,10 @@ function drawFarmWallDoor(ctx, cx, cy, seed, opts = {}) {
   const sillB = wallFace.point(u1 + 0.08, 1);
   linePx(ctx, sillA[0], sillA[1], sillB[0], sillB[1], PALETTE.outline, 3);
   linePx(ctx, sillA[0], sillA[1] - 1, sillB[0], sillB[1] - 1, PALETTE.stoneDark, 1);
-  drawNoisePixels(ctx, Math.min(sillA[0], sillB[0]) - 3, Math.min(sillA[1], sillB[1]) - 47, Math.abs(sillB[0] - sillA[0]) + 6, 48, [PALETTE.woodDark, PALETTE.rustDark], 0.018, seed);
+  if (variant === 'grain-shed' || variant === 'barn') {
+    drawChaffScatter(ctx, cx, Math.max(sillA[1], sillB[1]) + 2, seed + 19);
+  }
+  drawNoisePixels(ctx, Math.min(sillA[0], sillB[0]) - 3, Math.min(sillA[1], sillB[1]) - 47, Math.abs(sillB[0] - sillA[0]) + 6, 48, [style.shade, PALETTE.rustDark], 0.018, seed);
 }
 
 export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
@@ -792,43 +1179,78 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
 
   const locked = Boolean(opts.locked);
   const unlocked = Boolean(opts.unlocked || opts.revealed);
+  const variant = normalizeFarmVariant(opts.variant);
+  const style = farmDoorStyle(variant);
   const lean = (seed & 1) ? 1 : -1;
-  const left = cx - 18 + lean;
-  const right = cx + 17 + lean;
-  const top = cy - 63;
+  const left = cx - Math.floor(style.floorWidth / 2) + lean;
+  const right = cx + Math.floor(style.floorWidth / 2) + lean;
+  const top = cy - style.floorHeight;
   const bottom = cy + 2;
 
-  drawShadowBlob(ctx, cx, cy + 4, 42, 14);
-  drawIsoDiamond(ctx, cx, cy + 2, 36, 12, PALETTE.outline);
-  drawIsoDiamond(ctx, cx, cy, 31, 9, PALETTE.stoneDark);
+  drawShadowBlob(ctx, cx, cy + 4, variant === 'barn' ? 56 : 42, 14);
+  drawIsoDiamond(ctx, cx, cy + 2, style.floorWidth + 3, 12, PALETTE.outline);
+  drawIsoDiamond(ctx, cx, cy, style.floorWidth - 2, 9, PALETTE.stoneDark);
 
   px(ctx, left - 3, top - 3, PALETTE.outline, right - left + 6, bottom - top + 7);
-  px(ctx, left, top, PALETTE.woodMid, right - left + 1, bottom - top + 1);
-  px(ctx, cx + 1 + lean, top, PALETTE.woodDark, right - cx - lean, bottom - top + 1);
-  px(ctx, left + 2, top + 2, PALETTE.woodLight, 4, bottom - top - 2);
+  px(ctx, left, top, style.base, right - left + 1, bottom - top + 1);
+  px(ctx, cx + 1 + lean, top, style.shade, right - cx - lean, bottom - top + 1);
+  px(ctx, left + 2, top + 2, style.trim, 4, bottom - top - 2);
 
-  for (const x of [left + 8, left + 16, left + 24]) {
+  const verticals = variant === 'barn'
+    ? [left + 9, left + 18, cx + lean, right - 18, right - 9]
+    : variant === 'grain-shed'
+    ? [left + 6, left + 12, left + 18, right - 12, right - 6]
+    : [left + 8, cx + lean, right - 8];
+  for (const x of verticals) {
     px(ctx, x, top + 3, PALETTE.outline, 2, bottom - top - 4);
-    px(ctx, x + 1, top + 4, PALETTE.woodDark, 1, bottom - top - 6);
+    px(ctx, x + 1, top + 4, style.shade, 1, bottom - top - 6);
   }
-  for (const y of [top + 16, top + 40]) {
+  for (const y of variant === 'barn' ? [top + 15, top + 34, top + 52] : [top + 16, top + Math.max(34, style.floorHeight - 17)]) {
     px(ctx, left - 1, y, PALETTE.outline, right - left + 3, 4);
-    px(ctx, left + 1, y + 1, PALETTE.woodDark, right - left - 1, 1);
-    px(ctx, left + 1, y + 2, PALETTE.woodLight, Math.max(4, right - left - 16), 1);
+    px(ctx, left + 1, y + 1, style.shade, right - left - 1, 1);
+    px(ctx, left + 1, y + 2, style.trim, Math.max(4, right - left - 16), 1);
   }
-  linePx(ctx, left + 2, top + 10, right - 4, top + 29, PALETTE.outline, 3);
-  linePx(ctx, left + 4, top + 11, right - 6, top + 28, PALETTE.woodDark, 1);
-  linePx(ctx, right - 4, top + 34, left + 4, top + 55, PALETTE.outline, 3);
-  linePx(ctx, right - 6, top + 35, left + 6, top + 54, PALETTE.woodDark, 1);
+  if (variant === 'barn') {
+    linePx(ctx, left + 4, top + 12, cx - 3, top + 31, PALETTE.outline, 3);
+    linePx(ctx, right - 4, top + 12, cx + 3, top + 31, PALETTE.outline, 3);
+    linePx(ctx, left + 4, top + 56, cx - 3, top + 38, PALETTE.outline, 3);
+    linePx(ctx, right - 4, top + 56, cx + 3, top + 38, PALETTE.outline, 3);
+    px(ctx, left - 5, top - 7, PALETTE.outline, right - left + 10, 5);
+    px(ctx, left - 2, top - 6, PALETTE.rustLight, right - left + 4, 2);
+  } else if (variant === 'storage-shed') {
+    linePx(ctx, left + 3, top + 11, right - 4, top + 45, PALETTE.outline, 2);
+    linePx(ctx, right - 4, top + 12, left + 4, top + 45, PALETTE.outline, 2);
+  } else if (variant === 'grain-shed') {
+    px(ctx, right - 14, top + 10, PALETTE.outline, 9, 7);
+    px(ctx, right - 12, top + 12, PALETTE.void, 5, 3);
+    drawChaffScatter(ctx, cx, cy + 5, seed + 23);
+  } else if (variant === 'tool-shed') {
+    linePx(ctx, left + 7, top + 14, right - 8, top + 22, PALETTE.rustLight, 1);
+    linePx(ctx, left + 4, top + 42, right - 5, top + 32, PALETTE.rustDark, 1);
+    linePx(ctx, left + 11, top + 50, right - 9, top + 44, PALETTE.stoneDust, 1);
+  } else {
+    px(ctx, left + 8, top + 14, PALETTE.outline, 8, 10);
+    px(ctx, left + 10, top + 16, PALETTE.void, 4, 6);
+    px(ctx, right - 17, top + 14, PALETTE.outline, 8, 10);
+    px(ctx, right - 15, top + 16, PALETTE.void, 4, 6);
+  }
 
   for (const y of [top + 12, top + 47]) {
     px(ctx, left - 6, y, PALETTE.outline, 8, 7);
-    px(ctx, left - 5, y + 1, PALETTE.rustDark, 5, 4);
+    px(ctx, left - 5, y + 1, style.trim, 5, 4);
   }
 
-  px(ctx, right - 9, top + 35, PALETTE.outline, 9, 8);
-  px(ctx, right - 8, top + 36, locked && !unlocked ? PALETTE.rustDark : PALETTE.rustLight, 6, 5);
-  px(ctx, right - 6, top + 38, PALETTE.hostGold, 2, 2);
+  const pullX = variant === 'storage-shed' ? cx + lean : right - 9;
+  const pullY = variant === 'storage-shed' ? top + 31 : top + Math.min(35, style.floorHeight - 19);
+  if (variant === 'storage-shed') {
+    px(ctx, pullX - 5, pullY - 5, PALETTE.outline, 10, 10);
+    px(ctx, pullX - 3, pullY - 3, style.metal, 6, 6);
+    px(ctx, pullX - 1, pullY - 1, PALETTE.void, 3, 3);
+  } else {
+    px(ctx, pullX, pullY, PALETTE.outline, 9, 8);
+    px(ctx, pullX + 1, pullY + 1, locked && !unlocked ? PALETTE.rustDark : style.metal, 6, 5);
+    px(ctx, pullX + 3, pullY + 3, PALETTE.hostGold, 2, 2);
+  }
   if (locked && !unlocked) {
     linePx(ctx, right - 14, top + 38, right - 3, top + 38, PALETTE.outline, 3);
     linePx(ctx, right - 13, top + 37, right - 4, top + 37, PALETTE.stoneDust, 1);
@@ -840,7 +1262,7 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
     px(ctx, right - 3, top + 43, PALETTE.stoneDark, 2, 11);
   }
 
-  drawNoisePixels(ctx, left, top, right - left, bottom - top, [PALETTE.woodDark, PALETTE.rustDark], 0.025, seed);
+  drawNoisePixels(ctx, left, top, right - left, bottom - top, [style.shade, PALETTE.rustDark], 0.025, seed);
 }
 
 function drawFarmWheel(ctx, cx, cy, radius = 7, opts = {}) {

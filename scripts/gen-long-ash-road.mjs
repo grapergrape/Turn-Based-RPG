@@ -9,7 +9,8 @@ const outputPath = join(root, 'data', 'levels', 'long_ash_road_approach.json');
 const WIDTH = 160;
 const HEIGHT = 70;
 const START = { x: 142, y: 68 };
-const GRAVEYARD = { x0: 127, x1: 140, y0: 52, y1: 59 };
+const GRAVEYARD = { x0: 126, x1: 148, y0: 47, y1: 59 };
+const INFECTED_CAVE = { x: 90, y: 10 };
 const FARM_DOOR_DIALOGUES = [
   'long-ash-farmhouse-door',
   'long-ash-barn-door',
@@ -23,7 +24,7 @@ const GRAVEYARD_BODIES = [
     name: 'Eren Voss',
     variant: 'kneeling-fused-hands',
     x: 129,
-    y: 54,
+    y: 50,
     log: 'Eren Voss kneels in the ash with both hands fused under his chin. The stone kept the prayer and lost the man.'
   },
   {
@@ -31,7 +32,7 @@ const GRAVEYARD_BODIES = [
     name: 'Sister Maud Arel',
     variant: 'broken-halo',
     x: 132,
-    y: 54,
+    y: 50,
     log: 'Sister Maud Arel went pale around a broken ring of bone. Half the halo lies in chips at her feet.'
   },
   {
@@ -39,7 +40,7 @@ const GRAVEYARD_BODIES = [
     name: 'Toma Kest',
     variant: 'rib-open-chest',
     x: 135,
-    y: 54,
+    y: 50,
     log: 'Toma Kest stands with his ribs opened like little chapel doors. The cavity behind them is dry stone.'
   },
   {
@@ -47,47 +48,47 @@ const GRAVEYARD_BODIES = [
     name: 'Iven Rusk',
     variant: 'reaching-arm',
     x: 138,
-    y: 54,
+    y: 50,
     log: 'Iven Rusk reaches toward the fence with one stone hand. The other arm is folded into his chest.'
   },
   {
     id: 'grave-nara-vell',
     name: 'Nara Vell',
     variant: 'goat-skull',
-    x: 128,
-    y: 56,
+    x: 129,
+    y: 52,
     log: 'Nara Vell has a long goat skull where her face should be. One horn curls whole, the other snapped at the root.'
   },
   {
     id: 'grave-brother-senn-kade',
     name: 'Brother Senn Kade',
     variant: 'thorned-back',
-    x: 131,
-    y: 56,
+    x: 132,
+    y: 52,
     log: 'Brother Senn Kade is bent forward under pale thorns. They broke through his back and froze there.'
   },
   {
     id: 'grave-lysa-orm',
     name: 'Lysa Orm',
     variant: 'bell-jaw',
-    x: 134,
-    y: 56,
+    x: 135,
+    y: 52,
     log: 'Lysa Orm has a jaw pulled wide into a bell shape. Nothing rings when the wind passes through it.'
   },
   {
     id: 'grave-arno-pell',
     name: 'Arno Pell',
     variant: 'half-prayer-twist',
-    x: 137,
-    y: 56,
+    x: 138,
+    y: 52,
     log: 'Arno Pell is twisted halfway into prayer, one palm sealed to the chest and one elbow cracked backward.'
   },
   {
     id: 'grave-ilyen-marr',
     name: 'Ilyen Marr',
     variant: 'collapsed-shoulder',
-    x: 130,
-    y: 58,
+    x: 129,
+    y: 54,
     log: 'Ilyen Marr slumps under one collapsed shoulder. The ash at his feet has been packed smoother than the rest.',
     search: {
       title: "Ilyen Marr's Grave",
@@ -122,18 +123,24 @@ const GRAVEYARD_BODIES = [
     id: 'grave-vel-sarec',
     name: 'Vel Sarec',
     variant: 'buried-lower-body',
-    x: 133,
-    y: 58,
+    x: 132,
+    y: 54,
     log: 'Vel Sarec rises only from the waist. The rest is buried in a hard swell of ash and root.'
   },
   {
     id: 'grave-otta-fen',
     name: 'Otta Fen',
     variant: 'split-face',
-    x: 136,
-    y: 58,
+    x: 135,
+    y: 54,
     log: 'Otta Fen split down the face before the Stilling took him. One side is smooth as chalk, the other all dark seam.'
   }
+];
+const GRAVEYARD_PLOTS = [
+  [129, 50], [132, 50], [135, 50], [138, 50], [141, 50], [144, 50],
+  [129, 52], [132, 52], [135, 52], [138, 52], [141, 52], [144, 52],
+  [129, 54], [132, 54], [135, 54], [138, 54], [141, 54], [144, 54],
+  [129, 58], [132, 58], [135, 58], [138, 58], [141, 58], [144, 58]
 ];
 
 const ROAD_MAIN = [
@@ -163,6 +170,7 @@ const ALL_ROADS = [ROAD_MAIN, ROAD_BRANCH, ROAD_CENSURE, ROAD_REMNANT];
 const tiles = Array.from({ length: HEIGHT }, () => Array.from({ length: WIDTH }, () => '.'));
 const objects = [];
 const reserved = new Set();
+const FARM_BUILDING_TILES = new Set(['H', 'B', 'T', 'S', 'G']);
 
 function key(x, y) {
   return `${x},${y}`;
@@ -239,12 +247,22 @@ function isProtectedRange(x, y) {
   return false;
 }
 
+function isInfectedCaveClearance(x, y) {
+  if (x >= INFECTED_CAVE.x - 10 && x <= INFECTED_CAVE.x + 10 && y >= INFECTED_CAVE.y - 6 && y <= INFECTED_CAVE.y + 7) {
+    return true;
+  }
+  const trailA = { x: INFECTED_CAVE.x, y: INFECTED_CAVE.y + 3 };
+  const trailB = { x: 116, y: 8 };
+  return x >= trailA.x && x <= trailB.x && y >= 6 && y <= 14 && distToSegment(x, y, trailA, trailB) <= 1.35;
+}
+
 function canBlock(x, y) {
   if (!inBounds(x, y)) return false;
   if (reserved.has(key(x, y))) return false;
+  if (hasObjectAt(x, y)) return false;
   if (isProtectedRange(x, y)) return false;
   const tile = getTile(x, y);
-  if (tile === 'r' || tile === 's' || tile === 'B') return false;
+  if (tile === 'r' || tile === 's' || FARM_BUILDING_TILES.has(tile)) return false;
   return true;
 }
 
@@ -252,6 +270,36 @@ function hash(x, y, salt = 0) {
   let h = (Math.imul(x + salt * 17, 374761393) + Math.imul(y + 97, 668265263)) | 0;
   h = Math.imul(h ^ (h >>> 13), 1274126177);
   return (h ^ (h >>> 16)) >>> 0;
+}
+
+function forestBlockKind(h, dense) {
+  const roll = h % 100;
+  if (dense) {
+    if (roll < 68) return 'ash-tree';
+    if (roll < 78) return 'scrub-bush';
+    if (roll < 90) return 'fallen-ash-log';
+    return 'ash-tree-stump';
+  }
+  if (roll < 46) return 'ash-tree';
+  if (roll < 66) return 'scrub-bush';
+  if (roll < 82) return 'fallen-ash-log';
+  return 'ash-tree-stump';
+}
+
+function forestSeedSalt(kind) {
+  if (kind === 'ash-tree') return 11;
+  if (kind === 'scrub-bush') return 13;
+  if (kind === 'fallen-ash-log') return 15;
+  return 17;
+}
+
+function canPlaceSapling(x, y) {
+  if (!inBounds(x, y)) return false;
+  if (isProtectedRange(x, y)) return false;
+  if (reserved.has(key(x, y)) || hasObjectAt(x, y)) return false;
+  if (getTile(x, y) !== 'd') return false;
+  if (roadDistance(x, y) < 4.6) return false;
+  return true;
 }
 
 function scatterForest() {
@@ -269,7 +317,22 @@ function scatterForest() {
       const jitterX = Math.max(0, Math.min(WIDTH - 1, x + ((h >> 3) % 3) - 1));
       const jitterY = Math.max(0, Math.min(HEIGHT - 1, y + ((h >> 6) % 3) - 1));
       if (!canBlock(jitterX, jitterY)) continue;
-      addObject('ash-tree', jitterX, jitterY, { blocking: true, seed: hash(jitterX, jitterY, 11) });
+      const kind = forestBlockKind(hash(jitterX, jitterY, 7), inTopForest || inRightForest);
+      addObject(kind, jitterX, jitterY, {
+        blocking: true,
+        seed: hash(jitterX, jitterY, forestSeedSalt(kind))
+      });
+    }
+  }
+
+  for (let y = 3; y < HEIGHT - 2; y += 3) {
+    for (let x = 47; x < WIDTH - 2; x += 4) {
+      const h = hash(x, y, 23);
+      if ((h % 100) > 16) continue;
+      const sx = Math.max(1, Math.min(WIDTH - 2, x + ((h >> 5) % 3) - 1));
+      const sy = Math.max(1, Math.min(HEIGHT - 2, y + ((h >> 9) % 3) - 1));
+      if (!canPlaceSapling(sx, sy)) continue;
+      addObject('ash-sapling', sx, sy, { seed: hash(sx, sy, 25) });
     }
   }
 
@@ -278,8 +341,11 @@ function scatterForest() {
       const h = hash(x, y, 19);
       if ((h % 100) > 25) continue;
       if (roadDistance(x, y) < 4 || isProtectedRange(x, y)) continue;
-      if (getTile(x, y) === 'B' || reserved.has(key(x, y))) continue;
-      addObject('scrub-bush', x + (h % 3) - 1, y + ((h >> 4) % 3) - 1, { seed: h });
+      if (FARM_BUILDING_TILES.has(getTile(x, y)) || reserved.has(key(x, y))) continue;
+      const bx = x + (h % 3) - 1;
+      const by = y + ((h >> 4) % 3) - 1;
+      if (!inBounds(bx, by) || hasObjectAt(bx, by)) continue;
+      addObject('scrub-bush', bx, by, { seed: h });
     }
   }
 
@@ -316,11 +382,11 @@ function paintFarm() {
   }
 
   // Farm compound and outbuildings.
-  paintRect(17, 43, 25, 51, 'B');
+  paintRect(17, 43, 25, 51, 'H');
   paintRect(28, 43, 36, 50, 'B');
-  paintRect(14, 54, 20, 60, 'B');
-  paintRect(23, 56, 28, 60, 'B');
-  paintRect(31, 56, 36, 60, 'B');
+  paintRect(14, 54, 20, 60, 'T');
+  paintRect(23, 56, 28, 60, 'S');
+  paintRect(31, 56, 36, 60, 'G');
 }
 
 function placeFarmObjects() {
@@ -342,12 +408,13 @@ function placeFarmObjects() {
     }
   }
 
-  addFarmDoor('farmhouse-door', 'Farmhouse Door', 21, 51, 'long-ash-farmhouse-door', 'The farmhouse door is thumb-polished around the latch.', { wallPlane: 'sw' });
-  addFarmDoor('barn-door', 'Barn Door', 36, 50, 'long-ash-barn-door', 'The barn door rides low on its track, with chaff pressed into the groove.', { wallPlane: 'sw' });
-  addFarmDoor('storage-shed-door', 'Storage Shed Door', 25, 60, 'long-ash-storage-shed-door', 'The storage shed door has a ring pull worn bright at the bottom edge.', { wallPlane: 'sw' });
-  addFarmDoor('grain-shed-door', 'Grain Shed Door', 33, 60, 'long-ash-grain-shed-door', 'Dry seed husks are packed under the grain shed door.', { wallPlane: 'sw' });
+  addFarmDoor('farmhouse-door', 'Farmhouse Door', 21, 51, 'long-ash-farmhouse-door', 'The farmhouse door is thumb-polished around the latch.', { wallPlane: 'sw', variant: 'farmhouse' });
+  addFarmDoor('barn-door', 'Barn Door', 36, 50, 'long-ash-barn-door', 'The barn door rides low on its track, with chaff pressed into the groove.', { wallPlane: 'sw', variant: 'barn' });
+  addFarmDoor('storage-shed-door', 'Storage Shed Door', 25, 60, 'long-ash-storage-shed-door', 'The storage shed door has a ring pull worn bright at the bottom edge.', { wallPlane: 'sw', variant: 'storage-shed' });
+  addFarmDoor('grain-shed-door', 'Grain Shed Door', 33, 60, 'long-ash-grain-shed-door', 'Dry seed husks are packed under the grain shed door.', { wallPlane: 'sw', variant: 'grain-shed' });
   addFarmDoor('tool-shed-door', 'Tool Shed Door', 20, 57, 'long-ash-tool-shed-door', 'The tool shed door gives after the hasp is worked loose.', {
     wallPlane: 'se',
+    variant: 'tool-shed',
     lock: {
       id: 'long-ash-tool-shed-lock',
       title: 'Tool Shed Lock',
@@ -383,7 +450,7 @@ function placeFarmObjects() {
 }
 
 function addFarmDoor(id, name, x, y, dialogue, log, extraInteract = {}) {
-  const { wallPlane, ...interactExtras } = extraInteract;
+  const { wallPlane, variant, ...interactExtras } = extraInteract;
   const object = {
     id,
     blocking: true,
@@ -397,6 +464,7 @@ function addFarmDoor(id, name, x, y, dialogue, log, extraInteract = {}) {
     }
   };
   if (wallPlane) object.wallPlane = wallPlane;
+  if (variant) object.variant = variant;
   addObject('farm-door', x, y, object);
 }
 
@@ -435,16 +503,92 @@ function placeFarmVictims() {
   addObject('blood-sigil', 35, 54, { seed: hash(35, 54, 151) });
 }
 
-function placeGraveyard() {
-  paintRect(GRAVEYARD.x0 - 1, GRAVEYARD.y0, GRAVEYARD.x1 + 1, GRAVEYARD.y1, 'd');
-  for (let x = GRAVEYARD.x0 - 1; x <= GRAVEYARD.x1 + 1; x += 1) {
-    if (x % 2 === 0) addObject('farm-fence', x, GRAVEYARD.y0, { blocking: true, orient: 'se', seed: hash(x, GRAVEYARD.y0, 61) });
-    if (x % 2 === 1) addObject('farm-fence', x, GRAVEYARD.y1, { blocking: true, orient: 'se', seed: hash(x, GRAVEYARD.y1, 61) });
+function isGraveyardGate(x, y) {
+  return x === GRAVEYARD.x0 && (y === 56 || y === 57);
+}
+
+function paintGraveyardGround() {
+  paintRect(GRAVEYARD.x0, GRAVEYARD.y0, GRAVEYARD.x1, GRAVEYARD.y1, 'd');
+  for (let x = GRAVEYARD.x0; x <= GRAVEYARD.x1; x += 1) {
+    setTile(x, 56, 's');
   }
   for (let y = GRAVEYARD.y0 + 1; y <= GRAVEYARD.y1 - 1; y += 1) {
-    if (y % 2 === 0) addObject('farm-fence', GRAVEYARD.x0 - 1, y, { blocking: true, orient: 'sw', seed: hash(GRAVEYARD.x0 - 1, y, 63) });
-    if (y % 2 === 1) addObject('farm-fence', GRAVEYARD.x1 + 1, y, { blocking: true, orient: 'sw', seed: hash(GRAVEYARD.x1 + 1, y, 63) });
+    setTile(127, y, 's');
+    setTile(146, y, 's');
   }
+  setTile(GRAVEYARD.x0 - 1, 56, 's');
+  setTile(GRAVEYARD.x0 - 1, 57, 's');
+}
+
+function placeGraveyardWalls() {
+  for (let x = GRAVEYARD.x0; x <= GRAVEYARD.x1; x += 1) {
+    addObject('graveyard-wall', x, GRAVEYARD.y0, {
+      blocking: true,
+      orient: 'se',
+      seed: hash(x, GRAVEYARD.y0, 61)
+    });
+    addObject('graveyard-wall', x, GRAVEYARD.y1, {
+      blocking: true,
+      orient: 'se',
+      seed: hash(x, GRAVEYARD.y1, 61)
+    });
+  }
+  for (let y = GRAVEYARD.y0 + 1; y <= GRAVEYARD.y1 - 1; y += 1) {
+    if (!isGraveyardGate(GRAVEYARD.x0, y)) {
+      addObject('graveyard-wall', GRAVEYARD.x0, y, {
+        blocking: true,
+        orient: 'sw',
+        seed: hash(GRAVEYARD.x0, y, 63)
+      });
+    }
+    addObject('graveyard-wall', GRAVEYARD.x1, y, {
+      blocking: true,
+      orient: 'sw',
+      seed: hash(GRAVEYARD.x1, y, 63)
+    });
+  }
+}
+
+function placeGraveyardPlots() {
+  for (const [x, y] of GRAVEYARD_PLOTS) {
+    const plotOrient = ((x + y) & 1) ? 'sw' : 'se';
+    addObject('calcified-grave-plot', x, y, {
+      orient: plotOrient,
+      seed: hash(x, y, 65)
+    });
+    addObject('calcified-headstone', x, y - 1, {
+      blocking: true,
+      seed: hash(x, y, 66)
+    });
+  }
+}
+
+function placeGraveyardDressing() {
+  for (const [x, y] of [
+    [127, 56], [134, 56], [142, 56], [146, 56], [127, 51], [146, 53], [127, 58]
+  ]) {
+    addObject('road-dust', x, y, { seed: hash(x, y, 68) });
+  }
+  for (const [x, y] of [
+    [128, 49], [145, 51], [140, 55], [136, 57], [147, 58]
+  ]) {
+    addObject('rubble-decal', x, y, { seed: hash(x, y, 69) });
+  }
+  for (const [x, y] of [
+    [127, 55], [143, 55], [146, 57]
+  ]) {
+    addObject('candle-cluster', x, y, { seed: hash(x, y, 70) });
+    addObject('wax-stain', x, y, { seed: hash(x, y, 71) });
+  }
+  addObject('floor-crack', 140, 49, { seed: hash(140, 49, 72) });
+  addObject('floor-crack', 145, 57, { seed: hash(145, 57, 72) });
+}
+
+function placeGraveyard() {
+  paintGraveyardGround();
+  placeGraveyardWalls();
+  placeGraveyardPlots();
+  placeGraveyardDressing();
   for (const body of GRAVEYARD_BODIES) {
     addObject('calcified-grave-body', body.x, body.y, {
       id: body.id,
@@ -480,7 +624,8 @@ function addMapEdgeBlock(x, y, side) {
     return;
   }
   const h = hash(x, y, 101);
-  addObject(h % 7 === 0 ? 'ash-tree-stump' : 'scrub-bush', x, y, {
+  const edgeKind = h % 13 === 0 ? 'fallen-ash-log' : h % 7 === 0 ? 'ash-tree-stump' : 'scrub-bush';
+  addObject(edgeKind, x, y, {
     blocking: true,
     seed: h
   });
@@ -530,6 +675,54 @@ function placeKillSite() {
   }
 }
 
+function clearInfectedCaveApproach() {
+  const removable = new Set(['ash-tree', 'ash-tree-stump', 'fallen-ash-log', 'ash-sapling', 'scrub-bush']);
+  for (let i = objects.length - 1; i >= 0; i -= 1) {
+    const object = objects[i];
+    if (!removable.has(object.kind) || !isInfectedCaveClearance(object.x, object.y)) continue;
+    if (object.blocking) reserved.delete(key(object.x, object.y));
+    objects.splice(i, 1);
+  }
+}
+
+function placeInfectedCave() {
+  clearInfectedCaveApproach();
+  for (const [x, y, id] of [
+    [85, 10, 'infected-cave-rubble-west'],
+    [88, 11, 'infected-cave-rubble-threshold-west'],
+    [92, 11, 'infected-cave-rubble-threshold-east'],
+    [95, 10, 'infected-cave-rubble-east'],
+    [90, 12, 'infected-cave-rubble-trail']
+  ]) {
+    addObject('rubble-decal', x, y, { id, seed: hash(x, y, 157) });
+  }
+  addObject('floor-crack', 90, 11, { id: 'infected-cave-threshold-crack', seed: hash(90, 11, 157) });
+  for (const [x, y, id] of [
+    [83, 9, 'infected-cave-far-west-rocks'],
+    [85, 10, 'infected-cave-west-shoulder-rocks'],
+    [87, 11, 'infected-cave-west-lip-rocks'],
+    [93, 11, 'infected-cave-east-lip-rocks'],
+    [95, 10, 'infected-cave-east-shoulder-rocks'],
+    [97, 9, 'infected-cave-far-east-rocks']
+  ]) {
+    addObject('rubble-pile', x, y, {
+      id,
+      blocking: true,
+      seed: hash(x, y, 159)
+    });
+  }
+  addObject('infected-cave-entrance', INFECTED_CAVE.x, INFECTED_CAVE.y, {
+    id: 'infected-cave-entrance',
+    blocking: true,
+    name: 'Infected Cave',
+    seed: hash(INFECTED_CAVE.x, INFECTED_CAVE.y, 161),
+    interact: {
+      type: 'note',
+      log: 'Wet fur and sick rot gather in the cold between the stones. Wolf tracks vanish into the black mouth.'
+    }
+  });
+}
+
 function placeRoadDressing() {
   for (const [x, y] of [
     [142, 68], [134, 65], [123, 61], [112, 56], [102, 52],
@@ -566,6 +759,7 @@ placeMapEdges();
 placeWheatModels();
 placeFarmMachinery();
 placeFarmVictims();
+placeInfectedCave();
 
 objects.sort((a, b) => (a.y - b.y) || (a.x - b.x) || a.kind.localeCompare(b.kind));
 
@@ -586,14 +780,24 @@ const level = {
     w: { kind: 'floor', floor: 'wheat-field', walkable: true },
     f: { kind: 'floor', floor: 'furrow-field', walkable: true },
     d: { kind: 'floor', floor: 'forest-floor', walkable: true },
-    B: { kind: 'farm-building-block', walkable: false }
+    H: { kind: 'farmhouse-building-block', walkable: false },
+    B: { kind: 'barn-building-block', walkable: false },
+    T: { kind: 'tool-shed-building-block', walkable: false },
+    S: { kind: 'storage-shed-building-block', walkable: false },
+    G: { kind: 'grain-shed-building-block', walkable: false }
   },
   mood: {
     floorShade: '#15130e',
-    floorShadeAlpha: 0.18,
-    ambient: '#050505',
-    ambientAlpha: 0.08,
-    vignette: 1.1
+    floorShadeAlpha: 0.04,
+    ambient: '#b8aa83',
+    ambientAlpha: 0.05,
+    vignette: 0.35,
+    sun: {
+      enabled: true,
+      shadowOffsetX: 12,
+      shadowOffsetY: 6,
+      shadowAlpha: 0.16
+    }
   },
   spawns: {
     player: { actor: 'mara-vey', x: START.x, y: START.y },

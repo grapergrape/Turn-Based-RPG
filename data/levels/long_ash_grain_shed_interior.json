@@ -55,6 +55,7 @@
       "x": 6,
       "y": 8,
       "blocking": true,
+      "variant": "grain-shed",
       "id": "grain-shed-exit-door",
       "name": "Grain Shed Door",
       "interact": {
@@ -103,6 +104,12 @@
       "kind": "floor-crack",
       "x": 8,
       "y": 7
+    },
+    {
+      "kind": "chaff-scatter",
+      "x": 6,
+      "y": 6,
+      "seed": 5711
     }
   ]
 }

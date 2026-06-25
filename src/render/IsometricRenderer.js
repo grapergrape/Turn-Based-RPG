@@ -22,6 +22,7 @@ const SPEECH_PAD_X = 7;
 const SPEECH_PAD_Y = 5;
 const SPEECH_LINE_HEIGHT = 11;
 const SPEECH_VIEWPORT_PAD = 4;
+const SUN_SHADOW_SKIP_KINDS = new Set(['wheat-clump', 'ash-sapling', 'scrub-bush']);
 
 export class IsometricRenderer {
   constructor(canvas, atlas) {
@@ -154,6 +155,7 @@ export class IsometricRenderer {
 
     ctx.drawImage(this.scene, -this.camera.x, -this.camera.y);
 
+    this.#drawSunShadows(ctx, state);
     if (state.overlay?.debugGrid) this.#drawDebugGrid(ctx);
     this.#drawVisionCones(ctx, state.overlay?.enemyVisionCones ?? []);
     this.#drawDepthSorted(ctx, state);
@@ -193,6 +195,60 @@ export class IsometricRenderer {
 
     queue.sort((a, b) => a.key - b.key);
     for (const item of queue) item.draw();
+  }
+
+  #drawSunShadows(ctx, state) {
+    const sun = this.mood?.sun;
+    if (!sun?.enabled) return;
+
+    const offsetX = finiteNumber(sun.shadowOffsetX, 12);
+    const offsetY = finiteNumber(sun.shadowOffsetY, 6);
+    const alpha = clamp(finiteNumber(sun.shadowAlpha, 0.16), 0, 0.45);
+    if (alpha <= 0) return;
+
+    for (const prop of this.volumeProps) {
+      if (this.#isHiddenCell(prop.x, prop.y)) continue;
+      const entry = getSprite(prop.kind);
+      const size = this.#sunShadowSizeForProp(prop, entry);
+      if (!size) continue;
+      const s = gridToScreen(prop.x, prop.y, 0, this.worldOrigin);
+      if (!this.#onScreen(s, 160)) continue;
+      P.drawDaylightCastShadow(ctx, s.x, s.y, {
+        offsetX,
+        offsetY,
+        width: size.width,
+        height: size.height,
+        alpha: alpha * size.alphaScale
+      });
+    }
+
+    for (const actor of state.actors ?? []) {
+      if (actor.type !== 'player' && this.#isHiddenCell(actor.x, actor.y)) continue;
+      const base = gridToScreen(actor.x, actor.y, 0, this.worldOrigin);
+      const fx = base.x + (actor.pxOffset?.x ?? 0);
+      const fy = base.y + (actor.pxOffset?.y ?? 0);
+      if (!this.#onScreen({ x: fx, y: fy }, 120)) continue;
+      P.drawDaylightCastShadow(ctx, fx, fy, {
+        offsetX,
+        offsetY,
+        width: actor.isDead ? 30 : 34,
+        height: actor.isDead ? 9 : 11,
+        alpha: alpha * (actor.isDead ? 0.4 : 0.65)
+      });
+    }
+  }
+
+  #sunShadowSizeForProp(prop, entry) {
+    if (!entry || entry.flat || SUN_SHADOW_SKIP_KINDS.has(prop.kind)) return null;
+    if (prop.kind === 'ash-tree') return { width: 88, height: 25, alphaScale: 1 };
+    if (prop.kind === 'fallen-ash-log') return { width: 46, height: 13, alphaScale: 0.65 };
+    if (prop.kind === 'ash-tree-stump') return { width: 34, height: 10, alphaScale: 0.55 };
+    if (entry.block) return { width: Math.round(TILE_WIDTH * 0.88), height: Math.round(TILE_HEIGHT * 0.52), alphaScale: 0.8 };
+    if (entry.category === 'plant' || entry.category === 'light') return null;
+    if (prop.blocking) return { width: 44, height: 14, alphaScale: 0.7 };
+    if (entry.category === 'structure') return { width: 40, height: 13, alphaScale: 0.6 };
+    if (entry.category === 'gore' || entry.category === 'creature') return { width: 36, height: 12, alphaScale: 0.55 };
+    return null;
   }
 
   #drawProp(ctx, prop, anim, player = null) {
@@ -653,4 +709,9 @@ export class IsometricRenderer {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function finiteNumber(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
 }

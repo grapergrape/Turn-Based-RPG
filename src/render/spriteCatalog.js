@@ -63,6 +63,13 @@ const oriented = (fn, category, layer = 2) => ({
 });
 // A flat ground decal that takes (ctx, cx, cy, seed).
 const decal = (fn) => ({ category: CATEGORY.DECAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed) });
+const farmBuildingBlock = (variant = null) => ({
+  category: CATEGORY.STRUCTURE, layer: 0, block: true,
+  draw: (ctx, x, y, seed, c) => P.drawFarmBuildingBlock(ctx, x, y, seed, {
+    connected: c.prop.connected,
+    variant: c.prop.variant ?? variant
+  })
+});
 
 function barrelShowsLadder(prop) {
   const type = prop?.interact?.type;
@@ -119,6 +126,9 @@ export const SPRITE_CATALOG = {
   'cracked-column': simple(P.drawCrackedColumn, CATEGORY.STRUCTURE),
   'saint-statue': simple(P.drawSaintStatue, CATEGORY.STRUCTURE),
   'stone-tomb': simple(P.drawStoneTomb, CATEGORY.STRUCTURE),
+  'graveyard-wall': oriented(P.drawGraveyardWall, CATEGORY.STRUCTURE),
+  'calcified-grave-plot': oriented(P.drawCalcifiedGravePlot, CATEGORY.STRUCTURE),
+  'calcified-headstone': simple(P.drawCalcifiedHeadstone, CATEGORY.STRUCTURE),
   'stone-stairwell': {
     category: CATEGORY.STRUCTURE, layer: 18,
     draw: (ctx, x, y, seed) => P.drawStoneStairwell(ctx, x, y, seed)
@@ -153,23 +163,25 @@ export const SPRITE_CATALOG = {
     category: CATEGORY.STRUCTURE, layer: 2,
     draw: (ctx, x, y, seed, c) => P.drawDamagedAltar(ctx, x, y, seed, c.pulse)
   },
-  'farm-building-block': {
-    category: CATEGORY.STRUCTURE, layer: 0, block: true,
-    draw: (ctx, x, y, seed, c) => P.drawFarmBuildingBlock(ctx, x, y, seed, {
-      connected: c.prop.connected
-    })
-  },
+  'farm-building-block': farmBuildingBlock(),
+  'farmhouse-building-block': farmBuildingBlock('farmhouse'),
+  'barn-building-block': farmBuildingBlock('barn'),
+  'tool-shed-building-block': farmBuildingBlock('tool-shed'),
+  'storage-shed-building-block': farmBuildingBlock('storage-shed'),
+  'grain-shed-building-block': farmBuildingBlock('grain-shed'),
   'farm-door': {
     category: CATEGORY.STRUCTURE, layer: 2,
     draw: (ctx, x, y, seed, c) => P.drawFarmDoor(ctx, x, y, seed, {
       locked: Boolean(c.prop.interact?.lock && !c.prop.unlocked),
       unlocked: Boolean(c.prop.unlocked),
       revealed: Boolean(c.prop.revealed),
-      wallPlane: c.prop.wallPlane
+      wallPlane: c.prop.wallPlane,
+      variant: c.prop.variant
     })
   },
   'farm-fence': oriented(P.drawFarmFence, CATEGORY.STRUCTURE),
   'road-sign-post': simple(P.drawRoadSignPost, CATEGORY.STRUCTURE),
+  'infected-cave-entrance': simple(P.drawInfectedCaveEntrance, CATEGORY.STRUCTURE, 4),
 
   // --- Furniture (placed objects) ----------------------------------------
   'broken-pew': simple(P.drawBrokenPew, CATEGORY.FURNITURE),
@@ -247,6 +259,8 @@ export const SPRITE_CATALOG = {
     draw: (ctx, x, y, seed) => P.drawAshTree(ctx, x, y, seed)
   },
   'ash-tree-stump': simple(P.drawAshTreeStump, CATEGORY.PLANT),
+  'fallen-ash-log': simple(P.drawFallenAshLog, CATEGORY.PLANT),
+  'ash-sapling': simple(P.drawAshSapling, CATEGORY.PLANT),
   'scrub-bush': simple(P.drawScrubBush, CATEGORY.PLANT),
   'wheat-clump': {
     category: CATEGORY.PLANT, layer: 4, canopyRadius: 1, canopyAlpha: 0.32,
@@ -333,6 +347,7 @@ export const SPRITE_CATALOG = {
   'scorch-mark': decal((ctx, x, y, seed) => P.drawScorchMark(ctx, x, y, seed)),
   'wax-stain': decal((ctx, x, y, seed) => P.drawWaxStain(ctx, x, y, seed)),
   'paper-scraps': decal((ctx, x, y, seed) => P.drawPaperScraps(ctx, x, y, seed)),
+  'chaff-scatter': decal((ctx, x, y, seed) => P.drawChaffScatter(ctx, x, y, seed)),
   'chalk-drawing': decal((ctx, x, y, seed) => P.drawChalkDrawing(ctx, x, y, seed)),
   'machine-oil': decal((ctx, x, y, seed) => P.drawMachineOil(ctx, x, y, seed)),
   'cobweb': decal((ctx, x, y, seed) => P.drawCobweb(ctx, x, y, seed)),
