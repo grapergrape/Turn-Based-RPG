@@ -50,6 +50,53 @@ export const CATEGORY = {
   PLANT: 'plant'            // greenery (none yet; reserved for future biomes)
 };
 
+const DISPLAY_NAMES = {
+  'broken-pew': 'Broken Pew',
+  'rusted-reliquary': 'Rusted Reliquary',
+  'rusted-barrel': 'Rusted Barrel',
+  'field-satchel': 'Field Satchel',
+  corpse: 'Corpse',
+  'paper-scraps': 'Paper Scraps',
+  'quarantine-sign': 'Quarantine Sign',
+  'damaged-altar': 'Damaged Altar',
+  'host-growth': 'Host Growth',
+  'candle-cluster': 'Candle Cluster',
+  'rubble-pile': 'Rubble',
+  'rusted-crate': 'Rusted Crate',
+  campfire: 'Campfire',
+  'chapel-banner': 'Torn Chapel Banner',
+  'broken-bell': 'Broken Bell',
+  'bell-rope': 'Bell Rope',
+  'prayer-lectern': 'Prayer Lectern',
+  'ritual-bowl': 'Ritual Bowl',
+  'cracked-column': 'Cracked Column',
+  'quarantine-barricade': 'Quarantine Barricade',
+  'chapel-double-door': 'Chapel Doors',
+  'blood-stain': 'Blood Stain',
+  'floor-crack': 'Floor Crack',
+  'rubble-decal': 'Broken Stone',
+  'glass-debris': 'Glass Debris',
+  dust: 'Dust',
+  'road-dust': 'Road Dust',
+  'scorch-mark': 'Scorch Mark',
+  'wax-stain': 'Wax Stain',
+  'loose-flagstone': 'Loose Flagstone',
+  'bone-pile': 'Ossuary Heap',
+  'chalk-drawing': "Child's Drawing",
+  'machine-oil': 'Oil Smear',
+  'blood-sigil': 'Blood Sigil',
+  'ritual-circle': 'Rite Circle',
+  'cross-martyr': 'The Opened Saint',
+  'bound-victim': 'Bound Captive',
+  wall: 'Chapel Wall',
+  'wall-broken': 'Broken Wall'
+};
+
+export function displayNameForKind(kind) {
+  if (typeof kind !== 'string' || kind.trim() === '') return 'Object';
+  return DISPLAY_NAMES[kind] ?? kind.replaceAll('-', ' ');
+}
+
 // Convenience for the most common entry: a single P.drawX(ctx, cx, cy, seed).
 const simple = (fn, category, layer = 2) => ({
   category, layer, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed)

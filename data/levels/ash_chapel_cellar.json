@@ -67,6 +67,7 @@
   },
   "objects": [
     {
+      "id": "loose-brick-2-6",
       "kind": "loose-flagstone",
       "x": 2,
       "y": 6,
@@ -115,6 +116,7 @@
       "y": 2
     },
     {
+      "id": "cellar-ladder-12-14",
       "kind": "rusted-barrel",
       "x": 12,
       "y": 14,
@@ -127,6 +129,7 @@
       }
     },
     {
+      "id": "dead-road-warden-15-9",
       "kind": "corpse",
       "x": 15,
       "y": 9,
@@ -152,6 +155,7 @@
       }
     },
     {
+      "id": "buried-reliquary-17-6",
       "kind": "rusted-reliquary",
       "x": 17,
       "y": 6,
@@ -177,6 +181,7 @@
       }
     },
     {
+      "id": "warden-cache-8-10",
       "kind": "field-satchel",
       "x": 8,
       "y": 10,
@@ -379,6 +384,7 @@
       "blocking": true
     },
     {
+      "id": "wound-star-11-1",
       "kind": "choir-pentagram",
       "x": 11,
       "y": 1,

@@ -284,7 +284,10 @@
         "appearance": {
           "body": "lean",
           "outfit": "choir-dark-robe",
-          "gear": ["throat-glass", "thin-pack"],
+          "gear": [
+            "throat-glass",
+            "thin-pack"
+          ],
           "accent": "dark-cowl"
         },
         "x": 19,
@@ -314,7 +317,9 @@
         "appearance": {
           "body": "average",
           "outfit": "choir-red-robe",
-          "gear": ["candle-tray"],
+          "gear": [
+            "candle-tray"
+          ],
           "accent": "bone-cowl"
         },
         "x": 21,
@@ -340,7 +345,9 @@
         "appearance": {
           "body": "heavy",
           "outfit": "choir-red-robe",
-          "gear": ["sacrament-flesh"],
+          "gear": [
+            "sacrament-flesh"
+          ],
           "accent": "dark-cowl"
         },
         "x": 18,
@@ -364,7 +371,10 @@
         "appearance": {
           "body": "average",
           "outfit": "choir-red-robe",
-          "gear": ["veil", "prayer-cord"],
+          "gear": [
+            "veil",
+            "prayer-cord"
+          ],
           "accent": "dark-cowl"
         },
         "x": 22,
@@ -382,7 +392,10 @@
         "appearance": {
           "body": "average",
           "outfit": "choir-red-robe",
-          "gear": ["tally-tags", "bone-scroll"],
+          "gear": [
+            "tally-tags",
+            "bone-scroll"
+          ],
           "accent": "bone-cowl"
         },
         "x": 4,
@@ -396,12 +409,27 @@
         },
         "patrol": {
           "mode": "loop",
-          "delay": [1.0, 2.1],
+          "delay": [
+            1,
+            2.1
+          ],
           "path": [
-            { "x": 4, "y": 14 },
-            { "x": 5, "y": 13 },
-            { "x": 6, "y": 12 },
-            { "x": 5, "y": 13 }
+            {
+              "x": 4,
+              "y": 14
+            },
+            {
+              "x": 5,
+              "y": 13
+            },
+            {
+              "x": 6,
+              "y": 12
+            },
+            {
+              "x": 5,
+              "y": 13
+            }
           ]
         },
         "ambient": [
@@ -415,7 +443,10 @@
         "appearance": {
           "body": "broad",
           "outfit": "choir-dark-robe",
-          "gear": ["rope-coil", "chain"],
+          "gear": [
+            "rope-coil",
+            "chain"
+          ],
           "accent": "dark-cowl"
         },
         "x": 5,
@@ -437,7 +468,10 @@
         "appearance": {
           "body": "old-stooped",
           "outfit": "choir-dark-robe",
-          "gear": ["bone-scroll", "confessor-staff"],
+          "gear": [
+            "bone-scroll",
+            "confessor-staff"
+          ],
           "accent": "dark-cowl"
         },
         "x": 33,
@@ -679,6 +713,7 @@
       }
     },
     {
+      "id": "opened-altar-20-3",
       "kind": "damaged-altar",
       "x": 20,
       "y": 3,
@@ -780,6 +815,7 @@
       "y": 5
     },
     {
+      "id": "cult-ledger-24-4",
       "kind": "paper-scraps",
       "x": 24,
       "y": 4,
@@ -851,6 +887,7 @@
       "blocking": true
     },
     {
+      "id": "scratched-confession-13-14",
       "kind": "cracked-column",
       "x": 13,
       "y": 14,
@@ -863,6 +900,7 @@
       }
     },
     {
+      "id": "beheaded-saint-16-8",
       "kind": "saint-statue",
       "x": 16,
       "y": 8,
@@ -875,6 +913,7 @@
       }
     },
     {
+      "id": "beheaded-saint-23-8",
       "kind": "saint-statue",
       "x": 23,
       "y": 8,
@@ -981,6 +1020,7 @@
       }
     },
     {
+      "id": "settlement-table-20-20",
       "kind": "settlement-table",
       "x": 20,
       "y": 20,
@@ -1022,6 +1062,7 @@
       "y": 24
     },
     {
+      "id": "kitchen-hearth-3-10",
       "kind": "kitchen-hearth",
       "x": 3,
       "y": 10,
@@ -1039,6 +1080,7 @@
       "blocking": true
     },
     {
+      "id": "prep-counter-5-10",
       "kind": "kitchen-counter",
       "x": 5,
       "y": 10,
@@ -1058,6 +1100,7 @@
       "blocking": true
     },
     {
+      "id": "rusted-reliquary-7-10",
       "kind": "rusted-reliquary",
       "x": 7,
       "y": 10,
@@ -1078,6 +1121,7 @@
       }
     },
     {
+      "id": "pantry-shelf-2-11",
       "kind": "pantry-shelf",
       "x": 2,
       "y": 11,
@@ -1089,6 +1133,7 @@
       }
     },
     {
+      "id": "field-satchel-7-11",
       "kind": "field-satchel",
       "x": 7,
       "y": 11,
@@ -1104,6 +1149,7 @@
       }
     },
     {
+      "id": "wash-tub-7-12",
       "kind": "wash-tub",
       "x": 7,
       "y": 12,
@@ -1136,6 +1182,7 @@
       "orient": "se"
     },
     {
+      "id": "refectory-table-4-18",
       "kind": "dining-table",
       "x": 4,
       "y": 18,
@@ -1245,6 +1292,7 @@
       "y": 19
     },
     {
+      "id": "split-barrel-36-13",
       "kind": "rusted-barrel",
       "x": 36,
       "y": 13,
@@ -1336,6 +1384,7 @@
       "blocking": true
     },
     {
+      "id": "marked-settlement-guard-21-22",
       "kind": "cult-victim",
       "x": 21,
       "y": 22,
@@ -1377,6 +1426,7 @@
       "y": 23
     },
     {
+      "id": "dead-settlement-guard-15-24",
       "kind": "corpse",
       "x": 15,
       "y": 24,
@@ -1430,6 +1480,7 @@
       }
     },
     {
+      "id": "field-satchel-17-26",
       "kind": "field-satchel",
       "x": 17,
       "y": 26,
@@ -1445,6 +1496,7 @@
       }
     },
     {
+      "id": "compact-medicine-crate-12-24",
       "kind": "rusted-crate",
       "x": 12,
       "y": 24,
@@ -1467,6 +1519,7 @@
       }
     },
     {
+      "id": "childs-drawing-20-18",
       "kind": "chalk-drawing",
       "x": 20,
       "y": 18,
@@ -1478,6 +1531,7 @@
       }
     },
     {
+      "id": "fouled-font-21-25",
       "kind": "chapel-font",
       "x": 21,
       "y": 25,
@@ -1489,6 +1543,7 @@
       }
     },
     {
+      "id": "oil-and-tread-18-25",
       "kind": "machine-oil",
       "x": 18,
       "y": 25,
@@ -1847,6 +1902,7 @@
       }
     },
     {
+      "id": "wardens-journal-35-13",
       "kind": "paper-scraps",
       "x": 35,
       "y": 13,
@@ -1858,6 +1914,7 @@
       }
     },
     {
+      "id": "quarantine-house-orders-15-18",
       "kind": "paper-scraps",
       "x": 15,
       "y": 18,
@@ -1888,6 +1945,7 @@
       }
     },
     {
+      "id": "bell-stair-door-31-3",
       "kind": "wall-stair-door",
       "x": 31,
       "y": 3,
@@ -1900,6 +1958,7 @@
       }
     },
     {
+      "id": "bell-stair-landing-30-3",
       "kind": "stone-stairwell",
       "x": 30,
       "y": 3,
@@ -1917,6 +1976,7 @@
       "y": 2
     },
     {
+      "id": "wound-star-26-2",
       "kind": "choir-pentagram",
       "x": 26,
       "y": 2,

@@ -114,6 +114,7 @@
   },
   "objects": [
     {
+      "id": "bell-room-stair-door-4-9",
       "kind": "wall-stair-door",
       "x": 4,
       "y": 9,
@@ -126,6 +127,7 @@
       }
     },
     {
+      "id": "bell-room-stair-landing-5-9",
       "kind": "stone-stairwell",
       "x": 5,
       "y": 9,
@@ -145,6 +147,7 @@
       "name": "Sabotaged Bell"
     },
     {
+      "id": "bell-rope-7-5",
       "kind": "bell-rope",
       "x": 7,
       "y": 5,
@@ -196,6 +199,7 @@
       "y": 7
     },
     {
+      "id": "bell-keepers-crate-10-7",
       "kind": "rusted-crate",
       "x": 10,
       "y": 7,

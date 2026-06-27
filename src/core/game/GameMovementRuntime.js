@@ -1,0 +1,268 @@
+import { FIELD_RATINGS, calculateFieldRating, normalizeProgression } from '../Progression.js';
+import { manhattan } from '../../combat/CombatSystem.js';
+import { findPath } from '../../world/Pathfinder.js';
+import { SUSPICION_SEVERITY } from '../../world/PerceptionSystem.js';
+import { gridToScreen, screenFacing } from '../../render/isoMath.js';
+import { VIEWPORT_HEIGHT } from '../../render/renderConfig.js';
+import {
+  SNEAK_SPEECH_LIFE,
+  SNEAK_STEP_DURATION,
+  SPRINT_STEP_DURATION,
+  STEP_DURATION,
+  TRIGGER_RADIUS,
+  WALK_FRAMES
+} from './runtimeConstants.js';
+import { installGameMethods } from './installGameMethods.js';
+
+class GameMovementRuntime {
+  // ---- Movement ----------------------------------------------------------
+
+  // Begin a stepped move of `actor` by `dir` if the destination is free.
+  // Returns true if a step started.
+  _tryStep(actor, dir, { logBlock = false, moveState = null } = {}) {
+    if (this.moving) return false;
+    const nx = actor.position.x + dir.x;
+    const ny = actor.position.y + dir.y;
+    if (this._isCellHidden(nx, ny) || !this.grid.isWalkable(nx, ny) || this._isOccupied(nx, ny, actor)) {
+      if (logBlock) this._log('The ruins do not give way.');
+      return false;
+    }
+
+    // Face the way we step (one of eight isometric facings).
+    actor.facing = screenFacing(dir.x, dir.y);
+    // Screen-space delta is independent of the camera origin (it cancels).
+    const from = gridToScreen(actor.position.x, actor.position.y, 0);
+    actor.moveTo(nx, ny);
+    const to = gridToScreen(nx, ny, 0);
+    actor.pxOffset = { x: from.x - to.x, y: from.y - to.y };
+    const stateName = moveState ?? this._defaultMoveState(actor);
+    actor.render.state = stateName;
+    actor.render.frameIndex = 0;
+    actor.render.timer = 0;
+
+    this.moving = {
+      actor,
+      t: 0,
+      stateName,
+      sneakMode: actor === this.player && this.mode === 'explore' && this.sneakMode,
+      usedSprint: actor === this.player && this.mode === 'explore' && this._isSprintHeld(),
+      fromX: actor.pxOffset.x,
+      fromY: actor.pxOffset.y
+    };
+    return true;
+  }
+
+  // Advance the active step. Returns true while a step is in flight. The visual
+  // offset is quantized to the walk frames so movement keeps an old CRPG cadence
+  // instead of smooth modern tweening.
+  _advanceMovement(dt) {
+    if (!this.moving) return false;
+    const move = this.moving;
+    const movementState = this._movementStateForActiveStep(move);
+    if (move.actor === this.player && this.mode === 'explore' && this._isSprintHeld()) {
+      move.usedSprint = true;
+    }
+    const duration = this._stepDurationForState(movementState);
+    move.t = Math.min((move.t ?? 0) + (dt / duration), 1);
+    const ratio = move.t;
+    const frameIndex = Math.min(WALK_FRAMES - 1, Math.floor(ratio * WALK_FRAMES));
+    const visualRatio = ratio >= 1 ? 1 : frameIndex / WALK_FRAMES;
+    move.actor.pxOffset = {
+      x: Math.round(move.fromX * (1 - visualRatio)),
+      y: Math.round(move.fromY * (1 - visualRatio))
+    };
+    if (!move.actor.isDead) {
+      move.actor.render.state = movementState;
+      move.actor.render.frameIndex = frameIndex;
+    }
+
+    if (ratio >= 1) {
+      move.actor.pxOffset = { x: 0, y: 0 };
+      if (move.actor === this.player && this.mode === 'explore') {
+        move.actor.pendingSuspicionSeverity = this._movementSeverityForCompletedStep(move);
+      }
+      if (move.actor.render.state === movementState) {
+        move.actor.render.state = this._idleStateFor(move.actor);
+        move.actor.render.frameIndex = 0;
+      }
+      this.moving = null;
+      this._onStepComplete(move.actor);
+    }
+    return this.moving !== null;
+  }
+
+  _defaultMoveState(actor) {
+    return actor === this.player && this.mode === 'explore' ? this._currentPlayerMoveState() : 'walk';
+  }
+
+  _currentPlayerMoveState() {
+    if (this.mode === 'explore' && this._isSprintHeld()) return 'walk';
+    return this.mode === 'explore' && this.sneakMode ? 'sneak' : 'walk';
+  }
+
+  _movementStateForActiveStep(move) {
+    if (move.actor === this.player && this.mode === 'explore') {
+      if (this._isSprintHeld()) return 'walk';
+      return move.sneakMode ? 'sneak' : 'walk';
+    }
+    return move.stateName ?? 'walk';
+  }
+
+  _stepDurationForState(stateName) {
+    if (this.mode === 'explore' && this.moving?.actor === this.player && this._isSprintHeld()) {
+      return SPRINT_STEP_DURATION;
+    }
+    return stateName === 'sneak' ? SNEAK_STEP_DURATION : STEP_DURATION;
+  }
+
+  _movementSeverityForCompletedStep(move) {
+    if (move.usedSprint) return SUSPICION_SEVERITY.HIGH;
+    return move.sneakMode ? SUSPICION_SEVERITY.LOW : SUSPICION_SEVERITY.MEDIUM;
+  }
+
+  _idleStateFor(actor) {
+    return actor === this.player && this.mode === 'explore' && this.sneakMode ? 'sneakIdle' : 'idle';
+  }
+
+  _isSprintHeld() {
+    return Boolean(this.input?.isHeld?.('shift') || this.input?.keys?.has?.('shift'));
+  }
+
+  _toggleSneakMode() {
+    if (this.mode !== 'explore') return;
+    this.sneakMode = !this.sneakMode;
+    if (this.sneakMode) {
+      this.player.speech = { text: 'Shhh.', ttl: SNEAK_SPEECH_LIFE, kind: 'sneak' };
+    } else if (this.player.speech?.kind === 'sneak') {
+      this.player.speech = null;
+    }
+    if (this.moving?.actor === this.player && !this.player.isDead) {
+      this.moving.sneakMode = this.sneakMode;
+      this.moving.stateName = this._currentPlayerMoveState();
+      this.player.render.state = this._movementStateForActiveStep(this.moving);
+    } else if (!this.moving && !this.player.isDead) {
+      this.player.render.state = this._idleStateFor(this.player);
+      this.player.render.frameIndex = 0;
+    }
+    this._log(this.sneakMode ? 'You crouch low.' : 'You stand.');
+  }
+
+  // Walk the next cell of a queued click-to-move path.
+  _stepAlongPath() {
+    if (this.pathQueue.length === 0) return;
+    if (this.mode === 'combat' && !this.turnManager.isPlayerTurn()) return;
+    if (this.mode === 'defeat') { this.pathQueue = []; return; }
+    if (this.mode === 'combat' && this.player.ap < this.player.moveCost) {
+      this.pathQueue = [];
+      return;
+    }
+    const next = this.pathQueue[0];
+    const dir = {
+      x: Math.sign(next.x - this.player.position.x),
+      y: Math.sign(next.y - this.player.position.y)
+    };
+    if (this._tryStep(this.player, dir, { logBlock: false })) {
+      this.pathQueue.shift();
+      if (this.mode === 'combat') this.player.ap -= this.player.moveCost;
+    } else {
+      this.pathQueue = [];
+    }
+  }
+
+  // Left-click a walkable tile to path there; click an enemy (in combat) to
+  // target it.
+  _handleClickMove(click, combat) {
+    if (click.button !== 0) return;
+    if (click.y >= VIEWPORT_HEIGHT) return; // ignore clicks on the UI bar
+    const cell = this.renderer.toGrid(click.x, click.y);
+    if (!this.grid.isInside(cell.x, cell.y)) return;
+
+    if (combat) {
+      const idx = this._livingEnemies().findIndex(
+        (e) => e.position.x === cell.x && e.position.y === cell.y
+      );
+      if (idx >= 0) {
+        this.targetIndex = idx;
+        this._faceToward(this.player, cell);
+        this.pathQueue = [];
+        this._log(`Target: ${this._livingEnemies()[idx].name}.`);
+        return;
+      }
+    }
+    if (this._isCellHidden(cell.x, cell.y) || !this.grid.isWalkable(cell.x, cell.y)) return;
+    const path = findPath(this.grid, this.player.position, cell, this._occupiedSet(this.player));
+    this.pathQueue = path && path.length ? path : [];
+  }
+
+  _onStepComplete(actor) {
+    if (actor === this.player && this.mode === 'explore') {
+      const severity = this.player.pendingSuspicionSeverity ?? SUSPICION_SEVERITY.LOW;
+      this.player.pendingSuspicionSeverity = null;
+      this._registerSuspiciousAction(severity, 'movement');
+      if (this.mode !== 'explore') return;
+      this._checkCombatProximity();
+      if (this.mode !== 'explore') return;
+      this._tryCompletePendingExploreTarget();
+    } else if (actor?.type === 'enemy' && this.mode === 'explore') {
+      this._registerSuspiciousAction(SUSPICION_SEVERITY.MEDIUM, 'patrol');
+    }
+    if (actor !== this.player && this.mode === 'explore') {
+      this._handlePatrolArrival(actor);
+    }
+  }
+
+  _handlePatrolArrival(actor) {
+    this.patrolSystem.handleArrival(actor);
+  }
+
+  _removeActorFromLevel(actor) {
+    if (!actor) return;
+    actor.removed = true;
+    actor.speech = null;
+    this.npcs = (this.npcs ?? []).filter((entry) => entry !== actor);
+    this.enemies = (this.enemies ?? []).filter((entry) => entry !== actor);
+    if (this.dialogueActor === actor) this.dialogueActor = null;
+    if (this.preCombatTarget === actor) this.preCombatTarget = null;
+  }
+
+  _checkCombatProximity() {
+    const speaker = this._triggeredDialogueEnemy();
+    if (speaker) {
+      this._openEnemyDialogue(speaker);
+      return;
+    }
+
+    for (const trigger of this.level.combatTriggers ?? []) {
+      if (this._isCellHidden(trigger.x, trigger.y)) continue;
+      const encounterId = this._resolveEncounterId(trigger.encounter ?? trigger.id);
+      if (this.clearedEncounters.has(encounterId)) continue;
+      if (this._livingEnemiesForEncounter(encounterId).length === 0) continue;
+      if (trigger.forceCombat === true && manhattan(this.player.position, trigger) <= (trigger.radius ?? TRIGGER_RADIUS)) {
+        this._startCombat(encounterId);
+        return;
+      }
+    }
+  }
+
+  _registerSuspiciousAction(severity = SUSPICION_SEVERITY.LOW, action = 'movement', options = {}) {
+    return this.stealthRuntime.registerSuspiciousAction(severity, action, options);
+  }
+
+  _speakAggroLine(enemy) {
+    this.stealthRuntime.speakAggroLine(enemy);
+  }
+
+  _enemyPerceptionRating(enemy, perception = null) {
+    const field = FIELD_RATINGS.find((entry) => entry.id === 'search');
+    const base = field ? calculateFieldRating(normalizeProgression(enemy.progression), field) : 0;
+    return base + (perception?.ratingBonus ?? 0);
+  }
+
+  _advanceExplorePatrols(dt) {
+    this.patrolSystem.advanceExplore(dt);
+  }
+}
+
+export function installGameMovementRuntime(GameClass) {
+  installGameMethods(GameClass, GameMovementRuntime);
+}
