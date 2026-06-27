@@ -10,15 +10,15 @@ export function enemyHasUnclaimedLoot(enemy) {
 }
 
 export class LootSession {
-  constructor(game, callbacks = {}) {
-    this.game = game;
+  constructor(state, callbacks = {}) {
+    this.state = state;
     this.callbacks = callbacks;
   }
 
   objectShouldOpen(object) {
     const descriptor = object?.interact ?? {};
     if (descriptor.type !== 'container' && descriptor.type !== 'corpse') return false;
-    if (descriptor.type === 'container' && descriptor.requiresItem && !this.game.inventory.has(descriptor.requiresItem)) {
+    if (descriptor.type === 'container' && descriptor.requiresItem && !this.state.inventory.has(descriptor.requiresItem)) {
       return false;
     }
     if (descriptor.type === 'container' && object.consumed) return false;
@@ -37,10 +37,10 @@ export class LootSession {
     const logLines = [].concat(descriptor.log ?? []).filter(Boolean);
     for (const line of logLines) this.callbacks.log?.(line);
 
-    this.game.pendingLootAfterDialogue = { sourceType: 'object', source: object };
+    this.state.pendingLootAfterDialogue = { sourceType: 'object', source: object };
     if (descriptor.dialogue) {
       this.callbacks.openDialogueById?.(descriptor.dialogue);
-      if (this.game.uiScreen === 'dialogue') return true;
+      if (this.state.uiScreen === 'dialogue') return true;
     }
     if (logLines.length) {
       this.callbacks.openDialogue?.(
@@ -48,9 +48,9 @@ export class LootSession {
         logLines,
         descriptor.type ?? 'inspect'
       );
-      if (this.game.uiScreen === 'dialogue') return true;
+      if (this.state.uiScreen === 'dialogue') return true;
     }
-    this.game.pendingLootAfterDialogue = null;
+    this.state.pendingLootAfterDialogue = null;
     return false;
   }
 
@@ -64,7 +64,7 @@ export class LootSession {
     } else if (descriptor.type === 'corpse') {
       this.callbacks.registerSuspiciousAction?.(SUSPICION_SEVERITY.LOW, 'looting');
     }
-    if (this.game.mode !== 'explore') return;
+    if (this.state.mode !== 'explore') return;
     this.open({
       title: this.callbacks.objectName?.(object) ?? object?.name ?? 'Loot',
       sourceType: 'object',
@@ -73,24 +73,24 @@ export class LootSession {
   }
 
   open({ title, sourceType, source }) {
-    this.game.uiScreen = 'loot';
-    this.game.dialogue = null;
-    this.game.pendingLootAfterDialogue = null;
-    this.game.inventoryActionMenu = null;
-    this.game.inventorySplit = null;
-    this.game.loot = {
+    this.state.uiScreen = 'loot';
+    this.state.dialogue = null;
+    this.state.pendingLootAfterDialogue = null;
+    this.state.inventoryActionMenu = null;
+    this.state.inventorySplit = null;
+    this.state.loot = {
       title: title ?? 'Loot',
       sourceType,
       source
     };
-    this.game.lootIndex = 0;
+    this.state.lootIndex = 0;
   }
 
   sourceHasItems(loot) {
     return this.entriesForSource(loot).some((entry) => entry.count > 0);
   }
 
-  entriesForSource(loot = this.game.loot) {
+  entriesForSource(loot = this.state.loot) {
     if (!loot?.source) return [];
     if (loot.sourceType === 'enemy') return Array.isArray(loot.source.loot) && !loot.source.lootClaimed ? loot.source.loot : [];
     const descriptor = loot.source.interact ?? {};
@@ -108,18 +108,18 @@ export class LootSession {
         const itemId = entry.item;
         const count = Math.max(0, Math.floor(Number(entry.count ?? 1) || 0));
         if (!itemId || count <= 0) return null;
-        const itemDef = this.game.inventory.itemDefs[itemId] ?? {};
+        const itemDef = this.state.inventory.itemDefs[itemId] ?? {};
         return {
           rawIndex,
           id: itemId,
           itemId,
           count,
-          name: this.game.inventory.displayName(itemId),
+          name: this.state.inventory.displayName(itemId),
           type: itemDef.type ?? 'item',
           groundModel: itemDef.groundModel ?? null,
           description: itemDef.description ?? '',
-          weight: this.game.inventory.itemWeight(itemId),
-          totalWeight: this.game.inventory.weightOf(itemId, count),
+          weight: this.state.inventory.itemWeight(itemId),
+          totalWeight: this.state.inventory.weightOf(itemId, count),
           canEquip: Boolean(itemDef.equipment?.slot),
           equipmentSlot: itemDef.equipment?.slot ?? null
         };
@@ -129,7 +129,7 @@ export class LootSession {
 
   takeMarked() {
     const entries = this.currentEntries();
-    const entry = entries[this.game.lootIndex ?? 0];
+    const entry = entries[this.state.lootIndex ?? 0];
     if (!entry) {
       this.finalizeIfEmpty();
       return;
@@ -143,20 +143,20 @@ export class LootSession {
       this.finalizeIfEmpty();
       return;
     }
-    const carry = this.game.inventory.canAddLoot(entries.map((entry) => ({ item: entry.itemId, count: entry.count })));
+    const carry = this.state.inventory.canAddLoot(entries.map((entry) => ({ item: entry.itemId, count: entry.count })));
     if (!carry.ok) {
       this.callbacks.logCarryFailure?.(carry);
       return;
     }
     const summary = entries.map((entry) => `${entry.count}x ${entry.name}`).join(', ');
     for (const entry of entries) {
-      this.game.inventory.add(entry.itemId, entry.count);
+      this.state.inventory.add(entry.itemId, entry.count);
       this.setEntryCount(entry.rawIndex, 0);
     }
     this.callbacks.syncInventoryOrder?.();
     if (summary) this.callbacks.log?.(`Recovered: ${summary}.`);
     this.callbacks.registerSuspiciousAction?.(SUSPICION_SEVERITY.LOW, 'looting');
-    if (this.game.mode !== 'explore') return;
+    if (this.state.mode !== 'explore') return;
     this.finalizeIfEmpty();
   }
 
@@ -165,21 +165,21 @@ export class LootSession {
     const raw = rawEntries[rawIndex];
     if (!raw?.item) return false;
     const amount = Math.max(1, Math.min(Math.floor(Number(count) || 1), Math.floor(Number(raw.count ?? 1) || 1)));
-    const carry = this.game.inventory.canAdd(raw.item, amount);
+    const carry = this.state.inventory.canAdd(raw.item, amount);
     if (!carry.ok) {
       this.callbacks.logCarryFailure?.(carry);
       return false;
     }
-    const result = this.game.inventory.add(raw.item, amount);
+    const result = this.state.inventory.add(raw.item, amount);
     if (!result.ok) {
-      this.callbacks.log?.(`No room for ${this.game.inventory.displayName(raw.item)}.`);
+      this.callbacks.log?.(`No room for ${this.state.inventory.displayName(raw.item)}.`);
       return false;
     }
     this.setEntryCount(rawIndex, Math.max(0, (raw.count ?? 1) - amount));
     this.callbacks.syncInventoryOrder?.();
-    this.callbacks.log?.(`Recovered: ${amount}x ${this.game.inventory.displayName(raw.item)}.`);
+    this.callbacks.log?.(`Recovered: ${amount}x ${this.state.inventory.displayName(raw.item)}.`);
     this.callbacks.registerSuspiciousAction?.(SUSPICION_SEVERITY.LOW, 'looting');
-    if (this.game.mode !== 'explore') return true;
+    if (this.state.mode !== 'explore') return true;
     this.finalizeIfEmpty();
     return true;
   }
@@ -192,17 +192,17 @@ export class LootSession {
   }
 
   finalizeIfEmpty() {
-    if (!this.game.loot) return false;
+    if (!this.state.loot) return false;
     const entries = this.currentEntries();
     if (entries.length) {
-      this.game.lootIndex = Math.max(0, Math.min(entries.length - 1, this.game.lootIndex ?? 0));
+      this.state.lootIndex = Math.max(0, Math.min(entries.length - 1, this.state.lootIndex ?? 0));
       return false;
     }
 
-    const { sourceType, source } = this.game.loot;
-    this.game.loot = null;
-    this.game.lootIndex = 0;
-    this.game.uiScreen = null;
+    const { sourceType, source } = this.state.loot;
+    this.state.loot = null;
+    this.state.lootIndex = 0;
+    this.state.uiScreen = null;
 
     if (sourceType === 'enemy' && source) {
       source.lootClaimed = true;
@@ -214,7 +214,7 @@ export class LootSession {
       source.opened = true;
       if (descriptor.type === 'container') {
         source.consumed = true;
-        syncObjectPassability(source, this.game.grid);
+        syncObjectPassability(source, this.state.grid);
       } else if (descriptor.type === 'corpse') {
         source.looted = true;
       }

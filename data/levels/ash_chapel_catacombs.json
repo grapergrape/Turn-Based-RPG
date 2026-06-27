@@ -133,10 +133,19 @@
         },
         "patrol": {
           "mode": "pingpong",
-          "delay": [1.2, 2.4],
+          "delay": [
+            1.2,
+            2.4
+          ],
           "path": [
-            { "x": 18, "y": 4 },
-            { "x": 19, "y": 4 }
+            {
+              "x": 18,
+              "y": 4
+            },
+            {
+              "x": 19,
+              "y": 4
+            }
           ]
         },
         "ambient": [
@@ -414,6 +423,7 @@
   },
   "objects": [
     {
+      "id": "stone-stair-up-20-2",
       "kind": "loose-flagstone",
       "x": 20,
       "y": 2,
@@ -503,6 +513,7 @@
       "name": "Sealed Storage Crate"
     },
     {
+      "id": "wardens-burial-ledger-22-4",
       "kind": "paper-scraps",
       "x": 22,
       "y": 4,
@@ -514,6 +525,7 @@
       }
     },
     {
+      "id": "wardens-note-the-sick-5-7",
       "kind": "paper-scraps",
       "x": 5,
       "y": 7,
@@ -525,6 +537,7 @@
       }
     },
     {
+      "id": "wardens-note-the-doubters-35-7",
       "kind": "paper-scraps",
       "x": 35,
       "y": 7,
@@ -536,6 +549,7 @@
       }
     },
     {
+      "id": "wardens-note-the-useful-dead-4-18",
       "kind": "paper-scraps",
       "x": 4,
       "y": 18,
@@ -547,6 +561,7 @@
       }
     },
     {
+      "id": "wardens-note-the-loud-ones-35-18",
       "kind": "paper-scraps",
       "x": 35,
       "y": 18,
@@ -558,6 +573,7 @@
       }
     },
     {
+      "id": "wardens-last-tally-9-31",
       "kind": "paper-scraps",
       "x": 9,
       "y": 31,
@@ -569,6 +585,7 @@
       }
     },
     {
+      "id": "wardens-shrine-confession-20-47",
       "kind": "paper-scraps",
       "x": 20,
       "y": 47,
@@ -580,6 +597,7 @@
       }
     },
     {
+      "id": "sealed-berth-5-13",
       "kind": "stone-tomb",
       "x": 5,
       "y": 13,
@@ -597,6 +615,7 @@
       }
     },
     {
+      "id": "foremans-berth-13-25",
       "kind": "stone-tomb",
       "x": 13,
       "y": 25,
@@ -614,6 +633,7 @@
       }
     },
     {
+      "id": "unnamed-berth-26-25",
       "kind": "stone-tomb",
       "x": 26,
       "y": 25,
@@ -631,6 +651,7 @@
       }
     },
     {
+      "id": "bone-reliquary-29-37",
       "kind": "rusted-reliquary",
       "x": 29,
       "y": 37,

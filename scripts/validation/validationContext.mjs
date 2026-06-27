@@ -37,40 +37,6 @@ export const root = process.cwd();
 export const dataRoot = join(root, 'data');
 export const errors = [];
 
-// NOTE: DECAL_KINDS below is a curated scene-density heuristic (ground clutter
-// to keep rooms from looking bare), NOT the renderer's flat-decal set. The
-// authoritative list of renderable kinds and which are flat lives in the sprite
-// catalog (src/render/spriteCatalog.js); kind validity is checked against it.
-
-// Content this slice (Ash Chapel Breach) must contain.
-export const MAIN_LEVEL_ID = 'ash-chapel-breach';
-export const CELLAR_LEVEL_ID = 'ash-chapel-cellar';
-export const REQUIRED_MAIN_ENEMY_IDS = [
-  'choir-flesh-eater',
-  'choir-candle-bearer',
-  'choir-throat-singer',
-  'host-touched-penitent'
-];
-export const REQUIRED_INTERACTABLE_KINDS = ['rusted-reliquary', 'field-satchel', 'damaged-altar', 'rusted-barrel'];
-export const REQUIRED_ITEM_IDS = [
-  'ducat',
-  'relic-rounds',
-  'field-dressing',
-  'tarnished-saint-token',
-  'road-warden-chit',
-  'choir-hymnal-fragment'
-];
-export const REQUIRED_QUEST_IDS = ['investigate-ash-chapel-cult'];
-export const REQUIRED_DIALOGUE_IDS = [
-  'ash-chapel-altar-rite',
-  'ash-chapel-barrel-ladder',
-  'ash-chapel-cellar-corpse',
-  'ash-chapel-cellar-ladder',
-  'ash-chapel-cult-ledger'
-];
-export const DECAL_KINDS = new Set([
-  'rubble-pile', 'rubble-decal', 'floor-crack', 'blood-stain', 'glass-debris', 'dust', 'road-dust'
-]);
 export const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring']);
 export const ITEM_GROUND_MODELS = new Set([
   'ball', 'boots', 'coat', 'hood', 'vest', 'ring', 'necklace', 'key',
