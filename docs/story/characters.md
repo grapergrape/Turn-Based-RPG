@@ -51,7 +51,7 @@ Ilyra is a Remnant exorcist from the Mercy Orders. She believes in God and knows
 She should not be written as naive. She has seen Host outbreaks and understands why frightened towns ask for fire. Her conflict is that obedience keeps people safe until it becomes murder.
 
 **Personal conflict:** Obedience versus mercy.
-**Quest hook:** Ilyra's old Mercy Order cell is discovered sheltering Stage One and Stage Two victims. The player can help her hide them, turn them over, seek Compact treatment, or expose the Remnant's secret research hypocrisy.
+**Quest hook:** Ilyra's old Mercy Order cell is discovered sheltering Stage I and Stage II victims. The player can help her hide them, turn them over, seek Compact treatment, or expose the Remnant's secret research hypocrisy.
 **Relationship hooks:** Argues theology with Anselm, distrusts Kael's utilitarian ethics, and may become protective of Lio.
 
 ### Dr. Kael Ren
@@ -65,7 +65,7 @@ Kael Ren is a Compact xenobiologist who believes the Vale Imprint theory is corr
 He should not be written as a clean skeptic. Kael has abandoned test subjects, signed off on dangerous exposure studies, and told himself that truth required it. He can help the player understand The Host better than almost anyone alive, but he needs the player to force him to remember that subjects are people.
 
 **Personal conflict:** Truth versus moral accountability.
-**Quest hook:** Kael learns that Stage Two test subjects he left in a sealed Meridian Vault lab are still alive, altered, and aware. Saving them could destroy his career and expose Compact crimes.
+**Quest hook:** Kael learns that Stage II test subjects he left in a sealed Meridian Vault lab are still alive, altered, and aware. Saving them could destroy his career and expose Compact crimes.
 **Relationship hooks:** Intellectually respects Ilyra more than he admits, fears Anselm's knowledge, and sees Lio as both person and data until challenged.
 
 ### Brother Tarn
@@ -149,7 +149,7 @@ Kess commands purge columns along the borderlands. He is brave, disciplined, and
 **Faction:** Holy Remnant, Mercy Orders
 **Role:** Ilyra's superior and secret healer
 
-Caldra runs a field hospice that publicly performs last rites and privately treats early infection. She knows prayer-litanies can lower panic and buy time, but she also knows faith cannot reverse Stage Three.
+Caldra runs a field hospice that publicly performs last rites and privately treats early infection. She knows prayer-litanies can lower panic and buy time, but she also knows faith cannot reverse Stage III.
 
 **Campaign function:** Moral counterweight inside the Remnant.
 **Pressure point:** Her mercy network can save lives only while the institution she serves remains strong enough to hide it.

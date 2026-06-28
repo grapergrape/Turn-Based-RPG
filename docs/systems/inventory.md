@@ -12,6 +12,17 @@ The current inventory is a small field-pack system, not an infinite loot bag.
   pack-full message.
 - Equipped items still count as carried weight.
 
+## Rarity
+
+- Each item defines `rarity` as `common`, `uncommon`, `rare`, `epic`, or
+  `legendary`.
+- Inventory, loot, and trade screens color item names and slot accents from the
+  rarity grade.
+- Missing runtime rarity falls back to `common`, but committed item JSON must set
+  the field explicitly.
+- Items can set `build` to show the build they are tuned for in inventory, loot,
+  and trade details.
+
 ## Gear slots
 
 The player has fixed equipment slots:

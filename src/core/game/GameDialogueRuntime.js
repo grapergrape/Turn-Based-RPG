@@ -250,6 +250,7 @@ class GameDialogueRuntime {
     this.moving = null;
     this.pathQueue = [];
     this.pendingExploreTarget = null;
+    if (this.hiddenTilesKey !== null) this._revealMapAroundPlayer();
   }
 
   _closeUiScreen() {

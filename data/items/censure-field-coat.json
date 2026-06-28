@@ -2,6 +2,7 @@
   "id": "censure-field-coat",
   "name": "Censure Field Coat",
   "type": "clothes",
+  "rarity": "uncommon",
   "weight": 1.5,
   "groundModel": "coat",
   "equipment": { "slot": "clothes" },

@@ -1,0 +1,33 @@
+{
+  "id": "host-wolf-spider",
+  "name": "Spider-Leg Host Wolf",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "host-wolf-spider",
+  "description": "A road wolf forced into a low saint-beast shape. Six thin bone legs rise from the ribs and set down with careful, prayerful taps.",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 6,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "bone-leg-gouge",
+      "name": "Bone Leg Gouge",
+      "apCost": 3,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "aggro": [
+    "The wolf clicks its bone legs on the stone.",
+    "The wolf lowers its borrowed horns."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "wolf",
+    "skitter"
+  ]
+}

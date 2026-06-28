@@ -328,6 +328,7 @@ export class Game {
     this.anim = { tick: 0, bob: 0, flicker: 0, pulse: 0 };
     this.hiddenTiles = new Set();
     this.hiddenTilesKey = null;
+    this.exploredMapTiles = new Set();
 
     this.selectedAttackId = this.player.attacks[0]?.id ?? null;
     this.targetIndex = 0;
@@ -339,6 +340,7 @@ export class Game {
     this._restoreLevelState();
     if (bootOptions.player) this._teleportPlayer(bootOptions.player);
     this._refreshHiddenTiles();
+    this._revealMapAroundPlayer();
     this._renderLoading(0.88, 'Baking field view');
     await this._loadingFrame();
     this.renderer.rebuildStaticScene({
@@ -355,7 +357,7 @@ export class Game {
     this._log(level.intro || level.name);
     this._startQuests(previousQuestStages, previousQuestReached);
     this._log('C crouches. Hold Shift while moving to sprint.');
-    this._log('I pack, J journal, H bind wounds.');
+    this._log('I pack, J journal, M map, H bind wounds.');
     if (bootOptions.skipIntro) this.introSeen = true;
 
     // The opening writ plays once, on a fresh start (not on level transitions
@@ -555,12 +557,21 @@ export class Game {
   }
 
   _drainBlockingInput() {
-    // Still honour persistent toggles and restart/debug while animating.
-    if (typeof this.input.consumeText === 'function') this.input.consumeText();
-    for (const action of this.input.consume()) {
+    const actions = this.input.consume();
+    const click = this.input.consumeClick();
+    const textInput = typeof this.input.consumeText === 'function' ? this.input.consumeText() : [];
+    if (this.uiScreen) {
+      this._handleUiScreen(actions, click, textInput);
+      return;
+    }
+
+    // Still honour persistent toggles and lightweight screens while animating.
+    for (const action of actions) {
       if (action === 'restart') this.boot();
       else if (action === 'debug') this.debugGrid = !this.debugGrid;
       else if (action === 'toggle-sneak') this._toggleSneakMode();
+      else if (action === 'journal') this._toggleJournal();
+      else if (action === 'map') this._toggleJournal({ section: 'MAP' });
     }
   }
 
@@ -602,6 +613,9 @@ export class Game {
           break;
         case 'journal':
           this._toggleJournal();
+          break;
+        case 'map':
+          this._toggleJournal({ section: 'MAP' });
           break;
         case 'dressing':
           this._log(this.inventory.useFieldDressing(this.player));
@@ -888,6 +902,7 @@ export class Game {
       now: this.anim?.tick ?? null
     });
     this._refreshHiddenTiles({ rebuildStatic: true });
+    this._revealMapAroundPlayer();
     if (log) {
       for (const line of [].concat(object.interact?.log ?? [])) this._log(line);
     }

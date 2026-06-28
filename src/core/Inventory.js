@@ -1,6 +1,9 @@
 // Inventory state: item-id -> count, carry weight, and a fixed paper-doll
 // equipment map. Item definitions remain data-driven.
 
+import { itemRarityMeta } from './ItemRarity.js';
+import { buildProfile } from './Progression.js';
+
 export const EQUIPMENT_SLOTS = [
   { id: 'clothes', label: 'Clothes' },
   { id: 'armor', label: 'Armor' },
@@ -70,6 +73,15 @@ export class Inventory {
   itemWeight(itemId) {
     const value = this.itemDefs[itemId]?.weight;
     return typeof value === 'number' && Number.isFinite(value) ? Math.max(0, value) : 0;
+  }
+
+  itemRarity(itemId) {
+    return itemRarityMeta(this.itemDefs[itemId]?.rarity);
+  }
+
+  itemBuild(itemId) {
+    const buildId = this.itemDefs[itemId]?.build;
+    return buildId ? buildProfile(buildId) : null;
   }
 
   weightOf(itemId, count = 1) {
@@ -184,12 +196,19 @@ export class Inventory {
   equipmentEntries() {
     return EQUIPMENT_SLOTS.map((slot) => {
       const itemId = this.equipment.get(slot.id);
+      const rarity = itemId ? this.itemRarity(itemId) : null;
+      const build = itemId ? this.itemBuild(itemId) : null;
       return {
         slot: slot.id,
         label: slot.label,
         itemId,
         name: itemId ? this.displayName(itemId) : 'Empty',
         type: itemId ? this.itemDefs[itemId]?.type ?? 'item' : '',
+        rarity: rarity?.id ?? null,
+        rarityLabel: rarity?.label ?? '',
+        rarityRank: rarity?.rank ?? 0,
+        build: build?.id ?? null,
+        buildLabel: build?.label ?? '',
         groundModel: itemId ? this.itemDefs[itemId]?.groundModel ?? null : null,
         description: itemId ? this.itemDefs[itemId]?.description ?? '' : '',
         weight: itemId ? this.itemWeight(itemId) : 0,
@@ -222,21 +241,30 @@ export class Inventory {
   }
 
   entries() {
-    return [...this.counts.entries()].map(([id, count]) => ({
-      id,
-      count,
-      name: this.displayName(id),
-      type: this.itemDefs[id]?.type ?? 'item',
-      groundModel: this.itemDefs[id]?.groundModel ?? null,
-      description: this.itemDefs[id]?.description ?? '',
-      weight: this.itemWeight(id),
-      totalWeight: this.weightOf(id, count),
-      equipmentSlot: this.equipmentSlotFor(id),
-      canEquip: this.canEquip(id),
-      canUse: this.canUse(id),
-      equippedCount: this.equippedCount(id),
-      wornSlots: this.wornSlots(id)
-    }));
+    return [...this.counts.entries()].map(([id, count]) => {
+      const rarity = this.itemRarity(id);
+      const build = this.itemBuild(id);
+      return {
+        id,
+        count,
+        name: this.displayName(id),
+        type: this.itemDefs[id]?.type ?? 'item',
+        rarity: rarity.id,
+        rarityLabel: rarity.label,
+        rarityRank: rarity.rank,
+        build: build?.id ?? null,
+        buildLabel: build?.label ?? '',
+        groundModel: this.itemDefs[id]?.groundModel ?? null,
+        description: this.itemDefs[id]?.description ?? '',
+        weight: this.itemWeight(id),
+        totalWeight: this.weightOf(id, count),
+        equipmentSlot: this.equipmentSlotFor(id),
+        canEquip: this.canEquip(id),
+        canUse: this.canUse(id),
+        equippedCount: this.equippedCount(id),
+        wornSlots: this.wornSlots(id)
+      };
+    });
   }
 
   canUse(itemId) {

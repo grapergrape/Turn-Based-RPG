@@ -2,6 +2,7 @@
   "id": "mourning-ring",
   "name": "Mourning Ring",
   "type": "ring",
+  "rarity": "uncommon",
   "weight": 0.1,
   "groundModel": "ring",
   "equipment": { "slot": "ring" },

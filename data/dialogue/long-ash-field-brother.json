@@ -22,7 +22,7 @@
       "conditions": {
         "flag": "long-ash-field-family-lie"
       },
-      "else": "report-check",
+      "else": "report-known",
       "lines": [
         "\"Safe. Good. I knew the Choir would speak sternly to them. Very sternly. Holy sternly.\"",
         "\"When rapture comes, I may only tax them a little. For rope damages.\""
@@ -30,6 +30,59 @@
       "choices": [
         {
           "label": "Leave Edrin in the wheat",
+          "close": true
+        }
+      ]
+    },
+    "report-known": {
+      "conditions": {
+        "flag": "long-ash-field-brother-met",
+        "questStages": {
+          "calcified-brothers": "family-known"
+        }
+      },
+      "else": "report-check",
+      "lines": [
+        "\"You saw the yard. Do not tidy your face before you answer. I have watched one hundred harvests. I know tidy means trouble.\"",
+        "\"Are they well? Tell me straight, or tell me kind. I am not sure which I deserve.\""
+      ],
+      "choices": [
+        {
+          "label": "Tell him they are dead",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-family-truth"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
+            "log": "Edrin gives up the location of his old forest stash."
+          },
+          "next": "truth"
+        },
+        {
+          "label": "Lie that they are safe",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-family-lie"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
+            "log": "Edrin gives up the location of his old forest stash."
+          },
+          "next": "lie"
+        },
+        {
+          "label": "Make the truth hurt",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-family-truth",
+              "long-ash-field-brother-mocked"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
+            "log": "Edrin gives up the location of his old forest stash."
+          },
+          "next": "cruel-truth"
+        },
+        {
+          "label": "Not yet",
           "close": true
         }
       ]
@@ -45,7 +98,8 @@
       },
       "else": "waiting-check",
       "lines": [
-        "\"You saw the yard. Do not tidy your face before you answer. I have watched one hundred harvests. I know tidy means trouble.\"",
+        "A calcified man stands lashed above the wheat. His face moves when he hears your boots in the furrows.",
+        "\"Edrin Holt. If you saw the yard, do not tidy your face before you answer. I have watched one hundred harvests. I know tidy means trouble.\"",
         "\"Are they well? Tell me straight, or tell me kind. I am not sure which I deserve.\""
       ],
       "choices": [
@@ -118,14 +172,22 @@
       ]
     },
     "first": {
+      "conditions": {
+        "flag": "long-ash-crossroad-brother-paid"
+      },
+      "else": "first-mentioned",
       "lines": [
         "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
-        "\"Hail, traveler. You may address me as Edrin Holt, advanced scarecrow and future road prince.\"",
+        "\"Hail, traveler. Edrin Holt, field hand. The family put me here to scare birds off Holt grain.\"",
+        "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
         "\"If Garron sent you, tell him I am nearly royal.\""
       ],
       "choices": [
         {
           "label": "Garron sent me",
+          "conditions": {
+            "flag": "long-ash-crossroad-brother-paid"
+          },
           "effects": {
             "setFlag": "long-ash-field-brother-met",
             "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
@@ -166,9 +228,139 @@
         }
       ]
     },
+    "first-mentioned": {
+      "conditions": {
+        "flag": "long-ash-crossroad-edrin-named",
+        "flagsAbsent": "long-ash-crossroad-brother-paid"
+      },
+      "else": "first-unknown",
+      "lines": [
+        "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
+        "\"Hail, traveler. Edrin Holt, field hand. The family put me here to scare birds off Holt grain.\"",
+        "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
+        "\"If Garron sent you, tell him I am nearly royal.\""
+      ],
+      "choices": [
+        {
+          "label": "Garron mentioned you",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "family-task"
+        },
+        {
+          "label": "Ask about the Choir",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "choir"
+        },
+        {
+          "label": "Ask why he is in the field",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "field"
+        },
+        {
+          "label": "Mock the scarecrow",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-brother-met",
+              "long-ash-field-brother-mocked"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
+            "log": "Edrin rustles in his ropes, pleased and offended at once."
+          },
+          "next": "mocked"
+        },
+        {
+          "label": "Leave him to the wheat",
+          "close": true
+        }
+      ]
+    },
+    "first-unknown": {
+      "lines": [
+        "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
+        "\"Hail, traveler. Edrin Holt, field hand. The family put me here to scare birds off Holt grain.\"",
+        "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
+        "\"If Garron sent you, tell him I am nearly royal.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask who Garron is",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "garron-who"
+        },
+        {
+          "label": "Ask about the Choir",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "choir"
+        },
+        {
+          "label": "Ask why he is in the field",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "field"
+        },
+        {
+          "label": "Mock the scarecrow",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-brother-met",
+              "long-ash-field-brother-mocked"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
+            "log": "Edrin rustles in his ropes, pleased and offended at once."
+          },
+          "next": "mocked"
+        },
+        {
+          "label": "Leave him to the wheat",
+          "close": true
+        }
+      ]
+    },
+    "garron-who": {
+      "lines": [
+        "\"My brother. If the road still has use for him, he is pointing at Hallowfen and taking insults from pilgrims.\"",
+        "\"He worries about me. I am busy worrying about the house. The cups stopped clinking after the Choir came through.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why he is in the field",
+          "next": "field"
+        },
+        {
+          "label": "Ask about the Choir",
+          "next": "choir"
+        },
+        {
+          "label": "Ask about the family",
+          "next": "family-task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
     "field": {
       "lines": [
-        "\"The family put me here after the Stilling. Practical people. They had grain, crows, and one brother who could no longer run away from work.\"",
+        "\"The family put me here after the Stilling. Practical people. They had grain and crows. They had one brother who could no longer run from work.\"",
+        "\"That was the work: keep the birds off Holt wheat, even if I had to yell all afternoon.\"",
         "\"I was angry for the first thirty years. Then the youngest started bringing soup in a cup tied to a pole, and the field stopped feeling empty.\""
       ],
       "choices": [
@@ -198,6 +390,9 @@
         },
         {
           "label": "Garron doubts them",
+          "conditions": {
+            "flag": "long-ash-crossroad-choir-doubt-known"
+          },
           "next": "garron-doubts"
         },
         {

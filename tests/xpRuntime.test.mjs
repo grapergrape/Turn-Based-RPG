@@ -60,6 +60,7 @@ function buildGameForQuestXp() {
       initialStage: 'active',
       stages: [
         { id: 'active', description: 'Start' },
+        { id: 'clue', description: 'Found the clue.' },
         { id: 'found', description: 'Found it.', xp: 25 }
       ]
     }
@@ -150,6 +151,7 @@ function buildGameForCombatXp() {
 
   assert.equal(game.player.progression.xp, 25);
   assert.equal(game.questStages.get('test-quest'), 'found');
+  assert.deepEqual([...game.questReached.get('test-quest')], ['active', 'clue', 'found']);
   assert.equal(game.awardedQuestXp.has('test-quest:found'), true);
   assert.equal(game.log.includes('Experience gained: 25.'), true);
 }
@@ -161,6 +163,20 @@ function buildGameForCombatXp() {
 
   assert.equal(game.player.progression.xp, 0);
   assert.equal(game.questStages.get('test-quest'), 'found');
+}
+
+{
+  const game = buildGameForQuestXp();
+  game.questStages.set('test-quest', 'found');
+  game.questReached.set('test-quest', new Set(['active', 'clue', 'found']));
+  game.dialogue.choices = [
+    { label: 'Old lead', effects: { questUpdate: { quest: 'test-quest', stage: 'active' } } }
+  ];
+  game.update(0);
+
+  assert.equal(game.player.progression.xp, 0);
+  assert.equal(game.questStages.get('test-quest'), 'found');
+  assert.deepEqual([...game.questReached.get('test-quest')], ['active', 'clue', 'found']);
 }
 
 {

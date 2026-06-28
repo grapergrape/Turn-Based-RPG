@@ -79,6 +79,9 @@ class GameCombatRuntime {
         case 'journal':
           this._toggleJournal();
           return;
+        case 'map':
+          this._toggleJournal({ section: 'MAP' });
+          return;
         case 'restart':
           this.boot();
           return;
@@ -372,6 +375,14 @@ class GameCombatRuntime {
     for (const action of actions) {
       if (action === 'restart') {
         this.boot();
+        return;
+      }
+      if (action === 'journal') {
+        this._toggleJournal();
+        return;
+      }
+      if (action === 'map') {
+        this._toggleJournal({ section: 'MAP' });
         return;
       }
       if (action === 'debug') this.debugGrid = !this.debugGrid;

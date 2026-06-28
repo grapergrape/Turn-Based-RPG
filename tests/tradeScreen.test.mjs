@@ -32,9 +32,9 @@ globalThis.window = { addEventListener() {} };
 globalThis.document = { createElement: () => mockCanvas() };
 
 const itemDefs = {
-  ducat: { name: 'Ducat', type: 'currency', weight: 0, groundModel: 'chit', description: 'Stamped trade coin.' },
-  'field-dressing': { name: 'Field Dressing', type: 'consumable', weight: 0.2, groundModel: 'dressing', description: 'Sterile dressing.', use: { effect: 'heal', amount: 4 } },
-  'tinned-beans': { name: 'Tinned Beans', type: 'food', weight: 0.3, groundModel: 'food', description: 'A dented tin.', use: { effect: 'heal', amount: 1 } }
+  ducat: { name: 'Ducat', type: 'currency', rarity: 'common', weight: 0, groundModel: 'chit', description: 'Stamped trade coin.' },
+  'field-dressing': { name: 'Field Dressing', type: 'consumable', rarity: 'rare', weight: 0.2, groundModel: 'dressing', description: 'Sterile dressing.', use: { effect: 'heal', amount: 4 } },
+  'tinned-beans': { name: 'Tinned Beans', type: 'food', rarity: 'common', weight: 0.3, groundModel: 'food', description: 'A dented tin.', use: { effect: 'heal', amount: 1 } }
 };
 
 function buildTradeGame({ actions, ducats = 4, playerHp = 10 }) {
@@ -109,6 +109,10 @@ function buildTradeGame({ actions, ducats = 4, playerHp = 10 }) {
 
 {
   const { game, trader } = buildTradeGame({ actions: [['interact'], ['down', 'interact']], ducats: 5 });
+
+  const stock = game._tradeStockEntries();
+  assert.equal(stock.find((entry) => entry.id === 'field-dressing').rarity, 'rare');
+  assert.equal(stock.find((entry) => entry.id === 'field-dressing').rarityLabel, 'Rare');
 
   game.update(0);
   assert.equal(game.inventory.count('ducat'), 1);

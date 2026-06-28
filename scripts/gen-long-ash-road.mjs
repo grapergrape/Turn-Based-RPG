@@ -17,8 +17,14 @@ const FARM_DOOR_DIALOGUES = [
   'long-ash-storage-shed-door',
   'long-ash-grain-shed-door',
   'long-ash-tool-shed-door',
+  'long-ash-infected-cave-entrance',
   'long-ash-crossroad-brother',
   'long-ash-field-brother'
+];
+const INFECTED_CAVE_OUTSIDE_WOLVES = [
+  { id: 'host-wolf-spider', x: 88, y: 13, facing: 'se' },
+  { id: 'host-wolf-maw', x: 91, y: 13, facing: 's' },
+  { id: 'host-wolf-ribsplit', x: 94, y: 12, facing: 'sw' }
 ];
 const GRAVEYARD_BODIES = [
   {
@@ -799,7 +805,8 @@ function placeInfectedCave() {
     name: 'Infected Cave',
     seed: hash(INFECTED_CAVE.x, INFECTED_CAVE.y, 161),
     interact: {
-      type: 'note',
+      type: 'secret-entrance',
+      dialogue: 'long-ash-infected-cave-entrance',
       log: 'Wet fur and sick rot gather in the cold between the stones. Wolf tracks vanish into the black mouth.'
     }
   });
@@ -912,22 +919,41 @@ const level = {
   },
   mood: {
     floorShade: '#15130e',
-    floorShadeAlpha: 0.04,
+    floorShadeAlpha: 0.02,
     ambient: '#b8aa83',
-    ambientAlpha: 0.05,
-    vignette: 0.35,
+    ambientAlpha: 0.09,
+    vignette: 0.24,
     sun: {
       enabled: true,
       shadowOffsetX: 12,
       shadowOffsetY: 6,
-      shadowAlpha: 0.16
+      shadowAlpha: 0.12
     }
   },
   spawns: {
     player: { actor: 'mara-vey', x: START.x, y: START.y },
-    enemies: [],
+    enemies: INFECTED_CAVE_OUTSIDE_WOLVES.map((wolf, index) => ({
+      ...wolf,
+      encounter: 'infected-cave-mouth',
+      spawnId: `infected-cave-mouth-wolf-${index + 1}`,
+      aggroRadius: 2
+    })),
     npcs: []
   },
+  combatTriggers: [
+    {
+      id: 'infected-cave-mouth-trigger',
+      encounter: 'infected-cave-mouth',
+      x: 90,
+      y: 12,
+      radius: 3,
+      forceCombat: true,
+      intro: [
+        'Three shapes uncoil from the rocks. The wolves still move like a pack.'
+      ]
+    }
+  ],
+  victoryLog: 'The cave mouth falls quiet. The black entrance remains.',
   objects
 };
 

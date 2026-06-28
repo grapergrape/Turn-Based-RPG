@@ -194,8 +194,37 @@ class GameMovementRuntime {
     this.pathQueue = path && path.length ? path : [];
   }
 
+  _queueJournalMapWalk(cell, map) {
+    if (this.mode !== 'explore' || !cell || !map) return false;
+    const target = { x: Math.round(cell.x), y: Math.round(cell.y) };
+    if (!this.grid?.isInside?.(target.x, target.y)) return false;
+    if (!journalMapCellIsKnown(map, target)) return false;
+    if (this._isCellHidden(target.x, target.y) || !this.grid.isWalkable(target.x, target.y)) return false;
+    if (target.x === this.player.position.x && target.y === this.player.position.y) return false;
+
+    const known = knownJournalMapCells(map);
+    const startKey = cellKey(this.player.position.x, this.player.position.y);
+    const knownGrid = {
+      isWalkable: (x, y) => {
+        const key = cellKey(x, y);
+        return this.grid.isInside(x, y) &&
+          this.grid.isWalkable(x, y) &&
+          !this._isCellHidden(x, y) &&
+          (key === startKey || known.has(key));
+      }
+    };
+    const path = findPath(knownGrid, this.player.position, target, this._occupiedSet(this.player));
+    if (!path?.length) return false;
+
+    this.pendingExploreTarget = null;
+    this.preCombatTarget = null;
+    this.pathQueue = path;
+    return true;
+  }
+
   _onStepComplete(actor) {
     if (actor === this.player && this.mode === 'explore') {
+      this._revealMapAroundPlayer();
       const severity = this.player.pendingSuspicionSeverity ?? SUSPICION_SEVERITY.LOW;
       this.player.pendingSuspicionSeverity = null;
       this._registerSuspiciousAction(severity, 'movement');
@@ -265,4 +294,25 @@ class GameMovementRuntime {
 
 export function installGameMovementRuntime(GameClass) {
   installGameMethods(GameClass, GameMovementRuntime);
+}
+
+function journalMapCellIsKnown(map, cell) {
+  return (map.cells ?? []).some((entry) =>
+    entry.x === cell.x &&
+    entry.y === cell.y &&
+    entry.explored &&
+    !entry.hidden
+  );
+}
+
+function knownJournalMapCells(map) {
+  return new Set(
+    (map.cells ?? [])
+      .filter((entry) => entry.explored && !entry.hidden)
+      .map((entry) => entry.key ?? cellKey(entry.x, entry.y))
+  );
+}
+
+function cellKey(x, y) {
+  return `${x},${y}`;
 }

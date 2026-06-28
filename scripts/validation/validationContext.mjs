@@ -9,6 +9,7 @@ import {
   PRIMARY_ATTRIBUTES,
   TRACE_STAGES
 } from '../../src/core/Progression.js';
+import { ITEM_RARITY_IDS } from '../../src/core/ItemRarity.js';
 import {
   HUMAN_ACCENT_IDS,
   HUMAN_BODY_IDS,
@@ -38,9 +39,11 @@ export const dataRoot = join(root, 'data');
 export const errors = [];
 
 export const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring']);
+export { ITEM_RARITY_IDS };
 export const ITEM_GROUND_MODELS = new Set([
   'ball', 'boots', 'coat', 'hood', 'vest', 'ring', 'necklace', 'key',
-  'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard', 'food'
+  'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard', 'food',
+  'ribguard'
 ]);
 export const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
 export const DOOR_LEAVES = new Set(['north', 'south']);

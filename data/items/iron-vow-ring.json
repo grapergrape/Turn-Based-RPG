@@ -2,6 +2,7 @@
   "id": "iron-vow-ring",
   "name": "Iron Vow Ring",
   "type": "ring",
+  "rarity": "uncommon",
   "weight": 0.1,
   "groundModel": "ring",
   "equipment": { "slot": "ring" },

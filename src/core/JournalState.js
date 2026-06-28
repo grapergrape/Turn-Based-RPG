@@ -1,7 +1,7 @@
 import { buildCharacterSheet } from './Progression.js';
 import { buildTechniqueSheet } from './TechniqueSystem.js';
 
-export const JOURNAL_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS', 'TECHNIQUES'];
+export const JOURNAL_SECTIONS = ['QUESTS', 'MAP', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS', 'TECHNIQUES'];
 export const JOURNAL_TURN_DURATION = 0.46;
 
 export function buildJournalState({
@@ -18,7 +18,8 @@ export function buildJournalState({
   techniqueDefs = {},
   techniqueContext = {},
   primaryIndex = 0,
-  techniqueIndex = 0
+  techniqueIndex = 0,
+  map = null
 } = {}) {
   const character = buildCharacterSheet(player);
   const techniques = buildTechniqueSheet(player?.progression, techniqueDefs, techniqueContext);
@@ -28,6 +29,7 @@ export function buildJournalState({
     turn: journalTurnState(turn),
     factionIndex,
     quests: journalQuests({ questDefs, questStages, questReached }),
+    map,
     findings: journalFindings({ questDefs, questReached, journalNotes, flags }),
     factions: journalFactions({ codexDefs, flags, questReached }),
     character,

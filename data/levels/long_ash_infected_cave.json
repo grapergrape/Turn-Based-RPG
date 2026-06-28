@@ -1,0 +1,262 @@
+{
+  "id": "long-ash-infected-cave",
+  "name": "Long Ash Infected Cave",
+  "intro": "The cave narrows into wet limestone. A small river works over the floor, bright in the dark where it catches daylight from cracks above.",
+  "width": 24,
+  "height": 18,
+  "tileSize": 64,
+  "enemyVisionRadius": 5,
+  "enemyVisionCone": 120,
+  "enemyHearingRadius": {
+    "low": 2,
+    "medium": 4,
+    "high": 7
+  },
+  "quests": [
+    "investigate-ash-chapel-cult",
+    "calcified-brothers"
+  ],
+  "dialogue": [
+    "long-ash-infected-cave-exit"
+  ],
+  "mood": {
+    "floorShade": "#050505",
+    "floorShadeAlpha": 0.5,
+    "ambient": "#0a141c",
+    "ambientAlpha": 0.16,
+    "vignette": 1.65
+  },
+  "tiles": [
+    "########################",
+    "########################",
+    "#####......######....###",
+    "###.........####......##",
+    "##....................##",
+    "##....~~~.............##",
+    "##...~~~~~.......##...##",
+    "##..~~~~~~~......##...##",
+    "##...~~~~~~...........##",
+    "###...~~~~............##",
+    "###.....~~....####....##",
+    "##.............###....##",
+    "##....................##",
+    "###.................####",
+    "####..............######",
+    "#######..........#######",
+    "##########.....#########",
+    "########################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "cave-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "cave-stone",
+      "walkable": true
+    },
+    "~": {
+      "kind": "floor",
+      "floor": "cave-river",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 12,
+      "y": 15
+    },
+    "enemies": [
+      {
+        "id": "host-wolf-spider",
+        "spawnId": "cave-wolf-spider-west",
+        "x": 8,
+        "y": 4,
+        "facing": "se",
+        "encounter": "infected-cave-den",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-wolf-maw",
+        "spawnId": "cave-wolf-maw-north",
+        "x": 16,
+        "y": 6,
+        "facing": "sw",
+        "encounter": "infected-cave-den",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-wolf-ribsplit",
+        "spawnId": "cave-wolf-ribsplit-east",
+        "x": 18,
+        "y": 11,
+        "facing": "w",
+        "encounter": "infected-cave-den",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-wolf-spider",
+        "spawnId": "cave-wolf-spider-south",
+        "x": 10,
+        "y": 12,
+        "facing": "ne",
+        "encounter": "infected-cave-den",
+        "aggroRadius": 2
+      }
+    ],
+    "npcs": []
+  },
+  "combatStartBarks": [
+    "The pack answers with one wet bark."
+  ],
+  "combatTriggers": [
+    {
+      "id": "infected-cave-den-trigger",
+      "encounter": "infected-cave-den",
+      "x": 12,
+      "y": 11,
+      "radius": 3,
+      "forceCombat": true,
+      "intro": [
+        "The river noise breaks under claws. Four wolves move from the stone teeth."
+      ]
+    }
+  ],
+  "victoryLog": "The wolves lie still. Water keeps moving through the cave.",
+  "objects": [
+    {
+      "kind": "rubble-pile",
+      "x": 12,
+      "y": 16,
+      "blocking": true,
+      "id": "infected-cave-exit-mouth",
+      "name": "Cave Mouth",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "long-ash-infected-cave-exit",
+        "log": "Cold daylight shows through the cave mouth."
+      }
+    },
+    {
+      "kind": "rusted-reliquary",
+      "x": 20,
+      "y": 7,
+      "blocking": true,
+      "id": "infected-cave-dry-shelf-chest",
+      "name": "Cave Chest",
+      "mapMarker": {
+        "kind": "search",
+        "label": "Cave Chest"
+      },
+      "interact": {
+        "type": "container",
+        "log": "A rusted chest sits above the waterline. Someone wedged it under a dry shelf and left the hasp unlatched.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 60
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "pilgrim-ribguard",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "cave-stalagmite",
+      "x": 5,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "cave-stalagmite",
+      "x": 15,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "cave-stalagmite",
+      "x": 6,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "cave-stalagmite",
+      "x": 20,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "cave-stalagmite",
+      "x": 11,
+      "y": 9
+    },
+    {
+      "kind": "cave-stalactites",
+      "x": 6,
+      "y": 3
+    },
+    {
+      "kind": "cave-stalactites",
+      "x": 12,
+      "y": 2
+    },
+    {
+      "kind": "cave-stalactites",
+      "x": 20,
+      "y": 4
+    },
+    {
+      "kind": "cave-stalactites",
+      "x": 4,
+      "y": 13
+    },
+    {
+      "kind": "cave-flowstone",
+      "x": 6,
+      "y": 4
+    },
+    {
+      "kind": "cave-flowstone",
+      "x": 18,
+      "y": 5
+    },
+    {
+      "kind": "cave-flowstone",
+      "x": 14,
+      "y": 10
+    },
+    {
+      "kind": "cave-flowstone",
+      "x": 9,
+      "y": 13
+    },
+    {
+      "kind": "blood-stain",
+      "x": 8,
+      "y": 12
+    },
+    {
+      "kind": "blood-stain",
+      "x": 17,
+      "y": 10
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 13,
+      "y": 15
+    },
+    {
+      "kind": "floor-crack",
+      "x": 19,
+      "y": 12
+    }
+  ]
+}

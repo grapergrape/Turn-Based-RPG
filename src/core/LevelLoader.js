@@ -277,6 +277,7 @@ export async function loadLevel(levelPath, options = {}) {
     enemy.dialogueRepeat = Boolean(spawn.dialogueRepeat);
     enemy.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
     enemy.talkRadius = spawn.talkRadius ?? 1;
+    enemy.mapMarker = spawn.mapMarker ?? null;
     if (Array.isArray(spawn.loot)) enemy.loot = spawn.loot.map((entry) => ({ ...entry }));
     enemy.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
     enemy.aggro = Array.isArray(spawn.aggro)
@@ -315,6 +316,7 @@ export async function loadLevel(levelPath, options = {}) {
     npc.dialogueRepeat = spawn.dialogueRepeat !== false;
     npc.dialogueTriggerRadius = spawn.dialogueTriggerRadius ?? null;
     npc.talkRadius = spawn.talkRadius ?? 1;
+    npc.mapMarker = spawn.mapMarker ?? null;
     npc.ambient = Array.isArray(spawn.ambient) ? [...spawn.ambient] : [];
     npc.ambientIndex = 0;
     npc.ambientTimer = 8 + (index % 6) * 3.2;

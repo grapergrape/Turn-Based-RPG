@@ -2,6 +2,7 @@
   "id": "penitent-gear-scrap",
   "name": "Penitent Gear Scrap",
   "type": "salvage",
+  "rarity": "common",
   "weight": 0.3,
   "groundModel": "shard",
   "description": "A scorched gear tooth from Penitent armor. Host veins left black gold pinpoints in the steel."

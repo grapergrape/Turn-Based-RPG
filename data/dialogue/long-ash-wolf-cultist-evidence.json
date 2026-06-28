@@ -1,0 +1,26 @@
+{
+  "id": "long-ash-wolf-cultist-evidence",
+  "title": "Dead Cultists and Wolves",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "read-long-ash-child-wolf-journal"
+      },
+      "else": "unread",
+      "effects": {
+        "setFlag": "long-ash-wolves-avenged-family"
+      },
+      "lines": [
+        "After the child's copybook, the bodies make sense. The cultists wear red cloth at the cuff and throat.",
+        "Wolf hair is caught in the buckles. The bite marks came from the road grass, not from the cave mouth.",
+        "The pack was not hunting the Holt family. It came for the men who nailed them to the yard posts."
+      ]
+    },
+    "unread": {
+      "lines": [
+        "Dead cultists and torn wolf bodies lie near the cave mouth. The tracks cross too many times to read cleanly.",
+        "The cult cloth is shredded at the cuff and throat. Whatever happened here began before the cave swallowed the trail."
+      ]
+    }
+  }
+}

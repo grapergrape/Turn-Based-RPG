@@ -69,13 +69,32 @@
       "kind": "sealed-storage-crate",
       "x": 3,
       "y": 3,
-      "blocking": true
+      "blocking": true,
+      "id": "storage-shed-food-crate",
+      "name": "Food Crate",
+      "interact": {
+        "type": "container",
+        "log": "The crate has been picked over, but two tins remain under split straw.",
+        "loot": [
+          { "item": "tinned-beans", "count": 2 }
+        ]
+      }
     },
     {
       "kind": "sealed-storage-crate",
       "x": 8,
       "y": 3,
-      "blocking": true
+      "blocking": true,
+      "id": "storage-shed-supply-crate",
+      "name": "Supply Crate",
+      "interact": {
+        "type": "container",
+        "log": "A shallow tray under the crate lid still holds road odds and a sealed dressing.",
+        "loot": [
+          { "item": "field-dressing", "count": 1 },
+          { "item": "ducat", "count": 4 }
+        ]
+      }
     },
     {
       "kind": "pantry-shelf",
@@ -93,7 +112,17 @@
       "kind": "rusted-barrel",
       "x": 8,
       "y": 6,
-      "blocking": true
+      "blocking": true,
+      "id": "storage-shed-barrel",
+      "name": "Storage Barrel",
+      "interact": {
+        "type": "container",
+        "log": "A wrapped tin and a few road coins sit below the barrel's false bottom.",
+        "loot": [
+          { "item": "tinned-beans", "count": 1 },
+          { "item": "ducat", "count": 3 }
+        ]
+      }
     },
     {
       "kind": "road-dust",

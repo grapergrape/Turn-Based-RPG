@@ -95,7 +95,17 @@
       "kind": "rusted-crate",
       "x": 8,
       "y": 6,
-      "blocking": true
+      "blocking": true,
+      "id": "tool-shed-rusted-crate",
+      "name": "Tool Crate",
+      "interact": {
+        "type": "container",
+        "log": "The crate holds bent nails and broken handles. A small pouch is shoved into the corner.",
+        "loot": [
+          { "item": "ducat", "count": 3 },
+          { "item": "road-warden-chit", "count": 1 }
+        ]
+      }
     },
     {
       "kind": "candle-cluster",

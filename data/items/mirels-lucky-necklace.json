@@ -2,6 +2,7 @@
   "id": "mirels-lucky-necklace",
   "name": "Mirel's Lucky Necklace",
   "type": "quest",
+  "rarity": "rare",
   "weight": 0.1,
   "groundModel": "necklace",
   "description": "A tin saint on a black cord. Mirel says Jarik wore it through fever, hunger, and three bad road seasons. He left for Hallowfen without it."

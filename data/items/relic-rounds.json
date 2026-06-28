@@ -2,6 +2,7 @@
   "id": "relic-rounds",
   "name": "Relic Rounds",
   "type": "ammo",
+  "rarity": "common",
   "weight": 0.1,
   "groundModel": "rounds",
   "description": "Hand-pressed cartridges blessed at a Free City shrine. The sidearm never runs dry in this slice."

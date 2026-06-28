@@ -1,0 +1,33 @@
+{
+  "id": "host-wolf-ribsplit",
+  "name": "Ribsplit Host Wolf",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "host-wolf-ribsplit",
+  "description": "Its ribs have opened outward in two pale fans. Black-gold veins stitch the split chest, and each breath works the bones like doors.",
+  "stats": {
+    "hp": 7,
+    "maxHp": 7,
+    "actionPoints": 5,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "split-rib-rake",
+      "name": "Split Rib Rake",
+      "apCost": 3,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "aggro": [
+    "The wolf's open ribs flex.",
+    "A gold seam pulses under the hide."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "wolf",
+    "ribsplit"
+  ]
+}

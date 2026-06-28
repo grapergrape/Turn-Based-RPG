@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-infected-cave-entrance",
+  "title": "Infected Cave",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The cave mouth breathes cold air over wet stone. Wolf prints pass under the black lip and do not come back out."
+      ],
+      "choices": [
+        {
+          "label": "Enter the cave",
+          "effects": {
+            "log": "You step under the rock lip.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_infected_cave.json",
+              "player": { "x": 12, "y": 15 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay by the cave mouth."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

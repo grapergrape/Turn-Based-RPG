@@ -211,6 +211,99 @@ export function drawRubblePile(ctx, cx, cy, seed) {
   drawNoisePixels(ctx, cx - 22, cy - 4, 44, 14, [PALETTE.stoneDust, PALETTE.stoneDark], 0.05, seed);
 }
 
+export function drawCaveStalagmite(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 401, seed * 5 + 17));
+  drawShadowBlob(ctx, cx, cy + 4, 38, 15);
+  for (const spike of [
+    { dx: -10, w: 13, h: 26 + (seed % 7) },
+    { dx: 1, w: 17, h: 38 + ((seed >> 3) % 9) },
+    { dx: 13, w: 10, h: 20 + ((seed >> 5) % 8) }
+  ]) {
+    const bx = cx + spike.dx + Math.floor((rng() - 0.5) * 4);
+    const foot = cy + 2 + Math.floor(rng() * 4);
+    const half = Math.floor(spike.w / 2);
+    poly(ctx, PALETTE.outline, [
+      [bx - half - 2, foot],
+      [bx + 1, foot - spike.h - 3],
+      [bx + half + 2, foot]
+    ]);
+    poly(ctx, PALETTE.stoneMid, [
+      [bx - half, foot],
+      [bx, foot - spike.h],
+      [bx + half, foot]
+    ]);
+    poly(ctx, PALETTE.stoneLight, [
+      [bx - half + 1, foot - 1],
+      [bx - 1, foot - spike.h + 5],
+      [bx + 1, foot - 1]
+    ]);
+    poly(ctx, PALETTE.stoneDark, [
+      [bx + 1, foot - spike.h + 4],
+      [bx + half, foot - 1],
+      [bx + 2, foot - 1]
+    ]);
+    if ((seed + spike.dx) % 2 === 0) linePx(ctx, bx - 2, foot - spike.h + 8, bx - 5, foot - 4, PALETTE.stoneDust, 1);
+  }
+  drawNoisePixels(ctx, cx - 19, cy - 12, 38, 16, [PALETTE.stoneDust, PALETTE.stoneDark], 0.05, seed + 19);
+}
+
+export function drawCaveStalactites(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 409, seed * 7 + 23));
+  const anchorY = cy - 58;
+  px(ctx, cx - 26, anchorY - 3, PALETTE.outline, 52, 5);
+  px(ctx, cx - 24, anchorY - 2, PALETTE.stoneDark, 48, 3);
+  for (const spike of [
+    { dx: -18, w: 11, h: 24 + (seed % 9) },
+    { dx: -5, w: 15, h: 36 + ((seed >> 2) % 10) },
+    { dx: 11, w: 12, h: 28 + ((seed >> 5) % 11) },
+    { dx: 23, w: 7, h: 18 + ((seed >> 7) % 8) }
+  ]) {
+    const x = cx + spike.dx + Math.floor((rng() - 0.5) * 3);
+    const half = Math.floor(spike.w / 2);
+    poly(ctx, PALETTE.outline, [
+      [x - half - 1, anchorY],
+      [x + half + 1, anchorY],
+      [x, anchorY + spike.h + 3]
+    ]);
+    poly(ctx, PALETTE.stoneMid, [
+      [x - half, anchorY],
+      [x + half, anchorY],
+      [x, anchorY + spike.h]
+    ]);
+    poly(ctx, PALETTE.stoneLight, [
+      [x - half + 1, anchorY],
+      [x - 1, anchorY + spike.h - 4],
+      [x + 1, anchorY + 4]
+    ]);
+    poly(ctx, PALETTE.stoneDark, [
+      [x + 1, anchorY + 2],
+      [x + half, anchorY],
+      [x, anchorY + spike.h]
+    ]);
+    if ((seed + spike.dx) % 3 === 0) px(ctx, x, anchorY + spike.h + 5, PALETTE.stoneDust, 1, 2);
+  }
+}
+
+export function drawCaveFlowstone(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 419, seed * 11 + 31));
+  ctx.save();
+  ctx.globalAlpha = 0.88;
+  for (let band = 0; band < 5; band += 1) {
+    const y = cy - 8 + band * 4 + Math.floor(rng() * 3);
+    const left = cx - 25 + Math.floor(rng() * 7);
+    const right = cx + 22 - Math.floor(rng() * 7);
+    const color = band % 2 === 0 ? PALETTE.stoneDust : PALETTE.stoneLight;
+    linePx(ctx, left, y, right, y - 2 + Math.floor(rng() * 5), color, 1);
+    if (band % 2 === 1) linePx(ctx, left + 5, y + 1, right - 6, y + 2, PALETTE.stoneDark, 1);
+  }
+  for (let i = 0; i < 9; i += 1) {
+    const x = cx - 22 + Math.floor(rng() * 45);
+    const y = cy - 8 + Math.floor(rng() * 17);
+    px(ctx, x, y, rng() < 0.5 ? PALETTE.hostBone : PALETTE.stoneDust, 1 + Math.floor(rng() * 3), 1);
+  }
+  ctx.restore();
+}
+
 export function drawInfectedCaveEntrance(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 131, seed * 5 + 29));
   const top = cy - 154;

@@ -88,7 +88,7 @@ Rules:
   omitted, the renderer uses the original ruined stone style. Current floor
   styles are `stone`, `ash-dirt`, `ash-road`, `road-shoulder`, `wheat-field`,
   `furrow-field`, `forest-floor`, `graveyard-earth`, `farm-plank`, and
-  `packed-earth`.
+  `packed-earth`, `cave-stone`, and `cave-river`.
 - Levels can optionally set `mood` for scene-wide visual treatment. Existing
   keys are `floorShade`, `floorShadeAlpha`, `ambient`, `ambientAlpha`, and
   `vignette`. Outdoor daylight maps can also set `mood.sun.enabled: true` with
@@ -395,6 +395,28 @@ Search rules:
   ]
 }
 ```
+- The journal map is generated from the live level grid, blocking objects,
+  current player position, explored cells, dialogue sources, quest updates, and
+  combat triggers. Unexplored cells are black on the journal map. Hidden regions
+  stay black until their linked door group opens.
+- Objects, enemy spawns, NPC spawns, and combat triggers can define
+  `mapMarker` to control the automatic journal map marker. Use `false` to hide
+  an automatic marker. Use an object to override marker text or type:
+
+```json
+{
+  "mapMarker": {
+    "label": "Warden's Safe",
+    "kind": "locked",
+    "reveal": "explored"
+  }
+}
+```
+
+  Valid `kind` values are `quest`, `dialogue`, `exit`, `locked`, `search`,
+  `danger`, and `note`. Valid `reveal` values are `explored` and `always`.
+  A marker inside an active `hiddenRegions` rectangle stays hidden even if
+  `reveal` is `always`.
 - `quests` lists runtime quest ids loaded from `data/quests/`.
 - `dialogue` lists runtime dialogue ids loaded from `data/dialogue/`.
 - Enemy spawns can define `encounter` to group nearby enemies into one combat
@@ -612,6 +634,7 @@ Items live in `data/items/`, one file per id.
   "id": "field-dressing",
   "name": "Field Dressing",
   "type": "consumable",
+  "rarity": "common",
   "weight": 0.2,
   "groundModel": "dressing",
   "description": "Restores 4 HP. Consumed on use.",
@@ -621,11 +644,16 @@ Items live in `data/items/`, one file per id.
 
 Rules:
 
-- `id`, `name`, and `type` are required.
+- `id`, `name`, `type`, and `rarity` are required.
+- `rarity` controls loot color grades in inventory, loot, and trade screens.
+  Current grades are `common`, `uncommon`, `rare`, `epic`, and `legendary`.
+- Optional `build` marks the character build an item is tuned for. It must match
+  a build profile id from `src/core/Progression.js`, such as `road-ghost`.
 - `weight` is required and uses kilograms. It must be zero or greater.
 - `groundModel` is required so the item has drop and pickup art. Current models
   are `ball`, `boots`, `coat`, `hood`, `vest`, `ring`, `necklace`, `key`,
-  `token`, `chit`, `paper`, `vial`, `dressing`, `rounds`, `shard`, and `food`.
+  `token`, `chit`, `paper`, `vial`, `dressing`, `rounds`, `shard`, `food`, and
+  `ribguard`.
 - Equippable items define `equipment.slot`. Valid item slots are `clothes`,
   `armor`, `boots`, `helmet`, `trinket`, and `ring`.
 - Ring items can be worn in either actor slot, `ring1` or `ring2`.

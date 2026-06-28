@@ -33,8 +33,8 @@ globalThis.window = { addEventListener() {} };
 globalThis.document = { createElement: () => mockCanvas() };
 
 const itemDefs = {
-  ducat: { name: 'Ducat', type: 'currency', weight: 0, groundModel: 'chit', description: 'Stamped trade coin.' },
-  'field-dressing': { name: 'Field Dressing', type: 'consumable', weight: 0.2, groundModel: 'dressing', description: 'Sterile dressing.' }
+  ducat: { name: 'Ducat', type: 'currency', rarity: 'common', weight: 0, groundModel: 'chit', description: 'Stamped trade coin.' },
+  'field-dressing': { name: 'Field Dressing', type: 'consumable', rarity: 'rare', weight: 0.2, groundModel: 'dressing', description: 'Sterile dressing.' }
 };
 
 function buildLootGame({ actions, loot }) {
@@ -179,6 +179,10 @@ function buildObjectLootGame({ actions, clicks, object }) {
     actions: [['interact'], ['interact']],
     loot: [{ item: 'ducat', count: 2 }, { item: 'field-dressing', count: 1 }]
   });
+
+  const entries = game._currentLootEntries();
+  assert.equal(entries.find((entry) => entry.id === 'field-dressing').rarity, 'rare');
+  assert.equal(entries.find((entry) => entry.id === 'field-dressing').rarityLabel, 'Rare');
 
   game.update(0);
   assert.equal(game.inventory.count('ducat'), 2);

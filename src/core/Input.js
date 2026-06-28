@@ -31,7 +31,8 @@ const KEY_TOKENS = {
   5: 'choice5',
   tab: 'cycle',
   g: 'debug',
-  j: 'journal'
+  j: 'journal',
+  m: 'map'
 };
 
 const KEY_CODE_TOKENS = {

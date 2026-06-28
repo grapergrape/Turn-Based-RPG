@@ -2,6 +2,7 @@
   "id": "warden-seal-ring",
   "name": "Warden's Seal Ring",
   "type": "ring",
+  "rarity": "rare",
   "weight": 0.1,
   "groundModel": "ring",
   "equipment": { "slot": "ring" },
