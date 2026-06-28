@@ -16,7 +16,9 @@ const FARM_DOOR_DIALOGUES = [
   'long-ash-barn-door',
   'long-ash-storage-shed-door',
   'long-ash-grain-shed-door',
-  'long-ash-tool-shed-door'
+  'long-ash-tool-shed-door',
+  'long-ash-crossroad-brother',
+  'long-ash-field-brother'
 ];
 const GRAVEYARD_BODIES = [
   {
@@ -142,6 +144,30 @@ const GRAVEYARD_PLOTS = [
   [129, 54], [132, 54], [135, 54], [138, 54], [141, 54], [144, 54],
   [129, 58], [132, 58], [135, 58], [138, 58], [141, 58], [144, 58]
 ];
+const GRAVEYARD_TOMBS = [
+  { x: 141, y: 50, orient: 'se' },
+  { x: 144, y: 52, orient: 'sw' },
+  { x: 138, y: 58, orient: 'se' }
+];
+const GRAVEYARD_BONE_MARKERS = [
+  { x: 128, y: 48 },
+  { x: 145, y: 49 },
+  { x: 140, y: 55 },
+  { x: 128, y: 57 },
+  { x: 145, y: 57 }
+];
+const GRAVEYARD_CATACOMB = { x: 143, y: 48, orient: 'se' };
+const GRAVEYARD_PATH_STONES = [
+  [127, 56], [130, 56], [133, 56], [136, 56], [139, 56], [142, 56], [145, 56],
+  [140, 49], [140, 51], [140, 53], [140, 57]
+];
+const GRAVEYARD_ROOT_SEAMS = [
+  [128, 50], [145, 50], [130, 55], [137, 57], [146, 58]
+];
+const GRAVEYARD_PRAYER_SCRATCHES = [
+  [131, 49], [137, 49], [142, 51], [134, 53], [141, 55], [132, 57]
+];
+const GRAVEYARD_CROSS = { x: 140, y: 55 };
 
 const ROAD_MAIN = [
   { x: 142, y: 68 },
@@ -494,9 +520,15 @@ function placeFarmVictims() {
   for (const victim of victims) {
     addObject('blood-stain', victim.x, victim.y, { seed: hash(victim.x, victim.y, 147) });
     addObject('farm-cross-victim', victim.x, victim.y, {
+      id: `long-ash-farm-victim-${victim.member}`,
       blocking: true,
       member: victim.member,
-      seed: hash(victim.x, victim.y, 149)
+      seed: hash(victim.x, victim.y, 149),
+      interact: {
+        type: 'note',
+        log: 'The farm family has been raised on rough crosses in the yard. Their field coats are stiff with old blood and chaff.',
+        questUpdate: { quest: 'calcified-brothers', stage: 'family-known' }
+      }
     });
   }
   addObject('blood-sigil', 29, 53, { seed: hash(29, 53, 151) });
@@ -508,12 +540,13 @@ function isGraveyardGate(x, y) {
 }
 
 function paintGraveyardGround() {
-  paintRect(GRAVEYARD.x0, GRAVEYARD.y0, GRAVEYARD.x1, GRAVEYARD.y1, 'd');
+  paintRect(GRAVEYARD.x0, GRAVEYARD.y0, GRAVEYARD.x1, GRAVEYARD.y1, 'g');
   for (let x = GRAVEYARD.x0; x <= GRAVEYARD.x1; x += 1) {
     setTile(x, 56, 's');
   }
   for (let y = GRAVEYARD.y0 + 1; y <= GRAVEYARD.y1 - 1; y += 1) {
     setTile(127, y, 's');
+    setTile(140, y, 's');
     setTile(146, y, 's');
   }
   setTile(GRAVEYARD.x0 - 1, 56, 's');
@@ -552,6 +585,9 @@ function placeGraveyardWalls() {
 function placeGraveyardPlots() {
   for (const [x, y] of GRAVEYARD_PLOTS) {
     const plotOrient = ((x + y) & 1) ? 'sw' : 'se';
+    addObject('graveyard-packed-ash', x, y, {
+      seed: hash(x, y, 64)
+    });
     addObject('calcified-grave-plot', x, y, {
       orient: plotOrient,
       seed: hash(x, y, 65)
@@ -561,16 +597,61 @@ function placeGraveyardPlots() {
       seed: hash(x, y, 66)
     });
   }
+  for (const tomb of GRAVEYARD_TOMBS) {
+    addObject('graveyard-tomb-slab', tomb.x, tomb.y, {
+      blocking: true,
+      orient: tomb.orient,
+      seed: hash(tomb.x, tomb.y, 76)
+    });
+  }
+  for (const marker of GRAVEYARD_BONE_MARKERS) {
+    addObject('graveyard-bone-marker', marker.x, marker.y, {
+      blocking: true,
+      seed: hash(marker.x, marker.y, 77)
+    });
+  }
+}
+
+function placeGraveyardCatacomb() {
+  addObject('graveyard-catacomb-mouth', GRAVEYARD_CATACOMB.x, GRAVEYARD_CATACOMB.y, {
+    id: 'graveyard-catacomb-mouth',
+    blocking: true,
+    orient: GRAVEYARD_CATACOMB.orient,
+    seed: hash(GRAVEYARD_CATACOMB.x, GRAVEYARD_CATACOMB.y, 78)
+  });
+  for (const [x, y, salt] of [
+    [140, 48, 79],
+    [145, 48, 80],
+    [142, 49, 81]
+  ]) {
+    addObject('rubble-decal', x, y, { seed: hash(x, y, salt) });
+  }
+  addObject('floor-crack', 143, 49, { seed: hash(143, 49, 82) });
 }
 
 function placeGraveyardDressing() {
+  addObject('graveyard-remnant-cross', GRAVEYARD_CROSS.x, GRAVEYARD_CROSS.y, {
+    id: 'graveyard-remnant-cross',
+    blocking: true,
+    seed: hash(GRAVEYARD_CROSS.x, GRAVEYARD_CROSS.y, 84)
+  });
+  for (const [x, y] of GRAVEYARD_PATH_STONES) {
+    addObject('graveyard-path-stones', x, y, { seed: hash(x, y, 85) });
+  }
+  for (const [x, y] of GRAVEYARD_ROOT_SEAMS) {
+    addObject('graveyard-root-seam', x, y, { seed: hash(x, y, 86) });
+  }
+  for (const [x, y] of GRAVEYARD_PRAYER_SCRATCHES) {
+    addObject('graveyard-prayer-scratch', x, y, { seed: hash(x, y, 87) });
+  }
   for (const [x, y] of [
-    [127, 56], [134, 56], [142, 56], [146, 56], [127, 51], [146, 53], [127, 58]
+    [127, 56], [134, 56], [142, 56], [146, 56], [127, 51], [146, 53], [127, 58],
+    [141, 49], [144, 51], [139, 57]
   ]) {
     addObject('road-dust', x, y, { seed: hash(x, y, 68) });
   }
   for (const [x, y] of [
-    [128, 49], [145, 51], [140, 55], [136, 57], [147, 58]
+    [128, 49], [145, 51], [140, 55], [136, 57], [147, 58], [142, 52], [130, 57]
   ]) {
     addObject('rubble-decal', x, y, { seed: hash(x, y, 69) });
   }
@@ -588,6 +669,7 @@ function placeGraveyard() {
   paintGraveyardGround();
   placeGraveyardWalls();
   placeGraveyardPlots();
+  placeGraveyardCatacomb();
   placeGraveyardDressing();
   for (const body of GRAVEYARD_BODIES) {
     addObject('calcified-grave-body', body.x, body.y, {
@@ -729,12 +811,52 @@ function placeRoadDressing() {
     [92, 46], [81, 41], [70, 34], [101, 38], [113, 31],
     [116, 5], [117, 54]
   ]) {
-    addObject('road-dust', x, y, { seed: hash(x, y, 83) });
+  addObject('road-dust', x, y, { seed: hash(x, y, 83) });
   }
   addObject('road-sign-post', 116, 5, { seed: hash(116, 5, 89) });
-  addObject('road-sign-post', 113, 31, { seed: hash(113, 31, 89) });
   addObject('road-sign-post', 117, 55, { seed: hash(117, 55, 89) });
   addObject('road-sign-post', 141, 67, { seed: hash(141, 67, 89) });
+}
+
+function placeCalcifiedBrothers() {
+  addObject('calcified-crossroad-brother', 113, 31, {
+    id: 'long-ash-crossroad-brother',
+    blocking: true,
+    name: 'Garron Holt',
+    seed: hash(113, 31, 173),
+    interact: {
+      type: 'note',
+      dialogue: 'long-ash-crossroad-brother',
+      log: 'The man at the crossroads points with both hands. One calcified arm aims up the Hallowfen road.'
+    }
+  });
+
+  addObject('calcified-scarecrow-brother', 50, 35, {
+    id: 'long-ash-field-brother',
+    blocking: true,
+    name: 'Edrin Holt',
+    seed: hash(50, 35, 175),
+    interact: {
+      type: 'note',
+      dialogue: 'long-ash-field-brother',
+      log: 'A calcified man stands lashed above the wheat. His face is still soft enough to move.'
+    }
+  });
+
+  addObject('field-satchel', 83, 31, {
+    id: 'long-ash-holt-forest-stash',
+    name: 'Old Holt Stash',
+    seed: hash(83, 31, 177),
+    interact: {
+      type: 'container',
+      log: 'The roots hide a tarred field satchel. The leather has gone stiff, but the knot kept the water out.',
+      loot: [
+        { item: 'ducat', count: 12 },
+        { item: 'road-warden-chit', count: 1 },
+        { item: 'tarnished-saint-token', count: 1 }
+      ]
+    }
+  });
 }
 
 function paintForestFloor() {
@@ -754,6 +876,7 @@ placeFarmObjects();
 placeGraveyard();
 placeKillSite();
 placeRoadDressing();
+placeCalcifiedBrothers();
 scatterForest();
 placeMapEdges();
 placeWheatModels();
@@ -770,7 +893,7 @@ const level = {
   width: WIDTH,
   height: HEIGHT,
   tileSize: 64,
-  quests: ['investigate-ash-chapel-cult'],
+  quests: ['investigate-ash-chapel-cult', 'calcified-brothers'],
   dialogue: FARM_DOOR_DIALOGUES,
   tiles: tiles.map((row) => row.join('')),
   legend: {
@@ -780,6 +903,7 @@ const level = {
     w: { kind: 'floor', floor: 'wheat-field', walkable: true },
     f: { kind: 'floor', floor: 'furrow-field', walkable: true },
     d: { kind: 'floor', floor: 'forest-floor', walkable: true },
+    g: { kind: 'floor', floor: 'graveyard-earth', walkable: true },
     H: { kind: 'farmhouse-building-block', walkable: false },
     B: { kind: 'barn-building-block', walkable: false },
     T: { kind: 'tool-shed-building-block', walkable: false },

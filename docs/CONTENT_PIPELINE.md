@@ -87,7 +87,8 @@ Rules:
   indoor floor style while keeping the usual `kind` and `walkable` fields. If
   omitted, the renderer uses the original ruined stone style. Current floor
   styles are `stone`, `ash-dirt`, `ash-road`, `road-shoulder`, `wheat-field`,
-  `furrow-field`, and `forest-floor`.
+  `furrow-field`, `forest-floor`, `graveyard-earth`, `farm-plank`, and
+  `packed-earth`.
 - Levels can optionally set `mood` for scene-wide visual treatment. Existing
   keys are `floorShade`, `floorShadeAlpha`, `ambient`, `ambientAlpha`, and
   `vignette`. Outdoor daylight maps can also set `mood.sun.enabled: true` with
@@ -338,6 +339,9 @@ Search rules:
   `tool-shed-building-block`, `S` maps to `storage-shed-building-block`, and
   `G` maps to `grain-shed-building-block`. These are wall-grid blocks, not
   authored objects. Keep the footprint source in `scripts/gen-long-ash-road.mjs`.
+- Farm building interiors use separate wall-grid block kinds so they do not
+  reuse chapel stone: `farmhouse-interior-wall`, `barn-interior-wall`, and
+  `shed-interior-wall`.
 - `farm-door.variant` selects both wall-mounted exterior door art and interior
   floor-door art. Valid values are `"farmhouse"`, `"barn"`,
   `"storage-shed"`, `"grain-shed"`, and `"tool-shed"`. Exterior doors usually
@@ -354,7 +358,8 @@ Search rules:
   along either diagonal, a counter facing the room or the wall). The facing
   names the screen direction the prop's front points. Only kinds registered with
   the `oriented()` helper in `src/render/spriteCatalog.js` read it (currently
-  `dining-table`, `dining-bench`, `kitchen-counter`); other kinds ignore it.
+  `dining-table`, `dining-bench`, `kitchen-counter`, and `farm-prep-table`);
+  other kinds ignore it.
   Lighting stays correct at every facing because the renderer colors faces by
   screen position, so a rotated copy is never lit from the wrong side. To make a
   new kind orientation-aware, give its draw function an `opts.orient` and build

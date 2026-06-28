@@ -1,0 +1,341 @@
+{
+  "id": "long-ash-crossroad-brother",
+  "title": "Garron Holt",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "long-ash-field-family-truth"
+      },
+      "else": "lie-check",
+      "lines": [
+        "\"You told Edrin the truth. Brave work. Cruel work. Often the same boot, different mud.\"",
+        "\"He always did believe a hard answer could be polished into sense. I hope he keeps one corner of himself unpolished.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Garron to the road",
+          "close": true
+        }
+      ]
+    },
+    "lie-check": {
+      "conditions": {
+        "flag": "long-ash-field-family-lie"
+      },
+      "else": "field-check",
+      "lines": [
+        "\"Edrin is smiling. I can hear it from here when the wind turns stupid.\"",
+        "\"If you lied, I will not ask you to confess. This road already collects enough little crimes.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Garron to the road",
+          "close": true
+        }
+      ]
+    },
+    "field-check": {
+      "conditions": {
+        "flag": "long-ash-field-brother-met"
+      },
+      "else": "first",
+      "lines": [
+        "\"You found Edrin. Good. If he called himself a field prince, forgive him. Wheat gives a man ideas.\"",
+        "\"The Choir promised him rapture, crowns, a world full of kneeling. They promised me the same. I asked who would scratch my nose after the coronation. No answer yet.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask if he trusts the Choir",
+          "next": "choir-kind"
+        },
+        {
+          "label": "Ask about the coins",
+          "next": "coins"
+        },
+        {
+          "label": "Leave Garron to the road",
+          "close": true
+        }
+      ]
+    },
+    "first": {
+      "lines": [
+        "The calcified man stands at the road fork with both arms fixed into directions. One hand points up the Hallowfen road. The other points toward the farm, though two fingers have been snapped off and tied back on with wire.",
+        "Names, luck marks, and worse words have been scratched across his pale ribs. Pebbles, old spit, and a little pile of ducats sit at his feet.",
+        "\"Well? Nothing? Not even a spit in the face? Standards have fallen since the Stilling.\""
+      ],
+      "choices": [
+        {
+          "label": "I am not spitting on you",
+          "effects": {
+            "setFlag": [
+              "long-ash-crossroad-brother-met",
+              "long-ash-crossroad-brother-kind"
+            ]
+          },
+          "next": "kind"
+        },
+        {
+          "label": "Ask who did this",
+          "next": "history"
+        },
+        {
+          "label": "Insult the road sign",
+          "effects": {
+            "setFlag": [
+              "long-ash-crossroad-brother-met",
+              "long-ash-crossroad-brother-abused"
+            ],
+            "log": "Garron takes the insult like weather."
+          },
+          "next": "abused"
+        },
+        {
+          "label": "Ask about the Choir",
+          "next": "choir"
+        },
+        {
+          "label": "Leave the sign",
+          "close": true
+        }
+      ]
+    },
+    "kind": {
+      "lines": [
+        "\"A reformer. I knew one would come. Took only a century and change.\"",
+        "\"Name is Garron Holt. One hand points to Hallowfen, the other to the farm. The road kept the rest.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about his brother",
+          "next": "task"
+        },
+        {
+          "label": "Ask if he trusts the Choir",
+          "next": "choir-kind"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "history": {
+      "lines": [
+        "\"The Stilling caught me pointing during an argument. My brother said I looked useful for once. Then the town agreed with him.\"",
+        "\"Caravans learned I could still talk. That made me a signpost with commentary, which is the most hated form of signpost.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about his brother",
+          "next": "task"
+        },
+        {
+          "label": "Ask about the abuse",
+          "next": "abuse"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "abused": {
+      "lines": [
+        "\"There it is. Good lungs. Weak vocabulary.\"",
+        "\"A trader once wrote half a sermon on my hip and charged passersby to read it. I remember the knife more than the words.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about his brother anyway",
+          "next": "task"
+        },
+        {
+          "label": "Double down",
+          "effects": {
+            "setFlag": "long-ash-crossroad-brother-abused",
+            "log": "Garron laughs once. It sounds like a hinge full of grit."
+          },
+          "next": "abused-more"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "abused-more": {
+      "lines": [
+        "\"Careful. There are only so many clean places left on me for new words.\"",
+        "\"Now do a useful cruelty and walk to the wheat. My brother is out there being converted by compliments.\""
+      ],
+      "choices": [
+        {
+          "label": "Check on Edrin",
+          "effects": {
+            "setFlag": [
+              "long-ash-crossroad-brother-met",
+              "long-ash-crossroad-brother-paid"
+            ],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 7 }
+              ]
+            },
+            "questUpdate": { "quest": "calcified-brothers", "stage": "find-field-brother" }
+          },
+          "next": "paid"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "abuse": {
+      "lines": [
+        "\"Children threw mud first. Adults improved it with theology.\"",
+        "\"Some folk toss ducats for luck. Some spit. Some ask which road is safest, then carve their initials into my stomach when I answer honestly.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about his brother",
+          "next": "task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "choir": {
+      "lines": [
+        "\"The Choir came with clean hands and dirty knives. They called me holy royalty. I asked whether royalty still gets rained on. They said rapture is coming.\"",
+        "\"Rapture has been coming for one hundred years. The rain reaches me more often.\""
+      ],
+      "choices": [
+        {
+          "label": "You do not believe them",
+          "effects": {
+            "setFlag": "long-ash-crossroad-brother-kind"
+          },
+          "next": "choir-kind"
+        },
+        {
+          "label": "Maybe they are right",
+          "next": "choir-doubt"
+        },
+        {
+          "label": "Ask about his brother",
+          "next": "task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "choir-kind": {
+      "lines": [
+        "\"No. I do not believe them. I have been promised release by road priests and gutter saints. Most reached for the coins after.\"",
+        "\"The Choir is better dressed. That is not a doctrine.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about Edrin",
+          "next": "task"
+        },
+        {
+          "label": "Ask about the coins",
+          "next": "coins"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "choir-doubt": {
+      "lines": [
+        "\"Maybe. I am a road sign made of infected stone. I keep a small purse open for surprises.\"",
+        "\"But every prophet who says I will rule the world has still asked me which way to Hallowfen. A king notices that.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about his brother",
+          "next": "task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "task": {
+      "lines": [
+        "\"My brother Edrin is in the wheat east of the farm. They stuck him there to scare birds. It worked on people too.\"",
+        "\"He believes the Choir. Thinks the rapture will let us walk again and give orders. Check on him before their hymns get too deep in him.\""
+      ],
+      "choices": [
+        {
+          "label": "Check on Edrin",
+          "conditions": {
+            "flagsAbsent": "long-ash-crossroad-brother-paid"
+          },
+          "effects": {
+            "setFlag": [
+              "long-ash-crossroad-brother-met",
+              "long-ash-crossroad-brother-paid"
+            ],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 7 }
+              ]
+            },
+            "questUpdate": { "quest": "calcified-brothers", "stage": "find-field-brother" },
+            "log": "Garron tells you to take the luck money at his feet."
+          },
+          "next": "paid"
+        },
+        {
+          "label": "I already took the job",
+          "conditions": {
+            "flag": "long-ash-crossroad-brother-paid"
+          },
+          "next": "paid-repeat"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "paid": {
+      "lines": [
+        "\"Take the ducats. People threw them at me for luck. Luck and I are not on speaking terms.\"",
+        "\"Tell Edrin his brother still points. He will think that is noble. Do not correct him too fast.\""
+      ]
+    },
+    "paid-repeat": {
+      "lines": [
+        "\"The wheat, friend. If Edrin starts talking crowns, listen for the fear under it.\""
+      ]
+    },
+    "coins": {
+      "lines": [
+        "\"Luck money. Pilgrims toss it, then ask me which way the blessed city lies. I point. They thank me by missing my feet half the time.\"",
+        "\"If a coin hits my face, I try not to flinch.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about Edrin",
+          "next": "task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    }
+  }
+}

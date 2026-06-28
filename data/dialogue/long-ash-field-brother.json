@@ -1,0 +1,327 @@
+{
+  "id": "long-ash-field-brother",
+  "title": "Edrin Holt",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "long-ash-field-family-truth"
+      },
+      "else": "lie-check",
+      "lines": [
+        "\"They are dead. I know. The wheat is too polite now.\"",
+        "\"Thank you for not wrapping it in sugar. Sugar brings ants, and I cannot slap them.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Edrin in the wheat",
+          "close": true
+        }
+      ]
+    },
+    "lie-check": {
+      "conditions": {
+        "flag": "long-ash-field-family-lie"
+      },
+      "else": "report-check",
+      "lines": [
+        "\"Safe. Good. I knew the Choir would speak sternly to them. Very sternly. Holy sternly.\"",
+        "\"When rapture comes, I may only tax them a little. For rope damages.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Edrin in the wheat",
+          "close": true
+        }
+      ]
+    },
+    "report-check": {
+      "conditions": {
+        "questStages": {
+          "calcified-brothers": "family-known"
+        }
+      },
+      "effects": {
+        "setFlag": "long-ash-field-brother-met"
+      },
+      "else": "waiting-check",
+      "lines": [
+        "\"You saw the yard. Do not tidy your face before you answer. I have watched one hundred harvests. I know tidy means trouble.\"",
+        "\"Are they well? Tell me straight, or tell me kind. I am not sure which I deserve.\""
+      ],
+      "choices": [
+        {
+          "label": "Tell him they are dead",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-family-truth"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
+            "log": "Edrin gives up the location of his old forest stash."
+          },
+          "next": "truth"
+        },
+        {
+          "label": "Lie that they are safe",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-family-lie"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
+            "log": "Edrin gives up the location of his old forest stash."
+          },
+          "next": "lie"
+        },
+        {
+          "label": "Make the truth hurt",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-family-truth",
+              "long-ash-field-brother-mocked"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
+            "log": "Edrin gives up the location of his old forest stash."
+          },
+          "next": "cruel-truth"
+        },
+        {
+          "label": "Not yet",
+          "close": true
+        }
+      ]
+    },
+    "waiting-check": {
+      "conditions": {
+        "flag": "long-ash-field-brother-met"
+      },
+      "else": "first",
+      "lines": [
+        "\"Have you checked the family? I would go, but the wheat has promoted me to permanent staff.\"",
+        "\"If they are angry, say I kept watch. I still know the sound of their door.\""
+      ],
+      "choices": [
+        {
+          "label": "I will check",
+          "close": true
+        },
+        {
+          "label": "Ask about the Choir",
+          "next": "choir"
+        },
+        {
+          "label": "Mock the field king",
+          "effects": {
+            "setFlag": "long-ash-field-brother-mocked",
+            "log": "Edrin rustles in his ropes, pleased and offended at once."
+          },
+          "next": "mocked"
+        }
+      ]
+    },
+    "first": {
+      "lines": [
+        "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
+        "\"Hail, traveler. You may address me as Edrin Holt, advanced scarecrow and future road prince.\"",
+        "\"If Garron sent you, tell him I am nearly royal.\""
+      ],
+      "choices": [
+        {
+          "label": "Garron sent me",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "family-task"
+        },
+        {
+          "label": "Ask about the Choir",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "choir"
+        },
+        {
+          "label": "Ask why he is in the field",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "next": "field"
+        },
+        {
+          "label": "Mock the scarecrow",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-brother-met",
+              "long-ash-field-brother-mocked"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
+            "log": "Edrin rustles in his ropes, pleased and offended at once."
+          },
+          "next": "mocked"
+        },
+        {
+          "label": "Leave him to the wheat",
+          "close": true
+        }
+      ]
+    },
+    "field": {
+      "lines": [
+        "\"The family put me here after the Stilling. Practical people. They had grain, crows, and one brother who could no longer run away from work.\"",
+        "\"I was angry for the first thirty years. Then the youngest started bringing soup in a cup tied to a pole, and the field stopped feeling empty.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the family",
+          "next": "family-task"
+        },
+        {
+          "label": "Ask about the Choir",
+          "next": "choir"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "choir": {
+      "lines": [
+        "\"The Choir came singing through the wheat and called me holy. Properly holy, not village holy, which mostly meant no one wanted to touch me.\"",
+        "\"They said rapture is coming. The calcified will rise first. Garron will point armies. I will walk to the house and ask why the cups stopped clinking at breakfast.\""
+      ],
+      "choices": [
+        {
+          "label": "You believe that",
+          "next": "believes"
+        },
+        {
+          "label": "Garron doubts them",
+          "next": "garron-doubts"
+        },
+        {
+          "label": "Ask about the family",
+          "next": "family-task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "believes": {
+      "lines": [
+        "\"Of course I believe it. A man must have ambitions. Mine were once boots. Now they are standing in the yard without ropes.\"",
+        "\"I will be merciful. No shouting at the children. No ropes for anyone who can still feel them.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the family",
+          "next": "family-task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "garron-doubts": {
+      "lines": [
+        "\"Garron doubts anything that arrives singing. He had more road than I did, and the road taught him mean.\"",
+        "\"I had wheat and kitchen smoke on clear mornings. That made me easier to fool.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the family",
+          "next": "family-task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "mocked": {
+      "lines": [
+        "\"Mockery noted. I will remember it after ascension, if remembering still belongs to me.\"",
+        "\"Still, check the family. Even a future prince keeps accounts.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the family",
+          "next": "family-task"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "family-task": {
+      "lines": [
+        "\"The family that set me here lives by the yard. They were not gentle, but they were mine after a fashion.\"",
+        "\"The Choir said they would speak to them about disrespect. I hope that means stern words and not knives. Please check.\""
+      ],
+      "choices": [
+        {
+          "label": "I will check on them",
+          "effects": {
+            "setFlag": "long-ash-field-brother-met",
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
+          },
+          "close": true
+        },
+        {
+          "label": "They deserve a scare",
+          "effects": {
+            "setFlag": [
+              "long-ash-field-brother-met",
+              "long-ash-field-brother-mocked"
+            ],
+            "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
+            "log": "Edrin goes quiet long enough for the wheat to rasp around him."
+          },
+          "next": "family-bad"
+        },
+        {
+          "label": "Leave",
+          "close": true
+        }
+      ]
+    },
+    "family-bad": {
+      "lines": [
+        "\"Perhaps. I said worse in year twelve.\"",
+        "\"Still check. Anger is not permission to vanish people. I learned that after year thirteen.\""
+      ],
+      "choices": [
+        {
+          "label": "I will check",
+          "close": true
+        }
+      ]
+    },
+    "truth": {
+      "lines": [
+        "\"Dead. Ah.\"",
+        "\"The Choir promised stern words. They left the yard quiet instead.\"",
+        "\"I had a stash before the Stilling. Forest side of the branch road, under roots beside a split stump. Take it. I have no pockets, and no wish to enrich the crows.\""
+      ]
+    },
+    "lie": {
+      "lines": [
+        "\"Safe. Good. That is good.\"",
+        "\"When I rise, I will visit them first and be gracious. I have practiced that word for years.\"",
+        "\"I had a stash before the Stilling. Forest side of the branch road, under roots beside a split stump. Take it for the news. I cannot exactly fetch it with dignity.\""
+      ]
+    },
+    "cruel-truth": {
+      "lines": [
+        "\"You made the truth wear boots before it came in.\"",
+        "\"Fine. Let it stand there. I have stood in worse company.\"",
+        "\"Forest side of the branch road, under roots beside a split stump. My old stash is there. Take it and go before I mistake your voice for theirs.\""
+      ]
+    }
+  }
+}

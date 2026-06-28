@@ -88,8 +88,26 @@ const DISPLAY_NAMES = {
   'ritual-circle': 'Rite Circle',
   'cross-martyr': 'The Opened Saint',
   'bound-victim': 'Bound Captive',
+  'calcified-crossroad-brother': 'Calcified Sign Brother',
+  'calcified-scarecrow-brother': 'Calcified Field Brother',
+  'graveyard-wall': 'Graveyard Wall',
+  'calcified-grave-plot': 'Calcified Grave',
+  'calcified-headstone': 'Headstone',
+  'graveyard-tomb-slab': 'Tomb Slab',
+  'graveyard-catacomb-mouth': 'Catacomb Mouth',
+  'graveyard-bone-marker': 'Bone Marker',
+  'graveyard-remnant-cross': 'Graveyard Cross',
+  'graveyard-packed-ash': 'Packed Grave Ash',
+  'graveyard-path-stones': 'Path Stones',
+  'graveyard-root-seam': 'Root Seam',
+  'graveyard-prayer-scratch': 'Prayer Scratch',
   wall: 'Chapel Wall',
-  'wall-broken': 'Broken Wall'
+  'wall-broken': 'Broken Wall',
+  'farmhouse-interior-wall': 'Farmhouse Wall',
+  'barn-interior-wall': 'Barn Wall',
+  'shed-interior-wall': 'Shed Wall',
+  'farm-prep-table': 'Farm Prep Table',
+  'farm-kitchen-hearth': 'Farm Hearth'
 };
 
 export function displayNameForKind(kind) {
@@ -135,6 +153,27 @@ export const SPRITE_CATALOG = {
     category: CATEGORY.TERRAIN, layer: 0, block: true,
     draw: (ctx, x, y, seed, c) => P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? Math.round(WALL_HEIGHT * 0.55), seed)
   },
+  'farmhouse-interior-wall': {
+    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    draw: (ctx, x, y, seed, c) => P.drawFarmInteriorWallBlock(ctx, x, y, c.prop.height, seed, {
+      connected: c.prop.connected,
+      variant: 'farmhouse'
+    })
+  },
+  'barn-interior-wall': {
+    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    draw: (ctx, x, y, seed, c) => P.drawFarmInteriorWallBlock(ctx, x, y, c.prop.height, seed, {
+      connected: c.prop.connected,
+      variant: 'barn'
+    })
+  },
+  'shed-interior-wall': {
+    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    draw: (ctx, x, y, seed, c) => P.drawFarmInteriorWallBlock(ctx, x, y, c.prop.height, seed, {
+      connected: c.prop.connected,
+      variant: 'shed'
+    })
+  },
 
   // --- Wall fixtures (a feature set into the SW face of a wall block) -----
   // Block first, then the fixture overlay, at the same cell. A fixture that
@@ -174,8 +213,12 @@ export const SPRITE_CATALOG = {
   'saint-statue': simple(P.drawSaintStatue, CATEGORY.STRUCTURE),
   'stone-tomb': simple(P.drawStoneTomb, CATEGORY.STRUCTURE),
   'graveyard-wall': oriented(P.drawGraveyardWall, CATEGORY.STRUCTURE),
-  'calcified-grave-plot': oriented(P.drawCalcifiedGravePlot, CATEGORY.STRUCTURE),
+  'calcified-grave-plot': oriented(P.drawCalcifiedGravePlot, CATEGORY.STRUCTURE, 1),
   'calcified-headstone': simple(P.drawCalcifiedHeadstone, CATEGORY.STRUCTURE),
+  'graveyard-tomb-slab': oriented(P.drawGraveyardTombSlab, CATEGORY.STRUCTURE),
+  'graveyard-catacomb-mouth': oriented(P.drawGraveyardCatacombMouth, CATEGORY.STRUCTURE, 4),
+  'graveyard-bone-marker': simple(P.drawCalcifiedGraveMarker, CATEGORY.STRUCTURE),
+  'graveyard-remnant-cross': simple(P.drawGraveyardRemnantCross, CATEGORY.STRUCTURE),
   'stone-stairwell': {
     category: CATEGORY.STRUCTURE, layer: 18,
     draw: (ctx, x, y, seed) => P.drawStoneStairwell(ctx, x, y, seed)
@@ -244,7 +287,9 @@ export const SPRITE_CATALOG = {
   'dining-table': oriented(P.drawDiningTable, CATEGORY.FURNITURE),
   'dining-bench': oriented(P.drawDiningBench, CATEGORY.FURNITURE),
   'kitchen-counter': oriented(P.drawKitchenCounter, CATEGORY.FURNITURE),
+  'farm-prep-table': oriented(P.drawFarmPrepTable, CATEGORY.FURNITURE),
   'kitchen-hearth': simple(P.drawKitchenHearth, CATEGORY.FURNITURE),
+  'farm-kitchen-hearth': simple(P.drawFarmKitchenHearth, CATEGORY.FURNITURE),
   'pantry-shelf': simple(P.drawPantryShelf, CATEGORY.FURNITURE),
   'wash-tub': simple(P.drawWashTub, CATEGORY.FURNITURE),
   'chapel-banner': simple(P.drawChapelBanner, CATEGORY.FURNITURE),
@@ -370,6 +415,8 @@ export const SPRITE_CATALOG = {
     })
   },
   'calcified-penitent': simple(P.drawCalcifiedPenitent, CATEGORY.CREATURE),
+  'calcified-crossroad-brother': simple(P.drawCalcifiedCrossroadBrother, CATEGORY.CREATURE),
+  'calcified-scarecrow-brother': simple(P.drawCalcifiedScarecrowBrother, CATEGORY.CREATURE),
   'calcified-grave-body': {
     category: CATEGORY.CREATURE, layer: 2,
     draw: (ctx, x, y, seed, c) => P.drawCalcifiedGraveBody(ctx, x, y, seed, {
@@ -394,6 +441,10 @@ export const SPRITE_CATALOG = {
   'scorch-mark': decal((ctx, x, y, seed) => P.drawScorchMark(ctx, x, y, seed)),
   'wax-stain': decal((ctx, x, y, seed) => P.drawWaxStain(ctx, x, y, seed)),
   'paper-scraps': decal((ctx, x, y, seed) => P.drawPaperScraps(ctx, x, y, seed)),
+  'graveyard-packed-ash': decal((ctx, x, y, seed) => P.drawGraveyardPackedAsh(ctx, x, y, seed)),
+  'graveyard-path-stones': decal((ctx, x, y, seed) => P.drawGraveyardPathStones(ctx, x, y, seed)),
+  'graveyard-root-seam': decal((ctx, x, y, seed) => P.drawGraveyardRootSeam(ctx, x, y, seed)),
+  'graveyard-prayer-scratch': decal((ctx, x, y, seed) => P.drawGraveyardPrayerScratch(ctx, x, y, seed)),
   'chaff-scatter': decal((ctx, x, y, seed) => P.drawChaffScatter(ctx, x, y, seed)),
   'chalk-drawing': decal((ctx, x, y, seed) => P.drawChalkDrawing(ctx, x, y, seed)),
   'machine-oil': decal((ctx, x, y, seed) => P.drawMachineOil(ctx, x, y, seed)),

@@ -37,23 +37,41 @@ export function drawCalcifiedGraveMarker(ctx, cx, cy, seed) {
   const bone = PALETTE.hostBone;
   const lo = PALETTE.stoneDark;
   const dust = PALETTE.stoneDust;
+  const split = seed % 4 === 0;
 
-  drawShadowBlob(ctx, cx, cy + 3, 24, 10);
-  px(ctx, cx - 8 + lean, cy - 42, PALETTE.outline, 17, 43);
-  px(ctx, cx - 7 + lean, cy - 41, bone, 14, 41);
-  px(ctx, cx - 7 + lean, cy - 41, dust, 4, 36);
-  px(ctx, cx + 5 + lean, cy - 37, lo, 2, 34);
-  px(ctx, cx - 10 + lean, cy - 21, PALETTE.outline, 21, 4);
-  px(ctx, cx - 9 + lean, cy - 20, dust, 19, 2);
-  px(ctx, cx - 3 + lean, cy - 39, PALETTE.void, 7, 3);
-  px(ctx, cx - 2 + lean, cy - 36, lo, 5, 15);
-  px(ctx, cx - 4 + lean, cy - 10, lo, 9, 2);
-  for (let i = 0; i < 5; i += 1) {
-    const x = cx - 6 + lean + Math.floor(rng() * 13);
-    const y = cy - 35 + Math.floor(rng() * 29);
-    px(ctx, x, y, rng() < 0.5 ? lo : dust, 1, 1);
+  drawShadowBlob(ctx, cx, cy + 3, 28, 11);
+  drawIsoDiamond(ctx, cx, cy, 25, 9, PALETTE.stoneDark);
+  px(ctx, cx - 9 + lean, cy - 43, PALETTE.outline, 19, 44);
+  px(ctx, cx - 8 + lean, cy - 42, bone, 15, 40);
+  px(ctx, cx - 8 + lean, cy - 42, dust, 5, 36);
+  px(ctx, cx + 5 + lean, cy - 38, lo, 3, 34);
+  if (split) {
+    linePx(ctx, cx + lean + 1, cy - 40, cx + lean - 2, cy - 4, PALETTE.void, 1);
+    px(ctx, cx + lean + 3, cy - 30, PALETTE.stoneDark, 3, 2);
   }
-  drawNoisePixels(ctx, cx - 13, cy - 5, 26, 10, [PALETTE.stoneDark, PALETTE.rustDark], 0.08, seed);
+  px(ctx, cx - 12 + lean, cy - 22, PALETTE.outline, 25, 5);
+  px(ctx, cx - 11 + lean, cy - 21, dust, 22, 2);
+  px(ctx, cx + 5 + lean, cy - 20, lo, 5, 2);
+
+  // Bone niche in the marker face: a dark recess with one tiny sorted skull.
+  px(ctx, cx - 5 + lean, cy - 38, PALETTE.outline, 11, 14);
+  px(ctx, cx - 4 + lean, cy - 37, PALETTE.void, 9, 11);
+  px(ctx, cx - 3 + lean, cy - 35, bone, 7, 5);
+  px(ctx, cx - 2 + lean, cy - 33, PALETTE.void, 2, 2);
+  px(ctx, cx + 2 + lean, cy - 33, PALETTE.void, 2, 2);
+  px(ctx, cx - 3 + lean, cy - 28, dust, 7, 1);
+
+  px(ctx, cx - 5 + lean, cy - 11, lo, 11, 2);
+  for (let i = 0; i < 7; i += 1) {
+    const x = cx - 7 + lean + Math.floor(rng() * 15);
+    const y = cy - 36 + Math.floor(rng() * 31);
+    px(ctx, x, y, rng() < 0.48 ? lo : dust, 1 + (i % 3 === 0 ? 1 : 0), 1);
+  }
+  for (let i = 0; i < 3; i += 1) {
+    const bx = cx - 10 + i * 9 + Math.floor(rng() * 3);
+    px(ctx, bx, cy - 3 + (i & 1), rng() < 0.5 ? bone : lo, 3, 1);
+  }
+  drawNoisePixels(ctx, cx - 15, cy - 6, 30, 12, [PALETTE.stoneDark, PALETTE.rustDark], 0.09, seed);
 }
 const GRAVE_BODY_VARIANTS = [
   'kneeling-fused-hands',
@@ -180,6 +198,11 @@ export function drawCalcifiedGraveBody(ctx, cx, cy, seed, opts = {}) {
   ctx.globalAlpha = 0.66;
   drawIsoDiamond(ctx, cx, cy + 1, buried ? 38 : 28, buried ? 15 : 10, PALETTE.stoneDark);
   ctx.restore();
+  drawIsoDiamond(ctx, cx + side, cy - 1, buried ? 35 : 31, buried ? 13 : 11, PALETTE.outline);
+  drawIsoDiamond(ctx, cx + side, cy - 2, buried ? 31 : 27, buried ? 11 : 9, PALETTE.stoneDark);
+  px(ctx, cx - 13, cy - 8, PALETTE.stoneDust, 10, 1);
+  px(ctx, cx + 3, cy - 7, PALETTE.hostBone, 7, 1);
+  px(ctx, cx - 2 + side, cy - 5, PALETTE.rustDark, 8, 1);
   drawNoisePixels(ctx, cx - 18, cy - 5, 36, 11, [PALETTE.stoneDark, PALETTE.rustDark], 0.08, seed);
 
   if (!buried) {

@@ -40,7 +40,10 @@ export const FLOOR_STYLE_IDS = [
   'road-shoulder',
   'wheat-field',
   'furrow-field',
-  'forest-floor'
+  'forest-floor',
+  'graveyard-earth',
+  'farm-plank',
+  'packed-earth'
 ];
 
 export function drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy) {
@@ -240,6 +243,139 @@ function drawRoadShoulderCell(ctx, cx, cy, gx, gy) {
   }
 }
 
+function drawFarmPlankFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 211, gy + 223);
+  const r = rngFrom(seed);
+  const zone = hash2D((gx >> 1) + 17, (gy >> 1) + 23);
+  const base = zone % 5 === 0 ? PALETTE.woodMid : PALETTE.woodDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  const d = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+  const seamColor = zone % 3 === 0 ? PALETTE.outline : PALETTE.rustDark;
+  for (const t of [0.24, 0.49, 0.74]) {
+    const wobble = ((seed >> Math.floor(t * 11)) & 1) ? 1 : 0;
+    const a = mixPoint(d.left, d.top, t);
+    const b = mixPoint(d.bottom, d.right, t);
+    linePx(ctx, a[0], a[1] + wobble, b[0], b[1] + wobble, seamColor, 1);
+  }
+
+  if ((seed & 3) !== 0) {
+    const t = 0.26 + r() * 0.48;
+    const a = mixPoint(d.left, d.bottom, t);
+    const b = mixPoint(d.top, d.right, t + (r() - 0.5) * 0.1);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.woodMid, 1);
+  }
+
+  if (r() < 0.46) {
+    drawIsoDiamond(
+      ctx,
+      cx + Math.floor((r() - 0.5) * 18),
+      cy + Math.floor((r() - 0.5) * 8),
+      14 + Math.floor(r() * 12),
+      6 + Math.floor(r() * 5),
+      r() < 0.45 ? PALETTE.stoneDark : PALETTE.rustDark
+    );
+  }
+
+  for (let i = 0; i < 5; i += 1) {
+    if (r() > 0.62) continue;
+    const x = cx - 23 + Math.floor(r() * 46);
+    const y = cy - 8 + Math.floor(r() * 16);
+    px(ctx, x, y, r() < 0.5 ? PALETTE.woodLight : PALETTE.stoneDark, 1 + Math.floor(r() * 3), 1);
+  }
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.woodDark, PALETTE.stoneDark, PALETTE.rustDark], 0.026, seed);
+}
+
+function drawPackedEarthFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 251, gy + 263);
+  const r = rngFrom(seed);
+  const zone = hash2D((gx >> 1) + 29, (gy >> 1) + 31);
+  const base = zone % 4 === 0 ? PALETTE.stoneDark : PALETTE.woodDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  if (r() < 0.62) {
+    drawIsoDiamond(
+      ctx,
+      cx + Math.floor((r() - 0.5) * 18),
+      cy + Math.floor((r() - 0.5) * 8),
+      20 + Math.floor(r() * 18),
+      9 + Math.floor(r() * 7),
+      r() < 0.5 ? PALETTE.rustDark : PALETTE.stoneMid
+    );
+  }
+
+  if ((seed % 5) === 0) {
+    const d = diamond(cx, cy, TILE_WIDTH - 12, TILE_HEIGHT - 6);
+    const a = mixPoint(d.left, d.top, 0.2 + r() * 0.25);
+    const b = mixPoint(d.bottom, d.right, 0.64 + r() * 0.22);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.woodMid, 2);
+    linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.woodLight, 1);
+  }
+
+  for (let i = 0; i < 7; i += 1) {
+    if (r() > 0.72) continue;
+    const x = cx - 22 + Math.floor(r() * 44);
+    const y = cy - 8 + Math.floor(r() * 16);
+    linePx(ctx, x, y, x + 2 + Math.floor(r() * 6), y - 1 + Math.floor(r() * 3), r() < 0.6 ? PALETTE.clothTan : PALETTE.woodMid, 1);
+  }
+
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.rustDark, PALETTE.stoneDark, PALETTE.woodMid], 0.044, seed);
+  if (seed % 17 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 2);
+}
+
+function drawGraveyardEarthCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 281, gy + 307);
+  const r = rngFrom(seed);
+  const zone = hash2D((gx >> 1) + 37, (gy >> 1) + 41);
+  const base = zone % 5 === 0 ? PALETTE.stoneMid : PALETTE.stoneDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  ctx.save();
+  ctx.globalAlpha = 0.12;
+  drawIsoDiamond(
+    ctx,
+    cx + Math.floor((r() - 0.5) * 14),
+    cy + Math.floor((r() - 0.5) * 7),
+    26 + Math.floor(r() * 18),
+    11 + Math.floor(r() * 7),
+    r() < 0.48 ? PALETTE.stoneDust : PALETTE.rustDark
+  );
+  ctx.globalAlpha = 0.05;
+  drawIsoDiamond(
+    ctx,
+    cx + Math.floor((r() - 0.5) * 18),
+    cy + Math.floor((r() - 0.5) * 8),
+    18 + Math.floor(r() * 14),
+    8 + Math.floor(r() * 5),
+    PALETTE.hostBone
+  );
+  ctx.restore();
+
+  // Faint rectangular burial seams, broken enough to avoid a stamped grid.
+  if ((gx + gy + (seed & 3)) % 4 === 0) {
+    const d = diamond(cx, cy, TILE_WIDTH - 12, TILE_HEIGHT - 6);
+    const topA = mixPoint(d.left, d.top, 0.34);
+    const topB = mixPoint(d.top, d.right, 0.66);
+    const botA = mixPoint(d.left, d.bottom, 0.36);
+    const botB = mixPoint(d.bottom, d.right, 0.64);
+    ctx.save();
+    ctx.globalAlpha = 0.36;
+    linePx(ctx, topA[0], topA[1], topB[0], topB[1], PALETTE.stoneDust, 1);
+    linePx(ctx, botA[0], botA[1], botB[0], botB[1], PALETTE.stoneDark, 1);
+    if (seed % 8 === 0) linePx(ctx, topA[0] + 2, topA[1] + 2, botA[0] + 2, botA[1] - 1, PALETTE.rustDark, 1);
+    ctx.restore();
+  }
+
+  if (seed % 6 === 0) {
+    const x = cx - 22 + Math.floor(r() * 44);
+    const y = cy - 7 + Math.floor(r() * 14);
+    linePx(ctx, x, y, x + 5 + Math.floor(r() * 9), y - 2 + Math.floor(r() * 4), PALETTE.woodDark, 1);
+  }
+
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.stoneDark, PALETTE.stoneDust, PALETTE.rustDark], 0.03, seed);
+  if (seed % 13 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 2);
+}
+
 export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
   switch (style) {
     case 'ash-dirt':
@@ -284,9 +420,125 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
         lo: PALETTE.hostBlack
       }, { noise: 0.05, patchAlpha: 0.1, leafLitter: true, crackEvery: 15 });
       return;
+    case 'graveyard-earth':
+      drawGraveyardEarthCell(ctx, cx, cy, gx, gy);
+      return;
+    case 'farm-plank':
+      drawFarmPlankFloorCell(ctx, cx, cy, gx, gy);
+      return;
+    case 'packed-earth':
+      drawPackedEarthFloorCell(ctx, cx, cy, gx, gy);
+      return;
     case 'stone':
     default:
       drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy);
+  }
+}
+
+const FARM_INTERIOR_WALL_STYLES = {
+  farmhouse: {
+    height: 52,
+    top: PALETTE.woodMid,
+    lit: PALETTE.clothTan,
+    shade: PALETTE.woodDark,
+    seam: PALETTE.woodDark,
+    trim: PALETTE.woodLight,
+    grime: PALETTE.rustDark
+  },
+  barn: {
+    height: 58,
+    top: PALETTE.woodDark,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.outline,
+    seam: PALETTE.outline,
+    trim: PALETTE.rustMid,
+    grime: PALETTE.stoneDark
+  },
+  shed: {
+    height: 46,
+    top: PALETTE.rustDark,
+    lit: PALETTE.woodDark,
+    shade: PALETTE.stoneDark,
+    seam: PALETTE.outline,
+    trim: PALETTE.rustLight,
+    grime: PALETTE.rustDark
+  }
+};
+
+function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false) {
+  const seam = shaded ? PALETTE.outline : style.seam;
+  const trim = shaded ? PALETTE.woodDark : style.trim;
+
+  if (variant === 'farmhouse') {
+    for (const u of [0.16, 0.38, 0.62, 0.84]) face.line(u, 0.04, u, 0.98, seam, 1);
+    face.line(0.05, 0.2, 0.94, 0.2, trim, 1);
+    face.line(0.08, 0.76, 0.92, 0.76, PALETTE.woodDark, 2);
+    if ((seed & 1) === 0) {
+      face.rect(0.18, 0.34, 0.44, 0.58, PALETTE.stoneDust);
+      face.line(0.18, 0.34, 0.44, 0.34, PALETTE.clothTan, 1);
+    }
+    if (seed % 3 === 0) face.line(0.55, 0.42, 0.82, 0.5, PALETTE.rustDark, 1);
+    return;
+  }
+
+  if (variant === 'barn') {
+    for (const u of [0.1, 0.22, 0.34, 0.46, 0.6, 0.74, 0.88]) {
+      face.line(u, 0.05, u + (((seed + Math.floor(u * 100)) & 1) ? 0.02 : -0.01), 0.98, seam, 1);
+    }
+    for (const v of [0.28, 0.56, 0.82]) {
+      face.line(0.04, v, 0.96, v, v === 0.28 ? trim : PALETTE.woodDark, 2);
+    }
+    if ((seed & 3) === 1) face.line(0.22, 0.2, 0.78, 0.72, PALETTE.rustDark, 1);
+    return;
+  }
+
+  for (const u of [0.18, 0.35, 0.57, 0.79]) face.line(u, 0.08, u, 0.96, seam, 1);
+  face.line(0.08, 0.26, 0.9, 0.22, trim, 1);
+  face.line(0.08, 0.58, 0.9, 0.62, PALETTE.outline, 1);
+  face.line(0.2, 0.72, 0.86, 0.4, PALETTE.woodDark, 1);
+  if ((seed & 1) === 0) {
+    face.rect(0.52, 0.2, 0.78, 0.34, PALETTE.rustDark);
+    face.line(0.52, 0.2, 0.78, 0.2, PALETTE.rustLight, 1);
+  }
+}
+
+export function drawFarmInteriorWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
+  const variant = FARM_INTERIOR_WALL_STYLES[opts.variant] ? opts.variant : 'shed';
+  const connected = opts.connected ?? {};
+  const style = FARM_INTERIOR_WALL_STYLES[variant];
+  const wallH = heightPx ?? style.height;
+  const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+  const cap = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
+
+  drawShadowBlob(ctx, cx, cy + 2, TILE_WIDTH * 0.64, TILE_HEIGHT * 0.58);
+
+  if (!connected.yPlus) {
+    poly(ctx, style.lit, [cap.left, cap.bottom, base.bottom, base.left]);
+    const face = faceTools(ctx, cap.left, cap.bottom, base.bottom, base.left);
+    drawFarmWallFaceDetail(ctx, face, seed + 17, style, variant, false);
+  }
+
+  if (!connected.xPlus) {
+    poly(ctx, style.shade, [cap.bottom, cap.right, base.right, base.bottom]);
+    const face = faceTools(ctx, cap.bottom, cap.right, base.right, base.bottom);
+    drawFarmWallFaceDetail(ctx, face, seed + 31, style, variant, true);
+  }
+
+  poly(ctx, style.top, [cap.top, cap.right, cap.bottom, cap.left]);
+
+  linePx(ctx, cap.left[0], cap.left[1], cap.top[0], cap.top[1], style.trim, 1);
+  if (!connected.xPlus) linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.woodDark, 1);
+  if (!connected.yPlus) linePx(ctx, cap.left[0], cap.left[1], cap.bottom[0], cap.bottom[1], PALETTE.outline, 1);
+
+  for (const t of [0.26, 0.52, 0.78]) {
+    if (((seed + Math.floor(t * 100)) & 1) === 0) continue;
+    const a = mixPoint(cap.left, cap.top, t);
+    const b = mixPoint(cap.bottom, cap.right, t);
+    linePx(ctx, a[0], a[1], b[0], b[1], variant === 'farmhouse' ? PALETTE.woodDark : PALETTE.outline, 1);
+  }
+
+  if ((seed & 3) === 0) {
+    drawNoisePixels(ctx, cx - 24, cy - wallH + 12, 48, Math.max(12, wallH - 10), [style.grime, PALETTE.stoneDark], 0.018, seed);
   }
 }
 

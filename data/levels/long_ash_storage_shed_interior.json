@@ -32,11 +32,12 @@
   ],
   "legend": {
     "#": {
-      "kind": "wall",
+      "kind": "shed-interior-wall",
       "walkable": false
     },
     ".": {
       "kind": "floor",
+      "floor": "packed-earth",
       "walkable": true
     }
   },

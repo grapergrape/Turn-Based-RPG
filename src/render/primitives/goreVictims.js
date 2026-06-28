@@ -655,6 +655,266 @@ export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
   drawNoisePixels(ctx, cx - 10, cy - 3, 20, 8, [cut, PALETTE.stoneDark], 0.07, seed);
 }
 
+function drawCalcifiedLimb(ctx, points, colors, size = 2) {
+  for (let i = 0; i < points.length - 1; i += 1) {
+    const a = points[i];
+    const b = points[i + 1];
+    linePx(ctx, a.x, a.y, b.x, b.y, PALETTE.outline, size + 2);
+    linePx(ctx, a.x, a.y, b.x, b.y, colors.mid, size);
+    if (size > 1) linePx(ctx, a.x, a.y - 1, b.x, b.y - 1, colors.hi, 1);
+    linePx(ctx, a.x, a.y + 1, b.x, b.y + 1, colors.dk, 1);
+  }
+  for (let i = 1; i < points.length - 1; i += 1) {
+    const p = points[i];
+    px(ctx, p.x - 1, p.y - 1, PALETTE.outline, 4, 4);
+    px(ctx, p.x, p.y - 1, colors.mid, 2, 3);
+    px(ctx, p.x, p.y - 1, colors.hi, 1, 1);
+  }
+}
+
+function drawSpeakingCalcifiedFace(ctx, cx, y, side = 1) {
+  const rows = [
+    [5, 0, PALETTE.skinDark],
+    [7, -1, PALETTE.skinMid],
+    [8, -1, PALETTE.skinMid],
+    [8, 0, PALETTE.skinMid],
+    [7, 1, PALETTE.skinDark],
+    [6, 1, PALETTE.skinDark],
+    [5, 2, PALETTE.stoneDust]
+  ];
+  for (let row = 0; row < rows.length; row += 1) {
+    const [w, off, color] = rows[row];
+    const x = cx - Math.floor(w / 2) + off;
+    px(ctx, x - 1, y + row, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y + row, color, w, 1);
+    if (row < 4) px(ctx, x, y + row, PALETTE.skinLight, 1, 1);
+    px(ctx, x + w - 1, y + row, PALETTE.stoneDark, 1, 1);
+  }
+  px(ctx, cx - 3, y + 3, PALETTE.void, 2, 2);
+  px(ctx, cx + 2, y + 3, PALETTE.void, 2, 2);
+  px(ctx, cx - 2 + side, y + 6, PALETTE.void, 5, 1);
+  px(ctx, cx - 1 + side, y + 7, PALETTE.skinDark, 3, 1);
+}
+
+function drawBrokenCalcifiedHalo(ctx, cx, cy, seed, side = 1) {
+  for (let i = 0; i < 15; i += 1) {
+    if (i > 8 && i < 12) continue;
+    const a = Math.PI * (0.1 + i * 0.055);
+    const hx = cx + Math.round(Math.cos(a) * (10 + (i & 1)));
+    const hy = cy - Math.round(Math.sin(a) * 8);
+    px(ctx, hx, hy, i % 3 === 0 ? PALETTE.hostBone : PALETTE.stoneDust, i % 4 === 0 ? 2 : 1, 1);
+  }
+  px(ctx, cx + side * 8, cy + 4, PALETTE.stoneDust, 4, 1);
+  px(ctx, cx + side * 11, cy + 6, PALETTE.stoneDark, 3, 1);
+}
+
+function drawCalcifiedTorsoRows(ctx, cx, shoulderY, hipY, lean, side, opts = {}) {
+  const topW = opts.topW ?? 13;
+  const bottomW = opts.bottomW ?? 8;
+  const phase = opts.phase ?? 0;
+  for (let y = shoulderY; y <= hipY; y += 1) {
+    const t = (y - shoulderY) / Math.max(1, hipY - shoulderY);
+    const w = Math.max(5, Math.round(topW + (bottomW - topW) * t));
+    const drift = Math.round(lean * (1 - t) + side * Math.sin(t * Math.PI) * 3);
+    const x = cx + drift - Math.floor(w / 2);
+    const tone = y < shoulderY + 5 ? PALETTE.hostBone : y < hipY - 4 ? PALETTE.stoneDust : PALETTE.stoneDark;
+    px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y, tone, w, 1);
+    px(ctx, x, y, PALETTE.stoneLight, 1, 1);
+    px(ctx, x + w - 1, y, PALETTE.stoneDark, 1, 1);
+    if ((y + phase) % 5 === 0) px(ctx, x + 2, y, PALETTE.stoneDark, Math.max(2, w - 5), 1);
+  }
+}
+
+function drawThrownRoadOfferings(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 409, seed * 5 + 19));
+  for (let i = 0; i < 8; i += 1) {
+    const x = cx - 24 + Math.floor(rng() * 48);
+    const y = cy - 4 + Math.floor(rng() * 11);
+    const color = i % 3 === 0 ? PALETTE.hostGold : i % 3 === 1 ? PALETTE.rustDark : PALETTE.stoneDust;
+    px(ctx, x - 1, y - 1, PALETTE.outline, 4, 3);
+    px(ctx, x, y - 1, color, 2 + (i & 1), 1);
+    if (i % 3 === 0) px(ctx, x + 1, y - 2, PALETTE.hostBone, 1, 1);
+  }
+  px(ctx, cx - 31, cy - 8, PALETTE.outline, 10, 5);
+  px(ctx, cx - 30, cy - 7, PALETTE.rustDark, 8, 3);
+  px(ctx, cx + 22, cy - 7, PALETTE.outline, 8, 4);
+  px(ctx, cx + 23, cy - 6, PALETTE.stoneDust, 6, 2);
+}
+
+export function drawCalcifiedCrossroadBrother(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 337, seed * 7 + 29));
+  const side = (seed & 1) ? 1 : -1;
+  const lean = Math.round((rng() - 0.5) * 4);
+  const boneRamp = {
+    hi: PALETTE.hostBone,
+    mid: PALETTE.stoneDust,
+    lo: PALETTE.stoneDark,
+    dk: PALETTE.stoneDark
+  };
+  const footY = cy - 1;
+  const hipY = cy - 21;
+  const chestY = cy - 36;
+  const shoulderY = cy - 46;
+  const headY = cy - 60;
+
+  drawShadowBlob(ctx, cx, cy + 4, 46, 15);
+  drawIsoDiamond(ctx, cx + 1, cy + 2, 34, 12, PALETTE.stoneDark);
+  drawThrownRoadOfferings(ctx, cx, cy, seed);
+
+  // A buried remnant of the real signpost frames the frozen body as road furniture.
+  linePx(ctx, cx - 2, cy - 3, cx - 2, cy - 54, PALETTE.outline, 5);
+  linePx(ctx, cx - 1, cy - 4, cx - 1, cy - 53, PALETTE.woodDark, 2);
+  linePx(ctx, cx - 3, cy - 35, cx + 16, cy - 30, PALETTE.outline, 3);
+  linePx(ctx, cx - 2, cy - 36, cx + 15, cy - 31, PALETTE.woodMid, 1);
+
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean - 5, y: shoulderY + 3 },
+    { x: cx - 25, y: shoulderY - 3 },
+    { x: cx - 43, y: shoulderY - 12 }
+  ], boneRamp, 2);
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean + 5, y: shoulderY + 2 },
+    { x: cx + 30, y: shoulderY - 6 },
+    { x: cx + 48, y: shoulderY - 17 }
+  ], boneRamp, 2);
+  for (const hand of [
+    { x: cx - 45, y: shoulderY - 13, s: -1 },
+    { x: cx + 50, y: shoulderY - 18, s: 1 }
+  ]) {
+    px(ctx, hand.x - 2, hand.y - 2, PALETTE.outline, 6, 5);
+    px(ctx, hand.x - 1, hand.y - 1, PALETTE.hostBone, 4, 3);
+    linePx(ctx, hand.x + hand.s, hand.y - 1, hand.x + hand.s * 9, hand.y - 4, PALETTE.outline, 2);
+    linePx(ctx, hand.x + hand.s, hand.y - 2, hand.x + hand.s * 8, hand.y - 5, PALETTE.hostBone, 1);
+  }
+
+  drawCalcifiedTorsoRows(ctx, cx, shoulderY, hipY, lean, side, { phase: seed & 7 });
+  px(ctx, cx + lean - 5, chestY - 2, PALETTE.void, 10, 12);
+  px(ctx, cx + lean - 3, chestY + 1, PALETTE.stoneDark, 5, 7);
+  px(ctx, cx + lean - 6, chestY + 2, PALETTE.hostBone, 4, 1);
+  px(ctx, cx + lean + 4, chestY + 3, PALETTE.hostBone, 4, 1);
+  px(ctx, cx + lean - 1, chestY - 3, PALETTE.stoneDark, 1, 14);
+
+  // Scratched road cruelty: rude marks, luck signs, and old spit stains.
+  linePx(ctx, cx + lean - 8, chestY + 12, cx + lean + 5, chestY + 10, PALETTE.rustDark, 1);
+  linePx(ctx, cx + lean - 7, chestY + 15, cx + lean + 4, chestY + 16, PALETTE.rustDark, 1);
+  px(ctx, cx + lean - 5, chestY + 9, PALETTE.void, 3, 1);
+  px(ctx, cx + lean + 1, chestY + 8, PALETTE.void, 1, 5);
+  px(ctx, cx + lean + 4, chestY + 12, PALETTE.void, 3, 1);
+  drawNoisePixels(ctx, cx + lean - 12, chestY + 7, 24, 19, [PALETTE.rustDark, PALETTE.stoneDark], 0.12, seed);
+
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean - 4, y: hipY },
+    { x: cx - 8, y: footY - 10 },
+    { x: cx - 7, y: footY - 2 }
+  ], boneRamp, 3);
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean + 4, y: hipY },
+    { x: cx + 8, y: footY - 11 },
+    { x: cx + 7, y: footY - 2 }
+  ], boneRamp, 3);
+  px(ctx, cx - 11, footY - 3, PALETTE.stoneDark, 9, 3);
+  px(ctx, cx + 3, footY - 3, PALETTE.stoneDark, 9, 3);
+
+  drawBrokenCalcifiedHalo(ctx, cx + lean + side, headY + 9, seed, side);
+  px(ctx, cx + lean - 6, shoulderY - 4, PALETTE.outline, 13, 3);
+  px(ctx, cx + lean - 5, shoulderY - 3, PALETTE.stoneDark, 11, 1);
+  drawSpeakingCalcifiedFace(ctx, cx + lean + side, headY, side);
+  px(ctx, cx + lean - side * 8, headY + 1, PALETTE.hostBone, 2, 3);
+  px(ctx, cx + lean - side * 10, headY, PALETTE.outline, 2, 1);
+}
+
+export function drawCalcifiedScarecrowBrother(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 503, seed * 11 + 37));
+  const side = (seed & 1) ? 1 : -1;
+  const lean = Math.round((rng() - 0.5) * 3);
+  const boneRamp = {
+    hi: PALETTE.hostBone,
+    mid: PALETTE.stoneDust,
+    lo: PALETTE.stoneDark,
+    dk: PALETTE.stoneDark
+  };
+  const footY = cy - 2;
+  const hipY = cy - 22;
+  const chestY = cy - 38;
+  const shoulderY = cy - 48;
+  const headY = cy - 61;
+  const barY = shoulderY + 1;
+
+  drawShadowBlob(ctx, cx, cy + 4, 42, 14);
+  drawIsoDiamond(ctx, cx, cy + 2, 36, 12, PALETTE.stoneDark);
+
+  // Dry wheat crowded around the base, so it reads as a field placement.
+  for (let i = 0; i < 15; i += 1) {
+    const bx = cx - 25 + Math.floor(rng() * 51);
+    const by = cy - 4 + Math.floor(rng() * 11);
+    const h = 15 + Math.floor(rng() * 9);
+    const tip = bx - 4 + Math.floor(rng() * 9);
+    linePx(ctx, bx, by, tip, by - h, PALETTE.outline, 2);
+    linePx(ctx, bx, by, tip, by - h, i % 3 ? PALETTE.woodMid : PALETTE.clothTan, 1);
+  }
+
+  // Farmer's lash-up. The body is the scarecrow, not clothing on a pole.
+  linePx(ctx, cx, cy - 4, cx + lean, cy - 58, PALETTE.outline, 5);
+  linePx(ctx, cx + 1, cy - 5, cx + lean + 1, cy - 57, PALETTE.woodDark, 2);
+  linePx(ctx, cx - 28, barY, cx + 29, barY - 4, PALETTE.outline, 5);
+  linePx(ctx, cx - 27, barY - 1, cx + 28, barY - 5, PALETTE.woodMid, 2);
+
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean - 6, y: shoulderY + 3 },
+    { x: cx - 18, y: barY },
+    { x: cx - 29, y: barY + 1 }
+  ], boneRamp, 2);
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean + 6, y: shoulderY + 2 },
+    { x: cx + 18, y: barY - 3 },
+    { x: cx + 30, y: barY - 6 }
+  ], boneRamp, 2);
+  for (const w of [
+    { x: cx - 25, y: barY, s: -1 },
+    { x: cx + 25, y: barY - 4, s: 1 }
+  ]) {
+    px(ctx, w.x - 4, w.y - 2, PALETTE.clothTan, 9, 2);
+    px(ctx, w.x - 3, w.y, PALETTE.rustDark, 7, 1);
+    px(ctx, w.x + w.s * 5, w.y + 1, PALETTE.hostBone, 3, 2);
+  }
+
+  drawCalcifiedTorsoRows(ctx, cx, shoulderY, hipY, lean, side, { topW: 12, bottomW: 9, phase: seed & 5 });
+  px(ctx, cx + lean - 4, chestY - 2, PALETTE.void, 9, 11);
+  px(ctx, cx + lean - 2, chestY, PALETTE.stoneDark, 5, 7);
+  for (const s of [-1, 1]) {
+    for (let r = 0; r < 3; r += 1) {
+      linePx(ctx, cx + lean + s * 4, chestY + r * 3, cx + lean + s * (8 - r), chestY - 1 + r * 3, PALETTE.hostBone, 1);
+    }
+  }
+  px(ctx, cx + lean - 1, chestY - 3, PALETTE.stoneDark, 1, 13);
+  linePx(ctx, cx + lean - 9, chestY + 13, cx + lean + 8, chestY + 11, PALETTE.clothTan, 1);
+  linePx(ctx, cx + lean - 8, chestY + 15, cx + lean + 7, chestY + 16, PALETTE.rustDark, 1);
+
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean - 4, y: hipY },
+    { x: cx - 8, y: footY - 10 },
+    { x: cx - 6, y: footY - 2 }
+  ], boneRamp, 3);
+  drawCalcifiedLimb(ctx, [
+    { x: cx + lean + 4, y: hipY },
+    { x: cx + 6, y: footY - 12 },
+    { x: cx + 8, y: footY - 3 }
+  ], boneRamp, 3);
+  px(ctx, cx - 9, footY - 3, PALETTE.stoneDark, 8, 3);
+  px(ctx, cx + 3, footY - 4, PALETTE.stoneDark, 9, 3);
+
+  drawBrokenCalcifiedHalo(ctx, cx + lean - side, headY + 9, seed, -side);
+  drawSpeakingCalcifiedFace(ctx, cx + lean - side, headY, -side);
+  px(ctx, cx + lean - 9, headY + 9, PALETTE.clothTan, 19, 2);
+  px(ctx, cx + lean - 10, headY + 10, PALETTE.rustDark, 21, 1);
+  px(ctx, cx + 15, headY + 3, PALETTE.outline, 6, 5);
+  px(ctx, cx + 16, headY + 4, PALETTE.stoneDark, 4, 3);
+  px(ctx, cx + 17, headY + 3, PALETTE.stoneDust, 2, 1);
+  px(ctx, cx - 19, cy - 13, PALETTE.outline, 5, 4);
+  px(ctx, cx - 18, cy - 12, PALETTE.rustDark, 3, 2);
+}
+
 export function drawCultVictim(ctx, cx, cy, seed) {
   const blood = PALETTE.hostRed;
   const dark = PALETTE.rustDark;
