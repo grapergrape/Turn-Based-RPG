@@ -2,6 +2,7 @@
   "id": "choir-hymnal-fragment",
   "name": "Hymnal Fragment",
   "type": "evidence",
+  "rarity": "common",
   "weight": 0.1,
   "groundModel": "paper",
   "description": "A torn hymn page copied by hand. The words are mostly instruction: listen, open, answer."

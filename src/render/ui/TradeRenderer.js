@@ -1,4 +1,5 @@
 import { PALETTE } from '../palette.js';
+import { itemRarityColor, itemRarityLabel } from './ItemRarityStyle.js';
 import {
   TRADE_BOX,
   TRADE_BUTTONS,
@@ -60,7 +61,7 @@ function drawTradeStockRow(ctx, box, item, state, tools) {
   tools.drawInventorySlot(ctx, iconBox, item, { selected: false });
   const sold = item.count <= 0;
   const blocked = !sold && item.affordable === false;
-  const color = sold ? PALETTE.uiBorderDark : (state.selected ? PALETTE.uiText : PALETTE.uiDim);
+  const color = sold ? PALETTE.uiBorderDark : itemRarityColor(item);
   const priceColor = sold ? PALETTE.uiBorderDark : (blocked ? PALETTE.uiFailure : PALETTE.uiWarn);
   const count = item.count > 0 ? `${item.count}X` : 'SOLD';
   const price = `${item.price ?? 0}D`;
@@ -84,7 +85,7 @@ function drawTradePackRow(ctx, box, item, state, tools) {
   if (!item) return;
   const iconBox = { x: box.x + 5, y: box.y + 1, w: 18, h: 18 };
   tools.drawInventorySlot(ctx, iconBox, item, { selected: false });
-  const color = state.selected ? PALETTE.uiText : PALETTE.uiDim;
+  const color = itemRarityColor(item);
   const weight = `WT ${tools.formatWeight(item.totalWeight ?? item.weight ?? 0)}`;
   tools.text(ctx, tools.clip(item.name, 19), box.x + 29, box.y + 3, color);
   tools.text(ctx, `${item.count}X`, box.x + 29, box.y + 12, PALETTE.uiGood);
@@ -97,11 +98,13 @@ function drawTradeDetail(ctx, trade, item, focusStock, tools) {
     tools.text(ctx, focusStock ? 'NO STOCK SELECTED' : 'PACK EMPTY', box.x + 8, box.y + 8, PALETTE.uiBorderLight);
     return;
   }
-  tools.text(ctx, tools.clip(item.name, 36), box.x + 8, box.y + 8, PALETTE.uiBorderLight);
+  tools.text(ctx, tools.clip(item.name, 36), box.x + 8, box.y + 8, itemRarityColor(item));
   const ask = focusStock
     ? `PRICE ${item.price ?? 0} DUCATS  STOCK ${item.count ?? 0}`
     : `COUNT ${item.count ?? 0}  WT ${tools.formatWeight(item.totalWeight ?? item.weight ?? 0)} KG`;
-  tools.text(ctx, ask, box.x + 8, box.y + 20, focusStock ? PALETTE.uiWarn : PALETTE.uiGood);
+  const build = item.buildLabel ? `BUILD ${item.buildLabel}  ` : '';
+  const meta = `${build}GRADE ${itemRarityLabel(item)}  ${ask}`;
+  tools.text(ctx, tools.clip(meta, 58), box.x + 8, box.y + 20, focusStock ? PALETTE.uiWarn : PALETTE.uiGood);
   const status = focusStock
     ? item.count <= 0
       ? 'SOLD OUT'

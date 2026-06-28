@@ -9,7 +9,8 @@
     "investigate-ash-chapel-cult"
   ],
   "dialogue": [
-    "long-ash-farmhouse-exit"
+    "long-ash-farmhouse-exit",
+    "long-ash-child-wolf-journal"
   ],
   "mood": {
     "floorShade": "#15130e",
@@ -70,7 +71,17 @@
       "kind": "pantry-shelf",
       "x": 2,
       "y": 3,
-      "blocking": true
+      "blocking": true,
+      "id": "farmhouse-pantry-shelf",
+      "name": "Farmhouse Pantry",
+      "interact": {
+        "type": "container",
+        "log": "A few tins and a wrapped field packet sit behind the flour jars.",
+        "loot": [
+          { "item": "tinned-beans", "count": 2 },
+          { "item": "field-dressing", "count": 1 }
+        ]
+      }
     },
     {
       "kind": "farm-kitchen-hearth",
@@ -143,7 +154,14 @@
       "kind": "paper-scraps",
       "x": 5,
       "y": 7,
-      "seed": 5413
+      "seed": 5413,
+      "id": "child-wolf-journal",
+      "name": "Child's Wolf Journal",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-child-wolf-journal",
+        "log": "A child's copybook lies near the table. One corner has been chewed through."
+      }
     }
   ]
 }

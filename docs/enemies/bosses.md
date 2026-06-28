@@ -58,7 +58,7 @@ Dain calls theft holy taxation and uses fear of the Host to legitimize raids. He
 
 **Faction:** Compact experiment, The Host
 **Location:** Meridian Vault sealed lower lab
-**Former identity:** Stage Three patient reconstructed through Project Lazarus Bloom
+**Former identity:** Stage III patient reconstructed through Project Lazarus Bloom
 **Narrative purpose:** Make the Compact's hope and cruelty visible in one body.
 
 The Lazarus Subject may speak with fragments of multiple recorded personalities. It might be a failed cure, a partial success, or a person the Compact refused to recognize because the result was inconvenient.
@@ -99,7 +99,7 @@ The Bell Below has protected Low Harrow in exchange for offerings. It may be int
 
 Ysolde should be persuasive enough that killing her feels like stopping a real danger and destroying one of the only shelters some people had. By Act III, her larger rite is clear: she is harvesting living Host matter in barrels and vats for a total-immersion sacrament. She believes a worthy body submerged whole in the Host can survive as Satan made manifest.
 
-**Encounter role:** Ritual leader who buffs voluntary Stage Two converts, opens hazard zones, uses civilian positioning as moral pressure, and prepares the Pontifex immersion.
+**Encounter role:** Ritual leader who buffs voluntary Stage II converts, opens hazard zones, uses civilian positioning as moral pressure, and prepares the Pontifex immersion.
 **Branching outcome:** Kill, capture, discredit, let her evacuate outcasts, allow Anselm to confront her, or help her complete enough of the rite to change the Act III climax.
 
 ### The Devil Manifestation

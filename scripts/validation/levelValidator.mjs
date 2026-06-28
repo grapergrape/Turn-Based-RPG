@@ -28,6 +28,9 @@ import { validateActorAppearance, validateActorSpriteId } from './renderCatalogV
 import { validateDialogueConditions, validateDialogueEffects, validateDialogueReference } from './dialogueValidator.mjs';
 import { validateBarkCollection, validateStringList } from './textRules.mjs';
 
+const MAP_MARKER_KINDS = new Set(['quest', 'dialogue', 'exit', 'locked', 'search', 'danger', 'note']);
+const MAP_MARKER_REVEALS = new Set(['explored', 'always']);
+
 function validateTiles(name, data) {
   if (!Array.isArray(data.tiles)) {
     errors.push(`${name}: tiles must be an array of strings.`);
@@ -132,6 +135,7 @@ export function validateLevel(filePath, data) {
     validateSpawnPerception(name, data, point, 'spawns.enemies[]');
     validateSpawnPatrol(name, data, point, 'spawns.enemies[]');
     validateLoot(name, point.loot, 'spawns.enemies[].loot');
+    validateMapMarker(name, point.mapMarker, 'spawns.enemies[].mapMarker');
   }
   for (const point of npcs) {
     if (!inBounds(data, point)) {
@@ -155,6 +159,7 @@ export function validateLevel(filePath, data) {
       requireNumber(name, point.talkRadius, 'spawns.npcs[].talkRadius');
     }
     validateSpawnPatrol(name, data, point, 'spawns.npcs[]');
+    validateMapMarker(name, point.mapMarker, 'spawns.npcs[].mapMarker');
   }
 
   const objects = Array.isArray(data.objects) ? data.objects : [];
@@ -177,7 +182,9 @@ export function validateLevel(filePath, data) {
     validateLock(name, object.interact?.lock, 'objects[].interact.lock');
     validateSearch(name, object.interact?.search, 'objects[].interact.search');
     validateDoorObject(name, object);
+    validateMapMarker(name, object.mapMarker, 'objects[].mapMarker');
   }
+  validateCombatTriggerMapMarkers(name, data);
   validateHiddenRegions(name, data, objects);
   validatePatrolReachability(name, data, [
     ...enemies.map((spawn) => ({ spawn, label: `enemy "${spawn.id}"` })),
@@ -224,6 +231,41 @@ export function validateLevel(filePath, data) {
   }
 
   validateTalkableNpcReachability(name, data, npcs, objects);
+}
+
+function validateCombatTriggerMapMarkers(name, data) {
+  if (data.combatTrigger !== undefined) {
+    validateMapMarker(name, data.combatTrigger?.mapMarker, 'combatTrigger.mapMarker');
+  }
+  if (data.combatTriggers === undefined) return;
+  if (!Array.isArray(data.combatTriggers)) {
+    errors.push(`${name}: combatTriggers must be an array.`);
+    return;
+  }
+  data.combatTriggers.forEach((trigger, index) => {
+    validateMapMarker(name, trigger?.mapMarker, `combatTriggers[${index}].mapMarker`);
+  });
+}
+
+function validateMapMarker(name, marker, fieldName) {
+  if (marker === undefined || marker === false) return;
+  if (!marker || typeof marker !== 'object' || Array.isArray(marker)) {
+    errors.push(`${name}: ${fieldName} must be false or an object.`);
+    return;
+  }
+  if (marker.label !== undefined) requireString(name, marker.label, `${fieldName}.label`);
+  if (marker.kind !== undefined) {
+    requireString(name, marker.kind, `${fieldName}.kind`);
+    if (typeof marker.kind === 'string' && !MAP_MARKER_KINDS.has(marker.kind)) {
+      errors.push(`${name}: ${fieldName}.kind must be one of ${[...MAP_MARKER_KINDS].join(', ')}.`);
+    }
+  }
+  if (marker.reveal !== undefined) {
+    requireString(name, marker.reveal, `${fieldName}.reveal`);
+    if (typeof marker.reveal === 'string' && !MAP_MARKER_REVEALS.has(marker.reveal)) {
+      errors.push(`${name}: ${fieldName}.reveal must be one of ${[...MAP_MARKER_REVEALS].join(', ')}.`);
+    }
+  }
 }
 
 function validateObjectIds(name, objects) {

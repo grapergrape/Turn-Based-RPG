@@ -1,0 +1,33 @@
+{
+  "id": "host-wolf-maw",
+  "name": "Maw Host Wolf",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "host-wolf-maw",
+  "description": "The skull still knows it was a wolf. The throat forgot. It opens into a red little chapel of teeth and wet black cords.",
+  "stats": {
+    "hp": 5,
+    "maxHp": 5,
+    "actionPoints": 6,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "throat-maw-bite",
+      "name": "Throat Maw Bite",
+      "apCost": 3,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "aggro": [
+    "The wolf's throat opens first.",
+    "Wet cords drag along the rock."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "wolf",
+    "maw"
+  ]
+}

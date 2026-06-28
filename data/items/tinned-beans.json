@@ -2,6 +2,7 @@
   "id": "tinned-beans",
   "name": "Tinned Beans",
   "type": "food",
+  "rarity": "common",
   "weight": 0.3,
   "groundModel": "food",
   "description": "A dented tin from a road store. Restores 1 HP. Consumed on use.",

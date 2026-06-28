@@ -2,6 +2,7 @@
   "id": "scarred-leather-vest",
   "name": "Scarred Leather Vest",
   "type": "armor",
+  "rarity": "uncommon",
   "weight": 2.8,
   "groundModel": "vest",
   "equipment": { "slot": "armor" },

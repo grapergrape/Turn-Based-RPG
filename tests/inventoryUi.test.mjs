@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { Inventory } from '../src/core/Inventory.js';
+import { itemRarityMeta } from '../src/core/ItemRarity.js';
 import { UIRenderer } from '../src/render/UIRenderer.js';
 import {
   INVENTORY_ACTION_BOXES,
@@ -39,6 +40,7 @@ const itemDefs = {
   ducat: {
     name: 'Ducat',
     type: 'currency',
+    rarity: 'common',
     weight: 0,
     groundModel: 'chit',
     description: 'Stamped trade coin.'
@@ -46,6 +48,7 @@ const itemDefs = {
   'field-dressing': {
     name: 'Field Dressing',
     type: 'consumable',
+    rarity: 'common',
     weight: 0.2,
     groundModel: 'dressing',
     description: 'A sealed sterile dressing.'
@@ -53,6 +56,7 @@ const itemDefs = {
   'tinned-beans': {
     name: 'Tinned Beans',
     type: 'food',
+    rarity: 'common',
     weight: 0.3,
     groundModel: 'food',
     description: 'A dented tin.'
@@ -60,10 +64,21 @@ const itemDefs = {
   'ash-road-boots': {
     name: 'Ash Road Boots',
     type: 'boots',
+    rarity: 'uncommon',
     weight: 1.2,
     groundModel: 'boots',
     equipment: { slot: 'boots' },
     description: 'Heavy travel boots.'
+  },
+  'pilgrim-ribguard': {
+    name: 'Pilgrim Ribguard',
+    type: 'armor',
+    rarity: 'epic',
+    build: 'road-ghost',
+    weight: 1.6,
+    groundModel: 'ribguard',
+    equipment: { slot: 'armor' },
+    description: 'Light rib armor.'
   }
 };
 
@@ -71,10 +86,18 @@ const inventory = new Inventory(itemDefs);
 inventory.add('ducat', 12);
 inventory.add('field-dressing', 3);
 inventory.add('ash-road-boots', 1);
+inventory.add('pilgrim-ribguard', 1);
 inventory.equip('ash-road-boots');
 
 const entries = inventory.entries();
 assert.equal(entries.find((entry) => entry.id === 'ducat').groundModel, 'chit');
+assert.equal(entries.find((entry) => entry.id === 'ducat').rarity, 'common');
+assert.equal(entries.find((entry) => entry.id === 'ash-road-boots').rarityLabel, 'Uncommon');
+assert.equal(entries.find((entry) => entry.id === 'pilgrim-ribguard').buildLabel, 'Road Ghost');
+assert.equal(entries.find((entry) => entry.id === 'pilgrim-ribguard').groundModel, 'ribguard');
+assert.equal(inventory.equipmentEntries().find((entry) => entry.slot === 'boots').rarity, 'uncommon');
+assert.equal(itemRarityMeta('legendary').rank, 4);
+assert.equal(itemRarityMeta('unknown').id, 'common');
 
 const firstSlot = inventorySlotBox(0);
 assert.equal(inventorySlotAt({ x: firstSlot.x + 2, y: firstSlot.y + 2 }), 0);

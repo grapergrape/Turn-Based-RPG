@@ -2,6 +2,7 @@
   "id": "warden-safe-key",
   "name": "Warden's Iron Key",
   "type": "key",
+  "rarity": "rare",
   "weight": 0.1,
   "groundModel": "key",
   "description": "A heavy iron key, oiled against rust and hidden under a loose stone. It opens the warden's wall safe behind the hung saint, and nothing else worth the weight."

@@ -2,6 +2,7 @@
   "id": "ducat",
   "name": "Ducat",
   "type": "currency",
+  "rarity": "common",
   "weight": 0,
   "groundModel": "chit",
   "description": "A stamped trade coin accepted by road markets, gate clerks, and caravan factors."

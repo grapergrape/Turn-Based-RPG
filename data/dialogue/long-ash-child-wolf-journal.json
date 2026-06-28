@@ -1,0 +1,17 @@
+{
+  "id": "long-ash-child-wolf-journal",
+  "title": "Child's Wolf Journal",
+  "nodes": {
+    "start": {
+      "effects": {
+        "setFlag": "read-long-ash-child-wolf-journal"
+      },
+      "lines": [
+        "The book is a child's copybook, half sums and half field chores. The later pages are all about the wolves beyond the north fence.",
+        "\"Father says no meat over the fence. Road wolves remember a hand better than saints remember prayers. I did it anyway. Gray took the fat from my palm and did not bite.\"",
+        "\"The little ones come when I whistle twice and sit for marrow bones. They hate red cloth. Father says I am teaching teeth to beg. I think I am teaching them our smell.\"",
+        "The last written page is only a feed tally: two marrow bones, one fat strip. Under it, the child wrote, DO NOT TELL FATHER."
+      ]
+    }
+  }
+}

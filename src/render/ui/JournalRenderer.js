@@ -1,5 +1,11 @@
 import { PALETTE } from '../palette.js';
-import { JOURNAL_ARROW_BOXES, JOURNAL_BOOK } from '../../ui/journalLayout.js';
+import {
+  JOURNAL_ARROW_BOXES,
+  JOURNAL_BOOK,
+  JOURNAL_MAP_FIELD_BOX,
+  JOURNAL_PAGES,
+  journalMapGridMetrics
+} from '../../ui/journalLayout.js';
 
 // Aged-paper palette for the journal book (dark ink on dirty parchment).
 const PARCHMENT = {
@@ -43,8 +49,8 @@ export function drawJournal(ctx, ui, tools) {
   }
 
   // Two worn parchment pages flanking a stitched spine.
-  const left = { x: B.x + 16, y: B.y + 14, w: 244, h: B.h - 26 };
-  const right = { x: B.x + 284, y: B.y + 14, w: 244, h: B.h - 26 };
+  const left = JOURNAL_PAGES.left;
+  const right = JOURNAL_PAGES.right;
   journalPage(ctx, left, { dogEar: 'bl' }, tools);
   journalPage(ctx, right, { dogEar: 'br', ring: true }, tools);
   const spineX = left.x + left.w;
@@ -77,15 +83,17 @@ export function drawJournal(ctx, ui, tools) {
   journalArrowButton(ctx, JOURNAL_ARROW_BOXES.prev, 'prev', tools);
   journalArrowButton(ctx, JOURNAL_ARROW_BOXES.next, 'next', tools);
 
-  tools.text(ctx, 'A/D OR ARROWS TURN PAGE   J OR ESC CLOSE', B.x + 72, B.y + B.h - 11, PALETTE.clothTan);
+  tools.text(ctx, 'A/D TURN PAGE   M MAP   J OR ESC CLOSE', B.x + 88, B.y + B.h - 11, PALETTE.clothTan);
 }
 
 function journalContent(ctx, left, right, section, journal, tools) {
-  if (section === 1) journalNotesPage(ctx, left, right, journal.findings ?? [], tools);
-  else if (section === 2) journalFactionsPage(ctx, left, right, journal.factions ?? [], journal.factionIndex ?? 0, tools);
-  else if (section === 3) journalCharacterPage(ctx, left, right, journal.character ?? {}, journal.primaryIndex ?? 0, tools);
-  else if (section === 4) journalScarsPage(ctx, left, right, journal.character ?? {}, tools);
-  else if (section === 5) journalTechniquesPage(ctx, left, right, journal.techniques ?? {}, tools);
+  const sectionId = (journal.sections ?? [])[section] ?? 'QUESTS';
+  if (sectionId === 'MAP') journalMapPage(ctx, left, right, journal.map, tools);
+  else if (sectionId === 'NOTES') journalNotesPage(ctx, left, right, journal.findings ?? [], tools);
+  else if (sectionId === 'FACTIONS') journalFactionsPage(ctx, left, right, journal.factions ?? [], journal.factionIndex ?? 0, tools);
+  else if (sectionId === 'CHARACTER') journalCharacterPage(ctx, left, right, journal.character ?? {}, journal.primaryIndex ?? 0, tools);
+  else if (sectionId === 'SCARS') journalScarsPage(ctx, left, right, journal.character ?? {}, tools);
+  else if (sectionId === 'TECHNIQUES') journalTechniquesPage(ctx, left, right, journal.techniques ?? {}, tools);
   else journalQuestsPage(ctx, left, right, journal.quests ?? [], journal.character ?? {}, tools);
 }
 
@@ -256,6 +264,149 @@ function journalQuestsPage(ctx, left, right, quests, character, tools) {
     tools.text(ctx, 'NOTHING SET DOWN YET.', rx, ry, C.inkDim);
   }
   journalSeal(ctx, right, tools, character);
+}
+
+function journalMapPage(ctx, left, right, map, tools) {
+  const C = PARCHMENT;
+  let y = journalHeader(ctx, left, 'AREA MAP', tools);
+  const lx = left.x + 12;
+  if (!map) {
+    tools.text(ctx, 'NO AREA MAP.', lx, y, C.inkDim);
+    return;
+  }
+
+  tools.text(ctx, tools.clip(map.name ?? 'AREA MAP', 31), lx, y, C.ink);
+  const total = Math.max(1, map.totalCells ?? 1);
+  const percent = Math.round(((map.exploredCount ?? 0) / total) * 100);
+  tools.text(ctx, `${percent}% FILED`, left.x + left.w - 76, y, C.inkDim);
+  y += 15;
+
+  drawMapField(ctx, JOURNAL_MAP_FIELD_BOX, map, tools);
+
+  const footerY = left.y + left.h - 36;
+  tools.text(ctx, 'BLACK GROUND IS UNSEEN.', lx, footerY, C.inkDim);
+  tools.text(ctx, 'SECRET ROOMS STAY DARK.', lx, footerY + 11, C.inkDim);
+
+  journalMapNotes(ctx, right, map, tools);
+}
+
+function drawMapField(ctx, box, map, tools) {
+  const metrics = journalMapGridMetrics(map, box);
+  if (!metrics) return;
+  const { scale, scaleX, scaleY } = metrics;
+  const ox = metrics.x;
+  const oy = metrics.y;
+
+  tools.rect(ctx, box.x - 1, box.y - 1, box.w + 2, box.h + 2, PARCHMENT.inkDim);
+  tools.rect(ctx, box.x, box.y, box.w, box.h, PALETTE.void);
+  for (const cell of map.cells ?? []) {
+    const x = ox + cell.x * scaleX;
+    const y = oy + cell.y * scaleY;
+    if (x < box.x || y < box.y || x >= box.x + box.w || y >= box.y + box.h) continue;
+    tools.rect(ctx, x, y, scaleX, scaleY, mapCellColor(cell));
+  }
+
+  const markers = (map.markers ?? []).filter((marker) => marker.kind !== 'player');
+  for (const marker of markers) drawMapMarker(ctx, metrics, marker, tools);
+  const player = (map.markers ?? []).find((marker) => marker.kind === 'player');
+  if (player) drawMapMarker(ctx, metrics, player, tools);
+}
+
+function journalMapNotes(ctx, right, map, tools) {
+  const C = PARCHMENT;
+  let y = journalHeader(ctx, right, 'MAP NOTES', tools);
+  const rx = right.x + 12;
+  tools.text(ctx, tools.clip(map.name ?? 'AREA', 32), rx, y, C.ink);
+  y += 14;
+
+  tools.text(ctx, 'KEY', rx, y, C.inkDim);
+  y += 12;
+  const legend = [
+    ['OPEN', mapCellColor({ explored: true, type: 'floor' })],
+    ['WALL', mapCellColor({ explored: true, type: 'wall' })],
+    ['BLOCK', mapCellColor({ explored: true, type: 'blocked' })],
+    ['DARK', mapCellColor({ explored: false, type: 'floor' })],
+    ['YOU', mapMarkerColor('player')],
+    ['WRIT', mapMarkerColor('quest')],
+    ['TALK', mapMarkerColor('dialogue')],
+    ['RISK', mapMarkerColor('danger')]
+  ];
+  for (let i = 0; i < legend.length; i += 1) {
+    const col = i < 4 ? rx : rx + 92;
+    const rowY = y + (i % 4) * 11;
+    tools.rect(ctx, col, rowY + 1, 7, 7, PARCHMENT.inkDim);
+    tools.rect(ctx, col + 1, rowY + 2, 5, 5, legend[i][1]);
+    tools.text(ctx, legend[i][0], col + 12, rowY, C.inkDim);
+  }
+  y += 52;
+
+  tools.text(ctx, 'MARKS', rx, y, C.inkDim);
+  y += 12;
+  const markers = (map.markers ?? []).filter((marker) => marker.kind !== 'player');
+  if (!markers.length) {
+    tools.text(ctx, 'NO MARKS IN SIGHT.', rx, y, C.inkDim);
+    return;
+  }
+  for (const marker of markers.slice(0, 13)) {
+    const color = mapMarkerColor(marker.kind);
+    tools.rect(ctx, rx, y + 1, 7, 7, PARCHMENT.inkDim);
+    tools.rect(ctx, rx + 1, y + 2, 5, 5, color);
+    tools.text(ctx, markerKindLabel(marker.kind), rx + 12, y, color);
+    tools.text(ctx, tools.clip(marker.label ?? 'MARK', 21), rx + 56, y, C.inkDim);
+    y += 12;
+    if (y > right.y + right.h - 18) {
+      tools.text(ctx, '. . .', rx, y, C.inkDim);
+      break;
+    }
+  }
+}
+
+function drawMapMarker(ctx, metrics, marker, tools) {
+  const { scale, scaleX, scaleY } = metrics;
+  const color = mapMarkerColor(marker.kind);
+  const x = metrics.x + marker.x * scaleX + Math.floor(scaleX / 2);
+  const y = metrics.y + marker.y * scaleY + Math.floor(scaleY / 2);
+  if (marker.kind === 'player') {
+    tools.rect(ctx, x - 3, y, 7, 1, PARCHMENT.ink);
+    tools.rect(ctx, x, y - 3, 1, 7, PARCHMENT.ink);
+    tools.rect(ctx, x - 2, y, 5, 1, color);
+    tools.rect(ctx, x, y - 2, 1, 5, color);
+    return;
+  }
+  const s = Math.max(2, Math.min(4, scale + 1));
+  const bx = x - Math.floor(s / 2);
+  const by = y - Math.floor(s / 2);
+  tools.rect(ctx, bx - 1, by - 1, s + 2, s + 2, PARCHMENT.ink);
+  tools.rect(ctx, bx, by, s, s, color);
+}
+
+function mapCellColor(cell) {
+  if (!cell.explored || cell.hidden) return PALETTE.void;
+  if (cell.type === 'wall') return PARCHMENT.inkDim;
+  if (cell.type === 'blocked') return PALETTE.woodDark;
+  if (cell.type === 'secret' || cell.type === 'void') return PALETTE.outline;
+  return PARCHMENT.hi;
+}
+
+function mapMarkerColor(kind) {
+  if (kind === 'player') return PALETTE.clothRed;
+  if (kind === 'quest') return PALETTE.hostGold;
+  if (kind === 'dialogue') return PALETTE.clothBlue;
+  if (kind === 'exit') return PALETTE.uiGood;
+  if (kind === 'locked') return PALETTE.uiWarn;
+  if (kind === 'search') return PALETTE.stoneLight;
+  if (kind === 'danger') return PALETTE.uiBad;
+  return PARCHMENT.inkDim;
+}
+
+function markerKindLabel(kind) {
+  if (kind === 'quest') return 'WRIT';
+  if (kind === 'dialogue') return 'TALK';
+  if (kind === 'exit') return 'EXIT';
+  if (kind === 'locked') return 'LOCK';
+  if (kind === 'search') return 'SEEK';
+  if (kind === 'danger') return 'RISK';
+  return 'NOTE';
 }
 
 function journalNotesPage(ctx, left, right, findings, tools) {

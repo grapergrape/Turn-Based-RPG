@@ -1,0 +1,19 @@
+{
+  "id": "pilgrim-ribguard",
+  "name": "Pilgrim Ribguard",
+  "type": "armor",
+  "rarity": "epic",
+  "build": "road-ghost",
+  "weight": 1.6,
+  "groundModel": "ribguard",
+  "equipment": { "slot": "armor" },
+  "visual": {
+    "vest": {
+      "mid": "stoneDust",
+      "hi": "hostBone",
+      "lo": "stoneMid",
+      "plate": "hostBone"
+    }
+  },
+  "description": "A light torso guard made from boiled leather and chapel ceramic. The bone plates sit close to the ribs, easy to move in and hard enough to turn a bad bite once."
+}

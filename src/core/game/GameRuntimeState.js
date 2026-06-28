@@ -1,4 +1,5 @@
 import { buildJournalState } from '../JournalState.js';
+import { buildJournalMapState, revealExploredMapCells } from '../JournalMapState.js';
 import { questStageExperience, questStageExperienceKey } from '../Progression.js';
 import { objectGroupId, syncObjectPassability } from '../../world/DoorSystem.js';
 import { hydrateGroundItem, isGroundItemPickupComplete, serializeGroundItem } from '../../world/GroundItems.js';
@@ -291,9 +292,12 @@ class GameRuntimeState {
     const quest = this.questDefs[update.quest];
     const current = this.questStages.get(update.quest);
     if (!quest || current === update.stage) return;
+    const currentIndex = this._questStageIndex(quest, current);
+    const nextIndex = this._questStageIndex(quest, update.stage);
+    if (currentIndex >= 0 && nextIndex >= 0 && nextIndex < currentIndex) return;
     this.questStages.set(update.quest, update.stage);
     const reached = this.questReached.get(update.quest) ?? new Set();
-    reached.add(update.stage);
+    for (const reachedStage of this._stagesUpTo(quest, update.stage)) reached.add(reachedStage);
     this.questReached.set(update.quest, reached);
     if (update.log) this._log(update.log);
     this._awardQuestStageExperience(quest, update.stage);
@@ -303,6 +307,10 @@ class GameRuntimeState {
     }
     const description = this._questStageDescription(update.quest, update.stage);
     if (description) this._log(description);
+  }
+
+  _questStageIndex(quest, stageId) {
+    return (quest.stages ?? []).findIndex((stage) => stage.id === stageId);
   }
 
   _questStageDescription(questId, stageId) {
@@ -335,8 +343,37 @@ class GameRuntimeState {
       techniqueDefs: this.techniqueDefs,
       techniqueContext: this._techniqueContext(),
       primaryIndex: this.journalPrimaryIndex ?? 0,
-      techniqueIndex: this.journalTechniqueIndex ?? 0
+      techniqueIndex: this.journalTechniqueIndex ?? 0,
+      map: this._buildJournalMap()
     });
+  }
+
+  _buildJournalMap() {
+    return buildJournalMapState({
+      grid: this.grid,
+      level: this.level,
+      player: this.player,
+      exploredCells: this.exploredMapTiles,
+      hiddenTiles: this.hiddenTiles,
+      interactables: this.level?.interactables ?? [],
+      actors: [...(this.npcs ?? []), ...(this.enemies ?? [])],
+      combatTriggers: this.level?.combatTriggers ?? [],
+      questDefs: this.questDefs,
+      isQuestUpdateActive: (update) => this._isQuestUpdateActiveForMap(update),
+      objectName: (object) => this._objectName(object),
+      resolveEncounterId: (encounterId) => this._resolveEncounterId(encounterId),
+      encounterHasLiving: (encounterId) =>
+        !this.clearedEncounters?.has?.(this._resolveEncounterId(encounterId)) &&
+        this._livingEnemiesForEncounter(encounterId).length > 0
+    });
+  }
+
+  _isQuestUpdateActiveForMap(update) {
+    if (!update?.quest || !update.stage) return false;
+    const quest = this.questDefs?.[update.quest];
+    if (!quest) return false;
+    const reached = this.questReached?.get?.(update.quest) ?? new Set();
+    return !reached.has(update.stage);
   }
 
   _techniqueContext() {
@@ -397,7 +434,8 @@ class GameRuntimeState {
       lootedEnemies,
       clearedEncounters: new Set(this.clearedEncounters ?? []),
       tradeStockByActor,
-      groundItems
+      groundItems,
+      exploredMapTiles: new Set(this.exploredMapTiles ?? [])
     });
   }
 
@@ -461,6 +499,19 @@ class GameRuntimeState {
       }
     }
     this.clearedEncounters = new Set(state.clearedEncounters ?? []);
+    this.exploredMapTiles = new Set(state.exploredMapTiles ?? []);
+  }
+
+  _revealMapAroundPlayer() {
+    const next = revealExploredMapCells({
+      grid: this.grid,
+      origin: this.player?.position,
+      exploredCells: this.exploredMapTiles,
+      hiddenTiles: this.hiddenTiles
+    });
+    const changed = mapSetKey(next) !== mapSetKey(this.exploredMapTiles);
+    this.exploredMapTiles = next;
+    return changed;
   }
 
   _refreshHiddenTiles({ rebuildStatic = false } = {}) {
@@ -527,4 +578,8 @@ class GameRuntimeState {
 
 export function installGameRuntimeState(GameClass) {
   installGameMethods(GameClass, GameRuntimeState);
+}
+
+function mapSetKey(set) {
+  return [...(set ?? [])].sort().join('|');
 }

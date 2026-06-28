@@ -2,6 +2,7 @@
   "id": "ash-road-boots",
   "name": "Ash Road Boots",
   "type": "boots",
+  "rarity": "uncommon",
   "weight": 1.2,
   "groundModel": "boots",
   "equipment": { "slot": "boots" },

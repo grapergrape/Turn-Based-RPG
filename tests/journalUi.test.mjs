@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { buildCharacterSheet } from '../src/core/Progression.js';
+import { JOURNAL_SECTIONS } from '../src/core/JournalState.js';
 import { UIRenderer } from '../src/render/UIRenderer.js';
 import { JOURNAL_ARROW_BOXES, journalArrowAt } from '../src/ui/journalLayout.js';
 
@@ -64,16 +65,40 @@ const baseUi = {
 
 const renderer = new UIRenderer();
 
-const journalSections = ['QUESTS', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS', 'TECHNIQUES'];
+const map = {
+  id: 'test-map',
+  name: 'Test Map',
+  width: 6,
+  height: 4,
+  exploredCount: 10,
+  totalCells: 24,
+  cells: Array.from({ length: 4 }, (_, y) =>
+    Array.from({ length: 6 }, (_, x) => ({
+      x,
+      y,
+      key: `${x},${y}`,
+      explored: x < 4,
+      hidden: x === 5,
+      type: x === 0 ? 'wall' : x === 3 ? 'blocked' : 'floor'
+    }))
+  ).flat(),
+  markers: [
+    { id: 'player', kind: 'player', label: 'Mara Vey', x: 1, y: 1, reveal: 'always' },
+    { id: 'quest:test', kind: 'quest', label: 'Test Writ', x: 2, y: 1, reveal: 'explored' },
+    { id: 'dialogue:test', kind: 'dialogue', label: 'Test Contact', x: 3, y: 2, reveal: 'explored' }
+  ],
+  player: { x: 1, y: 1 }
+};
 
-for (let section = 0; section < journalSections.length; section += 1) {
+for (let section = 0; section < JOURNAL_SECTIONS.length; section += 1) {
   renderer.draw(mockCtx(), {
     ...baseUi,
     journal: {
       section,
-      sections: journalSections,
+      sections: JOURNAL_SECTIONS,
       factionIndex: 0,
       primaryIndex: 0,
+      map,
       quests: [],
       findings: [],
       factions: [],
@@ -92,9 +117,10 @@ renderer.draw(mockCtx(), {
   ...baseUi,
   journal: {
     section: 4,
-    sections: journalSections,
+    sections: JOURNAL_SECTIONS,
     turn: { from: 3, to: 4, direction: 1, progress: 0.5 },
     factionIndex: 0,
+    map,
     quests: [],
     findings: [],
     factions: [],

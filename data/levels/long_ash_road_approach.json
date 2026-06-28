@@ -15,6 +15,8 @@
     "long-ash-storage-shed-door",
     "long-ash-grain-shed-door",
     "long-ash-tool-shed-door",
+    "long-ash-infected-cave-entrance",
+    "long-ash-wolf-cultist-evidence",
     "long-ash-crossroad-brother",
     "long-ash-field-brother"
   ],
@@ -149,15 +151,15 @@
   },
   "mood": {
     "floorShade": "#15130e",
-    "floorShadeAlpha": 0.04,
+    "floorShadeAlpha": 0.02,
     "ambient": "#b8aa83",
-    "ambientAlpha": 0.05,
-    "vignette": 0.35,
+    "ambientAlpha": 0.09,
+    "vignette": 0.24,
     "sun": {
       "enabled": true,
       "shadowOffsetX": 12,
       "shadowOffsetY": 6,
-      "shadowAlpha": 0.16
+      "shadowAlpha": 0.12
     }
   },
   "spawns": {
@@ -166,9 +168,51 @@
       "x": 142,
       "y": 68
     },
-    "enemies": [],
+    "enemies": [
+      {
+        "id": "host-wolf-spider",
+        "x": 88,
+        "y": 13,
+        "facing": "se",
+        "encounter": "infected-cave-mouth",
+        "spawnId": "infected-cave-mouth-wolf-1",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-wolf-maw",
+        "x": 91,
+        "y": 13,
+        "facing": "s",
+        "encounter": "infected-cave-mouth",
+        "spawnId": "infected-cave-mouth-wolf-2",
+        "aggroRadius": 2
+      },
+      {
+        "id": "host-wolf-ribsplit",
+        "x": 94,
+        "y": 12,
+        "facing": "sw",
+        "encounter": "infected-cave-mouth",
+        "spawnId": "infected-cave-mouth-wolf-3",
+        "aggroRadius": 2
+      }
+    ],
     "npcs": []
   },
+  "combatTriggers": [
+    {
+      "id": "infected-cave-mouth-trigger",
+      "encounter": "infected-cave-mouth",
+      "x": 90,
+      "y": 12,
+      "radius": 3,
+      "forceCombat": true,
+      "intro": [
+        "Three shapes uncoil from the rocks. The wolves still move like a pack."
+      ]
+    }
+  ],
+  "victoryLog": "The cave mouth falls quiet. The black entrance remains.",
   "objects": [
     {
       "kind": "farm-fence",
@@ -3296,7 +3340,8 @@
       "name": "Infected Cave",
       "seed": 1264299409,
       "interact": {
-        "type": "note",
+        "type": "secret-entrance",
+        "dialogue": "long-ash-infected-cave-entrance",
         "log": "Wet fur and sick rot gather in the cold between the stones. Wolf tracks vanish into the black mouth."
       }
     },
@@ -8699,14 +8744,26 @@
       "x": 98,
       "y": 32,
       "seed": 630396095,
-      "id": "dead-host-wolf-spider-302"
+      "id": "dead-host-wolf-spider-302",
+      "name": "Dead Host Wolf",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead wolf lies among torn cult cloth and blackened blood."
+      }
     },
     {
       "kind": "dead-cultist",
       "x": 103,
       "y": 32,
       "seed": 2808293798,
-      "id": "dead-cultist-299"
+      "id": "dead-cultist-299",
+      "name": "Dead Cultist",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead cultist is torn open near the throat and cuff."
+      }
     },
     {
       "kind": "ash-tree",
@@ -8928,7 +8985,13 @@
       "x": 96,
       "y": 33,
       "seed": 2928589698,
-      "id": "dead-cultist-297"
+      "id": "dead-cultist-297",
+      "name": "Dead Cultist",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead cultist is torn open near the throat and cuff."
+      }
     },
     {
       "kind": "blood-stain",
@@ -8942,7 +9005,13 @@
       "x": 105,
       "y": 33,
       "seed": 4168955673,
-      "id": "dead-host-wolf-ribsplit-304"
+      "id": "dead-host-wolf-ribsplit-304",
+      "name": "Dead Host Wolf",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead wolf lies among torn cult cloth and blackened blood."
+      }
     },
     {
       "kind": "scrub-bush",
@@ -9211,7 +9280,13 @@
       "x": 101,
       "y": 34,
       "seed": 1147808626,
-      "id": "dead-cultist-301"
+      "id": "dead-cultist-301",
+      "name": "Dead Cultist",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead cultist is torn open near the throat and cuff."
+      }
     },
     {
       "kind": "blood-stain",
@@ -9526,14 +9601,26 @@
       "x": 102,
       "y": 35,
       "seed": 1547877968,
-      "id": "dead-host-wolf-maw-303"
+      "id": "dead-host-wolf-maw-303",
+      "name": "Dead Host Wolf",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead wolf lies among torn cult cloth and blackened blood."
+      }
     },
     {
       "kind": "dead-cultist",
       "x": 105,
       "y": 35,
       "seed": 3057741400,
-      "id": "dead-cultist-300"
+      "id": "dead-cultist-300",
+      "name": "Dead Cultist",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead cultist is torn open near the throat and cuff."
+      }
     },
     {
       "kind": "fallen-ash-log",
@@ -9765,7 +9852,13 @@
       "x": 99,
       "y": 36,
       "seed": 1889298720,
-      "id": "dead-cultist-298"
+      "id": "dead-cultist-298",
+      "name": "Dead Cultist",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-wolf-cultist-evidence",
+        "log": "The dead cultist is torn open near the throat and cuff."
+      }
     },
     {
       "kind": "blood-stain",

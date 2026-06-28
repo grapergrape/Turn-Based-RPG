@@ -108,6 +108,18 @@ The lore should influence systems:
 - Enemy designs should reflect past identity and Vale-Imprint damnation roles.
 - Quests should often force choices between truth, survival, faith, and exploitation.
 
+## Host infection stages
+
+Use stages as field labels, not exact biology.
+
+- **Stage I:** exposure without reliable outward change.
+- **Stage II:** symptoms and minor Host signs. The person is usually still themselves in speech and choice.
+- **Stage III:** visible transformation or calcified interruption. Stage III characters may still be dialogue NPCs if memory, speech, and personality remain.
+- **Stage IV:** active Host opening. The Host is driving the encounter, whether the form is feral, devotional, or still able to speak.
+- **Stage V:** node, Bloom, structure, or terrain-scale Host integration.
+
+Stress, ritual feeding, Bloom proximity, and the failing Stilling can blur or accelerate stages. Do not use stages to make generic zombies. Every stage still follows the Vale Imprint and should express a specific damnation-role.
+
 ## Originality guardrails
 
 The story uses familiar CRPG ingredients: factions, forbidden archives, cults, political hubs, and a late truth about the world. Those pieces are allowed only when the cause-and-effect chain stays specific to this setting. Use `docs/story/originality.md` as the longer audit when designing major quests, bosses, and faction branches.

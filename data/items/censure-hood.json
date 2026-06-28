@@ -2,6 +2,7 @@
   "id": "censure-hood",
   "name": "Censure Hood",
   "type": "helmet",
+  "rarity": "uncommon",
   "weight": 0.4,
   "groundModel": "hood",
   "equipment": { "slot": "helmet" },

@@ -43,7 +43,9 @@ export const FLOOR_STYLE_IDS = [
   'forest-floor',
   'graveyard-earth',
   'farm-plank',
-  'packed-earth'
+  'packed-earth',
+  'cave-stone',
+  'cave-river'
 ];
 
 export function drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy) {
@@ -323,6 +325,67 @@ function drawPackedEarthFloorCell(ctx, cx, cy, gx, gy) {
   if (seed % 17 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 2);
 }
 
+function drawCaveStoneFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 331, gy + 347);
+  const r = rngFrom(seed);
+  const zone = hash2D((gx >> 1) + 43, (gy >> 1) + 47);
+  const base = zone % 4 === 0 ? PALETTE.stoneMid : PALETTE.stoneDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  if (r() < 0.7) {
+    drawIsoDiamond(
+      ctx,
+      cx + Math.floor((r() - 0.5) * 18),
+      cy + Math.floor((r() - 0.5) * 8),
+      18 + Math.floor(r() * 22),
+      8 + Math.floor(r() * 8),
+      r() < 0.45 ? PALETTE.stoneLight : PALETTE.stoneDark
+    );
+  }
+
+  const d = diamond(cx, cy, TILE_WIDTH - 8, TILE_HEIGHT - 4);
+  for (const t of [0.18, 0.48, 0.76]) {
+    if (((seed + Math.floor(t * 100)) % 3) === 0) continue;
+    const a = mixPoint(d.left, d.bottom, t);
+    const b = mixPoint(d.top, d.right, Math.max(0.12, Math.min(0.88, t + (r() - 0.5) * 0.18)));
+    linePx(ctx, a[0], a[1], b[0], b[1], r() < 0.55 ? PALETTE.outline : PALETTE.stoneDust, 1);
+  }
+
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.outline, PALETTE.stoneDust, PALETTE.rustDark], 0.038, seed);
+  if (seed % 9 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 3);
+}
+
+function drawCaveRiverFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 353, gy + 359);
+  const r = rngFrom(seed);
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, PALETTE.outline);
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH - 4, TILE_HEIGHT - 2, PALETTE.clothBlueDark);
+  drawIsoDiamond(ctx, cx + 1, cy - 1, TILE_WIDTH - 18, TILE_HEIGHT - 9, PALETTE.stoneDark);
+  drawIsoDiamond(ctx, cx - 1, cy, TILE_WIDTH - 25, TILE_HEIGHT - 12, PALETTE.clothBlue);
+
+  const d = diamond(cx, cy, TILE_WIDTH - 8, TILE_HEIGHT - 4);
+  for (let i = 0; i < 7; i += 1) {
+    const t = (i + 1) / 8;
+    const wobble = Math.floor(r() * 5) - 2;
+    const a = mixPoint(d.left, d.top, Math.max(0.08, t - 0.1));
+    const b = mixPoint(d.bottom, d.right, Math.min(0.92, t + 0.1));
+    const color = i % 3 === 0 ? PALETTE.hostBone : i % 2 === 0 ? PALETTE.clothBlue : PALETTE.stoneDust;
+    linePx(ctx, a[0] + wobble, a[1] + 1, b[0] + wobble, b[1] - 1, color, i % 3 === 0 ? 1 : 2);
+  }
+
+  for (let i = 0; i < 13; i += 1) {
+    const x = cx - 25 + Math.floor(r() * 51);
+    const y = cy - 10 + Math.floor(r() * 20);
+    const color = r() < 0.52 ? PALETTE.hostBone : PALETTE.stoneDust;
+    px(ctx, x, y, color, 1 + Math.floor(r() * 4), 1);
+  }
+
+  if ((gx + gy) % 2 === 0) {
+    linePx(ctx, cx - 29, cy + 4, cx - 12, cy + 12, PALETTE.void, 1);
+    linePx(ctx, cx + 12, cy - 12, cx + 29, cy - 4, PALETTE.stoneLight, 1);
+  }
+}
+
 function drawGraveyardEarthCell(ctx, cx, cy, gx, gy) {
   const seed = hash2D(gx + 281, gy + 307);
   const r = rngFrom(seed);
@@ -428,6 +491,12 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
       return;
     case 'packed-earth':
       drawPackedEarthFloorCell(ctx, cx, cy, gx, gy);
+      return;
+    case 'cave-stone':
+      drawCaveStoneFloorCell(ctx, cx, cy, gx, gy);
+      return;
+    case 'cave-river':
+      drawCaveRiverFloorCell(ctx, cx, cy, gx, gy);
       return;
     case 'stone':
     default:
@@ -565,4 +634,55 @@ export function drawIsoWallBlock(ctx, cx, cy, heightPx, seed) {
   if ((seed & 3) === 0) {
     drawRubbleCluster(ctx, cx, cy + 4, seed, 4);
   }
+}
+
+export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
+  const wallH = heightPx ?? WALL_HEIGHT;
+  const connected = opts.connected ?? {};
+  const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+  const cap = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
+  const rng = rngFrom(hash2D(seed + 379, seed * 3 + 11));
+
+  drawShadowBlob(ctx, cx, cy + 3, TILE_WIDTH * 0.74, TILE_HEIGHT * 0.74);
+
+  if (!connected.yPlus) {
+    poly(ctx, PALETTE.stoneMid, [cap.left, cap.bottom, base.bottom, base.left]);
+    const face = faceTools(ctx, cap.left, cap.bottom, base.bottom, base.left);
+    for (const u of [0.12, 0.27, 0.43, 0.61, 0.78, 0.9]) {
+      const lean = ((seed + Math.floor(u * 100)) & 1) ? 0.05 : -0.04;
+      face.line(u, 0.02, Math.max(0.04, Math.min(0.96, u + lean)), 0.96, PALETTE.outline, 1);
+    }
+    for (const v of [0.22, 0.47, 0.71]) {
+      face.line(0.05, v, 0.94, v + (rng() - 0.5) * 0.08, v < 0.5 ? PALETTE.stoneDust : PALETTE.stoneDark, 1);
+    }
+  }
+
+  if (!connected.xPlus) {
+    poly(ctx, PALETTE.stoneDark, [cap.bottom, cap.right, base.right, base.bottom]);
+    const face = faceTools(ctx, cap.bottom, cap.right, base.right, base.bottom);
+    for (const u of [0.16, 0.36, 0.58, 0.82]) {
+      face.line(u, 0.05, Math.max(0.04, Math.min(0.96, u - 0.06)), 0.98, PALETTE.outline, 1);
+    }
+    for (const v of [0.32, 0.65]) face.line(0.06, v, 0.92, v - 0.04, PALETTE.void, 1);
+  }
+
+  poly(ctx, PALETTE.stoneLight, [cap.top, cap.right, cap.bottom, cap.left]);
+  poly(ctx, PALETTE.stoneDust, [
+    mixPoint(cap.left, cap.top, 0.12),
+    mixPoint(cap.top, cap.right, 0.84),
+    mixPoint(cap.bottom, cap.right, 0.22),
+    mixPoint(cap.left, cap.bottom, 0.78)
+  ]);
+
+  linePx(ctx, cap.left[0], cap.left[1], cap.top[0], cap.top[1], PALETTE.stoneDust, 1);
+  linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.outline, 1);
+  if (!connected.yPlus) linePx(ctx, cap.left[0], cap.left[1], cap.bottom[0], cap.bottom[1], PALETTE.outline, 1);
+  if (!connected.xPlus) linePx(ctx, cap.bottom[0], cap.bottom[1], cap.right[0], cap.right[1], PALETTE.outline, 1);
+
+  for (let i = 0; i < 6; i += 1) {
+    const fx = cx - 26 + Math.floor(rng() * 52);
+    const fy = cy - wallH + 8 + Math.floor(rng() * Math.max(8, wallH - 12));
+    px(ctx, fx, fy, rng() < 0.55 ? PALETTE.stoneDust : PALETTE.void, 2 + Math.floor(rng() * 4), 1);
+  }
+  if ((seed & 3) === 0) drawRubbleCluster(ctx, cx, cy + 5, seed + 383, 5);
 }

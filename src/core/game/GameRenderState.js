@@ -235,9 +235,11 @@ class GameRenderState {
     } else if (this.uiScreen === 'primary-assignment') {
       controls = ['Arrows Assign', 'Enter Confirm'];
     } else if (this.uiScreen === 'journal') {
-      if (this.journalSection === 2) controls = ['Up/Dn Select', 'A/D Turn Page', 'J/Esc Close'];
-      else if (this.journalSection === 3 || this.journalSection === 5) controls = ['Up/Dn Select', 'Enter Confirm', 'A/D Turn Page', 'J/Esc Close'];
-      else controls = ['A/D Turn Page', 'J/Esc Close'];
+      const journalSection = this._currentJournalSectionId?.() ?? 'QUESTS';
+      if (journalSection === 'FACTIONS') controls = ['Up/Dn Select', 'A/D Turn Page', 'M Map', 'J/Esc Close'];
+      else if (journalSection === 'CHARACTER' || journalSection === 'TECHNIQUES') controls = ['Up/Dn Select', 'Enter Confirm', 'M Map', 'J/Esc Close'];
+      else if (journalSection === 'MAP') controls = ['Click Walk', 'A/D Turn Page', 'M/J/Esc Close'];
+      else controls = ['A/D Turn Page', 'M Map', 'J/Esc Close'];
     } else if (this.uiScreen === 'inventory') {
       controls = this.inventorySplit
         ? ['Left/Right Count', 'Enter Drop', 'Esc Back']
@@ -255,11 +257,11 @@ class GameRenderState {
     } else if (this.uiScreen === 'dialogue') {
       controls = ['Enter Close', 'Esc Close', 'I Pack'];
     } else if (this.mode === 'combat') {
-      controls = ['Click/WASD Move', '1 Knife 2 Gun', 'Tab Target', 'Space Attack', 'E End Turn', 'I Pack', 'H Dress'];
+      controls = ['Click/WASD Move', '1 Knife 2 Gun', 'Tab Target', 'Space Attack', 'E End Turn', 'I Pack', 'M Map', 'H Dress'];
     } else if (this.mode === 'explore' && target) {
-      controls = ['Space Attack', '1 Knife 2 Gun', 'Right Click Target', 'Esc Clear', crouchControl, 'I Pack'];
+      controls = ['Space Attack', '1 Knife 2 Gun', 'Right Click Target', 'Esc Clear', crouchControl, 'I Pack', 'M Map'];
     } else {
-      controls = ['Click Move/Use', 'WASD Move', crouchControl, 'Hold Shift Sprint', 'I Pack', 'J Journal', 'H Dressing'];
+      controls = ['Click Move/Use', 'WASD Move', crouchControl, 'Hold Shift Sprint', 'I Pack', 'J Journal', 'M Map', 'H Dressing'];
     }
 
     const cursor = this._cursorInfo();

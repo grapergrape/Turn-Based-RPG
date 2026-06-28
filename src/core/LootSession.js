@@ -109,6 +109,8 @@ export class LootSession {
         const count = Math.max(0, Math.floor(Number(entry.count ?? 1) || 0));
         if (!itemId || count <= 0) return null;
         const itemDef = this.state.inventory.itemDefs[itemId] ?? {};
+        const rarity = this.state.inventory.itemRarity(itemId);
+        const build = this.state.inventory.itemBuild(itemId);
         return {
           rawIndex,
           id: itemId,
@@ -116,6 +118,11 @@ export class LootSession {
           count,
           name: this.state.inventory.displayName(itemId),
           type: itemDef.type ?? 'item',
+          rarity: rarity.id,
+          rarityLabel: rarity.label,
+          rarityRank: rarity.rank,
+          build: build?.id ?? null,
+          buildLabel: build?.label ?? '',
           groundModel: itemDef.groundModel ?? null,
           description: itemDef.description ?? '',
           weight: this.state.inventory.itemWeight(itemId),

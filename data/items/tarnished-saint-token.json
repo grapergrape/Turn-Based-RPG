@@ -2,6 +2,7 @@
   "id": "tarnished-saint-token",
   "name": "Tarnished Saint Token",
   "type": "trinket",
+  "rarity": "uncommon",
   "weight": 0.1,
   "groundModel": "token",
   "equipment": { "slot": "trinket" },

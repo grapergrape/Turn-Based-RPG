@@ -4,6 +4,10 @@
 
 ## Item Type
 
+## Rarity
+
+## Build Fit
+
 ## Gameplay Purpose
 
 ## Narrative Purpose

@@ -67,6 +67,12 @@ function adjacentWalkable(grid, cell) {
   return null;
 }
 
+function visibleChoiceLabels(node, state = {}) {
+  return (node.choices ?? [])
+    .filter((choice) => meetsDialogueConditions(choice.conditions, state))
+    .map((choice) => choice.label);
+}
+
 function isFarmBuildingTile(level, x, y) {
   const tile = level.tiles[y]?.[x];
   const kind = level.legend?.[tile]?.kind;
@@ -148,7 +154,14 @@ function expectedFootprintCells(spec) {
 const level = await readJson('../data/levels/long_ash_road_approach.json');
 const grid = new Grid(level);
 addBlockingObjects(grid, level.objects ?? []);
+const caveLevel = await readJson('../data/levels/long_ash_infected_cave.json');
+const caveGrid = new Grid(caveLevel);
+addBlockingObjects(caveGrid, caveLevel.objects ?? []);
+const crossroadBrotherDialogue = await readJson('../data/dialogue/long-ash-crossroad-brother.json');
 const fieldBrotherDialogue = await readJson('../data/dialogue/long-ash-field-brother.json');
+const caveEntranceDialogue = await readJson('../data/dialogue/long-ash-infected-cave-entrance.json');
+const caveExitDialogue = await readJson('../data/dialogue/long-ash-infected-cave-exit.json');
+const pilgrimRibguard = await readJson('../data/items/pilgrim-ribguard.json');
 const farmInteriors = [
   {
     key: 'farmhouse',
@@ -224,15 +237,15 @@ const farmExitDialogues = new Map([
 {
   assert.deepEqual(level.mood, {
     floorShade: '#15130e',
-    floorShadeAlpha: 0.04,
+    floorShadeAlpha: 0.02,
     ambient: '#b8aa83',
-    ambientAlpha: 0.05,
-    vignette: 0.35,
+    ambientAlpha: 0.09,
+    vignette: 0.24,
     sun: {
       enabled: true,
       shadowOffsetX: 12,
       shadowOffsetY: 6,
-      shadowAlpha: 0.16
+      shadowAlpha: 0.12
     }
   }, 'Long Ash Road keeps the brighter midday outdoor lighting profile');
 }
@@ -385,10 +398,12 @@ const farmExitDialogues = new Map([
     level.dialogue,
     [
       ...expectedFarmDoors.map((door) => door.dialogue),
+      'long-ash-infected-cave-entrance',
+      'long-ash-wolf-cultist-evidence',
       'long-ash-crossroad-brother',
       'long-ash-field-brother'
     ],
-    'farm door and calcified brother dialogues are loaded with the road level'
+    'farm door, cave entrance, and calcified brother dialogues are loaded with the road level'
   );
   assert.ok(level.quests.includes('calcified-brothers'), 'Long Ash Road loads the calcified brothers quest');
   const fieldReportNode = fieldBrotherDialogue.nodes['report-check'];
@@ -404,6 +419,71 @@ const farmExitDialogues = new Map([
     fieldReportNode.effects,
     { setFlag: 'long-ash-field-brother-met' },
     'reporting the family state marks Edrin as met without regressing the quest'
+  );
+  assert.equal(
+    fieldReportNode.lines.some((line) => line.includes('Edrin Holt')),
+    true,
+    'family-first Edrin report introduces him before asking for the answer'
+  );
+  for (const nodeId of ['first', 'first-mentioned', 'first-unknown']) {
+    assert.equal(
+      fieldBrotherDialogue.nodes[nodeId].lines.some((line) => line.includes('scare birds off Holt grain')),
+      true,
+      `${nodeId} names Edrin's scarecrow job on first contact`
+    );
+    assert.equal(
+      fieldBrotherDialogue.nodes[nodeId].lines.some((line) => line.includes('my first law will make birds illegal')),
+      true,
+      `${nodeId} keeps Edrin's king-and-birds line on first contact`
+    );
+  }
+  assert.equal(
+    fieldBrotherDialogue.nodes.field.lines.some((line) => line.includes('keep the birds off Holt wheat')),
+    true,
+    'Edrin explains the field job when asked why he is there'
+  );
+  assert.equal(
+    crossroadBrotherDialogue.nodes.kind.choices.some((choice) => choice.label === 'Ask about his brother'),
+    false,
+    'Garron does not expose a brother prompt before naming a brother'
+  );
+  assert.equal(
+    crossroadBrotherDialogue.nodes.kind.choices.some((choice) => choice.label === 'Ask why he points to the farm'),
+    true,
+    'Garron offers a visible farm prompt before naming Edrin'
+  );
+  assert.deepEqual(
+    visibleChoiceLabels(crossroadBrotherDialogue.nodes['paid-check'], {
+      flags: new Set(['long-ash-crossroad-brother-paid'])
+    }),
+    ['Ask if he trusts the Choir', 'Ask about the coins', 'Leave Garron to the road'],
+    'Garron remembers when the Edrin job has already been taken'
+  );
+  const freshEdrinChoices = visibleChoiceLabels(fieldBrotherDialogue.nodes['first-unknown'], {
+    flags: new Set()
+  });
+  assert.equal(freshEdrinChoices.includes('Garron sent me'), false, 'player cannot claim Garron sent them before meeting Garron');
+  assert.equal(freshEdrinChoices.includes('Ask who Garron is'), true, 'Edrin supports the field-first discovery order');
+  assert.deepEqual(
+    visibleChoiceLabels(fieldBrotherDialogue.nodes['first-mentioned'], {
+      flags: new Set(['long-ash-crossroad-edrin-named'])
+    }).slice(0, 1),
+    ['Garron mentioned you'],
+    'Edrin distinguishes Garron mentioning him from Garron sending the player'
+  );
+  assert.equal(
+    visibleChoiceLabels(fieldBrotherDialogue.nodes.choir, {
+      flags: new Set()
+    }).includes('Garron doubts them'),
+    false,
+    'Edrin cannot cite Garron doubt before the player hears it'
+  );
+  assert.equal(
+    visibleChoiceLabels(fieldBrotherDialogue.nodes.choir, {
+      flags: new Set(['long-ash-crossroad-choir-doubt-known'])
+    }).includes('Garron doubts them'),
+    true,
+    'Edrin can cite Garron doubt after the player hears it'
   );
   const actualFarmDoors = level.objects
     .filter((object) => object.kind === 'farm-door' && inRange(object, farmRange))
@@ -758,11 +838,28 @@ const farmExitDialogues = new Map([
   assert.equal(cave.x, 90);
   assert.equal(cave.y, 10);
   assert.equal(cave.blocking, true);
-  assert.equal(cave.interact?.type, 'note');
+  assert.equal(cave.interact?.type, 'secret-entrance');
+  assert.equal(cave.interact?.dialogue, 'long-ash-infected-cave-entrance');
+  assert.ok(level.dialogue.includes('long-ash-infected-cave-entrance'));
+  assert.equal(caveEntranceDialogue.nodes.start.choices[0].effects.loadLevel.path, './data/levels/long_ash_infected_cave.json');
+  assert.deepEqual(caveEntranceDialogue.nodes.start.choices[0].effects.loadLevel.player, { x: 12, y: 15 });
   assert.equal(level.tiles[cave.y][cave.x], 'd', 'infected cave sits on forest floor');
   assert.equal(inRange(cave, caveRange), true, 'infected cave stays inside the authored forest clearing');
   assert.equal(grid.isWalkable(cave.x, cave.y), false, 'infected cave mouth blocks its occupied tile');
   assert.equal(pathExists(grid, level.spawns.player, { x: 90, y: 11 }), true, 'start reaches the infected cave threshold');
+  const outsideWolves = level.spawns.enemies.filter((enemy) => enemy.encounter === 'infected-cave-mouth');
+  assert.equal(outsideWolves.length, 3, 'infected cave has three outside Host wolves');
+  assert.deepEqual(outsideWolves.map((enemy) => enemy.id).sort(), ['host-wolf-maw', 'host-wolf-ribsplit', 'host-wolf-spider']);
+  for (const wolf of outsideWolves) {
+    assert.equal(inRange(wolf, caveRange), true, `${wolf.spawnId} stays near the cave mouth`);
+    assert.equal(grid.isWalkable(wolf.x, wolf.y), true, `${wolf.spawnId} starts on walkable ground`);
+    assert.equal(pathExists(grid, level.spawns.player, { x: wolf.x, y: wolf.y }), true, `${wolf.spawnId} is reachable from start`);
+  }
+  const mouthTrigger = level.combatTriggers.find((trigger) => trigger.id === 'infected-cave-mouth-trigger');
+  assert.ok(mouthTrigger, 'infected cave mouth has a combat trigger');
+  assert.equal(mouthTrigger.encounter, 'infected-cave-mouth');
+  assert.equal(mouthTrigger.forceCombat, true);
+  assert.equal(mouthTrigger.radius, 3);
   assert.ok(
     level.objects.filter((object) =>
       object.kind === 'rubble-pile' && object.blocking === true && inRange(object, caveRange)
@@ -781,6 +878,81 @@ const farmExitDialogues = new Map([
   assert.equal(caveTarget.type, 'object', 'infected cave resolves as an inspectable object');
   assert.equal(caveTarget.object.id, cave.id);
   assert.equal(isTargetInReach({ position: { x: 90, y: 11 } }, caveTarget), true, 'infected cave is inspectable from the threshold');
+}
+
+{
+  assert.equal(caveLevel.id, 'long-ash-infected-cave');
+  assert.equal(caveLevel.name, 'Long Ash Infected Cave');
+  assert.equal(caveLevel.width, 24);
+  assert.equal(caveLevel.height, 18);
+  assert.equal(caveLevel.tiles.length, caveLevel.height);
+  for (const [index, row] of caveLevel.tiles.entries()) {
+    assert.equal(row.length, caveLevel.width, `cave row ${index} is ${caveLevel.width} cells`);
+  }
+  assert.equal(caveLevel.legend['#']?.kind, 'cave-wall');
+  assert.equal(caveLevel.legend['.']?.floor, 'cave-stone');
+  assert.equal(caveLevel.legend['~']?.floor, 'cave-river');
+  assert.equal(caveGrid.isWalkable(caveLevel.spawns.player.x, caveLevel.spawns.player.y), true, 'cave spawn is walkable');
+  assert.equal(pathExists(caveGrid, caveLevel.spawns.player, { x: 20, y: 8 }), true, 'cave chest is reachable from spawn');
+
+  const caveExit = caveLevel.objects.find((object) => object.id === 'infected-cave-exit-mouth');
+  assert.ok(caveExit, 'cave has a return mouth');
+  assert.equal(caveExit.interact?.type, 'secret-exit');
+  assert.equal(caveExit.interact?.dialogue, 'long-ash-infected-cave-exit');
+  const caveExitTarget = resolveInteractionTargetAtCell({
+    cell: { x: caveExit.x, y: caveExit.y },
+    grid: caveGrid,
+    player: { position: caveLevel.spawns.player },
+    actors: [],
+    enemies: [],
+    interactables: caveLevel.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(caveExitTarget.type, 'object', 'cave exit resolves as an object target');
+  assert.equal(isTargetInReach({ position: caveLevel.spawns.player }, caveExitTarget), true, 'cave exit starts in reach');
+  assert.equal(caveExitDialogue.nodes.start.choices[0].effects.loadLevel.path, './data/levels/long_ash_road_approach.json');
+  assert.deepEqual(caveExitDialogue.nodes.start.choices[0].effects.loadLevel.player, { x: 90, y: 11 });
+
+  const insideWolves = caveLevel.spawns.enemies.filter((enemy) => enemy.encounter === 'infected-cave-den');
+  assert.equal(insideWolves.length, 4, 'infected cave has four inside Host wolves');
+  assert.deepEqual(insideWolves.map((enemy) => enemy.id).sort(), [
+    'host-wolf-maw',
+    'host-wolf-ribsplit',
+    'host-wolf-spider',
+    'host-wolf-spider'
+  ]);
+  for (const wolf of insideWolves) {
+    assert.equal(caveGrid.isWalkable(wolf.x, wolf.y), true, `${wolf.spawnId} starts on walkable cave ground`);
+    assert.equal(pathExists(caveGrid, caveLevel.spawns.player, { x: wolf.x, y: wolf.y }), true, `${wolf.spawnId} is reachable from cave spawn`);
+  }
+  const denTrigger = caveLevel.combatTriggers.find((trigger) => trigger.id === 'infected-cave-den-trigger');
+  assert.ok(denTrigger, 'infected cave den has a combat trigger');
+  assert.equal(denTrigger.encounter, 'infected-cave-den');
+  assert.equal(denTrigger.forceCombat, true);
+  assert.equal(denTrigger.radius, 3);
+
+  const caveKinds = new Set(caveLevel.objects.map((object) => object.kind));
+  for (const kind of ['cave-stalagmite', 'cave-stalactites', 'cave-flowstone']) {
+    assert.ok(caveKinds.has(kind), `cave contains ${kind}`);
+    assert.ok(getSprite(kind), `${kind} is registered`);
+  }
+  assert.ok(getSprite('cave-wall'), 'cave-wall is registered');
+  assert.ok(caveLevel.tiles.some((row) => row.includes('~')), 'cave has river floor tiles');
+
+  const chest = caveLevel.objects.find((object) => object.id === 'infected-cave-dry-shelf-chest');
+  assert.ok(chest, 'cave chest is placed');
+  assert.equal(chest.kind, 'rusted-reliquary');
+  assert.equal(chest.name, 'Cave Chest');
+  assert.equal(chest.interact?.type, 'container');
+  assert.deepEqual(chest.interact?.loot, [
+    { item: 'ducat', count: 60 },
+    { item: 'field-dressing', count: 1 },
+    { item: 'pilgrim-ribguard', count: 1 }
+  ]);
+  assert.equal(pilgrimRibguard.rarity, 'epic');
+  assert.equal(pilgrimRibguard.build, 'road-ghost');
+  assert.equal(pilgrimRibguard.groundModel, 'ribguard');
+  assert.equal(pilgrimRibguard.equipment?.slot, 'armor');
 }
 
 {

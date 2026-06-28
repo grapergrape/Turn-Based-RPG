@@ -2,6 +2,7 @@
   "id": "field-dressing",
   "name": "Field Dressing",
   "type": "consumable",
+  "rarity": "common",
   "weight": 0.2,
   "groundModel": "dressing",
   "description": "A sealed sterile dressing. Restores 4 HP. Consumed on use.",

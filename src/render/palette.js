@@ -51,6 +51,9 @@ export const PALETTE = {
   uiGood: '#6f8a4c',
   uiSuccess: '#5f7446',
   uiWarn: '#b8862e',
+  uiRare: '#3f638c',
+  uiEpic: '#76518a',
+  uiLegendary: '#c4632a',
   uiFailure: '#7e2c21',
   uiBad: '#9a3322'
 };

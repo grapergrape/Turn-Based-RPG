@@ -1,5 +1,6 @@
 import { PALETTE } from '../palette.js';
 import { getFrame } from '../SpriteAtlas.js';
+import { itemRarityColor, itemRarityLabel } from './ItemRarityStyle.js';
 import {
   INVENTORY_ACTION_BOXES,
   INVENTORY_BOX,
@@ -63,8 +64,9 @@ export function drawInventory(ctx, ui, tools) {
     const slotBox = inventoryGearBox(i);
     if (selected) tools.rect(ctx, slotBox.x, slotBox.y, slotBox.w, slotBox.h, PALETTE.uiDark);
     const color = selected ? PALETTE.uiText : PALETTE.uiDim;
+    const itemColor = slot.empty ? PALETTE.uiBorderDark : itemRarityColor(slot);
     tools.text(ctx, `${selected ? '>' : ' '} ${tools.clip(slot.label, 8)}`, slotBox.x + 3, slotBox.y + 3, color);
-    tools.text(ctx, tools.clip(slot.name, 16), slotBox.x + 12, slotBox.y + 12, slot.empty ? PALETTE.uiBorderDark : PALETTE.uiDim);
+    tools.text(ctx, tools.clip(slot.name, 16), slotBox.x + 12, slotBox.y + 12, itemColor);
   }
 
   const slotSelection = slots[slotIndex] ?? null;
@@ -98,6 +100,9 @@ export function drawInventorySlot(ctx, box, item, state = {}, tools) {
   }
   if (!item) return;
 
+  const rarityColor = itemRarityColor(item);
+  tools.rect(ctx, box.x + 2, box.y + box.h - 4, box.w - 4, 1, rarityColor);
+  tools.rect(ctx, box.x + 2, box.y + 2, 1, box.h - 5, rarityColor);
   drawItemIcon(ctx, item, box, tools);
   if (item.equippedCount > 0) tools.text(ctx, '*', box.x + 4, box.y + 4, PALETTE.uiWarn);
   if (item.count > 1) {
@@ -187,6 +192,18 @@ function drawItemIcon(ctx, item, box, tools) {
     tools.rect(ctx, cx - 6, cy - 7, 5, 14, PALETTE.rustDark);
     tools.rect(ctx, cx + 1, cy - 7, 5, 14, PALETTE.rustDark);
     tools.rect(ctx, cx - 1, cy - 8, 2, 16, PALETTE.outline);
+  } else if (model === 'ribguard') {
+    tools.rect(ctx, cx - 9, cy - 10, 18, 20, PALETTE.outline);
+    tools.rect(ctx, cx - 7, cy - 8, 14, 16, PALETTE.rustDark);
+    tools.rect(ctx, cx - 6, cy - 9, 5, 18, PALETTE.hostBone);
+    tools.rect(ctx, cx + 1, cy - 9, 5, 18, PALETTE.hostBone);
+    tools.rect(ctx, cx - 5, cy - 5, 3, 1, PALETTE.stoneMid);
+    tools.rect(ctx, cx + 2, cy - 5, 3, 1, PALETTE.stoneMid);
+    tools.rect(ctx, cx - 6, cy, 4, 1, PALETTE.stoneMid);
+    tools.rect(ctx, cx + 1, cy, 4, 1, PALETTE.stoneMid);
+    tools.rect(ctx, cx - 1, cy - 9, 2, 18, PALETTE.outline);
+    tools.rect(ctx, cx - 8, cy - 2, 3, 4, PALETTE.woodDark);
+    tools.rect(ctx, cx + 5, cy + 1, 3, 4, PALETTE.woodDark);
   } else if (model === 'ring') {
     tools.rect(ctx, cx - 6, cy - 8, 12, 4, PALETTE.uiBorderDark);
     tools.rect(ctx, cx - 9, cy - 4, 18, 8, PALETTE.uiBorderLight);
@@ -272,9 +289,14 @@ function drawInventoryDetail(ctx, box, item, slot, tools) {
 
   const title = slot ? `${slot.label}: ${item.name}` : item.name;
   const textCols = Math.max(20, Math.floor((box.w - 16) / 6));
-  tools.text(ctx, tools.clip(title, textCols), box.x + 8, box.y + 8, PALETTE.uiBorderLight);
-  const parts = [`TYPE ${item.type || 'item'}`, `WT ${tools.formatWeight(item.weight ?? item.totalWeight ?? 0)} KG`];
+  tools.text(ctx, tools.clip(title, textCols), box.x + 8, box.y + 8, itemRarityColor(item));
+  const parts = [
+    `GRADE ${itemRarityLabel(item)}`,
+    `TYPE ${item.type || 'item'}`,
+    `WT ${tools.formatWeight(item.weight ?? item.totalWeight ?? 0)} KG`
+  ];
   if (item.equipmentSlot) parts.push(item.equipmentSlot === 'ring' ? 'GEAR RING' : `GEAR ${item.equipmentSlot}`);
+  if (item.buildLabel) parts.push(`BUILD ${item.buildLabel}`);
   if (Array.isArray(item.wornSlots) && item.wornSlots.length > 0) parts.push(`WORN ${item.wornSlots.join(', ')}`);
   tools.text(ctx, tools.clip(parts.join('  '), textCols), box.x + 8, box.y + 20, PALETTE.uiGood);
 

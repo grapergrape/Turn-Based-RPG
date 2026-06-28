@@ -101,6 +101,10 @@ const DISPLAY_NAMES = {
   'graveyard-path-stones': 'Path Stones',
   'graveyard-root-seam': 'Root Seam',
   'graveyard-prayer-scratch': 'Prayer Scratch',
+  'cave-wall': 'Cave Wall',
+  'cave-stalagmite': 'Cave Stalagmite',
+  'cave-stalactites': 'Cave Stalactites',
+  'cave-flowstone': 'Flowstone Ribs',
   wall: 'Chapel Wall',
   'wall-broken': 'Broken Wall',
   'farmhouse-interior-wall': 'Farmhouse Wall',
@@ -152,6 +156,12 @@ export const SPRITE_CATALOG = {
   'wall-broken': {
     category: CATEGORY.TERRAIN, layer: 0, block: true,
     draw: (ctx, x, y, seed, c) => P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? Math.round(WALL_HEIGHT * 0.55), seed)
+  },
+  'cave-wall': {
+    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    draw: (ctx, x, y, seed, c) => P.drawCaveWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed, {
+      connected: c.prop.connected
+    })
   },
   'farmhouse-interior-wall': {
     category: CATEGORY.TERRAIN, layer: 0, block: true,
@@ -314,6 +324,8 @@ export const SPRITE_CATALOG = {
 
   // --- Props (misc small props, caches) ----------------------------------
   'rubble-pile': simple(P.drawRubblePile, CATEGORY.PROP),
+  'cave-stalagmite': simple(P.drawCaveStalagmite, CATEGORY.PROP),
+  'cave-stalactites': simple(P.drawCaveStalactites, CATEGORY.PROP),
   'bone-pile': simple(P.drawBonePile, CATEGORY.PROP),
   'bone-niche': simple(P.drawBoneNiche, CATEGORY.PROP), // wall ossuary shelf of skulls + bones
   'loose-flagstone': simple(P.drawLooseFlagstone, CATEGORY.PROP), // a floor stash block
@@ -445,6 +457,7 @@ export const SPRITE_CATALOG = {
   'graveyard-path-stones': decal((ctx, x, y, seed) => P.drawGraveyardPathStones(ctx, x, y, seed)),
   'graveyard-root-seam': decal((ctx, x, y, seed) => P.drawGraveyardRootSeam(ctx, x, y, seed)),
   'graveyard-prayer-scratch': decal((ctx, x, y, seed) => P.drawGraveyardPrayerScratch(ctx, x, y, seed)),
+  'cave-flowstone': decal((ctx, x, y, seed) => P.drawCaveFlowstone(ctx, x, y, seed)),
   'chaff-scatter': decal((ctx, x, y, seed) => P.drawChaffScatter(ctx, x, y, seed)),
   'chalk-drawing': decal((ctx, x, y, seed) => P.drawChalkDrawing(ctx, x, y, seed)),
   'machine-oil': decal((ctx, x, y, seed) => P.drawMachineOil(ctx, x, y, seed)),

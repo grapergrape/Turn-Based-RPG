@@ -73,6 +73,9 @@ function drawGroundItemModel(ctx, model = 'token', cx, cy, seed, back = false) {
     case 'vest':
       drawGroundVest(ctx, cx, cy, back);
       break;
+    case 'ribguard':
+      drawGroundRibguard(ctx, cx, cy, back);
+      break;
     case 'ring':
       drawGroundRing(ctx, cx, cy, back);
       break;
@@ -195,6 +198,27 @@ function drawGroundRounds(ctx, cx, cy, back) {
     px(ctx, x, cy - 7 + (i % 2), brass, 2, 6);
     px(ctx, x, cy - 2 + (i % 2), PALETTE.rustDark, 2, 2);
   }
+}
+
+function drawGroundRibguard(ctx, cx, cy, back) {
+  const bone = back ? PALETTE.stoneDust : PALETTE.hostBone;
+  const shade = back ? PALETTE.stoneDark : PALETTE.stoneMid;
+  const strap = back ? PALETTE.woodDark : PALETTE.rustDark;
+  px(ctx, cx - 9, cy - 9, PALETTE.outline, 18, 16);
+  px(ctx, cx - 7, cy - 10, PALETTE.outline, 14, 18);
+  px(ctx, cx - 7, cy - 8, strap, 14, 13);
+  px(ctx, cx - 6, cy - 9, bone, 5, 15);
+  px(ctx, cx + 1, cy - 9, bone, 5, 15);
+  px(ctx, cx - 5, cy - 6, shade, 3, 1);
+  px(ctx, cx + 2, cy - 6, shade, 3, 1);
+  px(ctx, cx - 6, cy - 2, shade, 4, 1);
+  px(ctx, cx + 1, cy - 2, shade, 4, 1);
+  px(ctx, cx - 6, cy + 2, shade, 3, 1);
+  px(ctx, cx + 2, cy + 2, shade, 3, 1);
+  px(ctx, cx - 1, cy - 8, PALETTE.outline, 2, 15);
+  px(ctx, cx - 8, cy - 4, strap, 3, 3);
+  px(ctx, cx + 5, cy - 1, strap, 3, 3);
+  px(ctx, cx - 5, cy - 8, back ? PALETTE.stoneLight : PALETTE.hostBone, 3, 1);
 }
 
 function drawGroundChit(ctx, cx, cy, back) {

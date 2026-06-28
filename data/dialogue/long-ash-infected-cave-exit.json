@@ -1,0 +1,31 @@
+{
+  "id": "long-ash-infected-cave-exit",
+  "title": "Cave Mouth",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Pale daylight lies beyond the cave mouth. The Long Ash Road waits through the trees."
+      ],
+      "choices": [
+        {
+          "label": "Return to the road",
+          "effects": {
+            "log": "You climb back into the trees.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": { "x": 90, "y": 11 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in the cave",
+          "effects": {
+            "log": "You stay in the dark."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

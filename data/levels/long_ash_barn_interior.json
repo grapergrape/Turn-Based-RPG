@@ -89,7 +89,16 @@
       "kind": "rusted-barrel",
       "x": 3,
       "y": 6,
-      "blocking": true
+      "blocking": true,
+      "id": "barn-feed-barrel",
+      "name": "Feed Barrel",
+      "interact": {
+        "type": "container",
+        "log": "The barrel holds feed sweepings and torn twine. One clean packet is wrapped in oilcloth.",
+        "loot": [
+          { "item": "field-dressing", "count": 1 }
+        ]
+      }
     },
     {
       "kind": "feed-trough",

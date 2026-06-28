@@ -15,7 +15,7 @@ import {
 import { PRIMARY_ATTRIBUTES, normalizeProgression, spendPrimaryPoint } from '../Progression.js';
 import { learnTechnique, techniqueList } from '../TechniqueSystem.js';
 import { JOURNAL_SECTIONS, JOURNAL_TURN_DURATION, journalConditionMet } from '../JournalState.js';
-import { journalArrowAt } from '../../ui/journalLayout.js';
+import { journalArrowAt, journalMapCellAt } from '../../ui/journalLayout.js';
 import { tradeActionAt, tradePlayerIndexAt, tradeTraderIndexAt } from '../../ui/tradeLayout.js';
 import { installGameMethods } from './installGameMethods.js';
 
@@ -64,6 +64,10 @@ class GameUiScreens {
       }
       if (action === 'journal') {
         this._toggleJournal();
+        return;
+      }
+      if (action === 'map') {
+        this._toggleJournal({ section: 'MAP' });
         return;
       }
       if (action === 'dressing') {
@@ -198,13 +202,19 @@ class GameUiScreens {
     this._clampInventorySelection();
   }
 
-  _toggleJournal() {
+  _toggleJournal(options = {}) {
+    const targetSection = journalSectionIndex(options.section);
     if (this.uiScreen === 'journal') {
+      if (targetSection !== null && this.journalSection !== targetSection) {
+        this.journalSection = targetSection;
+        this.journalTurn = null;
+        return;
+      }
       this._closeUiScreen();
       return;
     }
     this.uiScreen = 'journal';
-    this.journalSection = 0;
+    this.journalSection = targetSection ?? 0;
     this.journalFactionIndex = 0;
     this.journalPrimaryIndex = 0;
     this.journalTechniqueIndex = 0;
@@ -220,10 +230,21 @@ class GameUiScreens {
       const arrow = journalArrowAt(click);
       if (arrow === 'prev') this._cycleJournalSection(-1);
       else if (arrow === 'next') this._cycleJournalSection(1);
+      else if (this._currentJournalSectionId() === 'MAP') this._handleJournalMapClick(click);
       return;
     }
     for (const action of actions) {
       if (action === 'cancel' || action === 'journal') {
+        this._closeUiScreen();
+        return;
+      }
+      if (action === 'map') {
+        const mapSection = journalSectionIndex('MAP');
+        if (mapSection !== null && this.journalSection !== mapSection) {
+          this.journalSection = mapSection;
+          this.journalTurn = null;
+          return;
+        }
         this._closeUiScreen();
         return;
       }
@@ -274,9 +295,10 @@ class GameUiScreens {
   }
 
   _moveJournalSelection(delta) {
-    if (this.journalSection === 2) this._moveJournalFaction(delta);
-    else if (this.journalSection === 3) this._moveJournalPrimary(delta);
-    else if (this.journalSection === 5) this._moveJournalTechnique(delta);
+    const section = this._currentJournalSectionId();
+    if (section === 'FACTIONS') this._moveJournalFaction(delta);
+    else if (section === 'CHARACTER') this._moveJournalPrimary(delta);
+    else if (section === 'TECHNIQUES') this._moveJournalTechnique(delta);
   }
 
   _moveJournalPrimary(delta) {
@@ -291,8 +313,23 @@ class GameUiScreens {
   }
 
   _confirmJournalSelection() {
-    if (this.journalSection === 3) this._spendSelectedPrimary();
-    else if (this.journalSection === 5) this._learnSelectedTechnique();
+    const section = this._currentJournalSectionId();
+    if (section === 'CHARACTER') this._spendSelectedPrimary();
+    else if (section === 'TECHNIQUES') this._learnSelectedTechnique();
+  }
+
+  _currentJournalSectionId() {
+    return JOURNAL_SECTIONS[this.journalSection ?? 0] ?? JOURNAL_SECTIONS[0];
+  }
+
+  _handleJournalMapClick(click) {
+    if (click.button !== 0 || this.journalTurn) return false;
+    const map = this._buildJournalMap?.();
+    const cell = journalMapCellAt(click, map);
+    if (!cell) return false;
+    if (!this._queueJournalMapWalk?.(cell, map)) return false;
+    this._closeUiScreen();
+    return true;
   }
 
   _spendSelectedPrimary() {
@@ -501,6 +538,12 @@ class GameUiScreens {
   _buildTradeUi() {
     return this.tradeSession.buildUi();
   }
+}
+
+function journalSectionIndex(section) {
+  if (typeof section !== 'string' || section.trim() === '') return null;
+  const index = JOURNAL_SECTIONS.indexOf(section.toUpperCase());
+  return index >= 0 ? index : null;
 }
 
 export function installGameUiScreens(GameClass) {

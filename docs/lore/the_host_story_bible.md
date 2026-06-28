@@ -705,7 +705,13 @@ The Vale Imprint gives it Hell.
 
 ## Stages of Infection
 
-### Stage One: The Whisper
+Survivors divide infection into stages because patrols need fast words, not because the Host honors neat borders. Remnant wardens, Compact triage crews, and road doctors use the same numbers with local arguments at the edges.
+
+### Stage I: Exposure
+
+Stage I means known contact: blood, tissue, ash, contaminated relics, or a bite that has not yet changed the body. There may be no reliable outward sign. The infection can clear, sleep, or deepen.
+
+### Stage II: The Whisper
 
 The victim experiences intrusive memories, nightmares, phantom sensations, auditory hallucinations, and emotional instability. They may smell incense where there is none. They may hear bells. They may dream of Europa’s ocean despite never having left Earth.
 
@@ -713,25 +719,29 @@ Physical symptoms include fever, black-gold capillary lines, bleeding gums, ligh
 
 At this stage, treatment is possible but uncertain.
 
-### Stage Two: The Confession
+### Stage III: The Icon
 
 The body begins to change visibly. Old wounds reopen. Bone growths form beneath the skin. Hands may stiffen into prayer-like positions. Eyes may multiply or cloud over with gold flecks. The victim becomes fixated on guilt, duty, failure, grief, hunger, shame, or judgment.
 
-The person is still themselves, but under pressure. They may beg for help, hide symptoms, become violent, seek priests, seek scientists, or feel drawn toward Bloom zones.
+The person is still themselves, but under pressure. Some beg for help. Some hide symptoms or become violent. Calcified signposts, field effigies, and half-opened saints belong here when a human voice is still inside the changed body.
 
-### Stage Three: The Icon
+Recovery from Stage III is considered impossible by the Remnant and nearly impossible by the Compact.
 
-The body reorganizes around an infernal role derived from the victim’s identity and the Vale Imprint. The victim may still speak and remember, but their instincts are altered. Some become predators. Some become guardians. Some become missionaries. Some become stationary shrines of suffering.
+### Stage IV: The Opened
 
-Recovery from Stage Three is considered impossible by the Remnant and nearly impossible by the Compact.
+The body reorganizes around an infernal role derived from the victim’s identity and the Vale Imprint. Feral hunger is common, but not the whole rule. Some Stage IV forms preach, bargain, guard, or punish with enough intelligence to be worse than an animal.
 
-### Stage Four: The Choir
+In field speech, Stage IV means the Host is driving. Do not trust the face just because it knows your name.
 
-The individual self collapses into a larger Host network. The body becomes part of a nest, landscape, living structure, or battlefield organism. It may repeat memories and phrases, but most scholars believe the original person is gone.
+### Stage V: The Choir
+
+The individual self collapses into a larger Host network. The body becomes part of a nest, terrain, living structure, or battlefield organism. It may repeat memories and phrases, but most scholars believe the original person is gone.
 
 The Choir of the Open Wound disagrees.
 
-They believe Stage Four is the beginning of true communion.
+They believe Stage V is the beginning of true communion.
+
+Stress, ritual feeding, Bloom proximity, and the failing Stilling can blur or accelerate every stage. The Choir exploits that blur by calling Stage III sufferers saints and trying to feed them into Stage IV.
 
 ---
 
@@ -803,7 +813,7 @@ Beneath the basilica are the **Mercy Courts**, where suspected infected are trie
 
 The Lumen Compact’s strongest city. It lies underground beneath a dead desert, inside old accelerator tunnels and military bunkers. It has clean water, stable power, advanced medicine, and sealed lower levels where experiments failed.
 
-Its greatest secret is **Project Lazarus Bloom**, an attempt to reverse Stage Three infection by reconstructing the original personality from Host-transformed neural tissue.
+Its greatest secret is **Project Lazarus Bloom**, an attempt to reverse Stage III infection by reconstructing the original personality from Host-transformed neural tissue.
 
 Some test subjects beg to die.
 

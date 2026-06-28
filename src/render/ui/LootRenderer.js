@@ -1,4 +1,5 @@
 import { PALETTE } from '../palette.js';
+import { itemRarityColor, itemRarityLabel } from './ItemRarityStyle.js';
 
 const LOOT_BOX = { x: 104, y: 54, w: 432, h: 270 };
 const LOOT_LIST_BOX = { x: LOOT_BOX.x + 16, y: LOOT_BOX.y + 32, w: 222, h: 164 };
@@ -26,17 +27,23 @@ export function drawLoot(ctx, ui, tools) {
     const iconBox = { x: LOOT_LIST_BOX.x + 8, y: y - 5, w: 24, h: 24 };
     tools.drawInventorySlot(ctx, iconBox, entry, { selected: false, moving: false });
     const color = selected ? PALETTE.uiText : PALETTE.uiDim;
+    const nameColor = itemRarityColor(entry);
     tools.text(ctx, `${selected ? '>' : ' '} ${entry.count}X`, LOOT_LIST_BOX.x + 38, y, color);
-    tools.text(ctx, tools.clip(entry.name, 24), LOOT_LIST_BOX.x + 38, y + 10, color);
+    tools.text(ctx, tools.clip(entry.name, 24), LOOT_LIST_BOX.x + 38, y + 10, nameColor);
     y += 26;
   }
 
   const selected = entries[selectedIndex] ?? null;
   if (selected) {
-    tools.text(ctx, tools.clip(selected.name, 20), LOOT_DETAIL_BOX.x + 8, LOOT_DETAIL_BOX.y + 8, PALETTE.uiBorderLight);
+    tools.text(ctx, tools.clip(selected.name, 20), LOOT_DETAIL_BOX.x + 8, LOOT_DETAIL_BOX.y + 8, itemRarityColor(selected));
     const wt = `WT ${tools.formatWeight(selected.totalWeight ?? selected.weight ?? 0)} KG`;
     tools.text(ctx, wt, LOOT_DETAIL_BOX.x + 8, LOOT_DETAIL_BOX.y + 21, PALETTE.uiGood);
+    tools.text(ctx, `GRADE ${itemRarityLabel(selected)}`, LOOT_DETAIL_BOX.x + 8, LOOT_DETAIL_BOX.y + 30, itemRarityColor(selected));
     let dy = LOOT_DETAIL_BOX.y + 38;
+    if (selected.buildLabel) {
+      tools.text(ctx, tools.clip(`BUILD ${selected.buildLabel}`, 21), LOOT_DETAIL_BOX.x + 8, dy, PALETTE.uiGood);
+      dy += 9;
+    }
     for (const line of tools.wrap(selected.description || 'NO DESCRIPTION.', 21).slice(0, 9)) {
       tools.text(ctx, line, LOOT_DETAIL_BOX.x + 8, dy, PALETTE.uiDim);
       dy += 9;

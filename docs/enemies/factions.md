@@ -50,7 +50,7 @@ Possible units:
 - **Gate Mother:** Saboteur who opens quarantine doors, prison locks, and refugee shelters.
 - **Relic-Bearer:** Carries living Host tissue in sealed reliquaries.
 - **Confession Knife:** Fast melee defender whose attacks raise infection risk.
-- **Almost-Icon:** A voluntary Stage Two cultist who may transform mid-encounter.
+- **Almost-Icon:** A voluntary Stage II cultist who may transform mid-encounter.
 
 ## Ash Cartels
 
@@ -150,7 +150,7 @@ Possible hostile cases:
 
 - A Bloomborn community defending itself from a purge.
 - A Compact-registered detection asset forced into combat.
-- A Stage Two Bloomborn losing control near active Host tissue.
+- A Stage II Bloomborn losing control near active Host tissue.
 - A Choir cell manipulating rejected Bloomborn into "completion."
 
 ## Environmental and Old-World Threats
