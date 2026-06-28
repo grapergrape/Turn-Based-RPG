@@ -278,108 +278,441 @@ export function drawStoneTomb(ctx, cx, cy, seed, opts = {}) {
 export function drawGraveyardWall(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const rng = rngFrom(hash2D(seed + 211, seed * 5 + 17));
-  const len = 0.92 + (rng() > 0.75 ? -0.08 : 0);
+  const len = 0.84 + (rng() > 0.58 ? 0.08 : 0);
+  const chipped = rng() > 0.52;
 
-  drawShadowBlob(ctx, cx, cy + 4, 53, 12);
+  drawShadowBlob(ctx, cx, cy + 4, 57, 13);
   const box = orientedBox(ctx, frame, len, 0.18, 12, {
-    top: PALETTE.stoneLight,
+    top: chipped ? PALETTE.stoneMid : PALETTE.stoneLight,
     lit: PALETTE.stoneMid,
     shade: PALETTE.stoneDark,
     outline: PALETTE.outline
   });
 
+  // Two separate cap stones with a broken seam, so the wall reads as graveyard
+  // masonry rather than a plain fence rail.
   const capA = mixPoint(box.cap.left, box.cap.top, 0.42);
   const capB = mixPoint(box.cap.bottom, box.cap.right, 0.58);
-  linePx(ctx, capA[0], capA[1], capB[0], capB[1], PALETTE.stoneDust, 1);
+  const capMid = mixPoint(capA, capB, 0.5);
+  linePx(ctx, capA[0], capA[1], capMid[0] - 2, capMid[1] - 1, PALETTE.stoneDust, 1);
+  linePx(ctx, capMid[0] + 2, capMid[1] + 1, capB[0], capB[1], PALETTE.stoneDust, 1);
+  px(ctx, capMid[0] - 1, capMid[1] - 2, PALETTE.outline, 2, 4);
+  if (chipped) {
+    px(ctx, capMid[0] + 3, capMid[1] - 5, PALETTE.outline, 5, 3);
+    px(ctx, capMid[0] + 4, capMid[1] - 5, PALETTE.stoneDark, 3, 2);
+  }
+
   const endA = frame.point(-len / 2, 0, 0);
   const endB = frame.point(len / 2, 0, 0);
   for (const [index, p] of [endA, endB].entries()) {
-    px(ctx, p[0] - 4, p[1] - 17, PALETTE.outline, 9, 17);
-    px(ctx, p[0] - 3, p[1] - 16, index === 0 ? PALETTE.stoneMid : PALETTE.stoneDark, 7, 14);
-    px(ctx, p[0] - 3, p[1] - 18, PALETTE.hostBone, 7, 3);
+    const lift = index === 0 ? 1 : 0;
+    px(ctx, p[0] - 5, p[1] - 18 - lift, PALETTE.outline, 11, 18 + lift);
+    px(ctx, p[0] - 4, p[1] - 17 - lift, index === 0 ? PALETTE.stoneMid : PALETTE.stoneDark, 9, 15 + lift);
+    px(ctx, p[0] - 4, p[1] - 19 - lift, PALETTE.hostBone, 9, 3);
+    px(ctx, p[0] - 3, p[1] - 18 - lift, PALETTE.stoneDust, 4, 1);
+    if ((seed + index) % 3 === 0) {
+      px(ctx, p[0] + 2, p[1] - 10, PALETTE.outline, 2, 6);
+      px(ctx, p[0] + 2, p[1] - 9, PALETTE.stoneLight, 1, 2);
+    }
   }
-  for (let i = 0; i < 5; i += 1) {
-    const t = 0.14 + i * 0.18 + rng() * 0.04;
+
+  for (let i = 0; i < 7; i += 1) {
+    const t = 0.08 + i * 0.14 + rng() * 0.03;
     const p = mixPoint(box.cap.left, box.cap.right, t);
-    px(ctx, p[0] - 1, p[1] - 2 + (i % 2), i % 2 ? PALETTE.stoneDust : PALETTE.stoneDark, 3, 1);
+    const tone = i % 3 === 0 ? PALETTE.hostBone : i % 2 ? PALETTE.stoneDust : PALETTE.stoneDark;
+    px(ctx, p[0] - 1, p[1] - 2 + (i % 2), tone, 2 + (i & 1), 1);
+    if (i % 4 === 0) px(ctx, p[0] + 1, p[1] + 4, PALETTE.outline, 1, 5);
   }
-  drawNoisePixels(ctx, cx - 23, cy - 14, 46, 17, [PALETTE.stoneDark, PALETTE.rustDark], 0.035, seed);
+  drawNoisePixels(ctx, cx - 26, cy - 15, 52, 19, [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.stoneDust], 0.045, seed);
 }
 
 export function drawCalcifiedGravePlot(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const rng = rngFrom(hash2D(seed + 223, seed * 3 + 31));
   const cracked = (seed % 5) === 0;
+  const sunken = (seed % 4) === 1;
+  const openAsh = (seed % 6) === 2;
 
-  drawShadowBlob(ctx, cx, cy + 4, 46, 15);
-  orientedBox(ctx, frame, 0.72, 0.48, 4, {
-    top: PALETTE.stoneMid,
+  drawShadowBlob(ctx, cx, cy + 4, 50, 16);
+  orientedBox(ctx, frame, 0.82, 0.52, sunken ? 3 : 5, {
+    top: sunken ? PALETTE.stoneDark : PALETTE.stoneMid,
     lit: PALETTE.stoneDust,
     shade: PALETTE.stoneDark,
     outline: PALETTE.outline
   });
 
+  const rim = [
+    frame.point(-0.37, -0.22, 6),
+    frame.point(0.37, -0.22, 6),
+    frame.point(0.37, 0.22, 6),
+    frame.point(-0.37, 0.22, 6)
+  ];
+  poly(ctx, PALETTE.outline, rim);
   const inset = [
-    frame.point(-0.27, -0.16, 5),
-    frame.point(0.25, -0.15, 5),
-    frame.point(0.27, 0.15, 5),
-    frame.point(-0.25, 0.16, 5)
+    frame.point(-0.32, -0.18, 7),
+    frame.point(0.31, -0.17, 7),
+    frame.point(0.32, 0.18, 7),
+    frame.point(-0.31, 0.18, 7)
   ];
   poly(ctx, PALETTE.stoneDark, inset);
   const fill = [
-    frame.point(-0.22, -0.12, 6),
-    frame.point(0.2, -0.11, 6),
-    frame.point(0.22, 0.11, 6),
-    frame.point(-0.2, 0.12, 6)
+    frame.point(-0.26, -0.13, 8),
+    frame.point(0.25, -0.12, 8),
+    frame.point(0.26, 0.13, 8),
+    frame.point(-0.25, 0.13, 8)
   ];
-  poly(ctx, seed & 1 ? PALETTE.stoneMid : PALETTE.stoneLight, fill);
+  poly(ctx, openAsh ? PALETTE.stoneDark : seed & 1 ? PALETTE.stoneMid : PALETTE.stoneLight, fill);
+
+  const upperLipA = frame.point(-0.31, -0.18, 9);
+  const upperLipB = frame.point(0.31, -0.17, 9);
+  linePx(ctx, upperLipA[0], upperLipA[1], upperLipB[0], upperLipB[1], PALETTE.hostBone, 1);
+  const lowerLipA = frame.point(-0.28, 0.16, 7);
+  const lowerLipB = frame.point(0.28, 0.15, 7);
+  linePx(ctx, lowerLipA[0], lowerLipA[1], lowerLipB[0], lowerLipB[1], PALETTE.stoneDark, 1);
+
   if (cracked) {
-    const a = frame.point(-0.18, -0.04, 7);
-    const b = frame.point(0.16, 0.08, 7);
+    const a = frame.point(-0.22, -0.06, 9);
+    const b = frame.point(0.2, 0.09, 9);
     linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
     linePx(ctx, a[0] + 3, a[1] - 1, b[0] - 2, b[1] - 2, PALETTE.stoneDark, 1);
   }
-  for (let i = 0; i < 5; i += 1) {
-    const p = frame.point(-0.3 + rng() * 0.6, -0.19 + rng() * 0.38, 7);
-    px(ctx, p[0], p[1], rng() < 0.55 ? PALETTE.hostBone : PALETTE.stoneDust, 1 + (i & 1), 1);
+  if (openAsh) {
+    const seamA = frame.point(-0.2, -0.03, 10);
+    const seamB = frame.point(0.22, 0.03, 10);
+    linePx(ctx, seamA[0], seamA[1], seamB[0], seamB[1], PALETTE.void, 2);
+    linePx(ctx, seamA[0] + 2, seamA[1] - 1, seamB[0] - 1, seamB[1] - 2, PALETTE.stoneDark, 1);
   }
-  drawNoisePixels(ctx, cx - 21, cy - 8, 42, 14, [PALETTE.stoneDark, PALETTE.rustDark], 0.04, seed + 17);
+  for (let i = 0; i < 8; i += 1) {
+    const p = frame.point(-0.35 + rng() * 0.7, -0.21 + rng() * 0.42, 9);
+    const tone = rng() < 0.5 ? PALETTE.hostBone : rng() < 0.65 ? PALETTE.rustDark : PALETTE.stoneDust;
+    px(ctx, p[0], p[1], tone, 1 + (i & 1), 1);
+  }
+  for (let r = 0; r < 2; r += 1) {
+    const a = frame.point(-0.38 + rng() * 0.2, -0.1 + rng() * 0.2, 7);
+    const b = frame.point(-0.24 + rng() * 0.18, 0.12 + rng() * 0.1, 7);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.woodDark, 1);
+  }
+  drawNoisePixels(ctx, cx - 23, cy - 9, 46, 16, [PALETTE.stoneDark, PALETTE.rustDark], 0.055, seed + 17);
 }
 
 export function drawCalcifiedHeadstone(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 239, seed * 7 + 5));
+  const variant = seed % 4;
   const lean = Math.floor((rng() - 0.5) * 5);
-  const h = 27 + Math.floor(rng() * 9);
-  const w = 15 + Math.floor(rng() * 5);
+  const h = variant === 2 ? 18 + Math.floor(rng() * 5) : 27 + Math.floor(rng() * 9);
+  const w = variant === 2 ? 23 + Math.floor(rng() * 6) : 15 + Math.floor(rng() * 5);
   const top = cy - h - 5;
   const left = cx - Math.floor(w / 2) + lean;
 
-  drawShadowBlob(ctx, cx, cy + 3, 24, 9);
-  px(ctx, left - 2, top + 5, PALETTE.outline, w + 4, h + 6);
-  for (let row = 0; row < h + 4; row += 1) {
-    const y = top + 5 + row;
-    const taper = row < 6 ? Math.max(0, 3 - Math.floor(row / 2)) : 0;
-    const lx = left + taper;
-    const ww = Math.max(5, w - taper * 2);
-    px(ctx, lx - 1, y, PALETTE.outline, ww + 2, 1);
-    px(ctx, lx, y, row < 4 ? PALETTE.hostBone : PALETTE.stoneDust, Math.ceil(ww * 0.45), 1);
-    px(ctx, lx + Math.ceil(ww * 0.45), y, PALETTE.stoneMid, Math.floor(ww * 0.35), 1);
-    px(ctx, lx + Math.ceil(ww * 0.8), y, PALETTE.stoneDark, Math.max(1, ww - Math.ceil(ww * 0.8)), 1);
+  drawShadowBlob(ctx, cx, cy + 3, variant === 2 ? 32 : 24, 9);
+  if (variant === 1) {
+    const stemX = cx + lean;
+    px(ctx, stemX - 4, top + 7, PALETTE.outline, 9, h + 6);
+    px(ctx, stemX - 3, top + 8, PALETTE.hostBone, 4, h + 2);
+    px(ctx, stemX + 1, top + 8, PALETTE.stoneMid, 3, h + 1);
+    px(ctx, stemX + 3, top + 12, PALETTE.stoneDark, 1, h - 3);
+    px(ctx, stemX - 10, top + 18, PALETTE.outline, 21, 6);
+    px(ctx, stemX - 9, top + 19, PALETTE.stoneDust, 12, 3);
+    px(ctx, stemX + 3, top + 19, PALETTE.stoneDark, 7, 3);
+    if (seed % 3 === 0) {
+      px(ctx, stemX + 5, top + 15, PALETTE.outline, 5, 4);
+      px(ctx, stemX + 6, top + 15, PALETTE.stoneDark, 3, 2);
+    }
+  } else if (variant === 2) {
+    drawIsoPrism(ctx, cx + lean, cy - 2, w, 13, 8, {
+      top: PALETTE.stoneMid,
+      left: PALETTE.stoneDust,
+      right: PALETTE.stoneDark,
+      outline: PALETTE.outline
+    });
+    px(ctx, left + 3, cy - 15, PALETTE.stoneLight, Math.max(4, w - 8), 1);
+    px(ctx, left + 5, cy - 12, PALETTE.outline, Math.max(4, w - 10), 1);
+    px(ctx, left + 7, cy - 9, PALETTE.stoneDark, Math.max(4, w - 14), 1);
+  } else if (variant === 3) {
+    const split = cx + lean + (seed & 1 ? 1 : -1);
+    for (let row = 0; row < h + 2; row += 1) {
+      const y = top + 6 + row;
+      const taper = row < 5 ? Math.max(0, 2 - Math.floor(row / 2)) : 0;
+      const leftW = Math.max(4, Math.floor(w * 0.48) - taper);
+      const rightW = Math.max(4, Math.floor(w * 0.48) - (row % 3 === 0 ? 1 : 0));
+      px(ctx, split - leftW - 2, y, PALETTE.outline, leftW + 2, 1);
+      px(ctx, split + 1, y + (row > 4 ? 1 : 0), PALETTE.outline, rightW + 2, 1);
+      px(ctx, split - leftW - 1, y, row < 3 ? PALETTE.hostBone : PALETTE.stoneDust, Math.ceil(leftW * 0.62), 1);
+      px(ctx, split - Math.floor(leftW * 0.35), y, PALETTE.stoneMid, Math.floor(leftW * 0.35), 1);
+      px(ctx, split + 2, y + (row > 4 ? 1 : 0), PALETTE.stoneMid, Math.ceil(rightW * 0.54), 1);
+      px(ctx, split + 2 + Math.ceil(rightW * 0.54), y + (row > 4 ? 1 : 0), PALETTE.stoneDark, Math.max(1, rightW - Math.ceil(rightW * 0.54)), 1);
+    }
+    linePx(ctx, split, top + 8, split - 2, cy - 4, PALETTE.void, 1);
+  } else {
+    px(ctx, left - 2, top + 5, PALETTE.outline, w + 4, h + 6);
+    for (let row = 0; row < h + 4; row += 1) {
+      const y = top + 5 + row;
+      const taper = row < 6 ? Math.max(0, 3 - Math.floor(row / 2)) : 0;
+      const lx = left + taper;
+      const ww = Math.max(5, w - taper * 2);
+      px(ctx, lx - 1, y, PALETTE.outline, ww + 2, 1);
+      px(ctx, lx, y, row < 4 ? PALETTE.hostBone : PALETTE.stoneDust, Math.ceil(ww * 0.45), 1);
+      px(ctx, lx + Math.ceil(ww * 0.45), y, PALETTE.stoneMid, Math.floor(ww * 0.35), 1);
+      px(ctx, lx + Math.ceil(ww * 0.8), y, PALETTE.stoneDark, Math.max(1, ww - Math.ceil(ww * 0.8)), 1);
+    }
   }
   px(ctx, left - 2, cy - 3, PALETTE.outline, w + 4, 5);
   px(ctx, left, cy - 2, PALETTE.stoneDark, w, 2);
 
   const crossX = cx + lean;
-  px(ctx, crossX - 1, top + 12, PALETTE.outline, 3, 13);
-  px(ctx, crossX - 5, top + 17, PALETTE.outline, 11, 3);
-  px(ctx, crossX, top + 13, PALETTE.stoneLight, 1, 11);
-  px(ctx, crossX - 4, top + 18, PALETTE.stoneLight, 9, 1);
+  if (variant !== 1 && variant !== 2) {
+    px(ctx, crossX - 1, top + 12, PALETTE.outline, 3, 13);
+    px(ctx, crossX - 5, top + 17, PALETTE.outline, 11, 3);
+    px(ctx, crossX, top + 13, PALETTE.stoneLight, 1, 11);
+    px(ctx, crossX - 4, top + 18, PALETTE.stoneLight, 9, 1);
+  }
   for (let i = 0; i < 6; i += 1) {
     const x = left + 2 + Math.floor(rng() * Math.max(1, w - 4));
     const y = top + 7 + Math.floor(rng() * Math.max(1, h - 4));
     px(ctx, x, y, rng() < 0.55 ? PALETTE.stoneDark : PALETTE.hostBone, 1, 1);
   }
   drawNoisePixels(ctx, cx - 12, cy - 3, 24, 8, [PALETTE.stoneDark, PALETTE.rustDark], 0.06, seed);
+}
+
+export function drawGraveyardTombSlab(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const rng = rngFrom(hash2D(seed + 251, seed * 7 + 43));
+  const cracked = seed % 3 === 0;
+
+  drawShadowBlob(ctx, cx, cy + 5, 58, 19);
+  const base = orientedBox(ctx, frame, 0.9, 0.52, 12, {
+    top: PALETTE.stoneMid,
+    lit: PALETTE.stoneDust,
+    shade: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+
+  const lid = [
+    frame.point(-0.38, -0.2, 15),
+    frame.point(0.38, -0.2, 15),
+    frame.point(0.36, 0.19, 15),
+    frame.point(-0.36, 0.19, 15)
+  ];
+  poly(ctx, PALETTE.outline, lid);
+  const top = [
+    frame.point(-0.32, -0.15, 16),
+    frame.point(0.31, -0.15, 16),
+    frame.point(0.3, 0.14, 16),
+    frame.point(-0.31, 0.14, 16)
+  ];
+  poly(ctx, PALETTE.stoneLight, top);
+  const shade = [
+    frame.point(-0.08, -0.12, 17),
+    frame.point(0.31, -0.15, 17),
+    frame.point(0.3, 0.14, 17),
+    frame.point(-0.02, 0.12, 17)
+  ];
+  poly(ctx, PALETTE.stoneMid, shade);
+
+  const crossA = frame.point(-0.16, 0, 18);
+  const crossB = frame.point(0.16, 0, 18);
+  const crossC = frame.point(0, -0.11, 18);
+  const crossD = frame.point(0, 0.1, 18);
+  linePx(ctx, crossA[0], crossA[1], crossB[0], crossB[1], PALETTE.stoneDust, 1);
+  linePx(ctx, crossC[0], crossC[1], crossD[0], crossD[1], PALETTE.stoneDust, 1);
+  if (cracked) {
+    const a = frame.point(-0.29, -0.1, 19);
+    const b = frame.point(0.2, 0.1, 19);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
+    px(ctx, b[0] + 1, b[1], PALETTE.stoneDark, 3, 1);
+  }
+
+  for (let i = 0; i < 7; i += 1) {
+    const p = frame.point(-0.43 + rng() * 0.86, -0.24 + rng() * 0.48, 15 + (i % 2));
+    px(ctx, p[0], p[1], rng() < 0.55 ? PALETTE.hostBone : PALETTE.stoneDark, 1 + (i & 1), 1);
+  }
+  const footA = mixPoint(base.base.left, base.base.bottom, 0.44);
+  const footB = mixPoint(base.base.bottom, base.base.right, 0.5);
+  linePx(ctx, footA[0], footA[1] - 1, footB[0], footB[1] - 1, PALETTE.stoneDark, 1);
+  drawNoisePixels(ctx, cx - 26, cy - 9, 52, 18, [PALETTE.stoneDark, PALETTE.rustDark], 0.045, seed);
+}
+
+export function drawGraveyardCatacombMouth(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const rng = rngFrom(hash2D(seed + 263, seed * 11 + 47));
+
+  drawShadowBlob(ctx, cx, cy + 6, 66, 21);
+  orientedBox(ctx, frame, 1, 0.62, 5, {
+    top: PALETTE.stoneMid,
+    lit: PALETTE.stoneDust,
+    shade: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+
+  const mouthOuter = [
+    frame.point(-0.38, -0.23, 8),
+    frame.point(0.38, -0.23, 8),
+    frame.point(0.31, 0.2, 8),
+    frame.point(-0.31, 0.2, 8)
+  ];
+  poly(ctx, PALETTE.outline, mouthOuter);
+  const mouth = [
+    frame.point(-0.29, -0.16, 9),
+    frame.point(0.29, -0.16, 9),
+    frame.point(0.22, 0.13, 9),
+    frame.point(-0.22, 0.13, 9)
+  ];
+  poly(ctx, PALETTE.void, mouth);
+  const throat = [
+    frame.point(-0.2, -0.09, 10),
+    frame.point(0.2, -0.09, 10),
+    frame.point(0.15, 0.08, 10),
+    frame.point(-0.15, 0.08, 10)
+  ];
+  poly(ctx, PALETTE.hostBlack, throat);
+
+  for (let step = 0; step < 4; step += 1) {
+    const lb = -0.08 + step * 0.07;
+    const a = frame.point(-0.23 + step * 0.03, lb, 11);
+    const b = frame.point(0.23 - step * 0.03, lb, 11);
+    linePx(ctx, a[0], a[1], b[0], b[1], step === 0 ? PALETTE.stoneLight : PALETTE.stoneDark, 1);
+  }
+
+  const rear = frame.point(0, -0.27, 0);
+  const rearFrame = isoFrame(rear[0], rear[1], frame.orient);
+  orientedBox(ctx, rearFrame, 0.82, 0.16, 18, {
+    top: PALETTE.stoneLight,
+    lit: PALETTE.stoneMid,
+    shade: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+  const lintelA = rearFrame.point(-0.36, 0, 20);
+  const lintelB = rearFrame.point(0.36, 0, 20);
+  linePx(ctx, lintelA[0], lintelA[1], lintelB[0], lintelB[1], PALETTE.hostBone, 1);
+  const seal = rearFrame.point(0, 0.05, 12);
+  px(ctx, seal[0] - 7, seal[1] - 7, PALETTE.outline, 15, 11);
+  px(ctx, seal[0] - 6, seal[1] - 6, PALETTE.stoneDark, 13, 9);
+  px(ctx, seal[0] - 5, seal[1] - 5, PALETTE.void, 11, 6);
+
+  for (let i = 0; i < 8; i += 1) {
+    const p = frame.point(-0.48 + rng() * 0.96, -0.28 + rng() * 0.58, 7);
+    px(ctx, p[0], p[1], rng() < 0.5 ? PALETTE.hostBone : PALETTE.stoneDark, 1 + (i & 1), 1);
+  }
+  drawNoisePixels(ctx, cx - 30, cy - 12, 60, 23, [PALETTE.stoneDark, PALETTE.rustDark], 0.055, seed);
+}
+
+export function drawGraveyardRemnantCross(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 271, seed * 13 + 53));
+  const lean = Math.floor((rng() - 0.5) * 3);
+
+  drawShadowBlob(ctx, cx, cy + 5, 42, 15);
+  drawIsoPrism(ctx, cx, cy, 36, 18, 8, {
+    top: PALETTE.stoneMid,
+    left: PALETTE.stoneDust,
+    right: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+  drawIsoPrism(ctx, cx + lean, cy - 8, 26, 13, 7, {
+    top: PALETTE.stoneLight,
+    left: PALETTE.stoneMid,
+    right: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+
+  const stemX = cx + lean;
+  px(ctx, stemX - 6, cy - 68, PALETTE.outline, 13, 61);
+  px(ctx, stemX - 5, cy - 67, PALETTE.hostBone, 5, 57);
+  px(ctx, stemX, cy - 67, PALETTE.stoneDust, 3, 57);
+  px(ctx, stemX + 3, cy - 64, PALETTE.stoneDark, 3, 54);
+  px(ctx, stemX - 18, cy - 52, PALETTE.outline, 37, 9);
+  px(ctx, stemX - 17, cy - 51, PALETTE.hostBone, 15, 6);
+  px(ctx, stemX - 2, cy - 51, PALETTE.stoneDust, 12, 6);
+  px(ctx, stemX + 10, cy - 49, PALETTE.stoneDark, 7, 5);
+
+  // Remnant sun-cross ring, broken and pixel-built.
+  for (let i = 0; i < 22; i += 1) {
+    if (i > 13 && i < 17) continue;
+    const a = (Math.PI * 2 * i) / 22;
+    const x = stemX + Math.round(Math.cos(a) * 12);
+    const y = cy - 48 + Math.round(Math.sin(a) * 7);
+    px(ctx, x, y, i % 3 === 0 ? PALETTE.hostBone : PALETTE.stoneDust, i % 5 === 0 ? 2 : 1, 1);
+  }
+
+  px(ctx, stemX - 4, cy - 23, PALETTE.stoneDark, 9, 2);
+  px(ctx, stemX - 3, cy - 18, PALETTE.outline, 8, 3);
+  px(ctx, stemX - 2, cy - 18, PALETTE.rustDark, 5, 1);
+  for (let i = 0; i < 8; i += 1) {
+    const x = stemX - 7 + Math.floor(rng() * 15);
+    const y = cy - 61 + Math.floor(rng() * 47);
+    px(ctx, x, y, rng() < 0.5 ? PALETTE.stoneDark : PALETTE.stoneLight, 1, 1);
+  }
+  drawNoisePixels(ctx, cx - 20, cy - 10, 40, 14, [PALETTE.stoneDark, PALETTE.rustDark], 0.055, seed);
+}
+
+export function drawGraveyardPackedAsh(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 277, seed * 7 + 61));
+  ctx.save();
+  ctx.globalAlpha = 0.24;
+  drawIsoDiamond(ctx, cx, cy, 52, 23, PALETTE.stoneDark);
+  ctx.globalAlpha = 0.13;
+  drawIsoDiamond(ctx, cx + Math.floor((rng() - 0.5) * 8), cy + Math.floor((rng() - 0.5) * 4), 39, 16, PALETTE.stoneDust);
+  ctx.restore();
+  const d = diamond(cx, cy, 50, 22);
+  linePx(ctx, d.left[0] + 5, d.left[1] + 1, d.top[0], d.top[1] + 4, PALETTE.stoneDust, 1);
+  linePx(ctx, d.bottom[0], d.bottom[1] - 3, d.right[0] - 5, d.right[1] + 1, PALETTE.stoneDark, 1);
+  for (let i = 0; i < 6; i += 1) {
+    const x = cx - 23 + Math.floor(rng() * 47);
+    const y = cy - 9 + Math.floor(rng() * 18);
+    px(ctx, x, y, rng() < 0.55 ? PALETTE.hostBone : PALETTE.rustDark, 1 + (i & 1), 1);
+  }
+}
+
+export function drawGraveyardPathStones(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 281, seed * 5 + 67));
+  const stones = [
+    { x: -14, y: -3, w: 21, h: 9 },
+    { x: 5, y: 2, w: 24, h: 10 },
+    { x: -2, y: -10, w: 18, h: 8 }
+  ];
+  for (const stone of stones) {
+    const dx = stone.x + Math.floor((rng() - 0.5) * 4);
+    const dy = stone.y + Math.floor((rng() - 0.5) * 3);
+    drawIsoDiamond(ctx, cx + dx, cy + dy + 1, stone.w + 2, stone.h + 2, PALETTE.outline);
+    drawIsoDiamond(ctx, cx + dx, cy + dy, stone.w, stone.h, rng() < 0.45 ? PALETTE.stoneLight : PALETTE.stoneMid);
+    px(ctx, cx + dx - 6, cy + dy - 2, PALETTE.stoneDust, 6, 1);
+    if (rng() < 0.45) px(ctx, cx + dx + 3, cy + dy + 2, PALETTE.stoneDark, 7, 1);
+  }
+  drawNoisePixels(ctx, cx - 23, cy - 10, 46, 20, [PALETTE.stoneDust, PALETTE.stoneDark], 0.035, seed);
+}
+
+export function drawGraveyardRootSeam(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 283, seed * 11 + 71));
+  for (let i = 0; i < 4; i += 1) {
+    const x = cx - 24 + Math.floor(rng() * 48);
+    const y = cy - 8 + Math.floor(rng() * 16);
+    const midX = x + 6 + Math.floor(rng() * 8);
+    const endX = midX + 5 + Math.floor(rng() * 9);
+    const midY = y - 4 + Math.floor(rng() * 8);
+    const endY = midY - 3 + Math.floor(rng() * 7);
+    linePx(ctx, x, y, midX, midY, PALETTE.outline, 2);
+    linePx(ctx, midX, midY, endX, endY, PALETTE.outline, 2);
+    linePx(ctx, x, y, midX, midY, PALETTE.woodDark, 1);
+    linePx(ctx, midX, midY, endX, endY, i % 2 ? PALETTE.rustDark : PALETTE.woodMid, 1);
+    if (i % 2 === 0) linePx(ctx, midX, midY, midX - 5, midY + 4, PALETTE.woodDark, 1);
+  }
+}
+
+export function drawGraveyardPrayerScratch(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 293, seed * 3 + 79));
+  const x = cx + Math.floor((rng() - 0.5) * 10);
+  const y = cy + Math.floor((rng() - 0.5) * 5);
+  ctx.save();
+  ctx.globalAlpha = 0.72;
+  linePx(ctx, x, y - 8, x, y + 7, PALETTE.hostBone, 1);
+  linePx(ctx, x - 8, y - 1, x + 8, y - 1, PALETTE.hostBone, 1);
+  linePx(ctx, x - 5, y + 4, x + 5, y + 4, PALETTE.stoneDust, 1);
+  for (let i = 0; i < 16; i += 1) {
+    if (i % 5 === 0) continue;
+    const a = (Math.PI * 2 * i) / 16;
+    px(ctx, x + Math.round(Math.cos(a) * 11), y - 1 + Math.round(Math.sin(a) * 6), PALETTE.stoneDust, 1, 1);
+  }
+  ctx.restore();
+  drawNoisePixels(ctx, cx - 16, cy - 8, 32, 16, [PALETTE.stoneDust, PALETTE.stoneDark], 0.035, seed);
 }
 
 function drawFallenSaint(ctx, cx, cy, seed, settle = 1) {

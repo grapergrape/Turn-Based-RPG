@@ -1,0 +1,41 @@
+{
+  "id": "calcified-brothers",
+  "title": "The Holt Brothers",
+  "initialStage": "find-crossroad-brother",
+  "objectives": [
+    { "text": "Speak with the calcified sign at the crossroads.", "stage": "find-crossroad-brother" },
+    { "text": "Find Edrin Holt in the wheat fields.", "stage": "find-field-brother" },
+    { "text": "Check the farm family for Edrin.", "stage": "check-farm-family" },
+    { "text": "Return to Edrin with what you found.", "stage": "family-known" }
+  ],
+  "stages": [
+    {
+      "id": "find-crossroad-brother",
+      "task": "Speak with the road sign",
+      "description": "A calcified man has been used as a living road sign at the Ash Road crossroads."
+    },
+    {
+      "id": "find-field-brother",
+      "task": "Find Edrin Holt",
+      "description": "Garron Holt asked you to check on his brother Edrin, who was taken to the farm fields."
+    },
+    {
+      "id": "check-farm-family",
+      "task": "Check the farm family",
+      "xp": 20,
+      "description": "Edrin Holt still cares for the family that tied him into the wheat. Find out what happened to them."
+    },
+    {
+      "id": "family-known",
+      "task": "Return to Edrin",
+      "xp": 25,
+      "description": "The farm family has been raised on crosses in the yard. Edrin is waiting for your answer."
+    },
+    {
+      "id": "complete",
+      "task": "Edrin has his answer",
+      "xp": 35,
+      "description": "You answered Edrin Holt. Truth or mercy, the wheat has gone quiet again."
+    }
+  ]
+}

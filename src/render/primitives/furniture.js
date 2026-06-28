@@ -579,6 +579,136 @@ export function drawKitchenCounter(ctx, cx, cy, seed, opts = {}) {
   if (rng() < 0.5) px(ctx, top.cap.top[0] - 4, top.cap.top[1] - 1, PALETTE.hostBone, 2, 1);
 }
 
+export function drawFarmPrepTable(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient);
+  const rng = rngFrom(hash2D(seed + 109, seed * 7 + 23));
+  const lenA = 1.48;
+  const lenB = 0.68;
+  const legH = 11;
+  const slabT = 4;
+  const ext = footprintExtent(lenA, lenB);
+  const ha = lenA / 2;
+  const hb = lenB / 2;
+  drawShadowBlob(ctx, cx, cy + 5, ext.w * 0.82, ext.h * 0.86);
+
+  const legs = [
+    frame.point(-ha + 0.07, -hb + 0.08),
+    frame.point(ha - 0.07, -hb + 0.08),
+    frame.point(ha - 0.07, hb - 0.08),
+    frame.point(-ha + 0.07, hb - 0.08)
+  ].sort((a, b) => a[1] - b[1]);
+  for (const p of legs) drawPropLeg(ctx, p, legH, PALETTE.woodDark);
+
+  const shelfA = frame.point(-ha + 0.08, 0, 4);
+  const shelfB = frame.point(ha - 0.1, 0, 4);
+  linePx(ctx, shelfA[0], shelfA[1], shelfB[0], shelfB[1], PALETTE.outline, 3);
+  linePx(ctx, shelfA[0], shelfA[1] - 1, shelfB[0], shelfB[1] - 1, PALETTE.woodMid, 1);
+
+  const box = orientedBox(ctx, frame, lenA, lenB, slabT, {
+    top: PALETTE.woodMid,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.woodDark,
+    outline: PALETTE.outline
+  }, legH);
+  linePx(ctx, box.cap.left[0], box.cap.left[1], box.cap.top[0], box.cap.top[1], PALETTE.woodLight, 1);
+
+  const topH = legH + slabT;
+  const board = frame.point(-0.2, 0.02, topH);
+  drawIsoDiamond(ctx, board[0], board[1], 18, 8, PALETTE.outline);
+  drawIsoDiamond(ctx, board[0], board[1] - 1, 15, 6, PALETTE.woodLight);
+  for (let i = 0; i < 4; i += 1) px(ctx, board[0] - 6 + i * 4, board[1] - 1, PALETTE.rustDark, 1, 1);
+
+  const bowl = frame.point(0.36, -0.1, topH);
+  drawIsoDiamond(ctx, bowl[0], bowl[1], 12, 6, PALETTE.outline);
+  drawIsoDiamond(ctx, bowl[0], bowl[1] - 1, 9, 4, PALETTE.stoneDust);
+  px(ctx, bowl[0] - 3, bowl[1] - 3, PALETTE.stoneMid, 6, 1);
+
+  const sack = frame.point(0.44, 0.16, topH);
+  px(ctx, sack[0] - 5, sack[1] - 8, PALETTE.outline, 10, 9);
+  px(ctx, sack[0] - 4, sack[1] - 7, PALETTE.clothTan, 8, 7);
+  px(ctx, sack[0] - 3, sack[1] - 7, PALETTE.stoneDust, 2, 2);
+  px(ctx, sack[0] - 2, sack[1] - 2, PALETTE.rustDark, 5, 1);
+
+  const knifeA = frame.point(-0.42, -0.12, topH);
+  const knifeB = frame.point(-0.08, 0.08, topH);
+  linePx(ctx, knifeA[0], knifeA[1], knifeB[0], knifeB[1], PALETTE.stoneLight, 1);
+  px(ctx, knifeA[0] - 1, knifeA[1], PALETTE.woodDark, 2, 2);
+
+  for (let i = 0; i < 5; i += 1) {
+    const p = frame.point(-ha + rng() * lenA, -hb + rng() * lenB, topH);
+    px(ctx, p[0], p[1], rng() < 0.5 ? PALETTE.woodLight : PALETTE.woodDark, rng() < 0.35 ? 2 : 1, 1);
+  }
+}
+
+export function drawFarmKitchenHearth(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 127, seed * 11 + 41));
+  drawShadowBlob(ctx, cx, cy + 8, 60, 22);
+
+  drawIsoPrism(ctx, cx, cy + 2, 58, 26, 11, {
+    top: PALETTE.clothTan,
+    left: PALETTE.woodMid,
+    right: PALETTE.woodDark,
+    outline: PALETTE.outline
+  });
+
+  poly(ctx, PALETTE.outline, [
+    [cx - 26, cy - 16],
+    [cx - 4, cy - 28],
+    [cx + 26, cy - 16],
+    [cx + 25, cy - 9],
+    [cx - 4, cy + 6],
+    [cx - 27, cy - 5]
+  ]);
+  poly(ctx, PALETTE.clothTan, [
+    [cx - 23, cy - 16],
+    [cx - 4, cy - 26],
+    [cx + 22, cy - 16],
+    [cx - 4, cy - 4]
+  ]);
+  poly(ctx, PALETTE.woodMid, [
+    [cx - 23, cy - 16],
+    [cx - 4, cy - 4],
+    [cx - 26, cy - 6]
+  ]);
+  poly(ctx, PALETTE.woodDark, [
+    [cx - 4, cy - 4],
+    [cx + 22, cy - 16],
+    [cx + 23, cy - 10]
+  ]);
+
+  poly(ctx, PALETTE.outline, [
+    [cx - 12, cy - 13],
+    [cx - 3, cy - 18],
+    [cx + 9, cy - 14],
+    [cx + 8, cy - 7],
+    [cx - 5, cy - 2],
+    [cx - 13, cy - 6]
+  ]);
+  poly(ctx, PALETTE.void, [
+    [cx - 10, cy - 12],
+    [cx - 3, cy - 16],
+    [cx + 6, cy - 13],
+    [cx + 6, cy - 8],
+    [cx - 5, cy - 4],
+    [cx - 11, cy - 7]
+  ]);
+
+  linePx(ctx, cx - 24, cy - 18, cx + 24, cy - 17, PALETTE.woodDark, 3);
+  linePx(ctx, cx - 23, cy - 19, cx + 23, cy - 18, PALETTE.woodLight, 1);
+  px(ctx, cx + 12, cy - 21, PALETTE.outline, 8, 7);
+  px(ctx, cx + 13, cy - 20, PALETTE.rustDark, 6, 5);
+  px(ctx, cx + 14, cy - 21, PALETTE.rustLight, 3, 1);
+  linePx(ctx, cx + 13, cy - 24, cx + 7, cy - 20, PALETTE.rustDark, 1);
+  linePx(ctx, cx + 20, cy - 24, cx + 27, cy - 20, PALETTE.rustDark, 1);
+
+  for (let i = 0; i < 8; i += 1) {
+    const x = cx - 24 + Math.floor(rng() * 48);
+    const y = cy - 23 + Math.floor(rng() * 22);
+    px(ctx, x, y, rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark);
+  }
+  drawNoisePixels(ctx, cx - 24, cy - 22, 48, 26, [PALETTE.rustDark, PALETTE.woodDark, PALETTE.stoneDark], 0.045, seed);
+}
+
 export function drawSealedStorageCrate(ctx, cx, cy, seed) {
   drawRustedCrate(ctx, cx, cy, seed);
   px(ctx, cx - 18, cy - 2, PALETTE.outline, 36, 4);

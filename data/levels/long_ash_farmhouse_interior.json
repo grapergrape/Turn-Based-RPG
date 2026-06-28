@@ -33,11 +33,12 @@
   ],
   "legend": {
     "#": {
-      "kind": "wall",
+      "kind": "farmhouse-interior-wall",
       "walkable": false
     },
     ".": {
       "kind": "floor",
+      "floor": "farm-plank",
       "walkable": true
     }
   },
@@ -72,7 +73,7 @@
       "blocking": true
     },
     {
-      "kind": "kitchen-hearth",
+      "kind": "farm-kitchen-hearth",
       "x": 11,
       "y": 3,
       "blocking": true
@@ -84,27 +85,27 @@
     },
     {
       "kind": "dining-bench",
-      "x": 6,
-      "y": 4,
+      "x": 4,
+      "y": 5,
       "blocking": true,
-      "orient": "se"
+      "orient": "sw"
     },
     {
       "kind": "dining-table",
-      "x": 6,
+      "x": 5,
       "y": 5,
       "blocking": true,
-      "orient": "se"
+      "orient": "sw"
     },
     {
       "kind": "dining-bench",
       "x": 6,
       "y": 6,
       "blocking": true,
-      "orient": "se"
+      "orient": "sw"
     },
     {
-      "kind": "kitchen-counter",
+      "kind": "farm-prep-table",
       "x": 10,
       "y": 5,
       "blocking": true,
@@ -118,8 +119,8 @@
     },
     {
       "kind": "low-stool",
-      "x": 9,
-      "y": 7,
+      "x": 8,
+      "y": 6,
       "blocking": true
     },
     {

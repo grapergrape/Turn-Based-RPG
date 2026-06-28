@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
+import { meetsDialogueConditions } from '../src/core/DialogueConditions.js';
 import { getSprite } from '../src/render/spriteCatalog.js';
 import { Grid } from '../src/world/Grid.js';
 import { isTargetInReach, resolveInteractionTargetAtCell } from '../src/world/InteractionTargeting.js';
@@ -147,13 +148,16 @@ function expectedFootprintCells(spec) {
 const level = await readJson('../data/levels/long_ash_road_approach.json');
 const grid = new Grid(level);
 addBlockingObjects(grid, level.objects ?? []);
+const fieldBrotherDialogue = await readJson('../data/dialogue/long-ash-field-brother.json');
 const farmInteriors = [
   {
     key: 'farmhouse',
     level: await readJson('../data/levels/long_ash_farmhouse_interior.json'),
     exitDialogue: 'long-ash-farmhouse-exit',
     doorVariant: 'farmhouse',
-    requiredKinds: ['farm-door', 'dining-table', 'dining-bench', 'kitchen-hearth', 'kitchen-counter', 'pantry-shelf', 'wash-tub'],
+    wallKind: 'farmhouse-interior-wall',
+    floorStyle: 'farm-plank',
+    requiredKinds: ['farm-door', 'dining-table', 'dining-bench', 'farm-kitchen-hearth', 'farm-prep-table', 'pantry-shelf', 'wash-tub'],
     dressingKinds: ['wax-stain', 'paper-scraps']
   },
   {
@@ -161,6 +165,8 @@ const farmInteriors = [
     level: await readJson('../data/levels/long_ash_barn_interior.json'),
     exitDialogue: 'long-ash-barn-exit',
     doorVariant: 'barn',
+    wallKind: 'barn-interior-wall',
+    floorStyle: 'packed-earth',
     requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'field-cart', 'field-plow', 'rusted-barrel'],
     dressingKinds: ['chaff-scatter']
   },
@@ -169,6 +175,8 @@ const farmInteriors = [
     level: await readJson('../data/levels/long_ash_storage_shed_interior.json'),
     exitDialogue: 'long-ash-storage-shed-exit',
     doorVariant: 'storage-shed',
+    wallKind: 'shed-interior-wall',
+    floorStyle: 'packed-earth',
     requiredKinds: ['farm-door', 'sealed-storage-crate', 'rusted-crate', 'rusted-barrel', 'pantry-shelf'],
     dressingKinds: ['paper-scraps', 'cobweb']
   },
@@ -177,6 +185,8 @@ const farmInteriors = [
     level: await readJson('../data/levels/long_ash_grain_shed_interior.json'),
     exitDialogue: 'long-ash-grain-shed-exit',
     doorVariant: 'grain-shed',
+    wallKind: 'shed-interior-wall',
+    floorStyle: 'packed-earth',
     requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'woodpile', 'rusted-barrel'],
     dressingKinds: ['chaff-scatter']
   },
@@ -185,6 +195,8 @@ const farmInteriors = [
     level: await readJson('../data/levels/long_ash_tool_shed_interior.json'),
     exitDialogue: 'long-ash-tool-shed-exit',
     doorVariant: 'tool-shed',
+    wallKind: 'shed-interior-wall',
+    floorStyle: 'packed-earth',
     requiredKinds: ['farm-door', 'tool-rack', 'field-plow', 'field-harrow', 'wagon-wheel', 'rusted-crate'],
     dressingKinds: ['machine-oil', 'floor-crack'],
     floorCrackMin: 2
@@ -229,7 +241,7 @@ const farmExitDialogues = new Map([
   const spawn = level.spawns.player;
   assert.deepEqual(spawn, { actor: 'mara-vey', x: 142, y: 68 });
   assert.equal(grid.isWalkable(spawn.x, spawn.y), true);
-  assert.equal(pathExists(grid, spawn, { x: 113, y: 31 }), true, 'start reaches the forest crossroad');
+  assert.equal(pathExists(grid, spawn, { x: 113, y: 32 }), true, 'start reaches the forest crossroad use tile');
   assert.equal(pathExists(grid, spawn, { x: 116, y: 4 }), true, 'start reaches the north road edge');
 }
 
@@ -371,8 +383,27 @@ const farmExitDialogues = new Map([
   const expectedDoorSnapshot = expectedFarmDoors.map(({ use, returnDialogue, tile, ...door }) => door);
   assert.deepEqual(
     level.dialogue,
-    expectedFarmDoors.map((door) => door.dialogue),
-    'farm door dialogues are loaded with the road level'
+    [
+      ...expectedFarmDoors.map((door) => door.dialogue),
+      'long-ash-crossroad-brother',
+      'long-ash-field-brother'
+    ],
+    'farm door and calcified brother dialogues are loaded with the road level'
+  );
+  assert.ok(level.quests.includes('calcified-brothers'), 'Long Ash Road loads the calcified brothers quest');
+  const fieldReportNode = fieldBrotherDialogue.nodes['report-check'];
+  assert.equal(
+    meetsDialogueConditions(fieldReportNode.conditions, {
+      flags: new Set(),
+      questStages: new Map([['calcified-brothers', 'family-known']])
+    }),
+    true,
+    'Edrin can report on the farm family even if the player found the victims before meeting him'
+  );
+  assert.deepEqual(
+    fieldReportNode.effects,
+    { setFlag: 'long-ash-field-brother-met' },
+    'reporting the family state marks Edrin as met without regressing the quest'
   );
   const actualFarmDoors = level.objects
     .filter((object) => object.kind === 'farm-door' && inRange(object, farmRange))
@@ -506,6 +537,18 @@ const farmExitDialogues = new Map([
     true,
     'farm family victim crosses block their occupied tiles'
   );
+  assert.equal(
+    level.objects
+      .filter((object) => object.kind === 'farm-cross-victim')
+      .every((object) =>
+        object.id?.startsWith('long-ash-farm-victim-') &&
+        object.interact?.type === 'note' &&
+        object.interact?.questUpdate?.quest === 'calcified-brothers' &&
+        object.interact?.questUpdate?.stage === 'family-known'
+      ),
+    true,
+    'farm family victims are inspectable and advance Edrin report state'
+  );
   assert.ok(
     level.objects.some((object) => object.kind === 'blood-sigil' && inRange(object, farmRange)),
     'cult blood sigils are placed inside the farm murder scene'
@@ -619,6 +662,92 @@ const farmExitDialogues = new Map([
   assert.ok(level.objects.some((object) => object.kind === 'dead-cultist' && inRange(object, killRange)));
   assert.ok(level.objects.some((object) => object.kind.startsWith('dead-host-wolf-') && inRange(object, killRange)));
 
+  const crossroadSprite = getSprite('calcified-crossroad-brother');
+  assert.ok(crossroadSprite, 'calcified-crossroad-brother is registered');
+  assert.equal(crossroadSprite.category, 'creature');
+  const fieldSprite = getSprite('calcified-scarecrow-brother');
+  assert.ok(fieldSprite, 'calcified-scarecrow-brother is registered');
+  assert.equal(fieldSprite.category, 'creature');
+
+  const crossroadBrother = level.objects.find((object) => object.id === 'long-ash-crossroad-brother');
+  assert.ok(crossroadBrother, 'crossroad brother is placed');
+  assert.equal(crossroadBrother.kind, 'calcified-crossroad-brother');
+  assert.equal(crossroadBrother.name, 'Garron Holt');
+  assert.equal(crossroadBrother.x, 113);
+  assert.equal(crossroadBrother.y, 31);
+  assert.equal(crossroadBrother.blocking, true);
+  assert.equal(crossroadBrother.interact?.dialogue, 'long-ash-crossroad-brother');
+  assert.equal(crossroadBrother.interact?.type, 'note');
+  assert.ok(crossroadBrother.interact?.log.includes('Hallowfen'));
+  assert.equal(level.tiles[crossroadBrother.y][crossroadBrother.x], 'r', 'crossroad brother stands on the road fork');
+  assert.equal(grid.isWalkable(crossroadBrother.x, crossroadBrother.y), false, 'crossroad brother blocks only his signpost cell');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 113, y: 32 }), true, 'start reaches the crossroad brother use tile');
+  const crossroadTarget = resolveInteractionTargetAtCell({
+    cell: { x: crossroadBrother.x, y: crossroadBrother.y },
+    grid,
+    player: { position: { x: 113, y: 32 } },
+    actors: [],
+    enemies: [],
+    interactables: level.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(crossroadTarget.type, 'object', 'crossroad brother resolves as an object target');
+  assert.equal(crossroadTarget.object.id, crossroadBrother.id);
+  assert.equal(isTargetInReach({ position: { x: 113, y: 32 } }, crossroadTarget), true, 'crossroad brother is clickable from the road');
+
+  const fieldBrother = level.objects.find((object) => object.id === 'long-ash-field-brother');
+  assert.ok(fieldBrother, 'field brother is placed');
+  assert.equal(fieldBrother.kind, 'calcified-scarecrow-brother');
+  assert.equal(fieldBrother.name, 'Edrin Holt');
+  assert.equal(fieldBrother.x, 50);
+  assert.equal(fieldBrother.y, 35);
+  assert.equal(fieldBrother.blocking, true);
+  assert.equal(fieldBrother.interact?.dialogue, 'long-ash-field-brother');
+  assert.equal(fieldBrother.interact?.type, 'note');
+  assert.equal(level.tiles[fieldBrother.y][fieldBrother.x], 'w', 'field brother stands in wheat');
+  assert.equal(grid.isWalkable(fieldBrother.x, fieldBrother.y), false, 'field brother blocks his scarecrow cell');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 50, y: 36 }), true, 'start reaches the field brother use tile');
+  const fieldTarget = resolveInteractionTargetAtCell({
+    cell: { x: fieldBrother.x, y: fieldBrother.y },
+    grid,
+    player: { position: { x: 50, y: 36 } },
+    actors: [],
+    enemies: [],
+    interactables: level.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(fieldTarget.type, 'object', 'field brother resolves as an object target');
+  assert.equal(fieldTarget.object.id, fieldBrother.id);
+  assert.equal(isTargetInReach({ position: { x: 50, y: 36 } }, fieldTarget), true, 'field brother is clickable from the wheat');
+
+  const stash = level.objects.find((object) => object.id === 'long-ash-holt-forest-stash');
+  assert.ok(stash, 'Holt forest stash is placed');
+  assert.equal(stash.kind, 'field-satchel');
+  assert.equal(stash.name, 'Old Holt Stash');
+  assert.equal(stash.x, 83);
+  assert.equal(stash.y, 31);
+  assert.equal(level.tiles[stash.y][stash.x], 'd', 'Holt stash sits on forest floor');
+  assert.equal(grid.isWalkable(stash.x, stash.y), true, 'Holt stash keeps its forest tile walkable');
+  assert.equal(pathExists(grid, level.spawns.player, { x: stash.x, y: stash.y }), true, 'start reaches the Holt stash');
+  assert.equal(stash.interact?.type, 'container');
+  assert.deepEqual(stash.interact?.loot, [
+    { item: 'ducat', count: 12 },
+    { item: 'road-warden-chit', count: 1 },
+    { item: 'tarnished-saint-token', count: 1 }
+  ]);
+  const stashTarget = resolveInteractionTargetAtCell({
+    cell: { x: stash.x, y: stash.y },
+    grid,
+    player: { position: { x: 83, y: 32 } },
+    actors: [],
+    enemies: [],
+    interactables: level.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(stashTarget.type, 'object', 'Holt stash resolves before movement on its walkable tile');
+  assert.equal(stashTarget.object.id, stash.id);
+  assert.equal(isTargetInReach({ position: { x: 83, y: 32 } }, stashTarget), true, 'Holt stash is reachable from an adjacent forest tile');
+
   const caveSprite = getSprite('infected-cave-entrance');
   assert.ok(caveSprite, 'infected-cave-entrance is registered');
   assert.equal(caveSprite.category, 'structure');
@@ -662,6 +791,9 @@ const farmExitDialogues = new Map([
     assert.equal(interior.tileSize, 64, `${spec.key} interior uses the standard tile size`);
     assert.ok(interior.quests.includes('investigate-ash-chapel-cult'), `${spec.key} interior keeps the Act I quest context`);
     assert.ok(interior.dialogue.includes(spec.exitDialogue), `${spec.key} interior lists its exit dialogue`);
+    assert.equal(interior.legend['#']?.kind, spec.wallKind, `${spec.key} interior uses its farm wall kind`);
+    assert.equal(interior.legend['.']?.floor, spec.floorStyle, `${spec.key} interior uses its farm floor style`);
+    assert.ok(getSprite(spec.wallKind), `${spec.wallKind} is registered for ${spec.key} interior`);
     assert.equal(interiorGrid.isWalkable(interior.spawns.player.x, interior.spawns.player.y), true, `${spec.key} spawn is walkable`);
 
     const exit = interior.objects.find((object) => object.kind === 'farm-door' && object.interact?.dialogue === spec.exitDialogue);
