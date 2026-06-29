@@ -2142,8 +2142,13 @@
       "kind": "road-sign-post",
       "x": 116,
       "y": 5,
+      "id": "long-ash-censure-camp-sign",
+      "name": "Censure Camp Sign",
       "seed": 4185626400,
-      "id": "road-sign-post-324"
+      "interact": {
+        "type": "note",
+        "log": "The board points toward the Censure road camp. Someone has rubbed ash over the office seal."
+      }
     },
     {
       "kind": "ash-tree",
@@ -8744,26 +8749,26 @@
       "x": 98,
       "y": 32,
       "seed": 630396095,
-      "id": "dead-host-wolf-spider-302",
       "name": "Dead Host Wolf",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead wolf lies among torn cult cloth and blackened blood."
-      }
+      },
+      "id": "dead-host-wolf-spider-302"
     },
     {
       "kind": "dead-cultist",
       "x": 103,
       "y": 32,
       "seed": 2808293798,
-      "id": "dead-cultist-299",
       "name": "Dead Cultist",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead cultist is torn open near the throat and cuff."
-      }
+      },
+      "id": "dead-cultist-299"
     },
     {
       "kind": "ash-tree",
@@ -8985,13 +8990,13 @@
       "x": 96,
       "y": 33,
       "seed": 2928589698,
-      "id": "dead-cultist-297",
       "name": "Dead Cultist",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead cultist is torn open near the throat and cuff."
-      }
+      },
+      "id": "dead-cultist-297"
     },
     {
       "kind": "blood-stain",
@@ -9005,13 +9010,13 @@
       "x": 105,
       "y": 33,
       "seed": 4168955673,
-      "id": "dead-host-wolf-ribsplit-304",
       "name": "Dead Host Wolf",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead wolf lies among torn cult cloth and blackened blood."
-      }
+      },
+      "id": "dead-host-wolf-ribsplit-304"
     },
     {
       "kind": "scrub-bush",
@@ -9280,13 +9285,13 @@
       "x": 101,
       "y": 34,
       "seed": 1147808626,
-      "id": "dead-cultist-301",
       "name": "Dead Cultist",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead cultist is torn open near the throat and cuff."
-      }
+      },
+      "id": "dead-cultist-301"
     },
     {
       "kind": "blood-stain",
@@ -9601,26 +9606,26 @@
       "x": 102,
       "y": 35,
       "seed": 1547877968,
-      "id": "dead-host-wolf-maw-303",
       "name": "Dead Host Wolf",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead wolf lies among torn cult cloth and blackened blood."
-      }
+      },
+      "id": "dead-host-wolf-maw-303"
     },
     {
       "kind": "dead-cultist",
       "x": 105,
       "y": 35,
       "seed": 3057741400,
-      "id": "dead-cultist-300",
       "name": "Dead Cultist",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead cultist is torn open near the throat and cuff."
-      }
+      },
+      "id": "dead-cultist-300"
     },
     {
       "kind": "fallen-ash-log",
@@ -9852,13 +9857,13 @@
       "x": 99,
       "y": 36,
       "seed": 1889298720,
-      "id": "dead-cultist-298",
       "name": "Dead Cultist",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-wolf-cultist-evidence",
         "log": "The dead cultist is torn open near the throat and cuff."
-      }
+      },
+      "id": "dead-cultist-298"
     },
     {
       "kind": "blood-stain",
@@ -12795,6 +12800,27 @@
       "id": "scrub-bush-1031"
     },
     {
+      "kind": "field-cart",
+      "x": 104,
+      "y": 50,
+      "id": "long-ash-stripped-cart",
+      "blocking": true,
+      "orient": "nw",
+      "name": "Stripped Cart",
+      "seed": 1377462221,
+      "interact": {
+        "type": "note",
+        "log": "The cart was dragged sideways and stripped clean. Red thread is caught on the left wheel."
+      }
+    },
+    {
+      "kind": "road-dust",
+      "x": 104,
+      "y": 50,
+      "id": "long-ash-stripped-cart-dust",
+      "seed": 614602406
+    },
+    {
       "kind": "fallen-ash-log",
       "x": 110,
       "y": 50,
@@ -13215,6 +13241,20 @@
       "id": "ash-tree-stump-857"
     },
     {
+      "kind": "rubble-decal",
+      "x": 105,
+      "y": 51,
+      "id": "long-ash-stripped-cart-rubble",
+      "seed": 634358085
+    },
+    {
+      "kind": "road-dust",
+      "x": 106,
+      "y": 51,
+      "id": "long-ash-cart-drag-dust",
+      "seed": 1316343858
+    },
+    {
       "kind": "graveyard-wall",
       "x": 126,
       "y": 51,
@@ -13387,6 +13427,28 @@
       "y": 52,
       "seed": 3964764792,
       "id": "road-dust-316"
+    },
+    {
+      "kind": "field-satchel",
+      "x": 107,
+      "y": 52,
+      "id": "long-ash-cart-satchel",
+      "name": "Cart Satchel",
+      "seed": 3751854065,
+      "interact": {
+        "type": "container",
+        "log": "A small satchel is tied under the cart bed. The cultists missed the knot.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 6
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      }
     },
     {
       "kind": "ash-tree",
@@ -14272,8 +14334,13 @@
       "kind": "road-sign-post",
       "x": 117,
       "y": 55,
+      "id": "long-ash-remnant-spur-sign",
+      "name": "Remnant Spur Sign",
       "seed": 2077292200,
-      "id": "road-sign-post-325"
+      "interact": {
+        "type": "note",
+        "log": "The old waypost points down the Remnant capital road. The bell nail is empty."
+      }
     },
     {
       "kind": "graveyard-wall",
@@ -16464,6 +16531,13 @@
       "id": "ash-tree-921"
     },
     {
+      "kind": "candle-cluster",
+      "x": 120,
+      "y": 62,
+      "id": "long-ash-old-bell-candles",
+      "seed": 3560509726
+    },
+    {
       "kind": "ash-tree",
       "x": 146,
       "y": 62,
@@ -16704,6 +16778,26 @@
       "id": "ash-tree-917"
     },
     {
+      "kind": "wax-stain",
+      "x": 120,
+      "y": 63,
+      "id": "long-ash-old-bell-wax",
+      "seed": 1565473302
+    },
+    {
+      "kind": "broken-bell",
+      "x": 121,
+      "y": 63,
+      "id": "long-ash-old-bell-marker",
+      "blocking": true,
+      "name": "Old Bell Marker",
+      "seed": 1161852753,
+      "interact": {
+        "type": "note",
+        "log": "The field bell has been split through the mouth. Someone took the clapper and scratched the road office mark from the yoke."
+      }
+    },
+    {
       "kind": "scrub-bush",
       "x": 122,
       "y": 63,
@@ -16894,6 +16988,20 @@
       "blocking": true,
       "seed": 4153453186,
       "id": "ash-tree-919"
+    },
+    {
+      "kind": "road-dust",
+      "x": 121,
+      "y": 64,
+      "id": "long-ash-old-bell-road-dust",
+      "seed": 2008718428
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 122,
+      "y": 64,
+      "id": "long-ash-old-bell-rubble",
+      "seed": 3681674081
     },
     {
       "kind": "scrub-bush",
@@ -17682,8 +17790,13 @@
       "kind": "road-sign-post",
       "x": 141,
       "y": 67,
+      "id": "long-ash-start-sign",
+      "name": "Ash Chapel Sign",
       "seed": 3468712950,
-      "id": "road-sign-post-326"
+      "interact": {
+        "type": "note",
+        "log": "The plank points back toward Ash Chapel. Fresh boot cuts in the dust all lead north."
+      }
     },
     {
       "kind": "scrub-bush",

@@ -18,6 +18,7 @@ const FARM_DOOR_DIALOGUES = [
   'long-ash-grain-shed-door',
   'long-ash-tool-shed-door',
   'long-ash-infected-cave-entrance',
+  'long-ash-wolf-cultist-evidence',
   'long-ash-crossroad-brother',
   'long-ash-field-brother'
 ];
@@ -752,10 +753,28 @@ function placeKillSite() {
   const cultists = [
     [96, 33], [99, 36], [103, 32], [105, 35], [101, 34]
   ];
-  for (const [x, y] of cultists) addObject('dead-cultist', x, y, { seed: hash(x, y, 71) });
-  addObject('dead-host-wolf-spider', 98, 32, { seed: hash(98, 32, 73) });
-  addObject('dead-host-wolf-maw', 102, 35, { seed: hash(102, 35, 73) });
-  addObject('dead-host-wolf-ribsplit', 105, 33, { seed: hash(105, 33, 73) });
+  const cultistEvidence = {
+    name: 'Dead Cultist',
+    interact: {
+      type: 'note',
+      dialogue: 'long-ash-wolf-cultist-evidence',
+      log: 'The dead cultist is torn open near the throat and cuff.'
+    }
+  };
+  const wolfEvidence = {
+    name: 'Dead Host Wolf',
+    interact: {
+      type: 'note',
+      dialogue: 'long-ash-wolf-cultist-evidence',
+      log: 'The dead wolf lies among torn cult cloth and blackened blood.'
+    }
+  };
+  for (const [x, y] of cultists) {
+    addObject('dead-cultist', x, y, { seed: hash(x, y, 71), ...cultistEvidence });
+  }
+  addObject('dead-host-wolf-spider', 98, 32, { seed: hash(98, 32, 73), ...wolfEvidence });
+  addObject('dead-host-wolf-maw', 102, 35, { seed: hash(102, 35, 73), ...wolfEvidence });
+  addObject('dead-host-wolf-ribsplit', 105, 33, { seed: hash(105, 33, 73), ...wolfEvidence });
   for (const [x, y] of [
     [96, 34], [98, 35], [100, 33], [102, 36], [104, 34], [106, 36], [99, 31]
   ]) {
@@ -820,9 +839,99 @@ function placeRoadDressing() {
   ]) {
   addObject('road-dust', x, y, { seed: hash(x, y, 83) });
   }
-  addObject('road-sign-post', 116, 5, { seed: hash(116, 5, 89) });
-  addObject('road-sign-post', 117, 55, { seed: hash(117, 55, 89) });
-  addObject('road-sign-post', 141, 67, { seed: hash(141, 67, 89) });
+  addObject('road-sign-post', 116, 5, {
+    id: 'long-ash-censure-camp-sign',
+    name: 'Censure Camp Sign',
+    seed: hash(116, 5, 89),
+    interact: {
+      type: 'note',
+      log: 'The board points toward the Censure road camp. Someone has rubbed ash over the office seal.'
+    }
+  });
+  addObject('road-sign-post', 117, 55, {
+    id: 'long-ash-remnant-spur-sign',
+    name: 'Remnant Spur Sign',
+    seed: hash(117, 55, 89),
+    interact: {
+      type: 'note',
+      log: 'The old waypost points down the Remnant capital road. The bell nail is empty.'
+    }
+  });
+  addObject('road-sign-post', 141, 67, {
+    id: 'long-ash-start-sign',
+    name: 'Ash Chapel Sign',
+    seed: hash(141, 67, 89),
+    interact: {
+      type: 'note',
+      log: 'The plank points back toward Ash Chapel. Fresh boot cuts in the dust all lead north.'
+    }
+  });
+}
+
+function placeRoadContentPass() {
+  addObject('broken-bell', 121, 63, {
+    id: 'long-ash-old-bell-marker',
+    blocking: true,
+    name: 'Old Bell Marker',
+    seed: hash(121, 63, 191),
+    interact: {
+      type: 'note',
+      log: 'The field bell has been split through the mouth. Someone took the clapper and scratched the road office mark from the yoke.'
+    }
+  });
+  addObject('candle-cluster', 120, 62, {
+    id: 'long-ash-old-bell-candles',
+    seed: hash(120, 62, 193)
+  });
+  addObject('wax-stain', 120, 63, {
+    id: 'long-ash-old-bell-wax',
+    seed: hash(120, 63, 195)
+  });
+  addObject('rubble-decal', 122, 64, {
+    id: 'long-ash-old-bell-rubble',
+    seed: hash(122, 64, 197)
+  });
+  addObject('road-dust', 121, 64, {
+    id: 'long-ash-old-bell-road-dust',
+    seed: hash(121, 64, 199)
+  });
+
+  addObject('field-cart', 104, 50, {
+    id: 'long-ash-stripped-cart',
+    blocking: true,
+    orient: 'nw',
+    name: 'Stripped Cart',
+    seed: hash(104, 50, 201),
+    interact: {
+      type: 'note',
+      log: 'The cart was dragged sideways and stripped clean. Red thread is caught on the left wheel.'
+    }
+  });
+  addObject('field-satchel', 107, 52, {
+    id: 'long-ash-cart-satchel',
+    name: 'Cart Satchel',
+    seed: hash(107, 52, 203),
+    interact: {
+      type: 'container',
+      log: 'A small satchel is tied under the cart bed. The cultists missed the knot.',
+      loot: [
+        { item: 'ducat', count: 6 },
+        { item: 'field-dressing', count: 1 }
+      ]
+    }
+  });
+  addObject('road-dust', 104, 50, {
+    id: 'long-ash-stripped-cart-dust',
+    seed: hash(104, 50, 205)
+  });
+  addObject('rubble-decal', 105, 51, {
+    id: 'long-ash-stripped-cart-rubble',
+    seed: hash(105, 51, 207)
+  });
+  addObject('road-dust', 106, 51, {
+    id: 'long-ash-cart-drag-dust',
+    seed: hash(106, 51, 209)
+  });
 }
 
 function placeCalcifiedBrothers() {
@@ -890,6 +999,7 @@ placeWheatModels();
 placeFarmMachinery();
 placeFarmVictims();
 placeInfectedCave();
+placeRoadContentPass();
 
 objects.sort((a, b) => (a.y - b.y) || (a.x - b.x) || a.kind.localeCompare(b.kind));
 
