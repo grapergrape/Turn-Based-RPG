@@ -253,6 +253,7 @@ const farmExitDialogues = new Map([
 {
   const spawn = level.spawns.player;
   assert.deepEqual(spawn, { actor: 'mara-vey', x: 142, y: 68 });
+  assert.equal(level.spawns.npcs.length, 0, 'Long Ash Road keeps the Holt brothers as object-based NPC presence only');
   assert.equal(grid.isWalkable(spawn.x, spawn.y), true);
   assert.equal(pathExists(grid, spawn, { x: 113, y: 32 }), true, 'start reaches the forest crossroad use tile');
   assert.equal(pathExists(grid, spawn, { x: 116, y: 4 }), true, 'start reaches the north road edge');
@@ -741,6 +742,21 @@ const farmExitDialogues = new Map([
   assert.deepEqual(ringMethod.success?.inventory?.add, [{ item: 'mourning-ring', count: 1 }]);
   assert.ok(level.objects.some((object) => object.kind === 'dead-cultist' && inRange(object, killRange)));
   assert.ok(level.objects.some((object) => object.kind.startsWith('dead-host-wolf-') && inRange(object, killRange)));
+  const killSiteEvidence = level.objects.filter((object) =>
+    inRange(object, killRange) &&
+    (object.kind === 'dead-cultist' || object.kind.startsWith('dead-host-wolf-'))
+  );
+  assert.equal(killSiteEvidence.length, 8, 'kill site keeps five cultists and three dead Host wolves');
+  assert.equal(
+    killSiteEvidence.every((object) =>
+      object.interact?.type === 'note' &&
+      object.interact?.dialogue === 'long-ash-wolf-cultist-evidence' &&
+      typeof object.interact?.log === 'string' &&
+      object.interact.log.trim() !== ''
+    ),
+    true,
+    'kill site bodies stay inspectable after regenerating the road'
+  );
 
   const crossroadSprite = getSprite('calcified-crossroad-brother');
   assert.ok(crossroadSprite, 'calcified-crossroad-brother is registered');
@@ -827,6 +843,149 @@ const farmExitDialogues = new Map([
   assert.equal(stashTarget.type, 'object', 'Holt stash resolves before movement on its walkable tile');
   assert.equal(stashTarget.object.id, stash.id);
   assert.equal(isTargetInReach({ position: { x: 83, y: 32 } }, stashTarget), true, 'Holt stash is reachable from an adjacent forest tile');
+
+  const expectedRoadSigns = [
+    {
+      id: 'long-ash-start-sign',
+      name: 'Ash Chapel Sign',
+      x: 141,
+      y: 67,
+      use: { x: 142, y: 68 },
+      log: 'The plank points back toward Ash Chapel. Fresh boot cuts in the dust all lead north.'
+    },
+    {
+      id: 'long-ash-remnant-spur-sign',
+      name: 'Remnant Spur Sign',
+      x: 117,
+      y: 55,
+      use: { x: 117, y: 56 },
+      log: 'The old waypost points down the Remnant capital road. The bell nail is empty.'
+    },
+    {
+      id: 'long-ash-censure-camp-sign',
+      name: 'Censure Camp Sign',
+      x: 116,
+      y: 5,
+      use: { x: 116, y: 6 },
+      log: 'The board points toward the Censure road camp. Someone has rubbed ash over the office seal.'
+    }
+  ];
+  const roadSignSprite = getSprite('road-sign-post');
+  assert.ok(roadSignSprite, 'road-sign-post is registered');
+  assert.equal(roadSignSprite.category, 'structure');
+  for (const expected of expectedRoadSigns) {
+    const sign = level.objects.find((object) => object.id === expected.id);
+    assert.ok(sign, `${expected.id} is placed`);
+    assert.equal(sign.kind, 'road-sign-post');
+    assert.equal(sign.name, expected.name);
+    assert.equal(sign.x, expected.x);
+    assert.equal(sign.y, expected.y);
+    assert.equal(sign.blocking, undefined, `${expected.id} stays non-blocking on the road`);
+    assert.equal(sign.interact?.type, 'note');
+    assert.equal(sign.interact?.log, expected.log);
+    assert.equal(level.tiles[sign.y][sign.x], 'r', `${expected.id} sits on the ash road`);
+    assert.equal(grid.isWalkable(expected.use.x, expected.use.y), true, `${expected.id} has a walkable use tile`);
+    const signTarget = resolveInteractionTargetAtCell({
+      cell: { x: sign.x, y: sign.y },
+      grid,
+      player: { position: expected.use },
+      actors: [],
+      enemies: [],
+      interactables: level.objects.filter((object) => object.interact),
+      mode: 'explore'
+    });
+    assert.equal(signTarget.type, 'object', `${expected.id} resolves as an object target`);
+    assert.equal(signTarget.object.id, sign.id);
+    assert.equal(isTargetInReach({ position: expected.use }, signTarget), true, `${expected.id} is inspectable from its road tile`);
+  }
+
+  for (const kind of ['broken-bell', 'candle-cluster', 'wax-stain', 'rubble-decal']) {
+    assert.ok(getSprite(kind), `${kind} is registered for the old bell marker scene`);
+  }
+  const oldBell = level.objects.find((object) => object.id === 'long-ash-old-bell-marker');
+  assert.ok(oldBell, 'old bell marker is placed');
+  assert.equal(oldBell.kind, 'broken-bell');
+  assert.equal(oldBell.name, 'Old Bell Marker');
+  assert.equal(oldBell.x, 121);
+  assert.equal(oldBell.y, 63);
+  assert.equal(oldBell.blocking, true);
+  assert.equal(oldBell.interact?.type, 'note');
+  assert.equal(
+    oldBell.interact?.log,
+    'The field bell has been split through the mouth. Someone took the clapper and scratched the road office mark from the yoke.'
+  );
+  assert.equal(level.tiles[oldBell.y][oldBell.x], 's', 'old bell marker sits on the road shoulder');
+  assert.equal(grid.isWalkable(oldBell.x, oldBell.y), false, 'old bell marker blocks only its occupied tile');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 121, y: 62 }), true, 'start reaches the old bell marker use tile');
+  const oldBellTarget = resolveInteractionTargetAtCell({
+    cell: { x: oldBell.x, y: oldBell.y },
+    grid,
+    player: { position: { x: 121, y: 62 } },
+    actors: [],
+    enemies: [],
+    interactables: level.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(oldBellTarget.type, 'object', 'old bell marker resolves as an object target');
+  assert.equal(oldBellTarget.object.id, oldBell.id);
+  assert.equal(isTargetInReach({ position: { x: 121, y: 62 } }, oldBellTarget), true, 'old bell marker is inspectable from the road');
+  for (const id of ['long-ash-old-bell-candles', 'long-ash-old-bell-wax', 'long-ash-old-bell-rubble']) {
+    assert.ok(level.objects.some((object) => object.id === id), `${id} dresses the old bell marker`);
+  }
+
+  const strippedCart = level.objects.find((object) => object.id === 'long-ash-stripped-cart');
+  assert.ok(strippedCart, 'stripped cart is placed');
+  assert.equal(strippedCart.kind, 'field-cart');
+  assert.equal(strippedCart.name, 'Stripped Cart');
+  assert.equal(strippedCart.x, 104);
+  assert.equal(strippedCart.y, 50);
+  assert.equal(strippedCart.orient, 'nw');
+  assert.equal(strippedCart.blocking, true);
+  assert.equal(strippedCart.interact?.type, 'note');
+  assert.equal(strippedCart.interact?.log, 'The cart was dragged sideways and stripped clean. Red thread is caught on the left wheel.');
+  assert.equal(level.tiles[strippedCart.y][strippedCart.x], 'r', 'stripped cart sits on the ash road');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 104, y: 51 }), true, 'start reaches the stripped cart use tile');
+  const cartTarget = resolveInteractionTargetAtCell({
+    cell: { x: strippedCart.x, y: strippedCart.y },
+    grid,
+    player: { position: { x: 104, y: 51 } },
+    actors: [],
+    enemies: [],
+    interactables: level.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(cartTarget.type, 'object', 'stripped cart resolves as an object target');
+  assert.equal(cartTarget.object.id, strippedCart.id);
+  assert.equal(isTargetInReach({ position: { x: 104, y: 51 } }, cartTarget), true, 'stripped cart is inspectable from the road');
+
+  const cartSatchel = level.objects.find((object) => object.id === 'long-ash-cart-satchel');
+  assert.ok(cartSatchel, 'cart satchel is placed');
+  assert.equal(cartSatchel.kind, 'field-satchel');
+  assert.equal(cartSatchel.name, 'Cart Satchel');
+  assert.equal(cartSatchel.x, 107);
+  assert.equal(cartSatchel.y, 52);
+  assert.equal(cartSatchel.interact?.type, 'container');
+  assert.equal(cartSatchel.interact?.log, 'A small satchel is tied under the cart bed. The cultists missed the knot.');
+  assert.deepEqual(cartSatchel.interact?.loot, [
+    { item: 'ducat', count: 6 },
+    { item: 'field-dressing', count: 1 }
+  ]);
+  assert.equal(pathExists(grid, level.spawns.player, { x: cartSatchel.x, y: cartSatchel.y }), true, 'start reaches the cart satchel');
+  const cartSatchelTarget = resolveInteractionTargetAtCell({
+    cell: { x: cartSatchel.x, y: cartSatchel.y },
+    grid,
+    player: { position: { x: 107, y: 53 } },
+    actors: [],
+    enemies: [],
+    interactables: level.objects.filter((object) => object.interact),
+    mode: 'explore'
+  });
+  assert.equal(cartSatchelTarget.type, 'object', 'cart satchel resolves before movement on its walkable tile');
+  assert.equal(cartSatchelTarget.object.id, cartSatchel.id);
+  assert.equal(isTargetInReach({ position: { x: 107, y: 53 } }, cartSatchelTarget), true, 'cart satchel is reachable from an adjacent road tile');
+  for (const id of ['long-ash-stripped-cart-dust', 'long-ash-stripped-cart-rubble', 'long-ash-cart-drag-dust']) {
+    assert.ok(level.objects.some((object) => object.id === id), `${id} dresses the stripped cart scene`);
+  }
 
   const caveSprite = getSprite('infected-cave-entrance');
   assert.ok(caveSprite, 'infected-cave-entrance is registered');
