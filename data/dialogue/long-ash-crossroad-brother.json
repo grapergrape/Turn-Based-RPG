@@ -343,7 +343,7 @@
       ],
       "choices": [
         {
-          "label": "Is Edrin Stage IV?",
+          "label": "Call it Stage III",
           "next": "edrin-stage"
         },
         {
@@ -381,9 +381,10 @@
     },
     "edrin-stage": {
       "lines": [
-        "\"Stage IV? No. If Edrin had opened that far, he would not be arguing tax law with crows.\"",
-        "\"Stage IV means the Host is driving. Sometimes it wears hunger. Sometimes it wears prayer.\"",
-        "\"Edrin is Stage III. Changed and trapped, but still Edrin. The rest is a century of talking to birds.\""
+        "You give the Censure read aloud: speech intact, no Host drive in the voice. Stage III.",
+        "\"Is that the merciful number?\" Garron asks.",
+        "You say it is the number that means Edrin is still Edrin.",
+        "\"Then hurry before the Choir teaches him a holier one.\""
       ],
       "choices": [
         {
