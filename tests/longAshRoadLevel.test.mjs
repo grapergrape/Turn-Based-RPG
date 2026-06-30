@@ -453,6 +453,26 @@ const farmExitDialogues = new Map([
     true,
     'Garron offers a visible farm prompt before naming Edrin'
   );
+  assert.equal(
+    crossroadBrotherDialogue.nodes.task.choices.some((choice) => choice.label === 'Call it Stage III'),
+    true,
+    'Mara can frame Edrin through a Censure infection-stage read'
+  );
+  assert.equal(
+    crossroadBrotherDialogue.nodes.task.choices.some((choice) => choice.label === 'Is Edrin Stage IV?'),
+    false,
+    'Garron no longer receives a glossary-style Stage IV prompt'
+  );
+  assert.equal(
+    crossroadBrotherDialogue.nodes['edrin-stage'].lines.some((line) => line.includes('Censure read')),
+    true,
+    'infection-stage language is carried by Mara field assessment'
+  );
+  assert.equal(
+    crossroadBrotherDialogue.nodes['edrin-stage'].lines.some((line) => line.includes('Stage IV means')),
+    false,
+    'Garron does not explain infection stages like a system glossary'
+  );
   assert.deepEqual(
     visibleChoiceLabels(crossroadBrotherDialogue.nodes['paid-check'], {
       flags: new Set(['long-ash-crossroad-brother-paid'])
