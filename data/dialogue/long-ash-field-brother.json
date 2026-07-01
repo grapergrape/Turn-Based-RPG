@@ -149,7 +149,7 @@
       },
       "else": "first",
       "lines": [
-        "\"Have you checked the family? I would go, but the wheat has promoted me to permanent staff.\"",
+        "\"Have you checked the Holt house? I would go, but the wheat has promoted me to permanent staff.\"",
         "\"If they are angry, say I kept watch. I still know the sound of their door.\""
       ],
       "choices": [
@@ -178,7 +178,7 @@
       "else": "first-mentioned",
       "lines": [
         "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
-        "\"Hail, traveler. Edrin Holt, field hand. The family put me here to scare birds off Holt grain.\"",
+        "\"Hail, traveler. Edrin Holt, field hand. The first Holts after the Stilling put me here to scare birds off Holt grain.\"",
         "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
         "\"If Garron sent you, tell him I am nearly royal.\""
       ],
@@ -236,7 +236,7 @@
       "else": "first-unknown",
       "lines": [
         "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
-        "\"Hail, traveler. Edrin Holt, field hand. The family put me here to scare birds off Holt grain.\"",
+        "\"Hail, traveler. Edrin Holt, field hand. The first Holts after the Stilling put me here to scare birds off Holt grain.\"",
         "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
         "\"If Garron sent you, tell him I am nearly royal.\""
       ],
@@ -286,7 +286,7 @@
     "first-unknown": {
       "lines": [
         "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
-        "\"Hail, traveler. Edrin Holt, field hand. The family put me here to scare birds off Holt grain.\"",
+        "\"Hail, traveler. Edrin Holt, field hand. The first Holts after the Stilling put me here to scare birds off Holt grain.\"",
         "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
         "\"If Garron sent you, tell him I am nearly royal.\""
       ],
@@ -359,9 +359,9 @@
     },
     "field": {
       "lines": [
-        "\"The family put me here after the Stilling. Practical people. They had grain and crows. They had one brother who could no longer run from work.\"",
-        "\"That was the work: keep the birds off Holt wheat, even if I had to yell all afternoon.\"",
-        "\"I was angry for the first thirty years. Then the youngest started bringing soup in a cup tied to a pole, and the field stopped feeling empty.\""
+        "\"The first Holts after the Stilling lashed me here. Practical people. They had grain, crows, and one great-granduncle who could no longer run from work.\"",
+        "\"That became the custom: keep the birds off Holt wheat, take the cup on a pole, wear the winter blanket, shout when wings came down.\"",
+        "\"I hated them for thirty years. Then their children started calling me Uncle Edrin, and hate had to share the field.\""
       ],
       "choices": [
         {
@@ -455,7 +455,7 @@
     },
     "family-task": {
       "lines": [
-        "\"The family that set me here lives by the yard. They were not gentle, but they were mine after a fashion.\"",
+        "\"The Holt house by the yard is mine by blood and habit. They did not start this cruelty. They learned to live around it.\"",
         "\"The Choir said they would speak to them about disrespect. I hope that means stern words and not knives. Please check.\""
       ],
       "choices": [

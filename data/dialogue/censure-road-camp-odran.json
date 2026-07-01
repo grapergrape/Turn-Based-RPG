@@ -239,7 +239,7 @@
       "conditions": {
         "flag": "long-ash-field-brother-mocked"
       },
-      "else": "road-family-lie",
+      "else": "road-holt-house-known",
       "lines": [
         "\"You mocked Edrin Holt in the wheat.\"",
         "\"He called himself royalty? That is evidence for mercy, not permission.\""
@@ -247,6 +247,24 @@
       "choices": [
         {
           "label": "Confess the mockery",
+          "next": "road-holt-house-known"
+        }
+      ]
+    },
+    "road-holt-house-known": {
+      "conditions": {
+        "questStages": {
+          "calcified-brothers": "complete"
+        }
+      },
+      "else": "road-family-lie",
+      "lines": [
+        "\"The Holt house kept two calcified great-granduncles as tools until custom learned to call itself care.\"",
+        "\"Then the Choir found the habit and called it an altar.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess the Holt house",
           "next": "road-family-lie"
         }
       ]

@@ -5,7 +5,7 @@
   "objectives": [
     { "text": "Speak with the calcified sign at the crossroads.", "stage": "find-crossroad-brother" },
     { "text": "Find Edrin Holt in the wheat fields.", "stage": "find-field-brother" },
-    { "text": "Check the farm family for Edrin.", "stage": "check-farm-family" },
+    { "text": "Check the Holt house for Edrin.", "stage": "check-farm-family" },
     { "text": "Return to Edrin with what you found.", "stage": "family-known" }
   ],
   "stages": [
@@ -21,15 +21,15 @@
     },
     {
       "id": "check-farm-family",
-      "task": "Check the farm family",
+      "task": "Check the Holt house",
       "xp": 20,
-      "description": "Edrin Holt still cares for the family that tied him into the wheat. Find out what happened to them."
+      "description": "Edrin Holt still cares for the descendants who kept him in the wheat. Find out what happened to the house."
     },
     {
       "id": "family-known",
       "task": "Return to Edrin",
       "xp": 25,
-      "description": "The farm family has been raised on crosses in the yard. Edrin is waiting for your answer."
+      "description": "The current Holt family has been raised on crosses in the yard. Edrin is waiting for your answer."
     },
     {
       "id": "complete",

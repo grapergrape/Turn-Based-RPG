@@ -4,13 +4,22 @@
   "nodes": {
     "start": {
       "lines": [
-        "A man is hammered to a chapel cross behind the altar, lit cold and grey by the tall windows broken into the wall behind him. They show no sky, no day, no moon. Only a flat, sourceless light pours through, and their lead came is shaped into inverted crosses.",
-        "He is not only a man anymore, but he is still, unmistakably, a man: opened up rather than replaced, no bigger than you are. His ribcage has been cracked down the middle and spread wide like two wings of bone, the cavity behind it wet and working. Thin tendrils have grown out of the opening, and a second mouth, ringed in bone teeth, has torn itself into his belly. His head has gone all the way over into a goat's skull, one horn curling, the other snapped. Black-gold runs in thin lines beneath what skin is left, no flood of it, just lit wire under the surface. The cult has been slicing the closed flesh from his ribs and arms, and it keeps growing back for them to cut again.",
-        "Scraps of a settlement guard's coat are still belted to him. Same patched black wool as the dead at the intake. They did not bring him here from the road. He held this place before they made him its warning.",
-        "His head turns the little the spikes allow. He looks down the length of the cross at you and whispers the same words, over and over: \"Looking down the cross... speak no evil...\"",
-        "End him, or leave him to whatever the cult intends. Either choice will travel with you. This road has a way of handing old decisions back."
+        "A man is hammered to the chapel cross behind the altar. Cold window light pins him in place.",
+        "He is still the size of a man. That is the part your eye keeps returning to."
       ],
       "choices": [
+        {
+          "label": "Study the opened body",
+          "next": "study-body"
+        },
+        {
+          "label": "Check the coat",
+          "next": "check-coat"
+        },
+        {
+          "label": "Listen to him",
+          "next": "listen"
+        },
         {
           "label": "Leave him to the cult",
           "effects": {
@@ -29,16 +38,114 @@
         }
       ]
     },
+    "study-body": {
+      "lines": [
+        "The ribs have been split down the breastbone and spread into two bone wings. A wet cavity works behind them, slow as a lung.",
+        "Thin tendrils have rooted in the cut places. A second mouth has torn through the belly, ringed with bone teeth.",
+        "The head has gone over into a goat skull, one horn curled, one horn snapped. Black-gold lines sit under the skin like wire. Nothing spills free."
+      ],
+      "choices": [
+        {
+          "label": "Check the coat",
+          "next": "check-coat"
+        },
+        {
+          "label": "Listen to him",
+          "next": "listen"
+        },
+        {
+          "label": "Leave him to the cult",
+          "effects": {
+            "log": "You step back and leave him on the cross. His whisper follows you across the stone."
+          },
+          "next": "leave"
+        },
+        {
+          "label": "Cut him down",
+          "effects": {
+            "setFlag": "nave-cross-martyr-ended",
+            "kill": "nave-cross-martyr",
+            "log": "You cut him loose. The body tears off the spikes and drops to the stone. The whispering stops."
+          },
+          "next": "cut"
+        }
+      ]
+    },
+    "check-coat": {
+      "lines": [
+        "Scraps of a settlement guard's coat are still belted to him. The patched black wool matches the dead at the intake.",
+        "The cult did not haul him from the road. He held this house before they made him its warning."
+      ],
+      "choices": [
+        {
+          "label": "Study the opened body",
+          "next": "study-body"
+        },
+        {
+          "label": "Listen to him",
+          "next": "listen"
+        },
+        {
+          "label": "Leave him to the cult",
+          "effects": {
+            "log": "You step back and leave him on the cross. His whisper follows you across the stone."
+          },
+          "next": "leave"
+        },
+        {
+          "label": "Cut him down",
+          "effects": {
+            "setFlag": "nave-cross-martyr-ended",
+            "kill": "nave-cross-martyr",
+            "log": "You cut him loose. The body tears off the spikes and drops to the stone. The whispering stops."
+          },
+          "next": "cut"
+        }
+      ]
+    },
+    "listen": {
+      "lines": [
+        "His head turns as far as the spikes allow.",
+        "\"Looking down the cross,\" he whispers. \"Speak no evil.\"",
+        "He says it again, softer. The words are the last rule he can still keep."
+      ],
+      "choices": [
+        {
+          "label": "Study the opened body",
+          "next": "study-body"
+        },
+        {
+          "label": "Check the coat",
+          "next": "check-coat"
+        },
+        {
+          "label": "Leave him to the cult",
+          "effects": {
+            "log": "You step back and leave him on the cross. His whisper follows you across the stone."
+          },
+          "next": "leave"
+        },
+        {
+          "label": "Cut him down",
+          "effects": {
+            "setFlag": "nave-cross-martyr-ended",
+            "kill": "nave-cross-martyr",
+            "log": "You cut him loose. The body tears off the spikes and drops to the stone. The whispering stops."
+          },
+          "next": "cut"
+        }
+      ]
+    },
     "cut": {
       "lines": [
-        "The halo guts out to dead bone as the body tears free of the spikes. It slides off the cross and drops to the floor, and lies there at last only a body.",
-        "Mercy, or evidence burned, or one less saint for the cult to finish: you will not know which you chose until later. On this road, you rarely do."
+        "The body tears free of the spikes. It hits the stone badly, then lies still.",
+        "Mercy, evidence destroyed, one less saint for the cult to finish. Censure will name it later. The man cannot."
       ]
     },
     "leave": {
       "lines": [
-        "You leave him hung and half-living, still growing, still being cut from, still whispering down the length of the cross.",
-        "Perhaps the Compact would pay to take him alive. Perhaps the Remnant would burn the whole chapel for less. Either way, he is still here when you turn your back, and he will still be here when someone else comes."
+        "You leave him hung and half-living. The ribs keep working. The mouth in his belly keeps tasting the chapel air.",
+        "Perhaps the Compact would pay to take him alive. Perhaps the Remnant would burn the whole chapel for less. He is still whispering when you turn away."
       ]
     }
   }
