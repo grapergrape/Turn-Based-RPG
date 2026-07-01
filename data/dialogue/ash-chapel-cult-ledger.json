@@ -4,14 +4,130 @@
   "nodes": {
     "start": {
       "lines": [
-        "The ledger is written as lessons, not confession, in a careful teaching hand. At the head of the first page, underlined twice: THE CHOIR OF THE OPEN WOUND. You have broken cults the length of the ash roads, and you have never once seen that name. That unsettles you more than the lessons do.",
-        "Lesson one: a body that stays whole is only a locked chapel. Open it, and the door is always the same door. They do not call this infection. They call it confession, and they name the opened ones icons, not monsters.",
-        "Lesson two: feed the opened flesh of the saint to the closed-flesh living, and the living open faster. Cut slow. Let the saint grow back between meals.",
-        "A later hand keeps stock below the lessons: 'Two guards dead at intake. Two guards good for opening: one crossed in the nave, one held below for after. Women and children moved before dawn. Keep the chapel quiet until the wall road closes.' A narrower sheet is pinned behind it, titled GATE MOTHER'S ROAD ORDER: 'The Hallowfen wall has stopped answering its tower bells. Carry witness before the checkpoints are sealed.'"
+        "The ledger is written as lessons, not confession, in a careful teaching hand.",
+        "At the head of the first page: THE CHOIR OF THE OPEN WOUND. You have broken cults along the ash roads and never seen that name."
       ],
       "effects": {
         "setFlag": "ash-chapel-choir-named"
-      }
+      },
+      "choices": [
+        {
+          "label": "Read the first lesson",
+          "next": "first-lesson"
+        },
+        {
+          "label": "Read the feeding lesson",
+          "next": "feeding-lesson"
+        },
+        {
+          "label": "Check the stock sheet",
+          "next": "stock-sheet"
+        },
+        {
+          "label": "Read the road order",
+          "next": "road-order"
+        },
+        {
+          "label": "Close the ledger",
+          "close": true
+        }
+      ]
+    },
+    "first-lesson": {
+      "lines": [
+        "Lesson one calls the body a locked chapel.",
+        "Open it, the hand writes, and the same door waits inside every rib. They call the opened ones icons, not monsters."
+      ],
+      "choices": [
+        {
+          "label": "Read the feeding lesson",
+          "next": "feeding-lesson"
+        },
+        {
+          "label": "Check the stock sheet",
+          "next": "stock-sheet"
+        },
+        {
+          "label": "Read the road order",
+          "next": "road-order"
+        },
+        {
+          "label": "Close the ledger",
+          "close": true
+        }
+      ]
+    },
+    "feeding-lesson": {
+      "lines": [
+        "Lesson two is a butcher's instruction.",
+        "Cut the saint slowly. Feed the opened flesh to the closed flesh. Let the wound grow back before the next meal."
+      ],
+      "choices": [
+        {
+          "label": "Read the first lesson",
+          "next": "first-lesson"
+        },
+        {
+          "label": "Check the stock sheet",
+          "next": "stock-sheet"
+        },
+        {
+          "label": "Read the road order",
+          "next": "road-order"
+        },
+        {
+          "label": "Close the ledger",
+          "close": true
+        }
+      ]
+    },
+    "stock-sheet": {
+      "lines": [
+        "A later hand keeps stock below the lessons: two guards dead at intake, two guards good for opening.",
+        "One is crossed in the nave. One is held below for after. Women and children were moved before dawn."
+      ],
+      "choices": [
+        {
+          "label": "Read the first lesson",
+          "next": "first-lesson"
+        },
+        {
+          "label": "Read the feeding lesson",
+          "next": "feeding-lesson"
+        },
+        {
+          "label": "Read the road order",
+          "next": "road-order"
+        },
+        {
+          "label": "Close the ledger",
+          "close": true
+        }
+      ]
+    },
+    "road-order": {
+      "lines": [
+        "A narrow sheet is pinned behind the ledger under a different hand: GATE MOTHER'S ROAD ORDER.",
+        "The Hallowfen wall has stopped answering tower bells. Carry witness before the checkpoints are sealed."
+      ],
+      "choices": [
+        {
+          "label": "Read the first lesson",
+          "next": "first-lesson"
+        },
+        {
+          "label": "Read the feeding lesson",
+          "next": "feeding-lesson"
+        },
+        {
+          "label": "Check the stock sheet",
+          "next": "stock-sheet"
+        },
+        {
+          "label": "Close the ledger",
+          "close": true
+        }
+      ]
     }
   }
 }

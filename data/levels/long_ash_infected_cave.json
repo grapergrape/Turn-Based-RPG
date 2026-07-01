@@ -17,7 +17,8 @@
     "calcified-brothers"
   ],
   "dialogue": [
-    "long-ash-infected-cave-exit"
+    "long-ash-infected-cave-exit",
+    "long-ash-infected-cave-censure-tag"
   ],
   "mood": {
     "floorShade": "#050505",
@@ -146,6 +147,36 @@
       "seed": 6111
     },
     {
+      "kind": "host-vein-seam",
+      "x": 11,
+      "y": 13,
+      "seed": 6121
+    },
+    {
+      "kind": "host-vein-seam",
+      "x": 15,
+      "y": 10,
+      "seed": 6123
+    },
+    {
+      "kind": "host-vein-seam",
+      "x": 9,
+      "y": 5,
+      "seed": 6125
+    },
+    {
+      "kind": "host-wolf-remains",
+      "x": 13,
+      "y": 9,
+      "seed": 6127
+    },
+    {
+      "kind": "host-wolf-remains",
+      "x": 9,
+      "y": 13,
+      "seed": 6129
+    },
+    {
       "kind": "blood-stain",
       "x": 11,
       "y": 14,
@@ -160,7 +191,8 @@
       "name": "Censure Tag",
       "interact": {
         "type": "note",
-        "log": "A Censure tag is pinned under a stone chip: do not skin the wolves. Burn the teeth. If the gums shine gold, burn the knife too."
+        "dialogue": "long-ash-infected-cave-censure-tag",
+        "log": "A Censure field tag is pinned under a stone chip. Burn the teeth."
       }
     },
     {

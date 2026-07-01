@@ -456,6 +456,98 @@ function drawDeadWolfSkull(ctx, hx, hy, flip, opts = {}) {
   }
 }
 
+export function drawHostVeinSeam(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 701, seed * 13 + 19));
+  const branchCount = 4 + (seed % 3);
+  const rootX = cx - 16 + Math.floor(rng() * 9);
+  const rootY = cy + Math.floor(rng() * 5) - 2;
+
+  for (let branch = 0; branch < branchCount; branch += 1) {
+    const dir = branch % 2 === 0 ? 1 : -1;
+    let x = rootX + Math.floor(rng() * 14);
+    let y = rootY + Math.floor(rng() * 5) - 2;
+    const segments = 3 + Math.floor(rng() * 3);
+    for (let step = 0; step < segments; step += 1) {
+      const nx = x + dir * (8 + Math.floor(rng() * 9)) + Math.floor(rng() * 5) - 2;
+      const ny = y - 5 + Math.floor(rng() * 12);
+      linePx(ctx, x, y, nx, ny, PALETTE.void, 2);
+      linePx(ctx, x, y, nx, ny, PALETTE.hostBlack, 1);
+      if ((step + branch) % 2 === 0) {
+        const midX = Math.round((x + nx) / 2);
+        const midY = Math.round((y + ny) / 2);
+        const glintX = Math.round(x + (nx - x) * 0.62);
+        const glintY = Math.round(y + (ny - y) * 0.62);
+        linePx(ctx, midX, midY, glintX, glintY, PALETTE.hostGold, 1);
+        px(ctx, midX, midY, PALETTE.hostGold, 1, 1);
+      }
+      x = nx;
+      y = ny;
+    }
+  }
+
+  for (let speck = 0; speck < 9; speck += 1) {
+    const x = cx - 22 + Math.floor(rng() * 45);
+    const y = cy - 8 + Math.floor(rng() * 17);
+    px(ctx, x, y, speck % 3 === 0 ? PALETTE.hostGold : PALETTE.hostBlack, 1, 1);
+  }
+}
+
+export function drawHostWolfRemains(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 733, seed * 17 + 29));
+  const flip = (seed & 1) ? 1 : -1;
+  drawShadowBlob(ctx, cx, cy + 5, 48, 17);
+  ctx.save();
+  ctx.globalAlpha = 0.82;
+  drawIsoDiamond(ctx, cx + flip * 2, cy + 5, 41, 16, PALETTE.rustDark);
+  ctx.restore();
+  drawNoisePixels(ctx, cx - 24, cy - 9, 49, 21, [PALETTE.hostBlack, PALETTE.rustDark, PALETTE.hostRed], 0.08, seed);
+
+  for (let row = 0; row < 10; row += 1) {
+    const core = row < 5 ? row : 9 - row;
+    const w = 19 + core * 5;
+    const x = cx - Math.floor(w / 2) - flip * 5 + (row > 6 ? flip * 3 : 0);
+    const y = cy - 11 + row;
+    const tone = row < 3 ? PALETTE.stoneMid : row < 7 ? PALETTE.hostBlack : PALETTE.void;
+    px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y, tone, w, 1);
+    if (row < 4) px(ctx, x + 2, y, PALETTE.stoneDust, 3, 1);
+    if (row === 5 || row === 7) px(ctx, x + 7, y, PALETTE.hostGold, Math.max(2, w - 16), 1);
+  }
+
+  const chestX = cx - flip * 4;
+  const chestY = cy - 9;
+  px(ctx, chestX - 7, chestY - 1, PALETTE.void, 15, 8);
+  px(ctx, chestX - 5, chestY, PALETTE.hostBlack, 11, 6);
+  for (let rib = 0; rib < 5; rib += 1) {
+    linePx(ctx, chestX - 1, chestY + rib * 2, chestX - flip * (12 + rib), chestY - 6 + rib, PALETTE.outline, 2);
+    linePx(ctx, chestX - 1, chestY + rib * 2, chestX - flip * (11 + rib), chestY - 6 + rib, rib % 2 ? PALETTE.stoneDust : PALETTE.hostBone, 1);
+  }
+  px(ctx, chestX + flip * 2, chestY - 1, PALETTE.hostGold, 1, 9);
+
+  const headX = cx + flip * 17;
+  const headY = cy - 15;
+  drawDeadWolfSkull(ctx, headX, headY, flip, { openJaw: true, halo: true });
+
+  for (let chip = 0; chip < 6; chip += 1) {
+    const chipX = cx - 18 + Math.floor(rng() * 36);
+    const chipY = cy - 2 + Math.floor(rng() * 16);
+    px(ctx, chipX, chipY, chip % 2 ? PALETTE.stoneDust : PALETTE.hostBone, chip % 3 === 0 ? 2 : 1, 1);
+  }
+
+  for (let i = 0; i < 3; i += 1) {
+    const baseX = chestX - flip * (4 + i * 3);
+    const baseY = chestY + 5 + i;
+    const tipX = baseX - flip * (11 + Math.floor(rng() * 8));
+    const tipY = cy + 8 + Math.floor(rng() * 6);
+    linePx(ctx, baseX, baseY, tipX, tipY, i % 2 ? PALETTE.hostRed : PALETTE.hostBlack, 1);
+    px(ctx, tipX, tipY, PALETTE.hostGold, 1, 1);
+  }
+
+  linePx(ctx, cx - flip * 7, cy - 5, cx - flip * 21, cy + 7, PALETTE.outline, 3);
+  linePx(ctx, cx - flip * 7, cy - 5, cx - flip * 21, cy + 7, PALETTE.stoneDark, 1);
+  px(ctx, cx - flip * 22, cy + 7, PALETTE.hostBone, 3, 1);
+}
+
 export function drawDeadHostWolfSpider(ctx, cx, cy, seed) {
   const { flip, rng, headX, headY } = wolfBody(ctx, cx, cy, seed, {});
   drawDeadWolfSkull(ctx, headX, headY, flip, { halo: true });

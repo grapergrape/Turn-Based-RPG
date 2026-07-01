@@ -60,6 +60,8 @@ const DISPLAY_NAMES = {
   'quarantine-sign': 'Quarantine Sign',
   'damaged-altar': 'Damaged Altar',
   'host-growth': 'Host Growth',
+  'host-vein-seam': 'Host Vein Seam',
+  'host-wolf-remains': 'Host Wolf Remains',
   'candle-cluster': 'Candle Cluster',
   'rubble-pile': 'Rubble',
   'rusted-crate': 'Rusted Crate',
@@ -438,6 +440,7 @@ export const SPRITE_CATALOG = {
   'dead-host-wolf-spider': simple(P.drawDeadHostWolfSpider, CATEGORY.CREATURE),
   'dead-host-wolf-maw': simple(P.drawDeadHostWolfMaw, CATEGORY.CREATURE),
   'dead-host-wolf-ribsplit': simple(P.drawDeadHostWolfRibsplit, CATEGORY.CREATURE),
+  'host-wolf-remains': simple(P.drawHostWolfRemains, CATEGORY.CREATURE),
 
   // --- Ritual imagery ----------------------------------------------------
   'choir-pentagram': simple(P.drawChoirPentagram, CATEGORY.RITUAL), // wall-mounted, but drawn as a prop overlay
@@ -453,6 +456,7 @@ export const SPRITE_CATALOG = {
   'scorch-mark': decal((ctx, x, y, seed) => P.drawScorchMark(ctx, x, y, seed)),
   'wax-stain': decal((ctx, x, y, seed) => P.drawWaxStain(ctx, x, y, seed)),
   'paper-scraps': decal((ctx, x, y, seed) => P.drawPaperScraps(ctx, x, y, seed)),
+  'host-vein-seam': decal((ctx, x, y, seed) => P.drawHostVeinSeam(ctx, x, y, seed)),
   'graveyard-packed-ash': decal((ctx, x, y, seed) => P.drawGraveyardPackedAsh(ctx, x, y, seed)),
   'graveyard-path-stones': decal((ctx, x, y, seed) => P.drawGraveyardPathStones(ctx, x, y, seed)),
   'graveyard-root-seam': decal((ctx, x, y, seed) => P.drawGraveyardRootSeam(ctx, x, y, seed)),

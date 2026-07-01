@@ -173,7 +173,7 @@
     },
     "history": {
       "lines": [
-        "\"The Stilling caught me pointing during an argument. My brother said I looked useful for once. Then the town agreed with him.\"",
+        "\"The Stilling caught me pointing during an argument. Edrin said I looked useful for once. Then the first Holt sons after us made the joke into road work.\"",
         "\"Caravans learned I could still talk. That made me a signpost with commentary, which is the most hated form of signpost.\""
       ],
       "choices": [
@@ -337,8 +337,8 @@
         "setFlag": "long-ash-crossroad-edrin-named"
       },
       "lines": [
-        "\"The Choir came through here calling me holy because the Host left me standing and talking. They asked for the Holt house. I pointed.\"",
-        "\"They went toward the yard and never came back. My brother Edrin is in the wheat east of the farm, drinking every compliment they spilled on the way.\"",
+        "\"The Choir came through here calling me holy because the Host left me standing and talking. They asked for the Holt house, the one our brother's line built around us. I pointed.\"",
+        "\"They went toward the yard and never came back. Edrin is in the wheat east of the farm, drinking every compliment they spilled on the way.\"",
         "\"Check on him before their hymns get too deep in him.\""
       ],
       "choices": [
