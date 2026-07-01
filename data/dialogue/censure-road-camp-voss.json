@@ -1,0 +1,50 @@
+{
+  "id": "censure-road-camp-voss",
+  "title": "Preceptor Voss",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Preceptor Voss has slates pinned under one boot and mud on both cuffs.",
+        "\"If Caldus calls this a camp again, make him count latrine nails. A camp has rest. This has paperwork with damp corners.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about cult-breaker training",
+          "next": "training"
+        },
+        {
+          "label": "Ask how supplies move",
+          "next": "supplies"
+        },
+        {
+          "label": "Leave Voss to the slates",
+          "close": true
+        }
+      ]
+    },
+    "training": {
+      "lines": [
+        "\"New breakers learn bells before blades. A missed bell wastes a squad before the enemy gets a turn.\"",
+        "\"After that, they learn how to stand still while a farmer begs for mercy with someone else's mouth.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Voss to the drill yard",
+          "close": true
+        }
+      ]
+    },
+    "supplies": {
+      "lines": [
+        "\"Runa issues what the writ allows. Maev sells what the writ forgot. Everyone calls that corruption until they need dry beans.\"",
+        "\"The road survives on doctrine, wax seals, and people pretending the third column in the ledger does not exist.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Voss to the ledgers",
+          "close": true
+        }
+      ]
+    }
+  }
+}

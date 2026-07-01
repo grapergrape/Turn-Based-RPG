@@ -1,0 +1,19 @@
+{
+  "id": "censure-father-odran",
+  "name": "Father Odran",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Road priest",
+  "appearance": {
+    "body": "old-bent",
+    "outfit": "settlement-chapel-hand",
+    "gear": ["prayer-cord"],
+    "accent": "bare-grey"
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "priest"]
+}

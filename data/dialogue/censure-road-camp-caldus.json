@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-caldus",
+  "title": "Brother Caldus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Brother Caldus points at the yard marks with a cracked baton.",
+        "\"Footwork first. If God wanted you to die tangled in your own coat, He would have issued a cheaper coat.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the drill yard",
+          "close": true
+        }
+      ]
+    }
+  }
+}

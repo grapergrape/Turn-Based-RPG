@@ -19,6 +19,7 @@ export function buildJournalState({
   techniqueContext = {},
   primaryIndex = 0,
   techniqueIndex = 0,
+  time = null,
   map = null
 } = {}) {
   const character = buildCharacterSheet(player);
@@ -28,6 +29,7 @@ export function buildJournalState({
     sections: JOURNAL_SECTIONS,
     turn: journalTurnState(turn),
     factionIndex,
+    time,
     quests: journalQuests({ questDefs, questStages, questReached }),
     map,
     findings: journalFindings({ questDefs, questReached, journalNotes, flags }),

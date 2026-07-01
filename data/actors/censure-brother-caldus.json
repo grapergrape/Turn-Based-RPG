@@ -1,0 +1,19 @@
+{
+  "id": "censure-brother-caldus",
+  "name": "Brother Caldus",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Drill brother",
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": ["shoulder-plate", "rope-coil"],
+    "accent": "bare-brown"
+  },
+  "stats": {
+    "hp": 10,
+    "maxHp": 10,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "drill"]
+}

@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-sera",
+  "title": "Bell Clerk Sera",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Bell Clerk Sera has charcoal on her thumb and rope dust on her sleeve.",
+        "\"One peal means road party. Two means wounded. If you hear four, finish your soup while you still own a stomach.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the bell mast",
+          "close": true
+        }
+      ]
+    }
+  }
+}

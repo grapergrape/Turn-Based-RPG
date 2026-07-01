@@ -1,0 +1,42 @@
+{
+  "id": "censure-road-confession",
+  "title": "Road Confession",
+  "initialStage": "seek-confession",
+  "objectives": [
+    { "text": "Report your Chapel and Ash Road conduct to Father Odran.", "stage": "seek-confession" },
+    { "text": "Pay or pray through Father Odran's road absolution.", "stage": "record-read" },
+    { "text": "Keep Father Odran's absolution chit.", "stage": "absolved-with-ducats" },
+    { "text": "Keep Father Odran's absolution chit.", "stage": "absolved-with-prayer" },
+    { "text": "Keep Father Odran's absolution chit.", "stage": "absolved-after-lying" }
+  ],
+  "stages": [
+    {
+      "id": "seek-confession",
+      "task": "Go to confession",
+      "description": "Father Odran says Chapel work and Ash Road work both leave marks. The Censure writes those marks down before sending anyone toward Hallowfen."
+    },
+    {
+      "id": "record-read",
+      "task": "Settle the absolution",
+      "description": "Father Odran has read the road record back to you. Absolution costs five ducats, or the missing coin made up in prayers."
+    },
+    {
+      "id": "absolved-with-ducats",
+      "task": "Absolved by payment",
+      "xp": 15,
+      "description": "You paid Father Odran's road price. Your soul now has a stamped receipt."
+    },
+    {
+      "id": "absolved-with-prayer",
+      "task": "Absolved by prayer",
+      "xp": 15,
+      "description": "You made up the missing ducats with prayers. Father Odran counted each one like a man auditing rain."
+    },
+    {
+      "id": "absolved-after-lying",
+      "task": "Absolved after lying",
+      "xp": 10,
+      "description": "You lied about your purse. Father Odran noticed, charged the extra ducat, and stamped the chit anyway."
+    }
+  ]
+}

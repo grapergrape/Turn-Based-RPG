@@ -1,0 +1,50 @@
+{
+  "id": "censure-road-camp-runa",
+  "title": "Quartermaster Runa",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Quartermaster Runa pins the ledger open with one flat hand.",
+        "\"No seal, no ration. No writ, no powder. No, a heroic face is not a seal.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what a writ buys",
+          "next": "writ"
+        },
+        {
+          "label": "Ask about Maev's cart",
+          "next": "maev"
+        },
+        {
+          "label": "Leave the issue table",
+          "close": true
+        }
+      ]
+    },
+    "writ": {
+      "lines": [
+        "\"One packet for a field writ: beans, dressing, candle stub, entry roll if Security has not misplaced the blessed things again.\"",
+        "\"Anything more needs a dead officer's signature or a living officer's shame.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the ledger",
+          "close": true
+        }
+      ]
+    },
+    "maev": {
+      "lines": [
+        "\"Maev is not official. Maev is useful. The Church has many words for sin and very few for useful.\"",
+        "\"If she overcharges you, tell me. I will nod with great concern.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the quartermaster",
+          "close": true
+        }
+      ]
+    }
+  }
+}

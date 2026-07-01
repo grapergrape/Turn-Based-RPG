@@ -121,6 +121,18 @@
       "x": 6,
       "y": 6,
       "seed": 5711
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 4,
+      "y": 4,
+      "seed": 5713,
+      "id": "grain-shed-feed-note",
+      "name": "Feed Note",
+      "interact": {
+        "type": "note",
+        "log": "The note is written in a child's square hand. Two whistles for Gray. One bone for each little wolf. Hide the red cloth before Father sees."
+      }
     }
   ]
 }

@@ -140,6 +140,30 @@
       }
     },
     {
+      "kind": "host-growth",
+      "x": 12,
+      "y": 14,
+      "seed": 6111
+    },
+    {
+      "kind": "blood-stain",
+      "x": 11,
+      "y": 14,
+      "seed": 6113
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 13,
+      "y": 14,
+      "seed": 6115,
+      "id": "infected-cave-censure-tag",
+      "name": "Censure Tag",
+      "interact": {
+        "type": "note",
+        "log": "A Censure tag is pinned under a stone chip: do not skin the wolves. Burn the teeth. If the gums shine gold, burn the knife too."
+      }
+    },
+    {
       "kind": "rusted-reliquary",
       "x": 20,
       "y": 7,

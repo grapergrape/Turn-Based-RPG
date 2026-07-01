@@ -138,7 +138,13 @@
       "kind": "paper-scraps",
       "x": 6,
       "y": 5,
-      "seed": 5611
+      "seed": 5611,
+      "id": "storage-shed-ration-tally",
+      "name": "Ration Tally",
+      "interact": {
+        "type": "note",
+        "log": "The tally counts beans by child, then crosses out three names after last bell. A second hand added: keep food inside until the road office answers."
+      }
     },
     {
       "kind": "cobweb",

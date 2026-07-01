@@ -1,4 +1,5 @@
 import { SUSPICION_STATES } from '../world/PerceptionSystem.js';
+import { createGameClock } from './GameClock.js';
 
 function cloneEffect(effect) {
   if (!effect || typeof effect !== 'object' || Array.isArray(effect)) return null;
@@ -26,6 +27,7 @@ export class DialogueEffects {
 
   apply(effects) {
     if (!effects) return false;
+    if (!this.canApplyInventoryEffects(effects.inventory)) return false;
     for (const line of [].concat(effects.log ?? [])) this.callbacks.log?.(line);
     for (const flag of [].concat(effects.setFlag ?? [])) this.game.flags.add(flag);
     this.applyInventoryEffects(effects.inventory);
@@ -33,6 +35,7 @@ export class DialogueEffects {
     if (effects.xp !== undefined) this.callbacks.awardPlayerExperience?.(effects.xp);
     if (effects.kill) this.callbacks.silenceProp?.(effects.kill);
     if (effects.teleport) this.callbacks.teleportPlayer?.(effects.teleport);
+    this.applyClockEffect(effects.clock);
     this.applyMoveActorEffects(effects.moveActor);
     if (effects.trade) {
       return this.callbacks.openTradeScreen?.(effects.trade) ?? false;
@@ -57,6 +60,43 @@ export class DialogueEffects {
       return true;
     }
     return false;
+  }
+
+  applyClockEffect(effect) {
+    if (effect === undefined) return;
+    const spec = typeof effect === 'number' ? { minuteOfDay: effect } : effect;
+    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) return;
+    const current = createGameClock(this.game.clock);
+    const dayDelta = Number.isInteger(spec.fieldDayDelta)
+      ? spec.fieldDayDelta
+      : spec.nextDay === true
+        ? 1
+        : 0;
+    if (dayDelta > 0) current.fieldDay += dayDelta;
+    if (typeof spec.advanceToMinuteOfDay === 'number' && Number.isFinite(spec.advanceToMinuteOfDay)) {
+      if (current.minuteOfDay > spec.advanceToMinuteOfDay) current.fieldDay += 1;
+      current.minuteOfDay = spec.advanceToMinuteOfDay;
+      current.minuteCarry = 0;
+    }
+    if (typeof spec.minuteOfDay === 'number' && Number.isFinite(spec.minuteOfDay)) {
+      current.minuteOfDay = spec.minuteOfDay;
+      current.minuteCarry = 0;
+    }
+    this.game.clock = createGameClock(current);
+  }
+
+  canApplyInventoryEffects(inventoryEffects) {
+    if (!inventoryEffects?.requireAll) return true;
+    const removeEntries = [].concat(inventoryEffects.remove ?? []);
+    for (const entry of removeEntries) {
+      if (!entry?.item) continue;
+      const count = entry.count ?? 1;
+      if ((this.game.inventory.count(entry.item) ?? 0) < count) {
+        this.callbacks.log?.(entry.failLog ?? `${this.game.inventory.displayName(entry.item)} is not in the pack.`);
+        return false;
+      }
+    }
+    return true;
   }
 
   applyMoveActorEffects(effect) {
@@ -124,8 +164,9 @@ export class DialogueEffects {
   }
 
   applyInventoryEffects(inventoryEffects) {
-    if (!inventoryEffects) return;
-    for (const entry of [].concat(inventoryEffects.remove ?? [])) {
+    if (!inventoryEffects) return true;
+    const removeEntries = [].concat(inventoryEffects.remove ?? []);
+    for (const entry of removeEntries) {
       if (!entry?.item) continue;
       const count = entry.count ?? 1;
       if (!this.game.inventory.remove(entry.item, count)) {
@@ -144,5 +185,6 @@ export class DialogueEffects {
     }
     this.callbacks.syncInventoryOrder?.();
     this.callbacks.clampInventorySelection?.();
+    return true;
   }
 }

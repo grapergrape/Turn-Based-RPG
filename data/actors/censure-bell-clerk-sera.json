@@ -1,0 +1,19 @@
+{
+  "id": "censure-bell-clerk-sera",
+  "name": "Bell Clerk Sera",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Bell clerk",
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-chapel-hand",
+    "gear": ["prayer-cord", "message-tube"],
+    "accent": "pale-hood"
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "bell-clerk"]
+}

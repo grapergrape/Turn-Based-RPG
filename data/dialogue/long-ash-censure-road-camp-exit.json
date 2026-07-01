@@ -1,0 +1,28 @@
+{
+  "id": "long-ash-censure-road-camp-exit",
+  "title": "Censure Camp Road",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The north road rises toward Censure canvas and a patched bell mast.",
+        "Dark undergrowth presses close against both shoulders of the road."
+      ],
+      "choices": [
+        {
+          "label": "Enter Censure Road Camp",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 34, "y": 46 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay on Long Ash Road",
+          "close": true
+        }
+      ]
+    }
+  }
+}

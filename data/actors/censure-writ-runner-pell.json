@@ -1,0 +1,19 @@
+{
+  "id": "censure-writ-runner-pell",
+  "name": "Writ Runner Pell",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Writ runner",
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-runner",
+    "gear": ["message-tube"],
+    "accent": "dark-hood"
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "runner"]
+}

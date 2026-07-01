@@ -1321,6 +1321,10 @@
             }
           ]
         }
+      },
+      "mapMarker": {
+        "label": "Cellar Ladder",
+        "kind": "exit"
       }
     },
     {
@@ -1955,6 +1959,10 @@
         "type": "secret-entrance",
         "dialogue": "ash-chapel-bell-stairs",
         "log": "A narrow service door is cut into the chapel wall. Behind it, stone steps climb toward the bell chamber."
+      },
+      "mapMarker": {
+        "label": "Bell Stair",
+        "kind": "exit"
       }
     },
     {
@@ -1968,6 +1976,10 @@
         "type": "secret-entrance",
         "dialogue": "ash-chapel-bell-stairs",
         "log": "A worn landing stone points into the narrow stair cut through the chapel wall."
+      },
+      "mapMarker": {
+        "label": "Bell Stair",
+        "kind": "exit"
       }
     },
     {

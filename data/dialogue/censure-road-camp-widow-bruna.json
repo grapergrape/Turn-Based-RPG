@@ -1,0 +1,71 @@
+{
+  "id": "censure-road-camp-widow-bruna",
+  "title": "Widow Bruna",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Widow Bruna works soap through a strip of bandage cloth. Her sleeves are rolled past the elbows, and gray water darkens the dirt around the tub.",
+        "\"If it is blood, ash, or soup, I can get half of it out. The other half belongs to God and bad stitching.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she washes",
+          "next": "work"
+        },
+        {
+          "label": "Ask about Father Odran",
+          "conditions": {
+            "flag": "odran-late-visit-seen",
+            "flagsAbsent": ["odran-late-visit-resolved"]
+          },
+          "next": "odran"
+        },
+        {
+          "label": "Leave Bruna",
+          "close": true
+        }
+      ]
+    },
+    "work": {
+      "lines": [
+        "\"Bandages first. Shirts second. Priestly linen last, because priests notice cuffs before they notice hunger.\"",
+        "\"My husband died under a toll bell with no priest in reach. I came here to put his name on the right list. Until they find the list, I wash.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about Father Odran",
+          "conditions": {
+            "flag": "odran-late-visit-seen",
+            "flagsAbsent": ["odran-late-visit-resolved"]
+          },
+          "next": "odran"
+        },
+        {
+          "label": "Leave Bruna",
+          "close": true
+        }
+      ]
+    },
+    "odran": {
+      "lines": [
+        "Bruna keeps twisting the cloth long after the water stops falling from it.",
+        "\"You saw me walk. Good. Then you also saw I walked on my own feet.\"",
+        "\"He said he could carry my husband's name in the morning office if I came after the last bell. Maybe he can. Maybe he wanted the dark more than the name.\""
+      ],
+      "choices": [
+        {
+          "label": "Promise not to name her",
+          "effects": {
+            "setFlag": "odran-widow-heard",
+            "log": "Bruna's account gives you a cleaner blade to hold over Father Odran."
+          },
+          "close": true
+        },
+        {
+          "label": "Leave Bruna",
+          "close": true
+        }
+      ]
+    }
+  }
+}

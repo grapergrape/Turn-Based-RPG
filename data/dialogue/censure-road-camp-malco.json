@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-malco",
+  "title": "Evidence Keeper Malco",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Evidence Keeper Malco stands outside the shed with tags looped around both wrists.",
+        "\"Cult relics go in left sacks. Bodies in right sacks. Anything that whispers gets its own shelf and no apology.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the shed",
+          "close": true
+        }
+      ]
+    }
+  }
+}

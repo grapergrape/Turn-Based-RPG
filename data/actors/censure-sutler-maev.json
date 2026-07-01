@@ -1,0 +1,31 @@
+{
+  "id": "censure-sutler-maev",
+  "name": "Sutler Maev",
+  "type": "npc",
+  "faction": "ash-road-traders",
+  "role": "Road sutler",
+  "appearance": {
+    "body": "heavy",
+    "outfit": "settlement-work-coat",
+    "gear": ["ledger", "crate-pack"],
+    "accent": "bare-light"
+  },
+  "trade": {
+    "title": "Maev's Road Cart",
+    "currency": "ducat",
+    "stock": [
+      { "item": "field-dressing", "count": 2, "price": 4 },
+      { "item": "tinned-beans", "count": 3, "price": 1 },
+      { "item": "relic-rounds", "count": 2, "price": 3 },
+      { "item": "censure-entry-roll", "count": 1, "price": 7 },
+      { "item": "camp-issue-ribguard", "count": 1, "price": 9 },
+      { "item": "ash-road-boots", "count": 1, "price": 6 }
+    ]
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": ["ash-road-trader", "sutler"]
+}

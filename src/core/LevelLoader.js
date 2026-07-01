@@ -62,11 +62,21 @@ function addInventoryEffectItems(effects, itemIds) {
   }
 }
 
+function addConditionItems(conditions, itemIds) {
+  if (!conditions || typeof conditions !== 'object') return;
+  for (const itemId of Object.keys(conditions.items ?? {})) itemIds.add(itemId);
+  for (const itemId of Object.keys(conditions.itemsMax ?? {})) itemIds.add(itemId);
+}
+
 function collectDialogueItemIds(dialogueDefs, itemIds) {
   for (const dialogue of Object.values(dialogueDefs ?? {})) {
     for (const node of Object.values(dialogue.nodes ?? {})) {
+      addConditionItems(node.conditions, itemIds);
       addInventoryEffectItems(node.effects, itemIds);
-      for (const choice of node.choices ?? []) addInventoryEffectItems(choice.effects, itemIds);
+      for (const choice of node.choices ?? []) {
+        addConditionItems(choice.conditions, itemIds);
+        addInventoryEffectItems(choice.effects, itemIds);
+      }
     }
   }
 }

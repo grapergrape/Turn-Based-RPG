@@ -19,7 +19,11 @@ const LEVEL_ALIASES = {
   ash_chapel_catacombs: './data/levels/ash_chapel_catacombs.json',
   road: './data/levels/long_ash_road_approach.json',
   'long-ash-road': './data/levels/long_ash_road_approach.json',
-  'long-ash-road-approach': './data/levels/long_ash_road_approach.json'
+  'long-ash-road-approach': './data/levels/long_ash_road_approach.json',
+  camp: './data/levels/censure_road_camp.json',
+  'censure-camp': './data/levels/censure_road_camp.json',
+  'censure-road-camp': './data/levels/censure_road_camp.json',
+  censure_road_camp: './data/levels/censure_road_camp.json'
 };
 
 const TRUE_VALUES = new Set(['', '1', 'true', 'yes', 'on']);

@@ -83,7 +83,7 @@ export function drawJournal(ctx, ui, tools) {
   journalArrowButton(ctx, JOURNAL_ARROW_BOXES.prev, 'prev', tools);
   journalArrowButton(ctx, JOURNAL_ARROW_BOXES.next, 'next', tools);
 
-  tools.text(ctx, 'A/D TURN PAGE   M MAP   J OR ESC CLOSE', B.x + 88, B.y + B.h - 11, PALETTE.clothTan);
+  journalFooter(ctx, B, journal.time, tools);
 }
 
 function journalContent(ctx, left, right, section, journal, tools) {
@@ -95,6 +95,20 @@ function journalContent(ctx, left, right, section, journal, tools) {
   else if (sectionId === 'SCARS') journalScarsPage(ctx, left, right, journal.character ?? {}, tools);
   else if (sectionId === 'TECHNIQUES') journalTechniquesPage(ctx, left, right, journal.techniques ?? {}, tools);
   else journalQuestsPage(ctx, left, right, journal.quests ?? [], journal.character ?? {}, tools);
+}
+
+function journalFooter(ctx, B, time, tools) {
+  const controls = 'A/D PAGE   M MAP   J CLOSE';
+  const y = B.y + B.h - 11;
+  const controlsX = B.x + B.w - tools.textWidth(controls) - 24;
+  const stampX = B.x + 72;
+  const stampMax = Math.max(12, Math.floor((controlsX - stampX - 12) / 6));
+  const stamp = time
+    ? `${time.dateLabel ?? 'FIELD DAY 1, YEAR 130 AFTER DESCENT'}   ${time.timeLabel ?? '08:00'} ${time.phaseLabel ?? 'MORNING'}`
+    : '';
+
+  if (stamp) tools.text(ctx, tools.clip(stamp, stampMax), stampX, y, PALETTE.clothTan);
+  tools.text(ctx, controls, controlsX, y, PALETTE.clothTan);
 }
 
 function journalCoverWear(ctx, B, noise, tools) {

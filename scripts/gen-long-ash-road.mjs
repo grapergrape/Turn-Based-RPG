@@ -19,6 +19,7 @@ const FARM_DOOR_DIALOGUES = [
   'long-ash-tool-shed-door',
   'long-ash-infected-cave-entrance',
   'long-ash-wolf-cultist-evidence',
+  'long-ash-censure-road-camp-exit',
   'long-ash-crossroad-brother',
   'long-ash-field-brother'
 ];
@@ -496,6 +497,7 @@ function addFarmDoor(id, name, x, y, dialogue, log, extraInteract = {}) {
       ...interactExtras
     }
   };
+  object.mapMarker = { label: name, kind: 'exit' };
   if (wallPlane) object.wallPlane = wallPlane;
   if (variant) object.variant = variant;
   addObject('farm-door', x, y, object);
@@ -827,7 +829,8 @@ function placeInfectedCave() {
       type: 'secret-entrance',
       dialogue: 'long-ash-infected-cave-entrance',
       log: 'Wet fur and sick rot gather in the cold between the stones. Wolf tracks vanish into the black mouth.'
-    }
+    },
+    mapMarker: { label: 'Infected Cave', kind: 'danger' }
   });
 }
 
@@ -844,9 +847,11 @@ function placeRoadDressing() {
     name: 'Censure Camp Sign',
     seed: hash(116, 5, 89),
     interact: {
-      type: 'note',
-      log: 'The board points toward the Censure road camp. Someone has rubbed ash over the office seal.'
-    }
+      type: 'secret-entrance',
+      dialogue: 'long-ash-censure-road-camp-exit',
+      log: 'The board points toward the Censure road camp. Dark undergrowth crowds the way north.'
+    },
+    mapMarker: { label: 'Censure Road Camp', kind: 'exit', reveal: 'always' }
   });
   addObject('road-sign-post', 117, 55, {
     id: 'long-ash-remnant-spur-sign',

@@ -1,0 +1,19 @@
+{
+  "id": "censure-quartermaster-runa",
+  "name": "Quartermaster Runa",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Quartermaster",
+  "appearance": {
+    "body": "sturdy",
+    "outfit": "settlement-quartermaster",
+    "gear": ["ledger"],
+    "accent": "bare-brown"
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "quartermaster"]
+}

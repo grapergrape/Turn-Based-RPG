@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-hanne",
+  "title": "Sister Hanne",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Sister Hanne boils water with a knife laid across the basin.",
+        "\"Clean cloth is for wounds. Dirty cloth is for officers who ask why clean cloth is gone.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the medic tent",
+          "close": true
+        }
+      ]
+    }
+  }
+}

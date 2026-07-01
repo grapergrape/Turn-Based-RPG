@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-elian",
+  "title": "Tether Guard Elian",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Tether Guard Elian watches the south gate and the empty rope line.",
+        "\"We had two pack goats at dawn. Now we have rope, teeth marks, and a moral victory for goats.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the gate",
+          "close": true
+        }
+      ]
+    }
+  }
+}

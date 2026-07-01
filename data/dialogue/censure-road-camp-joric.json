@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-joric",
+  "title": "Ash Porter Joric",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Ash Porter Joric leans on a crate marked urgent.",
+        "\"Urgent means someone shouted near ink. Sacred means the crate is heavier than the man who signed for it.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the supply tents",
+          "close": true
+        }
+      ]
+    }
+  }
+}
