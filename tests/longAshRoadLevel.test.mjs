@@ -401,10 +401,11 @@ const farmExitDialogues = new Map([
       ...expectedFarmDoors.map((door) => door.dialogue),
       'long-ash-infected-cave-entrance',
       'long-ash-wolf-cultist-evidence',
+      'long-ash-censure-road-camp-exit',
       'long-ash-crossroad-brother',
       'long-ash-field-brother'
     ],
-    'farm door, cave entrance, and calcified brother dialogues are loaded with the road level'
+    'farm door, cave entrance, camp exit, and calcified brother dialogues are loaded with the road level'
   );
   assert.ok(level.quests.includes('calcified-brothers'), 'Long Ash Road loads the calcified brothers quest');
   const fieldReportNode = fieldBrotherDialogue.nodes['report-check'];
@@ -535,6 +536,7 @@ const farmExitDialogues = new Map([
     assert.ok(door, `${expectedDoor.id} is placed`);
     assert.equal(level.tiles[door.y][door.x], expectedDoor.tile, `${door.id} sits on the expected building tile`);
     assert.equal(door.variant, expectedDoor.variant, `${door.id} uses the expected farm-door variant`);
+    assert.deepEqual(door.mapMarker, { label: door.name, kind: 'exit' }, `${door.id} has an explored structural map marker`);
     assert.equal(isFarmBuildingTile(level, door.x, door.y), true, `${door.id} is mounted on a farm building wall cell`);
     assert.equal(door.wallPlane, expectedDoor.wallPlane, `${door.id} defines its wall plane`);
     assert.equal(grid.isWalkable(expectedDoor.use.x, expectedDoor.use.y), true, `${door.id} has a walkable authored use tile`);
@@ -879,6 +881,7 @@ const farmExitDialogues = new Map([
       x: 117,
       y: 55,
       use: { x: 117, y: 56 },
+      type: 'note',
       log: 'The old waypost points down the Remnant capital road. The bell nail is empty.'
     },
     {
@@ -887,7 +890,10 @@ const farmExitDialogues = new Map([
       x: 116,
       y: 5,
       use: { x: 116, y: 6 },
-      log: 'The board points toward the Censure road camp. Someone has rubbed ash over the office seal.'
+      type: 'secret-entrance',
+      dialogue: 'long-ash-censure-road-camp-exit',
+      log: 'The board points toward the Censure road camp. Dark undergrowth crowds the way north.',
+      mapMarker: { label: 'Censure Road Camp', kind: 'exit', reveal: 'always' }
     }
   ];
   const roadSignSprite = getSprite('road-sign-post');
@@ -901,8 +907,10 @@ const farmExitDialogues = new Map([
     assert.equal(sign.x, expected.x);
     assert.equal(sign.y, expected.y);
     assert.equal(sign.blocking, undefined, `${expected.id} stays non-blocking on the road`);
-    assert.equal(sign.interact?.type, 'note');
+    assert.equal(sign.interact?.type, expected.type ?? 'note');
+    if (expected.dialogue) assert.equal(sign.interact?.dialogue, expected.dialogue);
     assert.equal(sign.interact?.log, expected.log);
+    if (expected.mapMarker) assert.deepEqual(sign.mapMarker, expected.mapMarker);
     assert.equal(level.tiles[sign.y][sign.x], 'r', `${expected.id} sits on the ash road`);
     assert.equal(grid.isWalkable(expected.use.x, expected.use.y), true, `${expected.id} has a walkable use tile`);
     const signTarget = resolveInteractionTargetAtCell({
@@ -1019,6 +1027,7 @@ const farmExitDialogues = new Map([
   assert.equal(cave.blocking, true);
   assert.equal(cave.interact?.type, 'secret-entrance');
   assert.equal(cave.interact?.dialogue, 'long-ash-infected-cave-entrance');
+  assert.deepEqual(cave.mapMarker, { label: 'Infected Cave', kind: 'danger' });
   assert.ok(level.dialogue.includes('long-ash-infected-cave-entrance'));
   assert.equal(caveEntranceDialogue.nodes.start.choices[0].effects.loadLevel.path, './data/levels/long_ash_infected_cave.json');
   assert.deepEqual(caveEntranceDialogue.nodes.start.choices[0].effects.loadLevel.player, { x: 12, y: 15 });
@@ -1111,10 +1120,15 @@ const farmExitDialogues = new Map([
   assert.equal(denTrigger.radius, 3);
 
   const caveKinds = new Set(caveLevel.objects.map((object) => object.kind));
-  for (const kind of ['cave-stalagmite', 'cave-stalactites', 'cave-flowstone']) {
+  for (const kind of ['cave-stalagmite', 'cave-stalactites', 'cave-flowstone', 'host-growth']) {
     assert.ok(caveKinds.has(kind), `cave contains ${kind}`);
     assert.ok(getSprite(kind), `${kind} is registered`);
   }
+  const caveTag = caveLevel.objects.find((object) => object.id === 'infected-cave-censure-tag');
+  assert.ok(caveTag, 'cave has a Censure warning tag near the entry');
+  assert.equal(caveTag.kind, 'paper-scraps');
+  assert.equal(caveTag.interact?.type, 'note');
+  assert.equal(caveTag.interact.log.includes('Burn the teeth'), true);
   assert.ok(getSprite('cave-wall'), 'cave-wall is registered');
   assert.ok(caveLevel.tiles.some((row) => row.includes('~')), 'cave has river floor tiles');
 
@@ -1178,8 +1192,28 @@ const farmExitDialogues = new Map([
   }
   const barnInterior = farmInteriors.find((spec) => spec.key === 'barn').level;
   const grainInterior = farmInteriors.find((spec) => spec.key === 'grain').level;
+  const storageInterior = farmInteriors.find((spec) => spec.key === 'storage').level;
+  const toolInterior = farmInteriors.find((spec) => spec.key === 'tool').level;
   assert.ok(barnInterior.objects.some((object) => object.kind === 'chaff-scatter'), 'barn interior uses chaff-scatter');
+  const draggedHarness = barnInterior.objects.find((object) => object.id === 'barn-dragged-harness');
+  assert.ok(draggedHarness, 'barn has a dragged harness clue');
+  assert.equal(draggedHarness.interact?.type, 'note');
+  assert.equal(draggedHarness.interact.log.includes('black-gold'), true);
+  const rationTally = storageInterior.objects.find((object) => object.id === 'storage-shed-ration-tally');
+  assert.ok(rationTally, 'storage shed has a ration-control note');
+  assert.equal(rationTally.interact?.type, 'note');
+  assert.equal(rationTally.interact.log.includes('last bell'), true);
   assert.ok(grainInterior.objects.some((object) => object.kind === 'chaff-scatter'), 'grain shed interior uses chaff-scatter');
+  const feedNote = grainInterior.objects.find((object) => object.id === 'grain-shed-feed-note');
+  assert.ok(feedNote, 'grain shed has a wolf-feeding note');
+  assert.equal(feedNote.interact?.type, 'note');
+  assert.equal(feedNote.interact.log.includes('little wolf'), true);
+  const toolCrate = toolInterior.objects.find((object) => object.id === 'tool-shed-rusted-crate');
+  assert.ok(toolCrate.interact?.search, 'tool shed crate has a search payoff');
+  assert.equal(toolCrate.interact.search.methods[0].field, 'search');
+  assert.deepEqual(toolCrate.interact.search.methods[0].success.inventory.add, [
+    { item: 'relic-rounds', count: 1 }
+  ]);
 }
 
 {

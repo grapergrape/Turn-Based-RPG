@@ -149,6 +149,7 @@ const [
     'barrel ladder in chapel'
   );
   assert.equal(barrel.interact.dialogue, 'ash-chapel-barrel-ladder');
+  assert.deepEqual(barrel.mapMarker, { label: 'Cellar Ladder', kind: 'exit' });
 
   const descend = findChoice(barrelLadder.nodes.start, 'Descend');
   assert.equal(descend.effects.loadLevel.path, './data/levels/ash_chapel_cellar.json');
@@ -160,6 +161,7 @@ const [
     'cellar ladder exit'
   );
   assert.equal(cellarExit.interact.dialogue, 'ash-chapel-cellar-ladder');
+  assert.deepEqual(cellarExit.mapMarker, { label: 'Back To Chapel', kind: 'exit' });
 
   const climbUp = findChoice(cellarLadder.nodes.start, 'Climb Up');
   assert.equal(climbUp.effects.loadLevel.path, './data/levels/ash_chapel_breach.json');
@@ -167,9 +169,31 @@ const [
 }
 
 {
+  const bellStair = findObject(
+    breach,
+    (object) => object.id === 'bell-stair-door-31-3',
+    'bell stair door'
+  );
+  assert.deepEqual(bellStair.mapMarker, { label: 'Bell Stair', kind: 'exit' });
+
   const bellStairChoice = findChoice(bellStairs.nodes.start, 'Climb to the bell room');
   assert.equal(bellStairChoice.effects.loadLevel.path, './data/levels/ash_chapel_bell_room.json');
   assert.deepEqual(bellStairChoice.effects.loadLevel.player, { x: 7, y: 8 });
+}
+
+{
+  const investigativeObjects = [
+    'opened-altar-20-3',
+    'cult-ledger-24-4',
+    'marked-settlement-guard-21-22',
+    'dead-settlement-guard-15-24',
+    'childs-drawing-20-18',
+    'wound-star-26-2'
+  ];
+  for (const id of investigativeObjects) {
+    const object = findObject(breach, (entry) => entry.id === id, `${id} investigative object`);
+    assert.notEqual(object.mapMarker?.reveal, 'always', `${id} does not get an always-visible evidence marker`);
+  }
 }
 
 {

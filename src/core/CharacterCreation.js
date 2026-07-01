@@ -79,14 +79,14 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
   },
   {
     id: 'breastSize',
-    label: 'Breast Size',
+    label: 'Breast Scale',
     kind: 'range',
     min: BODY_FEATURE_MIN,
     max: BODY_FEATURE_MAX
   },
   {
     id: 'penisSize',
-    label: 'Penis Size',
+    label: 'Groin Scale',
     kind: 'range',
     min: BODY_FEATURE_MIN,
     max: BODY_FEATURE_MAX

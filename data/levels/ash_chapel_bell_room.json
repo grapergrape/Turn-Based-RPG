@@ -124,6 +124,10 @@
         "type": "secret-exit",
         "dialogue": "ash-chapel-bell-room-stairs",
         "log": "The stair drops through the chapel wall, steep and close."
+      },
+      "mapMarker": {
+        "label": "Back To Chapel",
+        "kind": "exit"
       }
     },
     {
@@ -137,6 +141,10 @@
         "type": "secret-exit",
         "dialogue": "ash-chapel-bell-room-stairs",
         "log": "A worn landing stone drops toward the stair hidden in the chapel wall."
+      },
+      "mapMarker": {
+        "label": "Back To Chapel",
+        "kind": "exit"
       }
     },
     {
@@ -181,6 +189,10 @@
           ]
         },
         "dialogue": "ash-chapel-bell-rope"
+      },
+      "mapMarker": {
+        "label": "Bell Rope",
+        "kind": "note"
       }
     },
     {

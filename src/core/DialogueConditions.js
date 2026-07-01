@@ -6,6 +6,7 @@ export function meetsDialogueConditions(conditions, state = {}) {
   const hasScar = state.hasScar ?? (() => false);
   const fieldRating = state.fieldRating ?? (() => Number.NEGATIVE_INFINITY);
   const traceValue = state.traceValue ?? (() => 0);
+  const itemCount = state.itemCount ?? (() => 0);
 
   for (const flag of [].concat(conditions.flag ?? [], conditions.flags ?? [])) {
     if (!flags.has(flag)) return false;
@@ -27,6 +28,12 @@ export function meetsDialogueConditions(conditions, state = {}) {
   }
   for (const [fieldId, minimum] of Object.entries(conditions.fieldRatings ?? {})) {
     if (typeof minimum !== 'number' || fieldRating(fieldId) < minimum) return false;
+  }
+  for (const [itemId, minimum] of Object.entries(conditions.items ?? {})) {
+    if (typeof minimum !== 'number' || itemCount(itemId) < minimum) return false;
+  }
+  for (const [itemId, maximum] of Object.entries(conditions.itemsMax ?? {})) {
+    if (typeof maximum !== 'number' || itemCount(itemId) > maximum) return false;
   }
   if (conditions.traceMin !== undefined && traceValue() < conditions.traceMin) return false;
   if (conditions.traceMax !== undefined && traceValue() > conditions.traceMax) return false;

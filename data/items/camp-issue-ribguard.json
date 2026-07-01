@@ -1,0 +1,10 @@
+{
+  "id": "camp-issue-ribguard",
+  "name": "Camp Issue Ribguard",
+  "type": "armor",
+  "rarity": "common",
+  "weight": 1.4,
+  "groundModel": "ribguard",
+  "equipment": { "slot": "armor" },
+  "description": "Boiled leather and thin chapel ceramic tied over the ribs. It will not make you brave, but it gives panic somewhere useful to hide."
+}

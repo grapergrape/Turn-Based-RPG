@@ -1,0 +1,19 @@
+{
+  "id": "censure-ash-porter-joric",
+  "name": "Ash Porter Joric",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Supply porter",
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": ["crate-pack", "rope-coil"],
+    "accent": "bare-brown"
+  },
+  "stats": {
+    "hp": 9,
+    "maxHp": 9,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "porter"]
+}

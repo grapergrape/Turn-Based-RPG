@@ -17,6 +17,7 @@
     "long-ash-tool-shed-door",
     "long-ash-infected-cave-entrance",
     "long-ash-wolf-cultist-evidence",
+    "long-ash-censure-road-camp-exit",
     "long-ash-crossroad-brother",
     "long-ash-field-brother"
   ],
@@ -2146,8 +2147,14 @@
       "name": "Censure Camp Sign",
       "seed": 4185626400,
       "interact": {
-        "type": "note",
-        "log": "The board points toward the Censure road camp. Someone has rubbed ash over the office seal."
+        "type": "secret-entrance",
+        "dialogue": "long-ash-censure-road-camp-exit",
+        "log": "The board points toward the Censure road camp. Dark undergrowth crowds the way north."
+      },
+      "mapMarker": {
+        "label": "Censure Road Camp",
+        "kind": "exit",
+        "reveal": "always"
       }
     },
     {
@@ -3348,6 +3355,10 @@
         "type": "secret-entrance",
         "dialogue": "long-ash-infected-cave-entrance",
         "log": "Wet fur and sick rot gather in the cold between the stones. Wolf tracks vanish into the black mouth."
+      },
+      "mapMarker": {
+        "label": "Infected Cave",
+        "kind": "danger"
       }
     },
     {
@@ -12764,6 +12775,10 @@
         "dialogue": "long-ash-barn-door",
         "log": "The barn door rides low on its track, with chaff pressed into the groove."
       },
+      "mapMarker": {
+        "label": "Barn Door",
+        "kind": "exit"
+      },
       "wallPlane": "sw",
       "variant": "barn"
     },
@@ -13083,6 +13098,10 @@
         "type": "secret-entrance",
         "dialogue": "long-ash-farmhouse-door",
         "log": "The farmhouse door is thumb-polished around the latch."
+      },
+      "mapMarker": {
+        "label": "Farmhouse Door",
+        "kind": "exit"
       },
       "wallPlane": "sw",
       "variant": "farmhouse"
@@ -14713,6 +14732,10 @@
           ]
         }
       },
+      "mapMarker": {
+        "label": "Tool Shed Door",
+        "kind": "exit"
+      },
       "wallPlane": "se",
       "variant": "tool-shed"
     },
@@ -15795,6 +15818,10 @@
         "dialogue": "long-ash-storage-shed-door",
         "log": "The storage shed door has a ring pull worn bright at the bottom edge."
       },
+      "mapMarker": {
+        "label": "Storage Shed Door",
+        "kind": "exit"
+      },
       "wallPlane": "sw",
       "variant": "storage-shed"
     },
@@ -15810,6 +15837,10 @@
         "type": "secret-entrance",
         "dialogue": "long-ash-grain-shed-door",
         "log": "Dry seed husks are packed under the grain shed door."
+      },
+      "mapMarker": {
+        "label": "Grain Shed Door",
+        "kind": "exit"
       },
       "wallPlane": "sw",
       "variant": "grain-shed"

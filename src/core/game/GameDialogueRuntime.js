@@ -87,7 +87,8 @@ class GameDialogueRuntime {
       questStages: this.questStages,
       hasScar: (scarId, rank) => this._hasScar(scarId, rank),
       fieldRating: (fieldId) => this._fieldRating(fieldId),
-      traceValue: () => this._traceValue()
+      traceValue: () => this._traceValue(),
+      itemCount: (itemId) => this.inventory?.count(itemId) ?? 0
     });
   }
 

@@ -1,5 +1,5 @@
 import { createCustomizationState, currentCustomizationRows, customizationCanConfirm, createPrimaryAssignmentState, primaryAssignmentCanConfirm, primaryAssignmentRows } from '../CharacterCreation.js';
-import { chebyshev } from '../../combat/CombatSystem.js';
+import { chebyshev, manhattan } from '../../combat/CombatSystem.js';
 import { findPath } from '../../world/Pathfinder.js';
 import { GROUND_ITEM_KIND } from '../../world/GroundItems.js';
 import { isObjectLocked } from '../../world/LockSystem.js';
@@ -38,6 +38,7 @@ class GameRenderState {
       hiddenTiles: this.hiddenTiles,
       effects: this.effects,
       anim: this.anim,
+      time: this._buildClockReadout(),
       overlay: this._buildOverlay(),
       ui: this._buildUi()
     });
@@ -77,6 +78,10 @@ class GameRenderState {
       overlay.footTile = `${this.player.position.x},${this.player.position.y}`;
       const hover = this._hoverTile();
       if (hover) overlay.hoverTile = hover;
+      const actionTarget = this._nearbyActionTargetInfo();
+      if (actionTarget?.target?.cell && !this.uiScreen && !this.moving) {
+        overlay.interactionTile = `${actionTarget.target.cell.x},${actionTarget.target.cell.y}`;
+      }
       const target = this._currentTarget();
       if (target) overlay.targetTile = `${target.position.x},${target.position.y}`;
     } else {
@@ -138,6 +143,28 @@ class GameRenderState {
     return displayNameForKind(object.kind);
   }
 
+  _targetActionInfo(target) {
+    if (target?.type === 'talk') {
+      return { state: 'talk', text: `TALK: ${target.actor.name}` };
+    }
+    if (target?.type === 'corpse') {
+      if (this._enemyHasUnclaimedLoot(target.enemy)) {
+        return { state: 'loot', text: `LOOT: ${target.enemy.name}` };
+      }
+      return { state: 'inspect', text: `INSPECT: ${target.enemy.name}` };
+    }
+    if (target?.type === 'object') return this._objectActionInfo(target.object);
+    return null;
+  }
+
+  _nearbyActionTargetInfo() {
+    if (this.mode !== 'explore' || this.uiScreen) return null;
+    const target = this._nearbyExploreActionTarget();
+    const info = this._targetActionInfo(target);
+    if (!target || !info) return null;
+    return { target, ...info };
+  }
+
   _cursorInfo() {
     const mouse = this.input.mouse;
     if (!mouse) return null;
@@ -165,13 +192,10 @@ class GameRenderState {
       return { x: mouse.x, y: mouse.y, state: 'attack', text: `${selected ? 'ATTACK' : 'TARGET'}: ${target.actor.name}` };
     }
     if (target.type === 'talk') {
-      return { x: mouse.x, y: mouse.y, state: 'talk', text: `TALK: ${target.actor.name}` };
+      return { x: mouse.x, y: mouse.y, ...this._targetActionInfo(target) };
     }
     if (target.type === 'corpse') {
-      if (this._enemyHasUnclaimedLoot(target.enemy)) {
-        return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${target.enemy.name}` };
-      }
-      return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${target.enemy.name}` };
+      return { x: mouse.x, y: mouse.y, ...this._targetActionInfo(target) };
     }
     if (target.type === 'object') {
       return this._objectCursorInfo(mouse, target.object);
@@ -190,35 +214,39 @@ class GameRenderState {
     return { x: mouse.x, y: mouse.y, state: 'blocked', text: 'BLOCKED' };
   }
 
-  _objectCursorInfo(mouse, object) {
+  _objectActionInfo(object) {
     const name = this._objectName(object);
     if (object.kind === GROUND_ITEM_KIND || object.interact?.type === 'ground-item') {
-      return { x: mouse.x, y: mouse.y, state: 'loot', text: `PICK UP: ${name}` };
+      return { state: 'loot', text: `PICK UP: ${name}` };
     }
     if (isObjectLocked(object)) {
-      return { x: mouse.x, y: mouse.y, state: 'use', text: `LOCKED: ${name}` };
+      return { state: 'use', text: `LOCKED: ${name}` };
     }
     if (object.interact?.type === 'container') {
       if (this._objectShouldShowTextBeforeLoot(object)) {
-        return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${name}` };
+        return { state: 'inspect', text: `INSPECT: ${name}` };
       }
-      return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${name}` };
+      return { state: 'loot', text: `LOOT: ${name}` };
     }
     if (object.interact?.type === 'corpse' && !object.looted && object.interact?.loot?.length) {
       if (this._objectShouldShowTextBeforeLoot(object)) {
-        return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${name}` };
+        return { state: 'inspect', text: `INSPECT: ${name}` };
       }
-      return { x: mouse.x, y: mouse.y, state: 'loot', text: `LOOT: ${name}` };
+      return { state: 'loot', text: `LOOT: ${name}` };
     }
     if (object.interact?.type === 'altar' ||
         object.interact?.type === 'secret-entrance' ||
         object.interact?.type === 'secret-exit') {
-      return { x: mouse.x, y: mouse.y, state: 'use', text: `USE: ${name}` };
+      return { state: 'use', text: `USE: ${name}` };
     }
     if (object.kind === 'cross-martyr') {
-      return { x: mouse.x, y: mouse.y, state: 'use', text: `APPROACH: ${name}` };
+      return { state: 'use', text: `APPROACH: ${name}` };
     }
-    return { x: mouse.x, y: mouse.y, state: 'inspect', text: `INSPECT: ${name}` };
+    return { state: 'inspect', text: `INSPECT: ${name}` };
+  }
+
+  _objectCursorInfo(mouse, object) {
+    return { x: mouse.x, y: mouse.y, ...this._objectActionInfo(object) };
   }
 
   _buildUi() {
@@ -265,6 +293,7 @@ class GameRenderState {
     }
 
     const cursor = this._cursorInfo();
+    const nearbyAction = this._nearbyActionTargetInfo();
 
     return {
       levelName: this.level.name,
@@ -316,6 +345,7 @@ class GameRenderState {
       journal: this.uiScreen === 'journal' ? this._buildJournal() : null,
       dialogue: this.dialogue,
       contextActionMenu: this.contextActionMenu,
+      nearbyActionText: nearbyAction ? `E ${nearbyAction.text}` : null,
       hoverText: cursor?.text ?? null,
       cursor,
       log: this.log,

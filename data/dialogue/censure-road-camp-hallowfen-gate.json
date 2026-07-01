@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-hallowfen-gate",
+  "title": "Hallowfen Checkpoint Gate",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The east gate is chained and sealed with red wax.",
+        "Three Hallowfen bell marks sit on the slate. None has an answer beside it."
+      ],
+      "choices": [
+        {
+          "label": "Leave the chain",
+          "close": true
+        }
+      ]
+    }
+  }
+}

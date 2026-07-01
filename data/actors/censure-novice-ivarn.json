@@ -1,0 +1,19 @@
+{
+  "id": "censure-novice-ivarn",
+  "name": "Novice Ivarn",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Censure novice",
+  "appearance": {
+    "body": "teen",
+    "outfit": "settlement-work-coat",
+    "gear": ["bandage-sling"],
+    "accent": "bare-light"
+  },
+  "stats": {
+    "hp": 7,
+    "maxHp": 7,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "novice"]
+}

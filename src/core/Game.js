@@ -9,6 +9,7 @@
 import { GameLoop } from './GameLoop.js';
 import { Input } from './Input.js';
 import { Inventory } from './Inventory.js';
+import { cloneGameClock, createGameClock } from './GameClock.js';
 import { mapLoadingProgress, normalizeLoadingState } from './LoadingProgress.js';
 import { loadLevel, randomPatrolDelay } from './LevelLoader.js';
 import {
@@ -83,6 +84,28 @@ import { installGameRuntimeState } from './game/GameRuntimeState.js';
 import { installGameRenderState } from './game/GameRenderState.js';
 import { createLootSessionState, createTradeSessionState } from './game/sessionState.js';
 
+const FACING_OFFSETS = Object.freeze({
+  n: { x: -1, y: -1 },
+  ne: { x: 0, y: -1 },
+  e: { x: 1, y: -1 },
+  se: { x: 1, y: 0 },
+  s: { x: 1, y: 1 },
+  sw: { x: 0, y: 1 },
+  w: { x: -1, y: 1 },
+  nw: { x: -1, y: 0 }
+});
+
+const ADJACENT_INTERACT_OFFSETS = Object.freeze([
+  { x: 0, y: -1 },
+  { x: 1, y: 0 },
+  { x: 0, y: 1 },
+  { x: -1, y: 0 },
+  { x: 1, y: -1 },
+  { x: 1, y: 1 },
+  { x: -1, y: 1 },
+  { x: -1, y: -1 }
+]);
+
 export class Game {
   constructor({ canvas, levelPath, atlas, statusElement, bootOptions = {}, debugGrid = null }) {
     this.canvas = canvas;
@@ -90,6 +113,7 @@ export class Game {
     this.atlas = atlas;
     this.statusElement = statusElement;
     this.startupOptions = { ...bootOptions };
+    this.clock = createGameClock(this.startupOptions.clock);
 
     this.input = new Input(canvas);
     this.renderer = new IsometricRenderer(canvas, atlas);
@@ -197,6 +221,7 @@ export class Game {
     const previousAwardedQuestXp = bootOptions.preserveRun && this.awardedQuestXp
       ? new Set(this.awardedQuestXp)
       : null;
+    const previousClock = bootOptions.preserveRun ? cloneGameClock(this.clock) : null;
     const previousPlayer = bootOptions.preserveRun && this.player
       ? {
           name: this.player.name,
@@ -326,6 +351,7 @@ export class Game {
     this.briefingSkipPrompt = null;
     this.briefingMarksIntro = false;
     this.anim = { tick: 0, bob: 0, flicker: 0, pulse: 0 };
+    this.clock = previousClock ?? createGameClock(this.startupOptions.clock);
     this.hiddenTiles = new Set();
     this.hiddenTilesKey = null;
     this.exploredMapTiles = new Set();
@@ -416,6 +442,7 @@ export class Game {
     if (!this.ready) return;
 
     this._advanceAnim(dt);
+    if (this.mode !== 'intro' && !this.uiScreen) this._advanceClock(dt);
     this._advanceJournalTurn(dt);
     this._advanceGroundItems();
     if (this.areaTitleTimer > 0 && this.mode !== 'intro') {
@@ -507,6 +534,12 @@ export class Game {
     const normalized = typeof action === 'string' ? { openScreen: action } : action;
     const screen = normalized.openScreen ?? normalized.screen ?? normalized.type;
     const loadLevel = normalized.loadLevel ?? normalized.thenLoadLevel ?? null;
+    const postEffects = {
+      clock: normalized.clock,
+      log: normalized.log,
+      setFlag: normalized.setFlag
+    };
+    this._applyEffects(postEffects);
 
     if (screen === 'character-customization') {
       this._openCharacterCustomization();
@@ -605,6 +638,9 @@ export class Game {
             return;
           }
           break;
+        case 'interact':
+          if (this._interactWithNearbyTarget()) return;
+          break;
         case 'cancel':
           this.preCombatTarget = null;
           break;
@@ -632,6 +668,36 @@ export class Game {
           break;
       }
     }
+  }
+
+  _interactWithNearbyTarget() {
+    const target = this._nearbyExploreActionTarget();
+    if (!target) return false;
+    this._executeExploreTarget(target);
+    return true;
+  }
+
+  _nearbyExploreActionTarget() {
+    const origin = this.player?.position;
+    if (!origin) return null;
+
+    const cells = [{ x: origin.x, y: origin.y }];
+    const facing = FACING_OFFSETS[this.player.facing];
+    if (facing) cells.push({ x: origin.x + facing.x, y: origin.y + facing.y });
+    for (const offset of ADJACENT_INTERACT_OFFSETS) {
+      cells.push({ x: origin.x + offset.x, y: origin.y + offset.y });
+    }
+
+    const seen = new Set();
+    for (const cell of cells) {
+      const key = `${cell.x},${cell.y}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      const target = this._interactionTargetAtCell(cell, 'explore');
+      if (isActionTarget(target) && isTargetInReach(this.player, target)) return target;
+    }
+    return null;
   }
 
   _handleExploreClick(click) {

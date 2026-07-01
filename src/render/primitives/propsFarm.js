@@ -1,5 +1,6 @@
 import { PALETTE } from '../palette.js';
 import { TILE_WIDTH, TILE_HEIGHT, WALL_HEIGHT } from '../renderConfig.js';
+import { drawChaffScatter } from './propsChapel.js';
 import {
   diamond,
   drawCracks,

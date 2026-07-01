@@ -1,0 +1,53 @@
+{
+  "id": "censure-road-odran-watch",
+  "title": "Confession Screen",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The confession screen faces the short path between the writ chapel and Father Odran's private tent.",
+        "A scratched price table runs down one post. Someone crossed out the numbers, then wrote them again smaller."
+      ],
+      "choices": [
+        {
+          "label": "Keep watch after last bell",
+          "conditions": {
+            "flag": "odran-late-visit-suspected",
+            "flagsAbsent": ["odran-late-visit-seen", "odran-late-visit-resolved"]
+          },
+          "effects": {
+            "setFlag": "odran-late-visit-seen",
+            "clock": {
+              "advanceToMinuteOfDay": 1380
+            },
+            "showBriefing": {
+              "title": "AFTER LAST BELL",
+              "pages": [
+                [
+                  "At 23:00 the camp folds itself into low voices and lamp smoke. The bell clerk sleeps with one hand near the rope."
+                ],
+                [
+                  "Widow Bruna comes from the wash tubs with a basket under one arm. She pauses by Father Odran's private tent, looks once toward the road, and slips inside."
+                ],
+                [
+                  "No cry follows. No struggle. Only canvas moving in the night wind, and the little lamp inside left burning too long."
+                ]
+              ],
+              "lastPrompt": "ENTER: MORNING",
+              "skipPrompt": "ESC: MORNING",
+              "afterBriefing": {
+                "clock": {
+                  "nextDay": true,
+                  "minuteOfDay": 480
+                }
+              }
+            }
+          }
+        },
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    }
+  }
+}

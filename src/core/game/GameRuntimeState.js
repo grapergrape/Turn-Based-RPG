@@ -1,6 +1,8 @@
 import { buildJournalState } from '../JournalState.js';
 import { buildJournalMapState, revealExploredMapCells } from '../JournalMapState.js';
+import { advanceGameClock, buildClockReadout } from '../GameClock.js';
 import { questStageExperience, questStageExperienceKey } from '../Progression.js';
+import { manhattan } from '../../combat/CombatSystem.js';
 import { objectGroupId, syncObjectPassability } from '../../world/DoorSystem.js';
 import { hydrateGroundItem, isGroundItemPickupComplete, serializeGroundItem } from '../../world/GroundItems.js';
 import { objectStateKey } from '../../world/ObjectIdentity.js';
@@ -94,6 +96,14 @@ class GameRuntimeState {
     this.anim.bob = Math.floor(this.anim.tick / 0.5) % 2;
     this.anim.flicker = Math.floor(this.anim.tick / 0.13) % 2;
     this.anim.pulse = Math.floor(this.anim.tick / 0.6) % 2;
+  }
+
+  _advanceClock(dt) {
+    this.clock = advanceGameClock(this.clock, dt);
+  }
+
+  _buildClockReadout() {
+    return buildClockReadout(this.clock);
   }
 
   _advanceGroundItems() {
@@ -344,6 +354,7 @@ class GameRuntimeState {
       techniqueContext: this._techniqueContext(),
       primaryIndex: this.journalPrimaryIndex ?? 0,
       techniqueIndex: this.journalTechniqueIndex ?? 0,
+      time: this._buildClockReadout(),
       map: this._buildJournalMap()
     });
   }

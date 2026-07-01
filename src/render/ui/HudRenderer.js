@@ -74,7 +74,14 @@ function drawStatus(ctx, ui, tools) {
 function drawCommands(ctx, ui, tools) {
   let y = COMMAND_BOX.y + 19;
   const x = COMMAND_BOX.x + 8;
+  if (ui.nearbyActionText) {
+    tools.text(ctx, tools.clip(ui.nearbyActionText, 21), x, y, PALETTE.uiGood);
+    y += 10;
+    tools.rect(ctx, x, y, COMMAND_BOX.w - 16, 1, PALETTE.uiBorderDark);
+    y += 4;
+  }
   for (const line of ui.controls ?? []) {
+    if (y > COMMAND_BOX.y + COMMAND_BOX.h - 10) break;
     tools.text(ctx, tools.clip(line, 21), x, y, PALETTE.uiDim);
     y += 9;
   }

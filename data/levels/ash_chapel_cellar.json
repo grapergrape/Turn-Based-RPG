@@ -77,6 +77,10 @@
         "type": "secret-entrance",
         "dialogue": "ash-chapel-cellar-loose-brick",
         "log": "A brick sits proud of the cold-wall, low where the old stone has shifted."
+      },
+      "mapMarker": {
+        "label": "Catacomb Cut",
+        "kind": "exit"
       }
     },
     {
@@ -126,6 +130,10 @@
         "type": "secret-exit",
         "dialogue": "ash-chapel-cellar-ladder",
         "log": "The ladder climbs back toward the split barrel in the service room."
+      },
+      "mapMarker": {
+        "label": "Back To Chapel",
+        "kind": "exit"
       }
     },
     {

@@ -142,6 +142,18 @@
       "x": 8,
       "y": 10,
       "seed": 5519
+    },
+    {
+      "kind": "chaff-scatter",
+      "x": 10,
+      "y": 8,
+      "seed": 5521,
+      "id": "barn-dragged-harness",
+      "name": "Dragged Harness",
+      "interact": {
+        "type": "note",
+        "log": "A torn harness lies in the chaff. The drag marks run under the north boards and end in dark hair, dried mud, and one black-gold pin of rot."
+      }
     }
   ]
 }

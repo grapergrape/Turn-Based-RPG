@@ -1,0 +1,3566 @@
+{
+  "id": "censure-road-camp",
+  "name": "Censure Road Camp",
+  "intro": "The Censure road camp sits between two dead routes: one back to Ash Chapel, one toward the silent Hallowfen bells.",
+  "width": 70,
+  "height": 50,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult",
+    "calcified-brothers",
+    "censure-road-confession"
+  ],
+  "dialogue": [
+    "censure-road-camp-long-ash-road-exit",
+    "censure-road-camp-hallowfen-gate",
+    "censure-road-odran-watch",
+    "censure-road-camp-odran",
+    "censure-road-camp-voss",
+    "censure-road-camp-runa",
+    "censure-road-camp-maev",
+    "censure-road-camp-caldus",
+    "censure-road-camp-sera",
+    "censure-road-camp-pell",
+    "censure-road-camp-ivarn",
+    "censure-road-camp-hanne",
+    "censure-road-camp-joric",
+    "censure-road-camp-malco",
+    "censure-road-camp-elian",
+    "censure-road-camp-widow-bruna"
+  ],
+  "tiles": [
+    "vvvutvuvuuvuuvtulllullvltvuuuuuuuvuvutuuuuulvvvuvvuuvtuluuuuvtlluuvvlu",
+    "vuuuuulvvvvuluutuuvuvuvuvutuuuvlvuulvvluvltvvuuullvluuvlvluulvlvluvuvv",
+    "ltuvuuvvllvuvlvuvuutlvulluuuuvvuuvuluulluuvuluutluuuuuuvtuuluvvuvvutvv",
+    "uuvuuvtuvltvlutvuuvvtvvuuvulvvutuvtlvtvluuuuuuvuluvlvuuuvvuuuvtvuuuluu",
+    "utlulvluuvtvvvlvuvuttuuuluvuullvvluuuluvlluuuuuuuuuuuvutvluvvlvvluutvv",
+    "vuuvlttuuu......................................................lvvlvu",
+    "uvuuuuuull......................................................ltuuul",
+    "vuuluuutlu......................................................lvvluu",
+    "vvllluutvv......................................................vuutll",
+    "luvuutu............................................................uuu",
+    "uvulutu............................................................lvu",
+    "ulvuuvv............................................................uul",
+    "vvvuuuu............................................................lss",
+    "llluluu........................................................sssssss",
+    "vllvuuv..................................................sssssssssssrr",
+    "uvuvttu.................................................sssssssrrrrrrr",
+    "uuuuvvv...............................................ssssrrrrrrrrrrrr",
+    "uvuvuuv..............................................sssrrrrrrrrrrrrrr",
+    "lvtuvul.............................................sssrrrrrrrrrrrrrrr",
+    "llvuuul............................................sssrrrrrrrrrrrsssss",
+    "uuvutvl...........................................sssrrrrrrrssssssssss",
+    "vuvvuuu.........................................sssrrrrrrrsssssss..uvt",
+    "utuvuvu........................................sssrrrrrrrsss.......ult",
+    "tuulvuv.......................................sssrrrrrrrsss........uuv",
+    "uvuuvtv......................................sssrrrrrrrsss.........ull",
+    "vuvullv.....................................sssrrrrrrsss...........uut",
+    "vuuvtuv...................................sssrrrrrrrsss............uvu",
+    "uvuuvvt..................................sssrrrrrrrsss.............vuu",
+    "vuvuuuv.................................sssrrrrrrrsss..............lvu",
+    "luvvvut................................sssrrrrrrssss...............lvl",
+    "ulvuvlv...............................sssrrrrrrsss.................vuv",
+    "vluuuuu..............................sssrrrrrrsss..................uvu",
+    "vuvltvu.............................sssrrrrrrsss...................uvu",
+    "vvvuvlu............................sssrrrrrrsss....................vlv",
+    "vtuultt...........................sssrrrrrrsss.....................lvv",
+    "llutvuv...........................ssrrrrrrsss......................luu",
+    "vuluvvv..........................sssrrrrrsss.......................vll",
+    "tuutvvu..........................ssrrrrrss..............SSSSSSS....uvv",
+    "utvuvvu.........................sssrrrrsss..............SSSSSSS....vlu",
+    "luuvuvv.........................ssrrrrrss...............SSSSSSS....vvl",
+    "uuuutuu........................sssrrrrsss...............SSSSSSS....vul",
+    "lvluvlv........................ssrrrrrss...........................vuu",
+    "vvulull.......................sssrrrrsss...........................vuv",
+    "vvlvvvl.......................ssrrrrrss............................vlv",
+    "uuuuuvvvl.....................ssrrrrrss............................uvv",
+    "uvuvvluuu.....................ssrrrrrss............................tul",
+    "vlvvulvuv.....................ssrrrrrss............................lvv",
+    "vuuvluutu.....................ssrrrrrss............................uuv",
+    "luvlvuvlvvuuluuulvuvllluuututvssrrrrrsslulvuluvvvuvuuuuuullullvuuvvltl",
+    "ltlvtvvlutlulvvvtvlutuuulluuvvssrrrrrsstuuvlvuluuvlvtuvllvlullulvvuvvu"
+  ],
+  "legend": {
+    ".": {
+      "kind": "floor",
+      "floor": "packed-earth",
+      "walkable": true
+    },
+    "r": {
+      "kind": "floor",
+      "floor": "ash-road",
+      "walkable": true
+    },
+    "s": {
+      "kind": "floor",
+      "floor": "road-shoulder",
+      "walkable": true
+    },
+    "u": {
+      "kind": "ash-tree",
+      "floor": "forest-floor",
+      "walkable": false
+    },
+    "v": {
+      "kind": "scrub-bush",
+      "floor": "forest-floor",
+      "walkable": false
+    },
+    "l": {
+      "kind": "fallen-ash-log",
+      "floor": "forest-floor",
+      "walkable": false
+    },
+    "t": {
+      "kind": "ash-tree-stump",
+      "floor": "forest-floor",
+      "walkable": false
+    },
+    "S": {
+      "kind": "storage-shed-building-block",
+      "walkable": false
+    }
+  },
+  "mood": {
+    "floorShade": "#10130d",
+    "floorShadeAlpha": 0.05,
+    "ambient": "#b8aa83",
+    "ambientAlpha": 0.08,
+    "vignette": 0.28,
+    "sun": {
+      "enabled": true,
+      "shadowOffsetX": 12,
+      "shadowOffsetY": 6,
+      "shadowAlpha": 0.14
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 34,
+      "y": 46
+    },
+    "enemies": [],
+    "npcs": [
+      {
+        "actor": "censure-father-odran",
+        "x": 20,
+        "y": 18,
+        "facing": "se",
+        "dialogue": "censure-road-camp-odran",
+        "ambient": [
+          "Confession after bell check. God can wait ten breaths. The road cannot."
+        ],
+        "mapMarker": {
+          "label": "Father Odran",
+          "kind": "dialogue",
+          "reveal": "always"
+        }
+      },
+      {
+        "actor": "censure-preceptor-voss",
+        "x": 46,
+        "y": 13,
+        "facing": "sw",
+        "dialogue": "censure-road-camp-voss",
+        "ambient": [
+          "If that slate falls in the mud, nobody is eating until I can read it."
+        ],
+        "mapMarker": {
+          "label": "Preceptor Voss",
+          "kind": "dialogue",
+          "reveal": "always"
+        }
+      },
+      {
+        "actor": "censure-quartermaster-runa",
+        "x": 29,
+        "y": 30,
+        "facing": "se",
+        "dialogue": "censure-road-camp-runa",
+        "ambient": [
+          "No seal, no ration. A sad face is not a seal."
+        ],
+        "mapMarker": {
+          "label": "Quartermaster Runa",
+          "kind": "dialogue",
+          "reveal": "always"
+        }
+      },
+      {
+        "actor": "censure-sutler-maev",
+        "x": 49,
+        "y": 35,
+        "facing": "sw",
+        "dialogue": "censure-road-camp-maev",
+        "ambient": [
+          "Road prices are fair prices, if you ask the road."
+        ],
+        "mapMarker": {
+          "label": "Sutler Maev",
+          "kind": "dialogue",
+          "reveal": "always"
+        }
+      },
+      {
+        "actor": "censure-brother-caldus",
+        "x": 45,
+        "y": 25,
+        "facing": "se",
+        "dialogue": "censure-road-camp-caldus",
+        "ambient": [
+          "Again. A cultist will not wait while you remember where your elbow lives."
+        ],
+        "mapMarker": {
+          "label": "Brother Caldus",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-bell-clerk-sera",
+        "x": 32,
+        "y": 18,
+        "facing": "sw",
+        "dialogue": "censure-road-camp-sera",
+        "ambient": [
+          "One wrong peal sends a squad to the latrines. Ask me how I learned."
+        ],
+        "mapMarker": {
+          "label": "Bell Clerk Sera",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-writ-runner-pell",
+        "x": 14,
+        "y": 26,
+        "facing": "se",
+        "dialogue": "censure-road-camp-pell",
+        "ambient": [
+          "If the board says missing, it means late. If it says late, it means dead."
+        ],
+        "mapMarker": {
+          "label": "Writ Runner Pell",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-novice-ivarn",
+        "x": 50,
+        "y": 25,
+        "facing": "sw",
+        "dialogue": "censure-road-camp-ivarn",
+        "ambient": [
+          "I am not afraid. I am conserving bravery for paid work."
+        ],
+        "mapMarker": {
+          "label": "Novice Ivarn",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-sister-hanne",
+        "x": 60,
+        "y": 46,
+        "facing": "nw",
+        "dialogue": "censure-road-camp-hanne",
+        "ambient": [
+          "If you bleed on the tent flap, wipe it before you faint."
+        ],
+        "mapMarker": {
+          "label": "Sister Hanne",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-ash-porter-joric",
+        "x": 39,
+        "y": 33,
+        "facing": "se",
+        "dialogue": "censure-road-camp-joric",
+        "ambient": [
+          "A crate gets a destination. A porter gets a shrug. I envy crates."
+        ],
+        "mapMarker": {
+          "label": "Ash Porter Joric",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-evidence-keeper-malco",
+        "x": 58,
+        "y": 42,
+        "facing": "nw",
+        "dialogue": "censure-road-camp-malco",
+        "ambient": [
+          "Do not touch the bags. One of them already hummed at me."
+        ],
+        "mapMarker": {
+          "label": "Evidence Keeper Malco",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-tether-guard-elian",
+        "x": 31,
+        "y": 44,
+        "facing": "se",
+        "dialogue": "censure-road-camp-elian",
+        "ambient": [
+          "Tether line is empty. The goats filed a complaint and escaped."
+        ],
+        "mapMarker": {
+          "label": "Tether Guard Elian",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      },
+      {
+        "actor": "censure-widow-bruna",
+        "x": 56,
+        "y": 46,
+        "facing": "nw",
+        "dialogue": "censure-road-camp-widow-bruna",
+        "ambient": [
+          "I wash camp linen. I do not wash camp stories."
+        ],
+        "mapMarker": {
+          "label": "Widow Bruna",
+          "kind": "dialogue",
+          "reveal": "explored"
+        }
+      }
+    ]
+  },
+  "objects": [
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1567896298,
+      "id": "farm-fence-110"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 8,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 795164125,
+      "id": "farm-fence-112"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 9,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2458527900,
+      "id": "farm-fence-114"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 10,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2097963512,
+      "id": "farm-fence-116"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 11,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 721321841,
+      "id": "farm-fence-118"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 12,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 648732121,
+      "id": "farm-fence-120"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 13,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2476040386,
+      "id": "farm-fence-122"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 14,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2538096051,
+      "id": "farm-fence-124"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 15,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2763315148,
+      "id": "farm-fence-126"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 16,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 894716366,
+      "id": "farm-fence-128"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 17,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 868118138,
+      "id": "farm-fence-130"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 18,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1593834237,
+      "id": "farm-fence-132"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 19,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3346294869,
+      "id": "farm-fence-134"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 20,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3126457468,
+      "id": "farm-fence-136"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 21,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2505086197,
+      "id": "farm-fence-138"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 22,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1396240545,
+      "id": "farm-fence-140"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 23,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3503834818,
+      "id": "farm-fence-142"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 24,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4271410668,
+      "id": "farm-fence-144"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 25,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4041907704,
+      "id": "farm-fence-146"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 26,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2817279708,
+      "id": "farm-fence-148"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 27,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4258416513,
+      "id": "farm-fence-150"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 28,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2613629247,
+      "id": "farm-fence-152"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 29,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1386619325,
+      "id": "farm-fence-154"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 30,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 967726161,
+      "id": "farm-fence-156"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 31,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 91377366,
+      "id": "farm-fence-158"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 32,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 707669320,
+      "id": "farm-fence-159"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 33,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2897981659,
+      "id": "farm-fence-160"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 34,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1936473154,
+      "id": "farm-fence-161"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 35,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2097015800,
+      "id": "farm-fence-162"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 36,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1289523013,
+      "id": "farm-fence-163"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 37,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3464921855,
+      "id": "farm-fence-164"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 38,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2677775558,
+      "id": "farm-fence-165"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 39,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2075632450,
+      "id": "farm-fence-167"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 40,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3181654676,
+      "id": "farm-fence-169"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 41,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 628679222,
+      "id": "farm-fence-171"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 42,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1890701117,
+      "id": "farm-fence-173"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 43,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 62265088,
+      "id": "farm-fence-175"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 44,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1942032890,
+      "id": "farm-fence-177"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 45,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2785958609,
+      "id": "farm-fence-179"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 46,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3262631764,
+      "id": "farm-fence-181"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 47,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2874074857,
+      "id": "farm-fence-183"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 48,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 611985336,
+      "id": "farm-fence-185"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 49,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3380066811,
+      "id": "farm-fence-187"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 50,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3884058952,
+      "id": "farm-fence-189"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 51,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 129283244,
+      "id": "farm-fence-191"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 52,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2462024290,
+      "id": "farm-fence-193"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 53,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 944970158,
+      "id": "farm-fence-195"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 54,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1171013981,
+      "id": "farm-fence-197"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 55,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1838505700,
+      "id": "farm-fence-199"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 56,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1299701403,
+      "id": "farm-fence-201"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 57,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2901787231,
+      "id": "farm-fence-203"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 58,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 234871255,
+      "id": "farm-fence-205"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 59,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1852063646,
+      "id": "farm-fence-207"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 60,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4121868305,
+      "id": "farm-fence-209"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 61,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2845439770,
+      "id": "farm-fence-211"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 62,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 104734393,
+      "id": "farm-fence-213"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 63,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2009329536,
+      "id": "farm-fence-215"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 64,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2862579536,
+      "id": "farm-fence-217"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 65,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4165800101,
+      "id": "farm-fence-219"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4083492563,
+      "id": "farm-fence-221"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 6,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3147487103,
+      "id": "farm-fence-223"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 6,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2025575348,
+      "id": "farm-fence-224"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1629561146,
+      "id": "farm-fence-225"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2075577219,
+      "id": "farm-fence-226"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 8,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 557540310,
+      "id": "farm-fence-227"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 8,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1052674818,
+      "id": "farm-fence-228"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 9,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3374248714,
+      "id": "farm-fence-229"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 45,
+      "y": 9,
+      "id": "censure-road-preceptor-tent",
+      "blocking": true,
+      "name": "Preceptor Tent",
+      "seed": 231335140,
+      "mapMarker": {
+        "label": "Preceptor Tent",
+        "kind": "dialogue",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 9,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3918308032,
+      "id": "farm-fence-230"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 10,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4025523980,
+      "id": "farm-fence-231"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 10,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1355149969,
+      "id": "farm-fence-232"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 11,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4250760825,
+      "id": "farm-fence-233"
+    },
+    {
+      "kind": "settlement-table",
+      "x": 47,
+      "y": 11,
+      "id": "censure-road-preceptor-table",
+      "blocking": true,
+      "seed": 3645477179
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 11,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1424638773,
+      "id": "farm-fence-234"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 387786582,
+      "id": "farm-fence-235"
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 43,
+      "y": 12,
+      "id": "censure-road-preceptor-crate",
+      "blocking": true,
+      "seed": 2400766926
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 48,
+      "y": 12,
+      "id": "censure-road-preceptor-slate-scraps",
+      "seed": 844339662
+    },
+    {
+      "kind": "floor-crack",
+      "x": 52,
+      "y": 12,
+      "id": "censure-road-floor-crack-52-12",
+      "seed": 1819117049
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2358627024,
+      "id": "farm-fence-236"
+    },
+    {
+      "kind": "road-dust",
+      "x": 68,
+      "y": 12,
+      "seed": 460080411,
+      "id": "road-dust-3"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 13,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 899837567,
+      "id": "farm-fence-237"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 18,
+      "y": 13,
+      "id": "censure-road-writ-chapel-west",
+      "blocking": true,
+      "name": "Writ Chapel",
+      "seed": 3127658925,
+      "mapMarker": {
+        "label": "Writ Chapel",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 22,
+      "y": 13,
+      "id": "censure-road-writ-chapel-east",
+      "blocking": true,
+      "name": "Writ Chapel",
+      "seed": 1351981421
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 13,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 682140203,
+      "id": "farm-fence-238"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3015518426,
+      "id": "farm-fence-239"
+    },
+    {
+      "kind": "road-dust",
+      "x": 59,
+      "y": 14,
+      "seed": 2678846811,
+      "id": "road-dust-4"
+    },
+    {
+      "kind": "road-dust",
+      "x": 64,
+      "y": 14,
+      "seed": 1193527608,
+      "id": "road-dust-5"
+    },
+    {
+      "kind": "road-dust",
+      "x": 65,
+      "y": 14,
+      "seed": 3680636805,
+      "id": "road-dust-6"
+    },
+    {
+      "kind": "road-dust",
+      "x": 67,
+      "y": 14,
+      "seed": 1340782308,
+      "id": "road-dust-7"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 15,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1716704988,
+      "id": "farm-fence-240"
+    },
+    {
+      "kind": "chapel-banner",
+      "x": 19,
+      "y": 15,
+      "id": "censure-road-chapel-banner",
+      "blocking": true,
+      "seed": 3337688114
+    },
+    {
+      "kind": "road-dust",
+      "x": 61,
+      "y": 15,
+      "seed": 1460955801,
+      "id": "road-dust-8"
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 67,
+      "y": 15,
+      "id": "censure-road-hallowfen-gate-15",
+      "blocking": true,
+      "seed": 4189790466
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 16,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1750036341,
+      "id": "farm-fence-241"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 16,
+      "y": 16,
+      "id": "censure-road-odran-private-tent",
+      "blocking": true,
+      "name": "Father Odran's Tent",
+      "seed": 2087436275,
+      "interact": {
+        "type": "note",
+        "log": "Father Odran's private tent smells of lamp oil, damp canvas, and shaving soap.",
+        "lock": {
+          "id": "censure-road-odran-tent-flap",
+          "title": "Father Odran's Tent",
+          "lines": [
+            "A private flap is tied with ledger cord. The knot is ordinary. The consequences are not."
+          ],
+          "methods": [
+            {
+              "id": "open-ledger-cord",
+              "label": "Open the ledger cord",
+              "field": "security",
+              "dc": 55,
+              "successLog": "The cord comes loose without snapping the wax fleck.",
+              "failLog": "The knot holds, and the canvas gives a loud dry pop."
+            }
+          ]
+        },
+        "search": {
+          "title": "Father Odran's Tent",
+          "lines": [
+            "A cot, a travel chest, and folded church linen fill the private tent."
+          ],
+          "useLabel": "Inspect the tent",
+          "methods": [
+            {
+              "id": "search-folded-linen",
+              "label": "Search the folded linen",
+              "field": "search",
+              "dc": 45,
+              "conditions": {
+                "flagsAbsent": [
+                  "odran-late-visit-suspected",
+                  "odran-late-visit-seen",
+                  "odran-late-visit-resolved"
+                ]
+              },
+              "successLog": "Under a stack of priestly cloth, you find a woman's underlinen tucked hard against the chest wall.",
+              "failLog": "The linen is folded too tightly. If there is a secret here, it stays flat.",
+              "success": {
+                "setFlag": "odran-late-visit-suspected",
+                "log": "The hidden underlinen gives you a reason to watch Father Odran's tent after last bell."
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Father Odran's Tent",
+        "kind": "locked",
+        "reveal": "explored"
+      }
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 21,
+      "y": 16,
+      "id": "censure-road-writ-lectern",
+      "blocking": true,
+      "name": "Writ Lectern",
+      "seed": 3755203179,
+      "interact": {
+        "type": "note",
+        "log": "Fresh writ copies are stacked by route: chapel, road camp, Hallowfen wall. The last stack is still tied."
+      }
+    },
+    {
+      "kind": "broken-bell",
+      "x": 32,
+      "y": 16,
+      "id": "censure-road-bell-mast",
+      "blocking": true,
+      "name": "Bell Mast",
+      "seed": 2128807370,
+      "interact": {
+        "type": "note",
+        "log": "The camp bell hangs from a patched road mast. Each peal marks one route, one alarm, or one body count."
+      },
+      "mapMarker": {
+        "label": "Bell Mast",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "road-dust",
+      "x": 59,
+      "y": 16,
+      "seed": 2488865401,
+      "id": "road-dust-9"
+    },
+    {
+      "kind": "road-dust",
+      "x": 60,
+      "y": 16,
+      "seed": 3428780832,
+      "id": "road-dust-10"
+    },
+    {
+      "kind": "road-dust",
+      "x": 62,
+      "y": 16,
+      "seed": 2846036004,
+      "id": "road-dust-11"
+    },
+    {
+      "kind": "road-dust",
+      "x": 63,
+      "y": 16,
+      "seed": 2448582329,
+      "id": "road-dust-12"
+    },
+    {
+      "kind": "road-dust",
+      "x": 64,
+      "y": 16,
+      "seed": 2400118434,
+      "id": "road-dust-13"
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 67,
+      "y": 16,
+      "id": "censure-road-hallowfen-gate-16",
+      "blocking": true,
+      "seed": 862332692,
+      "name": "Hallowfen Checkpoint Gate",
+      "interact": {
+        "type": "note",
+        "dialogue": "censure-road-camp-hallowfen-gate",
+        "log": "The east road is chained until Preceptor Voss signs the marching slate."
+      },
+      "mapMarker": {
+        "label": "Hallowfen Checkpoints",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 17,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2026938306,
+      "id": "farm-fence-242"
+    },
+    {
+      "kind": "wax-stain",
+      "x": 24,
+      "y": 17,
+      "id": "censure-road-wax-stain-24-17",
+      "seed": 1012166853
+    },
+    {
+      "kind": "bell-rope",
+      "x": 33,
+      "y": 17,
+      "id": "censure-road-bell-rope",
+      "seed": 2465141919
+    },
+    {
+      "kind": "road-dust",
+      "x": 59,
+      "y": 17,
+      "seed": 3973563422,
+      "id": "road-dust-14"
+    },
+    {
+      "kind": "road-dust",
+      "x": 60,
+      "y": 17,
+      "seed": 2471806609,
+      "id": "road-dust-15"
+    },
+    {
+      "kind": "road-dust",
+      "x": 63,
+      "y": 17,
+      "seed": 4121368005,
+      "id": "road-dust-16"
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 67,
+      "y": 17,
+      "id": "censure-road-hallowfen-gate-17",
+      "blocking": true,
+      "seed": 543808483
+    },
+    {
+      "kind": "road-dust",
+      "x": 68,
+      "y": 17,
+      "seed": 4264665414,
+      "id": "road-dust-17"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 18,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 614064528,
+      "id": "farm-fence-243"
+    },
+    {
+      "kind": "chapel-font",
+      "x": 18,
+      "y": 18,
+      "id": "censure-road-chapel-font",
+      "blocking": true,
+      "seed": 3040040209
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 22,
+      "y": 18,
+      "id": "censure-road-chapel-candles",
+      "seed": 2929413896
+    },
+    {
+      "kind": "chapel-banner",
+      "x": 25,
+      "y": 18,
+      "id": "censure-road-confession-screen",
+      "blocking": true,
+      "name": "Confession Screen",
+      "seed": 2341755546,
+      "interact": {
+        "type": "note",
+        "dialogue": "censure-road-odran-watch",
+        "log": "The screen is canvas over a spare fence frame. Someone scratched a price table into the wood and then crossed it out."
+      },
+      "mapMarker": {
+        "label": "Confession Screen",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 27,
+      "y": 18,
+      "id": "censure-road-paper-scraps-27-18",
+      "seed": 620503058
+    },
+    {
+      "kind": "road-dust",
+      "x": 56,
+      "y": 18,
+      "seed": 3180761708,
+      "id": "road-dust-18"
+    },
+    {
+      "kind": "road-dust",
+      "x": 57,
+      "y": 18,
+      "seed": 656032421,
+      "id": "road-dust-19"
+    },
+    {
+      "kind": "road-dust",
+      "x": 59,
+      "y": 18,
+      "seed": 463584534,
+      "id": "road-dust-20"
+    },
+    {
+      "kind": "road-dust",
+      "x": 66,
+      "y": 18,
+      "seed": 2167208109,
+      "id": "road-dust-21"
+    },
+    {
+      "kind": "road-dust",
+      "x": 67,
+      "y": 18,
+      "seed": 2931280114,
+      "id": "road-dust-22"
+    },
+    {
+      "kind": "road-dust",
+      "x": 68,
+      "y": 18,
+      "seed": 449094921,
+      "id": "road-dust-23"
+    },
+    {
+      "kind": "road-dust",
+      "x": 69,
+      "y": 18,
+      "seed": 2523517505,
+      "id": "road-dust-24"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 19,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2814517573,
+      "id": "farm-fence-244"
+    },
+    {
+      "kind": "road-dust",
+      "x": 56,
+      "y": 19,
+      "seed": 3055074933,
+      "id": "road-dust-25"
+    },
+    {
+      "kind": "road-dust",
+      "x": 57,
+      "y": 19,
+      "seed": 3254671003,
+      "id": "road-dust-26"
+    },
+    {
+      "kind": "road-dust",
+      "x": 64,
+      "y": 19,
+      "seed": 3037660612,
+      "id": "road-dust-27"
+    },
+    {
+      "kind": "road-dust",
+      "x": 65,
+      "y": 19,
+      "seed": 513875606,
+      "id": "road-dust-28"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 19,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2662774726,
+      "id": "farm-fence-245"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 20,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2436452513,
+      "id": "farm-fence-246"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 20,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4023801982,
+      "id": "farm-fence-247"
+    },
+    {
+      "kind": "road-dust",
+      "x": 69,
+      "y": 20,
+      "seed": 2872826307,
+      "id": "road-dust-29"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 21,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 272383500,
+      "id": "farm-fence-248"
+    },
+    {
+      "kind": "road-dust",
+      "x": 51,
+      "y": 21,
+      "seed": 2957514720,
+      "id": "road-dust-30"
+    },
+    {
+      "kind": "road-dust",
+      "x": 52,
+      "y": 21,
+      "seed": 2965118513,
+      "id": "road-dust-31"
+    },
+    {
+      "kind": "road-dust",
+      "x": 53,
+      "y": 21,
+      "seed": 3208380022,
+      "id": "road-dust-32"
+    },
+    {
+      "kind": "road-dust",
+      "x": 54,
+      "y": 21,
+      "seed": 1131895334,
+      "id": "road-dust-33"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 21,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3117885751,
+      "id": "farm-fence-249"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 22,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4278963331,
+      "id": "farm-fence-250"
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 42,
+      "y": 22,
+      "blocking": true,
+      "seed": 1526216123,
+      "id": "quarantine-barricade-320"
+    },
+    {
+      "kind": "road-dust",
+      "x": 47,
+      "y": 22,
+      "seed": 125749910,
+      "id": "road-dust-34"
+    },
+    {
+      "kind": "road-dust",
+      "x": 51,
+      "y": 22,
+      "seed": 1389437806,
+      "id": "road-dust-35"
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 52,
+      "y": 22,
+      "blocking": true,
+      "seed": 3784138707,
+      "id": "quarantine-barricade-321"
+    },
+    {
+      "kind": "road-dust",
+      "x": 53,
+      "y": 22,
+      "seed": 3446665832,
+      "id": "road-dust-36"
+    },
+    {
+      "kind": "road-dust",
+      "x": 55,
+      "y": 22,
+      "seed": 1502556129,
+      "id": "road-dust-37"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 22,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2628045805,
+      "id": "farm-fence-251"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 23,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2489092669,
+      "id": "farm-fence-252"
+    },
+    {
+      "kind": "road-dust",
+      "x": 52,
+      "y": 23,
+      "seed": 1205739611,
+      "id": "road-dust-38"
+    },
+    {
+      "kind": "road-dust",
+      "x": 54,
+      "y": 23,
+      "seed": 2030309028,
+      "id": "road-dust-39"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 23,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2552782203,
+      "id": "farm-fence-253"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 24,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4206520221,
+      "id": "farm-fence-254"
+    },
+    {
+      "kind": "road-dust",
+      "x": 48,
+      "y": 24,
+      "seed": 477151503,
+      "id": "road-dust-40"
+    },
+    {
+      "kind": "road-dust",
+      "x": 51,
+      "y": 24,
+      "seed": 3610626406,
+      "id": "road-dust-41"
+    },
+    {
+      "kind": "road-dust",
+      "x": 57,
+      "y": 24,
+      "seed": 1152942905,
+      "id": "road-dust-42"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 24,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 994475519,
+      "id": "farm-fence-255"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 25,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4206778351,
+      "id": "farm-fence-256"
+    },
+    {
+      "kind": "quarantine-sign",
+      "x": 14,
+      "y": 25,
+      "id": "censure-road-writ-board",
+      "blocking": true,
+      "name": "Writ Board",
+      "seed": 1159257426,
+      "interact": {
+        "type": "note",
+        "log": "The board sorts orders by road bell. Hallowfen has three missed marks and one ink smear where a name was cut out."
+      },
+      "mapMarker": {
+        "label": "Writ Board",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "tool-rack",
+      "x": 43,
+      "y": 25,
+      "id": "censure-road-drill-yard-rack",
+      "blocking": true,
+      "seed": 2432035254
+    },
+    {
+      "kind": "road-dust",
+      "x": 44,
+      "y": 25,
+      "seed": 3780385102,
+      "id": "road-dust-43"
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 47,
+      "y": 25,
+      "id": "censure-road-drill-yard-chalk",
+      "seed": 3257686348
+    },
+    {
+      "kind": "road-dust",
+      "x": 48,
+      "y": 25,
+      "seed": 4269897508,
+      "id": "road-dust-44"
+    },
+    {
+      "kind": "road-dust",
+      "x": 49,
+      "y": 25,
+      "seed": 3712638319,
+      "id": "road-dust-45"
+    },
+    {
+      "kind": "road-dust",
+      "x": 51,
+      "y": 25,
+      "seed": 217453420,
+      "id": "road-dust-46"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 25,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1360873371,
+      "id": "farm-fence-257"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 26,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3449016521,
+      "id": "farm-fence-258"
+    },
+    {
+      "kind": "road-dust",
+      "x": 42,
+      "y": 26,
+      "seed": 606375702,
+      "id": "road-dust-47"
+    },
+    {
+      "kind": "road-dust",
+      "x": 44,
+      "y": 26,
+      "seed": 3497657608,
+      "id": "road-dust-48"
+    },
+    {
+      "kind": "field-harrow",
+      "x": 51,
+      "y": 26,
+      "id": "censure-road-drill-yard-harrow",
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4169360408
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 26,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4009440373,
+      "id": "farm-fence-259"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 27,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1488869724,
+      "id": "farm-fence-260"
+    },
+    {
+      "kind": "road-dust",
+      "x": 45,
+      "y": 27,
+      "seed": 1068418811,
+      "id": "road-dust-49"
+    },
+    {
+      "kind": "road-dust",
+      "x": 47,
+      "y": 27,
+      "seed": 4006946628,
+      "id": "road-dust-50"
+    },
+    {
+      "kind": "road-dust",
+      "x": 48,
+      "y": 27,
+      "seed": 2949563922,
+      "id": "road-dust-51"
+    },
+    {
+      "kind": "road-dust",
+      "x": 49,
+      "y": 27,
+      "seed": 1144944904,
+      "id": "road-dust-52"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 27,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2908822515,
+      "id": "farm-fence-261"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 28,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1113048569,
+      "id": "farm-fence-262"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 25,
+      "y": 28,
+      "id": "censure-road-quartermaster-sealed-storage-crate-25-28",
+      "blocking": true,
+      "seed": 147594400
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 30,
+      "y": 28,
+      "id": "censure-road-paper-scraps-30-28",
+      "seed": 3511938251
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 31,
+      "y": 28,
+      "id": "censure-road-quartermaster-sealed-storage-crate-31-28",
+      "blocking": true,
+      "seed": 3140762454
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 42,
+      "y": 28,
+      "blocking": true,
+      "seed": 3254205414,
+      "id": "quarantine-barricade-322"
+    },
+    {
+      "kind": "road-dust",
+      "x": 46,
+      "y": 28,
+      "seed": 2449156435,
+      "id": "road-dust-53"
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 52,
+      "y": 28,
+      "blocking": true,
+      "seed": 3888859283,
+      "id": "quarantine-barricade-323"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 28,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3569156007,
+      "id": "farm-fence-263"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 29,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1632344252,
+      "id": "farm-fence-264"
+    },
+    {
+      "kind": "settlement-table",
+      "x": 28,
+      "y": 29,
+      "id": "censure-road-quartermaster-table",
+      "blocking": true,
+      "name": "Quartermaster Table",
+      "seed": 616172355,
+      "interact": {
+        "type": "note",
+        "log": "Runa has split the ledger into issue, debt, and excuses. Excuses has the longest column."
+      },
+      "mapMarker": {
+        "label": "Quartermaster",
+        "kind": "dialogue",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "road-dust",
+      "x": 42,
+      "y": 29,
+      "seed": 1130539819,
+      "id": "road-dust-54"
+    },
+    {
+      "kind": "road-dust",
+      "x": 44,
+      "y": 29,
+      "seed": 644540023,
+      "id": "road-dust-55"
+    },
+    {
+      "kind": "road-dust",
+      "x": 47,
+      "y": 29,
+      "seed": 2092075024,
+      "id": "road-dust-56"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 29,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1912419440,
+      "id": "farm-fence-265"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 30,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 181945413,
+      "id": "farm-fence-266"
+    },
+    {
+      "kind": "road-dust",
+      "x": 43,
+      "y": 30,
+      "seed": 2632159404,
+      "id": "road-dust-57"
+    },
+    {
+      "kind": "road-dust",
+      "x": 44,
+      "y": 30,
+      "seed": 2213265919,
+      "id": "road-dust-58"
+    },
+    {
+      "kind": "road-dust",
+      "x": 49,
+      "y": 30,
+      "seed": 1124376005,
+      "id": "road-dust-59"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 30,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1284720212,
+      "id": "farm-fence-267"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 31,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2798424623,
+      "id": "farm-fence-268"
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 26,
+      "y": 31,
+      "id": "censure-road-quartermaster-rusted-crate-26-31",
+      "blocking": true,
+      "seed": 363979377
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 32,
+      "y": 31,
+      "id": "censure-road-quartermaster-rusted-barrel-32-31",
+      "blocking": true,
+      "seed": 2270169347
+    },
+    {
+      "kind": "road-dust",
+      "x": 39,
+      "y": 31,
+      "seed": 2238369803,
+      "id": "road-dust-60"
+    },
+    {
+      "kind": "road-dust",
+      "x": 42,
+      "y": 31,
+      "seed": 270135809,
+      "id": "road-dust-61"
+    },
+    {
+      "kind": "road-dust",
+      "x": 43,
+      "y": 31,
+      "seed": 1658901718,
+      "id": "road-dust-62"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 31,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2893358985,
+      "id": "farm-fence-269"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 32,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1973283289,
+      "id": "farm-fence-270"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 38,
+      "y": 32,
+      "id": "censure-road-supply-tent-38-32",
+      "blocking": true,
+      "name": "Supply Tent",
+      "seed": 1537452232,
+      "mapMarker": {
+        "label": "Supply Tents",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "road-dust",
+      "x": 38,
+      "y": 32,
+      "seed": 1857537408,
+      "id": "road-dust-63"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 41,
+      "y": 32,
+      "id": "censure-road-supply-tent-41-32",
+      "blocking": true,
+      "name": "Supply Tent",
+      "seed": 3333632013
+    },
+    {
+      "kind": "road-dust",
+      "x": 43,
+      "y": 32,
+      "seed": 1984090624,
+      "id": "road-dust-64"
+    },
+    {
+      "kind": "road-dust",
+      "x": 46,
+      "y": 32,
+      "seed": 1664795603,
+      "id": "road-dust-65"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 32,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2876074745,
+      "id": "farm-fence-271"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 33,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2252499838,
+      "id": "farm-fence-272"
+    },
+    {
+      "kind": "road-dust",
+      "x": 36,
+      "y": 33,
+      "seed": 3347102805,
+      "id": "road-dust-66"
+    },
+    {
+      "kind": "road-dust",
+      "x": 38,
+      "y": 33,
+      "seed": 2297722725,
+      "id": "road-dust-67"
+    },
+    {
+      "kind": "road-dust",
+      "x": 39,
+      "y": 33,
+      "seed": 969855004,
+      "id": "road-dust-68"
+    },
+    {
+      "kind": "road-dust",
+      "x": 41,
+      "y": 33,
+      "seed": 3302736401,
+      "id": "road-dust-69"
+    },
+    {
+      "kind": "road-dust",
+      "x": 42,
+      "y": 33,
+      "seed": 4154320533,
+      "id": "road-dust-70"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 43,
+      "y": 33,
+      "id": "censure-road-supply-sealed-storage-crate-43-33",
+      "blocking": true,
+      "seed": 562944546
+    },
+    {
+      "kind": "feed-trough",
+      "x": 64,
+      "y": 33,
+      "id": "censure-road-tether-line",
+      "blocking": true,
+      "orient": "sw",
+      "name": "Tether Line",
+      "seed": 2030283048,
+      "interact": {
+        "type": "note",
+        "log": "The tether line is empty except for chewed rope and one offended hoofprint."
+      },
+      "mapMarker": {
+        "label": "Tether Line",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 33,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3195710078,
+      "id": "farm-fence-273"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 34,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1435085661,
+      "id": "farm-fence-274"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 36,
+      "y": 34,
+      "id": "censure-road-supply-sealed-storage-crate-36-34",
+      "blocking": true,
+      "seed": 2672897057
+    },
+    {
+      "kind": "road-dust",
+      "x": 37,
+      "y": 34,
+      "seed": 808276322,
+      "id": "road-dust-71"
+    },
+    {
+      "kind": "road-dust",
+      "x": 39,
+      "y": 34,
+      "seed": 7946831,
+      "id": "road-dust-72"
+    },
+    {
+      "kind": "road-dust",
+      "x": 42,
+      "y": 34,
+      "seed": 3803213121,
+      "id": "road-dust-73"
+    },
+    {
+      "kind": "settlement-table",
+      "x": 48,
+      "y": 34,
+      "id": "censure-road-sutler-table",
+      "blocking": true,
+      "seed": 3280065474
+    },
+    {
+      "kind": "field-cart",
+      "x": 50,
+      "y": 34,
+      "id": "censure-road-sutler-cart",
+      "blocking": true,
+      "orient": "nw",
+      "name": "Maev's Cart",
+      "seed": 1437252321,
+      "mapMarker": {
+        "label": "Sutler Trader",
+        "kind": "dialogue",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 62,
+      "y": 34,
+      "id": "censure-road-rubble-decal-62-34",
+      "seed": 1482858272
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 34,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 815907452,
+      "id": "farm-fence-275"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 35,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4082725396,
+      "id": "farm-fence-276"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 38,
+      "y": 35,
+      "id": "censure-road-supply-tent-38-35",
+      "blocking": true,
+      "name": "Supply Tent",
+      "seed": 3635419920
+    },
+    {
+      "kind": "road-dust",
+      "x": 41,
+      "y": 35,
+      "seed": 3219181031,
+      "id": "road-dust-74"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 42,
+      "y": 35,
+      "id": "censure-road-supply-tent-42-35",
+      "blocking": true,
+      "name": "Supply Tent",
+      "seed": 1943408929
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 44,
+      "y": 35,
+      "id": "censure-road-supply-rusted-barrel-44-35",
+      "blocking": true,
+      "seed": 4290483973
+    },
+    {
+      "kind": "road-dust",
+      "x": 54,
+      "y": 35,
+      "id": "censure-road-road-dust-54-35",
+      "seed": 3605920757
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 35,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 196380035,
+      "id": "farm-fence-277"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 36,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2435355499,
+      "id": "farm-fence-278"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 13,
+      "y": 36,
+      "id": "censure-road-cult-breaker-tent-13-36",
+      "blocking": true,
+      "name": "Cult-Breaker Quarters",
+      "seed": 22297889,
+      "mapMarker": {
+        "label": "Cult-Breaker Quarters",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 17,
+      "y": 36,
+      "id": "censure-road-cult-breaker-tent-17-36",
+      "blocking": true,
+      "name": "Cult-Breaker Quarters",
+      "seed": 980097135
+    },
+    {
+      "kind": "road-dust",
+      "x": 36,
+      "y": 36,
+      "seed": 1005606404,
+      "id": "road-dust-75"
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 37,
+      "y": 36,
+      "id": "censure-road-supply-rusted-crate-37-36",
+      "blocking": true,
+      "seed": 647507677
+    },
+    {
+      "kind": "road-dust",
+      "x": 39,
+      "y": 36,
+      "seed": 3531105021,
+      "id": "road-dust-76"
+    },
+    {
+      "kind": "road-dust",
+      "x": 42,
+      "y": 36,
+      "seed": 1215939704,
+      "id": "road-dust-77"
+    },
+    {
+      "kind": "low-stool",
+      "x": 47,
+      "y": 36,
+      "id": "censure-road-sutler-stool",
+      "blocking": true,
+      "seed": 1137874160
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 36,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 964466033,
+      "id": "farm-fence-279"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 37,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2271526673,
+      "id": "farm-fence-280"
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 37,
+      "seed": 396044003,
+      "id": "road-dust-78"
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 37,
+      "seed": 1481875929,
+      "id": "road-dust-79"
+    },
+    {
+      "kind": "road-dust",
+      "x": 39,
+      "y": 37,
+      "seed": 1117566735,
+      "id": "road-dust-80"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 37,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 4137641381,
+      "id": "farm-fence-281"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 38,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2675344696,
+      "id": "farm-fence-282"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 15,
+      "y": 38,
+      "id": "censure-road-bedroll-15-38",
+      "seed": 2915312144
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 20,
+      "y": 38,
+      "id": "censure-road-bedroll-20-38",
+      "seed": 223976102
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 38,
+      "seed": 3073495503,
+      "id": "road-dust-81"
+    },
+    {
+      "kind": "road-dust",
+      "x": 38,
+      "y": 38,
+      "seed": 2549717200,
+      "id": "road-dust-82"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 38,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3721025064,
+      "id": "farm-fence-283"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 39,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 244746064,
+      "id": "farm-fence-284"
+    },
+    {
+      "kind": "campfire",
+      "x": 19,
+      "y": 39,
+      "id": "censure-road-quarters-fire",
+      "seed": 2600163513
+    },
+    {
+      "kind": "road-dust",
+      "x": 37,
+      "y": 39,
+      "seed": 4004900426,
+      "id": "road-dust-83"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 39,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 311867551,
+      "id": "farm-fence-285"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 40,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2130361243,
+      "id": "farm-fence-286"
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 13,
+      "y": 40,
+      "id": "censure-road-cult-breaker-tent-13-40",
+      "blocking": true,
+      "name": "Cult-Breaker Quarters",
+      "seed": 1882860870
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 18,
+      "y": 40,
+      "id": "censure-road-cult-breaker-tent-18-40",
+      "blocking": true,
+      "name": "Cult-Breaker Quarters",
+      "seed": 2476694172
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 40,
+      "seed": 2175921408,
+      "id": "road-dust-84"
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 40,
+      "seed": 2114035500,
+      "id": "road-dust-85"
+    },
+    {
+      "kind": "road-dust",
+      "x": 37,
+      "y": 40,
+      "seed": 2255383206,
+      "id": "road-dust-86"
+    },
+    {
+      "kind": "farm-door",
+      "x": 59,
+      "y": 40,
+      "id": "censure-road-evidence-shed-door",
+      "blocking": true,
+      "wallPlane": "sw",
+      "variant": "storage-shed",
+      "name": "Evidence Shed",
+      "seed": 3899105337,
+      "interact": {
+        "type": "note",
+        "log": "The evidence shed is sealed with three tags: cult relics, road bodies, and objects that talked back."
+      },
+      "mapMarker": {
+        "label": "Evidence Shed",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 40,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2077382725,
+      "id": "farm-fence-287"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 41,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 2342329398,
+      "id": "farm-fence-288"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 16,
+      "y": 41,
+      "id": "censure-road-bedroll-16-41",
+      "seed": 2173856531
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 41,
+      "seed": 3490904009,
+      "id": "road-dust-87"
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 35,
+      "y": 41,
+      "id": "censure-road-rubble-decal-35-41",
+      "seed": 364142340
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 41,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3130817189,
+      "id": "farm-fence-289"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 42,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1350534382,
+      "id": "farm-fence-290"
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 42,
+      "seed": 3553959508,
+      "id": "road-dust-88"
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 42,
+      "seed": 3623387806,
+      "id": "road-dust-89"
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 42,
+      "seed": 1876211120,
+      "id": "road-dust-90"
+    },
+    {
+      "kind": "road-dust",
+      "x": 39,
+      "y": 42,
+      "seed": 783701701,
+      "id": "road-dust-91"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 57,
+      "y": 42,
+      "id": "censure-road-evidence-tags",
+      "seed": 2926121820
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 42,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3171629131,
+      "id": "farm-fence-291"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 43,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 370612111,
+      "id": "farm-fence-292"
+    },
+    {
+      "kind": "road-dust",
+      "x": 32,
+      "y": 43,
+      "seed": 277698134,
+      "id": "road-dust-92"
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 43,
+      "seed": 3475917316,
+      "id": "road-dust-93"
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 43,
+      "seed": 2549468825,
+      "id": "road-dust-94"
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 43,
+      "y": 43,
+      "id": "censure-road-water-barrel-43",
+      "blocking": true,
+      "name": "Water Barrels",
+      "seed": 598923928
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 45,
+      "y": 43,
+      "id": "censure-road-water-barrel-45",
+      "blocking": true,
+      "name": "Water Barrels",
+      "seed": 3170233871,
+      "interact": {
+        "type": "note",
+        "log": "Three water barrels sit under wax seals. One seal has tooth marks and a guilty thumbprint."
+      },
+      "mapMarker": {
+        "label": "Water Barrels",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 47,
+      "y": 43,
+      "id": "censure-road-water-barrel-47",
+      "blocking": true,
+      "name": "Water Barrels",
+      "seed": 3484946619
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 43,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 226672330,
+      "id": "farm-fence-293"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 44,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 940013799,
+      "id": "farm-fence-294"
+    },
+    {
+      "kind": "field-harrow",
+      "x": 11,
+      "y": 44,
+      "id": "censure-road-ash-latrines",
+      "blocking": true,
+      "orient": "se",
+      "name": "Ash Latrines",
+      "seed": 3645221387,
+      "interact": {
+        "type": "note",
+        "log": "A prayer slip nailed to the latrine post asks God for mercy and better hinges."
+      },
+      "mapMarker": {
+        "label": "Ash Latrines",
+        "kind": "note",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 30,
+      "y": 44,
+      "id": "censure-road-south-gate-west-post",
+      "blocking": true,
+      "seed": 574932300
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 44,
+      "seed": 733817421,
+      "id": "road-dust-95"
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 44,
+      "seed": 1373246318,
+      "id": "road-dust-96"
+    },
+    {
+      "kind": "road-dust",
+      "x": 36,
+      "y": 44,
+      "seed": 2097113012,
+      "id": "road-dust-97"
+    },
+    {
+      "kind": "quarantine-barricade",
+      "x": 38,
+      "y": 44,
+      "id": "censure-road-south-gate-east-post",
+      "blocking": true,
+      "seed": 2931016569
+    },
+    {
+      "kind": "road-dust",
+      "x": 38,
+      "y": 44,
+      "seed": 2142482104,
+      "id": "road-dust-98"
+    },
+    {
+      "kind": "water-pump",
+      "x": 46,
+      "y": 44,
+      "id": "censure-road-water-pump",
+      "blocking": true,
+      "seed": 1079774685
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 44,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1070292379,
+      "id": "farm-fence-295"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 45,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 978515450,
+      "id": "farm-fence-296"
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 45,
+      "id": "censure-road-road-dust-16-45",
+      "seed": 2876626508
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 45,
+      "seed": 1969647603,
+      "id": "road-dust-99"
+    },
+    {
+      "kind": "road-dust",
+      "x": 37,
+      "y": 45,
+      "seed": 1386139503,
+      "id": "road-dust-100"
+    },
+    {
+      "kind": "wash-tub",
+      "x": 58,
+      "y": 45,
+      "id": "censure-road-medic-wash-tub",
+      "blocking": true,
+      "seed": 3250907677
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 61,
+      "y": 45,
+      "id": "censure-road-medic-tent",
+      "blocking": true,
+      "name": "Medic Tent",
+      "seed": 1631854737,
+      "mapMarker": {
+        "label": "Medic Tent",
+        "kind": "dialogue",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 45,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 3401508457,
+      "id": "farm-fence-297"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 46,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1130637847,
+      "id": "farm-fence-298"
+    },
+    {
+      "kind": "road-dust",
+      "x": 32,
+      "y": 46,
+      "seed": 2264588220,
+      "id": "road-dust-101"
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 46,
+      "seed": 3271448913,
+      "id": "road-dust-102"
+    },
+    {
+      "kind": "road-dust",
+      "x": 37,
+      "y": 46,
+      "seed": 2081285111,
+      "id": "road-dust-103"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 63,
+      "y": 46,
+      "id": "censure-road-medic-bedroll",
+      "seed": 278194130
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 46,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 1362684793,
+      "id": "farm-fence-299"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 7,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3253075668,
+      "id": "farm-fence-111"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 8,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4223805023,
+      "id": "farm-fence-113"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 9,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2600076487,
+      "id": "farm-fence-115"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 10,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2746960098,
+      "id": "farm-fence-117"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 11,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3297280130,
+      "id": "farm-fence-119"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 12,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2202675462,
+      "id": "farm-fence-121"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 13,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3074382269,
+      "id": "farm-fence-123"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 14,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3116093691,
+      "id": "farm-fence-125"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 15,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1059618763,
+      "id": "farm-fence-127"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 16,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4059847171,
+      "id": "farm-fence-129"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 17,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 245859836,
+      "id": "farm-fence-131"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 18,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 135466340,
+      "id": "farm-fence-133"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 19,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3652587386,
+      "id": "farm-fence-135"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 20,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 103601698,
+      "id": "farm-fence-137"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 21,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4185475881,
+      "id": "farm-fence-139"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 22,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3684875476,
+      "id": "farm-fence-141"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 23,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3716611034,
+      "id": "farm-fence-143"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 24,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 896322741,
+      "id": "farm-fence-145"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 25,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3312383063,
+      "id": "farm-fence-147"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 26,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2243046839,
+      "id": "farm-fence-149"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 27,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1327654191,
+      "id": "farm-fence-151"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 28,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3393091038,
+      "id": "farm-fence-153"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 29,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2671432604,
+      "id": "farm-fence-155"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 30,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 4225723259,
+      "id": "farm-fence-157"
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 47,
+      "seed": 482379033,
+      "id": "road-dust-104"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 38,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2105508549,
+      "id": "farm-fence-166"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 39,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2159335340,
+      "id": "farm-fence-168"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 40,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3817916533,
+      "id": "farm-fence-170"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 41,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 381383262,
+      "id": "farm-fence-172"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 42,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 140020793,
+      "id": "farm-fence-174"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 43,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 127376118,
+      "id": "farm-fence-176"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 44,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1083717148,
+      "id": "farm-fence-178"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 45,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2402873538,
+      "id": "farm-fence-180"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 46,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1442436577,
+      "id": "farm-fence-182"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 47,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3457184810,
+      "id": "farm-fence-184"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 48,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 706995383,
+      "id": "farm-fence-186"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 49,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 616232169,
+      "id": "farm-fence-188"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 50,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1882733047,
+      "id": "farm-fence-190"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 51,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1990166700,
+      "id": "farm-fence-192"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 52,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 19891768,
+      "id": "farm-fence-194"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 53,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1724535762,
+      "id": "farm-fence-196"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 54,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3583723493,
+      "id": "farm-fence-198"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 55,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3727934871,
+      "id": "farm-fence-200"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 56,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2546778346,
+      "id": "farm-fence-202"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 57,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 513938787,
+      "id": "farm-fence-204"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 58,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1502842526,
+      "id": "farm-fence-206"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 59,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1879785230,
+      "id": "farm-fence-208"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 60,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 818722677,
+      "id": "farm-fence-210"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 61,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1972519852,
+      "id": "farm-fence-212"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 62,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 3165158260,
+      "id": "farm-fence-214"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 63,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 2625212431,
+      "id": "farm-fence-216"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 64,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 1101771387,
+      "id": "farm-fence-218"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 65,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 312933449,
+      "id": "farm-fence-220"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 66,
+      "y": 47,
+      "blocking": true,
+      "orient": "se",
+      "seed": 336128483,
+      "id": "farm-fence-222"
+    },
+    {
+      "kind": "road-dust",
+      "x": 31,
+      "y": 48,
+      "seed": 1627045109,
+      "id": "road-dust-105"
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 48,
+      "seed": 813912127,
+      "id": "road-dust-106"
+    },
+    {
+      "kind": "road-sign-post",
+      "x": 34,
+      "y": 48,
+      "id": "censure-road-long-ash-gate",
+      "name": "Long Ash Road Gate",
+      "seed": 3585530349,
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-camp-long-ash-road-exit",
+        "log": "The south road drops back toward the long ash fields and the chapel breach."
+      },
+      "mapMarker": {
+        "label": "Long Ash Road",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "road-dust",
+      "x": 37,
+      "y": 48,
+      "seed": 1400377406,
+      "id": "road-dust-107"
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 49,
+      "seed": 3706959133,
+      "id": "road-dust-108"
+    },
+    {
+      "kind": "road-dust",
+      "x": 35,
+      "y": 49,
+      "seed": 3731469919,
+      "id": "road-dust-109"
+    }
+  ]
+}

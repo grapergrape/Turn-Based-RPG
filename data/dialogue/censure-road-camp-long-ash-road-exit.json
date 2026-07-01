@@ -1,0 +1,28 @@
+{
+  "id": "censure-road-camp-long-ash-road-exit",
+  "title": "Long Ash Road Gate",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The south road drops back toward the ash fields and the chapel breach.",
+        "Behind you, the camp bell shifts once in its rope."
+      ],
+      "choices": [
+        {
+          "label": "Return to Long Ash Road",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": { "x": 116, "y": 4 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in camp",
+          "close": true
+        }
+      ]
+    }
+  }
+}

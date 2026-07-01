@@ -1,0 +1,1031 @@
+{
+  "id": "censure-road-camp-odran",
+  "title": "Father Odran",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "censure-road-confession-absolved"
+      },
+      "else": "start-open",
+      "lines": [
+        "Father Odran sits beside the confession screen with a locked cup, a stamp pad, and the exhausted look of a man who has forgiven too many receipts.",
+        "\"You are absolved for road purposes. Do not spend the condition all in one place.\""
+      ],
+      "choices": [
+        {
+          "label": "Confront him about last bell",
+          "conditions": {
+            "flag": "odran-late-visit-seen",
+            "flagsAbsent": ["odran-late-visit-resolved"]
+          },
+          "next": "late-visit-confront-widow"
+        },
+        {
+          "label": "Ask who commands this camp",
+          "next": "command"
+        },
+        {
+          "label": "Leave Father Odran",
+          "close": true
+        }
+      ]
+    },
+    "start-open": {
+      "lines": [
+        "Father Odran sits beside the confession screen with a coin scale on his knee and a tiny knife for cutting paper chits.",
+        "\"Cult-breaker. Chapel dust on your boots, Ash Road grief in your coat, and no confession on my slate. Sit before the sins organize.\""
+      ],
+      "choices": [
+        {
+          "label": "Confront him about last bell",
+          "conditions": {
+            "flag": "odran-late-visit-seen",
+            "flagsAbsent": ["odran-late-visit-resolved"]
+          },
+          "next": "late-visit-confront-widow"
+        },
+        {
+          "label": "Enter confession",
+          "next": "confession-begin"
+        },
+        {
+          "label": "Ask how sins are priced",
+          "conditions": {
+            "flagsAbsent": ["odran-late-visit-seen"]
+          },
+          "next": "rules"
+        },
+        {
+          "label": "Ask who commands this camp",
+          "next": "command"
+        },
+        {
+          "label": "Leave Father Odran",
+          "close": true
+        }
+      ]
+    },
+    "rules": {
+      "lines": [
+        "\"Road absolution is not comfort work. You name the thing, pay enough to remember it, and I write down how much courage was left afterward.\"",
+        "\"Five ducats settles a standard field soul. If your purse is short, you pray the difference. If you claim poverty while it clinks, I add a ducat for insulting both of us.\""
+      ],
+      "choices": [
+        {
+          "label": "Enter confession",
+          "next": "confession-begin"
+        },
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    },
+    "command": {
+      "lines": [
+        "\"Voss commands hands, routes, and the little chalk arrows that keep novices from marching into latrines.\"",
+        "\"I am the priest assigned to the road office. Father-Censor Halvek reads my reports when a courier survives long enough to carry ink. Do not look relieved. Halvek reads margins like wounds.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how supplies move",
+          "next": "supplies"
+        },
+        {
+          "label": "Leave Father Odran",
+          "close": true
+        }
+      ]
+    },
+    "supplies": {
+      "lines": [
+        "\"Runa holds issue stock: bandages, meal, shot, clean hooks, black thread. A bell mark opens the right crate, a seal opens the good crate, and a believable emergency opens her temper.\"",
+        "\"Maev sells what the Office forgot to send. This is called private enterprise because theft sounded rude on the quartermaster forms.\""
+      ],
+      "choices": [
+        {
+          "label": "Enter confession",
+          "next": "confession-begin"
+        },
+        {
+          "label": "Ask who commands this camp",
+          "next": "command"
+        },
+        {
+          "label": "Leave Father Odran",
+          "close": true
+        }
+      ]
+    },
+    "confession-begin": {
+      "lines": [
+        "Odran pulls the canvas screen between you. His silhouette sharpens around the coin scale.",
+        "\"Kneel if you want ceremony. Sit if your knees have field sense. I will read the road back. You answer enough for Heaven and for my ledger. The ledger is less forgiving.\""
+      ],
+      "choices": [
+        {
+          "label": "Begin the record",
+          "next": "chapel-record-start"
+        },
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    },
+    "chapel-record-start": {
+      "lines": [
+        "\"Ash Chapel first. The road office trains you to notice blood, doctrine, doors, and excuses. It does not train the blood to stop noticing you.\""
+      ],
+      "choices": [
+        {
+          "label": "Answer for Ash Chapel",
+          "next": "chapel-cult-broken"
+        }
+      ]
+    },
+    "chapel-cult-broken": {
+      "conditions": {
+        "flag": "ash-chapel-cult-broken"
+      },
+      "else": "chapel-martyr-ended",
+      "lines": [
+        "\"You broke the chapel cell. Armed cultists, broken rite, bodies enough for a clerk to ask for a second clerk.\"",
+        "\"Killing a cell is field duty. I still write it down. Ink enjoys blood too much to be trusted alone.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess breaking the cell",
+          "next": "chapel-martyr-ended"
+        }
+      ]
+    },
+    "chapel-martyr-ended": {
+      "conditions": {
+        "flag": "nave-cross-martyr-ended"
+      },
+      "else": "chapel-cellar-victim-ended",
+      "lines": [
+        "\"You cut down the opened man behind the altar.\"",
+        "\"Mercy is a knife with excellent manners. Keep it sharp and stop pretending it is clean.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess cutting him down",
+          "next": "chapel-cellar-victim-ended"
+        }
+      ]
+    },
+    "chapel-cellar-victim-ended": {
+      "conditions": {
+        "flag": "cellar-victim-ended"
+      },
+      "else": "chapel-bell-rung",
+      "lines": [
+        "\"You ended the bound one in the cold room before the cult could make a second saint.\"",
+        "\"Good. Also terrible. Most field work is a pair of boots named Good and Terrible.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess the cold room",
+          "next": "chapel-bell-rung"
+        }
+      ]
+    },
+    "chapel-bell-rung": {
+      "conditions": {
+        "flag": "ash-chapel-bell-rung"
+      },
+      "else": "road-record-start",
+      "lines": [
+        "\"You rang the chapel bell and told the Remnant the house could be entered.\"",
+        "\"Pride costs extra only when it sings. The bell sang, not you. Small discount.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess ringing the bell",
+          "next": "road-record-start"
+        }
+      ]
+    },
+    "road-record-start": {
+      "lines": [
+        "\"Now the Ash Road. The road has better ears than most bishops and worse manners than all of them.\""
+      ],
+      "choices": [
+        {
+          "label": "Answer for the Ash Road",
+          "next": "road-garron-abused"
+        }
+      ]
+    },
+    "road-garron-abused": {
+      "conditions": {
+        "flag": "long-ash-crossroad-brother-abused"
+      },
+      "else": "road-edrin-mocked",
+      "lines": [
+        "\"You insulted Garron Holt while he was fixed into public usefulness.\"",
+        "\"A road sign with feelings is an administrative trap. You stepped in it.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess the insult",
+          "next": "road-edrin-mocked"
+        }
+      ]
+    },
+    "road-edrin-mocked": {
+      "conditions": {
+        "flag": "long-ash-field-brother-mocked"
+      },
+      "else": "road-family-lie",
+      "lines": [
+        "\"You mocked Edrin Holt in the wheat.\"",
+        "\"He called himself royalty? That is evidence for mercy, not permission.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess the mockery",
+          "next": "road-family-lie"
+        }
+      ]
+    },
+    "road-family-lie": {
+      "conditions": {
+        "flag": "long-ash-field-family-lie"
+      },
+      "else": "road-family-truth",
+      "lines": [
+        "\"You told Edrin the Holt family was safe.\"",
+        "\"Kind lies wear clean gloves. They still leave fingerprints.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess the lie",
+          "next": "road-wolves-evidence"
+        }
+      ]
+    },
+    "road-family-truth": {
+      "conditions": {
+        "flag": "long-ash-field-family-truth"
+      },
+      "else": "road-wolves-evidence",
+      "lines": [
+        "\"You told Edrin the family was dead.\"",
+        "\"Truth is not free because it is correct. It spends the listener.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess the truth",
+          "next": "road-wolves-evidence"
+        }
+      ]
+    },
+    "road-wolves-evidence": {
+      "conditions": {
+        "flag": "long-ash-wolves-avenged-family"
+      },
+      "else": "record-summary",
+      "lines": [
+        "\"You found the torn cult cloth by the wolves.\"",
+        "\"The pack judged faster than we could invoice it. Humbling.\""
+      ],
+      "choices": [
+        {
+          "label": "Confess the wolves",
+          "next": "record-summary"
+        }
+      ]
+    },
+    "record-summary": {
+      "lines": [
+        "\"That is the record the road has coughed up.\"",
+        "\"If I missed one, do not smile. God has better paperwork than I do.\""
+      ],
+      "choices": [
+        {
+          "label": "Settle the absolution",
+          "effects": {
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "record-read"
+            }
+          },
+          "next": "price"
+        },
+        {
+          "label": "Review the Chapel record",
+          "next": "chapel-record-start"
+        },
+        {
+          "label": "Review the Ash Road record",
+          "next": "road-record-start"
+        },
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    },
+    "price": {
+      "lines": [
+        "\"Absolution is five ducats or five prayers, less the coin you actually have.\"",
+        "\"Lie about the purse and I add one ducat. I am a priest, not a charity barrel with ears.\""
+      ],
+      "choices": [
+        {
+          "label": "Pay 5 ducats",
+          "conditions": {
+            "items": {
+              "ducat": 5
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-5"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 5, "failLog": "Father Odran waits for the fifth ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-with-ducats"
+            },
+            "log": "Father Odran stamps an absolution chit and slides it under the screen."
+          },
+          "next": "absolved-paid"
+        },
+        {
+          "label": "Lie that your purse is empty",
+          "conditions": {
+            "items": {
+              "ducat": 1
+            }
+          },
+          "next": "lie-caught-rich"
+        },
+        {
+          "label": "Pay 4 ducats and pray once",
+          "conditions": {
+            "items": {
+              "ducat": 4
+            },
+            "itemsMax": {
+              "ducat": 4
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-4"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 4, "failLog": "Father Odran waits for the fourth ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-with-prayer"
+            },
+            "log": "Father Odran stamps an absolution chit after the last prayer."
+          },
+          "next": "absolved-prayer"
+        },
+        {
+          "label": "Pay 3 ducats and pray twice",
+          "conditions": {
+            "items": {
+              "ducat": 3
+            },
+            "itemsMax": {
+              "ducat": 3
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-3"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 3, "failLog": "Father Odran waits for the third ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-with-prayer"
+            },
+            "log": "Father Odran stamps an absolution chit after the last prayer."
+          },
+          "next": "absolved-prayer"
+        },
+        {
+          "label": "More low coin options",
+          "conditions": {
+            "itemsMax": {
+              "ducat": 2
+            }
+          },
+          "next": "price-low"
+        }
+      ]
+    },
+    "price-low": {
+      "lines": [
+        "\"A short purse is not rare. A quiet one is.\"",
+        "\"Pay what is there, then pray until the difference stops laughing at you.\""
+      ],
+      "choices": [
+        {
+          "label": "Pay 2 ducats and pray three times",
+          "conditions": {
+            "items": {
+              "ducat": 2
+            },
+            "itemsMax": {
+              "ducat": 2
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-2"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 2, "failLog": "Father Odran waits for the second ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-with-prayer"
+            },
+            "log": "Father Odran stamps an absolution chit after the last prayer."
+          },
+          "next": "absolved-prayer"
+        },
+        {
+          "label": "Pay 1 ducat and pray four times",
+          "conditions": {
+            "items": {
+              "ducat": 1
+            },
+            "itemsMax": {
+              "ducat": 1
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-1"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 1, "failLog": "Father Odran waits for the ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-with-prayer"
+            },
+            "log": "Father Odran stamps an absolution chit after the last prayer."
+          },
+          "next": "absolved-prayer"
+        },
+        {
+          "label": "Pray five times",
+          "conditions": {
+            "itemsMax": {
+              "ducat": 0
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-confession-absolved",
+            "inventory": {
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-with-prayer"
+            },
+            "log": "Father Odran stamps an absolution chit after the fifth prayer."
+          },
+          "next": "absolved-prayer"
+        },
+        {
+          "label": "Back to the price",
+          "next": "price"
+        },
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    },
+    "lie-caught-rich": {
+      "conditions": {
+        "items": {
+          "ducat": 6
+        }
+      },
+      "else": "lie-caught-short",
+      "lines": [
+        "Before the lie finishes, Odran taps the screen with the stamp handle.",
+        "\"Your purse has a theological scent. Six ducats.\""
+      ],
+      "choices": [
+        {
+          "label": "Pay 6 ducats",
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-6"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 6, "failLog": "Father Odran waits for the sixth ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-after-lying"
+            },
+            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+          },
+          "next": "absolved-lie"
+        }
+      ]
+    },
+    "lie-caught-short": {
+      "lines": [
+        "Before the lie finishes, Odran taps the screen with the stamp handle.",
+        "\"Your purse clinks. Badly, but it clinks. Add one prayer to the debt for lying to a priest with ears.\""
+      ],
+      "choices": [
+        {
+          "label": "Pay 5 ducats and pray once",
+          "conditions": {
+            "items": {
+              "ducat": 5
+            },
+            "itemsMax": {
+              "ducat": 5
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-5"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 5, "failLog": "Father Odran waits for the fifth ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-after-lying"
+            },
+            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+          },
+          "next": "absolved-lie"
+        },
+        {
+          "label": "Pay 4 ducats and pray twice",
+          "conditions": {
+            "items": {
+              "ducat": 4
+            },
+            "itemsMax": {
+              "ducat": 4
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-4"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 4, "failLog": "Father Odran waits for the fourth ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-after-lying"
+            },
+            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+          },
+          "next": "absolved-lie"
+        },
+        {
+          "label": "Pay 3 ducats and pray three times",
+          "conditions": {
+            "items": {
+              "ducat": 3
+            },
+            "itemsMax": {
+              "ducat": 3
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-3"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 3, "failLog": "Father Odran waits for the third ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-after-lying"
+            },
+            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+          },
+          "next": "absolved-lie"
+        },
+        {
+          "label": "Pay 2 ducats and pray four times",
+          "conditions": {
+            "items": {
+              "ducat": 2
+            },
+            "itemsMax": {
+              "ducat": 2
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-2"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 2, "failLog": "Father Odran waits for the second ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-after-lying"
+            },
+            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+          },
+          "next": "absolved-lie"
+        },
+        {
+          "label": "Pay 1 ducat and pray five times",
+          "conditions": {
+            "items": {
+              "ducat": 1
+            },
+            "itemsMax": {
+              "ducat": 1
+            }
+          },
+          "effects": {
+            "setFlag": ["censure-road-confession-absolved", "odran-confession-paid-1"],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                { "item": "ducat", "count": 1, "failLog": "Father Odran waits for the ducat that is not there." }
+              ],
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-after-lying"
+            },
+            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+          },
+          "next": "absolved-lie"
+        }
+      ]
+    },
+    "late-visit-confront-widow": {
+      "conditions": {
+        "flag": "odran-widow-heard"
+      },
+      "else": "late-visit-confront",
+      "lines": [
+        "Odran's hand stops over the stamp pad when you name Bruna.",
+        "\"So she spoke. I told myself she would not, which was pride wearing a clean collar.\""
+      ],
+      "choices": [
+        {
+          "label": "Demand the confession money back",
+          "next": "late-visit-refund-6"
+        },
+        {
+          "label": "Demand silence money",
+          "next": "late-visit-blackmail"
+        },
+        {
+          "label": "Report him to Voss",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-reported-to-voss"],
+            "log": "You mark Father Odran for a report to Preceptor Voss."
+          },
+          "close": true
+        },
+        {
+          "label": "Let it pass",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-spared-after-late-visit"],
+            "log": "You leave Father Odran with his shame and no receipt."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-confront": {
+      "lines": [
+        "Odran listens without blinking while you tell him what you saw after last bell.",
+        "\"A woman entered my tent. That is what your eyes can swear to. Be careful what your mouth tries to collect from it.\"",
+        "His voice is dry, but his thumb rubs ink into the stamp handle."
+      ],
+      "choices": [
+        {
+          "label": "Demand the confession money back",
+          "next": "late-visit-refund-6"
+        },
+        {
+          "label": "Demand silence money",
+          "next": "late-visit-blackmail"
+        },
+        {
+          "label": "Report him to Voss",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-reported-to-voss"],
+            "log": "You mark Father Odran for a report to Preceptor Voss."
+          },
+          "close": true
+        },
+        {
+          "label": "Let it pass",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-spared-after-late-visit"],
+            "log": "You leave Father Odran with his shame and no receipt."
+          },
+          "close": true
+        },
+        {
+          "label": "Ask Bruna first",
+          "effects": {
+            "setFlag": "odran-ask-widow-first",
+            "log": "Bruna may tell you what she wants named and what she wants buried."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-refund-6": {
+      "conditions": {
+        "flag": "odran-confession-paid-6"
+      },
+      "else": "late-visit-refund-5",
+      "lines": [
+        "You name the six ducats and the lie tax with them.",
+        "Odran opens the locked cup with two fingers, as if the latch might accuse him."
+      ],
+      "choices": [
+        {
+          "label": "Take 6 ducats",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-refund-taken"],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 6 }
+              ]
+            },
+            "log": "Father Odran returns six ducats from the locked cup."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-refund-5": {
+      "conditions": {
+        "flag": "odran-confession-paid-5"
+      },
+      "else": "late-visit-refund-4",
+      "lines": [
+        "You name the five ducats he charged for absolution.",
+        "Odran opens the locked cup and looks past you toward the tent rope."
+      ],
+      "choices": [
+        {
+          "label": "Take 5 ducats",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-refund-taken"],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 5 }
+              ]
+            },
+            "log": "Father Odran returns five ducats from the locked cup."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-refund-4": {
+      "conditions": {
+        "flag": "odran-confession-paid-4"
+      },
+      "else": "late-visit-refund-3",
+      "lines": [
+        "You name the four ducats and the prayer he counted against the rest.",
+        "Odran opens the locked cup without lifting his eyes."
+      ],
+      "choices": [
+        {
+          "label": "Take 4 ducats",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-refund-taken"],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 4 }
+              ]
+            },
+            "log": "Father Odran returns four ducats from the locked cup."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-refund-3": {
+      "conditions": {
+        "flag": "odran-confession-paid-3"
+      },
+      "else": "late-visit-refund-2",
+      "lines": [
+        "You name the three ducats and let the silence do the heavier work.",
+        "Odran opens the locked cup. The coins click once."
+      ],
+      "choices": [
+        {
+          "label": "Take 3 ducats",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-refund-taken"],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 3 }
+              ]
+            },
+            "log": "Father Odran returns three ducats from the locked cup."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-refund-2": {
+      "conditions": {
+        "flag": "odran-confession-paid-2"
+      },
+      "else": "late-visit-refund-1",
+      "lines": [
+        "You name the two ducats. Odran's mouth tightens at the smallness of the number.",
+        "\"Small sums can still bruise.\""
+      ],
+      "choices": [
+        {
+          "label": "Take 2 ducats",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-refund-taken"],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 2 }
+              ]
+            },
+            "log": "Father Odran returns two ducats from the locked cup."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-refund-1": {
+      "conditions": {
+        "flag": "odran-confession-paid-1"
+      },
+      "else": "late-visit-refund-none",
+      "lines": [
+        "You name the single ducat he took.",
+        "Odran sets it on the table with the careful anger of a man paying for more than coin."
+      ],
+      "choices": [
+        {
+          "label": "Take 1 ducat",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-refund-taken"],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 1 }
+              ]
+            },
+            "log": "Father Odran returns one ducat from the locked cup."
+          },
+          "close": true
+        }
+      ]
+    },
+    "late-visit-refund-none": {
+      "lines": [
+        "Odran spreads his hands over the table.",
+        "\"You paid me in prayers. I can return those, but neither of us will enjoy the sound.\""
+      ],
+      "choices": [
+        {
+          "label": "Demand silence money instead",
+          "next": "late-visit-blackmail"
+        },
+        {
+          "label": "Leave him for now",
+          "close": true
+        }
+      ]
+    },
+    "late-visit-blackmail": {
+      "lines": [
+        "\"That is not correction,\" Odran says.",
+        "\"That is a hand in another sinner's pocket. I know the gesture because I have blessed it before.\""
+      ],
+      "choices": [
+        {
+          "label": "Take 8 ducats",
+          "effects": {
+            "setFlag": ["odran-late-visit-resolved", "odran-silence-money-taken"],
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 8 }
+              ]
+            },
+            "log": "Father Odran pays eight ducats for your silence."
+          },
+          "close": true
+        },
+        {
+          "label": "Back off",
+          "next": "late-visit-confront-widow"
+        }
+      ]
+    },
+    "absolved-paid": {
+      "lines": [
+        "The ducats vanish into the locked cup. Odran stamps a black paper chit, blows on the ink, and slides it under the screen.",
+        "\"Absolved for road purposes. For private guilt, come back after Hallowfen with a larger purse and a shorter face.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    },
+    "absolved-prayer": {
+      "lines": [
+        "Odran counts each prayer on his fingers, then stops at the number that hurts your pride.",
+        "\"Good. Heaven likes repetition. It gives the rest of us time to find the ink pad.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    },
+    "absolved-lie": {
+      "lines": [
+        "Odran stamps the chit with unnecessary force.",
+        "\"Absolved, with surcharge. Your purse and soul are now both easier to hear.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "censure-road-camp-ivarn",
+  "title": "Novice Ivarn",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Novice Ivarn stands in the drill yard with his sling tucked too neatly.",
+        "\"Caldus says fear is a tool. Mine is overqualified and seeking promotion.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the novice",
+          "close": true
+        }
+      ]
+    }
+  }
+}

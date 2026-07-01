@@ -1,0 +1,46 @@
+{
+  "id": "censure-road-camp-maev",
+  "title": "Sutler Maev",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Sutler Maev keeps her cart angled so every guard must walk around it.",
+        "\"Officially I sell comfort goods. Unofficially, comfort now includes ammunition and beans that do not argue back.\""
+      ],
+      "choices": [
+        {
+          "label": "Trade with Maev",
+          "effects": {
+            "trade": "censure-sutler-maev"
+          }
+        },
+        {
+          "label": "Ask what the road is saying",
+          "next": "road"
+        },
+        {
+          "label": "Leave the cart",
+          "close": true
+        }
+      ]
+    },
+    "road": {
+      "lines": [
+        "\"The Hallowfen wagons stopped paying in coin and started paying in reasons.\"",
+        "\"Reasons spoil faster than fish. I stopped taking them.\""
+      ],
+      "choices": [
+        {
+          "label": "Trade with Maev",
+          "effects": {
+            "trade": "censure-sutler-maev"
+          }
+        },
+        {
+          "label": "Leave the cart",
+          "close": true
+        }
+      ]
+    }
+  }
+}

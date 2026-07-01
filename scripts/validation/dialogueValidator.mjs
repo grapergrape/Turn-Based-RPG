@@ -8,6 +8,8 @@ import {
 
   referencedDialogueIds,
 
+  referencedItemIds,
+
   relative,
 
   requireNumber,
@@ -109,6 +111,8 @@ export function validateDialogueConditions(name, conditions, fieldName) {
   validateStringList(name, conditions.scars, `${fieldName}.scars`);
   validateStringList(name, conditions.notScar, `${fieldName}.notScar`);
   validateStringList(name, conditions.scarsAbsent, `${fieldName}.scarsAbsent`);
+  validateItemCountMap(name, conditions.items, `${fieldName}.items`);
+  validateItemCountMap(name, conditions.itemsMax, `${fieldName}.itemsMax`);
 
   if (conditions.questStages !== undefined) {
     if (!conditions.questStages || typeof conditions.questStages !== 'object' || Array.isArray(conditions.questStages)) {
@@ -163,6 +167,22 @@ function validateTraceCondition(name, value, fieldName) {
   }
 }
 
+function validateItemCountMap(name, value, fieldName) {
+  if (value === undefined) return;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  for (const [itemId, count] of Object.entries(value)) {
+    requireString(name, itemId, `${fieldName} item id`);
+    if (typeof itemId === 'string') referencedItemIds.add(itemId);
+    requireNumber(name, count, `${fieldName}.${itemId}`);
+    if (typeof count === 'number' && (!Number.isInteger(count) || count < 0)) {
+      errors.push(`${name}: ${fieldName}.${itemId} must be a zero or greater integer.`);
+    }
+  }
+}
+
 function validateShowBriefing(name, showBriefing, fieldName) {
   if (showBriefing === undefined) return;
   if (!showBriefing || typeof showBriefing !== 'object' || Array.isArray(showBriefing)) {
@@ -206,6 +226,7 @@ function validateAfterBriefing(name, afterBriefing, fieldName) {
     errors.push(`${name}: ${fieldName} must be an object.`);
     return;
   }
+  validateClockEffect(name, afterBriefing.clock, `${fieldName}.clock`);
   if (afterBriefing.openScreen !== undefined) {
     requireString(name, afterBriefing.openScreen, `${fieldName}.openScreen`);
     if (typeof afterBriefing.openScreen === 'string' &&
@@ -232,6 +253,7 @@ export function validateDialogueEffects(name, effects, fieldName) {
   }
 
   validateInventoryEffects(name, effects.inventory, `${fieldName}.inventory`);
+  validateClockEffect(name, effects.clock, `${fieldName}.clock`);
   validateXpNumber(name, effects.xp, `${fieldName}.xp`);
   validateMoveActorEffects(name, effects.moveActor, `${fieldName}.moveActor`);
 
@@ -246,6 +268,36 @@ export function validateDialogueEffects(name, effects, fieldName) {
     }
   }
   validateShowBriefing(name, effects.showBriefing, `${fieldName}.showBriefing`);
+}
+
+function validateClockEffect(name, clock, fieldName) {
+  if (clock === undefined) return;
+  if (typeof clock === 'number') {
+    validateMinuteOfDay(name, clock, fieldName);
+    return;
+  }
+  if (!clock || typeof clock !== 'object' || Array.isArray(clock)) {
+    errors.push(`${name}: ${fieldName} must be a minute number or an object.`);
+    return;
+  }
+  validateMinuteOfDay(name, clock.minuteOfDay, `${fieldName}.minuteOfDay`);
+  validateMinuteOfDay(name, clock.advanceToMinuteOfDay, `${fieldName}.advanceToMinuteOfDay`);
+  validateOptionalBoolean(name, clock.nextDay, `${fieldName}.nextDay`);
+  if (clock.fieldDayDelta !== undefined) {
+    requireNumber(name, clock.fieldDayDelta, `${fieldName}.fieldDayDelta`);
+    if (typeof clock.fieldDayDelta === 'number' &&
+        (!Number.isInteger(clock.fieldDayDelta) || clock.fieldDayDelta < 0)) {
+      errors.push(`${name}: ${fieldName}.fieldDayDelta must be a zero or greater integer.`);
+    }
+  }
+}
+
+function validateMinuteOfDay(name, value, fieldName) {
+  if (value === undefined) return;
+  requireNumber(name, value, fieldName);
+  if (typeof value === 'number' && (!Number.isInteger(value) || value < 0 || value > 1439)) {
+    errors.push(`${name}: ${fieldName} must be an integer from 0 to 1439.`);
+  }
 }
 
 function validateMoveActorEffects(name, moveActor, fieldName) {
@@ -305,6 +357,7 @@ function validateInventoryEffects(name, inventory, fieldName) {
     errors.push(`${name}: ${fieldName} must be an object.`);
     return;
   }
+  validateOptionalBoolean(name, inventory.requireAll, `${fieldName}.requireAll`);
   for (const key of ['add', 'remove']) {
     if (inventory[key] === undefined) continue;
     if (!Array.isArray(inventory[key])) {

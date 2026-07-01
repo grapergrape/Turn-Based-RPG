@@ -100,6 +100,13 @@ function buildGateGame() {
 }
 
 {
+  const breast = CHARACTER_CUSTOMIZATION_FIELDS.find((field) => field.id === 'breastSize');
+  const groin = CHARACTER_CUSTOMIZATION_FIELDS.find((field) => field.id === 'penisSize');
+  assert.equal(breast.label, 'Breast Scale');
+  assert.equal(groin.label, 'Groin Scale');
+}
+
+{
   let state = createCustomizationState({ name: 'Mara Vey' });
   state = applyCustomizationText({ ...state, name: '' }, [
     { type: 'char', value: 'J' },
@@ -178,6 +185,36 @@ function buildGateGame() {
   assert.equal(game.uiScreen, 'character-customization');
   assert.equal(game.player.name, 'Mara Vey');
   assert.equal(game.characterCreation.name, 'Mara Veye');
+}
+
+{
+  const game = buildGateGame();
+  const object = {
+    id: 'fouled-font',
+    kind: 'fouled-font',
+    x: 3,
+    y: 3,
+    interact: { type: 'note', log: 'Font.' }
+  };
+  let targetSeen = null;
+  game.mode = 'explore';
+  game.uiScreen = null;
+  game.player.moveTo(2, 2);
+  game.grid = {
+    isInside: (x, y) => x >= 0 && y >= 0 && x < 8 && y < 8,
+    isWalkable: () => true
+  };
+  game.level = { interactables: [object] };
+  game.hiddenTiles = new Set();
+  game._executeExploreTarget = (target) => { targetSeen = target; };
+  game.input = {
+    consume: () => ['interact'],
+    consumeClick: () => null,
+    consumeText: () => []
+  };
+  game.update(0);
+  assert.equal(targetSeen?.type, 'object');
+  assert.equal(targetSeen?.object, object);
 }
 
 {

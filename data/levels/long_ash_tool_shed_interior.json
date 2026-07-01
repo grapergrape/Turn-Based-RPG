@@ -101,6 +101,31 @@
       "interact": {
         "type": "container",
         "log": "The crate holds bent nails and broken handles. A small pouch is shoved into the corner.",
+        "search": {
+          "title": "Tool Crate",
+          "lines": [
+            "The crate bottom has one nail newer than the rest. Whoever hid the packet knew tools better than prayer."
+          ],
+          "useLabel": "Search the crate bottom",
+          "methods": [
+            {
+              "id": "lift-new-nail",
+              "label": "Lift the new nail",
+              "field": "search",
+              "dc": 30,
+              "successLog": "The false bottom lifts. One wrapped round sits in the dust.",
+              "failLog": "The nail will not lift cleanly. The wood starts to split.",
+              "success": {
+                "setFlag": "searched-tool-crate-bottom",
+                "inventory": {
+                  "add": [
+                    { "item": "relic-rounds", "count": 1 }
+                  ]
+                }
+              }
+            }
+          ]
+        },
         "loot": [
           { "item": "ducat", "count": 3 },
           { "item": "road-warden-chit", "count": 1 }

@@ -1,0 +1,19 @@
+{
+  "id": "censure-evidence-keeper-malco",
+  "name": "Evidence Keeper Malco",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Evidence keeper",
+  "appearance": {
+    "body": "old-bent",
+    "outfit": "settlement-mender",
+    "gear": ["ledger", "tool-roll"],
+    "accent": "bare-grey"
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "evidence"]
+}

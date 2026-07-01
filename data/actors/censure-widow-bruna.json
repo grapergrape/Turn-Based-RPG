@@ -1,0 +1,19 @@
+{
+  "id": "censure-widow-bruna",
+  "name": "Widow Bruna",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Camp washer and petitioner",
+  "appearance": {
+    "body": "old-bent",
+    "outfit": "settlement-mender",
+    "gear": ["prayer-cord"],
+    "accent": "bare-grey"
+  },
+  "stats": {
+    "hp": 7,
+    "maxHp": 7,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "petitioner", "washer"]
+}

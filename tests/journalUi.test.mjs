@@ -90,6 +90,12 @@ const map = {
   player: { x: 1, y: 1 }
 };
 
+const time = {
+  dateLabel: 'FIELD DAY 1, YEAR 130 AFTER DESCENT',
+  timeLabel: '08:00',
+  phaseLabel: 'MORNING'
+};
+
 for (let section = 0; section < JOURNAL_SECTIONS.length; section += 1) {
   renderer.draw(mockCtx(), {
     ...baseUi,
@@ -98,6 +104,7 @@ for (let section = 0; section < JOURNAL_SECTIONS.length; section += 1) {
       sections: JOURNAL_SECTIONS,
       factionIndex: 0,
       primaryIndex: 0,
+      time,
       map,
       quests: [],
       findings: [],
@@ -120,6 +127,7 @@ renderer.draw(mockCtx(), {
     sections: JOURNAL_SECTIONS,
     turn: { from: 3, to: 4, direction: 1, progress: 0.5 },
     factionIndex: 0,
+    time,
     map,
     quests: [],
     findings: [],

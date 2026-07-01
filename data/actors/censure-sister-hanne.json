@@ -1,0 +1,19 @@
+{
+  "id": "censure-sister-hanne",
+  "name": "Sister Hanne",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Medic sister",
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-nurse",
+    "gear": ["medicine-bag"],
+    "accent": "pale-hood"
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": ["holy-remnant", "ash-censure", "medic"]
+}

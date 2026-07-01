@@ -23,6 +23,39 @@ const SPEECH_PAD_Y = 5;
 const SPEECH_LINE_HEIGHT = 11;
 const SPEECH_VIEWPORT_PAD = 4;
 const SUN_SHADOW_SKIP_KINDS = new Set(['wheat-clump', 'ash-sapling', 'scrub-bush']);
+const TIME_OF_DAY_WASHES = Object.freeze({
+  dawn: Object.freeze([
+    Object.freeze({ color: PALETTE.clothBlueDark, alpha: 0.1 }),
+    Object.freeze({ color: PALETTE.hostBone, alpha: 0.04 })
+  ]),
+  morning: Object.freeze([
+    Object.freeze({ color: PALETTE.hostBone, alpha: 0.03 })
+  ]),
+  noon: Object.freeze([]),
+  afternoon: Object.freeze([
+    Object.freeze({ color: PALETTE.woodLight, alpha: 0.035 })
+  ]),
+  dusk: Object.freeze([
+    Object.freeze({ color: PALETTE.rustDark, alpha: 0.12 })
+  ]),
+  night: Object.freeze([
+    Object.freeze({ color: PALETTE.clothBlueDark, alpha: 0.22 }),
+    Object.freeze({ color: PALETTE.void, alpha: 0.08 })
+  ]),
+  'deep-night': Object.freeze([
+    Object.freeze({ color: PALETTE.clothBlueDark, alpha: 0.28 }),
+    Object.freeze({ color: PALETTE.void, alpha: 0.14 })
+  ])
+});
+const TIME_OF_DAY_VIGNETTE = Object.freeze({
+  dawn: 0.18,
+  morning: 0,
+  noon: 0,
+  afternoon: 0.04,
+  dusk: 0.24,
+  night: 0.5,
+  'deep-night': 0.72
+});
 
 export class IsometricRenderer {
   constructor(canvas, atlas) {
@@ -142,6 +175,7 @@ export class IsometricRenderer {
 
   renderFrame(state) {
     const ctx = this.ctx;
+    this.timeOfDay = state.time ?? null;
     if (state.hiddenTiles) this.hiddenTiles = state.hiddenTiles;
     this.#updateCamera(state.focus ?? { x: 0, y: 0 });
 
@@ -165,6 +199,7 @@ export class IsometricRenderer {
     this.#drawOverlays(ctx, state.overlay ?? {});
     this.#drawEffects(ctx, state.effects ?? []);
     this.#drawAmbientTint(ctx);
+    this.#drawTimeOfDayTint(ctx);
     this.#drawVignette(ctx);
 
     ctx.restore();
@@ -507,6 +542,7 @@ export class IsometricRenderer {
     } else {
       if (overlay.footTile && !this.#isHiddenKey(overlay.footTile)) this.#footMarker(ctx, overlay.footTile, 0.32);
       if (overlay.hoverTile && !this.#isHiddenKey(overlay.hoverTile)) this.#footMarker(ctx, overlay.hoverTile, 0.18);
+      if (overlay.interactionTile && !this.#isHiddenKey(overlay.interactionTile)) this.#interactionMarker(ctx, overlay.interactionTile);
       if (overlay.targetTile && !this.#isHiddenKey(overlay.targetTile)) this.#targetBracket(ctx, overlay.targetTile);
     }
   }
@@ -578,6 +614,23 @@ export class IsometricRenderer {
     ctx.lineTo(s.x - 14, s.y);
     ctx.closePath();
     ctx.stroke();
+    ctx.restore();
+  }
+
+  #interactionMarker(ctx, key) {
+    const s = this.#keyToScreen(key);
+    ctx.save();
+    ctx.globalAlpha = 0.64;
+    ctx.fillStyle = PALETTE.outline;
+    ctx.fillRect(s.x - 16, s.y - 1, 6, 3);
+    ctx.fillRect(s.x + 10, s.y - 1, 6, 3);
+    ctx.fillRect(s.x - 2, s.y - 9, 5, 3);
+    ctx.fillRect(s.x - 2, s.y + 6, 5, 3);
+    ctx.fillStyle = PALETTE.uiGood;
+    ctx.fillRect(s.x - 15, s.y, 4, 1);
+    ctx.fillRect(s.x + 11, s.y, 4, 1);
+    ctx.fillRect(s.x - 1, s.y - 8, 3, 1);
+    ctx.fillRect(s.x - 1, s.y + 7, 3, 1);
     ctx.restore();
   }
 
@@ -682,12 +735,24 @@ export class IsometricRenderer {
     ctx.restore();
   }
 
+  #drawTimeOfDayTint(ctx) {
+    const washes = TIME_OF_DAY_WASHES[this.timeOfDay?.phase] ?? [];
+    if (washes.length === 0) return;
+    ctx.save();
+    for (const wash of washes) {
+      ctx.globalAlpha = wash.alpha;
+      ctx.fillStyle = wash.color;
+      ctx.fillRect(VIEWPORT.x, VIEWPORT.y, VIEWPORT.width, VIEWPORT.height);
+    }
+    ctx.restore();
+  }
+
   #drawVignette(ctx) {
     // Stepped translucent void bands at the viewport edges dim the scene like
     // baked old CRPG lighting: no smooth gradient, just a few hard bands.
     const w = VIEWPORT.width;
     const h = VIEWPORT.height;
-    const strength = this.mood?.vignette ?? 1;
+    const strength = (this.mood?.vignette ?? 1) + (TIME_OF_DAY_VIGNETTE[this.timeOfDay?.phase] ?? 0);
     for (let i = 0; i < 6; i += 1) {
       const inset = i * 8;
       ctx.save();
