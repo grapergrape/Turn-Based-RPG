@@ -1,0 +1,140 @@
+{
+  "id": "censure-road-odran-tent-interior",
+  "name": "Father Odran's Tent",
+  "intro": "Lamp oil, damp linen, and ledger dust crowd the private tent.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.06,
+    "vignette": 1.15
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 8,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "odran-tent-exit-transition",
+      "x": 8,
+      "y": 8,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 16,
+          "y": 19
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 8,
+      "y": 9,
+      "id": "odran-tent-exit-flap",
+      "name": "Tent Flap"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 3,
+      "y": 3,
+      "id": "odran-tent-cot",
+      "seed": 2311
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 8,
+      "y": 3,
+      "blocking": true,
+      "id": "odran-tent-travel-chest",
+      "name": "Travel Chest",
+      "seed": 2313,
+      "interact": {
+        "search": {
+          "title": "Father Odran's Chest",
+          "lines": [
+            "Folded church linen fills the chest."
+          ],
+          "methods": [
+            {
+              "id": "search-folded-linen",
+              "label": "Search the folded linen",
+              "field": "search",
+              "dc": 45,
+              "conditions": {
+                "flagsAbsent": [
+                  "odran-late-visit-suspected",
+                  "odran-late-visit-seen",
+                  "odran-late-visit-resolved"
+                ]
+              },
+              "successLog": "Under a stack of priestly cloth, you find a woman's underlinen tucked hard against the chest wall.",
+              "failLog": "The linen is folded too tightly. If there is a secret here, it stays flat.",
+              "success": {
+                "setFlag": "odran-late-visit-suspected",
+                "log": "The hidden underlinen gives you a reason to watch Father Odran's tent after last bell."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "settlement-table",
+      "x": 6,
+      "y": 4,
+      "blocking": true,
+      "id": "odran-tent-ledger-table",
+      "seed": 2317
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 7,
+      "y": 5,
+      "id": "odran-tent-ledger-scraps",
+      "seed": 2321
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 4,
+      "y": 6,
+      "id": "odran-tent-candles",
+      "seed": 2327
+    }
+  ]
+}

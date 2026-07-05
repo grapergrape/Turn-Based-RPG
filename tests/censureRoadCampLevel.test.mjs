@@ -5,7 +5,6 @@ import { meetsDialogueConditions } from '../src/core/DialogueConditions.js';
 import { getSprite } from '../src/render/spriteCatalog.js';
 import { Grid } from '../src/world/Grid.js';
 import { isTargetInReach, resolveInteractionTargetAtCell } from '../src/world/InteractionTargeting.js';
-import { SECURITY_TOOL_ITEM, lockMethodStatus } from '../src/world/LockSystem.js';
 import { searchMethodStatus } from '../src/world/SearchSystem.js';
 
 async function readJson(path) {
@@ -43,10 +42,98 @@ function pathExists(grid, start, target) {
   return false;
 }
 
+function reachableInteractionApproach(level, grid, object, start) {
+  const candidates = [
+    { x: object.x, y: object.y },
+    { x: object.x + 1, y: object.y },
+    { x: object.x - 1, y: object.y },
+    { x: object.x, y: object.y + 1 },
+    { x: object.x, y: object.y - 1 },
+    { x: object.x + 1, y: object.y + 1 },
+    { x: object.x + 1, y: object.y - 1 },
+    { x: object.x - 1, y: object.y + 1 },
+    { x: object.x - 1, y: object.y - 1 }
+  ].filter((cell) => grid.isWalkable(cell.x, cell.y));
+
+  for (const candidate of candidates) {
+    if (!pathExists(grid, start, candidate)) continue;
+    const target = interactionTarget(level, grid, object, candidate);
+    if (target?.type === 'object' && target.object.id === object.id && isTargetInReach({ position: candidate }, target)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
+function tileComponents(level, tileChar) {
+  const seen = new Set();
+  const components = [];
+  const dirs = [
+    { x: 1, y: 0 },
+    { x: -1, y: 0 },
+    { x: 0, y: 1 },
+    { x: 0, y: -1 }
+  ];
+
+  for (let y = 0; y < level.height; y += 1) {
+    for (let x = 0; x < level.width; x += 1) {
+      const key = `${x},${y}`;
+      if (seen.has(key) || level.tiles[y][x] !== tileChar) continue;
+      const cells = [];
+      const queue = [{ x, y }];
+      seen.add(key);
+      for (let index = 0; index < queue.length; index += 1) {
+        const cell = queue[index];
+        cells.push(cell);
+        for (const dir of dirs) {
+          const next = { x: cell.x + dir.x, y: cell.y + dir.y };
+          const nextKey = `${next.x},${next.y}`;
+          if (
+            seen.has(nextKey)
+            || next.x < 0
+            || next.y < 0
+            || next.x >= level.width
+            || next.y >= level.height
+            || level.tiles[next.y][next.x] !== tileChar
+          ) continue;
+          seen.add(nextKey);
+          queue.push(next);
+        }
+      }
+      components.push(cells);
+    }
+  }
+  return components;
+}
+
 function objectById(level, id) {
   const object = level.objects.find((entry) => entry.id === id);
   assert.ok(object, `${id} exists`);
   return object;
+}
+
+function transitionById(level, id) {
+  const transition = (level.levelTransitions ?? []).find((entry) => entry.id === id);
+  assert.ok(transition, `${id} exists`);
+  return transition;
+}
+
+function pointInAreas(point, areas = []) {
+  return areas.some((area) => {
+    const left = Math.min(area.x0, area.x1);
+    const right = Math.max(area.x0, area.x1);
+    const top = Math.min(area.y0, area.y1);
+    const bottom = Math.max(area.y0, area.y1);
+    return point.x >= left && point.x <= right && point.y >= top && point.y <= bottom;
+  });
+}
+
+function isCardinalAdjacent(a, b) {
+  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1;
+}
+
+function tileAt(level, point) {
+  return level.tiles[point.y]?.[point.x] ?? null;
 }
 
 function interactionTarget(level, grid, object, player) {
@@ -79,6 +166,103 @@ const maevDialogue = await readJson('../data/dialogue/censure-road-camp-maev.jso
 const confessionQuest = await readJson('../data/quests/censure-road-confession.json');
 const absolutionChit = await readJson('../data/items/censure-absolution-chit.json');
 const campRibguard = await readJson('../data/items/camp-issue-ribguard.json');
+const tentSpecs = [
+  {
+    objectId: 'censure-road-odran-private-tent-flap',
+    interiorPath: './data/levels/censure_road_odran_tent_interior.json',
+    interiorFile: '../data/levels/censure_road_odran_tent_interior.json',
+    returnPlayer: { x: 16, y: 19 },
+    interiorPlayer: { x: 8, y: 7 },
+    interiorExit: { x: 8, y: 8 },
+    interiorFlap: { x: 8, y: 9 },
+    approach: { x: 16, y: 19 },
+    clickAreas: [{ x0: 14, y0: 14, x1: 17, y1: 18 }]
+  },
+  {
+    objectId: 'censure-road-writ-chapel-flap',
+    interiorPath: './data/levels/censure_road_writ_chapel_tent.json',
+    interiorFile: '../data/levels/censure_road_writ_chapel_tent.json',
+    returnPlayer: { x: 23, y: 17 },
+    interiorPlayer: { x: 6, y: 7 },
+    interiorExit: { x: 6, y: 8 },
+    interiorFlap: { x: 6, y: 9 },
+    approach: { x: 23, y: 17 },
+    clickAreas: [{ x0: 20, y0: 12, x1: 26, y1: 16 }]
+  },
+  {
+    objectId: 'censure-road-preceptor-tent-flap',
+    interiorPath: './data/levels/censure_road_preceptor_tent.json',
+    interiorFile: '../data/levels/censure_road_preceptor_tent.json',
+    returnPlayer: { x: 47, y: 13 },
+    interiorPlayer: { x: 6, y: 7 },
+    interiorExit: { x: 6, y: 8 },
+    interiorFlap: { x: 6, y: 9 },
+    approach: { x: 47, y: 13 },
+    clickAreas: [{ x0: 43, y0: 8, x1: 49, y1: 12 }]
+  },
+  {
+    objectId: 'censure-road-quartermaster-tent-flap',
+    interiorPath: './data/levels/censure_road_quartermaster_tent.json',
+    interiorFile: '../data/levels/censure_road_quartermaster_tent.json',
+    returnPlayer: { x: 28, y: 30 },
+    interiorPlayer: { x: 6, y: 7 },
+    interiorExit: { x: 6, y: 8 },
+    interiorFlap: { x: 6, y: 9 },
+    approach: { x: 28, y: 30 },
+    clickAreas: [{ x0: 24, y0: 25, x1: 32, y1: 29 }]
+  },
+  {
+    objectId: 'censure-road-supply-tent-flap',
+    interiorPath: './data/levels/censure_road_supply_tent.json',
+    interiorFile: '../data/levels/censure_road_supply_tent.json',
+    returnPlayer: { x: 39, y: 36 },
+    interiorPlayer: { x: 9, y: 7 },
+    interiorExit: { x: 9, y: 8 },
+    interiorFlap: { x: 9, y: 9 },
+    approach: { x: 39, y: 36 },
+    clickAreas: [
+      { x0: 35, y0: 31, x1: 38, y1: 35 },
+      { x0: 40, y0: 31, x1: 43, y1: 35 }
+    ]
+  },
+  {
+    objectId: 'censure-road-sutler-tent-flap',
+    interiorPath: './data/levels/censure_road_sutler_tent.json',
+    interiorFile: '../data/levels/censure_road_sutler_tent.json',
+    returnPlayer: { x: 50, y: 37 },
+    interiorPlayer: { x: 5, y: 7 },
+    interiorExit: { x: 5, y: 8 },
+    interiorFlap: { x: 5, y: 9 },
+    approach: { x: 50, y: 37 },
+    clickAreas: [{ x0: 48, y0: 32, x1: 53, y1: 36 }]
+  },
+  {
+    objectId: 'censure-road-medic-tent-flap',
+    interiorPath: './data/levels/censure_road_medic_tent.json',
+    interiorFile: '../data/levels/censure_road_medic_tent.json',
+    returnPlayer: { x: 60, y: 46 },
+    interiorPlayer: { x: 2, y: 7 },
+    interiorExit: { x: 1, y: 7 },
+    interiorFlap: { x: 0, y: 7 },
+    approach: { x: 60, y: 46 },
+    clickAreas: [{ x0: 61, y0: 42, x1: 65, y1: 46 }]
+  },
+  {
+    objectId: 'censure-road-quarters-tent-flap',
+    interiorPath: './data/levels/censure_road_quarters_tent.json',
+    interiorFile: '../data/levels/censure_road_quarters_tent.json',
+    returnPlayer: { x: 16, y: 41 },
+    interiorPlayer: { x: 6, y: 7 },
+    interiorExit: { x: 6, y: 8 },
+    interiorFlap: { x: 6, y: 9 },
+    approach: { x: 16, y: 41 },
+    clickAreas: [
+      { x0: 12, y0: 36, x1: 14, y1: 40 },
+      { x0: 16, y0: 35, x1: 18, y1: 40 },
+      { x0: 20, y0: 36, x1: 22, y1: 40 }
+    ]
+  }
+];
 
 {
   assert.equal(level.id, 'censure-road-camp');
@@ -108,6 +292,37 @@ const campRibguard = await readJson('../data/items/camp-issue-ribguard.json');
   assert.equal(level.legend.r.floor, 'ash-road');
   assert.equal(level.legend.s.floor, 'road-shoulder');
   assert.equal(level.legend['.'].floor, 'packed-earth');
+  assert.equal(level.legend.m.floor, 'mud-track');
+  assert.equal(level.legend.g.floor, 'ash-gravel');
+  assert.equal(level.legend.p.floor, 'worn-canvas');
+  for (const tile of ['m', 'g', 'p']) {
+    assert.equal(level.legend[tile].kind, 'floor', `${tile} remains a floor tile`);
+    assert.equal(level.legend[tile].walkable, true, `${tile} remains walkable`);
+  }
+  const floorCounts = Object.fromEntries(Object.keys(level.legend).map((tile) => [tile, 0]));
+  for (const row of level.tiles) {
+    for (const tile of row) floorCounts[tile] = (floorCounts[tile] ?? 0) + 1;
+  }
+  assert.ok(floorCounts.g >= 240, 'camp has ash-gravel work-ground texture');
+  assert.ok(floorCounts.m >= 200, 'camp has muddy traffic and drill-yard texture');
+  assert.ok(floorCounts.p >= 30, 'camp has worn-canvas floor mats at tent mouths');
+  const pathTiles = new Set(['m', 'g', 'p', 'r', 's']);
+  for (const [label, point] of [
+    ['south spine', { x: 34, y: 46 }],
+    ['bell lane', { x: 33, y: 18 }],
+    ['north camp spine', { x: 34, y: 20 }],
+    ['preceptor spur', { x: 47, y: 14 }],
+    ['training ground lane', { x: 54, y: 27 }],
+    ['quartermaster lane', { x: 30, y: 31 }],
+    ['supply lane', { x: 39, y: 36 }],
+    ['sutler lane', { x: 50, y: 37 }],
+    ['quarters lane', { x: 16, y: 41 }],
+    ['evidence lane', { x: 58, y: 41 }],
+    ['medic lane', { x: 60, y: 46 }]
+  ]) {
+    assert.equal(pathTiles.has(tileAt(level, point)), true, `${label} is marked by a visible path tile`);
+    assert.equal(grid.isWalkable(point.x, point.y), true, `${label} remains walkable`);
+  }
   for (const point of [
     { x: 0, y: 0 },
     { x: 69, y: 0 },
@@ -155,18 +370,24 @@ const campRibguard = await readJson('../data/items/camp-issue-ribguard.json');
 
 {
   const requiredSites = [
-    'censure-road-writ-chapel-west',
-    'censure-road-odran-private-tent',
+    'censure-road-writ-chapel-flap',
+    'censure-road-odran-private-tent-flap',
     'censure-road-confession-screen',
     'censure-road-bell-mast',
-    'censure-road-preceptor-tent',
+    'censure-road-preceptor-tent-flap',
     'censure-road-drill-yard-chalk',
+    'censure-road-sword-yard-dummy-west',
+    'censure-road-sword-yard-dummy-east',
+    'censure-road-shooting-range-target-left',
+    'censure-road-shooting-range-target-center',
+    'censure-road-shooting-range-target-right',
     'censure-road-quartermaster-table',
-    'censure-road-supply-tent-38-32',
+    'censure-road-supply-tent-flap',
+    'censure-road-sutler-tent-flap',
     'censure-road-sutler-cart',
     'censure-road-evidence-shed-door',
-    'censure-road-medic-tent',
-    'censure-road-cult-breaker-tent-13-36',
+    'censure-road-medic-tent-flap',
+    'censure-road-quarters-tent-flap',
     'censure-road-writ-board',
     'censure-road-tether-line',
     'censure-road-ash-latrines',
@@ -174,35 +395,56 @@ const campRibguard = await readJson('../data/items/camp-issue-ribguard.json');
   ];
   for (const id of requiredSites) objectById(level, id);
   assert.ok(level.objects.filter((object) => object.kind === 'farm-fence' && object.blocking).length >= 180, 'camp walls are fenced around the playable area');
-  assert.ok(level.objects.filter((object) => object.kind === 'canvas-tent' && object.blocking).length >= 10, 'camp uses tents for work and quarters');
+  const tentTiles = level.tiles.join('').split('').filter((tile) => tile === 'C').length;
+  assert.ok(tentTiles >= 250, 'camp uses mapped multi-cell tents for work and quarters');
+  assert.equal(level.legend.C.kind, 'canvas-tent-building-block');
+  assert.equal(getSprite(level.legend.C.kind)?.block, true, 'camp tent bodies are connected render blocks');
+  assert.equal(level.objects.filter((object) => object.kind === 'canvas-tent-flap').length, tentSpecs.length);
   assert.equal(objectById(level, 'censure-road-evidence-shed-door').variant, 'storage-shed');
   assert.equal(level.legend.S.kind, 'storage-shed-building-block', 'evidence shed uses the existing storage shed block');
+  assert.ok(tileComponents(level, 'C').length >= 10, 'camp tents are arranged as separate chapel, command, supply, trade, medical, and quarters footprints');
+  assert.equal(level.tiles[36][15], '.', 'cult-breaker quarters keep a lane gap between tent bays');
+  assert.equal(level.tiles[36][19], '.', 'cult-breaker quarters keep a second lane gap between tent bays');
+  assert.notEqual(level.tiles[34][39], 'C', 'supply tents keep a work lane between the two supply bays');
+  assert.equal(grid.isWalkable(39, 34), true, 'supply tent work lane is walkable');
+  assert.ok(level.objects.filter((object) => object.id?.startsWith('censure-road-drill-yard-rope-')).length >= 6, 'drill yard has rope and stake detail');
+  assert.ok(level.objects.filter((object) => object.id?.startsWith('censure-road-drill-yard-chalk')).length >= 4, 'drill yard has readable chalk marks');
+  assert.equal(getSprite('training-dummy')?.category, 'furniture', 'training dummies are cataloged as furniture');
+  assert.equal(getSprite('devil-target')?.category, 'structure', 'shooting range targets are cataloged as structures');
+  for (const kind of ['trampled-mud', 'practice-scars', 'spent-casings']) {
+    assert.equal(getSprite(kind)?.flat, true, `${kind} renders as a flat ground texture`);
+  }
+  assert.ok(level.objects.filter((object) => object.kind === 'trampled-mud').length >= 20, 'training spaces have trampled ground texture');
+  assert.ok(level.objects.filter((object) => object.kind === 'practice-scars').length >= 6, 'sword yard has cut and chalk ground marks');
+  assert.ok(level.objects.filter((object) => object.kind === 'spent-casings').length >= 6, 'shooting range has spent casing detail');
+  assert.equal(level.objects.filter((object) => object.kind === 'training-dummy').length, 2, 'sword yard has two training dummies');
+  assert.equal(level.objects.filter((object) => object.kind === 'devil-target').length, 3, 'shooting range has three devil targets');
+  const swordDummy = objectById(level, 'censure-road-sword-yard-dummy-west');
+  assert.equal(swordDummy.interact?.type, 'note', 'sword yard dummy is inspectable');
+  assert.equal(swordDummy.mapMarker?.label, 'Sword Yard');
+  const rangeTarget = objectById(level, 'censure-road-shooting-range-target-center');
+  assert.equal(rangeTarget.interact?.type, 'note', 'center devil target is inspectable');
+  assert.equal(rangeTarget.mapMarker?.label, 'Shooting Range');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 54, y: 27 }), true, 'spawn reaches the shooting range firing line');
 }
 
 {
-  const privateTent = objectById(level, 'censure-road-odran-private-tent');
-  assert.equal(privateTent.interact?.type, 'note');
-  assert.equal(privateTent.interact?.lock?.methods?.[0]?.field, 'security');
-  assert.equal(privateTent.interact.lock.methods[0].dc, 55);
-  const lockMethod = privateTent.interact.lock.methods[0];
-  assert.deepEqual(
-    lockMethodStatus(lockMethod, {
-      inventory: { has: () => false },
-      fieldRating: () => 80
-    }).requiredItem,
-    SECURITY_TOOL_ITEM,
-    'Odran tent Security method still requires an entry roll'
-  );
-  assert.equal(lockMethodStatus(lockMethod, {
-    inventory: { has: (itemId) => itemId === SECURITY_TOOL_ITEM },
-    fieldRating: () => 54
-  }).success, false);
-  assert.equal(lockMethodStatus(lockMethod, {
-    inventory: { has: (itemId) => itemId === SECURITY_TOOL_ITEM },
-    fieldRating: () => 55
-  }).success, true);
+  for (const object of level.objects.filter((entry) => entry.interact)) {
+    const approach = reachableInteractionApproach(level, grid, object, level.spawns.player);
+    assert.ok(approach, `${object.id ?? object.kind} has a reachable interaction approach`);
+  }
+}
 
-  const evidenceMethod = privateTent.interact.search.methods[0];
+{
+  const privateTent = objectById(level, 'censure-road-odran-private-tent-flap');
+  assert.equal(privateTent.interact, undefined, "Odran's tent is open and entered by walking through it");
+  assert.equal(privateTent.mapMarker?.kind, 'exit');
+
+  const odranInterior = await readJson('../data/levels/censure_road_odran_tent_interior.json');
+  const odranGrid = new Grid(odranInterior);
+  addBlockingObjects(odranGrid, odranInterior.objects ?? []);
+  const chest = objectById(odranInterior, 'odran-tent-travel-chest');
+  const evidenceMethod = chest.interact.search.methods[0];
   assert.equal(evidenceMethod.field, 'search');
   assert.equal(evidenceMethod.dc, 45);
   assert.equal(searchMethodStatus(evidenceMethod, {
@@ -214,6 +456,59 @@ const campRibguard = await readJson('../data/items/camp-issue-ribguard.json');
     fieldRating: () => 45
   }).success, true);
   assert.equal(evidenceMethod.success.setFlag, 'odran-late-visit-suspected');
+}
+
+{
+  const occupiedCampCells = new Map(
+    (level.spawns.npcs ?? []).map((npc) => [`${npc.x},${npc.y}`, npc.actor])
+  );
+  for (const spec of tentSpecs) {
+    const flap = objectById(level, spec.objectId);
+    assert.equal(flap.kind, 'canvas-tent-flap', `${spec.objectId} uses the tent flap art`);
+    assert.equal(flap.interact, undefined, `${spec.objectId} is not a click-to-enter door`);
+    assert.equal(flap.blocking, undefined, `${spec.objectId} does not add prop collision`);
+
+    const transition = transitionById(level, `${spec.objectId}-transition`);
+    assert.deepEqual({ x: transition.x, y: transition.y }, spec.approach, `${spec.objectId} transition sits on the tent mouth`);
+    assert.deepEqual(transition.clickAreas, spec.clickAreas, `${spec.objectId} transition owns its tent click footprint`);
+    assert.equal(pointInAreas(flap, transition.clickAreas), true, `${spec.objectId} click footprint covers the visible flap`);
+    assert.equal(grid.isWalkable(flap.x, flap.y), false, `${spec.objectId} visible flap tile remains tent body`);
+    assert.equal(grid.isWalkable(transition.x, transition.y), true, `${spec.objectId} transition tile is walkable`);
+    assert.equal(occupiedCampCells.has(`${transition.x},${transition.y}`), false, `${spec.objectId} transition is not occupied by an NPC`);
+    assert.equal(pathExists(grid, level.spawns.player, spec.approach), true, `${spec.objectId} transition is reachable from camp spawn`);
+    assert.equal(transition.loadLevel.path, spec.interiorPath, `${spec.objectId} transition loads its interior`);
+    assert.deepEqual(transition.loadLevel.player, spec.interiorPlayer, `${spec.objectId} loads into the matching interior entry tile`);
+
+    const interior = await readJson(spec.interiorFile);
+    const interiorGrid = new Grid(interior);
+    addBlockingObjects(interiorGrid, interior.objects ?? []);
+    assert.equal(interior.legend['#'].kind, 'canvas-tent-interior-wall', `${interior.id} uses canvas interior walls`);
+    assert.equal(interior.legend['.'].floor, 'worn-canvas', `${interior.id} uses visible worn-canvas floor tiles`);
+    assert.ok(interior.mood.floorShadeAlpha <= 0.14, `${interior.id} floor shade leaves the canvas floor readable`);
+    assert.ok(interior.mood.ambientAlpha <= 0.08, `${interior.id} ambient wash leaves the canvas floor readable`);
+    assert.deepEqual(interior.spawns.player, { actor: 'mara-vey', ...spec.interiorPlayer }, `${interior.id} authored spawn matches the exterior entry`);
+    assert.equal(interiorGrid.isWalkable(interior.spawns.player.x, interior.spawns.player.y), true, `${interior.id} player start is walkable`);
+    for (const object of interior.objects.filter((entry) => entry.interact)) {
+      const approach = reachableInteractionApproach(interior, interiorGrid, object, interior.spawns.player);
+      assert.ok(approach, `${interior.id} ${object.id ?? object.kind} has a reachable interaction approach`);
+    }
+    const exitFlap = interior.objects.find((object) => object.kind === 'canvas-tent-flap');
+    assert.ok(exitFlap, `${interior.id} keeps visible tent flap art`);
+    assert.deepEqual({ x: exitFlap.x, y: exitFlap.y }, spec.interiorFlap, `${interior.id} wall flap sits on the authored wall cell`);
+    assert.equal(exitFlap.interact, undefined, `${interior.id} exit is not a click-to-use door`);
+    assert.equal(exitFlap.blocking, undefined, `${interior.id} exit flap does not block movement`);
+    const exitTransition = (interior.levelTransitions ?? []).find((transition) =>
+      transition.loadLevel?.path === './data/levels/censure_road_camp.json'
+    );
+    assert.ok(exitTransition, `${interior.id} has a walk-out transition`);
+    assert.deepEqual({ x: exitTransition.x, y: exitTransition.y }, spec.interiorExit, `${interior.id} exit transition sits just inside the flap`);
+    assert.equal(isCardinalAdjacent(exitTransition, exitFlap), true, `${interior.id} exit transition is adjacent to the wall flap`);
+    assert.equal(interiorGrid.isWalkable(exitTransition.x, exitTransition.y), true, `${interior.id} exit transition is walkable`);
+    assert.equal(interiorGrid.isWalkable(exitFlap.x, exitFlap.y), false, `${interior.id} exit flap is mounted on a wall tile, not floating on the floor`);
+    assert.equal(pathExists(interiorGrid, interior.spawns.player, exitTransition), true, `${interior.id} exit transition is reachable from spawn`);
+    assert.deepEqual(exitTransition.loadLevel.player, spec.returnPlayer);
+    assert.equal(grid.isWalkable(spec.returnPlayer.x, spec.returnPlayer.y), true, `${interior.id} return point is walkable`);
+  }
 }
 
 {

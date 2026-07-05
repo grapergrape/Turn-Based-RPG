@@ -39,8 +39,10 @@ export function drawCalcifiedGraveMarker(ctx, cx, cy, seed) {
   const dust = PALETTE.stoneDust;
   const split = seed % 4 === 0;
 
-  drawShadowBlob(ctx, cx, cy + 3, 28, 11);
+  drawShadowBlob(ctx, cx, cy + 4, 34, 13);
+  drawIsoDiamond(ctx, cx, cy + 1, 32, 12, PALETTE.outline);
   drawIsoDiamond(ctx, cx, cy, 25, 9, PALETTE.stoneDark);
+  drawIsoDiamond(ctx, cx - 1, cy - 1, 18, 7, PALETTE.stoneDust);
   px(ctx, cx - 9 + lean, cy - 43, PALETTE.outline, 19, 44);
   px(ctx, cx - 8 + lean, cy - 42, bone, 15, 40);
   px(ctx, cx - 8 + lean, cy - 42, dust, 5, 36);
@@ -52,6 +54,9 @@ export function drawCalcifiedGraveMarker(ctx, cx, cy, seed) {
   px(ctx, cx - 12 + lean, cy - 22, PALETTE.outline, 25, 5);
   px(ctx, cx - 11 + lean, cy - 21, dust, 22, 2);
   px(ctx, cx + 5 + lean, cy - 20, lo, 5, 2);
+  px(ctx, cx - 10 + lean, cy - 45, PALETTE.outline, 21, 4);
+  px(ctx, cx - 8 + lean, cy - 46, bone, 15, 2);
+  px(ctx, cx + 6 + lean, cy - 44, lo, 4, 2);
 
   // Bone niche in the marker face: a dark recess with one tiny sorted skull.
   px(ctx, cx - 5 + lean, cy - 38, PALETTE.outline, 11, 14);
@@ -60,17 +65,27 @@ export function drawCalcifiedGraveMarker(ctx, cx, cy, seed) {
   px(ctx, cx - 2 + lean, cy - 33, PALETTE.void, 2, 2);
   px(ctx, cx + 2 + lean, cy - 33, PALETTE.void, 2, 2);
   px(ctx, cx - 3 + lean, cy - 28, dust, 7, 1);
+  px(ctx, cx - 6 + lean, cy - 26, PALETTE.outline, 13, 3);
+  px(ctx, cx - 5 + lean, cy - 27, bone, 9, 1);
 
   px(ctx, cx - 5 + lean, cy - 11, lo, 11, 2);
+  linePx(ctx, cx - 6 + lean, cy - 18, cx + 6 + lean, cy - 8, PALETTE.outline, 1);
+  linePx(ctx, cx - 5 + lean, cy - 19, cx + 5 + lean, cy - 9, dust, 1);
+  linePx(ctx, cx + 5 + lean, cy - 39, cx - 4 + lean, cy - 14, PALETTE.outline, 1);
+  linePx(ctx, cx + 4 + lean, cy - 39, cx - 5 + lean, cy - 15, lo, 1);
   for (let i = 0; i < 7; i += 1) {
     const x = cx - 7 + lean + Math.floor(rng() * 15);
     const y = cy - 36 + Math.floor(rng() * 31);
     px(ctx, x, y, rng() < 0.48 ? lo : dust, 1 + (i % 3 === 0 ? 1 : 0), 1);
   }
-  for (let i = 0; i < 3; i += 1) {
+  for (let i = 0; i < 6; i += 1) {
     const bx = cx - 10 + i * 9 + Math.floor(rng() * 3);
     px(ctx, bx, cy - 3 + (i & 1), rng() < 0.5 ? bone : lo, 3, 1);
   }
+  px(ctx, cx - 14 + lean, cy - 6, PALETTE.outline, 5, 3);
+  px(ctx, cx - 13 + lean, cy - 7, bone, 3, 1);
+  px(ctx, cx + 11 + lean, cy - 5, PALETTE.outline, 5, 3);
+  px(ctx, cx + 12 + lean, cy - 6, lo, 3, 1);
   drawNoisePixels(ctx, cx - 15, cy - 6, 30, 12, [PALETTE.stoneDark, PALETTE.rustDark], 0.09, seed);
 }
 const GRAVE_BODY_VARIANTS = [
@@ -332,6 +347,10 @@ export function drawDeadCultist(ctx, cx, cy, seed) {
   linePx(ctx, cx - flip * 5, cy - 10, cx + flip * 7, cy + 2, PALETTE.hostRed, 1);
   px(ctx, cx + flip * 5, cy - 4, PALETTE.hostGold, 1, 4);
   px(ctx, cx - 9, cy - 1, PALETTE.rustMid, 18, 1);
+  px(ctx, cx - flip * 2, cy - 8, PALETTE.outline, 12, 2);
+  px(ctx, cx - flip * 1, cy - 9, PALETTE.clothRed, 8, 1);
+  px(ctx, cx + flip * 1, cy + 4, PALETTE.outline, 16, 2);
+  px(ctx, cx + flip * 2, cy + 3, PALETTE.rustDark, 12, 1);
 
   // Outflung arms and real hands; the posture stays human and small.
   linePx(ctx, cx + flip * 2, cy - 4, cx + flip * 20, cy + 2, PALETTE.outline, 4);
@@ -350,10 +369,19 @@ export function drawDeadCultist(ctx, cx, cy, seed) {
   px(ctx, cx - flip * 14, cy + 5, PALETTE.stoneLight, 1, 2);
   px(ctx, cx + flip * 9, cy - 1, PALETTE.rustMid, 4, 4);
   px(ctx, cx + flip * 9, cy - 1, PALETTE.hostGold, 4, 1);
+  px(ctx, cx - flip * 18, cy + 8, PALETTE.outline, 8, 3);
+  px(ctx, cx - flip * 17, cy + 7, PALETTE.clothRed, 5, 1);
+  px(ctx, cx + flip * 14, cy + 5, PALETTE.outline, 5, 3);
+  px(ctx, cx + flip * 15, cy + 4, PALETTE.hostBone, 2, 1);
+  for (const [dx, dy] of [[-14, -7], [-5, -9], [7, -3], [16, 1]]) {
+    px(ctx, cx + flip * dx, cy + dy, PALETTE.outline, 3, 3);
+    px(ctx, cx + flip * dx, cy + dy - 1, rng() < 0.5 ? PALETTE.hostGold : PALETTE.rustMid, 1, 1);
+  }
 
   for (let i = 0; i < 7; i += 1) {
     px(ctx, cx - 17 + Math.floor(rng() * 35), cy - 5 + Math.floor(rng() * 14), PALETTE.hostRed, 1, 1);
   }
+  drawRubbleCluster(ctx, cx + flip * 22, cy + 8, seed + 157, 2);
 }
 
 function wolfBody(ctx, cx, cy, seed, opts = {}) {

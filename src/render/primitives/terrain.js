@@ -44,9 +44,293 @@ export const FLOOR_STYLE_IDS = [
   'graveyard-earth',
   'farm-plank',
   'packed-earth',
+  'mud-track',
+  'ash-gravel',
+  'worn-canvas',
   'cave-stone',
   'cave-river'
 ];
+
+function drawFloorEdgeWear(ctx, cx, cy, seed, light = PALETTE.stoneDust, dark = PALETTE.stoneDark) {
+  const d = diamond(cx, cy, TILE_WIDTH - 6, TILE_HEIGHT - 3);
+  ctx.save();
+  ctx.globalAlpha = 0.32;
+  if ((seed & 1) === 0) {
+    linePx(ctx, d.left[0] + 2, d.left[1], d.top[0], d.top[1] + 2, light, 1);
+    linePx(ctx, d.bottom[0], d.bottom[1] - 2, d.right[0] - 2, d.right[1], dark, 1);
+  } else {
+    linePx(ctx, d.top[0], d.top[1] + 2, d.right[0] - 2, d.right[1], light, 1);
+    linePx(ctx, d.left[0] + 2, d.left[1], d.bottom[0], d.bottom[1] - 2, dark, 1);
+  }
+  ctx.restore();
+}
+
+function drawAshBoneFlecks(ctx, cx, cy, seed, count = 7) {
+  const rng = rngFrom(hash2D(seed + 31, seed * 7 + 17));
+  for (let i = 0; i < count; i += 1) {
+    const x = cx - 24 + Math.floor(rng() * 49);
+    const y = cy - 9 + Math.floor(rng() * 18);
+    const color = i % 4 === 0 ? PALETTE.hostBone : i % 3 === 0 ? PALETTE.stoneDust : PALETTE.rustDark;
+    px(ctx, x, y, PALETTE.outline, 2 + (i & 1), 1);
+    px(ctx, x, y - 1, color, 1 + (i & 1), 1);
+  }
+}
+
+function drawPairedFootprints(ctx, cx, cy, seed, color = PALETTE.stoneDark) {
+  const rng = rngFrom(hash2D(seed + 47, seed * 11 + 23));
+  const baseX = cx - 18 + Math.floor(rng() * 12);
+  const baseY = cy - 4 + Math.floor(rng() * 7);
+  for (let step = 0; step < 3; step += 1) {
+    const x = baseX + step * 13;
+    const y = baseY - step * 3;
+    px(ctx, x, y, PALETTE.outline, 5, 2);
+    px(ctx, x + 1, y, color, 3, 1);
+    px(ctx, x + 5, y + 3, PALETTE.outline, 5, 2);
+    px(ctx, x + 6, y + 3, color, 3, 1);
+  }
+}
+
+function drawRootThreads(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 53, seed * 13 + 29));
+  for (let i = 0; i < 4; i += 1) {
+    const startX = cx - 29 + Math.floor(rng() * 14);
+    const startY = cy - 2 + Math.floor((rng() - 0.5) * 9);
+    const midX = startX + 18 + Math.floor(rng() * 12);
+    const midY = startY - 5 + Math.floor(rng() * 11);
+    const endX = midX + 12 + Math.floor(rng() * 14);
+    const endY = midY - 4 + Math.floor(rng() * 9);
+    linePx(ctx, startX, startY, midX, midY, PALETTE.outline, 2);
+    linePx(ctx, midX, midY, endX, endY, PALETTE.outline, 2);
+    linePx(ctx, startX, startY, midX, midY, i % 2 ? PALETTE.woodDark : PALETTE.hostBlack, 1);
+    linePx(ctx, midX, midY, endX, endY, i % 2 ? PALETTE.rustDark : PALETTE.woodDark, 1);
+    if (i % 2 === 0) linePx(ctx, startX + 1, startY - 1, midX + 1, midY - 1, PALETTE.stoneMid, 1);
+    if (i === 1 || i === 3) linePx(ctx, midX, midY, midX - 6, midY + 5, PALETTE.hostBlack, 1);
+  }
+}
+
+function drawGroundScratchMarks(ctx, cx, cy, seed, color = PALETTE.stoneDust, count = 3) {
+  const rng = rngFrom(hash2D(seed + 67, seed * 17 + 31));
+  for (let i = 0; i < count; i += 1) {
+    const x = cx - 20 + Math.floor(rng() * 41);
+    const y = cy - 7 + Math.floor(rng() * 15);
+    const len = 5 + Math.floor(rng() * 8);
+    linePx(ctx, x, y, x + len, y - 2 + Math.floor(rng() * 4), PALETTE.outline, 1);
+    linePx(ctx, x + 1, y - 1, x + len - 1, y - 2 + Math.floor(rng() * 3), color, 1);
+    if (i % 2 === 0) {
+      linePx(ctx, x + 2, y - 4, x + 2, y + 3, PALETTE.outline, 1);
+      linePx(ctx, x + 3, y - 3, x + 3, y + 2, color, 1);
+    }
+  }
+}
+
+function drawFloorChipRun(ctx, cx, cy, seed, light = PALETTE.stoneDust, dark = PALETTE.stoneDark) {
+  const rng = rngFrom(hash2D(seed + 89, seed * 19 + 43));
+  const d = diamond(cx, cy, TILE_WIDTH - 12, TILE_HEIGHT - 6);
+  for (let i = 0; i < 3; i += 1) {
+    const t = 0.18 + i * 0.29 + (rng() - 0.5) * 0.05;
+    const edge = (seed + i) & 3;
+    const p = edge === 0
+      ? mixPoint(d.left, d.top, t)
+      : edge === 1
+        ? mixPoint(d.top, d.right, t)
+        : edge === 2
+          ? mixPoint(d.left, d.bottom, t)
+          : mixPoint(d.bottom, d.right, t);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 4, 3);
+    px(ctx, p[0], p[1] - 1, light, 2, 1);
+    px(ctx, p[0] + 1, p[1], dark, 2, 1);
+  }
+}
+
+function drawFloorTallyScratches(ctx, cx, cy, seed, color = PALETTE.stoneDust) {
+  const rng = rngFrom(hash2D(seed + 101, seed * 23 + 5));
+  const x = cx - 16 + Math.floor(rng() * 31);
+  const y = cy - 8 + Math.floor(rng() * 15);
+  for (let i = 0; i < 4; i += 1) {
+    linePx(ctx, x + i * 3, y + 2, x + i * 3 + 2, y - 5, PALETTE.outline, 1);
+    linePx(ctx, x + i * 3 + 1, y + 1, x + i * 3 + 2, y - 4, color, 1);
+  }
+  linePx(ctx, x - 1, y - 1, x + 13, y - 4, PALETTE.outline, 1);
+  linePx(ctx, x, y - 2, x + 12, y - 5, color, 1);
+}
+
+function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
+  const seed = hash2D(gx + 701, gy + 719);
+  const rng = rngFrom(seed);
+  const d = diamond(cx, cy, TILE_WIDTH - 10, TILE_HEIGHT - 5);
+  if (!['ash-dirt', 'wheat-field', 'furrow-field', 'mud-track', 'worn-canvas', 'cave-river'].includes(style)) {
+    drawFloorChipRun(ctx, cx, cy, seed, PALETTE.stoneDust, PALETTE.stoneDark);
+  }
+
+  switch (style) {
+    case 'stone': {
+      const a = mixPoint(d.left, d.bottom, 0.35 + rng() * 0.18);
+      const b = mixPoint(d.top, d.right, 0.58 + rng() * 0.17);
+      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
+      linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.stoneDust, 1);
+      px(ctx, cx - 7, cy - 4, PALETTE.outline, 13, 3);
+      px(ctx, cx - 5, cy - 4, PALETTE.stoneLight, 5, 1);
+      px(ctx, cx + 1, cy - 3, PALETTE.stoneDark, 4, 1);
+      break;
+    }
+    case 'ash-dirt': {
+      for (const off of [-5, 5]) {
+        linePx(ctx, cx - 19, cy + off * 0.35, cx + 16, cy - 3 + off * 0.35, PALETTE.outline, 1);
+        linePx(ctx, cx - 16, cy - 1 + off * 0.35, cx + 13, cy - 4 + off * 0.35, PALETTE.stoneMid, 1);
+      }
+      px(ctx, cx + 12, cy - 3, PALETTE.outline, 8, 2);
+      px(ctx, cx + 13, cy - 4, PALETTE.hostBone, 5, 1);
+      px(ctx, cx + 17, cy - 1, PALETTE.rustDark, 3, 1);
+      break;
+    }
+    case 'ash-road': {
+      for (const t of [0.28, 0.68]) {
+        const a = mixPoint(d.left, d.top, t);
+        const b = mixPoint(d.bottom, d.right, Math.min(0.9, t + 0.16));
+        linePx(ctx, a[0], a[1] + 1, b[0], b[1] + 1, PALETTE.outline, 2);
+        linePx(ctx, a[0] + 1, a[1], b[0] + 1, b[1], PALETTE.stoneDust, 1);
+      }
+      px(ctx, cx - 4, cy - 11, PALETTE.outline, 9, 4);
+      px(ctx, cx - 3, cy - 11, PALETTE.stoneLight, 6, 2);
+      px(ctx, cx - 1, cy - 10, PALETTE.rustDark, 2, 1);
+      break;
+    }
+    case 'road-shoulder': {
+      const a = mixPoint(d.left, d.top, 0.18);
+      const b = mixPoint(d.left, d.bottom, 0.78);
+      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
+      linePx(ctx, a[0] + 1, a[1], b[0] + 1, b[1], PALETTE.stoneDust, 1);
+      for (let i = 0; i < 6; i += 1) {
+        const x = cx - 22 + Math.floor(rng() * 22);
+        const y = cy - 9 + Math.floor(rng() * 17);
+        px(ctx, x, y, PALETTE.outline, 3, 2);
+        px(ctx, x + 1, y - 1, i % 2 ? PALETTE.stoneLight : PALETTE.rustDark, 1, 1);
+      }
+      break;
+    }
+    case 'wheat-field': {
+      for (let i = 0; i < 4; i += 1) {
+        const x = cx - 18 + i * 11 + Math.floor(rng() * 3);
+        const y = cy - 2 + Math.floor(rng() * 8);
+        linePx(ctx, x, y, x + 2, y - 10 - Math.floor(rng() * 3), PALETTE.outline, 1);
+        linePx(ctx, x + 1, y - 1, x + 2, y - 9, i % 2 ? PALETTE.clothTan : PALETTE.woodLight, 1);
+        px(ctx, x, y - 12, PALETTE.hostGold, 2, 1);
+      }
+      break;
+    }
+    case 'furrow-field': {
+      for (const t of [0.2, 0.42, 0.64, 0.84]) {
+        const a = mixPoint(d.left, d.bottom, t);
+        const b = mixPoint(d.top, d.right, Math.min(0.92, t + 0.12));
+        linePx(ctx, a[0], a[1] + 1, b[0], b[1] + 1, PALETTE.outline, 2);
+        linePx(ctx, a[0] + 1, a[1], b[0] + 1, b[1], t === 0.42 ? PALETTE.rustDark : PALETTE.woodDark, 1);
+      }
+      px(ctx, cx + 10, cy - 5, PALETTE.outline, 8, 2);
+      px(ctx, cx + 11, cy - 6, PALETTE.hostGold, 5, 1);
+      break;
+    }
+    case 'forest-floor': {
+      drawRootThreads(ctx, cx, cy, seed + 19);
+      px(ctx, cx - 5, cy - 4, PALETTE.outline, 11, 6);
+      px(ctx, cx - 4, cy - 5, PALETTE.woodDark, 8, 4);
+      px(ctx, cx - 2, cy - 5, PALETTE.stoneDust, 3, 1);
+      px(ctx, cx + 4, cy - 2, PALETTE.hostGold, 2, 1);
+      break;
+    }
+    case 'graveyard-earth': {
+      const topA = mixPoint(d.left, d.top, 0.34);
+      const topB = mixPoint(d.top, d.right, 0.64);
+      const botA = mixPoint(d.left, d.bottom, 0.36);
+      const botB = mixPoint(d.bottom, d.right, 0.66);
+      linePx(ctx, topA[0], topA[1], topB[0], topB[1], PALETTE.hostBone, 1);
+      linePx(ctx, botA[0], botA[1], botB[0], botB[1], PALETTE.outline, 1);
+      drawFloorTallyScratches(ctx, cx, cy, seed + 11, PALETTE.stoneDust);
+      break;
+    }
+    case 'farm-plank': {
+      for (const t of [0.16, 0.5, 0.84]) {
+        const a = mixPoint(d.left, d.top, t);
+        const b = mixPoint(d.bottom, d.right, t);
+        px(ctx, Math.round((a[0] + b[0]) / 2) - 1, Math.round((a[1] + b[1]) / 2) - 1, PALETTE.outline, 4, 3);
+        px(ctx, Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2) - 1, PALETTE.rustLight, 1, 1);
+      }
+      linePx(ctx, cx - 17, cy + 3, cx + 12, cy - 8, PALETTE.outline, 1);
+      linePx(ctx, cx - 15, cy + 2, cx + 10, cy - 9, PALETTE.woodLight, 1);
+      break;
+    }
+    case 'packed-earth': {
+      for (const [dx, dy] of [[-18, -3], [-2, -7], [15, 0]]) {
+        px(ctx, cx + dx - 2, cy + dy - 2, PALETTE.outline, 6, 5);
+        px(ctx, cx + dx - 1, cy + dy - 1, PALETTE.rustDark, 4, 3);
+        px(ctx, cx + dx, cy + dy - 2, PALETTE.clothTan, 2, 1);
+      }
+      linePx(ctx, cx - 25, cy + 6, cx + 18, cy - 5, PALETTE.outline, 1);
+      linePx(ctx, cx - 22, cy + 5, cx + 16, cy - 6, PALETTE.woodMid, 1);
+      break;
+    }
+    case 'mud-track': {
+      for (const t of [0.34, 0.58]) {
+        const a = mixPoint(d.left, d.top, t);
+        const b = mixPoint(d.bottom, d.right, Math.min(0.9, t + 0.18));
+        linePx(ctx, a[0], a[1] + 2, b[0], b[1] + 2, PALETTE.outline, 3);
+        linePx(ctx, a[0] + 1, a[1] + 1, b[0] + 1, b[1] + 1, PALETTE.rustDark, 1);
+        linePx(ctx, a[0] + 2, a[1], b[0] + 2, b[1], PALETTE.woodMid, 1);
+      }
+      break;
+    }
+    case 'ash-gravel': {
+      for (let i = 0; i < 12; i += 1) {
+        const x = cx - 27 + Math.floor(rng() * 55);
+        const y = cy - 10 + Math.floor(rng() * 20);
+        px(ctx, x, y, PALETTE.outline, 3, 2);
+        px(ctx, x + 1, y - 1, i % 3 === 0 ? PALETTE.stoneLight : PALETTE.stoneDust, 1, 1);
+      }
+      drawGroundScratchMarks(ctx, cx, cy, seed + 13, PALETTE.stoneDust, 2);
+      break;
+    }
+    case 'worn-canvas': {
+      for (const t of [0.27, 0.7]) {
+        const a = mixPoint(d.left, d.top, t);
+        const b = mixPoint(d.bottom, d.right, t);
+        for (let i = 0; i < 3; i += 1) {
+          const x = Math.round(a[0] + (b[0] - a[0]) * (0.28 + i * 0.22));
+          const y = Math.round(a[1] + (b[1] - a[1]) * (0.28 + i * 0.22));
+          px(ctx, x - 1, y - 1, PALETTE.outline, 2, 2);
+          px(ctx, x, y - 1, PALETTE.clothTan, 1, 1);
+        }
+      }
+      px(ctx, cx - 10, cy - 8, PALETTE.outline, 14, 6);
+      px(ctx, cx - 8, cy - 7, PALETTE.clothTan, 10, 3);
+      px(ctx, cx - 6, cy - 5, PALETTE.rustDark, 7, 1);
+      break;
+    }
+    case 'cave-stone': {
+      for (const t of [0.24, 0.54, 0.8]) {
+        const a = mixPoint(d.left, d.bottom, t);
+        const b = mixPoint(d.top, d.right, Math.min(0.92, t + 0.08));
+        linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
+        linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.stoneDust, 1);
+      }
+      px(ctx, cx + 8, cy - 4, PALETTE.stoneLight, 9, 1);
+      px(ctx, cx + 11, cy - 2, PALETTE.outline, 6, 1);
+      break;
+    }
+    case 'cave-river': {
+      for (const t of [0.32, 0.66]) {
+        const a = mixPoint(d.left, d.top, t);
+        const b = mixPoint(d.bottom, d.right, Math.min(0.9, t + 0.1));
+        linePx(ctx, a[0], a[1], b[0], b[1], t < 0.5 ? PALETTE.stoneDust : PALETTE.clothBlueDark, 1);
+      }
+      for (const [dx, dy] of [[-23, 5], [19, -7], [7, 8]]) {
+        px(ctx, cx + dx - 1, cy + dy - 1, PALETTE.outline, 5, 3);
+        px(ctx, cx + dx, cy + dy - 1, PALETTE.stoneDust, 3, 1);
+      }
+      break;
+    }
+    default:
+      break;
+  }
+}
 
 export function drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy) {
   const seed = hash2D(gx, gy);
@@ -57,6 +341,18 @@ export function drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy) {
   // Base tones are deliberately close in value (no bright full-tile dust).
   const base = zone % 6 === 0 ? PALETTE.stoneLight : PALETTE.stoneMid;
   drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  const slab = diamond(cx, cy, TILE_WIDTH - 10, TILE_HEIGHT - 5);
+  if ((seed & 3) !== 1) {
+    const splitA = mixPoint(slab.left, slab.top, 0.28 + r() * 0.08);
+    const splitB = mixPoint(slab.bottom, slab.right, 0.64 + r() * 0.12);
+    linePx(ctx, splitA[0], splitA[1], splitB[0], splitB[1], PALETTE.outline, 1);
+    linePx(ctx, splitA[0] + 1, splitA[1] - 1, splitB[0] + 1, splitB[1] - 1, PALETTE.stoneDust, 1);
+  }
+  if (seed % 5 === 0) {
+    drawRubbleCluster(ctx, cx + Math.floor((r() - 0.5) * 18), cy + Math.floor((r() - 0.5) * 8), seed + 97, 4);
+  }
+  drawFloorEdgeWear(ctx, cx, cy, seed);
 
   // A faint, off-centre pale scuff — a partial diamond, never the whole tile.
   if (r() < 0.5) {
@@ -164,9 +460,42 @@ function drawOutdoorFloorCell(ctx, cx, cy, gx, gy, colors, detail = {}) {
     drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [colors.lo, colors.hi], detail.noise ?? 0.035, seed);
   }
 
+  if (detail.ashDrifts) {
+    const ashColor = detail.ashColor ?? colors.hi;
+    ctx.save();
+    ctx.globalAlpha = 0.58;
+    for (const t of [0.2, 0.48, 0.76]) {
+      linePx(ctx, cx - 25 + Math.floor(r() * 5), cy - 8 + Math.floor(t * 19), cx + 24 - Math.floor(r() * 5), cy - 10 + Math.floor(t * 19), ashColor, t === 0.48 ? 2 : 1);
+    }
+    ctx.restore();
+    for (const t of [0.31, 0.62]) {
+      linePx(ctx, cx - 27, cy - 8 + Math.round(t * 17), cx + 22, cy - 10 + Math.round(t * 17), PALETTE.outline, 1);
+      linePx(ctx, cx - 23, cy - 9 + Math.round(t * 17), cx + 18, cy - 11 + Math.round(t * 17), PALETTE.stoneMid, 1);
+    }
+    drawAshBoneFlecks(ctx, cx, cy, seed, 9);
+    drawGroundScratchMarks(ctx, cx, cy, seed + 71, PALETTE.stoneDust, 2);
+  }
+
+  if (detail.footTraffic) {
+    drawPairedFootprints(ctx, cx, cy, seed, colors.lo);
+  }
+
+  if (detail.roots) {
+    drawRootThreads(ctx, cx, cy, seed);
+    drawAshBoneFlecks(ctx, cx, cy, seed + 17, 8);
+    drawGroundScratchMarks(ctx, cx, cy, seed + 83, PALETTE.rustDark, 3);
+    for (let i = 0; i < 3; i += 1) {
+      const x = cx - 22 + Math.floor(r() * 45);
+      const y = cy - 8 + Math.floor(r() * 17);
+      px(ctx, x, y, PALETTE.outline, 5, 2);
+      px(ctx, x + 1, y - 1, i % 2 ? PALETTE.woodMid : PALETTE.stoneDust, 3, 1);
+    }
+  }
+
   if (seed % (detail.crackEvery ?? 13) === 0) {
     drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 2);
   }
+  drawFloorEdgeWear(ctx, cx, cy, seed, colors.hi, colors.lo);
 }
 
 function drawRoadSurfaceCell(ctx, cx, cy, gx, gy) {
@@ -204,6 +533,12 @@ function drawRoadSurfaceCell(ctx, cx, cy, gx, gy) {
   if (r() < 0.42) {
     px(ctx, cx - 21 + Math.floor(r() * 42), cy - 4 + Math.floor(r() * 8), PALETTE.rustDark, 8 + Math.floor(r() * 12), 1);
   }
+  for (const offset of [-5, 6]) {
+    linePx(ctx, cx - 26, cy + offset * 0.35, cx + 25, cy - 2 + offset * 0.35, PALETTE.stoneDark, 1);
+    linePx(ctx, cx - 22, cy + 1 + offset * 0.25, cx + 20, cy - 1 + offset * 0.25, PALETTE.stoneDust, 1);
+  }
+  drawAshBoneFlecks(ctx, cx, cy, seed + 23, 4);
+  drawFloorEdgeWear(ctx, cx, cy, seed, PALETTE.stoneDust, PALETTE.stoneDark);
   drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.stoneDark, PALETTE.stoneDust, PALETTE.rustDark], 0.028, seed);
 }
 
@@ -243,6 +578,9 @@ function drawRoadShoulderCell(ctx, cx, cy, gx, gy) {
   if (r() < 0.45) {
     px(ctx, cx - 18 + Math.floor(r() * 36), cy - 4 + Math.floor(r() * 8), PALETTE.stoneDark, 8 + Math.floor(r() * 9), 1);
   }
+  drawPairedFootprints(ctx, cx, cy, seed + 41, PALETTE.stoneDark);
+  drawAshBoneFlecks(ctx, cx, cy, seed + 43, 5);
+  drawFloorEdgeWear(ctx, cx, cy, seed, PALETTE.stoneDust, PALETTE.outline);
 }
 
 function drawFarmPlankFloorCell(ctx, cx, cy, gx, gy) {
@@ -259,6 +597,7 @@ function drawFarmPlankFloorCell(ctx, cx, cy, gx, gy) {
     const a = mixPoint(d.left, d.top, t);
     const b = mixPoint(d.bottom, d.right, t);
     linePx(ctx, a[0], a[1] + wobble, b[0], b[1] + wobble, seamColor, 1);
+    linePx(ctx, a[0] + 1, a[1] + wobble - 1, b[0] + 1, b[1] + wobble - 1, PALETTE.woodLight, 1);
   }
 
   if ((seed & 3) !== 0) {
@@ -285,6 +624,23 @@ function drawFarmPlankFloorCell(ctx, cx, cy, gx, gy) {
     const y = cy - 8 + Math.floor(r() * 16);
     px(ctx, x, y, r() < 0.5 ? PALETTE.woodLight : PALETTE.stoneDark, 1 + Math.floor(r() * 3), 1);
   }
+  for (const t of [0.2, 0.48, 0.76]) {
+    const a = mixPoint(d.left, d.bottom, t);
+    const b = mixPoint(d.top, d.right, Math.min(0.9, t + 0.18));
+    linePx(ctx, a[0], a[1], b[0], b[1], t === 0.48 ? PALETTE.outline : PALETTE.woodLight, 1);
+  }
+  for (const t of [0.18, 0.52, 0.86]) {
+    const p = mixPoint(d.left, d.top, t);
+    const q = mixPoint(d.bottom, d.right, t);
+    const x = Math.round((p[0] + q[0]) / 2);
+    const y = Math.round((p[1] + q[1]) / 2);
+    px(ctx, x - 1, y - 1, PALETTE.outline, 3, 3);
+    px(ctx, x, y - 1, PALETTE.rustLight, 1, 1);
+    px(ctx, x + 10, y + 4, PALETTE.outline, 2, 2);
+    px(ctx, x + 10, y + 3, PALETTE.woodLight, 1, 1);
+  }
+  drawGroundScratchMarks(ctx, cx, cy, seed + 97, PALETTE.woodLight, 2);
+  drawFloorEdgeWear(ctx, cx, cy, seed, PALETTE.woodLight, PALETTE.outline);
   drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.woodDark, PALETTE.stoneDark, PALETTE.rustDark], 0.026, seed);
 }
 
@@ -321,8 +677,203 @@ function drawPackedEarthFloorCell(ctx, cx, cy, gx, gy) {
     linePx(ctx, x, y, x + 2 + Math.floor(r() * 6), y - 1 + Math.floor(r() * 3), r() < 0.6 ? PALETTE.clothTan : PALETTE.woodMid, 1);
   }
 
+  drawPairedFootprints(ctx, cx, cy, seed + 13, PALETTE.woodMid);
+  for (const t of [0.22, 0.5, 0.78]) {
+    const d = diamond(cx, cy, TILE_WIDTH - 12, TILE_HEIGHT - 6);
+    const a = mixPoint(d.left, d.bottom, t);
+    const b = mixPoint(d.top, d.right, Math.min(0.9, t + 0.16));
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
+    linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, t === 0.5 ? PALETTE.clothTan : PALETTE.woodMid, 1);
+  }
+  for (let i = 0; i < 4; i += 1) {
+    const x = cx - 18 + Math.floor(r() * 37);
+    const y = cy - 6 + Math.floor(r() * 13);
+    px(ctx, x - 1, y - 1, PALETTE.outline, 4, 4);
+    px(ctx, x, y, i % 2 ? PALETTE.rustDark : PALETTE.stoneMid, 2, 2);
+  }
+  drawAshBoneFlecks(ctx, cx, cy, seed + 19, 7);
+  drawGroundScratchMarks(ctx, cx, cy, seed + 101, PALETTE.clothTan, 2);
+  drawFloorEdgeWear(ctx, cx, cy, seed, PALETTE.stoneMid, PALETTE.woodDark);
+
   drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.rustDark, PALETTE.stoneDark, PALETTE.woodMid], 0.044, seed);
   if (seed % 17 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 2);
+}
+
+function drawMudTrackFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 421, gy + 431);
+  const r = rngFrom(seed);
+  const zone = hash2D((gx >> 1) + 53, (gy >> 1) + 59);
+  const base = zone % 3 === 0 ? PALETTE.woodDark : PALETTE.stoneDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  ctx.save();
+  ctx.globalAlpha = 0.22;
+  drawIsoDiamond(
+    ctx,
+    cx + Math.floor((r() - 0.5) * 12),
+    cy + Math.floor((r() - 0.5) * 6),
+    44 + Math.floor(r() * 10),
+    18 + Math.floor(r() * 5),
+    PALETTE.rustDark
+  );
+  ctx.globalAlpha = 0.12;
+  drawIsoDiamond(
+    ctx,
+    cx + Math.floor((r() - 0.5) * 16),
+    cy - 1 + Math.floor((r() - 0.5) * 6),
+    28 + Math.floor(r() * 12),
+    12 + Math.floor(r() * 5),
+    PALETTE.stoneMid
+  );
+  ctx.restore();
+
+  const d = diamond(cx, cy, TILE_WIDTH - 10, TILE_HEIGHT - 5);
+  for (const t of [0.3, 0.56]) {
+    const wobble = Math.floor(r() * 3) - 1;
+    const a = mixPoint(d.left, d.top, t);
+    const b = mixPoint(d.bottom, d.right, Math.min(0.86, t + 0.18));
+    linePx(ctx, a[0], a[1] + wobble, b[0], b[1] + wobble, PALETTE.outline, 1);
+    linePx(ctx, a[0] + 1, a[1] + wobble - 1, b[0] + 1, b[1] + wobble - 1, PALETTE.woodMid, 1);
+  }
+
+  for (let i = 0; i < 5; i += 1) {
+    if (r() > 0.68) continue;
+    const x = cx - 20 + Math.floor(r() * 40);
+    const y = cy - 7 + Math.floor(r() * 15);
+    px(ctx, x, y, PALETTE.outline, 3, 1);
+    px(ctx, x + 4, y + 2, PALETTE.rustDark, 3, 1);
+  }
+
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.rustDark, PALETTE.woodMid, PALETTE.stoneMid], 0.04, seed);
+  if (seed % 19 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 12), cy + Math.floor((r() - 0.5) * 5), seed, 2);
+}
+
+function drawAshGravelFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 439, gy + 443);
+  const r = rngFrom(seed);
+  const zone = hash2D((gx >> 1) + 61, (gy >> 1) + 67);
+  const base = zone % 4 === 0 ? PALETTE.stoneDark : PALETTE.stoneMid;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  ctx.save();
+  ctx.globalAlpha = 0.08;
+  drawIsoDiamond(
+    ctx,
+    cx + Math.floor((r() - 0.5) * 14),
+    cy + Math.floor((r() - 0.5) * 7),
+    36 + Math.floor(r() * 14),
+    15 + Math.floor(r() * 6),
+    PALETTE.stoneLight
+  );
+  ctx.globalAlpha = 0.1;
+  drawIsoDiamond(
+    ctx,
+    cx + Math.floor((r() - 0.5) * 18),
+    cy + 2 + Math.floor((r() - 0.5) * 7),
+    20 + Math.floor(r() * 16),
+    9 + Math.floor(r() * 5),
+    PALETTE.rustDark
+  );
+  ctx.restore();
+
+  for (let i = 0; i < 9; i += 1) {
+    if (r() > 0.76) continue;
+    const x = cx - 24 + Math.floor(r() * 48);
+    const y = cy - 9 + Math.floor(r() * 18);
+    const s = 1 + Math.floor(r() * 2);
+    px(ctx, x, y, PALETTE.outline, s + 1, s + 1);
+    px(ctx, x, y, r() < 0.58 ? PALETTE.stoneDust : PALETTE.stoneLight, s, s);
+  }
+
+  if ((seed & 3) === 0) {
+    const d = diamond(cx, cy, TILE_WIDTH - 12, TILE_HEIGHT - 6);
+    const a = mixPoint(d.left, d.bottom, 0.18 + r() * 0.18);
+    const b = mixPoint(d.top, d.right, 0.58 + r() * 0.26);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.stoneDust, 1);
+  }
+
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.stoneDark, PALETTE.stoneDust, PALETTE.rustDark], 0.05, seed);
+}
+
+function drawWornCanvasFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 457, gy + 461);
+  const r = rngFrom(seed);
+  const zone = hash2D((gx >> 1) + 71, (gy >> 1) + 73);
+  const base = zone % 5 === 0 ? PALETTE.woodMid : zone % 3 === 0 ? PALETTE.woodDark : PALETTE.clothDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  const panel = diamond(cx, cy, TILE_WIDTH - 8, TILE_HEIGHT - 4);
+  const inner = diamond(cx, cy, TILE_WIDTH - 18, TILE_HEIGHT - 9);
+  const lit = [
+    mixPoint(panel.left, panel.top, 0.08),
+    mixPoint(panel.top, panel.right, 0.18),
+    mixPoint(inner.top, inner.right, 0.2),
+    mixPoint(inner.left, inner.top, 0.16)
+  ];
+  const shade = [
+    mixPoint(inner.left, inner.bottom, 0.2),
+    mixPoint(inner.bottom, inner.right, 0.18),
+    mixPoint(panel.bottom, panel.right, 0.18),
+    mixPoint(panel.left, panel.bottom, 0.12)
+  ];
+  poly(ctx, PALETTE.woodLight, lit);
+  poly(ctx, PALETTE.rustDark, shade);
+
+  const d = diamond(cx, cy, TILE_WIDTH - 8, TILE_HEIGHT - 4);
+  for (const t of [0.2, 0.4, 0.6, 0.8]) {
+    const a = mixPoint(d.left, d.top, t);
+    const b = mixPoint(d.bottom, d.right, t);
+    const color = t === 0.4 || t === 0.8 ? PALETTE.stoneDust : PALETTE.woodDark;
+    linePx(ctx, a[0], a[1], b[0], b[1], color, 1);
+    if ((seed + Math.floor(t * 100)) % 3 === 0) {
+      linePx(ctx, a[0] + 1, a[1], b[0] + 1, b[1], PALETTE.outline, 1);
+    }
+  }
+  for (const t of [0.28, 0.58]) {
+    const a = mixPoint(d.left, d.bottom, t);
+    const b = mixPoint(d.top, d.right, Math.min(0.9, t + 0.18));
+    linePx(ctx, a[0], a[1], b[0], b[1], t < 0.5 ? PALETTE.woodMid : PALETTE.rustDark, 1);
+  }
+
+  for (const t of [0.24, 0.5, 0.76]) {
+    for (let i = 0; i < 3; i += 1) {
+      const a = mixPoint(d.left, d.top, Math.max(0.08, t - 0.025 + i * 0.025));
+      const b = mixPoint(d.bottom, d.right, Math.max(0.08, t - 0.02 + i * 0.025));
+      const sx = Math.round((a[0] + b[0]) / 2) - 1;
+      const sy = Math.round((a[1] + b[1]) / 2) - 1;
+      px(ctx, sx, sy, i === 1 ? PALETTE.hostBone : PALETTE.outline, 2, 1);
+    }
+  }
+
+  for (const t of [0.13, 0.87]) {
+    const a = mixPoint(d.left, d.top, t);
+    const b = mixPoint(d.bottom, d.right, t);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
+    linePx(ctx, a[0] + 1, a[1], b[0] + 1, b[1], PALETTE.clothTan, 1);
+  }
+  for (const t of [0.31, 0.69]) {
+    const p = mixPoint(d.left, d.bottom, t);
+    px(ctx, p[0] - 2, p[1] - 1, PALETTE.outline, 5, 3);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.hostBone, 3, 1);
+  }
+
+  for (let i = 0; i < 7; i += 1) {
+    const x = cx - 22 + Math.floor(r() * 44);
+    const y = cy - 8 + Math.floor(r() * 16);
+    const w = 3 + Math.floor(r() * 8);
+    const color = r() < 0.5 ? PALETTE.clothTan : r() < 0.78 ? PALETTE.rustDark : PALETTE.stoneDust;
+    px(ctx, x, y, PALETTE.outline, w + 1, 1);
+    px(ctx, x + 1, y, color, Math.max(1, w - 1), 1);
+  }
+
+  if ((seed % 5) === 0) {
+    const a = mixPoint(d.left, d.bottom, 0.2 + r() * 0.2);
+    const b = mixPoint(d.top, d.right, 0.55 + r() * 0.22);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
+    linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.clothTan, 1);
+  }
+
+  drawNoisePixels(ctx, cx - 28, cy - 11, 56, 22, [PALETTE.woodDark, PALETTE.rustDark, PALETTE.stoneDust, PALETTE.clothTan], 0.052, seed);
 }
 
 function drawCaveStoneFloorCell(ctx, cx, cy, gx, gy) {
@@ -445,15 +996,18 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
         base: PALETTE.woodDark,
         alt: PALETTE.stoneDark,
-        hi: PALETTE.woodMid,
+        hi: PALETTE.stoneDust,
         lo: PALETTE.rustDark
-      }, { noise: 0.04, patchAlpha: 0.12, crackEvery: 11 });
+      }, { noise: 0.04, patchAlpha: 0.2, crackEvery: 11, ashDrifts: true, ashColor: PALETTE.stoneDust });
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'ash-dirt');
       return;
     case 'ash-road':
       drawRoadSurfaceCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'ash-road');
       return;
     case 'road-shoulder':
       drawRoadShoulderCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'road-shoulder');
       return;
     case 'wheat-field':
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
@@ -464,6 +1018,7 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
         row: PALETTE.woodDark,
         stalk: PALETTE.clothTan
       }, { noise: 0.022, rows: true, rowStep: 3, rowAlpha: 0.13, stalks: true, patchRate: 0.18, patchAlpha: 0.05, altModulo: 8, crackEvery: 23 });
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'wheat-field');
       return;
     case 'furrow-field':
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
@@ -474,33 +1029,53 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
         row: PALETTE.rustDark,
         stalk: PALETTE.hostGold
       }, { noise: 0.032, rows: true, rowStep: 2, rowAlpha: 0.26, stalks: true, patchRate: 0.28, patchAlpha: 0.08, crackEvery: 19 });
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'furrow-field');
       return;
     case 'forest-floor':
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
         base: PALETTE.stoneDark,
         alt: PALETTE.woodDark,
-        hi: PALETTE.stoneMid,
-        lo: PALETTE.hostBlack
-      }, { noise: 0.05, patchAlpha: 0.1, leafLitter: true, crackEvery: 15 });
+        hi: PALETTE.stoneDust,
+        lo: PALETTE.woodDark
+      }, { noise: 0.05, patchAlpha: 0.15, leafLitter: true, roots: true, crackEvery: 15 });
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'forest-floor');
       return;
     case 'graveyard-earth':
       drawGraveyardEarthCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'graveyard-earth');
       return;
     case 'farm-plank':
       drawFarmPlankFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'farm-plank');
       return;
     case 'packed-earth':
       drawPackedEarthFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'packed-earth');
+      return;
+    case 'mud-track':
+      drawMudTrackFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'mud-track');
+      return;
+    case 'ash-gravel':
+      drawAshGravelFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'ash-gravel');
+      return;
+    case 'worn-canvas':
+      drawWornCanvasFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'worn-canvas');
       return;
     case 'cave-stone':
       drawCaveStoneFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'cave-stone');
       return;
     case 'cave-river':
       drawCaveRiverFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'cave-river');
       return;
     case 'stone':
     default:
       drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy);
+      drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'stone');
   }
 }
 
@@ -537,16 +1112,53 @@ const FARM_INTERIOR_WALL_STYLES = {
 function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false) {
   const seam = shaded ? PALETTE.outline : style.seam;
   const trim = shaded ? PALETTE.woodDark : style.trim;
+  const grain = shaded ? PALETTE.stoneDark : PALETTE.woodDark;
+  const scar = shaded ? PALETTE.outline : PALETTE.rustDark;
+  const nail = shaded ? PALETTE.void : PALETTE.rustDark;
+
+  const nailHeads = (uValues, vValues, color = nail) => {
+    for (const u of uValues) {
+      for (const v of vValues) {
+        const p = face.point(u, v);
+        px(ctx, p[0] - 1, p[1], PALETTE.outline, 2, 1);
+        px(ctx, p[0], p[1] - 1, color, 1, 1);
+      }
+    }
+  };
 
   if (variant === 'farmhouse') {
     for (const u of [0.16, 0.38, 0.62, 0.84]) face.line(u, 0.04, u, 0.98, seam, 1);
-    face.line(0.05, 0.2, 0.94, 0.2, trim, 1);
-    face.line(0.08, 0.76, 0.92, 0.76, PALETTE.woodDark, 2);
+    for (const v of [0.18, 0.42, 0.76]) {
+      face.line(0.05, v, 0.94, v + (((seed + Math.floor(v * 100)) & 1) ? 0.02 : -0.015), v === 0.18 ? trim : grain, v === 0.76 ? 2 : 1);
+    }
+    for (const u of [0.15, 0.85]) {
+      face.line(u, 0.05, u, 0.96, PALETTE.outline, 2);
+      face.line(u + 0.015, 0.06, u + 0.015, 0.92, shaded ? PALETTE.woodDark : PALETTE.woodLight, 1);
+    }
+    face.line(0.07, 0.66, 0.93, 0.64, shaded ? PALETTE.outline : PALETTE.woodDark, 2);
+    face.line(0.08, 0.64, 0.9, 0.62, shaded ? PALETTE.stoneDark : PALETTE.clothTan, 1);
+    face.line(0.1, 0.11, 0.9, 0.11, PALETTE.hostBone, 1);
+    face.line(0.1, 0.9, 0.9, 0.9, PALETTE.outline, 1);
+    face.rect(0.24, 0.2, 0.36, 0.31, shaded ? PALETTE.woodDark : PALETTE.stoneDust);
+    face.line(0.24, 0.2, 0.36, 0.2, shaded ? PALETTE.stoneDark : PALETTE.hostBone, 1);
+    face.rect(0.68, 0.52, 0.82, 0.66, PALETTE.outline);
+    face.rect(0.7, 0.54, 0.8, 0.64, shaded ? PALETTE.stoneDark : PALETTE.clothTan);
     if ((seed & 1) === 0) {
+      face.rect(0.16, 0.32, 0.46, 0.61, PALETTE.outline);
       face.rect(0.18, 0.34, 0.44, 0.58, PALETTE.stoneDust);
       face.line(0.18, 0.34, 0.44, 0.34, PALETTE.clothTan, 1);
+      face.line(0.2, 0.57, 0.44, 0.57, PALETTE.stoneDark, 1);
     }
-    if (seed % 3 === 0) face.line(0.55, 0.42, 0.82, 0.5, PALETTE.rustDark, 1);
+    if (seed % 3 === 0) {
+      face.line(0.55, 0.42, 0.82, 0.5, scar, 2);
+      face.line(0.56, 0.4, 0.8, 0.49, PALETTE.woodLight, 1);
+    }
+    if (seed % 5 === 0) {
+      face.rect(0.58, 0.24, 0.74, 0.36, PALETTE.outline);
+      face.rect(0.61, 0.27, 0.71, 0.34, PALETTE.void);
+      face.line(0.66, 0.27, 0.66, 0.34, PALETTE.woodDark, 1);
+    }
+    nailHeads([0.16, 0.38, 0.62, 0.84], [0.2, 0.78]);
     return;
   }
 
@@ -557,17 +1169,105 @@ function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false)
     for (const v of [0.28, 0.56, 0.82]) {
       face.line(0.04, v, 0.96, v, v === 0.28 ? trim : PALETTE.woodDark, 2);
     }
-    if ((seed & 3) === 1) face.line(0.22, 0.2, 0.78, 0.72, PALETTE.rustDark, 1);
+    face.line(0.08, 0.13, 0.92, 0.16, PALETTE.outline, 2);
+    face.line(0.1, 0.12, 0.9, 0.15, PALETTE.rustMid, 1);
+    face.line(0.06, 0.92, 0.96, 0.88, PALETTE.outline, 2);
+    face.line(0.1, 0.23, 0.9, 0.79, PALETTE.outline, 2);
+    face.line(0.12, 0.24, 0.88, 0.78, PALETTE.rustDark, 1);
+    face.line(0.9, 0.23, 0.1, 0.79, PALETTE.outline, 2);
+    face.line(0.88, 0.24, 0.12, 0.78, PALETTE.woodMid, 1);
+    face.rect(0.18, 0.62, 0.3, 0.8, PALETTE.outline);
+    face.rect(0.2, 0.64, 0.28, 0.78, shaded ? PALETTE.void : PALETTE.woodDark);
+    face.rect(0.68, 0.34, 0.8, 0.48, PALETTE.outline);
+    face.rect(0.7, 0.36, 0.78, 0.46, shaded ? PALETTE.stoneDark : PALETTE.rustDark);
+    if ((seed & 3) === 1) {
+      face.rect(0.38, 0.2, 0.62, 0.36, PALETTE.outline);
+      face.rect(0.42, 0.23, 0.58, 0.33, PALETTE.void);
+    }
+    nailHeads([0.12, 0.46, 0.88], [0.3, 0.56, 0.82], shaded ? PALETTE.stoneDark : PALETTE.rustLight);
     return;
   }
 
   for (const u of [0.18, 0.35, 0.57, 0.79]) face.line(u, 0.08, u, 0.96, seam, 1);
+  face.line(0.1, 0.12, 0.88, 0.1, PALETTE.outline, 2);
   face.line(0.08, 0.26, 0.9, 0.22, trim, 1);
   face.line(0.08, 0.58, 0.9, 0.62, PALETTE.outline, 1);
-  face.line(0.2, 0.72, 0.86, 0.4, PALETTE.woodDark, 1);
+  face.line(0.2, 0.72, 0.86, 0.4, PALETTE.outline, 2);
+  face.line(0.22, 0.7, 0.84, 0.41, PALETTE.woodDark, 1);
+  face.line(0.1, 0.84, 0.88, 0.84, PALETTE.rustDark, 2);
+  face.rect(0.16, 0.38, 0.3, 0.52, PALETTE.outline);
+  face.rect(0.18, 0.4, 0.28, 0.5, shaded ? PALETTE.stoneDark : PALETTE.rustDark);
+  face.line(0.24, 0.15, 0.68, 0.23, shaded ? PALETTE.outline : PALETTE.rustLight, 1);
+  face.line(0.67, 0.78, 0.9, 0.68, PALETTE.outline, 2);
+  face.line(0.68, 0.76, 0.88, 0.67, shaded ? PALETTE.stoneDark : PALETTE.woodLight, 1);
   if ((seed & 1) === 0) {
+    face.rect(0.5, 0.18, 0.8, 0.36, PALETTE.outline);
     face.rect(0.52, 0.2, 0.78, 0.34, PALETTE.rustDark);
     face.line(0.52, 0.2, 0.78, 0.2, PALETTE.rustLight, 1);
+    face.line(0.57, 0.21, 0.57, 0.33, PALETTE.void, 1);
+  }
+  nailHeads([0.18, 0.57, 0.79], [0.28, 0.58, 0.86], shaded ? PALETTE.void : PALETTE.rustLight);
+}
+
+function drawBrokenStoneCourse(ctx, face, seed, shaded = false) {
+  const course = shaded ? PALETTE.outline : PALETTE.stoneDark;
+  const highlight = shaded ? PALETTE.stoneMid : PALETTE.stoneDust;
+  const chip = shaded ? PALETTE.void : PALETTE.stoneLight;
+  for (const v of [0.2, 0.38, 0.57, 0.75, 0.9]) {
+    const wobble = ((seed + Math.floor(v * 100)) & 1) ? 0.025 : -0.018;
+    face.line(0.03, v, 0.97, Math.max(0.05, Math.min(0.96, v + wobble)), course, 1);
+    if (v === 0.2 || v === 0.57) face.line(0.05, v - 0.02, 0.9, v + wobble - 0.02, highlight, 1);
+  }
+  const offset = (seed & 1) ? 0.08 : 0;
+  for (const u of [0.16, 0.34, 0.51, 0.69, 0.86]) {
+    const top = ((Math.floor((u + offset) * 10) + seed) & 1) ? 0.18 : 0.38;
+    face.line(u, top, u + (((seed + Math.floor(u * 91)) & 1) ? 0.035 : -0.025), Math.min(0.94, top + 0.28), course, 1);
+  }
+  if ((seed & 3) !== 2) {
+    face.line(0.22, 0.28, 0.46, 0.42, PALETTE.outline, 2);
+    face.line(0.23, 0.27, 0.45, 0.41, highlight, 1);
+    face.line(0.63, 0.62, 0.82, 0.53, PALETTE.outline, 2);
+    face.line(0.64, 0.6, 0.8, 0.52, shaded ? PALETTE.stoneDark : PALETTE.rustDark, 1);
+  }
+  if (seed % 5 === 0) {
+    face.rect(0.12, 0.62, 0.22, 0.72, PALETTE.outline);
+    face.rect(0.14, 0.64, 0.2, 0.7, chip);
+  }
+}
+
+function drawStoneCapWear(ctx, cap, seed, broken = false) {
+  const rng = rngFrom(hash2D(seed + 613, seed * 17 + 5));
+  const edges = [
+    [cap.left, cap.top],
+    [cap.top, cap.right],
+    [cap.left, cap.bottom],
+    [cap.bottom, cap.right]
+  ];
+  for (let i = 0; i < (broken ? 8 : 5); i += 1) {
+    const [a, b] = edges[(seed + i) & 3];
+    const t = 0.12 + rng() * 0.76;
+    const p = mixPoint(a, b, t);
+    const w = broken ? 4 + Math.floor(rng() * 5) : 2 + Math.floor(rng() * 4);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, w + 1, 3);
+    px(ctx, p[0], p[1] - 2, i % 2 ? PALETTE.stoneDust : PALETTE.stoneDark, Math.max(1, w - 1), 1);
+    if (broken && i % 3 === 0) px(ctx, p[0] + 1, p[1], PALETTE.void, Math.max(2, w - 2), 1);
+  }
+
+  const t0 = 0.22 + rng() * 0.16;
+  const a = mixPoint(cap.left, cap.top, t0);
+  const b = mixPoint(cap.bottom, cap.right, Math.min(0.9, t0 + 0.28));
+  linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
+  linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, broken ? PALETTE.rustDark : PALETTE.stoneDust, 1);
+}
+
+function drawWallBaseScuffs(ctx, cx, cy, seed, colors = [PALETTE.stoneDark, PALETTE.rustDark]) {
+  const rng = rngFrom(hash2D(seed + 641, seed * 19 + 7));
+  for (let i = 0; i < 7; i += 1) {
+    const x = cx - 29 + Math.floor(rng() * 58);
+    const y = cy - 6 + Math.floor(rng() * 15);
+    const w = 3 + Math.floor(rng() * 7);
+    px(ctx, x, y, PALETTE.outline, w, 2);
+    px(ctx, x + 1, y - 1, colors[i % colors.length], Math.max(1, w - 2), 1);
   }
 }
 
@@ -598,6 +1298,7 @@ export function drawFarmInteriorWallBlock(ctx, cx, cy, heightPx, seed, opts = {}
   linePx(ctx, cap.left[0], cap.left[1], cap.top[0], cap.top[1], style.trim, 1);
   if (!connected.xPlus) linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.woodDark, 1);
   if (!connected.yPlus) linePx(ctx, cap.left[0], cap.left[1], cap.bottom[0], cap.bottom[1], PALETTE.outline, 1);
+  drawStoneCapWear(ctx, cap, seed + 71, false);
 
   for (const t of [0.26, 0.52, 0.78]) {
     if (((seed + Math.floor(t * 100)) & 1) === 0) continue;
@@ -609,31 +1310,85 @@ export function drawFarmInteriorWallBlock(ctx, cx, cy, heightPx, seed, opts = {}
   if ((seed & 3) === 0) {
     drawNoisePixels(ctx, cx - 24, cy - wallH + 12, 48, Math.max(12, wallH - 10), [style.grime, PALETTE.stoneDark], 0.018, seed);
   }
+  drawWallBaseScuffs(ctx, cx, cy, seed + 83, [style.grime, PALETTE.woodDark, PALETTE.stoneDark]);
 }
 
 export function drawIsoWallBlock(ctx, cx, cy, heightPx, seed) {
-  // Base contact shadow.
+  const wallH = heightPx ?? WALL_HEIGHT;
+  const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+  const cap = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
+  const rng = rngFrom(hash2D(seed + 3, seed * 5 + 7));
+
   drawShadowBlob(ctx, cx, cy + 2, TILE_WIDTH * 0.7, TILE_HEIGHT * 0.7);
 
-  drawIsoPrism(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, heightPx, {
-    top: PALETTE.stoneLight,
-    left: PALETTE.stoneMid,
-    right: PALETTE.stoneDark,
-    outline: PALETTE.outline
-  });
+  poly(ctx, PALETTE.outline, [
+    [cap.top[0], cap.top[1] - 1],
+    [cap.right[0] + 1, cap.right[1]],
+    [base.right[0] + 1, base.right[1] + 1],
+    [base.bottom[0], base.bottom[1] + 2],
+    [base.left[0] - 1, base.left[1] + 1],
+    [cap.left[0] - 1, cap.left[1]]
+  ]);
+  poly(ctx, PALETTE.stoneMid, [cap.left, cap.bottom, base.bottom, base.left]);
+  poly(ctx, PALETTE.stoneDark, [cap.bottom, cap.right, base.right, base.bottom]);
 
-  // Chipped edge pixels and cracks on the front faces.
-  const rng = rngFrom(hash2D(seed + 3, seed * 5 + 7));
-  for (let i = 0; i < 6; i += 1) {
-    const fy = cy - Math.floor(rng() * heightPx);
-    const fx = cx + Math.floor((rng() - 0.5) * TILE_WIDTH * 0.6);
-    px(ctx, fx, fy, PALETTE.stoneDark);
-    if (rng() < 0.4) px(ctx, fx, fy + 1, PALETTE.stoneDust);
+  const leftFace = faceTools(ctx, cap.left, cap.bottom, base.bottom, base.left);
+  const rightFace = faceTools(ctx, cap.bottom, cap.right, base.right, base.bottom);
+  drawBrokenStoneCourse(ctx, leftFace, seed + 11, false);
+  drawBrokenStoneCourse(ctx, rightFace, seed + 29, true);
+
+  poly(ctx, PALETTE.stoneLight, [cap.top, cap.right, cap.bottom, cap.left]);
+  poly(ctx, PALETTE.stoneDust, [
+    mixPoint(cap.left, cap.top, 0.12),
+    mixPoint(cap.top, cap.right, 0.72),
+    mixPoint(cap.bottom, cap.right, 0.24),
+    mixPoint(cap.left, cap.bottom, 0.8)
+  ]);
+
+  for (const t of [0.22, 0.48, 0.73]) {
+    const a = mixPoint(cap.left, cap.top, t);
+    const b = mixPoint(cap.bottom, cap.right, t + (((seed + Math.floor(t * 100)) & 1) ? 0.03 : -0.03));
+    linePx(ctx, a[0], a[1], b[0], b[1], t === 0.48 ? PALETTE.stoneDark : PALETTE.stoneDust, 1);
   }
-  // A little rubble heaped at the base sometimes.
-  if ((seed & 3) === 0) {
+  for (const t of [0.28, 0.62]) {
+    const a = mixPoint(cap.top, cap.right, t);
+    const b = mixPoint(cap.left, cap.bottom, Math.min(0.9, t + 0.1));
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
+  }
+  drawStoneCapWear(ctx, cap, seed + 43, wallH < WALL_HEIGHT * 0.7);
+  linePx(ctx, cap.left[0], cap.left[1], cap.top[0], cap.top[1], PALETTE.stoneDust, 1);
+  linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.outline, 1);
+  linePx(ctx, cap.left[0], cap.left[1], cap.bottom[0], cap.bottom[1], PALETTE.outline, 2);
+  linePx(ctx, cap.bottom[0], cap.bottom[1], cap.right[0], cap.right[1], PALETTE.outline, 2);
+
+  for (let i = 0; i < 11; i += 1) {
+    const fy = cy - Math.floor(rng() * Math.max(8, wallH));
+    const fx = cx + Math.floor((rng() - 0.5) * TILE_WIDTH * 0.72);
+    const w = 1 + Math.floor(rng() * 4);
+    px(ctx, fx, fy, rng() < 0.54 ? PALETTE.stoneDark : PALETTE.outline, w, 1);
+    if (rng() < 0.55) px(ctx, fx + 1, fy - 1, PALETTE.stoneDust, Math.max(1, w - 1), 1);
+  }
+  if (wallH < WALL_HEIGHT * 0.7) {
+    poly(ctx, PALETTE.outline, [
+      mixPoint(cap.left, cap.top, 0.08),
+      mixPoint(cap.left, cap.top, 0.3),
+      mixPoint(cap.left, cap.bottom, 0.3),
+      mixPoint(cap.left, cap.bottom, 0.1)
+    ]);
+    poly(ctx, PALETTE.stoneDark, [
+      mixPoint(cap.top, cap.right, 0.62),
+      mixPoint(cap.top, cap.right, 0.86),
+      mixPoint(cap.bottom, cap.right, 0.78),
+      mixPoint(cap.bottom, cap.right, 0.56)
+    ]);
+    for (const [ox, oy] of [[-24, -2], [-15, 3], [12, 2], [22, -1]]) {
+      drawRubbleCluster(ctx, cx + ox, cy + oy, seed + ox * 13 + oy, 3);
+    }
+    linePx(ctx, cap.left[0] + 4, cap.left[1] + 2, cap.bottom[0] - 3, cap.bottom[1] - 1, PALETTE.rustDark, 1);
+  } else if ((seed & 3) === 0) {
     drawRubbleCluster(ctx, cx, cy + 4, seed, 4);
   }
+  drawWallBaseScuffs(ctx, cx, cy, seed + 59);
 }
 
 export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
@@ -652,9 +1407,19 @@ export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
       const lean = ((seed + Math.floor(u * 100)) & 1) ? 0.05 : -0.04;
       face.line(u, 0.02, Math.max(0.04, Math.min(0.96, u + lean)), 0.96, PALETTE.outline, 1);
     }
+    for (const u of [0.2, 0.52, 0.84]) {
+      face.line(u, 0.08, Math.max(0.05, u - 0.1), 0.42, PALETTE.stoneDust, 1);
+      face.line(Math.max(0.05, u - 0.1), 0.42, Math.min(0.96, u + 0.08), 0.74, PALETTE.outline, 2);
+    }
     for (const v of [0.22, 0.47, 0.71]) {
       face.line(0.05, v, 0.94, v + (rng() - 0.5) * 0.08, v < 0.5 ? PALETTE.stoneDust : PALETTE.stoneDark, 1);
     }
+    face.line(0.18, 0.82, 0.48, 0.58, PALETTE.outline, 2);
+    face.line(0.2, 0.8, 0.46, 0.57, PALETTE.stoneDust, 1);
+    face.rect(0.62, 0.34, 0.76, 0.42, PALETTE.outline);
+    face.rect(0.64, 0.35, 0.74, 0.4, PALETTE.void);
+    face.rect(0.28, 0.18, 0.4, 0.27, PALETTE.outline);
+    face.rect(0.3, 0.2, 0.38, 0.25, PALETTE.stoneLight);
   }
 
   if (!connected.xPlus) {
@@ -664,6 +1429,13 @@ export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
       face.line(u, 0.05, Math.max(0.04, Math.min(0.96, u - 0.06)), 0.98, PALETTE.outline, 1);
     }
     for (const v of [0.32, 0.65]) face.line(0.06, v, 0.92, v - 0.04, PALETTE.void, 1);
+    face.line(0.2, 0.24, 0.78, 0.7, PALETTE.outline, 2);
+    face.line(0.22, 0.24, 0.76, 0.69, PALETTE.stoneDark, 1);
+    face.rect(0.32, 0.72, 0.48, 0.82, PALETTE.void);
+    face.line(0.72, 0.12, 0.58, 0.92, PALETTE.void, 2);
+    face.line(0.74, 0.14, 0.6, 0.88, PALETTE.stoneDark, 1);
+    face.rect(0.58, 0.42, 0.74, 0.52, PALETTE.outline);
+    face.rect(0.61, 0.44, 0.71, 0.5, PALETTE.void);
   }
 
   poly(ctx, PALETTE.stoneLight, [cap.top, cap.right, cap.bottom, cap.left]);
@@ -673,16 +1445,19 @@ export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
     mixPoint(cap.bottom, cap.right, 0.22),
     mixPoint(cap.left, cap.bottom, 0.78)
   ]);
+  drawStoneCapWear(ctx, cap, seed + 397, false);
 
   linePx(ctx, cap.left[0], cap.left[1], cap.top[0], cap.top[1], PALETTE.stoneDust, 1);
   linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.outline, 1);
   if (!connected.yPlus) linePx(ctx, cap.left[0], cap.left[1], cap.bottom[0], cap.bottom[1], PALETTE.outline, 1);
   if (!connected.xPlus) linePx(ctx, cap.bottom[0], cap.bottom[1], cap.right[0], cap.right[1], PALETTE.outline, 1);
 
-  for (let i = 0; i < 6; i += 1) {
+  for (let i = 0; i < 10; i += 1) {
     const fx = cx - 26 + Math.floor(rng() * 52);
     const fy = cy - wallH + 8 + Math.floor(rng() * Math.max(8, wallH - 12));
-    px(ctx, fx, fy, rng() < 0.55 ? PALETTE.stoneDust : PALETTE.void, 2 + Math.floor(rng() * 4), 1);
+    px(ctx, fx, fy, rng() < 0.55 ? PALETTE.stoneDust : PALETTE.void, 2 + Math.floor(rng() * 6), 1);
+    if (rng() < 0.45) px(ctx, fx + 1, fy + 1, PALETTE.stoneDark, 2, 1);
   }
   if ((seed & 3) === 0) drawRubbleCluster(ctx, cx, cy + 5, seed + 383, 5);
+  drawWallBaseScuffs(ctx, cx, cy + 1, seed + 401, [PALETTE.void, PALETTE.stoneDark, PALETTE.stoneDust]);
 }

@@ -87,8 +87,9 @@ Rules:
   indoor floor style while keeping the usual `kind` and `walkable` fields. If
   omitted, the renderer uses the original ruined stone style. Current floor
   styles are `stone`, `ash-dirt`, `ash-road`, `road-shoulder`, `wheat-field`,
-  `furrow-field`, `forest-floor`, `graveyard-earth`, `farm-plank`, and
-  `packed-earth`, `cave-stone`, and `cave-river`.
+  `furrow-field`, `forest-floor`, `graveyard-earth`, `farm-plank`,
+  `packed-earth`, `mud-track`, `ash-gravel`, `worn-canvas`, `cave-stone`, and
+  `cave-river`.
 - Levels can optionally set `mood` for scene-wide visual treatment. Existing
   keys are `floorShade`, `floorShadeAlpha`, `ambient`, `ambientAlpha`, and
   `vignette`. Outdoor daylight maps can also set `mood.sun.enabled: true` with
@@ -147,6 +148,20 @@ Shape:
   "combatTriggers": [
     { "id": "nave-trigger", "encounter": "nave-rite", "x": 8, "y": 3, "radius": 2, "intro": ["A line shown when this encounter starts."] }
   ],
+  "levelTransitions": [
+    {
+      "id": "cellar-stair-transition",
+      "x": 12,
+      "y": 8,
+      "clickAreas": [
+        { "x0": 10, "y0": 5, "x1": 13, "y1": 7 }
+      ],
+      "loadLevel": {
+        "path": "./data/levels/ash_chapel_cellar.json",
+        "player": { "x": 12, "y": 13 }
+      }
+    }
+  ],
   "combatIntro": ["A line shown when combat starts."],
   "onVictory": { "questUpdate": { "quest": "investigate-ash-chapel-cult", "stage": "cult-broken" } },
   "objects": [
@@ -188,6 +203,14 @@ Rules:
   reference `dialogue` by id and apply a `questUpdate`.
 - Corpse loot uses the same inventory and carry-weight rules as containers, but
   the body stays visible and can still open its inspect dialogue after looting.
+- `levelTransitions` is an optional array of walk-on level exits. Each entry has
+  a stable `id`, a walkable `x` and `y` tile, and a `loadLevel` object with the
+  target `path` plus the destination player tile. Use this for open thresholds
+  where stepping onto the tile should move the player. Optional `clickAreas`
+  rectangles can cover nearby visual footprint cells and route clicks to the
+  walkable transition tile. The level change still fires only after the player
+  reaches `x` and `y`. Use `interact` plus dialogue when the player must inspect,
+  unlock, search, or choose before changing levels.
 - `interact.lock` can gate any interaction behind a deterministic fieldcraft
   panel. The runtime shows the lock through the normal dialogue UI, then resolves
   the selected method from item possession, a field rating, or a primary

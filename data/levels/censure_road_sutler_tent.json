@@ -1,0 +1,105 @@
+{
+  "id": "censure-road-sutler-tent",
+  "name": "Maev's Trade Tent",
+  "intro": "Trade goods sit in exact piles, with prices low enough to read and high enough to hurt.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.06,
+    "vignette": 1.0
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 5,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "sutler-tent-exit-transition",
+      "x": 5,
+      "y": 8,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 50,
+          "y": 37
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 5,
+      "y": 9,
+      "id": "sutler-tent-exit-flap",
+      "name": "Tent Flap"
+    },
+    {
+      "kind": "settlement-table",
+      "x": 6,
+      "y": 3,
+      "blocking": true,
+      "id": "sutler-tent-trade-table",
+      "seed": 2811
+    },
+    {
+      "kind": "field-satchel",
+      "x": 4,
+      "y": 5,
+      "blocking": true,
+      "id": "sutler-tent-satchel",
+      "seed": 2813
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 8,
+      "y": 5,
+      "blocking": true,
+      "id": "sutler-tent-bargain-crate",
+      "seed": 2817
+    },
+    {
+      "kind": "low-stool",
+      "x": 5,
+      "y": 6,
+      "blocking": true,
+      "id": "sutler-tent-stool",
+      "seed": 2821
+    }
+  ]
+}

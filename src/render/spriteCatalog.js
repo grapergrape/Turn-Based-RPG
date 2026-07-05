@@ -33,7 +33,6 @@
 //              `wall-*` kind is a block by convention.
 
 import * as P from './PixelPrimitives.js';
-import { PALETTE } from './palette.js';
 import { WALL_HEIGHT } from './renderConfig.js';
 
 export const CATEGORY = {
@@ -112,6 +111,14 @@ const DISPLAY_NAMES = {
   'farmhouse-interior-wall': 'Farmhouse Wall',
   'barn-interior-wall': 'Barn Wall',
   'shed-interior-wall': 'Shed Wall',
+  'canvas-tent-building-block': 'Canvas Tent',
+  'canvas-tent-interior-wall': 'Canvas Tent Wall',
+  'canvas-tent-flap': 'Canvas Tent Flap',
+  'training-dummy': 'Training Dummy',
+  'devil-target': 'Devil Target',
+  'trampled-mud': 'Trampled Mud',
+  'practice-scars': 'Practice Scars',
+  'spent-casings': 'Spent Casings',
   'farm-prep-table': 'Farm Prep Table',
   'farm-kitchen-hearth': 'Farm Hearth'
 };
@@ -271,6 +278,19 @@ export const SPRITE_CATALOG = {
   'tool-shed-building-block': farmBuildingBlock('tool-shed'),
   'storage-shed-building-block': farmBuildingBlock('storage-shed'),
   'grain-shed-building-block': farmBuildingBlock('grain-shed'),
+  'canvas-tent-building-block': {
+    category: CATEGORY.STRUCTURE, layer: 0, block: true,
+    draw: (ctx, x, y, seed, c) => P.drawCanvasTentBlock(ctx, x, y, seed, {
+      connected: c.prop.connected
+    })
+  },
+  'canvas-tent-interior-wall': {
+    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    draw: (ctx, x, y, seed, c) => P.drawCanvasTentBlock(ctx, x, y, seed, {
+      connected: c.prop.connected,
+      interior: true
+    })
+  },
   'farm-door': {
     category: CATEGORY.STRUCTURE, layer: 2,
     draw: (ctx, x, y, seed, c) => P.drawFarmDoor(ctx, x, y, seed, {
@@ -292,6 +312,15 @@ export const SPRITE_CATALOG = {
   'rusted-crate': simple(P.drawRustedCrate, CATEGORY.FURNITURE),
   'sealed-storage-crate': simple(P.drawSealedStorageCrate, CATEGORY.FURNITURE),
   'canvas-tent': simple(P.drawCanvasTent, CATEGORY.FURNITURE),
+  'canvas-tent-flap': {
+    category: CATEGORY.FIXTURE, layer: 1,
+    draw: (ctx, x, y, seed, c) => P.drawCanvasTentFlap(ctx, x, y, seed, {
+      locked: Boolean(c.prop.interact?.lock && !c.prop.unlocked),
+      unlocked: Boolean(c.prop.unlocked),
+      revealed: Boolean(c.prop.revealed),
+      wallPlane: c.prop.wallPlane
+    })
+  },
   'camp-bedroll': simple(P.drawCampBedroll, CATEGORY.FURNITURE),
   'settlement-table': simple(P.drawSettlementTable, CATEGORY.FURNITURE),
   'low-stool': simple(P.drawLowStool, CATEGORY.FURNITURE),
@@ -321,6 +350,8 @@ export const SPRITE_CATALOG = {
   'feed-trough': oriented(P.drawFeedTrough, CATEGORY.FURNITURE),
   'water-pump': simple(P.drawWaterPump, CATEGORY.FURNITURE),
   'tool-rack': simple(P.drawToolRack, CATEGORY.FURNITURE),
+  'training-dummy': oriented(P.drawTrainingDummy, CATEGORY.FURNITURE),
+  'devil-target': oriented(P.drawDevilTarget, CATEGORY.STRUCTURE),
   'wagon-wheel': simple(P.drawWagonWheel, CATEGORY.FURNITURE),
   'woodpile': simple(P.drawWoodpile, CATEGORY.FURNITURE),
 
@@ -447,12 +478,12 @@ export const SPRITE_CATALOG = {
   // Flat ritual marks live in the decal block below (blood-sigil, ritual-circle).
 
   // --- Flat ground decals (drawn in the floor pass) ----------------------
-  'blood-stain': decal((ctx, x, y, seed) => P.drawNoisePixels(ctx, x - 18, y - 8, 36, 16, [PALETTE.hostRed, PALETTE.rustDark], 0.16, seed)),
-  'road-dust': decal((ctx, x, y, seed) => P.drawNoisePixels(ctx, x - 30, y - 11, 60, 22, [PALETTE.stoneDust, PALETTE.stoneMid], 0.1, seed)),
-  'glass-debris': decal((ctx, x, y, seed) => P.drawNoisePixels(ctx, x - 18, y - 8, 36, 16, [PALETTE.hostBone, PALETTE.stoneLight], 0.07, seed)),
-  'dust': decal((ctx, x, y, seed) => P.drawNoisePixels(ctx, x - 22, y - 9, 44, 18, [PALETTE.stoneDust], 0.05, seed)),
-  'rubble-decal': decal((ctx, x, y, seed) => P.drawRubbleCluster(ctx, x, y, seed, 9)),
-  'floor-crack': decal((ctx, x, y, seed) => P.drawCracks(ctx, x, y, seed, 5)),
+  'blood-stain': decal((ctx, x, y, seed) => P.drawBloodStainDecal(ctx, x, y, seed)),
+  'road-dust': decal((ctx, x, y, seed) => P.drawRoadDustDecal(ctx, x, y, seed)),
+  'glass-debris': decal((ctx, x, y, seed) => P.drawGlassDebrisDecal(ctx, x, y, seed)),
+  'dust': decal((ctx, x, y, seed) => P.drawDustDecal(ctx, x, y, seed)),
+  'rubble-decal': decal((ctx, x, y, seed) => P.drawRubbleDecal(ctx, x, y, seed)),
+  'floor-crack': decal((ctx, x, y, seed) => P.drawFloorCrackDecal(ctx, x, y, seed)),
   'scorch-mark': decal((ctx, x, y, seed) => P.drawScorchMark(ctx, x, y, seed)),
   'wax-stain': decal((ctx, x, y, seed) => P.drawWaxStain(ctx, x, y, seed)),
   'paper-scraps': decal((ctx, x, y, seed) => P.drawPaperScraps(ctx, x, y, seed)),
@@ -463,6 +494,9 @@ export const SPRITE_CATALOG = {
   'graveyard-prayer-scratch': decal((ctx, x, y, seed) => P.drawGraveyardPrayerScratch(ctx, x, y, seed)),
   'cave-flowstone': decal((ctx, x, y, seed) => P.drawCaveFlowstone(ctx, x, y, seed)),
   'chaff-scatter': decal((ctx, x, y, seed) => P.drawChaffScatter(ctx, x, y, seed)),
+  'trampled-mud': decal((ctx, x, y, seed) => P.drawTrampledMud(ctx, x, y, seed)),
+  'practice-scars': decal((ctx, x, y, seed) => P.drawPracticeScars(ctx, x, y, seed)),
+  'spent-casings': decal((ctx, x, y, seed) => P.drawSpentCasings(ctx, x, y, seed)),
   'chalk-drawing': decal((ctx, x, y, seed) => P.drawChalkDrawing(ctx, x, y, seed)),
   'machine-oil': decal((ctx, x, y, seed) => P.drawMachineOil(ctx, x, y, seed)),
   'cobweb': decal((ctx, x, y, seed) => P.drawCobweb(ctx, x, y, seed)),

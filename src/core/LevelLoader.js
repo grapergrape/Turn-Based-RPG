@@ -121,6 +121,13 @@ function cloneEffect(effect) {
   return JSON.parse(JSON.stringify(effect));
 }
 
+function cloneLevelTransitions(transitions) {
+  if (!Array.isArray(transitions)) return [];
+  return transitions
+    .filter((transition) => transition && typeof transition === 'object' && !Array.isArray(transition))
+    .map((transition) => JSON.parse(JSON.stringify(transition)));
+}
+
 function positiveNumber(value, fallback) {
   return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : fallback;
 }
@@ -427,6 +434,7 @@ export async function loadLevel(levelPath, options = {}) {
     enemyHearingRadius: level.enemyHearingRadius ?? null,
     combatStartBarks: level.combatStartBarks ?? [],
     combatIntro: level.combatIntro ?? [],
+    levelTransitions: cloneLevelTransitions(level.levelTransitions),
     combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
     victoryLog: level.victoryLog ?? null,
     onVictory: level.onVictory ?? null,

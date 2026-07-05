@@ -46,6 +46,35 @@ function drawSkullHead(ctx, headX, headY, side, pose, opts = {}) {
   }
 }
 
+function drawWolfValeMarks(ctx, bodyCx, bodyY, side, pose) {
+  const glow = pose.bob ? PALETTE.hostGlow : PALETTE.hostGold;
+  for (let i = 0; i < 7; i += 1) {
+    const rootX = bodyCx - 18 + i * 6;
+    const tipX = rootX + (i - 3) * 2;
+    const tipY = bodyY - 29 - (i % 2);
+    wolfSeg(ctx, rootX, bodyY - 16, tipX, tipY, PALETTE.outline, 2);
+    wolfSeg(ctx, rootX, bodyY - 16, tipX, tipY, i % 2 ? PALETTE.stoneDust : PALETTE.hostBone, 1);
+  }
+  const haloX = bodyCx + side * 3;
+  for (const mark of [
+    [-10, -28, -3, -35],
+    [-3, -31, 4, -39],
+    [5, -30, 13, -36]
+  ]) {
+    wolfSeg(ctx, haloX + mark[0], bodyY + mark[1], haloX + mark[2], bodyY + mark[3], PALETTE.outline, 3);
+    wolfSeg(ctx, haloX + mark[0], bodyY + mark[1], haloX + mark[2], bodyY + mark[3], PALETTE.hostBone, 1);
+  }
+  const handY = bodyY + 2;
+  for (const hand of [-1, 1]) {
+    const wristX = bodyCx + side * 4 + hand * 4;
+    wolfSeg(ctx, wristX, handY - 8, wristX + hand * 4, handY + 5, PALETTE.outline, 2);
+    wolfSeg(ctx, wristX, handY - 8, wristX + hand * 4, handY + 4, PALETTE.skinDark, 1);
+    px(ctx, wristX + hand * 4 - 2, handY + 4, PALETTE.hostBone, 5, 2);
+    for (let f = 0; f < 3; f += 1) px(ctx, wristX + hand * 4 - 2 + f * 2, handY + 6, PALETTE.hostBone, 1, 3);
+  }
+  px(ctx, bodyCx + side * 2, bodyY - 17, glow, 2, 3);
+}
+
 function drawWolfBody(ctx, w, h, facing, pose, opts = {}) {
   const meta = FACING_META[facing] ?? FACING_META.se;
   const side = wolfSide(meta);
@@ -72,6 +101,7 @@ function drawWolfBody(ctx, w, h, facing, pose, opts = {}) {
     if ((row === 5 || row === 9) && !meta.back) px(ctx, x + ww - 7, y, PALETTE.hostGold, 4, 1);
     if (row === 7 && opts.ribHint) px(ctx, x + 8, y, PALETTE.hostBone, ww - 16, 1);
   }
+  drawWolfValeMarks(ctx, bodyCx, bodyY, side, pose);
 
   const legA = pose.legA ?? 0;
   const legB = pose.legB ?? 0;

@@ -1,0 +1,105 @@
+{
+  "id": "censure-road-supply-tent",
+  "name": "Supply Tent",
+  "intro": "Crates, barrel hoops, and cut route tags make narrow lanes inside the supply tent.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.06,
+    "vignette": 1.1
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 9,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "supply-tent-exit-transition",
+      "x": 9,
+      "y": 8,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 39,
+          "y": 36
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 9,
+      "y": 9,
+      "id": "supply-tent-exit-flap",
+      "name": "Tent Flap"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 3,
+      "y": 3,
+      "blocking": true,
+      "id": "supply-tent-food-crate",
+      "seed": 2711
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 8,
+      "y": 3,
+      "blocking": true,
+      "id": "supply-tent-ammo-crate",
+      "seed": 2713
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 4,
+      "y": 6,
+      "blocking": true,
+      "id": "supply-tent-water-barrel",
+      "seed": 2717
+    },
+    {
+      "kind": "tool-rack",
+      "x": 8,
+      "y": 6,
+      "blocking": true,
+      "id": "supply-tent-tool-rack",
+      "seed": 2721
+    }
+  ]
+}

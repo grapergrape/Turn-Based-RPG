@@ -42,6 +42,7 @@ export {
 export { HUMAN_MODEL_IDS, HUMAN_MODEL_SUMMARY } from './sprites/humanModels.js';
 
 const BASE_SPRITE_ATLAS_IDS = Object.freeze([
+  'player',
   'mara-vey',
   'settlement-man',
   'settlement-woman',
@@ -59,6 +60,7 @@ const BASE_SPRITE_ATLAS_IDS = Object.freeze([
   'settlement-eda',
   'choir-cultist',
   'red-tithe-cutthroat',
+  'host-penitent-bastion',
   'host-touched-penitent',
   'host-rat-sixlegs',
   'host-rat-throat-maw',
@@ -72,6 +74,7 @@ export const SPRITE_ATLAS_IDS = Object.freeze([...BASE_SPRITE_ATLAS_IDS, ...HUMA
 
 export function buildSpriteAtlas() {
   const atlas = {
+    'player': bakeMara(MARA_DEFAULT_EQUIPMENT, {}),
     'mara-vey': bakeMara(MARA_DEFAULT_EQUIPMENT, {}),
     'settlement-man': bakeActor(42, 62, SURVIVOR_MAN_STYLE),
     'settlement-woman': bakeActor(42, 62, SURVIVOR_WOMAN_STYLE),
@@ -89,6 +92,7 @@ export function buildSpriteAtlas() {
     'settlement-eda': bakeActor(36, 50, SURVIVOR_VARIANTS.eda),
     'choir-cultist': bakeActor(44, 64, CHOIR_STYLE),
     'red-tithe-cutthroat': bakeActor(44, 64, CUT_STYLE),
+    'host-penitent-bastion': bakeActor(64, 92, PEN_STYLE),
     'host-touched-penitent': bakeActor(64, 92, PEN_STYLE),
     'host-rat-sixlegs': bakeHostRat('sixlegs', drawSixLeggedRat),
     'host-rat-throat-maw': bakeHostRat('maw', drawThroatMawRat),

@@ -70,22 +70,29 @@ const FONT = {
 export function drawBriefing(ctx, data) {
   const W = ctx.canvas.width;
   const H = ctx.canvas.height;
+  rect(ctx, 0, 0, W, H, PALETTE.void);
   for (let y = 0; y < H; y += 3) rect(ctx, 0, y, W, 1, PALETTE.uiDark);
-  rect(ctx, 10, 10, W - 20, 1, PALETTE.uiBorderDark);
-  rect(ctx, 10, H - 11, W - 20, 1, PALETTE.uiBorderDark);
-  rect(ctx, 10, 10, 1, H - 20, PALETTE.uiBorderDark);
-  rect(ctx, W - 11, 10, 1, H - 20, PALETTE.uiBorderDark);
+  for (let x = 20; x < W - 20; x += 29) {
+    rect(ctx, x, 22 + ((x >> 2) % 4), 9, 1, PALETTE.uiBorderDark);
+    rect(ctx, x + 7, H - 30 - ((x >> 3) % 4), 7, 1, PALETTE.uiDark);
+  }
 
-  const left = 64;
-  const right = W - 64;
+  const frame = { x: 44, y: 32, w: W - 88, h: H - 64 };
+  const body = { x: frame.x + 42, y: frame.y + 68, w: frame.w - 84, h: frame.h - 148 };
+  windowFrame(ctx, frame, data.title ?? 'FIELD WRIT');
+  inset(ctx, body);
+
+  const left = body.x + 12;
+  const right = body.x + body.w - 12;
   const maxChars = Math.floor((right - left) / 6);
 
-  text(ctx, data.title ?? 'FIELD WRIT', left, 40, PALETTE.uiWarn);
   const pageStr = `${(data.pageIndex ?? 0) + 1} / ${data.pageCount ?? 1}`;
-  text(ctx, pageStr, right - textWidth(pageStr), 40, PALETTE.uiDim);
-  rect(ctx, left, 54, right - left, 1, PALETTE.uiBorderDark);
+  text(ctx, pageStr, right - textWidth(pageStr), frame.y + 28, PALETTE.uiDim);
+  rect(ctx, left, frame.y + 49, right - left, 1, PALETTE.uiBorderDark);
+  rect(ctx, left, frame.y + 52, 38, 1, PALETTE.uiWarn);
+  rect(ctx, right - 38, frame.y + 52, 38, 1, PALETTE.uiBorderDark);
 
-  let y = 92;
+  let y = body.y + 12;
   for (const para of data.page ?? []) {
     for (const line of wrapText(para, maxChars)) {
       text(ctx, line, left, y, PALETTE.uiText);
@@ -99,20 +106,37 @@ export function drawBriefing(ctx, data) {
     ? (data.lastPrompt ?? 'ENTER: ENTER THE CHAPEL')
     : (data.nextPrompt ?? 'ENTER: CONTINUE');
   const skipText = data.skipPrompt ?? 'ESC: SKIP';
-  text(ctx, advanceText, left, H - 44, PALETTE.uiGood);
-  if (skipText) text(ctx, skipText, right - textWidth(skipText), H - 44, PALETTE.uiDim);
+  rect(ctx, left - 2, frame.y + frame.h - 45, textWidth(advanceText) + 8, 13, PALETTE.outline);
+  rect(ctx, left - 1, frame.y + frame.h - 44, textWidth(advanceText) + 6, 11, PALETTE.uiDark);
+  text(ctx, advanceText, left + 2, frame.y + frame.h - 42, PALETTE.uiGood);
+  if (skipText) text(ctx, skipText, right - textWidth(skipText), frame.y + frame.h - 40, PALETTE.uiDim);
 }
 
 export function panelTexture(ctx, box) {
-  rect(ctx, box.x, box.y, box.width, box.height, PALETTE.uiPanel);
-  for (let y = box.y + 3; y < box.y + box.height; y += 4) {
-    rect(ctx, box.x, y, box.width, 1, PALETTE.uiDark);
+  const width = box.width ?? box.w;
+  const height = box.height ?? box.h;
+  rect(ctx, box.x, box.y, width, height, PALETTE.outline);
+  rect(ctx, box.x + 1, box.y + 1, width - 2, height - 2, PALETTE.uiPanel);
+  rect(ctx, box.x + 1, box.y + 1, width - 2, 1, PALETTE.uiBorderLight);
+  rect(ctx, box.x + 1, box.y + height - 2, width - 2, 1, PALETTE.uiDark);
+  rect(ctx, box.x + 1, box.y + 1, 1, height - 2, PALETTE.uiBorderLight);
+  rect(ctx, box.x + width - 2, box.y + 1, 1, height - 2, PALETTE.uiDark);
+  for (let y = box.y + 5; y < box.y + height - 4; y += 5) {
+    rect(ctx, box.x + 3, y, width - 6, 1, PALETTE.uiDark);
   }
-  for (let x = box.x + 5; x < box.x + box.width; x += 17) {
-    rect(ctx, x, box.y + 2 + ((x >> 1) % 4), 1, 1, PALETTE.uiBorderDark);
+  for (let x = box.x + 7; x < box.x + width - 7; x += 19) {
+    const y = box.y + 3 + ((x >> 1) % 4);
+    rect(ctx, x, y, 5, 1, PALETTE.uiBorderDark);
+    if (x % 3 === 0) rect(ctx, x + 2, box.y + height - 9, 1, 3, PALETTE.uiBorderDark);
   }
-  rect(ctx, box.x, box.y, box.width, 1, PALETTE.uiBorderLight);
-  rect(ctx, box.x, box.y + 1, box.width, 1, PALETTE.uiBorderDark);
+  for (const [x, y] of [
+    [box.x + 4, box.y + 4],
+    [box.x + width - 8, box.y + 4],
+    [box.x + 4, box.y + height - 8],
+    [box.x + width - 8, box.y + height - 8]
+  ]) {
+    rivet(ctx, x, y);
+  }
 }
 
 export function windowFrame(ctx, box, title = '') {
@@ -123,10 +147,22 @@ export function windowFrame(ctx, box, title = '') {
   rect(ctx, box.x, box.y + box.h - 1, box.w, 1, PALETTE.uiBorderDark);
   rect(ctx, box.x, box.y, 1, box.h, PALETTE.uiBorderLight);
   rect(ctx, box.x + box.w - 1, box.y, 1, box.h, PALETTE.uiBorderDark);
-  rect(ctx, box.x + 4, box.y + 4, box.w - 8, 10, PALETTE.uiDark);
-  rivet(ctx, box.x + 4, box.y + 4);
-  rivet(ctx, box.x + box.w - 8, box.y + 4);
-  if (title) text(ctx, title, box.x + 10, box.y + 6, PALETTE.uiBorderLight);
+  rect(ctx, box.x + 3, box.y + 3, box.w - 6, 13, PALETTE.uiDark);
+  rect(ctx, box.x + 5, box.y + 15, box.w - 10, 1, PALETTE.uiBorderDark);
+  rect(ctx, box.x + 8, box.y + box.h - 6, box.w - 16, 1, PALETTE.uiDark);
+  for (let x = box.x + 18; x < box.x + box.w - 18; x += 22) {
+    rect(ctx, x, box.y + 6, 7, 1, PALETTE.uiBorderDark);
+    rect(ctx, x + 3, box.y + box.h - 8, 5, 1, PALETTE.uiBorderDark);
+  }
+  frameCornerPlate(ctx, box.x + 4, box.y + 4, 1, 1);
+  frameCornerPlate(ctx, box.x + box.w - 5, box.y + 4, -1, 1);
+  frameCornerPlate(ctx, box.x + 4, box.y + box.h - 5, 1, -1);
+  frameCornerPlate(ctx, box.x + box.w - 5, box.y + box.h - 5, -1, -1);
+  if (title) {
+    rect(ctx, box.x + 9, box.y + 5, Math.min(box.w - 24, textWidth(title) + 4), 9, PALETTE.outline);
+    rect(ctx, box.x + 10, box.y + 6, Math.min(box.w - 26, textWidth(title) + 2), 7, PALETTE.uiDark);
+    text(ctx, title, box.x + 11, box.y + 6, PALETTE.uiBorderLight);
+  }
 }
 
 // A small solid scroll triangle (dir -1 = up, 1 = down).
@@ -232,32 +268,58 @@ export function screenBackdrop(ctx, fullScreen = false) {
   for (let y = 0; y < h; y += 2) {
     rect(ctx, 0, y, VIEWPORT.width, 1, 'rgba(5, 5, 5, 0.45)');
   }
+  for (let x = 0; x < VIEWPORT.width; x += 24) {
+    rect(ctx, x, 0, 7, 1, PALETTE.uiBorderDark);
+    rect(ctx, x + 9, h - 2, 9, 1, PALETTE.uiDark);
+  }
 }
 
 export function inset(ctx, box) {
   rect(ctx, box.x, box.y, box.w, box.h, PALETTE.outline);
   rect(ctx, box.x + 1, box.y + 1, box.w - 2, box.h - 2, PALETTE.uiDark);
-  rect(ctx, box.x + 2, box.y + 2, box.w - 4, 1, PALETTE.uiBorderDark);
+  rect(ctx, box.x + 2, box.y + 2, box.w - 4, box.h - 4, PALETTE.uiPanel);
+  rect(ctx, box.x + 2, box.y + 2, box.w - 4, 1, PALETTE.uiDark);
   rect(ctx, box.x + 2, box.y + box.h - 3, box.w - 4, 1, PALETTE.uiBorderLight);
+  rect(ctx, box.x + 2, box.y + 2, 1, box.h - 4, PALETTE.uiDark);
+  rect(ctx, box.x + box.w - 3, box.y + 2, 1, box.h - 4, PALETTE.uiBorderLight);
   for (let x = box.x + 6; x < box.x + box.w - 6; x += 23) {
-    rect(ctx, x, box.y + 5 + (x % 5), 1, 1, PALETTE.uiBorderDark);
+    rect(ctx, x, box.y + 5 + (x % 5), 3, 1, PALETTE.uiBorderDark);
+    if (x % 2 === 0) rect(ctx, x + 1, box.y + box.h - 9, 1, 2, PALETTE.uiDark);
   }
+  rect(ctx, box.x + 5, box.y + 5, 10, 1, PALETTE.uiBorderDark);
+  rect(ctx, box.x + 5, box.y + 5, 1, 7, PALETTE.uiBorderDark);
+  rect(ctx, box.x + box.w - 15, box.y + 5, 10, 1, PALETTE.uiBorderDark);
+  rect(ctx, box.x + box.w - 6, box.y + 5, 1, 7, PALETTE.uiBorderDark);
+  rect(ctx, box.x + 5, box.y + box.h - 6, 10, 1, PALETTE.uiBorderLight);
+  rect(ctx, box.x + box.w - 15, box.y + box.h - 6, 10, 1, PALETTE.uiBorderLight);
 }
 
 export function bar(ctx, x, y, w, h, ratio, color) {
-  const fill = Math.max(0, Math.min(w - 2, Math.round((w - 2) * ratio)));
+  const innerW = Math.max(1, w - 2);
+  const innerH = Math.max(1, h - 2);
+  const fill = Math.max(0, Math.min(innerW, Math.round(innerW * ratio)));
   rect(ctx, x, y, w, h, PALETTE.outline);
-  rect(ctx, x + 1, y + 1, w - 2, h - 2, PALETTE.uiDark);
-  rect(ctx, x + 1, y + 1, fill, h - 2, color);
-  for (let i = 8; i < w - 2; i += 8) rect(ctx, x + i, y + 1, 1, h - 2, PALETTE.outline);
+  rect(ctx, x + 1, y + 1, innerW, innerH, PALETTE.uiDark);
+  if (fill > 0) {
+    rect(ctx, x + 1, y + 1, fill, innerH, color);
+    rect(ctx, x + 2, y + 2, Math.max(1, fill - 2), 1, PALETTE.uiBorderLight);
+    rect(ctx, x + 1, y + h - 2, fill, 1, PALETTE.uiBorderDark);
+  }
+  for (let i = 8; i < w - 2; i += 8) {
+    rect(ctx, x + i, y + 1, 1, innerH, PALETTE.outline);
+    rect(ctx, x + i + 1, y + 2, 1, Math.max(1, innerH - 2), PALETTE.uiBorderDark);
+  }
 }
 
 export function apPips(ctx, x, y, ap, maxAp) {
   for (let i = 0; i < maxAp; i += 1) {
     const px = x + i * 7;
-    rect(ctx, px, y + 1, 5, 6, PALETTE.outline);
-    rect(ctx, px + 1, y + 2, 3, 4, i < ap ? PALETTE.uiGood : PALETTE.uiDark);
-    rect(ctx, px + 1, y + 2, 3, 1, PALETTE.uiBorderLight);
+    const active = i < ap;
+    rect(ctx, px, y, 6, 8, PALETTE.outline);
+    rect(ctx, px + 1, y + 1, 4, 6, active ? PALETTE.uiGood : PALETTE.uiDark);
+    rect(ctx, px + 1, y + 1, 4, 1, active ? PALETTE.uiBorderLight : PALETTE.uiBorderDark);
+    rect(ctx, px + 4, y + 2, 1, 4, PALETTE.uiBorderDark);
+    if (active) rect(ctx, px + 2, y + 3, 2, 2, PALETTE.uiText);
   }
 }
 
@@ -282,6 +344,16 @@ function rivet(ctx, x, y) {
   rect(ctx, x, y, 4, 4, PALETTE.uiBorderDark);
   rect(ctx, x + 1, y + 1, 2, 2, PALETTE.uiBorderLight);
   rect(ctx, x + 2, y + 2, 1, 1, PALETTE.outline);
+}
+
+function frameCornerPlate(ctx, x, y, sx, sy) {
+  const ox = sx > 0 ? 0 : -7;
+  const oy = sy > 0 ? 0 : -7;
+  rect(ctx, x + ox, y + oy, 8, 8, PALETTE.outline);
+  rect(ctx, x + ox + 1, y + oy + 1, 6, 6, PALETTE.uiBorderDark);
+  rect(ctx, x + ox + 1, y + oy + 1, sx > 0 ? 5 : 1, 1, PALETTE.uiBorderLight);
+  rect(ctx, x + ox + 1, y + oy + 1, 1, sy > 0 ? 5 : 1, PALETTE.uiBorderLight);
+  rect(ctx, x + ox + 3, y + oy + 3, 2, 2, PALETTE.uiDark);
 }
 
 export function text(ctx, str, x, y, color = PALETTE.uiText, scale = 1) {

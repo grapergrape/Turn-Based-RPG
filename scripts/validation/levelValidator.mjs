@@ -18,6 +18,7 @@ import {
   referencedDialogueIds,
   referencedItemIds,
   relative,
+  validateGridPoint,
   requireNumber,
   requireString,
   validateOptionalBoolean
@@ -184,6 +185,7 @@ export function validateLevel(filePath, data) {
     validateDoorObject(name, object);
     validateMapMarker(name, object.mapMarker, 'objects[].mapMarker');
   }
+  validateLevelTransitions(name, data, objects);
   validateCombatTriggerMapMarkers(name, data);
   validateHiddenRegions(name, data, objects);
   validatePatrolReachability(name, data, [
@@ -231,6 +233,75 @@ export function validateLevel(filePath, data) {
   }
 
   validateTalkableNpcReachability(name, data, npcs, objects);
+}
+
+function validateLevelTransitions(name, data, objects) {
+  if (data.levelTransitions === undefined) return;
+  if (!Array.isArray(data.levelTransitions)) {
+    errors.push(`${name}: levelTransitions must be an array.`);
+    return;
+  }
+
+  const grid = new Grid(data);
+  for (const object of objects) {
+    if (object.blocking && inBounds(data, object)) grid.addBlocked(object.x, object.y);
+  }
+  const ids = new Set();
+  for (const [index, transition] of data.levelTransitions.entries()) {
+    const fieldName = `levelTransitions[${index}]`;
+    if (!transition || typeof transition !== 'object' || Array.isArray(transition)) {
+      errors.push(`${name}: ${fieldName} must be an object.`);
+      continue;
+    }
+    requireString(name, transition.id, `${fieldName}.id`);
+    if (typeof transition.id === 'string') {
+      if (ids.has(transition.id)) errors.push(`${name}: ${fieldName}.id "${transition.id}" is duplicated.`);
+      ids.add(transition.id);
+    }
+    validateGridPoint(name, transition, fieldName);
+    validateDialogueConditions(name, transition.conditions, `${fieldName}.conditions`);
+    if (inBounds(data, transition) && !grid.isWalkable(transition.x, transition.y)) {
+      errors.push(`${name}: ${fieldName} (${transition.x}, ${transition.y}) must be on a walkable tile.`);
+    }
+    validateTransitionClickAreas(name, data, transition, fieldName);
+
+    const loadLevel = transition.loadLevel;
+    if (!loadLevel || typeof loadLevel !== 'object' || Array.isArray(loadLevel)) {
+      errors.push(`${name}: ${fieldName}.loadLevel must be an object.`);
+      continue;
+    }
+    requireString(name, loadLevel.path, `${fieldName}.loadLevel.path`);
+    validateGridPoint(name, loadLevel.player, `${fieldName}.loadLevel.player`);
+  }
+}
+
+function validateTransitionClickAreas(name, data, transition, fieldName) {
+  if (transition.clickAreas === undefined) return;
+  if (!Array.isArray(transition.clickAreas)) {
+    errors.push(`${name}: ${fieldName}.clickAreas must be an array.`);
+    return;
+  }
+  for (const [index, area] of transition.clickAreas.entries()) {
+    const areaName = `${fieldName}.clickAreas[${index}]`;
+    if (!area || typeof area !== 'object' || Array.isArray(area)) {
+      errors.push(`${name}: ${areaName} must be an object.`);
+      continue;
+    }
+    for (const key of ['x0', 'y0', 'x1', 'y1']) {
+      requireNumber(name, area[key], `${areaName}.${key}`);
+      if (typeof area[key] === 'number' && !Number.isInteger(area[key])) {
+        errors.push(`${name}: ${areaName}.${key} must be an integer.`);
+      }
+    }
+    if (!['x0', 'y0', 'x1', 'y1'].every((key) => typeof area[key] === 'number')) continue;
+    const left = Math.min(area.x0, area.x1);
+    const right = Math.max(area.x0, area.x1);
+    const top = Math.min(area.y0, area.y1);
+    const bottom = Math.max(area.y0, area.y1);
+    if (left < 0 || top < 0 || right >= data.width || bottom >= data.height) {
+      errors.push(`${name}: ${areaName} must stay inside the level bounds.`);
+    }
+  }
 }
 
 function validateCombatTriggerMapMarkers(name, data) {

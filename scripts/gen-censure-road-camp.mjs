@@ -12,6 +12,9 @@ const START = { x: 34, y: 46 };
 const CAMP = { x0: 7, x1: 66, y0: 5, y1: 47 };
 const SOUTH_GATE = { x0: 31, x1: 37, y: 47 };
 const EAST_GATE = { x: 66, y0: 14, y1: 18 };
+const TENT_TILE = 'C';
+const WALKABLE_FLOOR_TILES = new Set(['.', 'r', 's', 'm', 'g', 'p']);
+const PAINTABLE_CAMP_FLOOR_TILES = new Set(['.', 'm', 'g', 'p']);
 const ROAD = [
   { x: 34, y: 49 },
   { x: 34, y: 43 },
@@ -60,7 +63,7 @@ const NPCS = [
   {
     actor: 'censure-quartermaster-runa',
     x: 29,
-    y: 30,
+    y: 31,
     facing: 'se',
     dialogue: 'censure-road-camp-runa',
     ambient: ['No seal, no ration. A sad face is not a seal.'],
@@ -68,8 +71,8 @@ const NPCS = [
   },
   {
     actor: 'censure-sutler-maev',
-    x: 49,
-    y: 35,
+    x: 51,
+    y: 37,
     facing: 'sw',
     dialogue: 'censure-road-camp-maev',
     ambient: ['Road prices are fair prices, if you ask the road.'],
@@ -114,7 +117,7 @@ const NPCS = [
   {
     actor: 'censure-sister-hanne',
     x: 60,
-    y: 46,
+    y: 45,
     facing: 'nw',
     dialogue: 'censure-road-camp-hanne',
     ambient: ['If you bleed on the tent flap, wipe it before you faint.'],
@@ -122,8 +125,8 @@ const NPCS = [
   },
   {
     actor: 'censure-ash-porter-joric',
-    x: 39,
-    y: 33,
+    x: 44,
+    y: 36,
     facing: 'se',
     dialogue: 'censure-road-camp-joric',
     ambient: ['A crate gets a destination. A porter gets a shrug. I envy crates.'],
@@ -131,7 +134,7 @@ const NPCS = [
   },
   {
     actor: 'censure-evidence-keeper-malco',
-    x: 58,
+    x: 55,
     y: 42,
     facing: 'nw',
     dialogue: 'censure-road-camp-malco',
@@ -162,6 +165,7 @@ const tiles = Array.from({ length: HEIGHT }, (_, y) =>
   Array.from({ length: WIDTH }, (_, x) => undergrowthChar(x, y))
 );
 const objects = [];
+const levelTransitions = [];
 const reserved = new Set();
 
 function key(x, y) {
@@ -197,6 +201,15 @@ function getTile(x, y) {
 function paintRect(x0, y0, x1, y1, char) {
   for (let y = y0; y <= y1; y += 1) {
     for (let x = x0; x <= x1; x += 1) setTile(x, y, char);
+  }
+}
+
+function paintOpenRect(x0, y0, x1, y1, char, allowed = PAINTABLE_CAMP_FLOOR_TILES) {
+  for (let y = y0; y <= y1; y += 1) {
+    for (let x = x0; x <= x1; x += 1) {
+      if (!allowed.has(getTile(x, y))) continue;
+      setTile(x, y, char);
+    }
   }
 }
 
@@ -237,7 +250,52 @@ function canPlace(x, y) {
   if (!inBounds(x, y)) return false;
   if (reserved.has(key(x, y)) || hasObjectAt(x, y)) return false;
   const tile = getTile(x, y);
-  return tile === '.' || tile === 'r' || tile === 's';
+  return WALKABLE_FLOOR_TILES.has(tile);
+}
+
+function paintTentFootprint(x0, y0, x1, y1) {
+  paintRect(x0, y0, x1, y1, TENT_TILE);
+}
+
+function clickArea(x0, y0, x1, y1) {
+  return { x0, y0, x1, y1 };
+}
+
+function addLevelTransition(id, x, y, path, player, extra = {}) {
+  const transition = {
+    id,
+    x,
+    y,
+    loadLevel: {
+      path,
+      player
+    }
+  };
+  if (Array.isArray(extra.clickAreas) && extra.clickAreas.length > 0) {
+    transition.clickAreas = extra.clickAreas.map((area) => ({
+      x0: area.x0,
+      y0: area.y0,
+      x1: area.x1,
+      y1: area.y1
+    }));
+  }
+  levelTransitions.push(transition);
+}
+
+function addTentFlap(id, name, x, y, transition, extra = {}) {
+  const approach = transition?.approach ?? { x, y: y + 1 };
+  if (transition?.path) {
+    addLevelTransition(`${id}-transition`, approach.x, approach.y, transition.path, transition.player ?? { x: 6, y: 7 }, {
+      clickAreas: transition.clickAreas
+    });
+  }
+  return addObject('canvas-tent-flap', x, y, {
+    id,
+    name,
+    wallPlane: extra.wallPlane ?? 'sw',
+    seed: hash(x, y, extra.salt ?? 57),
+    ...(extra.mapMarker ? { mapMarker: extra.mapMarker } : {})
+  });
 }
 
 function paintRoads() {
@@ -327,77 +385,46 @@ function placeRoadGates() {
 }
 
 function placeWritChapel() {
-  addObject('canvas-tent', 16, 16, {
-    id: 'censure-road-odran-private-tent',
-    blocking: true,
-    name: "Father Odran's Tent",
-    seed: hash(16, 16, 35),
-    interact: {
-      type: 'note',
-      log: "Father Odran's private tent smells of lamp oil, damp canvas, and shaving soap.",
-      lock: {
-        id: 'censure-road-odran-tent-flap',
-        title: "Father Odran's Tent",
-        lines: [
-          'A private flap is tied with ledger cord. The knot is ordinary. The consequences are not.'
-        ],
-        methods: [
-          {
-            id: 'open-ledger-cord',
-            label: 'Open the ledger cord',
-            field: 'security',
-            dc: 55,
-            successLog: 'The cord comes loose without snapping the wax fleck.',
-            failLog: 'The knot holds, and the canvas gives a loud dry pop.'
-          }
-        ]
-      },
-      search: {
-        title: "Father Odran's Tent",
-        lines: [
-          'A cot, a travel chest, and folded church linen fill the private tent.'
-        ],
-        useLabel: 'Inspect the tent',
-        methods: [
-          {
-            id: 'search-folded-linen',
-            label: 'Search the folded linen',
-            field: 'search',
-            dc: 45,
-            conditions: {
-              flagsAbsent: ['odran-late-visit-suspected', 'odran-late-visit-seen', 'odran-late-visit-resolved']
-            },
-            successLog: "Under a stack of priestly cloth, you find a woman's underlinen tucked hard against the chest wall.",
-            failLog: 'The linen is folded too tightly. If there is a secret here, it stays flat.',
-            success: {
-              setFlag: 'odran-late-visit-suspected',
-              log: "The hidden underlinen gives you a reason to watch Father Odran's tent after last bell."
-            }
-          }
-        ]
-      }
+  paintTentFootprint(14, 14, 17, 18);
+  addTentFlap(
+    'censure-road-odran-private-tent-flap',
+    "Father Odran's Tent",
+    16,
+    18,
+    {
+      path: './data/levels/censure_road_odran_tent_interior.json',
+      approach: { x: 16, y: 19 },
+      player: { x: 8, y: 7 },
+      clickAreas: [clickArea(14, 14, 17, 18)]
     },
-    mapMarker: { label: "Father Odran's Tent", kind: 'locked', reveal: 'explored' }
-  });
-  addObject('canvas-tent', 18, 13, {
-    id: 'censure-road-writ-chapel-west',
-    blocking: true,
-    name: 'Writ Chapel',
-    seed: hash(18, 13, 37),
-    mapMarker: { label: 'Writ Chapel', kind: 'note', reveal: 'always' }
-  });
-  addObject('canvas-tent', 22, 13, {
-    id: 'censure-road-writ-chapel-east',
-    blocking: true,
-    name: 'Writ Chapel',
-    seed: hash(22, 13, 37)
-  });
-  addObject('chapel-banner', 19, 15, { id: 'censure-road-chapel-banner', blocking: true, seed: hash(19, 15, 39) });
-  addObject('prayer-lectern', 21, 16, {
+    {
+      salt: 35,
+      mapMarker: { label: "Father Odran's Tent", kind: 'exit', reveal: 'explored' }
+    }
+  );
+
+  paintTentFootprint(20, 12, 26, 16);
+  addTentFlap(
+    'censure-road-writ-chapel-flap',
+    'Writ Chapel',
+    23,
+    16,
+    {
+      path: './data/levels/censure_road_writ_chapel_tent.json',
+      approach: { x: 23, y: 17 },
+      clickAreas: [clickArea(20, 12, 26, 16)]
+    },
+    {
+      salt: 37,
+      mapMarker: { label: 'Writ Chapel', kind: 'exit', reveal: 'always' }
+    }
+  );
+  addObject('chapel-banner', 19, 17, { id: 'censure-road-chapel-banner', blocking: true, seed: hash(19, 17, 39) });
+  addObject('prayer-lectern', 21, 18, {
     id: 'censure-road-writ-lectern',
     blocking: true,
     name: 'Writ Lectern',
-    seed: hash(21, 16, 41),
+    seed: hash(21, 18, 41),
     interact: {
       type: 'note',
       log: 'Fresh writ copies are stacked by route: chapel, road camp, Hallowfen wall. The last stack is still tied.'
@@ -438,34 +465,156 @@ function placeBellMast() {
 }
 
 function placePreceptorTent() {
-  addObject('canvas-tent', 45, 9, {
-    id: 'censure-road-preceptor-tent',
-    blocking: true,
-    name: 'Preceptor Tent',
-    seed: hash(45, 9, 61),
-    mapMarker: { label: 'Preceptor Tent', kind: 'dialogue', reveal: 'always' }
-  });
-  addObject('settlement-table', 47, 11, { id: 'censure-road-preceptor-table', blocking: true, seed: hash(47, 11, 63) });
-  addObject('paper-scraps', 48, 12, { id: 'censure-road-preceptor-slate-scraps', seed: hash(48, 12, 65) });
-  addObject('rusted-crate', 43, 12, { id: 'censure-road-preceptor-crate', blocking: true, seed: hash(43, 12, 67) });
+  paintTentFootprint(43, 8, 49, 12);
+  addTentFlap(
+    'censure-road-preceptor-tent-flap',
+    'Preceptor Tent',
+    46,
+    12,
+    {
+      path: './data/levels/censure_road_preceptor_tent.json',
+      approach: { x: 47, y: 13 },
+      clickAreas: [clickArea(43, 8, 49, 12)]
+    },
+    {
+      salt: 61,
+      mapMarker: { label: 'Preceptor Tent', kind: 'exit', reveal: 'always' }
+    }
+  );
+  addObject('settlement-table', 50, 13, { id: 'censure-road-preceptor-table', blocking: true, seed: hash(50, 13, 63) });
+  addObject('paper-scraps', 48, 13, { id: 'censure-road-preceptor-slate-scraps', seed: hash(48, 13, 65) });
+  addObject('rusted-crate', 42, 13, { id: 'censure-road-preceptor-crate', blocking: true, seed: hash(42, 13, 67) });
 }
 
 function placeDrillYard() {
   for (const cell of [
-    [42, 22], [52, 22], [42, 28], [52, 28]
+    [42, 22], [47, 22], [52, 22], [57, 22], [62, 22], [42, 28], [47, 29], [52, 28], [57, 29], [62, 29]
   ]) {
     addObject('quarantine-barricade', cell[0], cell[1], {
       blocking: true,
       seed: hash(cell[0], cell[1], 71)
     });
   }
+  for (const [x, y, orient] of [
+    [44, 23, 'se'],
+    [50, 23, 'se'],
+    [55, 23, 'se'],
+    [60, 23, 'se'],
+    [43, 27, 'sw'],
+    [51, 27, 'sw'],
+    [56, 28, 'sw'],
+    [61, 28, 'sw'],
+    [46, 29, 'se'],
+    [49, 29, 'se']
+  ]) {
+    addObject('farm-fence', x, y, {
+      id: `censure-road-drill-yard-rope-${x}-${y}`,
+      orient,
+      seed: hash(x, y, 72)
+    });
+  }
   addObject('chalk-drawing', 47, 25, { id: 'censure-road-drill-yard-chalk', seed: hash(47, 25, 73) });
+  for (const [x, y] of [
+    [45, 24],
+    [49, 27],
+    [48, 25],
+    [41, 26],
+    [54, 27]
+  ]) {
+    addObject('chalk-drawing', x, y, {
+      id: `censure-road-drill-yard-chalk-${x}-${y}`,
+      seed: hash(x, y, 74)
+    });
+  }
+  for (const [x, y] of [
+    [40, 24], [41, 25], [42, 26], [43, 24], [44, 26], [45, 27],
+    [48, 24], [49, 25], [50, 26], [51, 24], [52, 25], [53, 26],
+    [54, 24], [55, 25], [56, 26], [57, 27], [58, 24], [59, 25], [60, 26], [61, 27]
+  ]) {
+    addObject('trampled-mud', x, y, {
+      id: `censure-road-training-mud-${x}-${y}`,
+      seed: hash(x, y, 79)
+    });
+  }
+  for (const [x, y] of [
+    [41, 24], [42, 25], [44, 24], [44, 27], [46, 26], [47, 27]
+  ]) {
+    addObject('practice-scars', x, y, {
+      id: `censure-road-sword-yard-scars-${x}-${y}`,
+      seed: hash(x, y, 80)
+    });
+  }
+  for (const [x, y, orient, label] of [
+    [41, 25, 'se', 'west'],
+    [44, 27, 'sw', 'east']
+  ]) {
+    addObject('training-dummy', x, y, {
+      id: `censure-road-sword-yard-dummy-${label}`,
+      blocking: true,
+      orient,
+      name: 'Sword Dummy',
+      seed: hash(x, y, 81),
+      ...(label === 'west' ? {
+        interact: {
+          type: 'note',
+          log: 'The practice dummy is wrapped in old Censure cloth. Blade cuts have opened the straw along one shoulder.'
+        },
+        mapMarker: { label: 'Sword Yard', kind: 'note', reveal: 'explored' }
+      } : {})
+    });
+  }
   addObject('tool-rack', 43, 25, { id: 'censure-road-drill-yard-rack', blocking: true, seed: hash(43, 25, 75) });
+  addObject('tool-rack', 53, 24, { id: 'censure-road-drill-yard-east-rack', blocking: true, seed: hash(53, 24, 76) });
   addObject('field-harrow', 51, 26, { id: 'censure-road-drill-yard-harrow', blocking: true, orient: 'sw', seed: hash(51, 26, 77) });
+  addObject('field-satchel', 48, 28, { id: 'censure-road-drill-yard-satchel', blocking: true, seed: hash(48, 28, 78) });
+  for (const [x, y, orient, label] of [
+    [57, 24, 'sw', 'left'],
+    [59, 25, 'sw', 'center'],
+    [61, 26, 'sw', 'right']
+  ]) {
+    addObject('devil-target', x, y, {
+      id: `censure-road-shooting-range-target-${label}`,
+      blocking: true,
+      orient,
+      name: 'Devil Target',
+      seed: hash(x, y, 82),
+      ...(label === 'center' ? {
+        interact: {
+          type: 'note',
+          log: 'A horned devil is painted in tar and red chalk. Every shot has gone high.'
+        },
+        mapMarker: { label: 'Shooting Range', kind: 'note', reveal: 'explored' }
+      } : {})
+    });
+  }
+  for (const [x, y] of [
+    [53, 27], [54, 28], [55, 27], [56, 27], [57, 28], [58, 27]
+  ]) {
+    addObject('spent-casings', x, y, {
+      id: `censure-road-shooting-range-casings-${x}-${y}`,
+      seed: hash(x, y, 84)
+    });
+  }
 }
 
 function placeQuartermaster() {
-  addObject('settlement-table', 28, 29, {
+  paintTentFootprint(24, 25, 32, 29);
+  addTentFlap(
+    'censure-road-quartermaster-tent-flap',
+    'Quartermaster Tent',
+    28,
+    29,
+    {
+      path: './data/levels/censure_road_quartermaster_tent.json',
+      approach: { x: 28, y: 30 },
+      clickAreas: [clickArea(24, 25, 32, 29)]
+    },
+    {
+      salt: 81,
+      mapMarker: { label: 'Quartermaster Tent', kind: 'exit', reveal: 'always' }
+    }
+  );
+  addObject('settlement-table', 28, 31, {
     id: 'censure-road-quartermaster-table',
     blocking: true,
     name: 'Quartermaster Table',
@@ -477,10 +626,12 @@ function placeQuartermaster() {
     mapMarker: { label: 'Quartermaster', kind: 'dialogue', reveal: 'always' }
   });
   for (const [x, y, kind] of [
-    [25, 28, 'sealed-storage-crate'],
-    [26, 31, 'rusted-crate'],
-    [31, 28, 'sealed-storage-crate'],
-    [32, 31, 'rusted-barrel']
+    [25, 30, 'sealed-storage-crate'],
+    [26, 32, 'rusted-crate'],
+    [31, 30, 'sealed-storage-crate'],
+    [32, 32, 'rusted-barrel'],
+    [23, 31, 'field-satchel'],
+    [33, 30, 'sealed-storage-crate']
   ]) {
     addObject(kind, x, y, {
       id: `censure-road-quartermaster-${kind}-${x}-${y}`,
@@ -491,22 +642,31 @@ function placeQuartermaster() {
 }
 
 function placeSupplyAndTrader() {
-  for (const [x, y] of [
-    [38, 32], [41, 32], [38, 35], [42, 35]
-  ]) {
-    addObject('canvas-tent', x, y, {
-      id: `censure-road-supply-tent-${x}-${y}`,
-      blocking: true,
-      name: 'Supply Tent',
-      seed: hash(x, y, 89),
-      ...(x === 38 && y === 32 ? { mapMarker: { label: 'Supply Tents', kind: 'note', reveal: 'always' } } : {})
-    });
-  }
+  paintTentFootprint(35, 31, 38, 35);
+  paintTentFootprint(40, 31, 43, 35);
+  addTentFlap(
+    'censure-road-supply-tent-flap',
+    'Supply Tent',
+    38,
+    35,
+    {
+      path: './data/levels/censure_road_supply_tent.json',
+      approach: { x: 39, y: 36 },
+      player: { x: 9, y: 7 },
+      clickAreas: [clickArea(35, 31, 38, 35), clickArea(40, 31, 43, 35)]
+    },
+    {
+      salt: 89,
+      mapMarker: { label: 'Supply Tent', kind: 'exit', reveal: 'always' }
+    }
+  );
   for (const [x, y, kind] of [
-    [36, 34, 'sealed-storage-crate'],
+    [34, 34, 'sealed-storage-crate'],
     [37, 36, 'rusted-crate'],
-    [43, 33, 'sealed-storage-crate'],
-    [44, 35, 'rusted-barrel']
+    [39, 33, 'sealed-storage-crate'],
+    [44, 33, 'sealed-storage-crate'],
+    [44, 35, 'rusted-barrel'],
+    [41, 36, 'field-satchel']
   ]) {
     addObject(kind, x, y, {
       id: `censure-road-supply-${kind}-${x}-${y}`,
@@ -514,16 +674,35 @@ function placeSupplyAndTrader() {
       seed: hash(x, y, 91)
     });
   }
-  addObject('field-cart', 50, 34, {
+  paintTentFootprint(48, 32, 53, 36);
+  addTentFlap(
+    'censure-road-sutler-tent-flap',
+    "Maev's Trade Tent",
+    50,
+    36,
+    {
+      path: './data/levels/censure_road_sutler_tent.json',
+      approach: { x: 50, y: 37 },
+      player: { x: 5, y: 7 },
+      clickAreas: [clickArea(48, 32, 53, 36)]
+    },
+    {
+      salt: 92,
+      mapMarker: { label: 'Sutler Tent', kind: 'exit', reveal: 'always' }
+    }
+  );
+  addObject('field-cart', 55, 34, {
     id: 'censure-road-sutler-cart',
     blocking: true,
     orient: 'nw',
     name: "Maev's Cart",
-    seed: hash(50, 34, 93),
+    seed: hash(55, 34, 93),
     mapMarker: { label: 'Sutler Trader', kind: 'dialogue', reveal: 'always' }
   });
-  addObject('settlement-table', 48, 34, { id: 'censure-road-sutler-table', blocking: true, seed: hash(48, 34, 95) });
-  addObject('low-stool', 47, 36, { id: 'censure-road-sutler-stool', blocking: true, seed: hash(47, 36, 97) });
+  addObject('settlement-table', 54, 35, { id: 'censure-road-sutler-table', blocking: true, seed: hash(54, 35, 95) });
+  addObject('low-stool', 47, 37, { id: 'censure-road-sutler-stool', blocking: true, seed: hash(47, 37, 97) });
+  addObject('field-satchel', 53, 37, { id: 'censure-road-sutler-satchel', blocking: true, seed: hash(53, 37, 98) });
+  addObject('paper-scraps', 52, 38, { id: 'censure-road-sutler-price-tags', seed: hash(52, 38, 99) });
 }
 
 function placeEvidenceShed() {
@@ -545,35 +724,68 @@ function placeEvidenceShed() {
 }
 
 function placeMedicTent() {
-  addObject('canvas-tent', 61, 45, {
-    id: 'censure-road-medic-tent',
-    blocking: true,
-    name: 'Medic Tent',
-    seed: hash(61, 45, 107),
-    mapMarker: { label: 'Medic Tent', kind: 'dialogue', reveal: 'always' }
-  });
-  addObject('camp-bedroll', 63, 46, { id: 'censure-road-medic-bedroll', seed: hash(63, 46, 109) });
-  addObject('wash-tub', 58, 45, { id: 'censure-road-medic-wash-tub', blocking: true, seed: hash(58, 45, 111) });
+  paintTentFootprint(61, 42, 65, 46);
+  addTentFlap(
+    'censure-road-medic-tent-flap',
+    'Medic Tent',
+    61,
+    46,
+    {
+      path: './data/levels/censure_road_medic_tent.json',
+      approach: { x: 60, y: 46 },
+      player: { x: 2, y: 7 },
+      clickAreas: [clickArea(61, 42, 65, 46)]
+    },
+    {
+      salt: 107,
+      mapMarker: { label: 'Medic Tent', kind: 'exit', reveal: 'always' }
+    }
+  );
+  addObject('camp-bedroll', 60, 44, { id: 'censure-road-medic-bedroll', seed: hash(60, 44, 109) });
+  addObject('field-satchel', 59, 43, { id: 'censure-road-medic-field-kit', blocking: true, seed: hash(59, 43, 110) });
+  addObject('wash-tub', 57, 45, { id: 'censure-road-medic-wash-tub', blocking: true, seed: hash(57, 45, 111) });
 }
 
 function placeQuarters() {
+  paintTentFootprint(12, 36, 14, 40);
+  paintTentFootprint(16, 35, 18, 40);
+  paintTentFootprint(20, 36, 22, 40);
+  addTentFlap(
+    'censure-road-quarters-tent-flap',
+    'Cult-Breaker Quarters',
+    16,
+    40,
+    {
+      path: './data/levels/censure_road_quarters_tent.json',
+      approach: { x: 16, y: 41 },
+      clickAreas: [
+        clickArea(12, 36, 14, 40),
+        clickArea(16, 35, 18, 40),
+        clickArea(20, 36, 22, 40)
+      ]
+    },
+    {
+      salt: 113,
+      mapMarker: { label: 'Cult-Breaker Quarters', kind: 'exit', reveal: 'always' }
+    }
+  );
   for (const [x, y] of [
-    [13, 36], [17, 36], [13, 40], [18, 40]
-  ]) {
-    addObject('canvas-tent', x, y, {
-      id: `censure-road-cult-breaker-tent-${x}-${y}`,
-      blocking: true,
-      name: 'Cult-Breaker Quarters',
-      seed: hash(x, y, 113),
-      ...(x === 13 && y === 36 ? { mapMarker: { label: 'Cult-Breaker Quarters', kind: 'note', reveal: 'always' } } : {})
-    });
-  }
-  for (const [x, y] of [
-    [15, 38], [20, 38], [16, 41]
+    [11, 38], [23, 38], [16, 41]
   ]) {
     addObject('camp-bedroll', x, y, { id: `censure-road-bedroll-${x}-${y}`, seed: hash(x, y, 115) });
   }
-  addObject('campfire', 19, 39, { id: 'censure-road-quarters-fire', seed: hash(19, 39, 117) });
+  for (const [x, y] of [
+    [14, 41],
+    [19, 41],
+    [22, 41]
+  ]) {
+    addObject('field-satchel', x, y, {
+      id: `censure-road-quarters-kit-${x}-${y}`,
+      blocking: true,
+      seed: hash(x, y, 116)
+    });
+  }
+  addObject('campfire', 19, 42, { id: 'censure-road-quarters-fire', seed: hash(19, 42, 117) });
 }
 
 function placeWritBoardAndWorkSites() {
@@ -637,11 +849,61 @@ function placeRoadDust() {
     for (let x = 0; x < WIDTH; x += 1) {
       const tile = getTile(x, y);
       if (tile !== 'r' && tile !== 's') continue;
+      if (hasObjectAt(x, y)) continue;
       const h = hash(x, y, 131);
       if ((h % 100) >= (tile === 'r' ? 36 : 13)) continue;
       addObject('road-dust', x, y, { seed: h });
     }
   }
+}
+
+function paintCampFloorTextures() {
+  const gravelRects = [
+    [18, 12, 34, 20],
+    [41, 12, 52, 15],
+    [23, 29, 34, 33],
+    [34, 34, 56, 38],
+    [29, 18, 40, 32]
+  ];
+  const mudRects = [
+    [39, 22, 63, 29],
+    [10, 38, 24, 43],
+    [40, 41, 48, 45],
+    [9, 42, 15, 45],
+    [56, 43, 65, 46],
+    [62, 31, 65, 34]
+  ];
+  const pathRects = [
+    [33, 18, 35, 47, 'm'],
+    [16, 18, 35, 20, 'm'],
+    [34, 16, 66, 18, 'm'],
+    [45, 13, 48, 18, 'm'],
+    [39, 24, 63, 27, 'm'],
+    [27, 29, 35, 32, 'm'],
+    [34, 35, 51, 37, 'm'],
+    [15, 40, 61, 42, 'm'],
+    [58, 42, 62, 46, 'm'],
+    [55, 40, 60, 42, 'g'],
+    [29, 18, 35, 20, 'g'],
+    [39, 24, 45, 27, 'g'],
+    [34, 35, 41, 37, 'g'],
+    [50, 36, 56, 38, 'g']
+  ];
+  const canvasRects = [
+    [15, 18, 17, 20],
+    [22, 16, 24, 18],
+    [45, 12, 47, 14],
+    [27, 29, 29, 31],
+    [37, 35, 39, 37],
+    [49, 36, 51, 38],
+    [60, 45, 62, 47],
+    [15, 40, 17, 42]
+  ];
+
+  for (const rect of gravelRects) paintOpenRect(...rect, 'g');
+  for (const rect of mudRects) paintOpenRect(...rect, 'm');
+  for (const [x0, y0, x1, y1, char] of pathRects) paintOpenRect(x0, y0, x1, y1, char);
+  for (const rect of canvasRects) paintOpenRect(...rect, 'p');
 }
 
 function placeSmallDressing() {
@@ -650,7 +912,7 @@ function placeSmallDressing() {
     [27, 18, 'paper-scraps'],
     [30, 28, 'paper-scraps'],
     [35, 41, 'rubble-decal'],
-    [54, 35, 'road-dust'],
+    [55, 36, 'road-dust'],
     [62, 34, 'rubble-decal'],
     [16, 45, 'road-dust'],
     [52, 12, 'floor-crack']
@@ -662,7 +924,6 @@ function placeSmallDressing() {
 paintCamp();
 paintRoads();
 placeEvidenceShed();
-placeRoadDust();
 placePerimeter();
 placeRoadGates();
 placeWritChapel();
@@ -674,6 +935,8 @@ placeSupplyAndTrader();
 placeMedicTent();
 placeQuarters();
 placeWritBoardAndWorkSites();
+paintCampFloorTextures();
+placeRoadDust();
 placeSmallDressing();
 
 objects.sort((a, b) => (a.y - b.y) || (a.x - b.x) || a.kind.localeCompare(b.kind));
@@ -692,10 +955,14 @@ const level = {
     '.': { kind: 'floor', floor: 'packed-earth', walkable: true },
     r: { kind: 'floor', floor: 'ash-road', walkable: true },
     s: { kind: 'floor', floor: 'road-shoulder', walkable: true },
+    m: { kind: 'floor', floor: 'mud-track', walkable: true },
+    g: { kind: 'floor', floor: 'ash-gravel', walkable: true },
+    p: { kind: 'floor', floor: 'worn-canvas', walkable: true },
     u: { kind: 'ash-tree', floor: 'forest-floor', walkable: false },
     v: { kind: 'scrub-bush', floor: 'forest-floor', walkable: false },
     l: { kind: 'fallen-ash-log', floor: 'forest-floor', walkable: false },
     t: { kind: 'ash-tree-stump', floor: 'forest-floor', walkable: false },
+    C: { kind: 'canvas-tent-building-block', walkable: false },
     S: { kind: 'storage-shed-building-block', walkable: false }
   },
   mood: {
@@ -718,6 +985,8 @@ const level = {
   },
   objects
 };
+
+if (levelTransitions.length > 0) level.levelTransitions = levelTransitions;
 
 await mkdir(dirname(outputPath), { recursive: true });
 await writeFile(outputPath, `${JSON.stringify(level, null, 2)}\n`, 'utf8');

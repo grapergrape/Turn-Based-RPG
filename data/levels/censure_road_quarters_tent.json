@@ -1,0 +1,109 @@
+{
+  "id": "censure-road-quarters-tent",
+  "name": "Cult-Breaker Quarters",
+  "intro": "Bedrolls, damp coats, and old field dust fill the quarters tent.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.06,
+    "vignette": 1.08
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 6,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "quarters-tent-exit-transition",
+      "x": 6,
+      "y": 8,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 16,
+          "y": 41
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 6,
+      "y": 9,
+      "id": "quarters-tent-exit-flap",
+      "name": "Tent Flap"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 3,
+      "y": 3,
+      "id": "quarters-tent-bedroll-west",
+      "seed": 3011
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 8,
+      "y": 3,
+      "id": "quarters-tent-bedroll-east",
+      "seed": 3013
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 4,
+      "y": 6,
+      "id": "quarters-tent-bedroll-south",
+      "seed": 3017
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 8,
+      "y": 6,
+      "blocking": true,
+      "id": "quarters-tent-coat-barrel",
+      "seed": 3021
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 6,
+      "y": 5,
+      "id": "quarters-tent-old-orders",
+      "seed": 3027
+    }
+  ]
+}

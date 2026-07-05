@@ -1,0 +1,104 @@
+{
+  "id": "censure-road-preceptor-tent",
+  "name": "Preceptor Tent",
+  "intro": "Route slates, field maps, and wet ink fill the command tent.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.06,
+    "vignette": 1.1
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 6,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "preceptor-tent-exit-transition",
+      "x": 6,
+      "y": 8,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 47,
+          "y": 13
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 6,
+      "y": 9,
+      "id": "preceptor-tent-exit-flap",
+      "name": "Tent Flap"
+    },
+    {
+      "kind": "settlement-table",
+      "x": 6,
+      "y": 3,
+      "blocking": true,
+      "id": "preceptor-tent-map-table",
+      "seed": 2511
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 6,
+      "y": 4,
+      "id": "preceptor-tent-slate-scraps",
+      "seed": 2513
+    },
+    {
+      "kind": "quarantine-sign",
+      "x": 3,
+      "y": 4,
+      "blocking": true,
+      "id": "preceptor-tent-route-board",
+      "seed": 2517
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 9,
+      "y": 5,
+      "blocking": true,
+      "id": "preceptor-tent-file-crate",
+      "seed": 2521
+    }
+  ]
+}

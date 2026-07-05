@@ -9,6 +9,34 @@ import {
 import { directionSide, px } from './spriteBake.js';
 
 
+function drawRoadWearLayer({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }, tone = PALETTE.rustDark) {
+  const side = directionSide(meta);
+  const c = torso.bodyCx;
+  const bob = pose.bob ?? 0;
+  px(ctx, c - Math.floor(torso.waistW / 2) - 1, hipY - 2, PALETTE.outline, torso.waistW + 2, 3);
+  px(ctx, c - Math.floor(torso.waistW / 2), hipY - 3, tone, torso.waistW, 1);
+  linePx(ctx, c - side * 6, shoulderY + 3, c + side * 5, hipY - 3, PALETTE.outline, 2);
+  linePx(ctx, c - side * 6, shoulderY + 3, c + side * 5, hipY - 3, tone, 1);
+  px(ctx, c + side * 5, hipY - 5, PALETTE.outline, 5, 4);
+  px(ctx, c + side * 6, hipY - 4, PALETTE.rustLight, 3, 1);
+  px(ctx, c - side * 7, shoulderY + 5, PALETTE.outline, 5, 4);
+  px(ctx, c - side * 6, shoulderY + 6, PALETTE.stoneDust, 3, 1);
+  if (!meta.back) {
+    px(ctx, c - 3, headY + 8 + bob, PALETTE.outline, 7, 2);
+    px(ctx, c - 2, headY + 8 + bob, PALETTE.skinDark, 5, 1);
+  }
+}
+
+function drawSmallHandAccent({ ctx, px, meta, pose, hipY, torso }) {
+  if (meta.back) return;
+  const side = directionSide(meta);
+  const c = torso.bodyCx;
+  const bob = pose.bob ?? 0;
+  px(ctx, c - side * 8, hipY - 2 + bob, PALETTE.skinDark, 3, 2);
+  px(ctx, c + side * 8, hipY - 3, PALETTE.skinMid, 3, 2);
+  px(ctx, c + side * 9, hipY - 4, PALETTE.skinLight, 1, 1);
+}
+
 
 function drawSurvivorManDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
   const side = directionSide(meta);
@@ -23,6 +51,8 @@ function drawSurvivorManDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, 
   if (!meta.back) {
     px(ctx, c - 2, headY + 7 + (pose.bob ?? 0), PALETTE.skinDark, 4, 1);
   }
+  drawRoadWearLayer({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }, PALETTE.rustDark);
+  drawSmallHandAccent({ ctx, px, meta, pose, hipY, torso });
 }
 
 function drawSurvivorWomanDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
@@ -37,6 +67,8 @@ function drawSurvivorWomanDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY
   px(ctx, c + side * 7, hipY - 11, PALETTE.rustDark, 4, 8);
   px(ctx, c + side * 7, hipY - 11, PALETTE.rustLight, 3, 1);
   if (!meta.back) px(ctx, c + 2, headY + 8 + (pose.bob ?? 0), PALETTE.clothTan, 3, 1);
+  drawRoadWearLayer({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }, PALETTE.woodDark);
+  drawSmallHandAccent({ ctx, px, meta, pose, hipY, torso });
 }
 
 function drawSurvivorChildDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
@@ -51,6 +83,8 @@ function drawSurvivorChildDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY
   if (!meta.back) {
     px(ctx, c - 2, headY + 7 + (pose.bob ?? 0), PALETTE.skinLight, 4, 1);
   }
+  drawRoadWearLayer({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }, PALETTE.rustMid);
+  if (!meta.back) px(ctx, c + side * 6, shoulderY + 5, PALETTE.hostBone, 3, 1);
 }
 
 function drawCampStaff(ctx, linePx, x, topY, side, color = PALETTE.woodMid) {

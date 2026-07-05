@@ -231,6 +231,7 @@ class GameMovementRuntime {
       if (this.mode !== 'explore') return;
       this._checkCombatProximity();
       if (this.mode !== 'explore') return;
+      if (this._triggerLevelTransitionAtPlayer()) return;
       this._tryCompletePendingExploreTarget();
     } else if (actor?.type === 'enemy' && this.mode === 'explore') {
       this._registerSuspiciousAction(SUSPICION_SEVERITY.MEDIUM, 'patrol');
@@ -271,6 +272,30 @@ class GameMovementRuntime {
         return;
       }
     }
+  }
+
+  _triggerLevelTransitionAtPlayer() {
+    if (this.pendingLevelTransition || this.mode !== 'explore' || !this.player?.position) return false;
+    const transition = this._levelTransitionAtCell(this.player.position);
+    const loadLevel = transition?.loadLevel ?? null;
+    if (!loadLevel || typeof loadLevel !== 'object' || Array.isArray(loadLevel)) return false;
+
+    this.pendingLevelTransition = transition.id ?? `${transition.x},${transition.y}`;
+    this.pathQueue = [];
+    this.pendingExploreTarget = null;
+    this.preCombatTarget = null;
+    void this._transitionLevel(loadLevel).finally(() => {
+      this.pendingLevelTransition = null;
+    });
+    return true;
+  }
+
+  _levelTransitionAtCell(cell, { includeClickAreas = false } = {}) {
+    if (!cell) return null;
+    return (this.level?.levelTransitions ?? []).find((entry) =>
+      this._meetsConditions(entry.conditions) &&
+      transitionMatchesCell(entry, cell, includeClickAreas)
+    ) ?? null;
   }
 
   _registerSuspiciousAction(severity = SUSPICION_SEVERITY.LOW, action = 'movement', options = {}) {
@@ -315,4 +340,22 @@ function knownJournalMapCells(map) {
 
 function cellKey(x, y) {
   return `${x},${y}`;
+}
+
+function transitionMatchesCell(transition, cell, includeClickAreas) {
+  if (!transition || typeof transition !== 'object') return false;
+  if (transition.x === cell.x && transition.y === cell.y) return true;
+  if (!includeClickAreas || !Array.isArray(transition.clickAreas)) return false;
+  return transition.clickAreas.some((area) => cellInRect(cell, area));
+}
+
+function cellInRect(cell, area) {
+  if (!area || typeof area !== 'object') return false;
+  const { x0, y0, x1, y1 } = area;
+  if (![x0, y0, x1, y1].every((value) => typeof value === 'number')) return false;
+  const left = Math.min(x0, x1);
+  const right = Math.max(x0, x1);
+  const top = Math.min(y0, y1);
+  const bottom = Math.max(y0, y1);
+  return cell.x >= left && cell.x <= right && cell.y >= top && cell.y <= bottom;
 }

@@ -1,0 +1,111 @@
+{
+  "id": "censure-road-writ-chapel-tent",
+  "name": "Writ Chapel",
+  "intro": "Wax, incense, and field orders make a chapel out of canvas.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#120e0a",
+    "ambientAlpha": 0.06,
+    "vignette": 1.05
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 6,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "writ-chapel-tent-exit-transition",
+      "x": 6,
+      "y": 8,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 23,
+          "y": 17
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 6,
+      "y": 9,
+      "id": "writ-chapel-exit-flap",
+      "name": "Tent Flap"
+    },
+    {
+      "kind": "chapel-banner",
+      "x": 5,
+      "y": 2,
+      "blocking": true,
+      "id": "writ-chapel-banner",
+      "seed": 2411
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 6,
+      "y": 4,
+      "blocking": true,
+      "id": "writ-chapel-lectern",
+      "seed": 2413
+    },
+    {
+      "kind": "chapel-font",
+      "x": 4,
+      "y": 5,
+      "blocking": true,
+      "id": "writ-chapel-font",
+      "seed": 2417
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 8,
+      "y": 5,
+      "id": "writ-chapel-candles",
+      "seed": 2421
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 7,
+      "y": 6,
+      "id": "writ-chapel-route-orders",
+      "seed": 2427
+    }
+  ]
+}

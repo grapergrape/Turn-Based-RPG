@@ -422,11 +422,26 @@ export class IsometricRenderer {
       const fade = Math.min(1, Math.max(0.25, actor.speech.ttl / 0.35));
 
       ctx.globalAlpha = 0.84 * fade;
-      ctx.fillStyle = PALETTE.void;
+      ctx.fillStyle = PALETTE.outline;
+      ctx.fillRect(left - 1, top - 1, width + 2, height + 2);
+      ctx.fillRect(Math.round(x) - 4, top + height, 9, 5);
+      ctx.fillStyle = PALETTE.uiDark;
       ctx.fillRect(left, top, width, height);
+      ctx.fillRect(Math.round(x) - 2, top + height, 5, 3);
+      for (let sx = left + 6; sx < left + width - 8; sx += 17) {
+        ctx.fillStyle = PALETTE.uiBorderDark;
+        ctx.fillRect(sx, top + 4 + (sx % 3), 5, 1);
+      }
       ctx.globalAlpha = 0.96 * fade;
-      ctx.strokeStyle = PALETTE.uiBorderLight;
-      ctx.strokeRect(left + 0.5, top + 0.5, width - 1, height - 1);
+      ctx.fillStyle = PALETTE.uiBorderLight;
+      ctx.fillRect(left, top, width, 1);
+      ctx.fillRect(left, top, 1, height);
+      ctx.fillStyle = PALETTE.uiBorderDark;
+      ctx.fillRect(left, top + height - 1, width, 1);
+      ctx.fillRect(left + width - 1, top, 1, height);
+      ctx.fillStyle = PALETTE.uiWarn;
+      ctx.fillRect(left + 4, top + 3, 3, 3);
+      ctx.fillRect(left + width - 7, top + 3, 3, 3);
       ctx.fillStyle = PALETTE.uiText;
       for (let i = 0; i < lines.length; i += 1) {
         ctx.fillText(lines[i], left + SPEECH_PAD_X, top + SPEECH_PAD_Y + i * SPEECH_LINE_HEIGHT);
@@ -596,6 +611,15 @@ export class IsometricRenderer {
     this.#tileRing(ctx, key, color, 0.7);
     ctx.font = '11px "Courier New", monospace';
     ctx.fillStyle = PALETTE.outline;
+    ctx.fillRect(s.x + 2, s.y - 31, 18, 14);
+    ctx.fillStyle = PALETTE.uiDark;
+    ctx.fillRect(s.x + 3, s.y - 30, 16, 12);
+    ctx.fillStyle = color;
+    ctx.fillRect(s.x + 3, s.y - 30, 16, 1);
+    ctx.fillRect(s.x + 3, s.y - 30, 1, 12);
+    ctx.fillStyle = PALETTE.uiBorderDark;
+    ctx.fillRect(s.x + 3, s.y - 19, 16, 1);
+    ctx.fillStyle = PALETTE.outline;
     ctx.fillText(`${cost}`, s.x + 7, s.y - 17);
     ctx.fillStyle = color;
     ctx.fillText(`${cost}`, s.x + 6, s.y - 18);
@@ -716,8 +740,18 @@ export class IsometricRenderer {
       }
       if (fx.text) {
         ctx.font = '11px "Courier New", monospace';
+        const label = String(fx.text);
+        const tx = s.x - 8;
+        const ty = s.y - 63 - (fx.rise ?? 0);
+        const tw = Math.max(16, Math.ceil(ctx.measureText(label).width) + 6);
+        ctx.fillStyle = PALETTE.outline;
+        ctx.fillRect(tx - 2, ty - 2, tw + 4, 13);
+        ctx.fillStyle = PALETTE.uiDark;
+        ctx.fillRect(tx - 1, ty - 1, tw + 2, 11);
         ctx.fillStyle = PALETTE.flash;
-        ctx.fillText(fx.text, s.x - 6, s.y - 52 - (fx.rise ?? 0));
+        ctx.fillRect(tx - 1, ty - 1, tw + 2, 1);
+        ctx.fillStyle = PALETTE.flash;
+        ctx.fillText(label, tx + 2, ty + 1);
       }
     }
   }

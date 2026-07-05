@@ -1,0 +1,111 @@
+{
+  "id": "censure-road-medic-tent",
+  "name": "Medic Tent",
+  "intro": "Washed canvas, bitter medicine, and old blood make the air close.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.06,
+    "vignette": 1.08
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 2,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "medic-tent-exit-transition",
+      "x": 1,
+      "y": 7,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 60,
+          "y": 46
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 0,
+      "y": 7,
+      "id": "medic-tent-exit-flap",
+      "name": "Tent Flap",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 3,
+      "y": 3,
+      "id": "medic-tent-sickbed-west",
+      "seed": 2911
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 8,
+      "y": 3,
+      "id": "medic-tent-sickbed-east",
+      "seed": 2913
+    },
+    {
+      "kind": "wash-tub",
+      "x": 4,
+      "y": 6,
+      "blocking": true,
+      "id": "medic-tent-wash-tub",
+      "seed": 2917
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 8,
+      "y": 6,
+      "blocking": true,
+      "id": "medic-tent-supply-crate",
+      "seed": 2921
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 6,
+      "y": 5,
+      "id": "medic-tent-candles",
+      "seed": 2927
+    }
+  ]
+}

@@ -353,6 +353,14 @@ export function drawFarmCrossVictim(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 7, footY - 1, darkBlood, 14, 3);
   px(ctx, cx - 4, footY, blood, 8, 2);
   px(ctx, cx - 1, footY + 2, darkBlood, 3, 3);
+  for (const [dx, dy] of [[-beamHalf + 2, barY + 1], [beamHalf - 4, barY], [-3, topY + 8], [2, footY - 8]]) {
+    px(ctx, cx + dx - 1, dy - 1, PALETTE.outline, 4, 3);
+    px(ctx, cx + dx, dy - 1, PALETTE.rustLight, 2, 1);
+  }
+  for (let i = 0; i < 6; i += 1) {
+    px(ctx, cx - 19 + Math.floor(rng() * 39), footY + Math.floor(rng() * 8), rng() < 0.5 ? darkBlood : PALETTE.stoneDark, 2, 1);
+  }
+  drawRubbleCluster(ctx, cx + 21, cy + 7, seed + 263, 2);
 
   // Cult sign cut into the lower post, small but legible beside the blood sigils.
   const markY = cy - Math.round(18 * stature);
@@ -503,6 +511,16 @@ export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
   drawIsoDiamond(ctx, cx + 1, cy + 1, 18, 8, PALETTE.rustDark);
   drawNoisePixels(ctx, cx - 10, cy - 4, 22, 9, [PALETTE.hostRed, PALETTE.rustDark, PALETTE.hostBlack], 0.06, seed);
   px(ctx, cx + lean - 1, footY, PALETTE.hostGold, 2, 1);
+  for (const w of [leftWrist, rightWrist]) {
+    px(ctx, w.x - 3, w.y - 3, PALETTE.outline, 8, 2);
+    px(ctx, w.x - 2, w.y - 4, PALETTE.rustLight, 5, 1);
+  }
+  px(ctx, cx - 13, barY - 4, PALETTE.outline, 29, 2);
+  px(ctx, cx - 11, barY - 5, PALETTE.woodLight, 22, 1);
+  for (let i = 0; i < 5; i += 1) {
+    px(ctx, cx - 12 + Math.floor(rng() * 25), cy + 2 + Math.floor(rng() * 7), rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark, 2, 1);
+  }
+  drawRubbleCluster(ctx, cx + side * 18, cy + 7, seed + 137, 2);
 }
 
 export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
@@ -975,12 +993,11 @@ export function drawCultVictim(ctx, cx, cy, seed) {
     pts.push([pcx + Math.cos(a) * R, pcy + Math.sin(a) * R * 0.8]);
   }
   const order = [0, 2, 4, 1, 3, 0];
-  ctx.strokeStyle = blood;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(pts[order[0]][0], pts[order[0]][1]);
-  for (let i = 1; i < order.length; i += 1) ctx.lineTo(pts[order[i]][0], pts[order[i]][1]);
-  ctx.stroke();
+  for (let i = 0; i < order.length - 1; i += 1) {
+    const a = pts[order[i]];
+    const b = pts[order[i + 1]];
+    linePx(ctx, a[0], a[1], b[0], b[1], blood, 1);
+  }
   // carved scratch-lines beneath the star (the words, read on inspection)
   for (let i = 0; i < 2; i += 1) px(ctx, pcx - 5, pcy + 6 + i, blood, 11 - i * 2, 1);
   // stab punctures across the belly
@@ -989,4 +1006,13 @@ export function drawCultVictim(ctx, cx, cy, seed) {
     px(ctx, sxp, cy + 1 + (i % 2), PALETTE.void, 2, 1);
     px(ctx, sxp, cy + 1 + (i % 2), blood, 1, 1);
   }
+  linePx(ctx, cx - 16, cy - 7, cx - 28, cy - 12, PALETTE.outline, 2);
+  linePx(ctx, cx - 15, cy - 8, cx - 27, cy - 13, PALETTE.clothDark, 1);
+  px(ctx, cx - 30, cy - 14, PALETTE.skinDark, 3, 2);
+  px(ctx, cx + 5, cy - 8, PALETTE.outline, 8, 2);
+  px(ctx, cx + 6, cy - 9, PALETTE.clothTan, 5, 1);
+  for (let i = 0; i < 6; i += 1) {
+    px(ctx, cx - 25 + Math.floor(rng() * 52), cy - 9 + Math.floor(rng() * 21), rng() < 0.5 ? dark : blood, 1 + (i & 1), 1);
+  }
+  drawRubbleCluster(ctx, cx + 24, cy + 9, seed + 23, 2);
 }

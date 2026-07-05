@@ -34,6 +34,7 @@ import {
 
 export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const rng = rngFrom(hash2D(seed + 211, seed * 7 + 13));
   const a = frame.point(-0.42, 0, 0);
   const b = frame.point(0.42, 0, 0);
   const posts = [a, b];
@@ -44,16 +45,249 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
     px(ctx, p[0] - 2, p[1] - 23, PALETTE.woodMid, 2, 21);
     px(ctx, p[0] - 2, p[1] - 28, PALETTE.outline, 7, 6);
     px(ctx, p[0] - 1, p[1] - 27, PALETTE.stoneDust, 5, 3);
+    px(ctx, p[0] - 4, p[1] - 7, PALETTE.outline, 9, 2);
+    px(ctx, p[0] - 3, p[1] - 8, PALETTE.woodLight, 4, 1);
   }
   for (const lift of [12, 20]) {
     linePx(ctx, a[0], a[1] - lift, b[0], b[1] - lift + ((seed + lift) & 1), PALETTE.outline, 5);
     linePx(ctx, a[0], a[1] - lift - 1, b[0], b[1] - lift - 1 + ((seed + lift) & 1), PALETTE.woodMid, 2);
     linePx(ctx, a[0], a[1] - lift + 1, b[0], b[1] - lift + 1 + ((seed + lift) & 1), PALETTE.woodDark, 1);
+    const mid = frame.point(0.02, 0, lift - 1);
+    px(ctx, mid[0] - 3, mid[1], PALETTE.outline, 7, 2);
+    px(ctx, mid[0] - 2, mid[1] - 1, lift > 15 ? PALETTE.woodLight : PALETTE.rustDark, 4, 1);
   }
   if ((seed & 3) === 0) {
     linePx(ctx, cx - 8, cy - 5, cx + 7, cy - 28, PALETTE.outline, 3);
     linePx(ctx, cx - 7, cy - 6, cx + 6, cy - 27, PALETTE.woodDark, 1);
   }
+  for (let i = 0; i < 3; i += 1) {
+    const sx = cx - 20 + Math.floor(rng() * 41);
+    const sy = cy + 2 + Math.floor(rng() * 5);
+    px(ctx, sx, sy, PALETTE.outline, 2, 1);
+    px(ctx, sx, sy - 1, rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 1, 1);
+  }
+}
+
+export function drawTrampledMud(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 101, seed * 5 + 3));
+  ctx.save();
+  ctx.globalAlpha = 0.26;
+  drawIsoDiamond(ctx, cx, cy + 2, 58, 24, PALETTE.rustDark);
+  ctx.globalAlpha = 0.18;
+  drawIsoDiamond(ctx, cx - 4, cy + 1, 42, 18, PALETTE.stoneDark);
+  ctx.restore();
+  for (let i = 0; i < 8; i += 1) {
+    const x = cx - 23 + Math.floor(rng() * 46);
+    const y = cy - 8 + Math.floor(rng() * 17);
+    const len = 5 + Math.floor(rng() * 7);
+    const dir = rng() < 0.5 ? 1 : -1;
+    linePx(ctx, x, y, x + dir * len, y + Math.floor(len * 0.32), i % 3 === 0 ? PALETTE.woodDark : PALETTE.stoneDark, 1);
+  }
+  for (const [dx, dy, dir] of [[-15, -4, 1], [-10, 1, 1], [8, -3, -1], [13, 2, -1]]) {
+    px(ctx, cx + dx - 1, cy + dy, PALETTE.outline, 6, 3);
+    px(ctx, cx + dx, cy + dy, PALETTE.woodDark, 4, 1);
+    px(ctx, cx + dx + dir, cy + dy + 1, PALETTE.rustDark, 3, 1);
+  }
+  for (let i = 0; i < 7; i += 1) {
+    const x = cx - 20 + Math.floor(rng() * 40);
+    const y = cy - 7 + Math.floor(rng() * 15);
+    px(ctx, x, y, PALETTE.outline, 3, 2);
+    px(ctx, x + 1, y, PALETTE.rustDark, 2, 1);
+  }
+  drawNoisePixels(ctx, cx - 25, cy - 10, 50, 20, [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.woodDark], 0.055, seed);
+}
+
+export function drawPracticeScars(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 109, seed * 7 + 11));
+  ctx.save();
+  ctx.globalAlpha = 0.68;
+  drawIsoDiamond(ctx, cx - 1, cy + 1, 50, 21, PALETTE.stoneDark);
+  for (let i = 0; i < 9; i += 1) {
+    const x = cx - 24 + Math.floor(rng() * 48);
+    const y = cy - 9 + Math.floor(rng() * 18);
+    const dx = 7 + Math.floor(rng() * 13);
+    const dy = Math.floor((rng() - 0.5) * 7);
+    linePx(ctx, x + 1, y + 1, x + dx + 1, y + dy + 1, PALETTE.outline, 1);
+    linePx(ctx, x, y, x + dx, y + dy, i % 3 === 0 ? PALETTE.hostBone : PALETTE.stoneDust, 1);
+  }
+  for (let i = 0; i < 4; i += 1) {
+    const x = cx - 14 + i * 9 + Math.floor(rng() * 3);
+    linePx(ctx, x + 1, cy + 6, x + 9, cy - 3, PALETTE.outline, 1);
+    linePx(ctx, x, cy + 5, x + 8, cy - 4, PALETTE.rustDark, 1);
+  }
+  px(ctx, cx - 3, cy - 2, PALETTE.outline, 8, 3);
+  px(ctx, cx - 2, cy - 3, PALETTE.hostBone, 5, 1);
+  ctx.restore();
+  drawNoisePixels(ctx, cx - 22, cy - 10, 44, 20, [PALETTE.stoneDust, PALETTE.rustDark], 0.03, seed);
+}
+
+export function drawSpentCasings(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 113, seed * 11 + 5));
+  ctx.save();
+  ctx.globalAlpha = 0.3;
+  drawIsoDiamond(ctx, cx, cy + 1, 42, 18, PALETTE.stoneDark);
+  ctx.restore();
+  for (let i = 0; i < 10; i += 1) {
+    const x = cx - 19 + Math.floor(rng() * 38);
+    const y = cy - 7 + Math.floor(rng() * 15);
+    const horizontal = rng() < 0.6;
+    px(ctx, x - 1, y, PALETTE.outline, horizontal ? 5 : 3, horizontal ? 2 : 4);
+    px(ctx, x, y, PALETTE.rustLight, horizontal ? 3 : 1, horizontal ? 1 : 3);
+    px(ctx, x + (horizontal ? 3 : 0), y + (horizontal ? 0 : 3), PALETTE.hostBone, 1, 1);
+    if ((i + seed) % 4 === 0) px(ctx, x + 1, y, PALETTE.hostGold, 1, 1);
+  }
+  for (const [dx, dy] of [[-13, 5], [11, -4]]) {
+    linePx(ctx, cx + dx, cy + dy, cx + dx + 8, cy + dy - 2, PALETTE.rustDark, 1);
+  }
+  drawNoisePixels(ctx, cx - 18, cy - 8, 36, 16, [PALETTE.stoneDark, PALETTE.rustDark], 0.025, seed);
+}
+
+export function drawTrainingDummy(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const lean = (seed & 1) ? 2 : -2;
+  const rng = rngFrom(hash2D(seed + 59, seed * 7 + 17));
+  drawShadowBlob(ctx, cx, cy + 4, 42, 14);
+
+  const baseA = frame.point(-0.42, 0, 2);
+  const baseB = frame.point(0.42, 0, 2);
+  const baseC = frame.point(0, -0.32, 1);
+  const baseD = frame.point(0, 0.32, 1);
+  linePx(ctx, baseA[0], baseA[1], baseB[0], baseB[1], PALETTE.outline, 4);
+  linePx(ctx, baseA[0], baseA[1] - 1, baseB[0], baseB[1] - 1, PALETTE.woodDark, 2);
+  linePx(ctx, baseC[0], baseC[1], baseD[0], baseD[1], PALETTE.outline, 4);
+  linePx(ctx, baseC[0], baseC[1] - 1, baseD[0], baseD[1] - 1, PALETTE.woodMid, 2);
+
+  px(ctx, cx - 4 + lean, cy - 59, PALETTE.outline, 8, 63);
+  px(ctx, cx - 2 + lean, cy - 58, PALETTE.woodDark, 4, 59);
+  px(ctx, cx - 2 + lean, cy - 58, PALETTE.woodMid, 1, 51);
+
+  const armL = frame.point(-0.45, 0, 34);
+  const armR = frame.point(0.45, 0, 34);
+  linePx(ctx, armL[0], armL[1], armR[0], armR[1], PALETTE.outline, 5);
+  linePx(ctx, armL[0], armL[1] - 1, armR[0], armR[1] - 1, PALETTE.woodMid, 2);
+  px(ctx, armL[0] - 4, armL[1] - 2, PALETTE.rustDark, 6, 3);
+  px(ctx, armR[0] - 2, armR[1] - 2, PALETTE.rustDark, 6, 3);
+
+  poly(ctx, PALETTE.outline, [
+    [cx - 14 + lean, cy - 49],
+    [cx + 7 + lean, cy - 52],
+    [cx + 15 + lean, cy - 31],
+    [cx + 7 + lean, cy - 18],
+    [cx - 13 + lean, cy - 22],
+    [cx - 18 + lean, cy - 38]
+  ]);
+  poly(ctx, PALETTE.clothTan, [
+    [cx - 12 + lean, cy - 47],
+    [cx + 5 + lean, cy - 50],
+    [cx + 12 + lean, cy - 31],
+    [cx + 5 + lean, cy - 20],
+    [cx - 11 + lean, cy - 24],
+    [cx - 15 + lean, cy - 38]
+  ]);
+  poly(ctx, PALETTE.stoneDust, [
+    [cx + 3 + lean, cy - 49],
+    [cx + 12 + lean, cy - 31],
+    [cx + 5 + lean, cy - 20],
+    [cx - 1 + lean, cy - 33]
+  ]);
+  px(ctx, cx - 10 + lean, cy - 42, PALETTE.rustDark, 23, 2);
+  px(ctx, cx - 12 + lean, cy - 31, PALETTE.woodDark, 25, 1);
+  px(ctx, cx - 9 + lean, cy - 39, PALETTE.outline, 19, 2);
+  px(ctx, cx - 7 + lean, cy - 40, PALETTE.hostBone, 14, 1);
+  px(ctx, cx - 5 + lean, cy - 35, PALETTE.outline, 12, 2);
+  px(ctx, cx - 4 + lean, cy - 36, PALETTE.rustLight, 8, 1);
+  linePx(ctx, cx - 8 + lean, cy - 45, cx + 8 + lean, cy - 24, PALETTE.rustDark, 1);
+  linePx(ctx, cx + 9 + lean, cy - 43, cx - 4 + lean, cy - 27, PALETTE.stoneDark, 1);
+  for (let i = 0; i < 5; i += 1) {
+    px(ctx, cx - 9 + lean + Math.floor(rng() * 20), cy - 44 + Math.floor(rng() * 21), PALETTE.outline, 3, 3);
+    px(ctx, cx - 8 + lean + Math.floor(rng() * 18), cy - 43 + Math.floor(rng() * 19), PALETTE.stoneDark, 1, 1);
+  }
+
+  poly(ctx, PALETTE.outline, [
+    [cx - 10 + lean, cy - 64],
+    [cx + 4 + lean, cy - 68],
+    [cx + 13 + lean, cy - 61],
+    [cx + 10 + lean, cy - 52],
+    [cx - 8 + lean, cy - 51],
+    [cx - 14 + lean, cy - 58]
+  ]);
+  poly(ctx, PALETTE.clothTan, [
+    [cx - 8 + lean, cy - 62],
+    [cx + 4 + lean, cy - 65],
+    [cx + 10 + lean, cy - 60],
+    [cx + 8 + lean, cy - 54],
+    [cx - 7 + lean, cy - 53],
+    [cx - 11 + lean, cy - 58]
+  ]);
+  px(ctx, cx - 6 + lean, cy - 57, PALETTE.stoneDark, 11, 1);
+  px(ctx, cx - 4 + lean, cy - 60, PALETTE.outline, 9, 2);
+  px(ctx, cx - 3 + lean, cy - 61, PALETTE.hostBone, 5, 1);
+  for (const p of [baseA, baseB, baseC, baseD]) {
+    px(ctx, p[0] - 2, p[1], PALETTE.outline, 5, 2);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.rustDark, 3, 1);
+  }
+  drawRubbleCluster(ctx, cx + 20, cy + 8, seed + 63, 2);
+  drawNoisePixels(ctx, cx - 15 + lean, cy - 62, 30, 42, [PALETTE.rustDark, PALETTE.woodDark, PALETTE.stoneDust], 0.035, seed);
+}
+
+export function drawDevilTarget(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient ?? 'sw');
+  drawShadowBlob(ctx, cx, cy + 5, 50, 15);
+
+  const postL = frame.point(-0.34, 0, 0);
+  const postR = frame.point(0.34, 0, 0);
+  for (const p of [postL, postR]) {
+    px(ctx, p[0] - 3, p[1] - 52, PALETTE.outline, 7, 55);
+    px(ctx, p[0] - 2, p[1] - 51, PALETTE.woodDark, 4, 51);
+    px(ctx, p[0] - 2, p[1] - 51, PALETTE.woodMid, 1, 45);
+  }
+
+  const topLeft = frame.point(-0.45, 0, 51);
+  const topRight = frame.point(0.45, 0, 51);
+  const bottomRight = frame.point(0.45, 0, 18);
+  const bottomLeft = frame.point(-0.45, 0, 18);
+  const face = faceTools(ctx, topLeft, topRight, bottomRight, bottomLeft);
+  face.rect(0, 0, 1, 1, PALETTE.outline);
+  face.rect(0.05, 0.06, 0.95, 0.94, PALETTE.clothTan);
+  face.line(0.08, 0.18, 0.92, 0.18, PALETTE.stoneDust, 1);
+  face.line(0.08, 0.82, 0.92, 0.82, PALETTE.woodDark, 1);
+  face.line(0.18, 0.5, 0.82, 0.5, PALETTE.rustDark, 1);
+  face.line(0.5, 0.18, 0.5, 0.86, PALETTE.rustDark, 1);
+
+  face.line(0.32, 0.35, 0.42, 0.18, PALETTE.outline, 2);
+  face.line(0.68, 0.35, 0.58, 0.18, PALETTE.outline, 2);
+  face.line(0.34, 0.36, 0.43, 0.22, PALETTE.hostRed, 1);
+  face.line(0.66, 0.36, 0.57, 0.22, PALETTE.hostRed, 1);
+  face.rect(0.38, 0.34, 0.62, 0.61, PALETTE.outline);
+  face.rect(0.42, 0.38, 0.58, 0.58, PALETTE.hostBone);
+  face.line(0.44, 0.47, 0.47, 0.47, PALETTE.void, 1);
+  face.line(0.54, 0.47, 0.57, 0.47, PALETTE.void, 1);
+  face.line(0.45, 0.58, 0.56, 0.55, PALETTE.hostRed, 1);
+  face.line(0.5, 0.59, 0.5, 0.75, PALETTE.outline, 1);
+  face.line(0.28, 0.74, 0.72, 0.74, PALETTE.outline, 2);
+  face.line(0.31, 0.73, 0.69, 0.73, PALETTE.rustDark, 1);
+  face.line(0.25, 0.2, 0.18, 0.08, PALETTE.outline, 2);
+  face.line(0.75, 0.2, 0.82, 0.08, PALETTE.outline, 2);
+  face.line(0.27, 0.2, 0.2, 0.1, PALETTE.hostRed, 1);
+  face.line(0.73, 0.2, 0.8, 0.1, PALETTE.hostRed, 1);
+
+  const rng = rngFrom(hash2D(seed + 127, seed * 13 + 7));
+  for (let i = 0; i < 6; i += 1) {
+    const p = face.point(0.18 + rng() * 0.65, 0.2 + rng() * 0.62);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 3);
+    px(ctx, p[0], p[1], PALETTE.stoneDark, 1, 1);
+  }
+  for (const [u, v] of [[0.12, 0.12], [0.88, 0.13], [0.13, 0.88], [0.86, 0.87]]) {
+    const p = face.point(u, v);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 3);
+    px(ctx, p[0], p[1], PALETTE.rustLight, 1, 1);
+  }
+  linePx(ctx, bottomLeft[0] - 4, bottomLeft[1] + 2, bottomRight[0] + 4, bottomRight[1] + 2, PALETTE.outline, 3);
+  linePx(ctx, bottomLeft[0] - 3, bottomLeft[1] + 1, bottomRight[0] + 3, bottomRight[1] + 1, PALETTE.woodDark, 1);
+  linePx(ctx, postL[0] - 8, postL[1] + 2, postR[0] + 8, postR[1] + 2, PALETTE.outline, 2);
+  linePx(ctx, postL[0] - 7, postL[1] + 1, postR[0] + 7, postR[1] + 1, PALETTE.woodMid, 1);
+  drawRubbleCluster(ctx, cx + 22, cy + 8, seed + 221, 2);
+  drawNoisePixels(ctx, Math.min(topLeft[0], topRight[0]) - 3, Math.min(topLeft[1], topRight[1]) - 2, Math.abs(topRight[0] - topLeft[0]) + 8, 39, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
 }
 const FARM_VARIANTS = new Set(['farmhouse', 'barn', 'storage-shed', 'grain-shed', 'tool-shed']);
 
@@ -138,12 +372,21 @@ function drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wal
       faceFront.rect(0.24, 0.31, 0.38, 0.47, PALETTE.void);
       faceFront.line(0.16, 0.3, 0.2, 0.51, PALETTE.woodLight, 1);
       faceFront.line(0.43, 0.3, 0.47, 0.51, PALETTE.woodDark, 1);
+      faceFront.rect(0.55, 0.26, 0.78, 0.42, PALETTE.outline);
+      faceFront.rect(0.58, 0.29, 0.75, 0.39, PALETTE.stoneDust);
+      faceFront.line(0.66, 0.29, 0.66, 0.39, PALETTE.woodDark, 1);
+      faceFront.line(0.08, 0.72, 0.92, 0.72, PALETTE.outline, 3);
+      faceFront.line(0.1, 0.69, 0.9, 0.69, PALETTE.woodLight, 1);
+      faceFront.line(0.18, 0.86, 0.84, 0.86, PALETTE.rustDark, 1);
     }
     if (faceSide) {
       faceSide.rect(0.5, 0.3, 0.7, 0.5, PALETTE.outline);
       faceSide.rect(0.54, 0.33, 0.67, 0.47, PALETTE.void);
       faceSide.line(0.49, 0.31, 0.49, 0.5, PALETTE.woodMid, 1);
       faceSide.line(0.71, 0.31, 0.71, 0.5, PALETTE.woodDark, 1);
+      faceSide.rect(0.16, 0.58, 0.38, 0.72, PALETTE.outline);
+      faceSide.rect(0.19, 0.6, 0.35, 0.69, PALETTE.clothTan);
+      faceSide.line(0.2, 0.68, 0.35, 0.68, PALETTE.rustDark, 1);
     }
     if (!connected.xMinus && !connected.yMinus) {
       px(ctx, cx - 7, cy - roofLift - 30, PALETTE.outline, 12, 19);
@@ -151,6 +394,10 @@ function drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wal
       px(ctx, cx - 5, cy - roofLift - 29, PALETTE.stoneDust, 2, 15);
       px(ctx, cx - 8, cy - roofLift - 32, PALETTE.outline, 14, 4);
       px(ctx, cx - 6, cy - roofLift - 31, PALETTE.rustDark, 10, 2);
+    }
+    for (const dx of [-24, -9, 14]) {
+      px(ctx, cx + dx, cy - roofLift + 1 + ((seed + dx) & 2), PALETTE.outline, 9, 2);
+      px(ctx, cx + dx + 1, cy - roofLift, PALETTE.rustLight, 6, 1);
     }
     return;
   }
@@ -163,8 +410,24 @@ function drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wal
       faceFront.line(0.5, 0.21, 0.5, 0.35, PALETTE.rustDark, 1);
       faceFront.line(0.08, 0.82, 0.92, 0.82, PALETTE.outline, 2);
       faceFront.line(0.1, 0.79, 0.9, 0.79, PALETTE.rustMid, 1);
+      faceFront.line(0.08, 0.42, 0.45, 0.78, PALETTE.outline, 3);
+      faceFront.line(0.1, 0.43, 0.43, 0.77, PALETTE.rustMid, 1);
+      faceFront.line(0.92, 0.42, 0.55, 0.78, PALETTE.outline, 3);
+      faceFront.line(0.9, 0.43, 0.57, 0.77, PALETTE.rustMid, 1);
+      faceFront.rect(0.13, 0.54, 0.27, 0.68, PALETTE.outline);
+      faceFront.rect(0.16, 0.56, 0.24, 0.65, PALETTE.void);
     }
-    if (faceSide) faceSide.line(0.14, 0.2, 0.86, 0.64, PALETTE.rustDark, 1);
+    if (faceSide) {
+      faceSide.line(0.14, 0.2, 0.86, 0.64, PALETTE.outline, 2);
+      faceSide.line(0.16, 0.21, 0.84, 0.63, PALETTE.rustDark, 1);
+      faceSide.line(0.84, 0.22, 0.18, 0.74, PALETTE.rustMid, 1);
+      faceSide.rect(0.62, 0.42, 0.82, 0.56, PALETTE.outline);
+      faceSide.rect(0.66, 0.45, 0.78, 0.53, PALETTE.void);
+    }
+    px(ctx, cx - 28, cy - roofLift + 4, PALETTE.outline, 19, 5);
+    px(ctx, cx - 26, cy - roofLift + 3, PALETTE.rustDark, 15, 2);
+    px(ctx, cx + 15, cy - roofLift + 7, PALETTE.outline, 16, 5);
+    px(ctx, cx + 17, cy - roofLift + 6, PALETTE.woodDark, 12, 2);
     return;
   }
 
@@ -174,6 +437,16 @@ function drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wal
       face.line(0.1, 0.55, 0.9, 0.55, PALETTE.outline, 2);
       face.line(0.14, 0.2, 0.82, 0.78, PALETTE.rustDark, 1);
       face.line(0.82, 0.2, 0.14, 0.78, PALETTE.woodDark, 1);
+      face.rect(0.16, 0.62, 0.38, 0.82, PALETTE.outline);
+      face.rect(0.2, 0.65, 0.35, 0.79, PALETTE.woodDark);
+      face.line(0.18, 0.72, 0.36, 0.72, PALETTE.rustLight, 1);
+      face.rect(0.58, 0.34, 0.82, 0.48, PALETTE.outline);
+      face.rect(0.61, 0.36, 0.79, 0.45, PALETTE.stoneDark);
+      face.line(0.64, 0.36, 0.64, 0.45, PALETTE.rustDark, 1);
+    }
+    for (const dx of [-17, 0, 17]) {
+      px(ctx, cx + dx, cy - roofLift + 2 + ((seed + dx) & 1), PALETTE.outline, 8, 2);
+      px(ctx, cx + dx + 1, cy - roofLift + 1, PALETTE.rustLight, 5, 1);
     }
     return;
   }
@@ -186,28 +459,47 @@ function drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wal
       face.rect(0.52, 0.18, 0.75, 0.33, PALETTE.outline);
       face.rect(0.56, 0.2, 0.72, 0.3, PALETTE.void);
       face.line(0.05, 0.92, 0.96, 0.92, PALETTE.stoneDust, 2);
+      face.line(0.08, 0.12, 0.92, 0.12, PALETTE.hostBone, 1);
+      face.line(0.08, 0.78, 0.92, 0.78, PALETTE.outline, 2);
+      for (const u of [0.22, 0.5, 0.78]) {
+        face.rect(u - 0.045, 0.84, u + 0.045, 0.98, PALETTE.outline);
+        face.rect(u - 0.025, 0.86, u + 0.025, 0.98, PALETTE.woodDark);
+      }
     }
     if (faceFront) {
       const chute = faceFront.point(0.68, 0.62);
       px(ctx, chute[0] - 4, chute[1] - 2, PALETTE.outline, 13, 7);
       px(ctx, chute[0] - 3, chute[1] - 1, PALETTE.woodDark, 10, 4);
+      linePx(ctx, chute[0] + 6, chute[1] + 4, chute[0] + 15, chute[1] + 9, PALETTE.outline, 3);
+      linePx(ctx, chute[0] + 7, chute[1] + 3, chute[0] + 14, chute[1] + 8, PALETTE.clothTan, 1);
     }
+    px(ctx, cx - 7, cy - roofLift - 8, PALETTE.outline, 15, 6);
+    px(ctx, cx - 5, cy - roofLift - 9, PALETTE.woodMid, 11, 3);
     return;
   }
 
   for (const face of [faceFront, faceSide].filter(Boolean)) {
     face.rect(0.2, 0.26, 0.48, 0.44, PALETTE.outline);
     face.rect(0.24, 0.29, 0.45, 0.41, PALETTE.stoneDark);
-    face.line(0.15, 0.68, 0.42, 0.56, PALETTE.rustLight, 1);
-    face.line(0.5, 0.7, 0.82, 0.5, PALETTE.rustDark, 1);
+    face.line(0.15, 0.68, 0.42, 0.56, PALETTE.outline, 2);
+    face.line(0.16, 0.67, 0.41, 0.56, PALETTE.rustLight, 1);
+    face.line(0.5, 0.7, 0.82, 0.5, PALETTE.outline, 2);
+    face.line(0.51, 0.69, 0.81, 0.5, PALETTE.rustDark, 1);
     face.line(0.36, 0.16, 0.7, 0.28, PALETTE.woodDark, 1);
+    face.line(0.58, 0.24, 0.58, 0.72, PALETTE.outline, 1);
+    face.line(0.68, 0.22, 0.68, 0.62, PALETTE.rustLight, 1);
+    face.rect(0.72, 0.62, 0.86, 0.8, PALETTE.outline);
+    face.rect(0.75, 0.65, 0.83, 0.77, PALETTE.void);
   }
+  px(ctx, cx + 21, cy - roofLift + 1, PALETTE.outline, 16, 3);
+  px(ctx, cx + 22, cy - roofLift, PALETTE.rustDark, 13, 1);
 }
 
 export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
   const connected = opts.connected ?? {};
   const variant = normalizeFarmVariant(opts.variant);
   const style = farmBuildingStyle(variant);
+  const rng = rngFrom(hash2D(seed + 223, seed * 9 + 31));
   const wallH = style.wallH;
   const roofLift = wallH + style.roofLift;
   const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
@@ -237,6 +529,16 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
     if (h % 5 === 0) {
       face.line(0.2, 0.2, 0.76, 0.76, PALETTE.outline, 2);
       face.line(0.22, 0.22, 0.74, 0.74, PALETTE.woodDark, 1);
+    }
+    for (const [u, v, tone] of [
+      [0.18, 0.2, style.trim],
+      [0.48, 0.48, PALETTE.outline],
+      [0.76, 0.72, style.wallShade]
+    ]) {
+      if ((h + Math.floor(u * 100) + Math.floor(v * 100)) % 4 !== 0) continue;
+      const p = face.point(u, v);
+      px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 4, 2);
+      px(ctx, p[0], p[1] - 2, tone, 2, 1);
     }
   };
 
@@ -304,8 +606,23 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
     px(ctx, cx + off, cy - roofLift - 2 + jitter, style.roofLight, 5, 1);
     px(ctx, cx + off + 2, cy - roofLift + 7 + jitter, style.wallShade, 7, 1);
   }
+  for (let i = 0; i < 7; i += 1) {
+    const sx = cx - 30 + Math.floor(rng() * 61);
+    const sy = cy - roofLift - 9 + Math.floor(rng() * 25);
+    px(ctx, sx, sy, PALETTE.outline, 2 + (i % 2), 1);
+    px(ctx, sx + 1, sy - 1, i % 3 === 0 ? style.roofLight : style.roofShade, 1, 1);
+  }
+  if (!connected.yPlus) {
+    linePx(ctx, base.left[0] + 2, base.left[1] + 1, base.bottom[0] - 2, base.bottom[1] + 1, PALETTE.outline, 2);
+    linePx(ctx, base.left[0] + 4, base.left[1], base.bottom[0] - 4, base.bottom[1], style.wallShade, 1);
+  }
+  if (!connected.xPlus) {
+    linePx(ctx, base.bottom[0] + 2, base.bottom[1] + 1, base.right[0] - 2, base.right[1] + 1, PALETTE.outline, 2);
+    linePx(ctx, base.bottom[0] + 4, base.bottom[1], base.right[0] - 4, base.right[1], PALETTE.stoneDark, 1);
+  }
   drawNoisePixels(ctx, cx - 33, cy - roofLift - 14, 66, 36, [style.roofShade, style.wallShade], 0.018, seed);
   drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wallTop, base, roof, roofLift);
+  if (!connected.yPlus || !connected.xPlus) drawRubbleCluster(ctx, cx + 24, cy + 8, seed + 227, 2);
 }
 
 const FARM_DOOR_STYLES = {
@@ -375,6 +692,7 @@ function drawFarmWallDoor(ctx, cx, cy, seed, opts = {}) {
   const unlocked = Boolean(opts.unlocked || opts.revealed);
   const variant = normalizeFarmVariant(opts.variant);
   const style = farmDoorStyle(variant);
+  const rng = rngFrom(hash2D(seed + 239, seed * 13 + 17));
   const wallPlane = opts.wallPlane === 'se' ? 'se' : 'sw';
   const wallFace = wallRunFace(ctx, cx, cy, { plane: wallPlane, side: 'near', span: 1 });
   const u0 = style.u0;
@@ -408,6 +726,10 @@ function drawFarmWallDoor(ctx, cx, cy, seed, opts = {}) {
     face.line(u, 0.12, u, 0.89, PALETTE.outline, 1);
     face.line(u + 0.025, 0.13, u + 0.025, 0.88, style.shade, 1);
   }
+  face.line(0.13, 0.16, 0.84, 0.68, PALETTE.outline, 2);
+  face.line(0.16, 0.16, 0.82, 0.66, style.shade, 1);
+  face.line(0.22, 0.86, 0.38, 0.73, PALETTE.outline, 1);
+  face.line(0.67, 0.18, 0.82, 0.31, PALETTE.rustDark, 1);
   for (const v of variant === 'barn' ? [0.24, 0.48, 0.72] : [0.28, 0.62]) {
     face.line(0.1, v, 0.9, v, PALETTE.outline, 3);
     face.line(0.14, v - 0.02, 0.86, v - 0.02, style.trim, 1);
@@ -469,14 +791,21 @@ function drawFarmWallDoor(ctx, cx, cy, seed, opts = {}) {
     face.line(0.9, 0.16, 0.9, 0.87, PALETTE.void, 2);
     face.line(0.87, 0.19, 0.87, 0.84, PALETTE.stoneDark, 1);
   }
+  for (let i = 0; i < 5; i += 1) {
+    const p = face.point(0.16 + rng() * 0.7, 0.16 + rng() * 0.68);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 2);
+    px(ctx, p[0], p[1] - 2, rng() < 0.5 ? style.trim : style.shade, 1, 1);
+  }
 
   const sillA = wallFace.point(u0 - 0.08, 1);
   const sillB = wallFace.point(u1 + 0.08, 1);
   linePx(ctx, sillA[0], sillA[1], sillB[0], sillB[1], PALETTE.outline, 3);
   linePx(ctx, sillA[0], sillA[1] - 1, sillB[0], sillB[1] - 1, PALETTE.stoneDark, 1);
+  linePx(ctx, sillA[0] + 2, sillA[1] + 2, sillB[0] - 2, sillB[1] + 2, PALETTE.rustDark, 1);
   if (variant === 'grain-shed' || variant === 'barn') {
     drawChaffScatter(ctx, cx, Math.max(sillA[1], sillB[1]) + 2, seed + 19);
   }
+  drawRubbleCluster(ctx, cx + 14, Math.max(sillA[1], sillB[1]) + 4, seed + 241, 2);
   drawNoisePixels(ctx, Math.min(sillA[0], sillB[0]) - 3, Math.min(sillA[1], sillB[1]) - 47, Math.abs(sillB[0] - sillA[0]) + 6, 48, [style.shade, PALETTE.rustDark], 0.018, seed);
 }
 
@@ -490,6 +819,7 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
   const unlocked = Boolean(opts.unlocked || opts.revealed);
   const variant = normalizeFarmVariant(opts.variant);
   const style = farmDoorStyle(variant);
+  const rng = rngFrom(hash2D(seed + 251, seed * 7 + 43));
   const lean = (seed & 1) ? 1 : -1;
   const left = cx - Math.floor(style.floorWidth / 2) + lean;
   const right = cx + Math.floor(style.floorWidth / 2) + lean;
@@ -514,6 +844,9 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
     px(ctx, x, top + 3, PALETTE.outline, 2, bottom - top - 4);
     px(ctx, x + 1, top + 4, style.shade, 1, bottom - top - 6);
   }
+  linePx(ctx, left + 5, top + 10, right - 6, top + Math.max(28, style.floorHeight - 22), PALETTE.outline, 2);
+  linePx(ctx, left + 7, top + 10, right - 8, top + Math.max(27, style.floorHeight - 23), style.shade, 1);
+  linePx(ctx, right - 7, top + 13, left + 8, top + Math.max(31, style.floorHeight - 20), PALETTE.rustDark, 1);
   for (const y of variant === 'barn' ? [top + 15, top + 34, top + 52] : [top + 16, top + Math.max(34, style.floorHeight - 17)]) {
     px(ctx, left - 1, y, PALETTE.outline, right - left + 3, 4);
     px(ctx, left + 1, y + 1, style.shade, right - left - 1, 1);
@@ -548,6 +881,12 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
     px(ctx, left - 6, y, PALETTE.outline, 8, 7);
     px(ctx, left - 5, y + 1, style.trim, 5, 4);
   }
+  for (let i = 0; i < 6; i += 1) {
+    const sx = left + 4 + Math.floor(rng() * Math.max(1, right - left - 8));
+    const sy = top + 7 + Math.floor(rng() * Math.max(1, bottom - top - 14));
+    px(ctx, sx - 1, sy, PALETTE.outline, 3, 1);
+    px(ctx, sx, sy - 1, rng() < 0.5 ? style.trim : style.shade, 1, 1);
+  }
 
   const pullX = variant === 'storage-shed' ? cx + lean : right - 9;
   const pullY = variant === 'storage-shed' ? top + 31 : top + Math.min(35, style.floorHeight - 19);
@@ -571,6 +910,7 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
     px(ctx, right - 3, top + 43, PALETTE.stoneDark, 2, 11);
   }
 
+  drawRubbleCluster(ctx, cx + 18, cy + 7, seed + 257, 2);
   drawNoisePixels(ctx, left, top, right - left, bottom - top, [style.shade, PALETTE.rustDark], 0.025, seed);
 }
 
@@ -616,6 +956,7 @@ function drawFarmWheel(ctx, cx, cy, radius = 7, opts = {}) {
 
 export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const rng = rngFrom(hash2D(seed + 191, seed * 5 + 13));
   drawShadowBlob(ctx, cx, cy + 5, 54, 18);
   const box = orientedBox(ctx, frame, 0.68, 0.36, 12, {
     top: PALETTE.woodLight,
@@ -655,6 +996,25 @@ export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
     hub: PALETTE.rustDark
   });
   px(ctx, box.cap.left[0] + 2, box.cap.left[1] - 1, PALETTE.stoneDust, 18, 2);
+  const sack = frame.point(-0.08, -0.06, 24);
+  px(ctx, sack[0] - 5, sack[1] - 8, PALETTE.outline, 11, 9);
+  px(ctx, sack[0] - 4, sack[1] - 7, PALETTE.clothTan, 8, 7);
+  px(ctx, sack[0] - 3, sack[1] - 7, PALETTE.stoneDust, 3, 2);
+  const brokenRailA = frame.point(-0.39, 0.24, 20);
+  const brokenRailB = frame.point(0.12, 0.24, 16);
+  linePx(ctx, brokenRailA[0], brokenRailA[1], brokenRailB[0], brokenRailB[1], PALETTE.outline, 2);
+  linePx(ctx, brokenRailA[0], brokenRailA[1] - 1, brokenRailB[0], brokenRailB[1] - 1, PALETTE.woodDark, 1);
+  for (const [la, lb] of [[-0.3, -0.16], [0.29, -0.16], [-0.28, 0.18], [0.26, 0.18]]) {
+    const p = frame.point(la, lb, 20);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 3);
+    px(ctx, p[0], p[1] - 1, PALETTE.rustLight, 1, 1);
+  }
+  for (let i = 0; i < 5; i += 1) {
+    const p = frame.point(-0.28 + rng() * 0.56, -0.15 + rng() * 0.3, 24);
+    px(ctx, p[0], p[1], rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 1 + (i & 1), 1);
+  }
+  const cartDebris = frame.point(0.62, 0.34);
+  drawRubbleCluster(ctx, cartDebris[0], cartDebris[1] + 4, seed + 197, 2);
   drawNoisePixels(ctx, cx - 22, cy - 18, 44, 26, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
 }
 
@@ -675,10 +1035,21 @@ export function drawHayRick(ctx, cx, cy, seed) {
     const y = cy - 17 + Math.floor(rng() * 19);
     px(ctx, x, y, rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
   }
+  linePx(ctx, cx - 19, cy - 12, cx + 18, cy - 9, PALETTE.outline, 2);
+  linePx(ctx, cx - 18, cy - 13, cx + 17, cy - 10, PALETTE.woodDark, 1);
+  linePx(ctx, cx - 15, cy - 2, cx + 15, cy, PALETTE.outline, 2);
+  linePx(ctx, cx - 14, cy - 3, cx + 14, cy - 1, PALETTE.rustDark, 1);
+  px(ctx, cx - 4, cy - 22, PALETTE.outline, 9, 3);
+  px(ctx, cx - 3, cy - 23, PALETTE.hostBone, 6, 1);
+  for (let i = 0; i < 8; i += 1) {
+    px(ctx, cx - 22 + Math.floor(rng() * 45), cy + 1 + Math.floor(rng() * 7), rng() < 0.5 ? PALETTE.clothTan : PALETTE.woodDark, 2, 1);
+  }
+  drawRubbleCluster(ctx, cx + 21, cy + 8, seed + 89, 2);
 }
 
 export function drawFieldPlow(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const rng = rngFrom(hash2D(seed + 211, seed * 3 + 29));
   drawShadowBlob(ctx, cx, cy + 4, 54, 16);
   const beamA = frame.point(-0.48, -0.02, 8);
   const beamB = frame.point(0.48, -0.02, 5);
@@ -717,6 +1088,12 @@ export function drawFieldPlow(ctx, cx, cy, seed, opts = {}) {
     [blade[0] - 4, blade[1] + 8]
   ]);
   linePx(ctx, blade[0] - 10, blade[1] - 4, blade[0] + 8, blade[1] - 1, PALETTE.stoneDust, 1);
+  linePx(ctx, blade[0] - 12, blade[1] + 6, blade[0] + 5, blade[1] + 10, PALETTE.outline, 1);
+  linePx(ctx, blade[0] - 11, blade[1] + 5, blade[0] + 4, blade[1] + 9, PALETTE.rustDark, 1);
+  for (const [dx, dy] of [[-8, -3], [5, 0], [-2, 5]]) {
+    px(ctx, blade[0] + dx, blade[1] + dy, PALETTE.outline, 3, 3);
+    px(ctx, blade[0] + dx + 1, blade[1] + dy, PALETTE.rustLight, 1, 1);
+  }
 
   const wheel = frame.point(0.42, 0.12, 3);
   const axle = frame.point(0.28, 0.06, 7);
@@ -732,11 +1109,17 @@ export function drawFieldPlow(ctx, cx, cy, seed, opts = {}) {
   const cutterBot = frame.point(0.08, -0.02, 3);
   linePx(ctx, cutterTop[0], cutterTop[1], cutterBot[0], cutterBot[1], PALETTE.outline, 3);
   linePx(ctx, cutterTop[0], cutterTop[1], cutterBot[0], cutterBot[1], PALETTE.rustLight, 1);
+  const soil = frame.point(0.25, 0.28);
+  for (let i = 0; i < 7; i += 1) {
+    px(ctx, soil[0] - 16 + Math.floor(rng() * 32), soil[1] - 3 + Math.floor(rng() * 8), rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark, 2, 1);
+  }
+  drawRubbleCluster(ctx, soil[0] + 12, soil[1] + 4, seed + 217, 2);
   drawNoisePixels(ctx, cx - 22, cy - 18, 44, 24, [PALETTE.rustDark, PALETTE.stoneDark], 0.04, seed);
 }
 
 export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const rng = rngFrom(hash2D(seed + 223, seed * 5 + 7));
   drawShadowBlob(ctx, cx, cy + 4, 58, 17);
   const ha = 0.5;
   const hb = 0.28;
@@ -778,6 +1161,12 @@ export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
   const tongueB = frame.point(0.8, 0, 4);
   linePx(ctx, tongueA[0], tongueA[1], tongueB[0], tongueB[1], PALETTE.outline, 3);
   linePx(ctx, tongueA[0], tongueA[1] - 1, tongueB[0], tongueB[1] - 1, PALETTE.woodDark, 1);
+  drawFarmWheel(ctx, frame.point(0.88, 0, 4)[0], frame.point(0.88, 0, 4)[1], 4, {
+    rim: PALETTE.woodDark,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.outline,
+    hub: PALETTE.rustLight
+  });
   const wheelA = frame.point(-0.45, 0.3, 3);
   const wheelB = frame.point(0.45, 0.3, 3);
   drawFarmWheel(ctx, wheelA[0], wheelA[1] - 3, 7, {
@@ -792,25 +1181,58 @@ export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
     shade: PALETTE.woodDark,
     hub: PALETTE.rustLight
   });
+  for (const [la, lb] of [[-0.48, -0.26], [0.48, -0.26], [-0.48, 0.27], [0.48, 0.27], [0, 0]]) {
+    const p = frame.point(la, lb, 10);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 3);
+    px(ctx, p[0], p[1] - 1, PALETTE.rustLight, 1, 1);
+  }
+  const drag = frame.point(0.05, 0.36);
+  for (let i = 0; i < 7; i += 1) {
+    px(ctx, drag[0] - 24 + Math.floor(rng() * 49), drag[1] - 4 + Math.floor(rng() * 9), rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark, 2, 1);
+  }
+  drawRubbleCluster(ctx, drag[0] + 22, drag[1] + 4, seed + 229, 2);
 }
 
 export function drawWagonWheel(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 4, 32, 12);
+  const rng = rngFrom(hash2D(seed + 233, seed * 11 + 5));
+  drawShadowBlob(ctx, cx, cy + 5, 42, 15);
   const lean = (seed & 1) ? 1 : -1;
-  linePx(ctx, cx - 9 * lean, cy - 2, cx + 8 * lean, cy - 31, PALETTE.outline, 3);
-  linePx(ctx, cx - 8 * lean, cy - 3, cx + 7 * lean, cy - 30, PALETTE.woodDark, 1);
-  drawFarmWheel(ctx, cx, cy - 18, 9, {
+  linePx(ctx, cx - 15 * lean, cy + 1, cx + 12 * lean, cy - 39, PALETTE.outline, 4);
+  linePx(ctx, cx - 14 * lean, cy, cx + 11 * lean, cy - 38, PALETTE.woodDark, 2);
+  drawFarmWheel(ctx, cx, cy - 22, 9, {
     rim: PALETTE.woodDark,
     lit: PALETTE.woodLight,
     shade: PALETTE.rustDark,
     hub: PALETTE.rustLight
   });
-  px(ctx, cx - 12, cy - 7, PALETTE.outline, 25, 4);
-  px(ctx, cx - 10, cy - 8, PALETTE.woodMid, 21, 2);
+  drawFarmWheel(ctx, cx - 3 * lean, cy - 21, 7, {
+    rim: PALETTE.outline,
+    lit: PALETTE.woodMid,
+    shade: PALETTE.woodDark,
+    hub: PALETTE.rustDark
+  });
+  for (const spoke of [[-14, -22], [14, -22], [0, -38], [0, -6]]) {
+    linePx(ctx, cx, cy - 22, cx + spoke[0], cy + spoke[1], PALETTE.outline, 2);
+    linePx(ctx, cx, cy - 22, cx + spoke[0], cy + spoke[1], PALETTE.woodMid, 1);
+  }
+  linePx(ctx, cx - 18, cy - 10, cx + 19, cy - 13, PALETTE.outline, 5);
+  linePx(ctx, cx - 17, cy - 11, cx + 18, cy - 14, PALETTE.woodMid, 2);
+  px(ctx, cx - 16, cy - 6, PALETTE.outline, 33, 5);
+  px(ctx, cx - 14, cy - 7, PALETTE.woodMid, 29, 2);
+  px(ctx, cx + 9 * lean, cy - 34, PALETTE.stoneDust, 6, 2);
+  px(ctx, cx - 10 * lean, cy - 30, PALETTE.outline, 7, 2);
+  px(ctx, cx - 9 * lean, cy - 31, PALETTE.woodLight, 4, 1);
+  px(ctx, cx + 12 * lean, cy - 18, PALETTE.outline, 6, 2);
+  px(ctx, cx + 13 * lean, cy - 19, PALETTE.rustDark, 3, 1);
+  for (let i = 0; i < 5; i += 1) {
+    px(ctx, cx - 18 + Math.floor(rng() * 37), cy - 7 + Math.floor(rng() * 9), rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
+  }
+  drawRubbleCluster(ctx, cx + 20 * lean, cy + 7, seed + 239, 2);
 }
 
 export function drawFeedTrough(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
+  const rng = rngFrom(hash2D(seed + 241, seed * 13 + 17));
   drawShadowBlob(ctx, cx, cy + 4, 42, 13);
   const box = orientedBox(ctx, frame, 0.82, 0.3, 10, {
     top: PALETTE.woodDark,
@@ -837,10 +1259,22 @@ export function drawFeedTrough(ctx, cx, cy, seed, opts = {}) {
   linePx(ctx, braceA[0], braceA[1], braceB[0], braceB[1], PALETTE.outline, 2);
   linePx(ctx, braceA[0], braceA[1] - 1, braceB[0], braceB[1] - 1, PALETTE.woodDark, 1);
   px(ctx, box.cap.left[0] + 3, box.cap.left[1], PALETTE.woodLight, 10, 1);
+  for (const la of [-0.3, 0, 0.3]) {
+    const p = frame.point(la, 0.16, 10);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 3);
+    px(ctx, p[0], p[1] - 1, PALETTE.rustLight, 1, 1);
+  }
+  linePx(ctx, box.cap.left[0], box.cap.left[1] + 3, box.cap.bottom[0], box.cap.bottom[1] + 2, PALETTE.outline, 1);
+  const spill = frame.point(0.12, 0.3);
+  for (let i = 0; i < 8; i += 1) {
+    px(ctx, spill[0] - 16 + Math.floor(rng() * 33), spill[1] - 4 + Math.floor(rng() * 9), rng() < 0.6 ? PALETTE.hostGold : PALETTE.clothTan, 1 + (i & 1), 1);
+  }
+  drawRubbleCluster(ctx, spill[0] + 15, spill[1] + 2, seed + 247, 2);
   drawNoisePixels(ctx, cx - 18, cy - 14, 36, 20, [PALETTE.woodDark, PALETTE.stoneDark], 0.035, seed);
 }
 
 export function drawWaterPump(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 251, seed * 7 + 37));
   drawShadowBlob(ctx, cx, cy + 4, 26, 11);
   drawIsoPrism(ctx, cx, cy + 2, 24, 11, 5, {
     top: PALETTE.stoneMid,
@@ -870,10 +1304,23 @@ export function drawWaterPump(ctx, cx, cy, seed) {
   linePx(ctx, cx - 8, cy - 30, cx - 23, cy - 21, PALETTE.woodDark, 1);
   px(ctx, cx - 5, cy - 17, PALETTE.stoneDust, 3, 2);
   px(ctx, cx + 3, cy - 17, PALETTE.stoneDust, 3, 2);
+  linePx(ctx, cx + 19, cy - 27, cx + 16, cy - 14, PALETTE.outline, 1);
+  linePx(ctx, cx + 18, cy - 27, cx + 15, cy - 14, PALETTE.stoneDust, 1);
+  px(ctx, cx + 13, cy - 12, PALETTE.outline, 7, 3);
+  px(ctx, cx + 14, cy - 13, PALETTE.stoneLight, 4, 1);
+  for (const [dx, dy] of [[-7, -35], [4, -34], [-7, -4], [5, -3]]) {
+    px(ctx, cx + dx, cy + dy, PALETTE.outline, 3, 3);
+    px(ctx, cx + dx + 1, cy + dy, PALETTE.rustLight, 1, 1);
+  }
+  for (let i = 0; i < 5; i += 1) {
+    px(ctx, cx - 14 + Math.floor(rng() * 29), cy + 2 + Math.floor(rng() * 6), rng() < 0.5 ? PALETTE.stoneDark : PALETTE.rustDark, 2, 1);
+  }
+  drawRubbleCluster(ctx, cx + 15, cy + 7, seed + 257, 2);
   drawNoisePixels(ctx, cx - 10, cy - 39, 20, 40, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
 }
 
 export function drawToolRack(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 263, seed * 11 + 19));
   drawShadowBlob(ctx, cx, cy + 4, 34, 12);
   px(ctx, cx - 15, cy - 42, PALETTE.outline, 5, 45);
   px(ctx, cx + 12, cy - 40, PALETTE.outline, 5, 43);
@@ -892,6 +1339,20 @@ export function drawToolRack(ctx, cx, cy, seed) {
   px(ctx, cx - 12, cy - 14, PALETTE.rustLight, 8, 2);
   px(ctx, cx - 4, cy - 11, PALETTE.stoneDust, 10, 2);
   px(ctx, cx + 4, cy - 16, PALETTE.rustLight, 8, 2);
+  linePx(ctx, cx - 14, cy - 31, cx + 13, cy - 4, PALETTE.outline, 2);
+  linePx(ctx, cx - 13, cy - 31, cx + 12, cy - 5, PALETTE.woodDark, 1);
+  for (const [dx, h, tone] of [[-13, 13, PALETTE.stoneDust], [12, 20, PALETTE.rustLight]]) {
+    px(ctx, cx + dx, cy - 33, PALETTE.outline, 3, h);
+    px(ctx, cx + dx + 1, cy - 32, tone, 1, h - 2);
+  }
+  for (const [dx, dy] of [[-13, -37], [13, -35], [-12, -6], [12, -5]]) {
+    px(ctx, cx + dx, cy + dy, PALETTE.outline, 3, 3);
+    px(ctx, cx + dx + 1, cy + dy, PALETTE.rustLight, 1, 1);
+  }
+  for (let i = 0; i < 5; i += 1) {
+    px(ctx, cx - 16 + Math.floor(rng() * 33), cy - 4 + Math.floor(rng() * 8), rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
+  }
+  drawRubbleCluster(ctx, cx + 18, cy + 7, seed + 269, 2);
   drawNoisePixels(ctx, cx - 17, cy - 39, 34, 38, [PALETTE.woodDark, PALETTE.stoneDark], 0.035, seed);
 }
 
@@ -908,15 +1369,26 @@ export function drawWoodpile(ctx, cx, cy, seed) {
       px(ctx, x, y - 3, PALETTE.woodLight, 3, 2);
       px(ctx, x + 8, y - 2, PALETTE.woodDark, 3, 4);
       px(ctx, x + 10, y - 1, PALETTE.outline, 1, 2);
+      if ((row + i + seed) % 3 === 0) {
+        px(ctx, x + 4, y - 2, PALETTE.outline, 4, 2);
+        px(ctx, x + 5, y - 3, PALETTE.hostBone, 2, 1);
+      }
     }
   }
   linePx(ctx, cx - 24, cy - 1, cx - 15, cy - 29, PALETTE.outline, 3);
   linePx(ctx, cx + 22, cy - 1, cx + 13, cy - 28, PALETTE.outline, 3);
   linePx(ctx, cx - 23, cy - 2, cx - 15, cy - 28, PALETTE.woodDark, 1);
   linePx(ctx, cx + 21, cy - 2, cx + 14, cy - 27, PALETTE.woodDark, 1);
+  px(ctx, cx - 20, cy - 21, PALETTE.outline, 41, 2);
+  px(ctx, cx - 18, cy - 22, PALETTE.rustDark, 36, 1);
+  for (let i = 0; i < 8; i += 1) {
+    px(ctx, cx - 24 + Math.floor(rng() * 49), cy + 1 + Math.floor(rng() * 8), rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
+  }
+  drawRubbleCluster(ctx, cx + 26, cy + 8, seed + 101, 2);
 }
 
 export function drawRoadSignPost(ctx, cx, cy, seed) {
+  const rng = rngFrom(hash2D(seed + 263, seed * 11 + 7));
   const side = (seed & 1) ? 1 : -1;
   const topY = cy - 48;
   const midY = cy - 39;
@@ -966,12 +1438,21 @@ export function drawRoadSignPost(ctx, cx, cy, seed) {
   linePx(ctx, innerRoot, topY + 4, innerShoulder, topY + 4, PALETTE.woodLight, 1);
   linePx(ctx, innerRoot, midY + 2, innerShoulder, midY + 2, PALETTE.outline, 1);
   linePx(ctx, innerRoot, botY - 3, innerShoulder, botY - 3, PALETTE.woodDark, 1);
+  linePx(ctx, innerRoot + side * 3, topY + 11, innerShoulder - side * 5, botY - 4, PALETTE.outline, 1);
+  linePx(ctx, innerRoot + side * 4, topY + 11, innerShoulder - side * 6, botY - 5, PALETTE.rustDark, 1);
   for (const off of [10, 22]) {
     const x = cx + side * off;
     px(ctx, x - 1, midY - 1, PALETTE.outline, 3, 3);
     px(ctx, x, midY, PALETTE.rustLight, 1, 1);
   }
+  for (let i = 0; i < 4; i += 1) {
+    const sx = Math.min(rootX, tipX) + Math.floor(rng() * Math.abs(tipX - rootX));
+    const sy = topY + 3 + Math.floor(rng() * 17);
+    px(ctx, sx, sy, PALETTE.outline, 3, 1);
+    px(ctx, sx + side, sy - 1, rng() < 0.5 ? PALETTE.woodLight : PALETTE.woodDark, 1, 1);
+  }
   linePx(ctx, cx + side * 6, cy - 31, cx + side * 20, cy - 24, PALETTE.outline, 3);
   linePx(ctx, cx + side * 7, cy - 32, cx + side * 19, cy - 25, PALETTE.woodDark, 1);
+  drawRubbleCluster(ctx, cx - side * 10, cy + 5, seed + 269, 2);
   drawNoisePixels(ctx, Math.min(rootX, tipX), topY + 2, Math.abs(tipX - rootX), 16, [PALETTE.woodDark, PALETTE.stoneDark], 0.03, seed);
 }

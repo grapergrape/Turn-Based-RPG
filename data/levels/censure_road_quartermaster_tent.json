@@ -1,0 +1,104 @@
+{
+  "id": "censure-road-quartermaster-tent",
+  "name": "Quartermaster Tent",
+  "intro": "The tent smells of ration wax, damp rope, and counted beans.",
+  "width": 12,
+  "height": 10,
+  "tileSize": 64,
+  "quests": [
+    "investigate-ash-chapel-cult"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.12,
+    "ambient": "#0d0b09",
+    "ambientAlpha": 0.06,
+    "vignette": 1.05
+  },
+  "tiles": [
+    "############",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "#..........#",
+    "############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 6,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "quartermaster-tent-exit-transition",
+      "x": 6,
+      "y": 8,
+      "loadLevel": {
+        "path": "./data/levels/censure_road_camp.json",
+        "player": {
+          "x": 28,
+          "y": 30
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "kind": "canvas-tent-flap",
+      "x": 6,
+      "y": 9,
+      "id": "quartermaster-tent-exit-flap",
+      "name": "Tent Flap"
+    },
+    {
+      "kind": "settlement-table",
+      "x": 5,
+      "y": 3,
+      "blocking": true,
+      "id": "quartermaster-tent-issue-table",
+      "seed": 2611
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 8,
+      "y": 3,
+      "blocking": true,
+      "id": "quartermaster-tent-sealed-crate",
+      "seed": 2613
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 3,
+      "y": 5,
+      "blocking": true,
+      "id": "quartermaster-tent-ration-barrel",
+      "seed": 2617
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 6,
+      "y": 5,
+      "id": "quartermaster-tent-debt-tags",
+      "seed": 2621
+    }
+  ]
+}
