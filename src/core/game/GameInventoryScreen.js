@@ -4,6 +4,7 @@ import {
   inventoryActionAt,
   inventoryGearBox,
   inventoryGearAt,
+  inventoryRepairActionAt,
   inventorySlotAt,
   inventorySlotBox,
   inventorySplitActionAt,
@@ -15,6 +16,10 @@ class GameInventoryScreen {
   _handleInventoryScreen(actions, click = null) {
     this._syncInventoryOrder();
     this._clampInventorySelection();
+    if (this.inventoryRepair) {
+      this._handleInventoryRepair(actions, click);
+      return;
+    }
     if (this.inventorySplit) {
       this._handleInventorySplit(actions, click);
       return;
@@ -175,6 +180,10 @@ class GameInventoryScreen {
       this._clampInventorySelection();
       return;
     }
+    if (action === 'repair') {
+      this._openSelectedInventoryRepair();
+      return;
+    }
     if (action === 'drop') {
       this._dropSelectedInventoryItem();
       this._refreshPlayerAppearance();
@@ -193,7 +202,7 @@ class GameInventoryScreen {
       this.equipmentIndex = gearIndex;
       this.inventoryMoveIndex = null;
       this.inventoryActionMenu = slot?.itemId
-        ? { focus: 'gear', slot: slot.slot, itemId: slot.itemId, anchor: inventoryGearBox(gearIndex) }
+        ? { focus: 'gear', slot: slot.slot, itemId: slot.id ?? slot.itemId, anchor: inventoryGearBox(gearIndex) }
         : null;
       this._clampInventorySelection();
       return;
@@ -217,7 +226,7 @@ class GameInventoryScreen {
     if (!menu?.itemId) return null;
     if (menu.focus === 'gear') {
       const slotIndex = this.inventory.equipmentEntries().findIndex((entry) =>
-        entry.slot === menu.slot && entry.itemId === menu.itemId
+        entry.slot === menu.slot && (entry.id ?? entry.itemId) === menu.itemId
       );
       if (slotIndex < 0) {
         this.inventoryActionMenu = null;
@@ -232,7 +241,8 @@ class GameInventoryScreen {
         canEquip: false,
         canUse: false,
         canUnequip: true,
-        canSplit: this.inventory.count(menu.itemId) > 1
+        canRepair: this.inventory.canRepair?.(menu.itemId) ?? false,
+        canSplit: false
       };
     }
 
@@ -250,6 +260,7 @@ class GameInventoryScreen {
       canEquip: Boolean(item.equipmentSlot),
       canUse: Boolean(item.canUse),
       canUnequip: item.equippedCount > 0,
+      canRepair: Boolean(item.canRepair),
       canSplit: item.count > 1
     };
   }
@@ -321,6 +332,54 @@ class GameInventoryScreen {
     }
   }
 
+  _handleInventoryRepair(actions, click = null) {
+    const repair = this._currentInventoryRepair();
+    if (!repair) return;
+
+    if (click) {
+      const action = inventoryRepairActionAt(click, repair.donors.length);
+      if (action === 'cancel') {
+        this.inventoryRepair = null;
+        return;
+      }
+      if (action === 'confirm') {
+        this._confirmInventoryRepair();
+        return;
+      }
+      if (typeof action === 'string' && action.startsWith('donor:')) {
+        this.inventoryRepair.index = Math.max(0, Math.min(repair.donors.length - 1, Number(action.slice(6)) || 0));
+      }
+      return;
+    }
+
+    for (const action of actions) {
+      if (action === 'cancel' || action === 'inventory') {
+        this.inventoryRepair = null;
+        return;
+      }
+      if (action === 'restart') {
+        this.boot();
+        return;
+      }
+      if (action === 'debug') {
+        this.debugGrid = !this.debugGrid;
+        continue;
+      }
+      if (action === 'up') {
+        this._moveInventoryRepairSelection(-1);
+        continue;
+      }
+      if (action === 'down') {
+        this._moveInventoryRepairSelection(1);
+        continue;
+      }
+      if (this._isConfirmAction(action) || action === 'interact') {
+        this._confirmInventoryRepair();
+        return;
+      }
+    }
+  }
+
   _openSelectedInventorySplit() {
     if (this.inventoryFocus === 'gear') {
       const slot = this.inventory.equipmentEntries()[this.equipmentIndex];
@@ -387,6 +446,65 @@ class GameInventoryScreen {
     }
   }
 
+  _openSelectedInventoryRepair() {
+    const item = this.inventoryFocus === 'gear'
+      ? this.inventory.equipmentEntries()[this.equipmentIndex]
+      : this._selectedInventoryItem();
+    const key = item?.id ?? item?.entryKey ?? item?.itemId;
+    this._openInventoryRepair(key);
+  }
+
+  _openInventoryRepair(itemKey) {
+    const donors = this.inventory.repairCandidates?.(itemKey) ?? [];
+    if (!donors.length) {
+      this._log('No matching weapon for repair.');
+      return;
+    }
+    this.inventoryRepair = { targetKey: itemKey, index: 0 };
+    this.inventoryActionMenu = null;
+    this.inventoryMoveIndex = null;
+  }
+
+  _currentInventoryRepair() {
+    if (!this.inventoryRepair?.targetKey) {
+      this.inventoryRepair = null;
+      return null;
+    }
+    const target = this._entryForKey(this.inventoryRepair.targetKey);
+    const donors = this.inventory.repairCandidates?.(this.inventoryRepair.targetKey) ?? [];
+    if (!target || !donors.length) {
+      this.inventoryRepair = null;
+      return null;
+    }
+    const index = Math.max(0, Math.min(donors.length - 1, Math.floor(Number(this.inventoryRepair.index) || 0)));
+    this.inventoryRepair.index = index;
+    return { ...this.inventoryRepair, target, donors, index };
+  }
+
+  _moveInventoryRepairSelection(delta) {
+    const repair = this._currentInventoryRepair();
+    if (!repair) return;
+    this.inventoryRepair.index = Math.max(0, Math.min(repair.donors.length - 1, repair.index + delta));
+  }
+
+  _confirmInventoryRepair() {
+    const repair = this._currentInventoryRepair();
+    if (!repair) return;
+    const donor = repair.donors[repair.index];
+    const result = this.inventory.repairWeapon(
+      repair.targetKey,
+      donor.entryKey ?? donor.id,
+      this._fieldRating?.('engineering') ?? 0
+    );
+    this._log(result.message);
+    this._refreshPlayerAttacks?.();
+    this._syncInventoryOrder();
+    this._clampInventorySelection();
+    this.inventoryRepair = result.ok && this.inventory.canRepair?.(repair.targetKey)
+      ? { targetKey: repair.targetKey, index: 0 }
+      : null;
+  }
+
   _inventoryEntries() {
     const entries = this.inventory?.entries() ?? [];
     this._syncInventoryOrder(entries);
@@ -398,9 +516,15 @@ class GameInventoryScreen {
     return this._inventoryEntries()[this.inventoryIndex] ?? null;
   }
 
+  _entryForKey(key) {
+    return this._inventoryEntries().find((entry) => entry.id === key)
+      ?? this.inventory.equipmentEntries().find((entry) => (entry.id ?? entry.itemId) === key)
+      ?? null;
+  }
+
   _inventoryFingerprint() {
     return (this.inventory?.entries() ?? [])
-      .map((entry) => `${entry.id}:${entry.count}`)
+      .map((entry) => `${entry.id}:${entry.count}:${entry.condition ?? ''}`)
       .sort()
       .join('|');
   }
@@ -426,6 +550,7 @@ class GameInventoryScreen {
       currency: 0,
       consumable: 1,
       ammo: 2,
+      weapon: 2,
       tool: 3,
       key: 3,
       quest: 4,
@@ -491,6 +616,7 @@ class GameInventoryScreen {
     }
     const result = this.inventory.equip(item.id);
     this._log(result.message);
+    this._refreshPlayerAttacks?.();
   }
 
   _useSelectedInventoryItem() {
@@ -510,18 +636,20 @@ class GameInventoryScreen {
       this._log('Pack is empty.');
       return;
     }
-    const slot = this.inventory.equipmentEntries().find((entry) => entry.itemId === item.id);
+    const slot = this.inventory.equipmentEntries().find((entry) => (entry.id ?? entry.itemId) === item.id);
     if (!slot) {
-      this._log('That item is not worn.');
+      this._log('That item is not equipped.');
       return;
     }
     this._log(this.inventory.unequip(slot.slot).message);
+    this._refreshPlayerAttacks?.();
   }
 
   _unequipSelectedGear() {
     const slot = this.inventory.equipmentEntries()[this.equipmentIndex];
     if (!slot) return;
     this._log(this.inventory.unequip(slot.slot).message);
+    this._refreshPlayerAttacks?.();
   }
 
   _dropSelectedInventoryItem() {
@@ -531,7 +659,7 @@ class GameInventoryScreen {
         this._log(slot?.empty ? `${slot.label} is empty.` : 'No gear selected.');
         return;
       }
-      this._dropItemFromInventory(slot.itemId, { slot: slot.slot });
+      this._dropItemFromInventory(slot.id ?? slot.itemId, { slot: slot.slot });
       return;
     }
 
@@ -543,11 +671,13 @@ class GameInventoryScreen {
     this._dropItemFromInventory(item.id);
   }
 
-  _dropItemFromInventory(itemId, options = {}) {
+  _dropItemFromInventory(itemKey, options = {}) {
+    const itemId = this.inventory.itemIdFor?.(itemKey) ?? itemKey;
     const itemDef = this.inventory.itemDefs[itemId] ?? {};
-    const name = this.inventory.displayName(itemId);
+    const name = this.inventory.displayName(itemKey);
     const amount = options.slot ? 1 : Math.max(1, Math.floor(Number(options.count) || 1));
-    const count = Math.min(amount, this.inventory.count(itemId));
+    const condition = this.inventory.conditionState?.(itemKey)?.condition ?? null;
+    const count = Math.min(amount, this.inventory.count(itemKey));
     if (options.slot) {
       const result = this.inventory.unequip(options.slot);
       if (!result.ok) {
@@ -555,7 +685,7 @@ class GameInventoryScreen {
         return false;
       }
     }
-    if (count <= 0 || !this.inventory.remove(itemId, count)) {
+    if (count <= 0 || !this.inventory.remove(itemKey, count)) {
       this._log(`${name} is not in the pack.`);
       return false;
     }
@@ -566,19 +696,21 @@ class GameInventoryScreen {
       itemId,
       itemDef,
       count,
+      condition,
       x: this.player.x,
       y: this.player.y,
       tick: this.anim.tick,
       source: 'player'
     });
     if (!groundItem) {
-      this.inventory.add(itemId, count, { ignoreCapacity: true });
+      this.inventory.add(itemId, count, { ignoreCapacity: true, condition });
       this._log(`Could not drop ${name}.`);
       return false;
     }
 
     this.groundItems.push(groundItem);
     this._syncInventoryOrder();
+    this._refreshPlayerAttacks?.();
     this._log(count === 1 ? `Dropped: ${name}.` : `Dropped: ${count}x ${name}.`);
     return true;
   }

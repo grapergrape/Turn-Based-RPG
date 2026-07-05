@@ -40,7 +40,8 @@ export class Entity {
     this.position = { ...position };
     this.spriteId = spriteId ?? id;
     this.appearance = appearance ? JSON.parse(JSON.stringify(appearance)) : null;
-    this.attacks = attacks.map((attack) => ({ ...attack }));
+    this.baseAttacks = attacks.map((attack) => ({ ...attack }));
+    this.attacks = this.baseAttacks.map((attack) => ({ ...attack }));
     this.baseStats = { ...stats };
     this.progression = progression ? JSON.parse(JSON.stringify(progression)) : null;
 

@@ -679,10 +679,36 @@ Rules:
 - `groundModel` is required so the item has drop and pickup art. Current models
   are `ball`, `boots`, `coat`, `hood`, `vest`, `ring`, `necklace`, `key`,
   `token`, `chit`, `paper`, `vial`, `dressing`, `rounds`, `shard`, `food`, and
-  `ribguard`.
+  `ribguard`, and `sidearm`.
 - Equippable items define `equipment.slot`. Valid item slots are `clothes`,
-  `armor`, `boots`, `helmet`, `trinket`, and `ring`.
+  `armor`, `boots`, `helmet`, `sidearm`, `melee`, `trinket`, and `ring`.
 - Ring items can be worn in either actor slot, `ring1` or `ring2`.
+- Weapon items use `type: "weapon"`, `equipment.slot` set to `sidearm` or
+  `melee`, a `weapon.weaponClass`, a `weapon.attack` block, and a `condition`
+  block. Example:
+
+```json
+{
+  "id": "censure-sidearm",
+  "name": "Censure Sidearm",
+  "type": "weapon",
+  "rarity": "common",
+  "weight": 1.1,
+  "groundModel": "sidearm",
+  "equipment": { "slot": "sidearm" },
+  "weapon": {
+    "weaponClass": "pistol",
+    "attack": { "id": "sidearm", "name": "Sidearm", "apCost": 4, "damage": 5, "range": 5 }
+  },
+  "condition": { "max": 100, "default": 92 },
+  "description": "A short player-facing item description."
+}
+```
+
+- Condition-bearing weapons are individual pack entries, not stacks. A weapon can
+  repair another weapon with the same `weapon.weaponClass`. An exact item id
+  match repairs more condition. Repair uses the player's `engineering` field
+  rating.
 - `type: "currency"` items such as `ducat` are ordinary stackable inventory
   items with `weight: 0`. Traders should price goods in ducats.
 - Loot in level objects, corpse objects, enemy files, and enemy spawns
@@ -805,8 +831,8 @@ Rules:
   `not-assessed` until the story has earned a stronger reveal.
 - `inventory` is optional. Player actors can define a starting pack with
   `maxCarryWeight`, item stacks, and equipped item ids.
-- Actor equipment slots are `clothes`, `armor`, `boots`, `helmet`, `trinket`,
-  `ring1`, and `ring2`.
+- Actor equipment slots are `clothes`, `armor`, `boots`, `helmet`, `sidearm`,
+  `melee`, `trinket`, `ring1`, and `ring2`.
 - Avoid putting long dialogue or lore paragraphs inside actor stat files. Use dialogue/lore files later.
 - Character customization opens after the opening briefing. The level 1 primary
   assignment gate opens after the chapel bell and Act I briefing.

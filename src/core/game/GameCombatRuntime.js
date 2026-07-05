@@ -124,6 +124,7 @@ class GameCombatRuntime {
   }
 
   _contextActionsForTarget(target) {
+    this._refreshPlayerAttacks();
     return buildContextActionsForTarget({
       player: this.player,
       target,
@@ -138,6 +139,7 @@ class GameCombatRuntime {
 
   _attackActionState(attack, target, extraAp = 0) {
     if (!attack) return { enabled: false, reason: 'No attack' };
+    if (attack.broken) return { enabled: false, reason: 'Needs repair' };
     if (!target || target.isDead) return { enabled: false, reason: 'No target' };
     if (chebyshev(this.player.position, target.position) > attack.range) {
       return { enabled: false, reason: 'Out of range' };
@@ -183,6 +185,7 @@ class GameCombatRuntime {
       this._log('Technique is not ready yet.');
       return;
     }
+    this._refreshPlayerAttacks();
     const attack = this.player.getAttack(action.attackId);
     const target = action.target;
     const state = this._attackActionState(attack, target, action.extraAp ?? 0);
@@ -200,6 +203,7 @@ class GameCombatRuntime {
       damageMultiplier: action.damageMultiplier ?? 1,
       spendAp: false
     });
+    this._degradeWeaponAttack(attack);
     for (const line of result.logs) this._log(line);
     this._pushEffect(result.effect);
     this._checkOutcome();
@@ -211,6 +215,7 @@ class GameCombatRuntime {
   }
 
   _selectAttack(id) {
+    this._refreshPlayerAttacks();
     const attack = this.player.getAttack(id);
     if (!attack) return;
     this.selectedAttackId = id;
@@ -234,9 +239,14 @@ class GameCombatRuntime {
   }
 
   _playerAttack(options = {}) {
+    this._refreshPlayerAttacks();
     const attack = this.player.getAttack(this.selectedAttackId);
     const target = this._currentTarget();
     if (!attack || !target) return;
+    if (attack.broken) {
+      this._log(`${attack.name} needs repair.`);
+      return;
+    }
     if (!options.ignoreApCost && this.player.ap < attack.apCost) {
       this._log('Not enough AP for that attack.');
       return;
@@ -254,6 +264,7 @@ class GameCombatRuntime {
     } : {
       spendAp: options.spendAp
     });
+    this._degradeWeaponAttack(attack);
     for (const line of result.logs) this._log(line);
     this._pushEffect(result.effect);
     this._checkOutcome();
@@ -393,6 +404,7 @@ class GameCombatRuntime {
 
   _startCombat(encounterId = null, { fromAltar = false, initialTarget = null, selectedAttackId = null } = {}) {
     if (this.mode === 'combat') return;
+    this._refreshPlayerAttacks();
     const resolvedEncounter = this._resolveEncounterId(encounterId);
     const combatants = this._livingEnemiesForEncounter(resolvedEncounter);
     if (combatants.length === 0) return;
@@ -421,6 +433,24 @@ class GameCombatRuntime {
       ? this._encounterIntro(resolvedEncounter)
       : combatants.map((enemy) => `${enemy.name} advances.`);
     for (const line of introLines) this._log(line);
+  }
+
+  _refreshPlayerAttacks() {
+    if (!this.player) return;
+    const baseAttacks = this.player.baseAttacks ?? this.player.attacks ?? [];
+    if (typeof this.inventory?.weaponAttacks === 'function') {
+      this.player.attacks = this.inventory.weaponAttacks(baseAttacks);
+    } else {
+      this.player.attacks = baseAttacks.map((attack) => ({ ...attack }));
+    }
+    if (this.selectedAttackId && this.player.getAttack(this.selectedAttackId)) return;
+    this.selectedAttackId = this.player.attacks[0]?.id ?? null;
+  }
+
+  _degradeWeaponAttack(attack) {
+    if (!this.inventory?.degradeWeaponAttack?.(attack, 1)) return;
+    this._refreshPlayerAttacks();
+    this._syncInventoryOrder?.();
   }
 
   _speakCombatStartBark(combatants, encounterId) {

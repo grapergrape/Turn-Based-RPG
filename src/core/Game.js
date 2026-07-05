@@ -203,6 +203,7 @@ export class Game {
     }
 
     const previousInventory = bootOptions.preserveRun ? this.inventory : null;
+    const previousInventoryState = previousInventory?.stateSnapshot?.() ?? null;
     const previousInventoryOrder = bootOptions.preserveRun && Array.isArray(this.inventoryOrder)
       ? [...this.inventoryOrder]
       : [];
@@ -266,15 +267,13 @@ export class Game {
       { ...(previousInventory?.itemDefs ?? {}), ...level.itemDefs },
       { maxCarryWeight: previousInventory?.maxCarryWeight ?? level.playerLoadout?.maxCarryWeight }
     );
-    if (previousInventory) {
-      for (const [itemId, count] of previousInventory.counts) {
-        this.inventory.add(itemId, count, { ignoreCapacity: true });
-      }
-      this.inventory.loadEquipment(previousInventory.equipmentSnapshot());
+    if (previousInventoryState) {
+      this.inventory.loadState(previousInventoryState);
     } else {
       this._loadStartingInventory(level.playerLoadout);
     }
     this._syncInventoryOrder();
+    this._refreshPlayerAttacks?.();
     // Bake the player sprite to match the loaded equipment so the world figure
     // and inventory paper doll reflect the customized actor.
     this._renderLoading(0.78, 'Baking player model');
@@ -334,6 +333,7 @@ export class Game {
     this.inventoryActionMenu = null;
     this.contextActionMenu = null;
     this.inventorySplit = null;
+    this.inventoryRepair = null;
     this.loot = null;
     this.lootIndex = 0;
     this.pendingLootAfterDialogue = null;
@@ -767,6 +767,7 @@ export class Game {
   }
 
   _attackPreCombatTarget() {
+    this._refreshPlayerAttacks?.();
     const target = this._currentPreCombatTarget();
     if (!target) return;
     const attack = this.player.getAttack(this.selectedAttackId) ?? this.player.attacks[0] ?? null;
@@ -806,7 +807,7 @@ export class Game {
   }
 
   _interactionTargetAtCell(cell, mode = this.mode) {
-    return resolveInteractionTargetAtCell({
+    const target = resolveInteractionTargetAtCell({
       cell,
       grid: this.grid,
       player: this.player,
@@ -816,6 +817,22 @@ export class Game {
       hiddenTiles: this.hiddenTiles,
       mode
     });
+    if (mode !== 'explore' || target.type !== 'blocked') return target;
+
+    const transition = this._levelTransitionAtCell?.(cell, { includeClickAreas: true });
+    if (!transition) return target;
+    if (this._isCellHidden?.(cell.x, cell.y)) return target;
+
+    const transitionCell = { x: transition.x, y: transition.y };
+    if (
+      !this.grid?.isInside?.(transitionCell.x, transitionCell.y) ||
+      !this.grid.isWalkable(transitionCell.x, transitionCell.y) ||
+      this._isCellHidden?.(transitionCell.x, transitionCell.y) ||
+      this._isOccupied?.(transitionCell.x, transitionCell.y, this.player)
+    ) {
+      return target;
+    }
+    return { type: 'move', cell: transitionCell, sourceCell: cell, transition };
   }
 
   _allInteractables() {
@@ -989,7 +1006,7 @@ export class Game {
       return;
     }
 
-    const result = this.inventory.add(item.itemId, count);
+    const result = this.inventory.add(item.itemId, count, { condition: item.condition });
     if (!result.ok) {
       this._log('Could not pick that up.');
       return;
@@ -1000,6 +1017,7 @@ export class Game {
     const label = `${count}x ${item.name ?? this.inventory.displayName(item.itemId)}`;
     this._log(`Picked up: ${label}.`);
     this._syncInventoryOrder();
+    this._refreshPlayerAttacks?.();
     this._clampInventorySelection();
   }
 

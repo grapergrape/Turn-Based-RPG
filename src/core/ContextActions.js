@@ -118,6 +118,7 @@ function aimedShotAction(player, technique, target) {
 
 function attackState(player, attack, target, extraAp = 0) {
   if (!attack) return { enabled: false, reason: 'No attack' };
+  if (attack.broken) return { enabled: false, reason: 'Needs repair' };
   if (!target || target.isDead) return { enabled: false, reason: 'No target' };
   if (chebyshev(player.position, target.position) > attack.range) return { enabled: false, reason: 'Out of range' };
   const cost = attack.apCost + extraAp;

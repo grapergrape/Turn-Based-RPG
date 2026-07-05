@@ -78,6 +78,7 @@ export class LootSession {
     this.state.pendingLootAfterDialogue = null;
     this.state.inventoryActionMenu = null;
     this.state.inventorySplit = null;
+    this.state.inventoryRepair = null;
     this.state.loot = {
       title: title ?? 'Loot',
       sourceType,

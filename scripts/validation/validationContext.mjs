@@ -38,12 +38,12 @@ export const root = process.cwd();
 export const dataRoot = join(root, 'data');
 export const errors = [];
 
-export const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring']);
+export const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'sidearm', 'melee', 'trinket', 'ring']);
 export { ITEM_RARITY_IDS };
 export const ITEM_GROUND_MODELS = new Set([
   'ball', 'boots', 'coat', 'hood', 'vest', 'ring', 'necklace', 'key',
   'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard', 'food',
-  'ribguard'
+  'ribguard', 'sidearm'
 ]);
 export const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
 export const DOOR_LEAVES = new Set(['north', 'south']);
@@ -55,7 +55,7 @@ export const FLOOR_STYLE_ID_SET = new Set(FLOOR_STYLE_IDS);
 export const PERCEPTION_FACING_IDS = new Set(PERCEPTION_FACINGS);
 export const PATROL_MODE_IDS = new Set(PATROL_MODES);
 export const SUSPICION_SEVERITY_IDS = new Set(Object.values(SUSPICION_SEVERITY));
-export const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'trinket', 'ring1', 'ring2']);
+export const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'sidearm', 'melee', 'trinket', 'ring1', 'ring2']);
 export const ACTOR_BODY_FRAMES = new Set(['feminine', 'masculine', 'androgynous']);
 export const ACTOR_ANATOMY = new Set(['vulva', 'penis', 'smooth', 'intersex']);
 export const ACTOR_SPRITE_IDS = new Set(SPRITE_ATLAS_IDS);

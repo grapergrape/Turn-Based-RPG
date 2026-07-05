@@ -41,8 +41,63 @@ export function validateItem(filePath, data) {
       errors.push(`${name}: equipment.slot must be one of ${[...ITEM_EQUIPMENT_SLOTS].join(', ')}.`);
     }
   }
+  if (data.condition !== undefined) validateCondition(name, data.condition);
+  if (data.type === 'weapon') validateWeapon(name, data);
   if (typeof data.id === 'string') seenItemIds.add(data.id);
 }
+
+function validateCondition(name, condition) {
+  if (!condition || typeof condition !== 'object' || Array.isArray(condition)) {
+    errors.push(`${name}: condition must be an object.`);
+    return;
+  }
+  requireNumber(name, condition.max, 'condition.max');
+  requireNumber(name, condition.default, 'condition.default');
+  if (typeof condition.max === 'number' && (!Number.isInteger(condition.max) || condition.max <= 0)) {
+    errors.push(`${name}: condition.max must be a positive integer.`);
+  }
+  if (typeof condition.default === 'number' && (!Number.isInteger(condition.default) || condition.default < 0)) {
+    errors.push(`${name}: condition.default must be a zero or greater integer.`);
+  }
+  if (
+    typeof condition.max === 'number' &&
+    typeof condition.default === 'number' &&
+    condition.default > condition.max
+  ) {
+    errors.push(`${name}: condition.default must be less than or equal to condition.max.`);
+  }
+}
+
+function validateWeapon(name, data) {
+  if (!data.equipment || !['sidearm', 'melee'].includes(data.equipment.slot)) {
+    errors.push(`${name}: weapon equipment.slot must be sidearm or melee.`);
+  }
+  if (!data.condition) {
+    errors.push(`${name}: weapon items must define condition.`);
+  }
+  const weapon = data.weapon;
+  if (!weapon || typeof weapon !== 'object' || Array.isArray(weapon)) {
+    errors.push(`${name}: weapon must be an object.`);
+    return;
+  }
+  requireString(name, weapon.weaponClass, 'weapon.weaponClass');
+  if (!weapon.attack || typeof weapon.attack !== 'object' || Array.isArray(weapon.attack)) {
+    errors.push(`${name}: weapon.attack must be an object.`);
+    return;
+  }
+  requireString(name, weapon.attack.id, 'weapon.attack.id');
+  requireString(name, weapon.attack.name, 'weapon.attack.name');
+  requireNumber(name, weapon.attack.apCost, 'weapon.attack.apCost');
+  requireNumber(name, weapon.attack.damage, 'weapon.attack.damage');
+  requireNumber(name, weapon.attack.range, 'weapon.attack.range');
+  for (const field of ['apCost', 'damage', 'range']) {
+    const value = weapon.attack[field];
+    if (typeof value === 'number' && (!Number.isInteger(value) || value < 0)) {
+      errors.push(`${name}: weapon.attack.${field} must be a zero or greater integer.`);
+    }
+  }
+}
+
 export function validateLoot(name, loot, fieldName = 'loot') {
   if (loot === undefined) return;
   if (!Array.isArray(loot)) {

@@ -1,0 +1,15 @@
+{
+  "id": "censure-sidearm",
+  "name": "Censure Sidearm",
+  "type": "weapon",
+  "rarity": "common",
+  "weight": 1.1,
+  "groundModel": "sidearm",
+  "equipment": { "slot": "sidearm" },
+  "weapon": {
+    "weaponClass": "pistol",
+    "attack": { "id": "sidearm", "name": "Sidearm", "apCost": 4, "damage": 5, "range": 5 }
+  },
+  "condition": { "max": 100, "default": 92 },
+  "description": "A black service pistol with a worn shrine stamp on the slide. Reliable if kept clean. Unforgiving if neglected."
+}

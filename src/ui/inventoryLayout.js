@@ -36,6 +36,14 @@ export const INVENTORY_SPLIT_BOX = Object.freeze({
   cancel: Object.freeze({ x: 340, y: 214, w: 78, h: 16 })
 });
 
+export const INVENTORY_REPAIR_BOX = Object.freeze({
+  box: Object.freeze({ x: 174, y: 98, w: 292, h: 178 }),
+  list: Object.freeze({ x: 190, y: 160, w: 260, h: 72 }),
+  rowH: 18,
+  confirm: Object.freeze({ x: 204, y: 242, w: 86, h: 16 }),
+  cancel: Object.freeze({ x: 350, y: 242, w: 86, h: 16 })
+});
+
 export function inventoryCapacity() {
   return INVENTORY_GRID.cols * INVENTORY_GRID.rows;
 }
@@ -64,9 +72,9 @@ export function inventoryGearBox(index) {
   if (!Number.isInteger(index) || index < 0) return null;
   return {
     x: INVENTORY_PANELS.gear.x + 5,
-    y: INVENTORY_PANELS.gear.y + 24 + index * 22 - 2,
+    y: INVENTORY_PANELS.gear.y + 23 + index * 18 - 2,
     w: INVENTORY_PANELS.gear.w - 10,
-    h: 19
+    h: 16
   };
 }
 
@@ -82,6 +90,7 @@ export function inventoryActionMenuActions(menu = null) {
   const actions = [];
   if (menu?.canUse) actions.push('use');
   if (!menu || menu.canEquip || menu.canUnequip) actions.push('equip');
+  if (menu?.canRepair) actions.push('repair');
   actions.push('drop');
   if (!menu || menu.canSplit !== false) actions.push('split');
   return actions;
@@ -144,6 +153,27 @@ export function inventorySplitAmountAt(point, maxAmount) {
   const max = Math.max(1, Math.floor(Number(maxAmount) || 1));
   const ratio = Math.max(0, Math.min(1, (point.x - INVENTORY_SPLIT_BOX.slider.x) / INVENTORY_SPLIT_BOX.slider.w));
   return Math.max(1, Math.min(max, Math.round(1 + ratio * (max - 1))));
+}
+
+export function inventoryRepairDonorBox(index) {
+  if (!Number.isInteger(index) || index < 0 || index >= 4) return null;
+  return {
+    x: INVENTORY_REPAIR_BOX.list.x,
+    y: INVENTORY_REPAIR_BOX.list.y + index * INVENTORY_REPAIR_BOX.rowH,
+    w: INVENTORY_REPAIR_BOX.list.w,
+    h: INVENTORY_REPAIR_BOX.rowH - 2
+  };
+}
+
+export function inventoryRepairActionAt(point, donorCount = 0) {
+  if (!point || !pointInBox(point, INVENTORY_REPAIR_BOX.box)) return null;
+  if (pointInBox(point, INVENTORY_REPAIR_BOX.confirm)) return 'confirm';
+  if (pointInBox(point, INVENTORY_REPAIR_BOX.cancel)) return 'cancel';
+  const maxRows = Math.min(4, Math.max(0, donorCount));
+  for (let index = 0; index < maxRows; index += 1) {
+    if (pointInBox(point, inventoryRepairDonorBox(index))) return `donor:${index}`;
+  }
+  return 'body';
 }
 
 function pointInBox(point, box) {

@@ -263,6 +263,7 @@ class GameDialogueRuntime {
     this.pendingLootAfterDialogue = null;
     this.inventoryActionMenu = null;
     this.inventorySplit = null;
+    this.inventoryRepair = null;
     this.contextActionMenu = null;
     this.loot = null;
     this.lootIndex = 0;

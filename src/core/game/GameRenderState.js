@@ -250,6 +250,7 @@ class GameRenderState {
   }
 
   _buildUi() {
+    this._refreshPlayerAttacks?.();
     const target = this._currentTarget();
     const attack = this.player.getAttack(this.selectedAttackId);
     const modeLabel = this.mode === 'explore'
@@ -269,7 +270,9 @@ class GameRenderState {
       else if (journalSection === 'MAP') controls = ['Click Walk', 'A/D Turn Page', 'M/J/Esc Close'];
       else controls = ['A/D Turn Page', 'M Map', 'J/Esc Close'];
     } else if (this.uiScreen === 'inventory') {
-      controls = this.inventorySplit
+      controls = this.inventoryRepair
+        ? ['Up/Dn Donor', 'Enter Repair', 'Esc Back']
+        : this.inventorySplit
         ? ['Left/Right Count', 'Enter Drop', 'Esc Back']
         : ['Click Select', 'Right Menu', 'Shift Sort', 'Ctrl Split', 'Esc Close'];
     } else if (this.uiScreen === 'loot') {
@@ -314,6 +317,7 @@ class GameRenderState {
       inventoryMoveIndex: this.inventoryMoveIndex,
       inventoryActionMenu: this._currentInventoryActionMenu(),
       inventorySplit: this._currentInventorySplit(),
+      inventoryRepair: this._currentInventoryRepair?.(),
       ducats: this.inventory.count('ducat'),
       figureSpriteId: this.player.spriteId,
       equipmentSlots: this.inventory.equipmentEntries(),

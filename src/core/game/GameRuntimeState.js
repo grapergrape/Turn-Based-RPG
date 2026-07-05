@@ -253,7 +253,7 @@ class GameRuntimeState {
 
   _loadStartingInventory(loadout) {
     for (const entry of loadout?.items ?? []) {
-      this.inventory.add(entry.item, entry.count ?? 1, { ignoreCapacity: true });
+      this.inventory.add(entry.item, entry.count ?? 1, { ignoreCapacity: true, condition: entry.condition });
     }
     this.inventory.loadEquipment(loadout?.equipment ?? {});
   }
@@ -389,7 +389,7 @@ class GameRuntimeState {
 
   _techniqueContext() {
     return {
-      itemIds: new Set(this.inventory?.counts?.keys?.() ?? []),
+      itemIds: new Set((this.inventory?.entries?.() ?? []).map((entry) => entry.itemId ?? entry.id)),
       equipment: this.inventory?.equipmentSnapshot?.() ?? {}
     };
   }

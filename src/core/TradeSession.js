@@ -16,6 +16,7 @@ export class TradeSession {
     this.state.pendingLootAfterDialogue = null;
     this.state.inventoryActionMenu = null;
     this.state.inventorySplit = null;
+    this.state.inventoryRepair = null;
     this.state.loot = null;
     this.state.trade = { trader };
     this.state.tradeFocus = 'trader';

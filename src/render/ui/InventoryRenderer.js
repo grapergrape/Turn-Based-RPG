@@ -5,12 +5,14 @@ import {
   INVENTORY_ACTION_BOXES,
   INVENTORY_BOX,
   INVENTORY_PANELS,
+  INVENTORY_REPAIR_BOX,
   INVENTORY_SPLIT_BOX,
   inventoryActionBox,
   inventoryActionMenuActions,
   inventoryActionMenuBox,
   inventoryCapacity,
   inventoryGearBox,
+  inventoryRepairDonorBox,
   inventorySlotBox
 } from '../../ui/inventoryLayout.js';
 
@@ -65,8 +67,8 @@ export function drawInventory(ctx, ui, tools) {
     if (selected) tools.rect(ctx, slotBox.x, slotBox.y, slotBox.w, slotBox.h, PALETTE.uiDark);
     const color = selected ? PALETTE.uiText : PALETTE.uiDim;
     const itemColor = slot.empty ? PALETTE.uiBorderDark : itemRarityColor(slot);
-    tools.text(ctx, `${selected ? '>' : ' '} ${tools.clip(slot.label, 8)}`, slotBox.x + 3, slotBox.y + 3, color);
-    tools.text(ctx, tools.clip(slot.name, 16), slotBox.x + 12, slotBox.y + 12, itemColor);
+    tools.text(ctx, `${selected ? '>' : ' '} ${tools.clip(slot.label, 8)}`, slotBox.x + 3, slotBox.y + 2, color);
+    tools.text(ctx, tools.clip(slot.name, 16), slotBox.x + 12, slotBox.y + 9, itemColor);
   }
 
   const slotSelection = slots[slotIndex] ?? null;
@@ -80,6 +82,7 @@ export function drawInventory(ctx, ui, tools) {
   drawInventoryActionButton(ctx, INVENTORY_ACTION_BOXES.sort, 'SORT', {}, tools);
   if (ui.inventoryActionMenu) drawInventoryActionMenu(ctx, ui.inventoryActionMenu, tools);
   if (ui.inventorySplit) drawInventorySplit(ctx, ui.inventorySplit, tools);
+  if (ui.inventoryRepair) drawInventoryRepair(ctx, ui.inventoryRepair, tools);
 }
 
 export function drawInventorySlot(ctx, box, item, state = {}, tools) {
@@ -144,6 +147,16 @@ function drawItemIcon(ctx, item, box, tools) {
       tools.rect(ctx, x + 1, cy - 9, 2, 2, PALETTE.uiWarn);
       tools.rect(ctx, x + 1, cy - 6, 2, 9, PALETTE.uiBorderLight);
     }
+  } else if (model === 'sidearm') {
+    tools.rect(ctx, cx - 12, cy - 7, 23, 7, PALETTE.outline);
+    tools.rect(ctx, cx - 10, cy - 6, 19, 4, PALETTE.uiBorderLight);
+    tools.rect(ctx, cx + 6, cy - 4, 7, 3, PALETTE.outline);
+    tools.rect(ctx, cx + 7, cy - 3, 5, 1, PALETTE.uiBorderLight);
+    tools.rect(ctx, cx - 5, cy - 2, 8, 12, PALETTE.outline);
+    tools.rect(ctx, cx - 3, cy - 1, 5, 9, PALETTE.rustDark);
+    tools.rect(ctx, cx - 7, cy, 7, 4, PALETTE.outline);
+    tools.rect(ctx, cx - 6, cy + 1, 4, 2, PALETTE.uiDark);
+    tools.rect(ctx, cx - 8, cy - 8, 8, 1, PALETTE.hostBone);
   } else if (model === 'key') {
     tools.rect(ctx, cx - 10, cy - 2, 17, 3, PALETTE.uiBorderLight);
     tools.rect(ctx, cx + 4, cy + 1, 3, 5, PALETTE.uiBorderLight);
@@ -280,6 +293,40 @@ function drawInventorySplit(ctx, split, tools) {
   tools.text(ctx, 'LEFT RIGHT COUNT  ENTER DROP  ESC BACK', modal.x + 15, modal.y + modal.h - 15, PALETTE.uiDim);
 }
 
+function drawInventoryRepair(ctx, repair, tools) {
+  const modal = INVENTORY_REPAIR_BOX.box;
+  tools.rect(ctx, modal.x - 4, modal.y - 4, modal.w + 8, modal.h + 8, 'rgba(5, 5, 5, 0.62)');
+  tools.window(ctx, modal, 'REPAIR WEAPON');
+  const target = repair.target ?? {};
+  tools.text(ctx, tools.clip(target.name ?? 'WEAPON', 36), modal.x + 12, modal.y + 27, PALETTE.uiBorderLight);
+  const condition = target.conditionMax
+    ? `COND ${target.condition}/${target.conditionMax}`
+    : 'COND UNKNOWN';
+  tools.text(ctx, condition, modal.x + 12, modal.y + 40, PALETTE.uiText);
+  tools.text(ctx, 'DONOR', modal.x + 12, modal.y + 55, PALETTE.uiDim);
+
+  const donors = repair.donors ?? [];
+  const selectedIndex = Math.max(0, Math.min(donors.length - 1, repair.index ?? 0));
+  if (!donors.length) {
+    tools.text(ctx, 'NO MATCHING WEAPON', INVENTORY_REPAIR_BOX.list.x, INVENTORY_REPAIR_BOX.list.y + 4, PALETTE.uiBad);
+  }
+  for (let i = 0; i < Math.min(4, donors.length); i += 1) {
+    const donor = donors[i];
+    const box = inventoryRepairDonorBox(i);
+    if (!box) continue;
+    const selected = i === selectedIndex;
+    tools.rect(ctx, box.x, box.y, box.w, box.h, selected ? PALETTE.uiDark : PALETTE.uiPanel);
+    tools.rect(ctx, box.x, box.y, box.w, 1, selected ? PALETTE.uiBorderLight : PALETTE.uiBorderDark);
+    const exact = donor.exactMatch ? ' SAME' : '';
+    const line = `${selected ? '>' : ' '} ${donor.name} ${donor.condition}/${donor.conditionMax}${exact}`;
+    tools.text(ctx, tools.clip(line, 40), box.x + 5, box.y + 4, donor.exactMatch ? PALETTE.uiGood : PALETTE.uiText);
+  }
+
+  drawInventoryActionButton(ctx, INVENTORY_REPAIR_BOX.confirm, 'REPAIR', { disabled: !donors.length }, tools);
+  drawInventoryActionButton(ctx, INVENTORY_REPAIR_BOX.cancel, 'BACK', {}, tools);
+  tools.text(ctx, 'UP DOWN DONOR  ENTER REPAIR  ESC BACK', modal.x + 19, modal.y + modal.h - 15, PALETTE.uiDim);
+}
+
 function drawInventoryDetail(ctx, box, item, slot, tools) {
   if (!item) {
     const label = slot ? `${slot.label}: Empty` : 'NO ITEM SELECTED';
@@ -296,6 +343,7 @@ function drawInventoryDetail(ctx, box, item, slot, tools) {
     `WT ${tools.formatWeight(item.weight ?? item.totalWeight ?? 0)} KG`
   ];
   if (item.equipmentSlot) parts.push(item.equipmentSlot === 'ring' ? 'GEAR RING' : `GEAR ${item.equipmentSlot}`);
+  if (item.conditionMax) parts.push(`COND ${item.condition}/${item.conditionMax}`);
   if (item.buildLabel) parts.push(`BUILD ${item.buildLabel}`);
   if (Array.isArray(item.wornSlots) && item.wornSlots.length > 0) parts.push(`WORN ${item.wornSlots.join(', ')}`);
   tools.text(ctx, tools.clip(parts.join('  '), textCols), box.x + 8, box.y + 20, PALETTE.uiGood);
