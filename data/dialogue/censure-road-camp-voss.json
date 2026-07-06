@@ -9,12 +9,23 @@
       ],
       "choices": [
         {
+          "label": "Fill the Hallowfen route report",
+          "next": "report-briefing"
+        },
+        {
           "label": "Ask about cult-breaker training",
           "next": "training"
         },
         {
           "label": "Ask how supplies move",
           "next": "supplies"
+        },
+        {
+          "label": "Ask about the filed report",
+          "conditions": {
+            "flag": "censure-road-voss-report-perfect"
+          },
+          "next": "report-filed"
         },
         {
           "label": "Leave Voss to the slates",
@@ -42,6 +53,1072 @@
       "choices": [
         {
           "label": "Leave Voss to the ledgers",
+          "close": true
+        }
+      ]
+    },
+    "report-filed": {
+      "lines": [
+        "\"Your report survived the red pencil. That does not make you holy, but it does make you rare.\"",
+        "\"Maev has your issue bundle. If she argues, tell her I can count her beans louder than she can sell them.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Voss to the filed slates",
+          "close": true
+        }
+      ]
+    },
+    "report-briefing": {
+      "lines": [
+        "Voss pulls a damp packet from beneath her boot and clips it to a field board.",
+        "\"Hallowfen route report, Form C-17. Thirty questions. One answer each. Circle answer one down the rest if you want the paper to know you surrendered.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the field board",
+          "next": "report-q01"
+        },
+        {
+          "label": "Leave the report for now",
+          "close": true
+        }
+      ]
+    },
+    "report-q01": {
+      "lines": [
+        "FORM C-17, QUESTION 1 OF 30. What name did the chapel ledger give the cult?"
+      ],
+      "choices": [
+        {
+          "label": "Choir of the Open Wound",
+          "next": "report-q02"
+        },
+        {
+          "label": "Red Tithe",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "A road family with poor candle habits",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q02": {
+      "lines": [
+        "FORM C-17, QUESTION 2 OF 30. Which road signal failed before the march order?"
+      ],
+      "choices": [
+        {
+          "label": "Hallowfen checkpoint bells",
+          "next": "report-q03"
+        },
+        {
+          "label": "The supper gong",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "A goat bell with criminal intent",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q03": {
+      "lines": [
+        "FORM C-17, QUESTION 3 OF 30. According to recovered cult notes, what happened to the chapel families?"
+      ],
+      "choices": [
+        {
+          "label": "They were moved before you arrived",
+          "next": "report-q04"
+        },
+        {
+          "label": "They signed voluntary silence forms",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "They were promoted to furniture",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q04": {
+      "lines": [
+        "FORM C-17, QUESTION 4 OF 30. What was the altar prepared to do?"
+      ],
+      "choices": [
+        {
+          "label": "Feed and raise another saint",
+          "next": "report-q05"
+        },
+        {
+          "label": "Store wet boots",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Host a clean sermon, somehow",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q05": {
+      "lines": [
+        "FORM C-17, QUESTION 5 OF 30. What did the cellar hold?"
+      ],
+      "choices": [
+        {
+          "label": "A bound victim kept for the next rite",
+          "next": "report-q06"
+        },
+        {
+          "label": "A spare bell clerk",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Beans, filed under hope",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q06": {
+      "lines": [
+        "FORM C-17, QUESTION 6 OF 30. What should follow a broken cell in a road chapel?"
+      ],
+      "choices": [
+        {
+          "label": "Ring the bell and call the road office",
+          "next": "report-q07"
+        },
+        {
+          "label": "Leave a polite chalk note",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Wait for the cult to update its own records",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q07": {
+      "lines": [
+        "FORM C-17, QUESTION 7 OF 30. Who knows the old bell frame well enough to trust?"
+      ],
+      "choices": [
+        {
+          "label": "Tomas Vek",
+          "next": "report-q08"
+        },
+        {
+          "label": "The loudest novice",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Any person with arms and confidence",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q08": {
+      "lines": [
+        "FORM C-17, QUESTION 8 OF 30. Which evidence points toward Hallowfen trouble?"
+      ],
+      "choices": [
+        {
+          "label": "Missed checkpoint marks and sealed road orders",
+          "next": "report-q09"
+        },
+        {
+          "label": "A clean tent flap, very suspicious",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Maev's prices, spiritually hostile",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q09": {
+      "lines": [
+        "FORM C-17, QUESTION 9 OF 30. Mark all recovered cult speech under the best field category."
+      ],
+      "choices": [
+        {
+          "label": "Doctrine, hostile",
+          "next": "report-q10"
+        },
+        {
+          "label": "Poetry, unwanted",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Kitchen complaint, severe",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q10": {
+      "lines": [
+        "FORM C-17, QUESTION 10 OF 30. A false saint still speaks. What is the safest report verb?"
+      ],
+      "choices": [
+        {
+          "label": "Whispered",
+          "next": "report-q11"
+        },
+        {
+          "label": "Volunteered",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Contributed to morale",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q11": {
+      "lines": [
+        "FORM C-17, QUESTION 11 OF 30. A door was opened with field tools. Which supply office must be blamed?"
+      ],
+      "choices": [
+        {
+          "label": "Security issue, Censure Entry Roll",
+          "next": "report-q12"
+        },
+        {
+          "label": "Runa's soup ladle",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "The door, for weakness",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q12": {
+      "lines": [
+        "FORM C-17, QUESTION 12 OF 30. Select the proper disposal note for cult cloth."
+      ],
+      "choices": [
+        {
+          "label": "Bag, seal, burn after witness copy",
+          "next": "report-q13"
+        },
+        {
+          "label": "Wear as a warning",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Give to Maev for resale, cheap",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q13": {
+      "lines": [
+        "FORM C-17, QUESTION 13 OF 30. If the report mentions bells, how many copies does Sera require?"
+      ],
+      "choices": [
+        {
+          "label": "Three, plus one if rain touches ink",
+          "next": "report-q14"
+        },
+        {
+          "label": "None. Sera remembers everything and hates paper",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "One copy, chewed for proof of goats",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q14": {
+      "lines": [
+        "FORM C-17, QUESTION 14 OF 30. Pick the least false phrase for a road family that kept calcified kin in use."
+      ],
+      "choices": [
+        {
+          "label": "Custom turned into harm",
+          "next": "report-q15"
+        },
+        {
+          "label": "Efficient ancestor placement",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Agricultural signage, blessed",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q15": {
+      "lines": [
+        "FORM C-17, QUESTION 15 OF 30. What should not be written beside a living road sign?"
+      ],
+      "choices": [
+        {
+          "label": "Voluntary infrastructure",
+          "next": "report-q16"
+        },
+        {
+          "label": "Suffering witness",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Needs mercy if field law permits",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q16": {
+      "lines": [
+        "FORM C-17, QUESTION 16 OF 30. If a novice says fear is overqualified, what box records him?"
+      ],
+      "choices": [
+        {
+          "label": "Training risk, not doctrine",
+          "next": "report-q17"
+        },
+        {
+          "label": "Possible goat influence",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Promotion request",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q17": {
+      "lines": [
+        "FORM C-17, QUESTION 17 OF 30. Which office receives evidence that hums?"
+      ],
+      "choices": [
+        {
+          "label": "Malco's shelf, sealed alone",
+          "next": "report-q18"
+        },
+        {
+          "label": "Sister Hanne's wash basin",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Maev's comfort goods basket",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q18": {
+      "lines": [
+        "FORM C-17, QUESTION 18 OF 30. The medicine wagon is clean but blocked. What is the error?"
+      ],
+      "choices": [
+        {
+          "label": "Stamped delay may become harm",
+          "next": "report-q19"
+        },
+        {
+          "label": "Wheels too clean for honest medicine",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Canvas lacks devotional wrinkles",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q19": {
+      "lines": [
+        "FORM C-17, QUESTION 19 OF 30. The form asks for smell of recovered chapel air. Choose approved terms."
+      ],
+      "choices": [
+        {
+          "label": "Ash, wax, opened meat",
+          "next": "report-q20"
+        },
+        {
+          "label": "Mostly Tuesday",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Like Caldus after rain drill",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q20": {
+      "lines": [
+        "FORM C-17, QUESTION 20 OF 30. If rain makes answer 19 unreadable, who is at fault?"
+      ],
+      "choices": [
+        {
+          "label": "The signer, for writing outdoors",
+          "next": "report-q21"
+        },
+        {
+          "label": "Rain, to be censured later",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Father Odran's ink, morally damp",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q21": {
+      "lines": [
+        "FORM C-17, QUESTION 21 OF 30. Which phrase best records Maev's unsanctioned usefulness?"
+      ],
+      "choices": [
+        {
+          "label": "Irregular supply, tolerated",
+          "next": "report-q22"
+        },
+        {
+          "label": "Sin with beans",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Blessed theft, retail division",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q22": {
+      "lines": [
+        "FORM C-17, QUESTION 22 OF 30. How many goats may testify to tether failure?"
+      ],
+      "choices": [
+        {
+          "label": "Zero, unless recovered and literate",
+          "next": "report-q23"
+        },
+        {
+          "label": "Two, by hoofprint proxy",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "All goats, once they apologize",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q23": {
+      "lines": [
+        "FORM C-17, QUESTION 23 OF 30. A crate says urgent. Who may believe it?"
+      ],
+      "choices": [
+        {
+          "label": "The porter, after checking the seal",
+          "next": "report-q24"
+        },
+        {
+          "label": "The crate, if lonely",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Any officer shouting near ink",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q24": {
+      "lines": [
+        "FORM C-17, QUESTION 24 OF 30. What is the sanctioned use of a heroic face at the ration table?"
+      ],
+      "choices": [
+        {
+          "label": "None",
+          "next": "report-q25"
+        },
+        {
+          "label": "One bean advance",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Emergency candle privilege",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q25": {
+      "lines": [
+        "FORM C-17, QUESTION 25 OF 30. If a cult relic talked back, which shelf gets it?"
+      ],
+      "choices": [
+        {
+          "label": "The shelf with no apology",
+          "next": "report-q26"
+        },
+        {
+          "label": "The polite shelf",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Maev's shelf, priced by syllable",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q26": {
+      "lines": [
+        "FORM C-17, QUESTION 26 OF 30. Select the authorized label for wet bandage cloth."
+      ],
+      "choices": [
+        {
+          "label": "Medical stock, pending Hanne",
+          "next": "report-q27"
+        },
+        {
+          "label": "Priestly cuff threat",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Soup-adjacent linen",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q27": {
+      "lines": [
+        "FORM C-17, QUESTION 27 OF 30. Which term best describes a devil target with every shot high?"
+      ],
+      "choices": [
+        {
+          "label": "Training deficiency",
+          "next": "report-q28"
+        },
+        {
+          "label": "Devil ducked",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Firearm expressed doubt",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q28": {
+      "lines": [
+        "FORM C-17, QUESTION 28 OF 30. How should a missing name on the writ board be recorded?"
+      ],
+      "choices": [
+        {
+          "label": "Removed name, reason unknown",
+          "next": "report-q29"
+        },
+        {
+          "label": "Ink escaped custody",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Board ate the witness",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q29": {
+      "lines": [
+        "FORM C-17, QUESTION 29 OF 30. The form asks whether the report contains an emotional opinion."
+      ],
+      "choices": [
+        {
+          "label": "No, unless fear counts as ink pressure",
+          "next": "report-q30"
+        },
+        {
+          "label": "Yes, the paper is rude",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Yes, but it started it",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-q30": {
+      "lines": [
+        "FORM C-17, QUESTION 30 OF 30. Certify that no answer was guessed, bribed, threatened, or inspired by soup."
+      ],
+      "choices": [
+        {
+          "label": "Certified under road seal",
+          "effects": {
+            "setFlag": "censure-road-voss-report-perfect",
+            "log": "Preceptor Voss files your Hallowfen route report without using the red pencil."
+          },
+          "next": "report-complete"
+        },
+        {
+          "label": "Certified by soup, reluctantly",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Certified by a goat not present",
+          "effects": {
+            "setFlag": "censure-road-voss-report-flawed"
+          },
+          "next": "report-error"
+        },
+        {
+          "label": "Circle answer 1 on every remaining line",
+          "effects": {
+            "setFlag": "censure-road-voss-report-circled",
+            "log": "You circle answer one down the rest of Form C-17."
+          },
+          "next": "report-circled"
+        }
+      ]
+    },
+    "report-error": {
+      "lines": [
+        "Voss draws one red line through the answer.",
+        "\"Returned for correction. The paper has survived worse than your handwriting. Start again if you still want Hallowfen to pretend we are organized.\""
+      ],
+      "choices": [
+        {
+          "label": "Start again from question one",
+          "next": "report-q01"
+        },
+        {
+          "label": "Leave the wounded paper",
+          "close": true
+        }
+      ]
+    },
+    "report-circled": {
+      "lines": [
+        "You circle answer one down the remaining sheets. The field board becomes a neat column of surrender.",
+        "Voss looks at the packet, then at you. \"Efficient. Also useless. I can send this to Halvek if I want him to think a pen died on purpose.\""
+      ],
+      "choices": [
+        {
+          "label": "Start again properly",
+          "next": "report-q01"
+        },
+        {
+          "label": "Leave the circled report",
+          "close": true
+        }
+      ]
+    },
+    "report-complete": {
+      "lines": [
+        "Voss flips through all thirty answers. Her pencil hovers, hunting for blood, then stops.",
+        "\"Clean enough. Maev has a small issue bundle for you. I wrote impressed on the slate, then crossed it out before it became evidence.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Voss with the filed report",
           "close": true
         }
       ]

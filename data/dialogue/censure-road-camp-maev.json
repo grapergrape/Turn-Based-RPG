@@ -9,6 +9,16 @@
       ],
       "choices": [
         {
+          "label": "Collect Voss's issue bundle",
+          "conditions": {
+            "flag": "censure-road-voss-report-perfect",
+            "flagsAbsent": [
+              "censure-road-voss-report-rewarded"
+            ]
+          },
+          "next": "voss-report-reward"
+        },
+        {
           "label": "Trade with Maev",
           "effects": {
             "trade": "censure-sutler-maev"
@@ -31,6 +41,16 @@
       ],
       "choices": [
         {
+          "label": "Collect Voss's issue bundle",
+          "conditions": {
+            "flag": "censure-road-voss-report-perfect",
+            "flagsAbsent": [
+              "censure-road-voss-report-rewarded"
+            ]
+          },
+          "next": "voss-report-reward"
+        },
+        {
           "label": "Trade with Maev",
           "effects": {
             "trade": "censure-sutler-maev"
@@ -38,6 +58,42 @@
         },
         {
           "label": "Leave the cart",
+          "close": true
+        }
+      ]
+    },
+    "voss-report-reward": {
+      "lines": [
+        "\"Voss sent a slate with your name on it. She wrote impressed, then scratched until the word looked less dangerous.\"",
+        "\"Orders say I hand over a ribguard, one dressing, and two rounds from my own shelf. I will mourn with dignity after you leave.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the free gear",
+          "effects": {
+            "setFlag": "censure-road-voss-report-rewarded",
+            "inventory": {
+              "add": [
+                {
+                  "item": "camp-issue-ribguard",
+                  "count": 1
+                },
+                {
+                  "item": "field-dressing",
+                  "count": 1
+                },
+                {
+                  "item": "relic-rounds",
+                  "count": 2
+                }
+              ]
+            },
+            "log": "Maev gives you Voss's issue bundle."
+          },
+          "close": true
+        },
+        {
+          "label": "Leave the bundle for now",
           "close": true
         }
       ]

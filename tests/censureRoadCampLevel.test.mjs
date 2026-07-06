@@ -163,6 +163,7 @@ const pellDialogue = await readJson('../data/dialogue/censure-road-camp-pell.jso
 const brunaDialogue = await readJson('../data/dialogue/censure-road-camp-widow-bruna.json');
 const maevActor = await readJson('../data/actors/censure-sutler-maev.json');
 const maevDialogue = await readJson('../data/dialogue/censure-road-camp-maev.json');
+const vossDialogue = await readJson('../data/dialogue/censure-road-camp-voss.json');
 const confessionQuest = await readJson('../data/quests/censure-road-confession.json');
 const absolutionChit = await readJson('../data/items/censure-absolution-chit.json');
 const campRibguard = await readJson('../data/items/camp-issue-ribguard.json');
@@ -555,6 +556,42 @@ const tentSpecs = [
   const tradeChoice = maevDialogue.nodes.start.choices.find((choice) => choice.effects?.trade);
   assert.ok(tradeChoice, 'Maev dialogue has a trade choice');
   assert.equal(tradeChoice.effects.trade, 'censure-sutler-maev');
+}
+
+{
+  const reportChoice = vossDialogue.nodes.start.choices.find((choice) => choice.next === 'report-briefing');
+  assert.ok(reportChoice, 'Voss can assign the Hallowfen route report');
+
+  const reportNodes = Object.keys(vossDialogue.nodes)
+    .filter((nodeId) => /^report-q\d\d$/.test(nodeId))
+    .sort();
+  assert.equal(reportNodes.length, 30, 'Voss report has thirty questions');
+
+  for (const nodeId of reportNodes) {
+    const choices = vossDialogue.nodes[nodeId].choices;
+    assert.equal(choices.length, 4, `${nodeId} has three answers plus the circle-one shortcut`);
+    const shortcut = choices[3];
+    assert.equal(shortcut.label, 'Circle answer 1 on every remaining line');
+    assert.equal(shortcut.effects.setFlag, 'censure-road-voss-report-circled');
+    assert.equal(shortcut.next, 'report-circled');
+  }
+
+  assert.equal(vossDialogue.nodes['report-q01'].choices[0].next, 'report-q02');
+  assert.equal(vossDialogue.nodes['report-q30'].choices[0].effects.setFlag, 'censure-road-voss-report-perfect');
+
+  const rewardChoice = maevDialogue.nodes.start.choices.find((choice) => choice.next === 'voss-report-reward');
+  assert.ok(rewardChoice, 'Maev can pay out Voss report gear');
+  assert.equal(meetsDialogueConditions(rewardChoice.conditions, {
+    flags: new Set(['censure-road-voss-report-perfect'])
+  }), true);
+  assert.equal(meetsDialogueConditions(rewardChoice.conditions, {
+    flags: new Set(['censure-road-voss-report-perfect', 'censure-road-voss-report-rewarded'])
+  }), false);
+  assert.deepEqual(maevDialogue.nodes['voss-report-reward'].choices[0].effects.inventory.add, [
+    { item: 'camp-issue-ribguard', count: 1 },
+    { item: 'field-dressing', count: 1 },
+    { item: 'relic-rounds', count: 2 }
+  ]);
 }
 
 {
