@@ -31,6 +31,7 @@ import { validateBarkCollection, validateStringList } from './textRules.mjs';
 
 const MAP_MARKER_KINDS = new Set(['quest', 'dialogue', 'exit', 'locked', 'search', 'danger', 'note']);
 const MAP_MARKER_REVEALS = new Set(['explored', 'always']);
+const COVER_VALUES = new Set(['none', 'light', 'hard']);
 
 function validateTiles(name, data) {
   if (!Array.isArray(data.tiles)) {
@@ -184,6 +185,7 @@ export function validateLevel(filePath, data) {
     validateSearch(name, object.interact?.search, 'objects[].interact.search');
     validateDoorObject(name, object);
     validateMapMarker(name, object.mapMarker, 'objects[].mapMarker');
+    validateCoverValue(name, object.cover, `object ${object.kind ?? 'unknown'} cover`);
   }
   validateLevelTransitions(name, data, objects);
   validateCombatTriggerMapMarkers(name, data);
@@ -230,9 +232,17 @@ export function validateLevel(filePath, data) {
         errors.push(`${name}: legend "${tileChar}" floor "${def.floor}" must be one of ${[...FLOOR_STYLE_ID_SET].join(', ')}.`);
       }
     }
+    validateCoverValue(name, def?.cover, `legend "${tileChar}" cover`);
   }
 
   validateTalkableNpcReachability(name, data, npcs, objects);
+}
+
+function validateCoverValue(name, value, fieldName) {
+  if (value === undefined) return;
+  if (typeof value !== 'string' || !COVER_VALUES.has(value)) {
+    errors.push(`${name}: ${fieldName} must be one of ${[...COVER_VALUES].join(', ')}.`);
+  }
 }
 
 function validateLevelTransitions(name, data, objects) {

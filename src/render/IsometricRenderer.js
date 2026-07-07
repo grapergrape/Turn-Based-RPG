@@ -549,6 +549,11 @@ export class IsometricRenderer {
           if (!this.#isHiddenKey(key)) this.#pip(ctx, key, color);
         }
       }
+      if (overlay.hazardTiles) {
+        for (const hazard of overlay.hazardTiles) {
+          if (!this.#isHiddenKey(hazard.key)) this.#hazardMarker(ctx, hazard);
+        }
+      }
       if (overlay.selectedTile && !this.#isHiddenKey(overlay.selectedTile)) this.#selectedMarker(ctx, overlay.selectedTile);
       if (overlay.targetTile && !this.#isHiddenKey(overlay.targetTile)) this.#targetBracket(ctx, overlay.targetTile);
       if (overlay.pathTile && overlay.pathCost != null && !this.#isHiddenKey(overlay.pathTile)) {
@@ -655,6 +660,29 @@ export class IsometricRenderer {
     ctx.fillRect(s.x + 11, s.y, 4, 1);
     ctx.fillRect(s.x - 1, s.y - 8, 3, 1);
     ctx.fillRect(s.x - 1, s.y + 7, 3, 1);
+    ctx.restore();
+  }
+
+  #hazardMarker(ctx, hazard) {
+    const key = hazard.key;
+    const s = this.#keyToScreen(key);
+    const burning = hazard.type === 'burning-ground';
+    const color = burning ? PALETTE.uiBad : PALETTE.uiWarn;
+    this.#tileRing(ctx, key, color, burning ? 0.5 : 0.7);
+    ctx.save();
+    ctx.globalAlpha = burning ? 0.8 : 0.72;
+    ctx.fillStyle = PALETTE.outline;
+    ctx.fillRect(s.x - 5, s.y - 2, 11, 5);
+    ctx.fillStyle = color;
+    if (burning) {
+      ctx.fillRect(s.x - 4, s.y, 3, 2);
+      ctx.fillRect(s.x, s.y - 1, 2, 3);
+      ctx.fillRect(s.x + 3, s.y, 2, 2);
+    } else {
+      ctx.fillRect(s.x - 3, s.y - 1, 7, 3);
+      ctx.fillStyle = PALETTE.uiBorderLight;
+      ctx.fillRect(s.x, s.y - 5, 1, 4);
+    }
     ctx.restore();
   }
 

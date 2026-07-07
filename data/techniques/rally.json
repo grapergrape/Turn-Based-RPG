@@ -1,0 +1,12 @@
+{
+  "id": "rally",
+  "name": "Rally",
+  "type": "active",
+  "targets": ["self"],
+  "requirements": {
+    "fieldRatings": {
+      "command": 45
+    }
+  },
+  "summary": "Force your breathing back into order. Clear panic effects and press the attack."
+}

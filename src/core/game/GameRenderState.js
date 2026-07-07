@@ -1,13 +1,16 @@
 import { createCustomizationState, currentCustomizationRows, customizationCanConfirm, createPrimaryAssignmentState, primaryAssignmentCanConfirm, primaryAssignmentRows } from '../CharacterCreation.js';
+import { hazardOverlayTiles } from '../../combat/CombatHazards.js';
 import { chebyshev, manhattan } from '../../combat/CombatSystem.js';
+import { visibleStatuses } from '../../combat/StatusEffects.js';
 import { findPath } from '../../world/Pathfinder.js';
 import { GROUND_ITEM_KIND } from '../../world/GroundItems.js';
 import { isObjectLocked } from '../../world/LockSystem.js';
+import { compactCoverLabel } from '../../world/CoverSystem.js';
 import { VIEWPORT_HEIGHT } from '../../render/renderConfig.js';
 import { displayNameForKind } from '../../render/spriteCatalog.js';
 import { journalArrowAt } from '../../ui/journalLayout.js';
 import { DIALOGUE_MAX_CHOICES } from '../../ui/dialogueLayout.js';
-import { AREA_TITLE_DURATION, PLAYER_CUSTOM_PREVIEW_SPRITE_ID } from './runtimeConstants.js';
+import { AREA_TITLE_DURATION, PLAYER_CUSTOM_PREVIEW_SPRITE_ID, SNEAK_ATTACK_MULTIPLIER } from './runtimeConstants.js';
 import { installGameMethods } from './installGameMethods.js';
 
 class GameRenderState {
@@ -46,6 +49,7 @@ class GameRenderState {
 
   _buildOverlay() {
     const overlay = { mode: this.mode === 'combat' ? 'COMBAT' : 'EXPLORE', debugGrid: this.debugGrid };
+    if (this.mode === 'combat') overlay.hazardTiles = hazardOverlayTiles(this.combatHazards ?? []);
     if (this.mode === 'explore' && this.sneakMode) overlay.enemyVisionCones = this._enemyVisionCones();
 
     if (this.mode === 'combat' && this.turnManager.isPlayerTurn() && !this.moving) {
@@ -165,6 +169,47 @@ class GameRenderState {
     return { target, ...info };
   }
 
+  _attackPreviewForUi(target, options = {}) {
+    const attack = this.player?.getAttack?.(this.selectedAttackId);
+    if (!attack || !target || typeof this._attackPreview !== 'function') return null;
+    const sneakAttack = this.mode === 'explore' && this._canOpenWithSneakAttack?.(target, attack);
+    return this._attackPreview(this.player, target, attack, {
+      ignoreApCost: this.mode === 'explore',
+      sneakAttack,
+      damageMultiplier: sneakAttack ? SNEAK_ATTACK_MULTIPLIER : 1,
+      ...options
+    });
+  }
+
+  _attackReadout(attack, preview) {
+    if (!attack) return '-';
+    if (!preview) return attack.name;
+    if (preview.enabled && preview.chanceText) {
+      return [attack.name, preview.chanceText, preview.damageText].filter(Boolean).join(' ');
+    }
+    if (!preview.enabled && preview.reason) return `${attack.name} ${preview.reason.toUpperCase()}`;
+    return attack.name;
+  }
+
+  _targetReadout(target, preview) {
+    if (!target) return '-';
+    const cover = compactCoverLabel(preview?.cover?.level);
+    const coverText = cover ? ` ${cover}` : '';
+    const statuses = visibleStatuses(target).map((status) => status.label.toUpperCase().slice(0, 3));
+    const statusText = statuses.length ? ` ${statuses.slice(0, 2).join(' ')}` : '';
+    return `${this._shortName(target.name)} ${target.hp}/${target.maxHp}${coverText}${statusText}`;
+  }
+
+  _attackCursorText(prefix, target) {
+    const preview = this._attackPreviewForUi(target);
+    if (!preview) return `${prefix}: ${target.name}`;
+    if (preview.enabled && preview.chanceText) {
+      return [ `${prefix}: ${target.name}`, preview.chanceText, preview.damageText ].filter(Boolean).join(' ');
+    }
+    if (preview.reason) return `${preview.reason.toUpperCase()}: ${target.name}`;
+    return `${prefix}: ${target.name}`;
+  }
+
   _cursorInfo() {
     const mouse = this.input.mouse;
     if (!mouse) return null;
@@ -185,11 +230,11 @@ class GameRenderState {
 
     const target = this._interactionTargetAtCell(cell, this.mode);
     if (target.type === 'combatant') {
-      return { x: mouse.x, y: mouse.y, state: 'attack', text: `ATTACK: ${target.actor.name}` };
+      return { x: mouse.x, y: mouse.y, state: 'attack', text: this._attackCursorText('ATTACK', target.actor) };
     }
     if (target.type === 'hostile') {
       const selected = this._currentPreCombatTarget() === target.actor;
-      return { x: mouse.x, y: mouse.y, state: 'attack', text: `${selected ? 'ATTACK' : 'TARGET'}: ${target.actor.name}` };
+      return { x: mouse.x, y: mouse.y, state: 'attack', text: this._attackCursorText(selected ? 'ATTACK' : 'TARGET', target.actor) };
     }
     if (target.type === 'talk') {
       return { x: mouse.x, y: mouse.y, ...this._targetActionInfo(target) };
@@ -253,6 +298,7 @@ class GameRenderState {
     this._refreshPlayerAttacks?.();
     const target = this._currentTarget();
     const attack = this.player.getAttack(this.selectedAttackId);
+    const attackPreview = this._attackPreviewForUi(target);
     const modeLabel = this.mode === 'explore'
       ? (this.sneakMode ? 'SNEAK' : 'EXPLORE')
       : { combat: 'COMBAT', victory: 'VICTORY', defeat: 'DEFEAT' }[this.mode];
@@ -308,8 +354,9 @@ class GameRenderState {
       maxHp: this.player.maxHp,
       ap: this.player.ap,
       maxAp: this.player.maxAp,
-      action: attack ? attack.name : '-',
-      target: target ? `${this._shortName(target.name)} ${target.hp}/${target.maxHp}` : '-',
+      statuses: visibleStatuses(this.player),
+      action: this._attackReadout(attack, attackPreview),
+      target: this._targetReadout(target, attackPreview),
       inventory: this.inventory.summary(),
       inventoryItems: this._inventoryEntries(),
       inventoryIndex: this.inventoryIndex ?? 0,

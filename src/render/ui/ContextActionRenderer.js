@@ -17,7 +17,9 @@ export function drawContextActionMenu(ctx, menu, tools) {
     tools.rect(ctx, row.x, row.y, row.w, row.h, enabled ? PALETTE.uiPanel : PALETTE.uiDark);
     tools.rect(ctx, row.x, row.y, row.w, 1, enabled ? PALETTE.uiBorderDark : PALETTE.outline);
     tools.text(ctx, tools.clip(action.label ?? action.id ?? 'ACTION', 24), row.x + 6, row.y + 3, enabled ? PALETTE.uiText : PALETTE.uiDim);
-    if (!enabled && action.reason) {
+    if (enabled && action.hint) {
+      tools.text(ctx, tools.clip(action.hint, 25), row.x + 6, row.y + 12, PALETTE.uiDim);
+    } else if (!enabled && action.reason) {
       tools.text(ctx, tools.clip(action.reason, 25), row.x + 6, row.y + 12, PALETTE.uiBad);
     }
   }

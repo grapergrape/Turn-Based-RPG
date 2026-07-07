@@ -1,0 +1,12 @@
+{
+  "id": "ambush-mark",
+  "name": "Ambush Mark",
+  "type": "passive",
+  "targets": ["self"],
+  "requirements": {
+    "fieldRatings": {
+      "stealth": 45
+    }
+  },
+  "summary": "A clean hidden opener marks the target for the next hard answer."
+}

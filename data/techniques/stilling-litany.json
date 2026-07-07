@@ -1,0 +1,14 @@
+{
+  "id": "stilling-litany",
+  "name": "Stilling Litany",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "anyFieldRatings": {
+      "doctrine": 55,
+      "command": 55,
+      "hostSigns": 55
+    }
+  },
+  "summary": "Recite containment cadence against a Host form. The words slow its charge."
+}

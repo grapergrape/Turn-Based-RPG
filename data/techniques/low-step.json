@@ -1,0 +1,12 @@
+{
+  "id": "low-step",
+  "name": "Low Step",
+  "type": "passive",
+  "targets": ["self"],
+  "requirements": {
+    "fieldRatings": {
+      "stealth": 55
+    }
+  },
+  "summary": "Your first combat step each round costs less AP, and careful feet avoid most tile hazards."
+}

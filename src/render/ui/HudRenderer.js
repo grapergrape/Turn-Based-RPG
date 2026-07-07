@@ -30,22 +30,30 @@ function drawLog(ctx, ui, tools) {
 }
 
 function drawStatus(ctx, ui, tools) {
-  let y = STATUS_BOX.y + 19;
+  let y = STATUS_BOX.y + 17;
   const x = STATUS_BOX.x + 9;
+  const statuses = Array.isArray(ui.statuses) ? ui.statuses : [];
   tools.text(ctx, tools.clip(ui.actorName ?? 'AGENT', 21), x, y, PALETTE.uiText);
-  y += 9;
-  if (ui.role) {
+  y += 8;
+  if (statuses.length > 0) {
+    const labels = statuses.map((status) => {
+      const suffix = status.stacks > 1 ? `${status.stacks}` : '';
+      return `${status.label}${suffix}`;
+    });
+    tools.text(ctx, tools.clip(`FX ${labels.join(' ')}`, 21), x, y, PALETTE.uiWarn);
+    y += 10;
+  } else if (ui.role) {
     tools.text(ctx, tools.clip(ui.role.split(',')[0], 21), x, y, PALETTE.uiDim);
-    y += 11;
+    y += 10;
   } else {
-    y += 2;
+    y += 1;
   }
 
   const hpRatio = ui.maxHp > 0 ? ui.hp / ui.maxHp : 0;
   const hpColor = hpRatio <= 0.34 ? PALETTE.uiBad : PALETTE.uiText;
   tools.text(ctx, `HP ${ui.hp}/${ui.maxHp}`, x, y, hpColor);
-  tools.bar(ctx, x, y + 9, 94, 6, hpRatio, hpColor);
-  y += 20;
+  tools.bar(ctx, x, y + 8, 94, 6, hpRatio, hpColor);
+  y += 18;
 
   tools.text(ctx, `MODE ${ui.mode ?? '-'}`, x, y, ui.sneakMode ? PALETTE.uiSuccess : PALETTE.uiDim);
   if (ui.sneakMode) {
@@ -53,13 +61,13 @@ function drawStatus(ctx, ui, tools) {
     tools.rect(ctx, x + 94, y + 4, 8, 1, PALETTE.uiSuccess);
     tools.rect(ctx, x + 104, y + 5, 8, 1, PALETTE.uiBorderLight);
   }
-  y += 10;
+  y += 9;
   if (ui.mode === 'COMBAT') {
     tools.text(ctx, `AP ${ui.ap}/${ui.maxAp}`, x, y, PALETTE.uiGood);
     tools.apPips(ctx, x + 45, y, ui.ap, ui.maxAp);
-    y += 10;
+    y += 9;
     tools.text(ctx, tools.clip(ui.action ?? '-', 19), x, y, PALETTE.uiGood);
-    y += 10;
+    y += 9;
     tools.text(ctx, tools.clip(`> ${ui.target ?? '-'}`, 19), x, y, PALETTE.uiBad);
   } else {
     const itemCount = (ui.inventoryItems ?? []).reduce((total, item) => total + item.count, 0);

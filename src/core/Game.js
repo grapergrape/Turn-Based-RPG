@@ -74,7 +74,7 @@ import { IsometricRenderer } from '../render/IsometricRenderer.js';
 import { bakePlayerCharacter } from '../render/SpriteAtlas.js';
 import { DEBUG_GRID_DEFAULT, VIEWPORT_HEIGHT } from '../render/renderConfig.js';
 import { DIALOGUE_MAX_CHOICES } from '../ui/dialogueLayout.js';
-import { AREA_TITLE_DURATION, PLAYER_CUSTOM_PREVIEW_SPRITE_ID } from './game/runtimeConstants.js';
+import { AREA_TITLE_DURATION, PLAYER_CUSTOM_PREVIEW_SPRITE_ID, SNEAK_ATTACK_MULTIPLIER } from './game/runtimeConstants.js';
 import { installGameUiScreens } from './game/GameUiScreens.js';
 import { installGameInventoryScreen } from './game/GameInventoryScreen.js';
 import { installGameDialogueRuntime } from './game/GameDialogueRuntime.js';
@@ -311,6 +311,7 @@ export class Game {
     this.mode = 'explore';
     this.log = [];
     this.effects = [];
+    this.combatHazards = [];
     this.moving = null;
     this.pathQueue = [];
     this.pendingExploreTarget = null;
@@ -779,11 +780,20 @@ export class Game {
     }
 
     const sneakAttack = this._canOpenWithSneakAttack(target, attack);
+    const preview = this._attackPreview?.(this.player, target, attack, {
+      sneakAttack,
+      ignoreApCost: true,
+      damageMultiplier: sneakAttack ? SNEAK_ATTACK_MULTIPLIER : 1
+    });
+    if (preview && !preview.enabled) {
+      if (preview.reason) this._log(preview.reason);
+      return;
+    }
     this._startCombat(target.encounter, { initialTarget: target, selectedAttackId: attack.id });
     if (this.mode !== 'combat') return;
     this._registerSuspiciousAction(SUSPICION_SEVERITY.HIGH, 'attack', { requireSight: true });
-    this._playerAttack({ sneakAttack, ignoreApCost: true, spendAp: false });
-    if (this.mode === 'combat' && this.turnManager.isPlayerTurn()) {
+    const attacked = this._playerAttack({ sneakAttack, ignoreApCost: true, spendAp: false });
+    if (attacked && this.mode === 'combat' && this.turnManager.isPlayerTurn()) {
       this._endPlayerTurn();
     }
   }

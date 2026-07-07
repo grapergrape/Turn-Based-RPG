@@ -1,0 +1,12 @@
+{
+  "id": "name-the-error",
+  "name": "Name the Error",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "doctrine": 45
+    }
+  },
+  "summary": "Call out a human enemy's false rite or broken law. Doubt costs them nerve and time."
+}

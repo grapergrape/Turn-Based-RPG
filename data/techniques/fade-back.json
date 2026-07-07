@@ -1,0 +1,12 @@
+{
+  "id": "fade-back",
+  "name": "Fade Back",
+  "type": "active",
+  "targets": ["tile"],
+  "requirements": {
+    "fieldRatings": {
+      "stealth": 45
+    }
+  },
+  "summary": "Slip to a nearby tile and make the next shot or strike harder to line up."
+}

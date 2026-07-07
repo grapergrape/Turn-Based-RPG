@@ -2,7 +2,7 @@
   "id": "burn-line",
   "name": "Burn Line",
   "type": "active",
-  "targets": ["tile"],
+  "targets": ["tile", "enemy"],
   "requirements": {
     "fieldRatings": {
       "purgationTools": 45

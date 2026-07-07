@@ -1,0 +1,13 @@
+{
+  "id": "wire-snare",
+  "name": "Wire Snare",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "anyFieldRatings": {
+      "engineering": 55,
+      "security": 55
+    }
+  },
+  "summary": "Throw field wire around a target's feet. It buys room when a mine would be too slow."
+}

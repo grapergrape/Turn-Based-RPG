@@ -1,0 +1,12 @@
+{
+  "id": "stabilize",
+  "name": "Stabilize",
+  "type": "active",
+  "targets": ["self"],
+  "requirements": {
+    "fieldRatings": {
+      "medicine": 45
+    }
+  },
+  "summary": "Clear a disabling condition and close a small wound before it decides the fight."
+}

@@ -1,12 +1,158 @@
 # Combat System
 
-Design status: early runtime combat exists for the Ash Chapel slice, but the full progression-backed combat model is not implemented yet.
+Design status: runtime combat now has progression-backed hit chance, damage
+scaling, cover, the minimum build-support technique set, combat statuses, and encounter hazards.
+The full party-scale combat model is not implemented yet.
 
 Combat should use the progression framework in `docs/systems/progression.md`: seven primary attributes, derived field ratings, scars, Trace, Icon Risk, techniques, gear, and clearances.
 
 The combat design target is a low-resolution tactical CRPG. Mandatory fights must be clearable by more than Firearms. Non-gun builds should win by changing the fight through tools, positioning, machines, morale, treatment, containment, stealth, or preparation.
 
 Religion is not magic. Doctrine, Command, Purgation Tools, and Containment can change who obeys, who hesitates, what is safe, and how anti-Host tools are used. They do not cast spells.
+
+## Current Attack Resolution Slice
+
+The runtime now resolves player and NPC attacks through a visible hit chance
+and a small skill-based damage bonus.
+The chance is clamped from 10% to 95%, so combat keeps some uncertainty without
+making perfect or impossible shots common.
+
+Current formula:
+
+- Base chance: 70%.
+- Skill: half the difference between attacker field rating and defender field rating.
+- Ranged distance: -4% per tile beyond the first.
+- Cover: -15% for light cover, -30% for hard cover.
+- Attacker wounds: -10% at half health or worse, -20% at quarter health or worse.
+- Situational modifiers: Sneak openings currently add +25%. Aimed Shot adds +15%.
+
+Current damage scaling:
+
+- Base weapon damage is never reduced by skill.
+- Damage uses `damageField` when an attack defines it, then `accuracyField`,
+  then Firearms for ranged attacks or Melee for close attacks.
+- Skill bonus starts only above rating 35.
+- The bonus is +1 damage per 20 rating points above 35.
+- Skill bonus is capped at +4 damage.
+- Multipliers such as Sneak Attack and Aimed Shot apply to base weapon damage
+  first, then skill bonus is added.
+
+Field mapping:
+
+- An attack can set `accuracyField`; otherwise ranged attacks use Firearms and
+  melee attacks use Melee.
+- An attack can set `defenseField`; otherwise ranged defense uses Stealth and
+  melee defense uses the better of Melee or Unarmed.
+
+Transparency rules:
+
+- HUD action text shows the current attack chance or a failure state such as
+  `NO SHOT`.
+- HUD action text also shows final damage as `D#`.
+- HUD target text appends `LIGHT COVER` or `HARD COVER` when cover affects the
+  selected shot.
+- Context attack rows show chance and damage in the label, with compact
+  modifiers on the second line.
+- Hover text shows chance and damage before attack confirmation.
+- Combat log lines report hit or miss, chance, roll, compact modifiers, and
+  skill damage bonuses when they apply.
+
+Cover comes from `src/render/spriteCatalog.js` by prop kind, with optional
+level JSON overrides using `cover: "none"`, `"light"`, or `"hard"`. Ranged
+line of fire can return `No shot` when a blocking cell is between attacker and
+target. Blocking cover adjacent to the target can reduce hit chance instead of
+fully denying the shot.
+
+## Current Technique and Status Slice
+
+The runtime supports the current learned technique set from `data/techniques/`.
+Technique availability is still content-driven through progression requirements,
+but the combat effects are implemented in `src/core/game/GameCombatRuntime.js`
+and small combat modules.
+
+Active techniques:
+
+- `aimed-shot`: spends 1 extra AP on a firearm attack, adds +15 hit chance,
+  and multiplies base weapon damage by 1.25 before skill damage.
+- `study-target`: spends 2 AP against a visible enemy within 6 tiles. It applies
+  `studied`, which adds hit chance and damage for Mara's later attacks against
+  that target. Better Search or Host Signs extends and improves the mark.
+- `field-measure`: spends 1 AP to apply `prepared`. The next player attack gains
+  hit chance and damage, then consumes the status.
+- `overwatch`: spends 2 AP and requires a firearm. It stores a one-round firing
+  watch on a target or tile, then fires a reaction shot when a matching hostile
+  acts or enters the watched tile.
+- `trip-mine`: spends 3 AP to place a persistent mine on a nearby free tile. An
+  enemy who steps onto it takes Engineering or Security-scaled damage and gains
+  `snared`, which raises movement AP cost for the rest of that turn.
+- `burn-line`: spends 3 AP to lay burning ground across up to three tiles in a
+  straight, diagonal, or isometric lane. It can be aimed at an occupied enemy
+  cell. Enemies in the lane take damage and gain `burning`.
+- `shove`: spends 2 AP against an adjacent enemy. It pushes the target one tile
+  away if the destination is free, or staggers the target in place. Either
+  result applies `off-balance`.
+- `guard-break`: spends 3 AP on a close attack at reduced damage. A hit applies
+  `guard-broken`, making later attacks easier.
+- `stabilize`: spends 2 AP to remove immediate bad statuses from the player and
+  heal a small amount.
+- `field-stimulant`: spends 1 AP once per encounter to gain AP immediately. It
+  also applies locked stimulant `fatigued`, so the burst has a combat cost.
+- `name-the-error`: spends 2 AP against a human-like enemy within 5 tiles. It
+  applies `rattled` and drains 1 AP. Host forms do not respond to it.
+- `stilling-litany`: spends 2 AP against a Host enemy within 5 tiles. It applies
+  `suppressed` and drains 1 AP. Human-like enemies do not respond to it.
+- `rally`: spends 2 AP to clear morale pressure from the player, refund 1 AP,
+  and apply `rallied`.
+- `feint`: spends 2 AP against an adjacent human-like enemy and applies
+  `off-balance`.
+- `wire-snare`: spends 2 AP against an enemy within 4 tiles. It drains 1 AP,
+  applies `snared`, and leaves the target `off-balance`.
+- `censure-spark`: spends 2 AP against an enemy within 4 tiles. It deals 1
+  damage and applies `burning`; Host enemies burn longer.
+- `fade-back`: spends 2 AP to move up to 2 tiles to a valid tile and apply
+  `faded`.
+- `seal-tile`: spends 2 AP to place a short-lived containment hazard on a free
+  tile or occupied enemy cell. It drains AP and applies `sealed`, with stronger
+  AP loss against Host enemies.
+- `quarantine-line`: spends 3 AP to place a short lane of containment hazards.
+  It can be aimed at an occupied enemy cell. Crossing it drains AP and applies
+  `suppressed`.
+
+Passive techniques:
+
+- `case-file`: improves `study-target`, extends the mark, and refunds 1 AP after
+  the study resolves.
+- `steady-hands`: offsets wound accuracy penalties while the actor is at half
+  health or worse.
+- `hard-seal`: makes player-created burn lines last longer.
+- `riposte`: lets the player make one free close counterattack per round after
+  an adjacent enemy misses.
+- `surgeons-nerve`: improves `stabilize` and adds `braced`.
+- `low-step`: makes the player's first combat move each round cost 1 less AP
+  and lets the player ignore non-mine combat floor hazards.
+- `ambush-mark`: marks a surviving target with `studied` after a successful
+  sneak opening.
+
+Runtime statuses:
+
+- `studied`: attack modifier against the marked target.
+- `burning`: start-of-turn damage over a short duration.
+- `snared`: extra movement AP cost while it lasts.
+- `overwatch`: player-held reaction state that lapses when the player's next
+  turn begins or when it fires.
+- `guard-broken`: hit chance bonus for later attacks against the target.
+- `off-balance`: smaller hit chance bonus for later attacks against the target.
+- `rattled`, `suppressed`, and `fatigued`: hit chance penalties that come from
+  pressure, containment, or stimulant debt.
+- `rallied`, `braced`, and `prepared`: short player hit chance bonuses.
+- `faded`: hit chance penalty for enemies attacking the faded actor.
+- `stimmed`: once-per-encounter bookkeeping for `field-stimulant`.
+- `sealed`: short movement AP penalty from containment.
+- `low-step-spent` and `riposte-spent`: hidden per-round bookkeeping statuses.
+
+Combat hazards are encounter state, not saved level content. They clear when an
+encounter ends or a new encounter starts. Current types are `trip-mine`,
+`burning-ground`, `sealed-tile`, and `quarantine-line`.
 
 ## Combat Lanes
 

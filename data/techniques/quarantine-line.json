@@ -1,0 +1,12 @@
+{
+  "id": "quarantine-line",
+  "name": "Quarantine Line",
+  "type": "active",
+  "targets": ["tile", "enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "containment": 55
+    }
+  },
+  "summary": "Lay a short containment line. Enemies that cross it lose AP instead of taking damage."
+}

@@ -1,0 +1,13 @@
+{
+  "id": "case-file",
+  "name": "Case File",
+  "type": "passive",
+  "targets": ["self"],
+  "requirements": {
+    "anyFieldRatings": {
+      "search": 55,
+      "hostSigns": 55
+    }
+  },
+  "summary": "A studied target gives up more than a weak point. The next answer comes faster."
+}

@@ -31,6 +31,7 @@
 //   flat       true = a flat ground decal, drawn in the floor pass.
 //   block      true = a wall-grid block (rendered as / into a wall block). A
 //              `wall-*` kind is a block by convention.
+//   cover      optional combat cover rating: "light" or "hard".
 
 import * as P from './PixelPrimitives.js';
 import { WALL_HEIGHT } from './renderConfig.js';
@@ -132,6 +133,7 @@ export function displayNameForKind(kind) {
 const simple = (fn, category, layer = 2) => ({
   category, layer, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed)
 });
+const cover = (entry, level) => ({ ...entry, cover: level });
 // An orientation-aware prop: forwards the authored facing as opts.orient so one
 // draw function can render at any of the four iso facings (see ORIENTS /
 // isoFrame in PixelPrimitives.js). Use this instead of `simple` for any piece
@@ -142,7 +144,7 @@ const oriented = (fn, category, layer = 2) => ({
 // A flat ground decal that takes (ctx, cx, cy, seed).
 const decal = (fn) => ({ category: CATEGORY.DECAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed) });
 const farmBuildingBlock = (variant = null) => ({
-  category: CATEGORY.STRUCTURE, layer: 0, block: true,
+  category: CATEGORY.STRUCTURE, layer: 0, block: true, cover: 'hard',
   draw: (ctx, x, y, seed, c) => P.drawFarmBuildingBlock(ctx, x, y, seed, {
     connected: c.prop.connected,
     variant: c.prop.variant ?? variant
@@ -159,35 +161,35 @@ function barrelShowsLadder(prop) {
 export const SPRITE_CATALOG = {
   // --- Terrain blocks (tile-driven walls) --------------------------------
   'wall': {
-    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed)
   },
   'wall-broken': {
-    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'light',
     draw: (ctx, x, y, seed, c) => P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? Math.round(WALL_HEIGHT * 0.55), seed)
   },
   'cave-wall': {
-    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawCaveWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed, {
       connected: c.prop.connected
     })
   },
   'farmhouse-interior-wall': {
-    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawFarmInteriorWallBlock(ctx, x, y, c.prop.height, seed, {
       connected: c.prop.connected,
       variant: 'farmhouse'
     })
   },
   'barn-interior-wall': {
-    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawFarmInteriorWallBlock(ctx, x, y, c.prop.height, seed, {
       connected: c.prop.connected,
       variant: 'barn'
     })
   },
   'shed-interior-wall': {
-    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawFarmInteriorWallBlock(ctx, x, y, c.prop.height, seed, {
       connected: c.prop.connected,
       variant: 'shed'
@@ -199,28 +201,28 @@ export const SPRITE_CATALOG = {
   // carries loot/locks (safe, stash) is placed as an authored object on a wall
   // cell; a purely visual fixture (window) can be a legend tile.
   'wall-window': {
-    category: CATEGORY.FIXTURE, layer: 0, block: true,
+    category: CATEGORY.FIXTURE, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => {
       P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed);
       P.drawChapelWindow(ctx, x, y, seed, { dim: c.prop.dim, flicker: c.flicker });
     }
   },
   'wall-safe': {
-    category: CATEGORY.FIXTURE, layer: 0, block: true,
+    category: CATEGORY.FIXTURE, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => {
       P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed);
       P.drawWallSafe(ctx, x, y, seed, { opened: c.prop.opened || c.prop.consumed });
     }
   },
   'wall-stash': {
-    category: CATEGORY.FIXTURE, layer: 0, block: true,
+    category: CATEGORY.FIXTURE, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => {
       P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed);
       P.drawWallStash(ctx, x, y, seed, { opened: c.prop.opened || c.prop.consumed });
     }
   },
   'wall-stair-door': {
-    category: CATEGORY.FIXTURE, layer: 0, block: true,
+    category: CATEGORY.FIXTURE, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => {
       P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed);
       P.drawWallStairDoor(ctx, x, y, seed);
@@ -228,12 +230,12 @@ export const SPRITE_CATALOG = {
   },
 
   // --- Structures (free-standing architecture) ---------------------------
-  'cracked-column': simple(P.drawCrackedColumn, CATEGORY.STRUCTURE),
+  'cracked-column': cover(simple(P.drawCrackedColumn, CATEGORY.STRUCTURE), 'hard'),
   'saint-statue': simple(P.drawSaintStatue, CATEGORY.STRUCTURE),
-  'stone-tomb': simple(P.drawStoneTomb, CATEGORY.STRUCTURE),
-  'graveyard-wall': oriented(P.drawGraveyardWall, CATEGORY.STRUCTURE),
+  'stone-tomb': cover(simple(P.drawStoneTomb, CATEGORY.STRUCTURE), 'hard'),
+  'graveyard-wall': cover(oriented(P.drawGraveyardWall, CATEGORY.STRUCTURE), 'hard'),
   'calcified-grave-plot': oriented(P.drawCalcifiedGravePlot, CATEGORY.STRUCTURE, 1),
-  'calcified-headstone': simple(P.drawCalcifiedHeadstone, CATEGORY.STRUCTURE),
+  'calcified-headstone': cover(simple(P.drawCalcifiedHeadstone, CATEGORY.STRUCTURE), 'light'),
   'graveyard-tomb-slab': oriented(P.drawGraveyardTombSlab, CATEGORY.STRUCTURE),
   'graveyard-catacomb-mouth': oriented(P.drawGraveyardCatacombMouth, CATEGORY.STRUCTURE, 4),
   'graveyard-bone-marker': simple(P.drawCalcifiedGraveMarker, CATEGORY.STRUCTURE),
@@ -242,7 +244,7 @@ export const SPRITE_CATALOG = {
     category: CATEGORY.STRUCTURE, layer: 18,
     draw: (ctx, x, y, seed) => P.drawStoneStairwell(ctx, x, y, seed)
   },
-  'quarantine-barricade': simple(P.drawQuarantineBarricade, CATEGORY.STRUCTURE),
+  'quarantine-barricade': cover(simple(P.drawQuarantineBarricade, CATEGORY.STRUCTURE), 'hard'),
   'broken-bell': simple(P.drawBrokenBell, CATEGORY.STRUCTURE),
   'bell-rope': {
     category: CATEGORY.STRUCTURE, layer: 2,
@@ -252,7 +254,7 @@ export const SPRITE_CATALOG = {
   },
   'quarantine-sign': simple(P.drawQuarantineSign, CATEGORY.STRUCTURE),
   'chapel-double-door': {
-    category: CATEGORY.STRUCTURE, layer: 18,
+    category: CATEGORY.STRUCTURE, layer: 18, cover: 'hard',
     draw: (ctx, x, y, seed, c) => {
       const opened = Boolean(c.prop.opened || c.prop.consumed);
       const start = c.prop.openedAt;
@@ -269,7 +271,7 @@ export const SPRITE_CATALOG = {
     }
   },
   'damaged-altar': {
-    category: CATEGORY.STRUCTURE, layer: 2,
+    category: CATEGORY.STRUCTURE, layer: 2, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawDamagedAltar(ctx, x, y, seed, c.pulse)
   },
   'farm-building-block': farmBuildingBlock(),
@@ -279,20 +281,20 @@ export const SPRITE_CATALOG = {
   'storage-shed-building-block': farmBuildingBlock('storage-shed'),
   'grain-shed-building-block': farmBuildingBlock('grain-shed'),
   'canvas-tent-building-block': {
-    category: CATEGORY.STRUCTURE, layer: 0, block: true,
+    category: CATEGORY.STRUCTURE, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawCanvasTentBlock(ctx, x, y, seed, {
       connected: c.prop.connected
     })
   },
   'canvas-tent-interior-wall': {
-    category: CATEGORY.TERRAIN, layer: 0, block: true,
+    category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawCanvasTentBlock(ctx, x, y, seed, {
       connected: c.prop.connected,
       interior: true
     })
   },
   'farm-door': {
-    category: CATEGORY.STRUCTURE, layer: 2,
+    category: CATEGORY.STRUCTURE, layer: 2, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawFarmDoor(ctx, x, y, seed, {
       locked: Boolean(c.prop.interact?.lock && !c.prop.unlocked),
       unlocked: Boolean(c.prop.unlocked),
@@ -301,19 +303,19 @@ export const SPRITE_CATALOG = {
       variant: c.prop.variant
     })
   },
-  'farm-fence': oriented(P.drawFarmFence, CATEGORY.STRUCTURE),
+  'farm-fence': cover(oriented(P.drawFarmFence, CATEGORY.STRUCTURE), 'light'),
   'road-sign-post': simple(P.drawRoadSignPost, CATEGORY.STRUCTURE),
   'infected-cave-entrance': simple(P.drawInfectedCaveEntrance, CATEGORY.STRUCTURE, 4),
 
   // --- Furniture (placed objects) ----------------------------------------
-  'broken-pew': simple(P.drawBrokenPew, CATEGORY.FURNITURE),
+  'broken-pew': cover(simple(P.drawBrokenPew, CATEGORY.FURNITURE), 'light'),
   'rusted-reliquary': simple(P.drawRustedReliquary, CATEGORY.FURNITURE),
   'field-satchel': simple(P.drawFieldSatchel, CATEGORY.FURNITURE),
-  'rusted-crate': simple(P.drawRustedCrate, CATEGORY.FURNITURE),
-  'sealed-storage-crate': simple(P.drawSealedStorageCrate, CATEGORY.FURNITURE),
+  'rusted-crate': cover(simple(P.drawRustedCrate, CATEGORY.FURNITURE), 'hard'),
+  'sealed-storage-crate': cover(simple(P.drawSealedStorageCrate, CATEGORY.FURNITURE), 'hard'),
   'canvas-tent': simple(P.drawCanvasTent, CATEGORY.FURNITURE),
   'canvas-tent-flap': {
-    category: CATEGORY.FIXTURE, layer: 1,
+    category: CATEGORY.FIXTURE, layer: 1, cover: 'light',
     draw: (ctx, x, y, seed, c) => P.drawCanvasTentFlap(ctx, x, y, seed, {
       locked: Boolean(c.prop.interact?.lock && !c.prop.unlocked),
       unlocked: Boolean(c.prop.unlocked),
@@ -338,26 +340,26 @@ export const SPRITE_CATALOG = {
   'ritual-bowl': simple(P.drawRitualBowl, CATEGORY.FURNITURE),
   'chapel-font': simple(P.drawChapelFont, CATEGORY.FURNITURE),
   'rusted-barrel': {
-    category: CATEGORY.FURNITURE, layer: 2,
+    category: CATEGORY.FURNITURE, layer: 2, cover: 'light',
     draw: (ctx, x, y, seed, c) => P.drawRustedBarrel(ctx, x, y, seed, {
       ladder: barrelShowsLadder(c.prop)
     })
   },
-  'field-cart': oriented(P.drawFieldCart, CATEGORY.FURNITURE),
-  'hay-rick': simple(P.drawHayRick, CATEGORY.FURNITURE),
+  'field-cart': cover(oriented(P.drawFieldCart, CATEGORY.FURNITURE), 'hard'),
+  'hay-rick': cover(simple(P.drawHayRick, CATEGORY.FURNITURE), 'hard'),
   'field-plow': oriented(P.drawFieldPlow, CATEGORY.FURNITURE),
   'field-harrow': oriented(P.drawFieldHarrow, CATEGORY.FURNITURE),
   'feed-trough': oriented(P.drawFeedTrough, CATEGORY.FURNITURE),
   'water-pump': simple(P.drawWaterPump, CATEGORY.FURNITURE),
   'tool-rack': simple(P.drawToolRack, CATEGORY.FURNITURE),
-  'training-dummy': oriented(P.drawTrainingDummy, CATEGORY.FURNITURE),
-  'devil-target': oriented(P.drawDevilTarget, CATEGORY.STRUCTURE),
+  'training-dummy': cover(oriented(P.drawTrainingDummy, CATEGORY.FURNITURE), 'light'),
+  'devil-target': cover(oriented(P.drawDevilTarget, CATEGORY.STRUCTURE), 'light'),
   'wagon-wheel': simple(P.drawWagonWheel, CATEGORY.FURNITURE),
-  'woodpile': simple(P.drawWoodpile, CATEGORY.FURNITURE),
+  'woodpile': cover(simple(P.drawWoodpile, CATEGORY.FURNITURE), 'hard'),
 
   // --- Props (misc small props, caches) ----------------------------------
-  'rubble-pile': simple(P.drawRubblePile, CATEGORY.PROP),
-  'cave-stalagmite': simple(P.drawCaveStalagmite, CATEGORY.PROP),
+  'rubble-pile': cover(simple(P.drawRubblePile, CATEGORY.PROP), 'light'),
+  'cave-stalagmite': cover(simple(P.drawCaveStalagmite, CATEGORY.PROP), 'light'),
   'cave-stalactites': simple(P.drawCaveStalactites, CATEGORY.PROP),
   'bone-pile': simple(P.drawBonePile, CATEGORY.PROP),
   'bone-niche': simple(P.drawBoneNiche, CATEGORY.PROP), // wall ossuary shelf of skulls + bones

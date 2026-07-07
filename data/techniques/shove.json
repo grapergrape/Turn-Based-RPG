@@ -1,0 +1,12 @@
+{
+  "id": "shove",
+  "name": "Shove",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "unarmed": 45
+    }
+  },
+  "summary": "Drive an adjacent enemy one tile back. If the way is blocked, the target staggers instead."
+}

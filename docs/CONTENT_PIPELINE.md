@@ -195,6 +195,12 @@ Rules:
   block is not drawn twice. The player reaches it from the floor tile in front.
 - `blocking: true` makes the object's tile impassable (collision uses the same
   rule in explore and combat).
+- `cover` is optional on level objects and legend entries. Valid values are
+  `"none"`, `"light"`, and `"hard"`. Most cover should come from
+  `src/render/spriteCatalog.js`, where the prop kind is already registered.
+  Use JSON `cover` only to override a specific placement. Cover affects ranged
+  hit chance and line of fire, not movement. `light` cover gives a smaller hit
+  penalty than `hard` cover. Open passable doors stop providing cover.
 - `interact` (optional) can mark a loot container (`type: "container"` with
   `loot`), a dead body (`type: "corpse"` with optional `loot`), the altar
   (`type: "altar"` with `triggersCombat`), a readable note (`type: "note"`), a
@@ -900,6 +906,47 @@ Rules:
 - Passive techniques are learned from the journal and apply later as modifiers
   or conditional effects.
 - Builds do not grant or lock techniques. Requirements do.
+
+Current runtime technique effects:
+
+- `aimed-shot` is an enemy-targeted firearm attack with extra AP, improved hit
+  chance, and higher base damage.
+- `study-target` is an enemy-targeted mark that applies the `studied` status.
+- `field-measure` prepares the player and improves the next attack.
+- `overwatch` targets an enemy or tile and stores a one-round reaction shot.
+- `trip-mine` targets a nearby free tile and creates an encounter-only hazard.
+- `burn-line` targets a nearby free tile or occupied enemy cell and creates
+  encounter-only burning ground along a short lane.
+- `shove` pushes or staggers an adjacent enemy and applies `off-balance`.
+- `guard-break` is a close attack that applies `guard-broken` on hit.
+- `stabilize` removes immediate bad statuses and heals the player.
+- `field-stimulant` grants immediate AP once per encounter and applies
+  locked stimulant `fatigued`.
+- `name-the-error` rattles a human-like enemy and drains AP.
+- `stilling-litany` suppresses a Host enemy and drains AP.
+- `rally` clears morale pressure, refunds 1 AP, and applies `rallied`.
+- `feint` applies `off-balance` to an adjacent human-like enemy.
+- `wire-snare` snares a target, drains AP, and leaves it off balance.
+- `censure-spark` applies direct flame and `burning`, with longer burn duration
+  against Host enemies.
+- `fade-back` moves the player up to 2 tiles and applies `faded`.
+- `seal-tile` targets a nearby free tile or occupied enemy cell and places a
+  containment hazard that applies `sealed` and drains AP.
+- `quarantine-line` targets a nearby free tile or occupied enemy cell and places
+  a short containment lane that applies `suppressed` and drains AP.
+- `case-file` improves `study-target` and refunds part of its AP cost.
+- `steady-hands` reduces the practical hit chance loss from wounds.
+- `hard-seal` extends player-created burn lines.
+- `riposte` grants one free close counterattack per round after an adjacent
+  enemy misses.
+- `surgeons-nerve` improves `stabilize` and adds `braced`.
+- `low-step` discounts the first combat move each round and ignores non-mine
+  floor hazards.
+- `ambush-mark` applies `studied` after a successful sneak opening.
+
+Statuses and combat hazards are source-defined systems today, not JSON content.
+Do not add `data/status-effects/` until multiple content files need to author or
+tune statuses directly.
 
 ## Enemy data
 

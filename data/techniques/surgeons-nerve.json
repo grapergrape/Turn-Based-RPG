@@ -1,0 +1,15 @@
+{
+  "id": "surgeons-nerve",
+  "name": "Surgeon's Nerve",
+  "type": "passive",
+  "targets": ["self"],
+  "requirements": {
+    "fieldRatings": {
+      "medicine": 55
+    },
+    "primaries": {
+      "nerve": 5
+    }
+  },
+  "summary": "Your treatment holds under pressure. Stabilize heals more and leaves you braced."
+}

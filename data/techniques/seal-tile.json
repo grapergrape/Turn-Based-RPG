@@ -1,0 +1,12 @@
+{
+  "id": "seal-tile",
+  "name": "Seal Tile",
+  "type": "active",
+  "targets": ["tile", "enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "containment": 45
+    }
+  },
+  "summary": "Mark a nearby tile with a hard field seal. Host forms that cross it lose momentum."
+}

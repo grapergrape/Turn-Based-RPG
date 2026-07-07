@@ -1,0 +1,12 @@
+{
+  "id": "feint",
+  "name": "Feint",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "guile": 45
+    }
+  },
+  "summary": "Sell one false move to a human enemy and leave their guard wrong-footed."
+}

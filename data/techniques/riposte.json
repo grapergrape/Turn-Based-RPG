@@ -1,0 +1,13 @@
+{
+  "id": "riposte",
+  "name": "Riposte",
+  "type": "passive",
+  "targets": ["self"],
+  "requirements": {
+    "anyFieldRatings": {
+      "melee": 55,
+      "unarmed": 55
+    }
+  },
+  "summary": "Once each round, answer a missed close attack with your readied melee weapon."
+}

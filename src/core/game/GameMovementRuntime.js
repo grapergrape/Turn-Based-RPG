@@ -152,7 +152,10 @@ class GameMovementRuntime {
     if (this.pathQueue.length === 0) return;
     if (this.mode === 'combat' && !this.turnManager.isPlayerTurn()) return;
     if (this.mode === 'defeat') { this.pathQueue = []; return; }
-    if (this.mode === 'combat' && this.player.ap < this.player.moveCost) {
+    const moveCost = this.mode === 'combat'
+      ? (this._combatMoveApCost?.(this.player) ?? this.player.moveCost)
+      : this.player.moveCost;
+    if (this.mode === 'combat' && this.player.ap < moveCost) {
       this.pathQueue = [];
       return;
     }
@@ -163,7 +166,10 @@ class GameMovementRuntime {
     };
     if (this._tryStep(this.player, dir, { logBlock: false })) {
       this.pathQueue.shift();
-      if (this.mode === 'combat') this.player.ap -= this.player.moveCost;
+      if (this.mode === 'combat') {
+        this.player.ap -= moveCost;
+        this._markCombatMoveSpent?.(this.player);
+      }
     } else {
       this.pathQueue = [];
     }
@@ -223,6 +229,10 @@ class GameMovementRuntime {
   }
 
   _onStepComplete(actor) {
+    if (this.mode === 'combat') {
+      this._triggerCombatStepEffects?.(actor);
+      return;
+    }
     if (actor === this.player && this.mode === 'explore') {
       this._revealMapAroundPlayer();
       const severity = this.player.pendingSuspicionSeverity ?? SUSPICION_SEVERITY.LOW;

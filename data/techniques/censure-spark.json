@@ -1,0 +1,12 @@
+{
+  "id": "censure-spark",
+  "name": "Censure Spark",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "purgationTools": 55
+    }
+  },
+  "summary": "Touch off a short burner charge. Host flesh keeps the flame longer."
+}

@@ -53,6 +53,7 @@ export class Entity {
     this.moveCost = scaledStats.moveCost ?? 1;
 
     this.isDead = false;
+    this.statuses = [];
     this.facing = 'se';
     // Render state consumed by IsometricRenderer.
     this.render = { state: 'idle', frameIndex: 0, timer: 0 };

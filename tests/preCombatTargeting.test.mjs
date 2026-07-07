@@ -162,10 +162,12 @@ function makeGame() {
   game.render();
   assert.equal(frame().overlay.targetTile, '2,1');
   assert.equal(frame().ui.target, 'Cutthroat 8/8');
+  assert.equal(frame().ui.action, 'Knife 95% D5');
   assert.ok(frame().ui.controls.includes('Space Attack'));
 
   const previousRandom = Math.random;
-  Math.random = () => 0.99;
+  const rolls = [0, 0, 0.99, 0];
+  Math.random = () => rolls.shift() ?? 0;
   try {
     actions = [['confirm']];
     game.update(0);
@@ -183,7 +185,7 @@ function makeGame() {
   assert.equal(watcher.encounter, 'room-a');
   assert.equal(game.turnManager.order.includes(watcher), true);
   assert.equal(game.preCombatTarget, null);
-  assert.ok(game.log.some((line) => line.includes('Sneak attack: Mara Vey strikes for 5 damage to Choir Cutthroat.')));
+  assert.ok(game.log.some((line) => line.includes('Sneak attack hit. Chance 95%, roll 1. Sneak. 5 damage to Choir Cutthroat.')));
   assert.equal(game.log.some((line) => line.includes('Not enough AP for that attack.')), false);
 }
 
@@ -200,12 +202,44 @@ function makeGame() {
 
   game.update(0);
   game.player.ap = 0;
-  actions = [['confirm']];
-  game.update(0);
+  const previousRandom = Math.random;
+  Math.random = () => 0;
+  try {
+    actions = [['confirm']];
+    game.update(0);
+  } finally {
+    Math.random = previousRandom;
+  }
 
   assert.equal(target.hp, 5);
   assert.equal(game.mode, 'combat');
   assert.equal(game.player.ap, game.player.maxAp);
-  assert.ok(game.log.some((line) => line.includes('Mara Vey strikes: 3 damage to Choir Cutthroat.')));
+  assert.ok(game.log.some((line) => line.includes("Mara Vey's Knife hit. Chance 70%, roll 1. 3 damage to Choir Cutthroat.")));
   assert.equal(game.log.some((line) => line.includes('Not enough AP for that attack.')), false);
+}
+
+{
+  const { game, target } = makeGame();
+  const clicks = [{ x: 320, y: 180, button: 2, shiftKey: false, ctrlKey: false }];
+  let actions = [];
+  game.input = {
+    consume: () => actions.shift() ?? [],
+    consumeClick: () => clicks.shift() ?? null,
+    isHeld: () => false
+  };
+
+  game.update(0);
+  const previousRandom = Math.random;
+  Math.random = () => 0.99;
+  try {
+    actions = [['confirm']];
+    game.update(0);
+  } finally {
+    Math.random = previousRandom;
+  }
+
+  assert.equal(target.hp, 8);
+  assert.equal(game.mode, 'combat');
+  assert.ok(game.log.some((line) => line.includes('Sneak attack missed. Chance 95%, roll 100. Sneak.')));
+  assert.equal(game.effects.at(-1)?.text, 'MISS');
 }

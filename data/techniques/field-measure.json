@@ -1,0 +1,14 @@
+{
+  "id": "field-measure",
+  "name": "Field Measure",
+  "type": "active",
+  "targets": ["self"],
+  "requirements": {
+    "anyFieldRatings": {
+      "firearms": 45,
+      "hostSigns": 45,
+      "medicine": 45
+    }
+  },
+  "summary": "Take one breath and check the room. Your next attack lands with better care."
+}

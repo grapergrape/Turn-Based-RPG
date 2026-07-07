@@ -1,0 +1,12 @@
+{
+  "id": "guard-break",
+  "name": "Guard Break",
+  "type": "active",
+  "targets": ["enemy"],
+  "requirements": {
+    "fieldRatings": {
+      "melee": 45
+    }
+  },
+  "summary": "Make a close strike that leaves the target open for follow-up attacks."
+}

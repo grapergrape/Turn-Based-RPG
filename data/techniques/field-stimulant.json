@@ -1,0 +1,12 @@
+{
+  "id": "field-stimulant",
+  "name": "Field Stimulant",
+  "type": "active",
+  "targets": ["self"],
+  "requirements": {
+    "fieldRatings": {
+      "medicine": 55
+    }
+  },
+  "summary": "Take one hard dose for extra action now. The crash follows soon after."
+}

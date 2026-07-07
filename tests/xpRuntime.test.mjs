@@ -181,7 +181,13 @@ function buildGameForCombatXp() {
 
 {
   const { game, enemy } = buildGameForCombatXp();
-  game.update(0);
+  const previousRandom = Math.random;
+  Math.random = () => 0;
+  try {
+    game.update(0);
+  } finally {
+    Math.random = previousRandom;
+  }
 
   assert.equal(enemy.isDead, true);
   assert.equal(game.player.progression.xp, 60);

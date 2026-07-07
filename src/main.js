@@ -2,6 +2,7 @@
 // upscaling, create the Game, load the level, and start the loop.
 
 import { Game } from './core/Game.js';
+import { devConsoleEnabled, installDevConsole } from './core/DevConsole.js';
 import { resolveDevStart } from './core/DevStart.js';
 import { buildSpriteAtlas } from './render/SpriteAtlas.js';
 import { INTERNAL_WIDTH, INTERNAL_HEIGHT } from './render/renderConfig.js';
@@ -71,6 +72,7 @@ async function start() {
     debugGrid: devStart.debugGrid
   });
   await game.boot();
+  installDevConsole(game, { enabled: devConsoleEnabled(window.location), target: window });
   const remaining = MIN_STARTUP_LOADING_MS - (nowMs() - startedAt);
   if (remaining > 0) await delay(remaining);
   game.start();
