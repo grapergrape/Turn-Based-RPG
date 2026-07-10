@@ -277,6 +277,16 @@ export function drawAshTree(ctx, cx, cy, seed) {
   drawShadowBlob(ctx, cx, cy + 5, shape.shadow[0], shape.shadow[1]);
   const top = drawTrunk(ctx, cx, cy, shape, rng);
   drawAshCanopy(ctx, cx, cy, seed, shape, rng, top);
+  // One tree in six is a wayside shrine: a small plank nailed at chest
+  // height with a cord-wrapped token. The road prays to what it passes.
+  if (seed % 6 === 1) {
+    px(ctx, cx - 7, cy - 26, PALETTE.outline, 9, 6);
+    px(ctx, cx - 6, cy - 25, PALETTE.woodLight, 7, 4); // the plank
+    px(ctx, cx - 4, cy - 24, PALETTE.stoneDark, 4, 1); // scratched line of prayer
+    px(ctx, cx - 3, cy - 22, PALETTE.hostGold, 2, 1); // the token
+    px(ctx, cx - 2, cy - 20, PALETTE.clothTan, 1, 3); // its cord tail
+  }
+
 }
 
 export function drawAshTreeStump(ctx, cx, cy, seed) {
@@ -300,6 +310,11 @@ export function drawAshTreeStump(ctx, cx, cy, seed) {
   px(ctx, cx - 8, topY + 1, PALETTE.stoneDark, 16, 2);
   px(ctx, cx - 5, topY + 3, PALETTE.rustDark, 10, 1);
   px(ctx, cx - 2, topY, PALETTE.rustDark, 3, 7);
+  // The heartwood weeps a thin black-gold seam where the saw went through:
+  // even the trees on this road carry the Imprint.
+  px(ctx, cx - 1, topY + 1, PALETTE.hostBlack, 1, 4);
+  px(ctx, cx, topY + 2, PALETTE.hostGold, 1, 2);
+  px(ctx, cx, topY + 8, PALETTE.hostGold, 1, 1); // one drop run down the bark
   px(ctx, cx - 7, topY, PALETTE.woodDark, 14, 1);
   px(ctx, cx - 5, topY + 2, PALETTE.woodDark, 10, 1);
   px(ctx, cx - 3, topY + 4, PALETTE.outline, 6, 1);
@@ -335,8 +350,14 @@ export function drawAshTreeStump(ctx, cx, cy, seed) {
     linePx(ctx, bx, cy - 20, bx + jitter(rng, 6), cy - 4, PALETTE.outline, 2);
     linePx(ctx, bx, cy - 20, bx + jitter(rng, 6), cy - 4, i % 2 ? PALETTE.stoneDark : PALETTE.rustDark, 1);
   }
-  px(ctx, cx + 5, cy - 22, PALETTE.hostBone, 2, 8);
-  px(ctx, cx + 3, cy - 18, PALETTE.hostBone, 6, 1);
+  // A road-prayer charm: two twigs lashed into a crooked cross, planted in
+  // the dirt against the stump. Never a clean floating mark.
+  px(ctx, cx + 15, cy + 3, PALETTE.void, 4, 1); // contact shadow
+  px(ctx, cx + 15, cy - 8, PALETTE.outline, 3, 11);
+  px(ctx, cx + 16, cy - 8, PALETTE.woodLight, 1, 10);
+  px(ctx, cx + 12, cy - 5, PALETTE.outline, 8, 2);
+  px(ctx, cx + 13, cy - 5, PALETTE.woodLight, 6, 1); // crossarm sits skewed
+  px(ctx, cx + 15, cy - 5, PALETTE.clothTan, 2, 2); // the lash knot
   px(ctx, cx - 7, cy - 14, PALETTE.hostGold, 2, 2);
   px(ctx, cx + 9, cy - 8, PALETTE.hostBlack, 3, 2);
 }
@@ -374,8 +395,18 @@ export function drawScrubBush(ctx, cx, cy, seed) {
     px(ctx, cx + dx, cy + dy, PALETTE.hostBlack, 3, 1);
     px(ctx, cx + dx + 1, cy + dy - 1, PALETTE.hostGold, 1, 1);
   }
-  px(ctx, cx - 3, cy - 20, PALETTE.hostBone, 2, 7);
-  px(ctx, cx - 6, cy - 17, PALETTE.hostBone, 8, 1);
+  // A scrap of coat wool snagged on a stalk: someone pushed through here
+  // rather than go around, and left part of themselves behind.
+  px(ctx, cx + 12, cy - 14, PALETTE.clothDark, 3, 2);
+  px(ctx, cx + 13, cy - 12, PALETTE.clothDark, 1, 2);
+  px(ctx, cx + 12, cy - 14, PALETTE.stoneDark, 1, 1);
+  // Lashed twig cross leaning into the bush, left by someone on the road.
+  px(ctx, cx - 14, cy + 2, PALETTE.void, 4, 1);
+  px(ctx, cx - 14, cy - 8, PALETTE.outline, 3, 10);
+  px(ctx, cx - 13, cy - 8, PALETTE.woodLight, 1, 9);
+  px(ctx, cx - 17, cy - 5, PALETTE.outline, 8, 2);
+  px(ctx, cx - 16, cy - 5, PALETTE.woodLight, 6, 1);
+  px(ctx, cx - 14, cy - 5, PALETTE.clothTan, 2, 2);
 }
 
 export function drawFallenAshLog(ctx, cx, cy, seed) {
@@ -435,10 +466,24 @@ export function drawFallenAshLog(ctx, cx, cy, seed) {
     linePx(ctx, cx + thorn[0], cy + thorn[1], cx + thorn[2], cy + thorn[3], PALETTE.outline, 3);
     linePx(ctx, cx + thorn[0], cy + thorn[1], cx + thorn[2], cy + thorn[3], PALETTE.stoneDark, 1);
   }
-  px(ctx, cx - 4, cy - 8, PALETTE.hostBone, 2, 8);
-  px(ctx, cx - 7, cy - 5, PALETTE.hostBone, 8, 1);
+  // Crooked twig cross wedged against the log.
+  px(ctx, cx - 17, cy + 4, PALETTE.void, 4, 1);
+  px(ctx, cx - 17, cy - 6, PALETTE.outline, 3, 10);
+  px(ctx, cx - 16, cy - 6, PALETTE.woodLight, 1, 9);
+  px(ctx, cx - 20, cy - 3, PALETTE.outline, 8, 2);
+  px(ctx, cx - 19, cy - 3, PALETTE.woodLight, 6, 1);
+  px(ctx, cx - 17, cy - 3, PALETTE.clothTan, 2, 2);
   px(ctx, cx + 9, cy - 10, PALETTE.hostGold, 2, 1);
   px(ctx, cx - 15, cy - 1, PALETTE.rustDark, 7, 1);
+  // The sawn end face: growth rings and the same thin black-gold seep the
+  // stumps carry. Whoever cut this log left it where it dropped.
+  px(ctx, x1 - 3, y1 - 6, PALETTE.outline, 8, 10);
+  px(ctx, x1 - 2, y1 - 5, PALETTE.woodMid, 6, 8);
+  px(ctx, x1 - 1, y1 - 4, PALETTE.woodDark, 4, 6);
+  px(ctx, x1, y1 - 3, PALETTE.rustDark, 2, 4);
+  px(ctx, x1, y1 - 2, PALETTE.hostGold, 1, 2);
+  px(ctx, x1 + 1, y1 + 1, PALETTE.hostBlack, 1, 1);
+
 }
 
 export function drawAshSapling(ctx, cx, cy, seed) {
@@ -460,9 +505,11 @@ export function drawAshSapling(ctx, cx, cy, seed) {
     linePx(ctx, cx + branch[0], cy + branch[1], bx, by, PALETTE.outline, 2);
     linePx(ctx, cx + branch[0], cy + branch[1], bx, by, PALETTE.stoneDark, 1);
   }
-  for (let i = 0; i < 5; i += 1) {
+  // A fuller ragged crown: seven clumps so the sapling reads as a young dead
+  // tree instead of a bare switch with lint on it.
+  for (let i = 0; i < 7; i += 1) {
     const tone = i === 0 ? PALETTE.stoneMid : i === 1 ? PALETTE.rustDark : PALETTE.woodDark;
-    leafClump(ctx, cx + lean + jitter(rng, 24), cy - height + 2 + i * 6 + jitter(rng, 7), 13 + Math.floor(rng() * 9), 8 + Math.floor(rng() * 5), tone, i === 1 || i === 3 ? PALETTE.stoneDust : null);
+    leafClump(ctx, cx + lean + jitter(rng, 26), cy - height + 2 + i * 5 + jitter(rng, 7), 16 + Math.floor(rng() * 10), 9 + Math.floor(rng() * 6), tone, i % 2 === 1 ? PALETTE.stoneDust : null);
   }
   linePx(ctx, cx - 3, cy - 4, cx - 16, cy + 4, PALETTE.outline, 2);
   linePx(ctx, cx - 2, cy - 4, cx - 14, cy + 3, PALETTE.woodDark, 1);
@@ -472,8 +519,14 @@ export function drawAshSapling(ctx, cx, cy, seed) {
   px(ctx, cx - 2, cy - 3, PALETTE.rustDark, 5, 2);
   px(ctx, cx + lean - 7, cy - height + 15, PALETTE.hostBlack, 3, 1);
   px(ctx, cx + lean + 6, cy - height + 26, PALETTE.hostGold, 2, 1);
-  px(ctx, cx + lean - 1, cy - height - 5, PALETTE.hostBone, 3, 9);
-  px(ctx, cx + lean - 5, cy - height - 1, PALETTE.hostBone, 10, 1);
+  // A prayer charm tied to the trunk with a cord, not a mark in the sky.
+  const charmY = cy - Math.floor(height * 0.45);
+  px(ctx, cx - 2, charmY - 4, PALETTE.outline, 2, 8);
+  px(ctx, cx - 1, charmY - 4, PALETTE.woodLight, 1, 7);
+  px(ctx, cx - 4, charmY - 2, PALETTE.outline, 6, 2);
+  px(ctx, cx - 3, charmY - 2, PALETTE.woodLight, 4, 1);
+  px(ctx, cx - 2, charmY - 2, PALETTE.clothTan, 2, 2); // cord wrap at the joint
+  px(ctx, cx - 3, charmY + 4, PALETTE.clothTan, 1, 1); // cord tail
 }
 
 export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
@@ -484,15 +537,28 @@ export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
 
   drawShadowBlob(ctx, cx, cy + 4, full ? 42 : 32, full ? 12 : 9);
 
+  // The whole clump shares one prevailing wind lean; dead grain combed the
+  // same way is what makes a field read as weather-beaten instead of random.
+  const wind = 2 + Math.floor(rng() * 4) * (rng() < 0.3 ? -1 : 1);
   for (let i = 0; i < count; i += 1) {
     const baseX = cx - 24 + Math.floor(rng() * 49);
     const baseY = cy - 6 + Math.floor(rng() * 13);
     const h = heightBase - 5 + Math.floor(rng() * 8);
-    const lean = -5 + Math.floor(rng() * 11);
+    const lean = wind + Math.floor(rng() * 4) - 1;
     const tipX = baseX + Math.floor(lean * 0.8);
     const tipY = baseY - h;
     const mid = i % 4 === 0 ? PALETTE.clothTan : i % 4 === 1 ? PALETTE.woodLight : PALETTE.stoneDust;
     const shade = i % 3 === 0 ? PALETTE.woodDark : PALETTE.woodMid;
+
+    if (i % 6 === 5) {
+      // A snapped stalk: broken at two-thirds height, the head hanging.
+      const bendY = baseY - Math.floor(h * 0.62);
+      linePx(ctx, baseX, baseY, baseX + Math.floor(lean * 0.4), bendY, PALETTE.outline, 2);
+      linePx(ctx, baseX, baseY, baseX + Math.floor(lean * 0.4), bendY, shade, 1);
+      linePx(ctx, baseX + Math.floor(lean * 0.4), bendY, baseX + Math.floor(lean * 0.4) + 4, bendY + 4, shade, 1);
+      px(ctx, baseX + Math.floor(lean * 0.4) + 3, bendY + 4, mid, 2, 2); // hanging head
+      continue;
+    }
 
     linePx(ctx, baseX, baseY, tipX, tipY, PALETTE.outline, 2);
     linePx(ctx, baseX, baseY, tipX, tipY, shade, 1);
@@ -501,7 +567,7 @@ export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
     const headW = full ? 3 : 2;
     px(ctx, tipX - 1, tipY - 3, PALETTE.outline, headW + 1, 5);
     px(ctx, tipX, tipY - 2, mid, headW, 3);
-    if (i % 5 === 0) px(ctx, tipX + 1, tipY - 4, PALETTE.hostBone, 1, 1);
+    if (i % 5 === 0) px(ctx, tipX + 1, tipY - 4, PALETTE.hostGold, 1, 2); // Host-touched grain
   }
 
   for (const band of [

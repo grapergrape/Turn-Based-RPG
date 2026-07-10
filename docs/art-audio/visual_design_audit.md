@@ -1,470 +1,626 @@
 # Visual Design Audit
 
-Date: 2026-07-03
+Date: 2026-07-10 (honest re-baseline; supersedes the 2026-07-03 pass)
 
-This audit rates the current runtime-drawn visual set against `game_art_skill/SKILL.md`, `docs/LORE_INTEGRATION.md`, and `docs/lore/the_host_story_bible.md`.
+This audit rates the runtime-drawn visual set against `game_art_skill/SKILL.md`
+(especially Section 22, the honest-review rubric added in this pass),
+`docs/LORE_INTEGRATION.md`, and `docs/lore/the_host_story_bible.md`.
 
-Scope covered:
+## Why the re-baseline
 
-- 15 floor styles from `src/render/primitives/terrain.js`.
-- 130 static renderable catalog kinds from `src/render/spriteCatalog.js`.
-- 17 ground item pickup models from `src/render/primitives/groundItems.js`.
-- 38 actor and enemy data records from `data/actors/` and `data/enemies/`.
-- 58 atlas and reusable human model ids from `src/render/SpriteAtlas.js`.
-- Main UI surfaces drawn by `src/render/UIRenderer.js` and `src/render/ui/*`.
+The 2026-07-03 pass declared all 272 audited rows "verified at 9/10". Play
+testing rejected that: the cut-down Opened Saint left a small cartoon skeleton,
+the bell stairwell read as a ring of sticks, character customization was
+invisible in game. Scores below use the full scale honestly: **4 is average**,
+10 is an exemplar. Scores are per family, with named outliers; a row-level 9
+claim without a fresh render behind it is worthless and none are made here.
 
-Evidence used:
+## Method
 
-- Source inventory from `SPRITE_CATALOG`, `FLOOR_STYLE_IDS`, `SPRITE_ATLAS_IDS`, actor/enemy JSON, level objects, and item `groundModel` values.
-- Isolated local screenshot galleries generated under `.ai/visual-audit/`.
-- Follow-up galleries from the current uplift pass: `ground-items-upgraded.png`, `ground-items-upgraded-v2.png`, `floors-upgraded-v4.png`, `static-catalog-current-v2.png`, `decals-upgraded-v3.png`, `plants-upgraded.png`, `plants-small-furniture-upgraded-v2.png`, `small-furniture-upgraded.png`, and `host-atlas-upgraded.png`.
-- Floor scene captures from the current pass: `scene-long-ash-road-floors-v4.png`, `scene-censure-camp-floors-v4.png`, `scene-ash-chapel-floors-v4.png`, and `scene-long-ash-cave-floors-v4.png`.
-- Ritual, light, and Host-growth evidence from the current pass: `ritual-light-host-upgraded-v1.png`, `scene-ash-chapel-ritual-light-v2.png`, `scene-ash-cellar-pentagram-v1.png`, and `scene-censure-campfire-v2.png`.
-- Ground-item evidence from the current pass: `ground-items-upgraded-v3.png`, `scene-ground-items-road-dropped-v3.png`, and `scene-ground-items-evidence-level-v4.png`.
-- Plant evidence from the current pass: `plants-upgraded-v2.png` and `scene-plants-evidence-level-v3.png`.
-- Fixture evidence from the current pass: `fixtures-upgraded-v1.png` and `scene-fixtures-evidence-level-v2.png`.
-- Terrain block evidence from the current pass: `terrain-blocks-upgraded-v1.png` and `scene-terrain-blocks-evidence-v2.png`.
-- Prop evidence from the current pass: `props-upgraded-v1.png` and `scene-props-evidence-v2.png`.
-- Structure evidence from the current pass: `structures-core-upgraded-v1.png` and `scene-structures-core-evidence-v1.png`.
-- Road and chapel structure evidence from the current pass: `structures-road-chapel-upgraded-v1.png` and `scene-road-chapel-structures-evidence-v1.png`.
-- Exterior structure evidence from the current pass: `structures-exterior-upgraded-v2.png`, `scene-exterior-structures-farm-evidence-v1.png`, and `scene-exterior-structures-cave-evidence-v1.png`.
-- Furniture evidence from the current pass: `furniture-core-upgraded-v1.png`, `scene-furniture-core-evidence-v1.png`, `furniture-interior-upgraded-v1.png`, `scene-furniture-interior-evidence-v1.png`, `farm-tool-furniture-upgraded-v1.png`, and `scene-farm-tool-furniture-evidence-v1.png`.
-- Human gore evidence from the current pass: `gore-human-upgraded-v1.png` and `scene-gore-human-evidence-v1.png`.
-- Host creature prop evidence from the current pass: `host-creature-props-upgraded-v1.png` and `scene-host-creature-props-evidence-v1.png`.
-- Decal evidence from the current pass: `decals-upgraded-v2.png` and `scene-decals-evidence-v2.png`.
-- Host actor evidence from the current pass: `host-actors-current-v1.png` and `scene-host-actors-current-v1.png`.
-- UI evidence from the current pass: `ui-dialogue-verified-v1.png`, `ui-trade-verified-v1.png`, `ui-loot-verified-v1.png`, and `ui-overlays-verified-v2.png`, alongside the earlier HUD, inventory, journal, loading, briefing, and creation captures.
-- Human actor evidence from the current pass: `human-data-actors-current-v1.png`, `human-atlas-current-v1.png`, and `scene-human-faction-current-v1.png`.
-- Representative in-scene screenshots for Ash Chapel, catacombs, cellar, Censure camp, tent interiors, Long Ash road, cave, farmhouse, and barn.
-- `npm run check`, which passed.
-- Static searches for inline colors, gradients/arcs/blur, `Math.random`, browser text, and dash violations in `data/` and `src/`.
+- Every catalog category, floor style, ground-item model, and atlas actor was
+  rendered fresh with `.ai/map-review/preview-catalog.html` (added this pass;
+  data-driven from `SPRITE_CATALOG`, so new kinds appear automatically).
+- Player customization rendered clothed and bare with
+  `.ai/map-review/preview-player-variants.html` (added this pass).
+- In-scene captures via `.ai/map-review/capture-scene.html` for the bell room
+  and the chapel nave.
+- Judged from the screenshots at gameplay zoom, never from the code.
 
-Scoring:
+## Family scores (4 = average)
 
-- `10`: exemplar. It should be copied as a standard.
-- `8-9`: strong. It has a distinct silhouette, material read, and strong setting fit.
-- `6-7`: good enough to keep, but not a standard. It is readable in scene and has some authored identity.
-- `4-5`: functional placeholder quality. It obeys rules, but is generic, repetitive, too subtle, or weak at gameplay scale.
-- `1-3`: poor or misleading. It needs redesign, not polish.
-- `0`: does not render as a valid model.
+| Family | Score | Notes |
+|---|---:|---|
+| Animated actors (humans, factions) | 6.5 | Strongest family. Role kits read; distinct silhouettes per faction. |
+| Host actors (penitents, rats, wolves) | 6.5 | Vale Imprint vocabulary present; bone halos and asymmetry read. |
+| Terrain wall blocks | 6.5 | Material identity holds (chapel stone, barn plank, canvas). |
+| Wall fixtures | 6 | Window and safe strong; `wall-stair-door` a dark slab (4). |
+| Standing cross-martyr | 8.5 | The exemplar. Goat skull, bone-wing ribs, gold pin light. |
+| Fallen cross-martyr (cut down) | 7 | **Fixed this pass** (was 1: shrunken cartoon skeleton). Man-sized fallen opened body, pool, drag smear. |
+| Stone stairwell (bell stairs) | 7 | **Fixed this pass** (was 2: oval ring of sticks). Masonry portal, treads into the dark, rope rail. |
+| Broken bell | 7.5 | **Fixed this pass** (was 3: read as red tarp tent). True bell profile, specular streak, hollow mouth. |
+| Bell rope | 5 | Rope + pulley read at zoom; frayed end splays oddly in scene. Backlog. |
+| Bone pile / ossuary heap | 5 | **Improved this pass** (was 2: white confetti). Skull, femurs, rib arc now namable; mound silhouette still weak. Backlog. |
+| Skeleton (gore) | 5.5 | **Improved this pass**: decay stain and rotted coat rag bind the bones; white speckle removed. |
+| Other gore (corpse, victims, dead cultist) | 5.5 | Serviceable; corpse can read as a log at distance. |
+| Calcified creature props | 6.5 | Crossroad-brother wing silhouette is strong (7.5). |
+| Host growth | 3 | Reads as a dark scratch in isolation (better in scene clusters). Backlog: fleshy mass + gold vein. |
+| Floors | 6 | **wheat-field fixed this pass** (was 2: flat saturated mustard; now ashen dead straw). **graveyard-earth seams dimmed** (bone-white lines read as glowing worms; now packed-edge stoneDust). **cave-river calmed** (7 bright bands and 13 glints per tile cut to 4 dim lines and 6 glints). |
+| Decals | 4.5 | Rule-abiding but most are invisible at gameplay zoom; acceptable for ground texture, not as story marks. |
+| Plants | 5.5 | **Floating bone-white "+" removed from all five kinds this pass**; now lashed twig charms planted in dirt. Sapling/scrub still thin (4). |
+| Structures (graveyard, farm blocks) | 5.5 | Building blocks fine in assembly; `graveyard-wall` fragmentary (3), `devil-target` weak read (4). |
+| Furniture | 5 | Broad placeholder middle. Outliers: chapel-banner (7), reliquary (6.5); `hay-rick` **fixed this pass** (was 2: yellow blob; now conical ashen stack with pole, ties, rot hole, 6); `chapel-font` unreadable at zoom (3, backlog), `field-harrow` odd caterpillar (3, backlog). |
+| Ground items | 5.5 | Readable minis. **Coat/hood pickups fixed this pass** to match the worn kit colors (were blue guide-cloth). Vial/ball keep blue as glass/curio; acceptable. |
+| Ritual marks | 5 | Pentagram fine; blood-sigil and ritual-circle small and dark (4). |
+| Lights | 6.5 | Candle cluster is strong; campfire flame slightly icon-like. |
+| UI surfaces (HUD, inventory, dialogue, journal) | 7 | Re-reviewed this pass from the evidence captures: cohesive riveted hard-pixel chrome, bitmap font, no browser leakage; the paper doll reflects the real player bake. Honest 7, not the old 9: panels are spare, and dialogue lacks the era's signature NPC portraits (the single biggest UI uplift available). |
+| Player customization (in game, clothed) | 7 | **Fixed this pass** (was 1: traits pixel-invisible under the default kit). See below. |
 
-## Top Findings
+## Fixed this pass (2026-07-10)
 
-1. The playable slice renders and the visual system is broadly coherent, but the first scoring pass was too forgiving. Most assets are functional hand-built placeholders, not finished 7s and 8s. The revised scores use the full scale.
-2. The two strict model failures from the baseline audit have been fixed: `player` and `host-penitent-bastion` now resolve in the atlas and render in `host-atlas-upgraded.png`.
-3. The actual standout pieces are narrow: `cross-martyr`, `host-touched-penitent`, calcified martyr forms, `rusted-reliquary`, `candle-cluster`, `damaged-altar`, `bone-niche`, and the journal screen.
-4. Floor textures have completed a verified 9/10 uplift pass. The `floors-upgraded-v4.png` gallery and current scene captures show all 15 floor styles with stronger material identity, scene-useful variation, and hard-pixel wear marks.
-5. The ritual, light, and Host-growth pass raised the first non-floor static rows to verified 9/10. It replaced the vector-stroked Choir pentagram with hard-pixel linework and strengthened the authored candle, campfire, ritual-bowl, Host-growth, blood-sigil, and ritual-circle reads.
-6. The 130-kind static renderable catalog now has a current 8+ evidence pass in `static-catalog-current-v2.png`, with more focused proof for floors, pickups, plants, structures, and furniture in the other galleries.
-7. Ground item pickup models now have a verified 9/10 uplift pass in `ground-items-upgraded-v3.png` and the all-model evidence level. Every pickup model has a readable physical silhouette at gameplay scale, including `ring`, `necklace`, `chit`, and `token`.
-8. Plant catalog rows now have a verified 9/10 uplift pass in `plants-upgraded-v2.png` and `scene-plants-evidence-level-v3.png`. The six plant kinds now read as authored dead growth rather than generic bush or stump markers.
-9. Wall fixture rows now have a verified 9/10 uplift pass in `fixtures-upgraded-v1.png` and `scene-fixtures-evidence-level-v2.png`. The chapel fixtures and canvas flap have stronger recessed depth, state reads, and hardware at gameplay scale.
-10. Terrain block rows now have a verified 9/10 uplift pass in `terrain-blocks-upgraded-v1.png` and `scene-terrain-blocks-evidence-v2.png`. Chapel, cave, farm, barn, shed, and canvas wall blocks now have stronger cap wear, base grime, material seams, and readable top-down CRPG silhouettes.
-11. Prop rows now have a verified 9/10 uplift pass in `props-upgraded-v1.png` and `scene-props-evidence-v2.png`. Rubble, cave stone teeth, ossuary piles/niches, the loose flagstone stash, and the blue key item all have stronger silhouettes and interaction-scale reads.
-12. The first structure cluster now has a verified 9/10 uplift pass in `structures-core-upgraded-v1.png` and `scene-structures-core-evidence-v1.png`. Chapel, graveyard, catacomb, and stairwell pieces now have stronger silhouettes, chipped masonry, ground contact, and traversal reads.
-13. Road and chapel structure rows now have a verified 9/10 uplift pass in `structures-road-chapel-upgraded-v1.png` and `scene-road-chapel-structures-evidence-v1.png`. Barricades, bells, ropes, warning signs, chapel doors, and the damaged altar now have stronger hardware, chipped surfaces, state reads, and interaction-scale silhouettes.
-14. Exterior structure rows now have a verified 9/10 uplift pass in `structures-exterior-upgraded-v2.png`, `scene-exterior-structures-farm-evidence-v1.png`, and `scene-exterior-structures-cave-evidence-v1.png`. Farm blocks, sheds, canvas tents, doors, fences, road signs, the infected cave mouth, and the training target now have stronger material wear, state reads, and scene-scale silhouettes.
-15. First furniture rows now have a verified 9/10 uplift pass in `furniture-core-upgraded-v1.png` and `scene-furniture-core-evidence-v1.png`. Chapel, camp, and storage furniture now has stronger hard-pixel planks, straps, locks, patches, debris, and tabletop or bedroll reads.
-16. Interior and chapel furniture rows now have a verified 9/10 uplift pass in `furniture-interior-upgraded-v1.png` and `scene-furniture-interior-evidence-v1.png`. Dining, kitchen, pantry, wash, banner, lectern, font, and barrel props now have stronger bracing, hardware, chipped surfaces, clutter, debris, and interaction-state reads.
-17. Farm-tool furniture rows now have a verified 9/10 uplift pass in `farm-tool-furniture-upgraded-v1.png` and `scene-farm-tool-furniture-evidence-v1.png`. Carts, hay, plows, harrows, troughs, pumps, racks, dummies, wheels, and woodpiles now have stronger tool wear, hardware, tied material, spill debris, and farmyard silhouettes.
-18. Human gore rows now have a verified 9/10 uplift pass in `gore-human-upgraded-v1.png` and `scene-gore-human-evidence-v1.png`. Corpses, skeletons, cult victims, dead cultists, bound captives, and crucified farm victims now have stronger hard-pixel wounds, human-scale silhouettes, hardware, readable clothing, base blood, and debris.
-19. Host creature prop rows now have a verified 9/10 evidence pass in `host-creature-props-upgraded-v1.png` and `scene-host-creature-props-evidence-v1.png`. Calcified human forms and dead Host wolf variants already meet the 9 bar with human-scale silhouettes, broken halos, bone cavities, black-gold seams, and asymmetric Vale Imprint reads.
-20. Decal rows now have a verified 9/10 uplift pass in `decals-upgraded-v2.png` and `scene-decals-evidence-v2.png`. The flat floor marks now read as authored surface events with hard-pixel material cues, not generic floor noise.
-21. Host actor rows now have a verified 9/10 evidence pass in `host-actors-current-v1.png` and `scene-host-actors-current-v1.png`. Penitent, Host rat, and Host wolf variants hold up across all eight facings and in-scene scale with readable Vale Imprint silhouettes.
-22. UI surface rows now have a verified 9/10 evidence pass in `ui-dialogue-verified-v1.png`, `ui-trade-verified-v1.png`, `ui-loot-verified-v1.png`, and `ui-overlays-verified-v2.png`. The interface reads as a cohesive late-90s CRPG canvas UI with hard-pixel chrome, dense but legible grouping, and no browser UI leakage.
-23. Human, cultist, and raider rows now have a verified 9/10 evidence pass in `human-data-actors-current-v1.png`, `human-atlas-current-v1.png`, and `scene-human-faction-current-v1.png`. Named Censure workers, survivors, Choir cultists, and Red Tithe raiders all carry distinct role kits and remain readable in scene.
+1. **Character customization now shows in game.** Root cause: the default kit
+   (censure-hood + coat + vest) erased every trait: hood forced "hooded" hair
+   and hid facial hair; bust never drew clothed; vest/harness/pendant styles
+   were computed but never painted. Fixes in `spriteBake.js`: the hood is worn
+   open (front crown shows real hair, scalp when shaved, loose locks spill),
+   beards render hooded, the bust widens the outer layer's silhouette in 4
+   buckets, vest/harness strap/pendant now paint. Verified: 6 of 9 creation
+   fields change the clothed bake (anatomy and groin are legitimately under
+   clothing; breast steps change per bucket). Evidence:
+   `.ai/visual-audit/player-customization-clothed-v1.png`.
+2. **Fallen Opened Saint** (`drawFallenSaint`, goreOssuary.js): man-sized fallen
+   opened body with collapsed rib wing, goat skull cheek-down, dying gold pin,
+   blood pool and drag smear, torn spikes left in the beam.
+3. **Stone stairwell** (`drawStoneStairwell`, furniture.js): masonry portal with
+   block jambs, heavy lintel, treads climbing into the dark, rope rail on iron
+   pins, worn landing slab.
+4. **Broken bell** (`drawBrokenBell`, propsChapel.js): true bell profile
+   (shoulder, waist, late sound-bow flare), specular streak, cast ridge lines,
+   hollow void mouth. Crack, wedge, and sabotage brace kept.
+5. **Bone pile** (`drawBonePile`, goreOssuary.js): raised mound with black
+   gaps, one skull facing out, one half-buried, femur across the crown, rib
+   arc, dried blood and cut cord.
+6. **Wheat field floor** (terrain.js): base moved from saturated hostGold to
+   ashen straw; gold only on sparse Host-touched grain heads.
+7. **Plant prayer marks** (plants.js, all five sites): floating bone-white "+"
+   replaced with lashed twig crosses, corded, planted with contact shadows (or
+   tied to the sapling trunk).
 
-## Current Uplift Pass Notes
+## Second fix pass (2026-07-10, same day)
 
-The current pass fixed the hard atlas failures and upgraded broad low-scoring families. The full 272-row audit is now verified at 9/10, with rows raised only after fresh isolated and in-scene evidence.
+Every backlog item was addressed and re-verified with fresh renders
+(`.ai/visual-audit/honest-2026-07-10-backlog-*.png`):
 
-- Fixed atlas ids: `player`, `host-penitent-bastion`.
-- Verified 9 texture pass: all 15 floor styles in `src/render/primitives/terrain.js`.
-- Verified 9 ritual and light pass: `ritual-bowl`, `candle-cluster`, `campfire`, `host-growth`, `choir-pentagram`, `blood-sigil`, and `ritual-circle`.
-- Verified 9 ground-item pass: the `ground-item` wrapper and all 17 pickup models in `src/render/primitives/groundItems.js`.
-- Verified 9 plant pass: all 6 plant kinds in `src/render/primitives/plants.js`.
-- Verified 9 wall fixture pass: `wall-window`, `wall-safe`, `wall-stash`, `wall-stair-door`, and `canvas-tent-flap`.
-- Verified 9 terrain block pass: `wall`, `wall-broken`, `cave-wall`, `farmhouse-interior-wall`, `barn-interior-wall`, `shed-interior-wall`, and `canvas-tent-interior-wall`.
-- Verified 9 prop pass: `rubble-pile`, `cave-stalagmite`, `cave-stalactites`, `bone-pile`, `bone-niche`, `loose-flagstone`, and `blue-ball`.
-- Verified 9 structure pass: `cracked-column`, `saint-statue`, `stone-tomb`, `graveyard-wall`, `calcified-grave-plot`, `calcified-headstone`, `graveyard-tomb-slab`, `graveyard-catacomb-mouth`, `graveyard-bone-marker`, `graveyard-remnant-cross`, and `stone-stairwell`.
-- Verified 9 road and chapel structure pass: `quarantine-barricade`, `broken-bell`, `bell-rope`, `quarantine-sign`, `chapel-double-door`, and `damaged-altar`.
-- Verified 9 exterior structure pass: `farm-building-block`, `farmhouse-building-block`, `barn-building-block`, `tool-shed-building-block`, `storage-shed-building-block`, `grain-shed-building-block`, `canvas-tent-building-block`, `farm-door`, `farm-fence`, `road-sign-post`, `infected-cave-entrance`, and `devil-target`.
-- Verified 9 first furniture pass: `broken-pew`, `rusted-reliquary`, `field-satchel`, `rusted-crate`, `sealed-storage-crate`, `canvas-tent`, `camp-bedroll`, `settlement-table`, and `low-stool`.
-- Verified 9 interior and chapel furniture pass: `dining-table`, `dining-bench`, `kitchen-counter`, `farm-prep-table`, `kitchen-hearth`, `farm-kitchen-hearth`, `pantry-shelf`, `wash-tub`, `chapel-banner`, `prayer-lectern`, `chapel-font`, and `rusted-barrel`.
-- Verified 9 farm-tool furniture pass: `field-cart`, `hay-rick`, `field-plow`, `field-harrow`, `feed-trough`, `water-pump`, `tool-rack`, `training-dummy`, `wagon-wheel`, and `woodpile`.
-- Verified 9 human gore pass: `corpse`, `cult-victim`, `farm-cross-victim`, `skeleton`, `dead-cultist`, and `bound-victim`.
-- Verified 9 Host creature prop pass: `calcified-penitent`, `calcified-crossroad-brother`, `calcified-scarecrow-brother`, `calcified-grave-body`, `dead-host-wolf-spider`, `dead-host-wolf-maw`, `dead-host-wolf-ribsplit`, and `host-wolf-remains`.
-- Verified 9 decal pass: `blood-stain`, `road-dust`, `glass-debris`, `dust`, `rubble-decal`, `floor-crack`, `scorch-mark`, `wax-stain`, `paper-scraps`, `host-vein-seam`, `graveyard-packed-ash`, `graveyard-path-stones`, `graveyard-root-seam`, `graveyard-prayer-scratch`, `cave-flowstone`, `chaff-scatter`, `trampled-mud`, `practice-scars`, `spent-casings`, `chalk-drawing`, `machine-oil`, and `cobweb`.
-- Verified 9 Host actor pass: `host-penitent-bastion`, `host-touched-penitent`, `host-rat-sixlegs`, `host-rat-throat-maw`, `host-rat-tendril-walker`, `host-wolf-spider`, `host-wolf-maw`, and `host-wolf-ribsplit` across actor/enemy records and reusable atlas ids.
-- Verified 9 UI pass: HUD command panel, message log, status panel, command panel, dialogue, inventory, journal, loading, creation, trade, loot, context action hints, world speech bubbles, and floating feedback.
-- Verified 9 human and faction actor pass: named Censure actors, catacombs survivors, player/Mara rows, Choir human enemies, Red Tithe rows, base settlement variants, and all reusable human model ids.
-- Verified 9 uplift families: floor styles, all 130 static renderable catalog kinds, all 17 ground item pickup models, actor/enemy data records, reusable atlas model ids, and UI surfaces.
-- Current target status: all 272 audited rows are verified at 9/10.
-- New evidence files: `.ai/visual-audit/floors-upgraded-v4.png`, `.ai/visual-audit/scene-long-ash-road-floors-v4.png`, `.ai/visual-audit/scene-censure-camp-floors-v4.png`, `.ai/visual-audit/scene-ash-chapel-floors-v4.png`, `.ai/visual-audit/scene-long-ash-cave-floors-v4.png`, `.ai/visual-audit/ritual-light-host-upgraded-v1.png`, `.ai/visual-audit/scene-ash-chapel-ritual-light-v2.png`, `.ai/visual-audit/scene-ash-cellar-pentagram-v1.png`, `.ai/visual-audit/scene-censure-campfire-v2.png`, `.ai/visual-audit/ground-items-upgraded-v3.png`, `.ai/visual-audit/scene-ground-items-road-dropped-v3.png`, `.ai/visual-audit/scene-ground-items-evidence-level-v4.png`, `.ai/visual-audit/plants-upgraded-v2.png`, `.ai/visual-audit/scene-plants-evidence-level-v3.png`, `.ai/visual-audit/fixtures-upgraded-v1.png`, `.ai/visual-audit/scene-fixtures-evidence-level-v2.png`, `.ai/visual-audit/terrain-blocks-upgraded-v1.png`, `.ai/visual-audit/scene-terrain-blocks-evidence-v2.png`, `.ai/visual-audit/props-upgraded-v1.png`, `.ai/visual-audit/scene-props-evidence-v2.png`, `.ai/visual-audit/structures-core-upgraded-v1.png`, `.ai/visual-audit/scene-structures-core-evidence-v1.png`, `.ai/visual-audit/structures-road-chapel-upgraded-v1.png`, `.ai/visual-audit/scene-road-chapel-structures-evidence-v1.png`, `.ai/visual-audit/structures-exterior-upgraded-v2.png`, `.ai/visual-audit/scene-exterior-structures-farm-evidence-v1.png`, `.ai/visual-audit/scene-exterior-structures-cave-evidence-v1.png`, `.ai/visual-audit/furniture-core-upgraded-v1.png`, `.ai/visual-audit/scene-furniture-core-evidence-v1.png`, `.ai/visual-audit/furniture-interior-upgraded-v1.png`, `.ai/visual-audit/scene-furniture-interior-evidence-v1.png`, `.ai/visual-audit/farm-tool-furniture-upgraded-v1.png`, `.ai/visual-audit/scene-farm-tool-furniture-evidence-v1.png`, `.ai/visual-audit/gore-human-upgraded-v1.png`, `.ai/visual-audit/scene-gore-human-evidence-v1.png`, `.ai/visual-audit/host-creature-props-upgraded-v1.png`, `.ai/visual-audit/scene-host-creature-props-evidence-v1.png`, `.ai/visual-audit/static-catalog-current-v2.png`, `.ai/visual-audit/plants-small-furniture-upgraded-v2.png`, `.ai/visual-audit/decals-upgraded-v3.png`, `.ai/visual-audit/plants-upgraded.png`, `.ai/visual-audit/small-furniture-upgraded.png`, `.ai/visual-audit/host-atlas-upgraded.png`, `.ai/visual-audit/structures-fixtures-tents-upgraded.png`, `.ai/visual-audit/chapel-graveyard-ritual-upgraded-v2.png`, `.ai/visual-audit/actor-atlas-upgraded-v2.png`, `.ai/visual-audit/ui-loading-upgraded.png`, `.ai/visual-audit/ui-briefing-upgraded.png`, `.ai/visual-audit/ui-creation-upgraded.png`, `.ai/visual-audit/ui-hud-upgraded.png`, `.ai/visual-audit/ui-inventory-upgraded.png`, and `.ai/visual-audit/ui-journal-upgraded.png`.
-- Latest decal evidence files: `.ai/visual-audit/decals-upgraded-v2.png` and `.ai/visual-audit/scene-decals-evidence-v2.png`.
-- Latest Host actor evidence files: `.ai/visual-audit/host-actors-current-v1.png` and `.ai/visual-audit/scene-host-actors-current-v1.png`.
-- Latest UI evidence files: `.ai/visual-audit/ui-dialogue-verified-v1.png`, `.ai/visual-audit/ui-trade-verified-v1.png`, `.ai/visual-audit/ui-loot-verified-v1.png`, and `.ai/visual-audit/ui-overlays-verified-v2.png`.
-- Latest human/faction actor evidence files: `.ai/visual-audit/human-data-actors-current-v1.png`, `.ai/visual-audit/human-atlas-current-v1.png`, and `.ai/visual-audit/scene-human-faction-current-v1.png`.
-- Verification: `npm run check` passed after the latest source and data validation pass.
+- `host-growth` 3 → 5.5: rooted fleshy mound with root lobes, living wound,
+  black-gold seams, thicker bone thorns with skin sockets.
+- `graveyard-wall` 3 → 6: waist-high massed masonry with block courses.
+- `devil-target` 4 → 7: bold crude red devil (solid body, crooked horns,
+  scrawled pitchfork), punched-through shot holes, a tally of misses in the
+  corner. The absurd humor lives in the crudeness.
+- `chapel-font` 3 → 5.5: taller pedestal, wider lit basin, defaced carved
+  cross.
+- `field-harrow` 3 → 5: heavy timber lattice dominates; tines are slim dark
+  teeth pointing into the soil.
+- `bell-rope` 5 → 6: the frayed "claw" is now a hard whipping knot over a
+  limp coil of slack on the stone.
+- `bone-pile` 5 → 6: mound enlarged and raised.
+- `wall-stair-door` 4 → 5: mouth treads carry stoneLight/stoneDust so the
+  fixture no longer collapses into a dark slab.
+- `blood-sigil` / `ritual-circle` 4 → 5.5: every ritual stroke carries a
+  rustMid wet edge (hostRed on hostBlack was nearly invisible).
+- `ash-sapling` 4 → 5.5: fuller ragged crown (7 clumps).
+- `corpse` 5 → 6: lit cheekbone, slack mouth, split legs with a bent shin.
+- `cobweb` 3 → 4.5: raised alpha, wrapped husk and caught dust.
+- `scrub-bush`: left as-is on review; its dark mass is thematically correct
+  for dead growth. Texture decals (road-dust, dust, trampled-mud,
+  practice-scars, path-stones) left subtle on purpose: they are ground
+  texture, and louder marks would read as noise.
 
-## Floor Styles
+## Third pass: the high-frequency surface (2026-07-10, same day)
 
-| Texture | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `stone` | Ruined stone floor | Broken slabs, edge wear, rubble chips, grime, and hard scuffs | 9 |
-| `ash-dirt` | Ash-choked earth | Wind-streaked ash, bone flecks, scratch marks, and dirty patches | 9 |
-| `ash-road` | Old road surface | Worn road slabs, cracks, ash grit, skid marks, and varied seams | 9 |
-| `road-shoulder` | Road edge | Raised hard shoulder with gravel, footprints, bone flecks, and dark rim | 9 |
-| `wheat-field` | Dead field rows | Gold-brown rows with stalk pixels, row rhythm, and dry field variation | 9 |
-| `furrow-field` | Worked field | Dark furrows, row structure, stalk remnants, and worked-soil patches | 9 |
-| `forest-floor` | Ash forest ground | Root tangles, litter, bone flecks, scratch marks, and dark leaf mass | 9 |
-| `graveyard-earth` | Grave soil | Cold burial seams, stone flecks, root traces, and grave-soil patches | 9 |
-| `farm-plank` | Interior plank floor | Warped planks, nails, board seams, scratches, and directional highlights | 9 |
-| `packed-earth` | Camp floor | Camp traffic, peg holes, scuffs, footprints, bone flecks, and dirt patches | 9 |
-| `mud-track` | Mud path | Dark wet lanes, hard bands, scuffs, and tracked mud marks | 9 |
-| `ash-gravel` | Gravel camp pad | Raised gravel flecks, pale chips, worn patches, and hard edge wear | 9 |
-| `worn-canvas` | Tent floor | Heavy canvas panels, seams, patches, rivet-like tie points, and stains | 9 |
-| `cave-stone` | Cave floor | Blue-grey stone bands, cracks, wet patches, and readable cave facets | 9 |
-| `cave-river` | Shallow cave water | Hard blue water bands, pale current streaks, stones, and dark bank edges | 9 |
+Usage counts across `data/levels/` rank what the player actually sees:
+wheat-clump (878 placements), farm-fence (488), ash-tree (379, already
+strong), scrub-bush (266), skeleton (191). Raising these lifts more screen
+area than everything else combined. Evidence:
+`.ai/visual-audit/honest-2026-07-10-surface-pass.png`.
 
-## Static Renderable Catalog
+- `wheat-clump` 5 → 6.5: the whole clump now shares one prevailing wind lean
+  (weather-beaten, not random), one-in-six stalks snapped with a hanging
+  head, rare Host-gold grain echoing the field floor accents.
+- `farm-fence` 5 → 6: seeded run variety: snapped low-rail variant sagging to
+  the dirt with pale split ends, ash drifted at the windward post, a knotted
+  prayer cord on some top rails.
+- `kitchen-hearth` 4 → 5.5 and `farm-kitchen-hearth` 5 → 6: banked embers
+  (rust + gold + one live coal) and soot licked up the breast; a hearth with
+  no fire read is a black box.
+- `sealed-storage-crate` 5 → 6: stencilled requisition mark and a red wax
+  seal over the hasp cord; "sealed" is now visible, not just named.
+- `broken-pew` 5 → 6: seeded leavings: a hymn sheet still on the seat, or a
+  dropped prayer cord where the rail broke.
 
-### Terrain Blocks
+## Fourth pass: lighting and interiors (2026-07-10, same day)
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `wall` | Chapel wall block | Tall stone prism with chipped cap wear, cracked courses, grime, scuffed base, rubble, and clear upper-left light | 9 |
-| `wall-broken` | Broken chapel wall | Low broken wall with jagged cap damage, exposed masonry, rubble scatter, dark gaps, and distinct damaged silhouette | 9 |
-| `cave-wall` | Cave wall | Vertical ribbed rock face with hard facets, dark seams, wet chips, cap wear, and cave-specific shadow read | 9 |
-| `farmhouse-interior-wall` | Farmhouse wall | Pale timber/plaster wall with studs, patches, nail heads, seams, grime, and lit face contrast | 9 |
-| `barn-interior-wall` | Barn wall | Dark plank wall with roof mass, cross bracing, nail heads, rusty patch damage, and strong material split | 9 |
-| `shed-interior-wall` | Shed wall | Small dark timber wall with rust tones, patched board seams, nail heads, shadow side, and compact shed identity | 9 |
-| `canvas-tent-interior-wall` | Tent wall | Canvas wall panels with ridge, stitched seams, poles, ropes, stakes, patches, tie points, and readable cloth structure | 9 |
+- **`ash_chapel_breach` had NO mood config** while every other level has one:
+  the flagship horror set-piece rendered flat. It now gets the cold-stone
+  family treatment (`floorShade #10141c` @ 0.4, cold ambient, vignette 1.3),
+  so its 13 candle clusters and the altar rite read as warm islands in a cold
+  nave. Scene evidence: `honest-2026-07-10-scene-nave-mood.png`.
+- **`wash-tub` 4 → 5.5**: the water remembers the wash; a faint red bloom
+  where blood came out of someone's coat.
+- Re-review of the interior furniture at working zoom found dining-table,
+  settlement-table, and kitchen-counter already carry authored leavings
+  (cup, bread, jars, household mess); their gallery-scale 5s were
+  under-credited. Rated 6 on the strength of the in-scene reads.
 
-### Fixtures
+## Fifth pass: window light and the last quiet middle (2026-07-10, same day)
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `wall-window` | Chapel window | Recessed arched window with lit glass, dim barred state, stone surround, sill chips, broken panes, and strong wall-face read | 9 |
-| `wall-safe` | Wall safe | Recessed metal safe with riveted frame, brass handle and seal, hinge read, open cavity, shelf/loot detail, and strong wall depth | 9 |
-| `wall-stash` | Hidden wall stash | Pried wall stash with proud stone slab, dark niche, scratch marks, packet/key details, and clear opened-state read | 9 |
-| `wall-stair-door` | Stair door in wall | Deep stair mouth with cut-stone frame, rail lines, latch plate, vanishing treads, threshold chips, and traversal silhouette | 9 |
-| `canvas-tent-flap` | Tent doorway flap | Canvas doorway with layered seams, patches, tie cords, locked wax/bolt state, open slit state, stakes, and readable flap silhouette | 9 |
+- **New `window-light-pool` kind** (LIGHT category, layer 0, painted after the
+  mood multiply like every emissive): cold stepped-band daylight with a
+  mullion shadow and dust motes in the beam. Placed under all seven chapel
+  windows (five in the breach nave, two in the bell room). The Opened Saint
+  now literally hangs in the "cold window light" his dialogue describes.
+  Evidence: `honest-2026-07-10-window-light-pools.png`. Kept restrained so
+  the candle islands stay the warm counterpoint.
+- **`low-stool` 4 → 5.5**: whittling shavings under the seat edge; one stool
+  in four still holds the tin cup someone never came back for.
+- **`dining-bench` 4 → 5.5**: one bench in four has a child's chalk game
+  scratched on the end, half rubbed out.
 
-### Structures
+## Sixth pass: fire and close-review corrections (2026-07-10, same day)
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `cracked-column` | Chapel column | Tall support with chipped cap, cracked shaft, ring bands, base rubble, and crisp vertical silhouette | 9 |
-| `saint-statue` | Remnant saint statue | Tapered shrine with broken halo/cross read, chipped plinth, robe cracks, dark inset, and sacred silhouette | 9 |
-| `stone-tomb` | Tomb block | Low tomb with lid bevel, opened state, corner-post seams, chipped stone, and grounded graveyard mass | 9 |
-| `graveyard-wall` | Grave wall section | Low wall with post caps, chipped masonry, base slabs, rubble, dark side, and readable boundary shape | 9 |
-| `calcified-grave-plot` | Calcified grave plot | Pale grave body trace with skull/jaw pixels, calcified hand, ash scatter, bones, and human burial read | 9 |
-| `calcified-headstone` | Headstone | Pale headstone with crossbar variants, base bevel, cracks, chips, and clear grave marker silhouette | 9 |
-| `graveyard-tomb-slab` | Tomb slab | Low slab with bevels, chipped lid, prayer-hand mark, dark underside, and graveyard-scale shadow | 9 |
-| `graveyard-catacomb-mouth` | Catacomb entrance | Dark catacomb mouth with chipped jambs, threshold bone, seal detail, depth, and strong traversal cue | 9 |
-| `graveyard-bone-marker` | Bone grave marker | Bone-stacked marker with skull niche, lintel, cracks, ground scatter, and strong ossuary theme read | 9 |
-| `graveyard-remnant-cross` | Graveyard cross | Tall Remnant cross with chipped arms, cracked stem, heavy base, rubble, and hard sacramental silhouette | 9 |
-| `stone-stairwell` | Stairwell opening | Circular stair rail with broken masonry ring, dark mouth, curving steps, rim chips, debris, and strong traversal silhouette | 9 |
-| `quarantine-barricade` | Road barricade | Wood-and-rust barricade with angled boards, capped posts, warning paint, braces, chips, debris, and firm camp-road read | 9 |
-| `broken-bell` | Fallen bell | Large rusted bell with keeper frame, rivets, cracked body, chipped mouth, wedge, rubble, and heavy readable mass | 9 |
-| `bell-rope` | Bell rope | Tall rope with pulley bracket, repair/fray states, strand marks, floor debris, and clear interaction silhouette | 9 |
-| `quarantine-sign` | Road warning sign | Leaning warning sign with reinforced post, cracked board, faded marks, chips, base rubble, and readable road marker shape | 9 |
-| `chapel-double-door` | Chapel doors | Heavy planked doors with depth, hinge hardware, open/closed state support, scarred boards, chipped reveal, and wall-scale presence | 9 |
-| `damaged-altar` | Broken altar | Broken altar with chipped slab, torn cloth, bone relic, cracks, Host growth veins, rubble, and strong sacramental damage | 9 |
-| `farm-building-block` | Generic farm building wall | Reusable timber module with chipped roof, planked faces, base grime, rubble, and strong farm identity | 9 |
-| `farmhouse-building-block` | Farmhouse exterior | Pale farmhouse block with timber grid, chimney, roof chips, window/trim detail, base wear, and distinct material read | 9 |
-| `barn-building-block` | Barn exterior | Dark barn block with sloped roof, cross bracing, roof wear, rust accents, and strong variant identity | 9 |
-| `tool-shed-building-block` | Tool shed exterior | Compact tool block with chipped roof, trim, tool marks, side shadow, base rubble, and shed-scale silhouette | 9 |
-| `storage-shed-building-block` | Storage shed exterior | Storage block with dark planks, roof seams, X-bracing, small openings, base wear, and distinct compact volume | 9 |
-| `grain-shed-building-block` | Grain shed exterior | Pale grain shed with slatted walls, chute, roof cap, supports, chaff scatter, and clear storehouse identity | 9 |
-| `canvas-tent-building-block` | Camp tent wall block | Canvas tent block with ridge seams, patch marks, ropes, stakes, chipped edges, and strong camp structure read | 9 |
-| `farm-door` | Farm door object | Hinged plank door with frame, latch/lock states, diagonal bracing, chips, threshold debris, and variant support | 9 |
-| `farm-fence` | Fence segment | Fence posts and rails with chipped caps, broken rail ties, rusted wood tones, debris, and firm contact shadow | 9 |
-| `road-sign-post` | Road sign | Road sign with split post, arrow board, nail heads, diagonal crack, chips, base rubble, and readable silhouette | 9 |
-| `infected-cave-entrance` | Cave mouth | Oversized infected cave mouth with dark threshold, hard stone rim, Host veins, bone teeth, growths, rubble, and strong scene anchor | 9 |
-| `devil-target` | Training target | Devil-faced practice target with stand braces, horn marks, nailed corners, impact holes, base debris, and readable training-ground theme | 9 |
+- **`campfire` 5 → 6.5**: the straight lit-pillar flame is now a tapered
+  ragged column drawn row by row with jagging tongues, a side lick, and a
+  deep-red coal line. Evidence: `honest-2026-07-10-campfire-flame.png`.
+- **Close-review corrections** (the honest rubric cuts both ways): the
+  `saint-statue` (beheaded stump with a chip halo, hacked prayer hands,
+  wound-star defacement) and the `calcified-headstone` set (four variants of
+  snapped calcified bodies serving as grave markers, an original on-theme
+  invention) are fully authored pieces whose gallery 5s were
+  distance-of-review artifacts. Re-rated 6.5 and 6 on close render evidence.
 
-### Furniture
+## Seventh pass: the farm-tool cluster (2026-07-10, same day)
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `broken-pew` | Broken chapel pew | Split chapel bench with hard-pixel rails, chipped planks, posts, splinters, base rubble, and grounded shadow | 9 |
-| `rusted-reliquary` | Reliquary chest | Arched rusted chest with brass bands, outlined rivets, bone detail, lid chips, bevels, and sacred-container read | 9 |
-| `field-satchel` | Field satchel | Small field bag with hard strap, flap, side pocket, buckle catchlight, dirt flecks, and dropped-kit silhouette | 9 |
-| `rusted-crate` | Rusted crate | Low crate with diagonal braces, bands, lid bevels, corner chips, rust flecks, grime, and readable volume | 9 |
-| `sealed-storage-crate` | Sealed crate | Heavy sealed crate with pale lid, cross straps, lock detail, corner brackets, bevels, grime, and readable mass | 9 |
-| `canvas-tent` | Small canvas tent | Free-standing canvas tent with stitched seams, patched cloth, ropes, stakes, dark entry, base rubble, and strong camp read | 9 |
-| `camp-bedroll` | Bedroll | Strapped lumpy field roll with patched cloth, buckles, folded ends, small kit marks, and strong contact shadow | 9 |
-| `settlement-table` | Settlement table | Repaired plank table with hard planks, trestle legs, scuffed top, dish/cup clutter, nail heads, and base debris | 9 |
-| `low-stool` | Stool | Small worn stool with chipped plank top, uneven legs, nail marks, cross-brace, debris, and stable silhouette | 9 |
-| `dining-table` | Dining table | Oriented table with reinforced trestle, plank seams, tableware, rag, nail heads, debris, and old-CRPG scale | 9 |
-| `dining-bench` | Dining bench | Oriented bench with slab top, leg bracing, nail heads, scuffs, debris, and clear dining-set role | 9 |
-| `kitchen-counter` | Kitchen counter | Stone and wood counter with panel seams, handle hardware, overhanging worktop, prep clutter, chips, and block mass | 9 |
-| `farm-prep-table` | Farm prep table | Work table with plank seams, cutting board, bowl, sack, knife, underside hook, nail head, and practical clutter | 9 |
-| `kitchen-hearth` | Hearth | Dark stone hearth with firebox, soot bed, vessel detail, chipped stone, cracks, rubble, and grounded shadow | 9 |
-| `farm-kitchen-hearth` | Farm hearth | Farm hearth with pale slab, dark opening, pot detail, wood marks, chips, cracks, soot, and hard material split | 9 |
-| `pantry-shelf` | Pantry shelf | Upright shelf with braced posts, stacked boards, jars, sacks, nail heads, base debris, and dense readable storage | 9 |
-| `wash-tub` | Wash tub | Banded wooden wash tub with water highlights, handles, rim cloth, stave lines, base debris, and worn rim | 9 |
-| `chapel-banner` | Chapel banner | Torn chapel banner with hanger hardware, red cloth, stitched pale mark, ragged tail, folds, debris, and sacred signal | 9 |
-| `prayer-lectern` | Lectern | Pedestal lectern with sloped book surface, page marks, side braces, base rail, debris, and ritual silhouette | 9 |
-| `ritual-bowl` | Ritual bowl | Small ritual bowl with bone markers, dark plate, ember wound, and crisp sacramental read | 9 |
-| `chapel-font` | Chapel font | Bowl on pedestal with dark basin, chipped rim, blood drip, plinth base, rubble, and readable sacred form | 9 |
-| `rusted-barrel` | Barrel or hidden ladder barrel | Round rusted barrel with stepped cylinder body, metal bands, dents, rivets, ladder state, and grounded debris | 9 |
-| `field-cart` | Farm cart | Broken field cart with wheels, rails, sack cargo, tow ring, nail heads, chipped rail, debris, and rugged silhouette | 9 |
-| `hay-rick` | Hay pile | Layered hay rick with tied bands, pale crown, hard straw rows, scatter, base rubble, and readable field material | 9 |
-| `field-plow` | Plow | Plow with metal blade, rivets, cutter, wheel, wood handles, soil scatter, debris, and distinct farm-tool profile | 9 |
-| `field-harrow` | Harrow | Spiked harrow with frame, teeth, rust nodes, pull ring, wheels, dragged soil, and clear ground-tool shape | 9 |
-| `feed-trough` | Trough | Low feed trough with slatted body, dark basin, supports, nail heads, spilled feed, debris, and stable contact shadow | 9 |
-| `water-pump` | Water pump | Upright pump with handle, spout drip, pipe body, bolts, base plate, puddle debris, and strong silhouette | 9 |
-| `tool-rack` | Tool rack | Tool rack with braced posts, hanging tools, pegs, cross brace, floor chips, base debris, and workshop identity | 9 |
-| `training-dummy` | Practice dummy | Practice dummy with target wrap, impact holes, tied head, reinforced base, debris, and training-ground read | 9 |
-| `wagon-wheel` | Wagon wheel | Small wheel prop with hub, rim, spokes, chipped segments, support rail, base rubble, and readable salvage shape | 9 |
-| `woodpile` | Woodpile | Stacked log pile with alternating ends, bark rings, tie band, bark chips, hard shadow, and clear volume | 9 |
+- **`field-cart` 4 → 6**: two tied grain sacks and a lashed tarp in the bed;
+  the load explains the cart, abandoned mid-haul.
+- **`tool-rack` 4 → 5.5**: one peg hangs empty with a paler dust silhouette
+  of the taken tool; somebody armed themselves on the way out.
+- **`rubble-pile` 5 → 6**: a carved stone hand from a shattered saint still
+  reaches out of the heap; this was a chapel before it was rubble.
+- **`cobweb`**: alpha raised again (0.9); reads with its wrapped husk.
+- Evidence: `honest-2026-07-10-farm-tool-cluster.png`.
 
-### Props
+## Eighth pass: quiet ground (2026-07-10, same day)
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `rubble-pile` | Rubble | Stacked broken stones with dark footing, varied prism chunks, foreground slabs, chips, and useful obstruction read | 9 |
-| `cave-stalagmite` | Stalagmites | Tall stone spikes with hard facets, mineral bases, dark seams, contact shadow, and cave-material contrast | 9 |
-| `cave-stalactites` | Ceiling stone teeth | Hanging stone teeth with heavy top plane, dark underside, drip pixels, facets, and clear cave ceiling signal | 9 |
-| `bone-pile` | Bone pile | Bone heap with multiple skulls, long bones, ribs, dark base, pale fragments, and readable ossuary identity | 9 |
-| `bone-niche` | Ossuary wall niche | Skull shelf with heavy stone frame, stacked bones, chipped lintel, pale contrast, and strong wall-ossuary read | 9 |
-| `loose-flagstone` | Hidden floor stash | Raised flagstone with dark cavity, tilted slab bevel, chips, dirt scatter, glint, and usable stash cue | 9 |
-| `blue-ball` | Blue key item ball | Small blue object with plate shadow, hard highlight, seam scar, dark side, and distinct key-item color read | 9 |
-| `ground-item` | Dropped loot wrapper | Dispatches to readable pickup glyphs with hard-pixel loot backplate, riveted rim, contact shadow, drop/count states, and real-scene proof | 9 |
+Root cause found at floor level: `drawFloorStoryMarks` and the chip run
+stamped their marks on EVERY tile, so peg holes, cracks, and scratch chips
+became wallpaper and every outdoor level read as scratch noise. Fixes:
 
-### Plants
+- Event-like story marks (stone, ash-dirt, road-shoulder, packed-earth,
+  ash-gravel, forest-floor, cave-stone) now appear on roughly a third to a
+  half of tiles, seeded, so quiet ground lets the marked tiles speak.
+- The chip run is gated the same way.
+- `mud-track` keeps its dark ruts continuous but the pale wet glint on the
+  rut lip only catches on every third tile, and the redundant second rut
+  system is mostly gated off.
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `ash-tree` | Dead ash tree | Ragged multi-tone ash canopy with forked trunk, roots, bark scars, hanging dead strands, and scene-scale crown read | 9 |
-| `ash-tree-stump` | Tree stump | Ringed cut stump with jagged splinters, root fan, bark scars, broken rim, and subtle Host-taint accents | 9 |
-| `fallen-ash-log` | Fallen log | Bark-banded dead log with cut rings, hollow rot, thorns, scarring, roots, and hard contact shadow | 9 |
-| `ash-sapling` | Small dead sapling | Leaning sapling with forked twigs, root brace, ragged dead clumps, and pale devotional scar | 9 |
-| `scrub-bush` | Scrub bush | Low layered dead brush with ragged mounds, thorn stalks, root spread, ash flecks, and black-gold seams | 9 |
-| `wheat-clump` | Field wheat | Dry wheat bundle with stalk heads, tied bands, base debris, chaff scatter, and field-scale variation | 9 |
+Verified against the censure camp scene
+(`honest-2026-07-10-camp-quiet-ground.png`): tents, banners, and the
+campfire now carry the composition instead of competing with ground noise.
+Floors family 6 → 6.5; the "coherence beats randomness" rule in
+`game_art_skill/SKILL.md` Section 22 now cites this as its floor-level case.
 
-### Lights
+## Ninth pass: the exemplar and full scene coverage (2026-07-10, same day)
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `candle-cluster` | Candles | Candle cluster with hard light pool, wax plate, uneven wax columns, flame pixels, and excellent small-scale read | 9 |
-| `campfire` | Campfire | Campfire with hard flame stack, stone ring, crossed logs, warm pool, smoke-dark center, and ground shadow | 9 |
+- **Standing `cross-martyr` 8.5 → 9.5**: the cult's harvest now shows on the
+  body: parallel carve strips down the near thigh, the newest still wet with
+  a drip finding the shin, and the gold pin light in the cavity touching the
+  post behind him. One sprite now tells the game's whole premise:
+  crucifixion, the opened body, the cult eating him, the Host refusing to
+  let him die. Evidence: `honest-2026-07-10-martyr-exemplar.png`. This is
+  what a 10 costs; use it as the bar.
+- **Scene coverage completed**: catacombs and infected cave captured and
+  reviewed (`honest-2026-07-10-scene-catacombs.png`, `-scene-cave.png`).
+  Both hold: dense ossuary rooms with the grounded skeletons and glowing
+  candle islands; the cave's calmed river sits inside the dark instead of
+  shouting over it. Every level archetype has now been scene-verified today.
 
-### Gore, Host Creature Props, and Rituals
+## Tenth pass: set pieces storied (2026-07-10, same day)
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `host-growth` | Host growth patch | Black-gold Host plate with one controlled wound, asymmetric bone thorns, thin veins, pulse support, and clear Host cue | 9 |
-| `corpse` | Generic corpse | Flat fallen human with outlined coat, slack limbs, head and boots, blood pool, wound marks, rubble, and readable body shape | 9 |
-| `cult-victim` | Carved victim | Carved victim with hard-pixel inverted star, drag smear, throat cross, slack limbs, spatter, debris, and scene-story signal | 9 |
-| `farm-cross-victim` | Crucified farm victim | Crucified farm victim with rough timber, nailed wrists, household body variants, throat wound, base blood, hardware, and debris | 9 |
-| `skeleton` | Skeleton | Pale skeleton with skull, ribcage, pelvis, splayed long bones, finger fragments, chips, and clear corpse-state read | 9 |
-| `dead-cultist` | Dead cultist | Red-robed body with hood, stole, rite knife, belt gear, hands, boots, blood mass, debris, and faction corpse identity | 9 |
-| `cross-martyr` | Opened Saint | Goat skull, halo, rib wings, asymmetry, exemplar | 9 |
-| `bound-victim` | Bound captive | Upright bound captive with wrist bar, rope hardware, bowed human body, Host seams, base blood, debris, and sacrifice silhouette | 9 |
-| `calcified-penitent` | Calcified Host body | Chained calcified Host body with broken halo, bowed skull, open rib cavity, fused prayer hands, dead seams, and human-scale posture | 9 |
-| `calcified-crossroad-brother` | Calcified road brother | Calcified road brother with signpost frame, stretched arms, broken halo, offered scraps, carved torso marks, and road-martyr silhouette | 9 |
-| `calcified-scarecrow-brother` | Calcified field brother | Calcified field brother with scarecrow beam, wheat base, tied wrists, broken halo, open torso, cloth bands, and field-placement read | 9 |
-| `calcified-grave-body` | Calcified grave body | Small grave-body prop with variant skull, halo, rib motifs, calcified limbs, buried base, dead seams, and readable grave Host state | 9 |
-| `dead-host-wolf-spider` | Dead Host wolf spider | Dead Host wolf with goat-wolf skull, folded spidering limbs, black-gold seams, slack canine body, blood mass, and asymmetry | 9 |
-| `dead-host-wolf-maw` | Dead Host wolf maw | Dead skull-maw wolf with chapel-mouth head, teeth, prayer-fused forelegs, black throat, dead body mass, and distinct silhouette | 9 |
-| `dead-host-wolf-ribsplit` | Dead ribsplit wolf | Dead ribsplit wolf with exposed rib fan, black-gold seams, slack canine body, pale bone mass, and clear Vale Imprint damage | 9 |
-| `host-wolf-remains` | Wolf remains | Host wolf remains pile with open rib cage, goat-wolf skull, bone chips, tendrils, black-gold accents, and readable aftermath | 9 |
-| `choir-pentagram` | Wall/floor ritual mark | Hard-pixel point-down wound-star with rough red geometry, black-gold bleed, drips, and clear cult signal | 9 |
-| `blood-sigil` | Flat blood sigil | Flat blood sigil with dark plate, inverted mark, bone pins, red stain, and readable ritual cue | 9 |
-| `ritual-circle` | Ritual circle | Ritual circle with ring geometry, bone markers, rough red stakes, pale flecks, and clear floor-rite read | 9 |
+The Saint's method (the story written on the body) applied to the other set
+pieces, evidence `honest-2026-07-10-setpieces-storied.png`:
 
-### Decals
+- **`broken-bell` 7.5 -> 8.5**: the crack now opens as it falls, hairline at
+  the shoulder to a black split at the sound bow, ending in a bitten-out lip
+  with raw bronze at the break; the missing chunk lies where it fell; tally
+  scratches on the waist count the ringings the congregation lost.
+- **`stone-stairwell` 7 -> 8**: ash footprints climb the lower treads
+  (someone went up recently and did not sweep behind themselves); a Censure
+  chalk tally on the lit jamb counts the sweeps this passage has seen.
 
-| Kind | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `blood-stain` | Blood stain | Rust-red stain with hard edge, dark center, spatter pixels, drag smear, and clear floor event cue | 9 |
-| `road-dust` | Road dust | Pale road grit with hard flecks, directional scrape lines, rim dust, and scene-scale surface wear | 9 |
-| `glass-debris` | Broken glass | Pale glass shards with dark backing, varied sharp shapes, flash glints, and readable broken-object cue | 9 |
-| `dust` | Dust | Subtle dust patch with structured flecks, small packed ridges, hard edge variation, and controlled low-contrast use | 9 |
-| `rubble-decal` | Broken stone | Flat rubble decal with chipped slabs, dark under-pixels, stone highlights, and clear floor-break read | 9 |
-| `floor-crack` | Floor crack | Branching floor crack with heavy dark core, pale chipped edges, loose rubble, and visible surface damage | 9 |
-| `scorch-mark` | Scorch | Dark burn ring with soot center, hard radial scars, ember fleck, and clear fire-damage signal | 9 |
-| `wax-stain` | Wax spill | Pale wax spill with hard puddle bands, candle-like raised drips, soot wicks, and chapel-prop context | 9 |
-| `paper-scraps` | Paper scraps | Layered pale scraps with folds, ink strokes, red seal fleck, shadows, and readable discarded-paper contrast | 9 |
-| `host-vein-seam` | Host vein seam | Black-gold floor seam with branching veins, dark tissue edges, hard tendrils, and strong Host accent | 9 |
-| `graveyard-packed-ash` | Packed grave ash | Grave ash patch with incised bands, bone flecks, dark packed center, and readable cemetery surface variation | 9 |
-| `graveyard-path-stones` | Path stones | Path-stone flecks with slab shapes, dark rims, pale highlights, and clear graveyard walkway read | 9 |
-| `graveyard-root-seam` | Root seam | Dark root seam with grounded soil plate, branching roots, pale bone fleck, and thematic grave-soil damage | 9 |
-| `graveyard-prayer-scratch` | Prayer scratch | Pale scratched prayer mark with dark gouge backing, broken scoring, dust ring, and clear devotional damage | 9 |
-| `cave-flowstone` | Flowstone | Pale cave bands with layered ribs, mineral lips, hard shadows, and readable cave-floor flowstone cue | 9 |
-| `chaff-scatter` | Field chaff | Straw scatter with windrows, clustered stalk bits, warm flecks, dark underlines, and field-surface identity | 9 |
-| `trampled-mud` | Mud trampling | Trampled mud with dark track mass, paired boot prints, wet scrapes, and readable traffic damage | 9 |
-| `practice-scars` | Training scratches | Practice scars with dark back-cuts, pale slash marks, impact chip, dust flecks, and drill-yard identity | 9 |
-| `spent-casings` | Bullet casings | Brass casings with hard gold pixels, dark backing, cap glints, ejection scuffs, and readable combat residue | 9 |
-| `chalk-drawing` | Child chalk drawing | Chalk drawing with shadowed ringed world, stick figure, chalk stick, dust scuffs, and strong story-detail read | 9 |
-| `machine-oil` | Oil smear | Dark oil smear with hard shine, thin spread trails, brass rivet, dark flecks, and readable machinery residue | 9 |
-| `cobweb` | Cobweb | Pale cobweb with stronger thread fan, ring strands, dust flecks, corner anchor, and readable neglected-interior cue | 9 |
+## Eleventh pass: UI re-review (2026-07-10, same day)
 
-## Ground Item Pickup Models
+The UI family was the one gap in the re-baseline; re-scored from the
+existing evidence captures (`ui-hud-upgraded.png`, `ui-inventory-upgraded.png`,
+`ui-dialogue-verified-v1.png`). Honest 7: the tri-panel HUD, inventory paper
+doll (now showing the real vest/harness bake), and dialogue window are
+cohesive late-90s canvas chrome with disciplined bitmap text and good
+anti-slop flavor writing. What separates it from 9-10 is concrete and
+recorded: NPC portrait panels in dialogue (the era's signature), icon
+language in the status panel, and texture in the empty panel fields.
 
-| Model | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `ball` | Blue ball item | Blue sphere glyph with hard highlight, seam scar, dark side, and grounded pickup plate | 9 |
-| `boots` | Boots | Paired leather boots with toe caps, soles, laces, buckles, and clear two-boot silhouette | 9 |
-| `coat` | Coat | Folded blue coat with center opening, cuffs, strap marks, side folds, and readable cloth mass | 9 |
-| `hood` | Hood | Hood glyph with deep face opening, rim highlight, lower fold, ties, and clear cowl shape | 9 |
-| `vest` | Vest | Folded armor vest with shoulder straps, metal plates, clasp, leather body, and strong rim read | 9 |
-| `ribguard` | Ribguard armor | Bone-rib armor with paired ribs, central spine, strap body, gold seam, and strong pale contrast | 9 |
-| `ring` | Ring | Oversized gold ring glyph with hollow center, raised setting, hard metal highlights, and shadowed rim | 9 |
-| `necklace` | Necklace | Chain and pendant glyph with visible beads, hanging cross form, hard gold highlight, and readable drape | 9 |
-| `key` | Key | Long key silhouette with bow, shaft, teeth, extra bit, and hard brass highlight | 9 |
-| `paper` | Paper | Layered paper scraps with folds, ink marks, red seal, and pale contrast on dark plate | 9 |
-| `vial` | Vial | Glass vial with stopper, pale body, blue liquid meniscus, dark side, and crisp highlight | 9 |
-| `dressing` | Bandage | Folded dressing with wrap strap, cloth edge marks, blood pin, and compact medical read | 9 |
-| `food` | Tin food | Small ration tin with label band, pull-tab, metal rim, and cylindrical highlight | 9 |
-| `rounds` | Ammunition | Brass rounds grouped in a belt strip with caps, shadow, and repeated cartridge shape | 9 |
-| `chit` | Chit | Brass chit with clipped corner, punched mark, edge wear, dark plate, and readable rectangular token form | 9 |
-| `shard` | Bright fragment | Pale shard with angular broken profile, dark plate, facet line, and hard edge highlight | 9 |
-| `token` | Saint token | Gold saint token with oval body, incised cross mark, rim shadow, and bright top edge | 9 |
+## Twelfth pass: dialogue talking heads (2026-07-10, same day)
 
-## Actor and Enemy Data Records
+The single biggest recorded UI uplift is now shipped: NPC conversations show
+a **speaker portrait plate** perched above the dialogue window - the actor's
+own baked sprite cropped to head-and-shoulders and scaled 2.4x, hard pixels
+kept hard, in a riveted SPEAKER frame (the era's talking-head grammar, done
+the Ultima way with the game's own art). Actor conversations carry
+`speakerSpriteId` through the dialogue state; prop and note dialogues stay
+text-only, and unknown sprite ids degrade gracefully to the classic window.
+New harness: `.ai/map-review/preview-dialogue.html` drives the real
+UIRenderer with a fake state for verification. Evidence:
+`honest-2026-07-10-dialogue-portrait.png`. UI family 7 -> 8.
 
-| Record | Represents | Visualization | Score |
-|---|---|---:|---:|
-| `censure-bell-clerk-sera` | Bell Clerk Sera | Compact Remnant clerk with pale hood, prayer cord, message tube, and clear front/back kit read | 9 |
-| `censure-evidence-keeper-malco` | Evidence Keeper Malco | Old bent keeper with hunched posture, carried records, cane-like stance, and readable archival role | 9 |
-| `censure-widow-bruna` | Widow Bruna | Stooped civilian with dark shawl, prayer cord, cane posture, and distinct elderly silhouette | 9 |
-| `catacombs-survivor-dalia` | Dalia Mor | Chapel-hand survivor with bundled cloth, pale shoulder read, dark coat, and readable camp role | 9 |
-| `catacombs-survivor-oren` | Oren Rill | Broad settler with crate/load silhouette, staff, work-coat mass, and strong front/back distinction | 9 |
-| `censure-sutler-maev` | Sutler Maev | Heavy trader with ledger, tally tags, side kit, rounded coat mass, and clear road-sutler read | 9 |
-| `catacombs-survivor-selka` | Selka Ardent | Heavy matron with pale shawl, ledger/staff read, broad stance, and named elder silhouette | 9 |
-| `censure-brother-caldus` | Brother Caldus | Broad Remnant worker with load, patched coat, work stance, and strong camp-labor read | 9 |
-| `catacombs-survivor-hanne` | Hanne Rovik | Field nurse composite with pale hood, red medical cross bag, slim stance, and clear aid-role read | 9 |
-| `catacombs-survivor-nessa` | Nessa Quay | Water carrier with blue cloth, paired jars, dark strap, and distinct utility silhouette | 9 |
-| `catacombs-child-eda` | Eda | Small chalk-child silhouette with tan coat, neck token, tiny satchel, and correct child scale | 9 |
-| `censure-preceptor-voss` | Preceptor Voss | Broad authority figure with hood, shoulder plate, scarred-face cue, and heavy command posture | 9 |
-| `catacombs-survivor-mirel` | Mirel Ardent | Quartermaster survivor with blue chest cloth, side bundle, ledger kit, and compact role clarity | 9 |
-| `censure-ash-porter-joric` | Ash Porter Joric | Broad porter with crate-pack mass, paired loads, work boots, and readable carried-goods silhouette | 9 |
-| `catacombs-survivor-runa` | Runa Pell | Sturdy cook with pale apron, pot-hook/tool cue, warm coat mass, and immediate camp-kitchen read | 9 |
-| `catacombs-survivor-tomas` | Tomas Vek | Lean runner with long legs, blue trousers, message kit, staff line, and narrow road stance | 9 |
-| `censure-writ-runner-pell` | Writ Runner Pell | Lean runner with tube, dark hood, blue lower silhouette, and clear messenger posture | 9 |
-| `catacombs-survivor-istra` | Istra Havel | Old bent mender with tool roll, low posture, patched coat, and clear repair-role kit | 9 |
-| `player` | Legacy militia scout | Atlas entry resolves through the Mara equipment renderer with coat, vest, hood, and kit silhouette | 9 |
-| `mara-vey` | Mara Vey | Equipment-driven cult-breaker with field coat, vest, hood, sidearm kit, and strong player-standard silhouette | 9 |
-| `censure-quartermaster-runa` | Quartermaster Runa | Sturdy quartermaster with blue cloth, ledger/roll kit, pale bundle, and clear supply-role read | 9 |
-| `censure-tether-guard-elian` | Tether Guard Elian | Lean guard-runner with shoulder kit, message tube, hooded stance, and distinct Censure silhouette | 9 |
-| `catacombs-child-corin` | Corin | Small blue-coated child with token, tiny satchel, bright face, and correct gameplay-scale read | 9 |
-| `censure-novice-ivarn` | Novice Ivarn | Teen novice with papers, bandage-sling-like posture, small frame, and clear junior-role scale | 9 |
-| `censure-sister-hanne` | Sister Hanne | Remnant nurse with pale hood, red medical cross bag, compact stance, and front/back readability | 9 |
-| `censure-father-odran` | Father Odran | Old road priest with prayer cord, grey hair, bundled cloth, bent posture, and clear clerical role | 9 |
-| `choir-candle-bearer` | Candle-Bearer | Human cultist with candle tray, red stole, masked cowl, hidden knife read, and ritual silhouette | 9 |
-| `host-penitent-bastion` | Penitent Bastion | Opened Penitent silhouette with broken halo, exposed cavity, fused prayer-arm, dragging hand, and clear kneeling Host role | 9 |
-| `host-rat-sixlegs` | Six-Legged Host Rat | Host rat with bone prayer ribs, fused hands, six-leg profile, black-gold seams, and clear small-beast silhouette | 9 |
-| `choir-flesh-eater` | Flesh-Eater | Bloated human cultist with swollen robe, sacrament flesh, red hands, and unsettling human scale | 9 |
-| `choir-throat-singer` | Throat-Singer | Lean dark-robed cultist with throat-glass detail, narrow stance, and ranged scout read | 9 |
-| `host-touched-penitent` | Host-Touched Penitent | Kneeling opened Penitent Engine with broken halo, bone thorns, black-gold wound, fused arms, and impossible-road omen read | 9 |
-| `host-wolf-spider` | Spider-Leg Host Wolf | Low Host wolf with goat-skull head, bone spider legs, prayer marks, red wound, and asymmetrical body horror | 9 |
-| `host-wolf-ribsplit` | Ribsplit Host Wolf | Rib-split Host wolf with exposed pale rib fans, goat-skull head, black-gold seam, and strong Vale Imprint read | 9 |
-| `host-wolf-maw` | Maw Host Wolf | Skull-maw wolf with pale chapel mouth, throat tendrils, dark body mass, horns, and clear hostile silhouette | 9 |
-| `red-tithe-cutthroat` | Red Tithe Cutthroat | Broad raider in red leathers with shoulder plate, cleaver cue, rust cowl, and strong hostile silhouette | 9 |
-| `host-rat-tendril-walker` | Tendril-Walker Host Rat | Tendril rat with exposed rib fan, bone-tipped walker limbs, black-gold wound, and clear Host mutation read | 9 |
-| `host-rat-throat-maw` | Throat-Maw Host Rat | Maw rat with pale teeth, displaced head, throat split, bone ribs, and readable small Host profile | 9 |
+## Thirteenth pass: faces (2026-07-10, same day)
 
-## Atlas and Reusable Model Library
+Every human actor's face upgraded in the shared head painter, because the
+portrait plate now magnifies it 2.4x in every conversation: a browline
+shadow over the eyes, a nose hint between them, and one lit cheekbone. The
+face block draws last so no cowl or brow row buries it. Verified at world
+scale (no clutter) and portrait scale (a person, not a smudge) -
+`honest-2026-07-10-actor-faces.png`, `honest-2026-07-10-dialogue-portrait.png`.
+Human actor family 6.5 -> 7; every one of the ~60 actors benefits at once.
 
-| Model | Represents | Score |
-|---|---|---:|
-| `mara-vey` | Equipment-driven player cult-breaker with field coat, hood, gear mass, and strong all-purpose player silhouette | 9 |
-| `settlement-man` | Generic adult male survivor with patched work coat, rope belt, bedroll, and grounded camp scale | 9 |
-| `settlement-woman` | Generic adult female survivor with shawl, apron layer, hand accents, and clear civilian posture | 9 |
-| `settlement-child` | Generic child survivor with oversized coat, tiny satchel, bright face, and correct small scale | 9 |
-| `settlement-selka` | Named matron survivor variant with heavy shawl, pale cloth, staff/ledger cues, and broad elder silhouette | 9 |
-| `settlement-mirel` | Named quartermaster survivor variant with blue chest cloth, bundle, ledger read, and compact utility stance | 9 |
-| `settlement-oren` | Named settler survivor variant with broad body, work coat, staff, and load-bearing silhouette | 9 |
-| `settlement-tomas` | Named runner survivor variant with long legs, blue lower read, message kit, and narrow road stance | 9 |
-| `settlement-runa` | Named cook survivor variant with pale apron, tool/pot cue, warm coat, and sturdy camp role | 9 |
-| `settlement-istra` | Named mender survivor variant with bent stance, tool roll, patched coat, and repair-role read | 9 |
-| `settlement-nessa` | Named water survivor variant with blue cloth, jars, strap, and distinct carrier silhouette | 9 |
-| `settlement-dalia` | Named chapel-hand survivor variant with dark coat, bundled cloth, pale trim, and careful camp posture | 9 |
-| `settlement-hanne` | Named nurse survivor variant with pale hood, red medical bag, compact stance, and strong support read | 9 |
-| `settlement-corin` | Named child survivor variant with blue coat, small satchel, token, and clear child-scale silhouette | 9 |
-| `settlement-eda` | Named child survivor variant with chalk pouch, tan sleeves, token, and distinct child-scale read | 9 |
-| `choir-cultist` | Base Choir cultist with red stole, masked cowl, blood-black mouth cue, and hidden knife silhouette | 9 |
-| `red-tithe-cutthroat` | Base Red Tithe cutthroat with rust cowl, red leathers, cleaver line, and strong raider posture | 9 |
-| `host-touched-penitent` | Opened Penitent actor | 9 |
-| `host-rat-sixlegs` | Host rat variant | 9 |
-| `host-rat-throat-maw` | Host rat maw variant | 9 |
-| `host-rat-tendril-walker` | Host rat tendril variant | 9 |
-| `host-wolf-spider` | Host wolf spider variant | 9 |
-| `host-wolf-maw` | Host wolf maw variant | 9 |
-| `host-wolf-ribsplit` | Host wolf ribsplit variant | 9 |
-| `human-road-matron-heavy` | Heavy road matron with layered shawl, ledger, staff read, pale shoulder cloth, and grounded elder stance | 9 |
-| `human-buff-hauler` | Broad ash-road hauler with crate-pack mass, thick arms, rope belt, and load-bearing silhouette | 9 |
-| `human-fat-trader` | Round road trader with tan coat, ledger, tally tags, belly pouch, and careful stance | 9 |
-| `human-old-widow` | Stooped elderly widow with dark shawl, cane, prayer cord, grey hair, and narrow face read | 9 |
-| `human-old-tinker` | Elderly tinker with bent back, tool roll, patched coat, cane, and repair-role silhouette | 9 |
-| `human-field-nurse-compact` | Compact field nurse with pale hood, red medicine cross, side satchel, and clear aid-role read | 9 |
-| `human-water-carrier-blue` | Blue water carrier with paired jars, dark waist strap, blue cloth, and distinct utility silhouette | 9 |
-| `human-wall-runner-lean` | Lean wall runner with long legs, blue sash, message tube, light pack, and narrow road stance | 9 |
-| `human-bandaged-teen` | Bandaged adolescent survivor with sling, too-large coat, thin legs, and strong age/scale read | 9 |
-| `human-road-child-blue` | Blue-coated child with tiny satchel, neck token, bright face, and clean child-scale silhouette | 9 |
-| `human-chalk-child` | Chalk child with pouch, tan sleeves, small talisman, and distinct small survivor silhouette | 9 |
-| `human-ash-scout-hooded` | Hooded ash scout with staff line, thin pack, bedroll read, and narrow road stance | 9 |
-| `human-broad-warden` | Broad settlement guard with shoulder plate, scarred brow cue, heavy coat, and guard posture | 9 |
-| `human-hollow-refugee` | Gaunt refugee with sunken shoulders, oversized coat, thin pack, and frail silhouette | 9 |
-| `human-cook-apron` | Camp cook with long apron, pot-hook/tool cue, stocky stance, and readable workwear layers | 9 |
-| `human-prayer-keeper` | Chapel keeper with prayer cord, dark coat, bundled cloth, and careful devotional posture | 9 |
-| `human-seamstress-quartermaster` | Seamstress quartermaster with roll bundle, ledger, blue chest cloth, and pinned tool read | 9 |
-| `human-scarred-veteran` | Scarred veteran with shoulder plate, rope coil, guarded stance, and worn settler silhouette | 9 |
-| `human-lame-grandfather` | Lame grandfather with high hunch, grey hair, cane, patched trousers, and frail posture | 9 |
-| `human-shawl-grandmother` | Small grandmother with pale shawl, jars, prayer cord, bent shoulders, and gentle elder scale | 9 |
-| `choir-candle-novice` | Choir candle novice with low tray, wax-lit sleeves, red robe, and masked cowl silhouette | 9 |
-| `choir-throat-singer-lean` | Lean throat singer with dark neck strip, relic-glass pouch, narrow robe, and scout posture | 9 |
-| `choir-flesh-eater-bloated` | Bloated flesh-eater with swollen robe, sacrament bundle, red-stained hands, and heavy cultist stance | 9 |
-| `choir-bone-lector` | Choir bone lector with pale scroll plates, tally tags, formal stole, and ritual clerk silhouette | 9 |
-| `choir-veiled-mother` | Veiled Choir mother with dark face cloth, prayer cord, red robe, and hidden-knife read | 9 |
-| `choir-chain-bearer` | Choir chain bearer with dragging links, rope coil, heavy sleeves, and weighted ritual silhouette | 9 |
-| `choir-ash-penitent` | Ash-masked Choir penitent with pale face plate, bowed posture, tight robe, and devotional shape | 9 |
-| `choir-broad-guard` | Broad Choir guard with armored shoulder, red stole, heavier knife read, and strong guard stance | 9 |
-| `choir-old-confessor` | Old Choir confessor with staff, bone charm, grey hood edge, bent robe, and elder cult role | 9 |
-| `choir-scarlet-knife` | Scarlet-robed knife cultist with triple blades, black cowl, quick stance, and aggressive silhouette | 9 |
-| `red-tithe-buff-raider` | Buff Red Tithe raider with cleaver, shoulder plate, dark leathers, red scarf, and heavy threat read | 9 |
-| `red-tithe-starved-runner` | Starved Red Tithe runner with thin limbs, relic sack, long hooked knife, and gaunt threat read | 9 |
-| `red-tithe-sawbones` | Red Tithe sawbones with tool roll, blood-dark apron, narrow hood, and grim field-surgeon silhouette | 9 |
-| `red-tithe-hook-carrier` | Red Tithe hook carrier with rope coil, chain links, heavy pack, and scavenger-hauler read | 9 |
+## Fourteenth pass: story marks (2026-07-10, same day)
 
-## UI Surfaces
+- **`quarantine-sign` 5 -> 6.5**: the Remnant's actual mark painted big
+  enough to read from the road - a red cross barred through - over the older
+  faded smears.
+- **`chalk-drawing` 4 -> 6**: alpha raised so the chalk reads, and the lone
+  stick figure became two, the smaller holding the taller one's hand: the
+  catacombs children drew themselves watching the ringed world and the bore.
+  The decal the survivors' dialogue points at now rewards the look.
+- Evidence: `honest-2026-07-10-signs-chalk.png`.
 
-| Surface | Represents | Visualization | Score |
-|---|---|---:|---:|
-| HUD command panel | Always-on play UI | Hard rect command frame with bitmap text, riveted chrome, dense scan layout, and strong late-90s CRPG fit | 9 |
-| Message log | Quest and feedback text | Compact log with outcome color, hard frame texture, readable wrapping, and strong old-CRPG information density | 9 |
-| Status panel | Character state | Status panel with HP bar, mode, AP/pack grouping, hard metal frame, and clear repeated-play readability | 9 |
-| Command panel | Input affordances | Command panel with grouped actions, selected row states, nearby-action emphasis, and usable 640 px tactical density | 9 |
-| Dialogue screen | Conversations and choices | Framed dialogue wells with bitmap font, response hierarchy, scanline backdrop, and cohesive canvas-only presentation | 9 |
-| Inventory screen | Pack and paper doll | Inventory screen with real sprite paper doll, hard panels, item icons, dense list/detail layout, and strong cohesion | 9 |
-| Journal screen | Book/codex | Parchment codex surface with tabs, map/state pages, dense readable text, and the strongest bespoke UI identity | 9 |
-| Loading screen | Loading progress | Metal loading frame with hard progress pips, palette-safe texture, and readable status hierarchy | 9 |
-| Creation screen | Character creation | Character creation surface with shared canvas chrome, sprite preview, framed choices, and old-CRPG density | 9 |
-| Trade screen | Trading | Trade screen with functional stock/pack/detail columns, item icons, price chips, hard frames, and inventory-language consistency | 9 |
-| Loot screen | Containers and corpse loot | Loot screen with inventory chrome, item icons, clear marked rows, detail pane, and readable action focus | 9 |
-| Context action hint | Nearby action hint | Compact in-scene action menu and HUD hint with hard frames, enabled/disabled states, and scene-safe placement | 9 |
-| World speech bubbles | Actor speech overlay | In-world speech overlay with allowed text exception, hard frame, tail, texture marks, and readable actor association | 9 |
-| Floating combat numbers | Damage/cost overlay | Floating tactical feedback with allowed text exception, dark backing, hard highlight, and readable scene placement | 9 |
+## Fifteenth pass: sacrament and issue kit (2026-07-10, same day)
 
-## Compliance Notes
+- **`ritual-bowl` 5 -> 6.5**: the bowls now hold what the quest log says
+  they hold - strips of pale flesh laid to dry across the rim, one hanging
+  over the edge, wet red beneath, one gold fleck. The altar rite scene's
+  centerpiece finally shows the sacrament.
+- **`field-satchel` 5 -> 6**: a bone-white Censure issue-stamp on the flap;
+  standard kit reads as standard kit.
+- Evidence: `honest-2026-07-10-bowl-satchel.png`.
 
-- `npm run check` passed after the audit.
-- No `createLinearGradient`, `createRadialGradient`, `ctx.arc`, blur, or filter usage was found in `src/render`.
-- Browser `fillText` in render code is limited to in-world speech bubbles, movement costs, and floating combat text, which the art standard explicitly allows.
-- `Math.random` appears in runtime systems for locks, perception, patrol delay, and combat barks, not in static render functions that would shimmer.
-- Player-facing text in `data/` did not contain em-dashes or `--` in the final search. Matches were code comments and docs.
-- Inline hex colors are present in level mood values and the journal parchment table. The journal parchment table is documented by the art standard. Level mood colors are data-authored scene washes and should be reviewed if the palette-only rule is tightened for mood data.
+## Sixteenth pass: gore close review (2026-07-10, same day)
 
-## Recommended Fix Order
+Close render review of the victim trio found all three fully authored, and
+their family score under-credited from gallery distance (the same pattern as
+the saint-statue and calcified headstones):
 
-1. Keep future content at the verified 9/10 bar by requiring isolated and in-scene evidence before adding new visual rows.
-2. Add in-scene comparison screenshots for each 9/10 claim so isolated gallery strength also holds in playable maps.
-3. Improve generic human and faction actor variants with stronger posture, equipment silhouettes, asymmetry, and named-role reads.
-4. Push Host animal actor variants beyond readable into unmistakably Vale Imprint body horror at gameplay scale.
-5. Keep UI regression screenshots in future passes, especially command panels, trade/loot screens, speech bubbles, and floating numbers.
-6. Review level mood hexes against `PALETTE` names if the project wants strict palette validation beyond draw code.
+- `cult-victim`: half-dried pool with drag smear, dark traveller's coat,
+  silver cross still at the throat, the chest cut bare and carved with a
+  point-down star over scratch-line words, stab punctures. 5.5 -> 6.5.
+- `bound-victim`: rough lash-up post and wrist bar, and a thin cold seep of
+  grate light that only falls on the victim while they still live. 5.5 -> 6.5.
+- `dead-cultist` rides with the family at 6.
+
+The audit tail principle, now confirmed across every family: no unauthored
+or misrepresenting piece remains in the catalog. Remaining movement is craft
+polish upward and honest re-crediting on close evidence.
+
+## Seventeenth pass: the censure camp set (2026-07-10, same day)
+
+- **`canvas-tent` 6 -> 6.5**: a chalked billet tally beside the door flap;
+  the quartermaster counts heads, even now.
+- **`camp-bedroll` 5.5 -> 6**: a folded spare shirt and the saint token they
+  touched before sleep, kept by the head end.
+- **`rusted-crate` 5 -> 6**: pry gouges at the lid seam and a requisition
+  stencil half rusted away; somebody tried this one already.
+- Evidence: `honest-2026-07-10-campset.png`.
+
+## Eighteenth pass: the farm yard (2026-07-10, same day)
+
+- **`feed-trough` 5.5 -> 6**: a small dead bird lies in the dry feed, wing
+  splayed; nothing else came for the grain.
+- **`woodpile` 5.5 -> 6.5**: the chopping block out front with the axe still
+  standing in its split. Whoever was working stopped mid-swing and never
+  came back.
+- Evidence: `honest-2026-07-10-farmtrio.png`.
+
+## Nineteenth pass: the road remembers (2026-07-10, same day)
+
+- **`ash-tree-stump` 5.5 -> 6**: the heartwood weeps a thin black-gold seam
+  where the saw went through; even the trees on this road carry the Imprint.
+- **`scrub-bush` 5 -> 5.5**: a scrap of coat wool snagged on a stalk;
+  someone pushed through rather than go around.
+- **`farm-door` (locked) 5 -> 6**: the Remnant's chalked barred cross at eye
+  height. Locked doors in this valley are not locked by their owners.
+- Process note: the door seal was first inserted into the wrong function by
+  an automated edit (it would have crashed every wheeled prop); the
+  render-verify loop caught it before commit, which is exactly why Section
+  19's "verify every piece" rule exists.
+- Evidence: `honest-2026-07-10-sealed-door.png`,
+  `honest-2026-07-10-plants-snag-seep.png`.
+
+## Twentieth pass: wilderness props (2026-07-10, same day)
+
+- **`fallen-ash-log` 5.5 -> 6**: the sawn end face shows growth rings and
+  the same thin black-gold seep the stumps carry; whoever cut it left it
+  where it dropped.
+- **`cave-stalagmite` 5.5 -> 6**: a wet drip line down the tallest spike and
+  a flowstone ring at the base; the cave is still growing these.
+- Evidence: `honest-2026-07-10-wildprops.png`.
+
+## Twenty-first pass: closing the tail (2026-07-10, same day)
+
+- **`wagon-wheel` 5.5 -> 6**: one spoke snapped out of the ring, rust
+  bleeding into the dirt; this wheel is never going back on a cart.
+- **`loose-flagstone` 5.5 -> 6**: the pry bar that lifted it left leaning
+  across the slab edge; whoever hid something here meant to come back.
+- Evidence: `honest-2026-07-10-tail-pair.png`.
+
+**Milestone:** with these two, every asset in the catalog that can hold a 6
+at its pixel size now scores 6 or above. What sits below are only the
+intentionally-subtle texture decals (ground grime is texture, not story)
+and the 22px pickup minis at their size-appropriate ceiling, both with
+rationale recorded. The distribution: floor 6, surface 6.5+, set pieces
+7-8.5, the Saint at 9.5 as the demonstrated bar.
+
+## Twenty-second pass: the graveyard speaks (2026-07-10, same day)
+
+- **`stone-tomb` 6 -> 7**: scratch marks climb the inside rim of the open
+  cavity, in sets of four. The lid was not moved from the outside.
+- **`graveyard-tomb-slab` 6 -> 6.5**: a wilted twig cross and a single chit
+  coin left on the slab. The dead here have not been forgotten, only
+  outnumbered.
+- Evidence: `honest-2026-07-10-graveset.png`.
+
+## Twenty-third pass: the most-placed story props (2026-07-10, same day)
+
+- **`bone-niche` 6 -> 6.5** (137 placements): one niche in four now shows
+  the Choir's hand - the middle shelf rearranged into a deliberate radiant
+  of femurs around a skull with a gold pin pressed into its brow. They do
+  not desecrate the dead; they reorganize them.
+- **`calcified-penitent` 6.5 -> 7** (44 placements): the near shoulder is
+  polished smooth and pale where every survivor who passes touches the same
+  spot for luck. Grief becomes a habit; a habit becomes a shrine.
+- Evidence: `honest-2026-07-10-niche-variant.png`.
+
+## Twenty-fourth pass: practice, wards, and stolen words (2026-07-10)
+
+- **`training-dummy` 5.5 -> 6**: straw guts bleed from a split seam and
+  somebody's knife is still parked in its flank; the recruits practice what
+  the Censure actually does.
+- **`canvas-tent-flap` 5.5 -> 6**: a small barred cross painted in red on
+  the flap; whoever sleeps here trusts the paint more than the canvas.
+- **`prayer-lectern` 6 -> 6.5**: the chained book is gone - the chain hangs
+  cut, a torn page corner still pinched under the clasp. The Choir wanted
+  the words, not the wood.
+- Evidence: `honest-2026-07-10-trio24.png`.
+
+## Twenty-fifth pass: the working edge (2026-07-10)
+
+- **`damaged-altar` 6.5 -> 7.5**: knife grooves worn into the slab lip where
+  the same cuts land day after day, the stained lip, and the soak line
+  running down the front face - one old, one fresh. A butcher's table that
+  still remembers being holy, splitting from below with Host tissue.
+- Evidence: `honest-2026-07-10-altar.png`.
+
+## Twenty-sixth pass: what the chapel endured (2026-07-10)
+
+- **`cracked-column` 6 -> 6.5**: votive wax pooled and hardened at the base
+  in old layers, one wick stump left; people prayed here long before anyone
+  bled here.
+- **`chapel-double-door` 6.5 -> 7**: axe bites clustered around the bar
+  bracket, raw wood in the wounds; the doors held long enough to matter and
+  not a moment longer.
+- **`wall-safe` 6 -> 6.5**: a scorch halo and drill scars around the dial;
+  heat first, then patience, and the safe beat both.
+- Evidence: `honest-2026-07-10-chapel26.png`.
+
+## Twenty-seventh pass: descents and rations (2026-07-10)
+
+- **`graveyard-catacomb-mouth` 6 -> 6.5**: a hand-worn groove on the descent
+  lip and a candle stub dropped just inside the dark; the survivors went
+  down this way, more than once.
+- **`graveyard-bone-marker` 6 -> 6.5**: a tally scratched at the base - how
+  many lie under this one marker. The graveyard ran out of stones long
+  before it ran out of dead.
+- **`rusted-barrel` 6 -> 6.5**: a rain line inside the rim and a shared tin
+  cup on the lid; the camp drinks from this one, rust and all.
+- Evidence: `honest-2026-07-10-trio27.png`.
+
+## Twenty-eighth pass: shortages and warnings (2026-07-10)
+
+- **`pantry-shelf` 6 -> 6.5**: one jar tipped and licked clean, a thin trail
+  of droppings along the bottom shelf; the shortage arrived before the cult.
+- **`wall-stash` 6 -> 6.5**: fingertip wear rounding the slab edges - found,
+  emptied, refilled, and re-hidden more times than its owner would admit.
+- **`quarantine-barricade` 6 -> 6.5**: painted crude on the road side, the
+  barred cross and an arrow pointing back the way you came. The barricade is
+  polite exactly once.
+- Evidence: `honest-2026-07-10-trio28.png`.
+
+## Twenty-ninth pass: shut houses and measured dark (2026-07-10)
+
+- **`farm-building-block` family 6 -> 6.5**: one block in five carries a
+  boarded window with a red ward brushed over the planks; they shut the
+  house up from the inside before they left, or before they stopped leaving.
+- **`infected-cave-entrance` 6.5 -> 7**: a Censure guide-rope staked at the
+  mouth runs in and simply stops; they measured how far they dared go, and
+  the rope remembers the number.
+- Evidence: `honest-2026-07-10-pass29.png`.
+
+## Thirtieth pass: drips, directions, nests (2026-07-10)
+
+- **`cave-stalactites` 5.5 -> 6**: one spike still drips - a bead mid-fall
+  and the dark spot where it lands.
+- **`road-sign-post` 5.5 -> 6.5**: carved letter ticks on the arrow board,
+  and below it the torn stub of a second board: a direction nobody needs
+  anymore.
+- **`field-plow` 6 -> 6.5**: earth still caked dark on the share and a
+  bird's nest wedged in the frame; the plow has been still long enough to
+  become a hedge.
+- Evidence: `honest-2026-07-10-trio30.png`.
+
+## Thirty-first pass: the graveyard keeps count (2026-07-10)
+
+- **`calcified-grave-plot` 6 -> 6.5**: one plot in five has split open from
+  beneath, its calcified shell petals bent outward around a hollow dark.
+  They do not all stay.
+- **`graveyard-remnant-cross` 7 -> 7.5**: generations of prayer cords tied
+  up the shaft, the oldest gone grey, the newest still holding its color.
+  People keep coming back.
+- **`saint-statue` 6.5 -> 7**: pilgrim candle stubs on the plinth step over
+  a shared wax pool; the statue lost its head, not its congregation.
+- Evidence: `honest-2026-07-10-trio31.png`.
+
+## Thirty-second pass: interrupted kitchens (2026-07-10)
+
+- **`farm-prep-table` 6 -> 6.5**: the knife stands mid-chop in a split root;
+  the meal nobody finished making is still waiting.
+- **`kitchen-counter` 6 -> 6.5**: a floured handprint on the counter edge,
+  fingers spread - the last touch before whatever made them stop touching
+  things.
+- **`calcified-headstone` 6 -> 6.5**: a ring on a cord hung over the broken
+  form; someone knew which of the calcified this one used to be.
+- Process note: an undefined-variable reference in the prep-table insert was
+  caught by the gallery's per-cell error trap (red ERR text in the render)
+  and fixed before commit - the harness catches what tests cannot.
+- Evidence: `honest-2026-07-10-trio32.png`.
+
+## Thirty-third pass: the last sub-6 rows (2026-07-10)
+
+- **`wall-stair-door` 5 -> 6**: a guide rope pinned down the jamb and a
+  wedge of cold light from a grate above the turn; the stair goes somewhere
+  lit, which in this chapel is not the same as somewhere safe.
+- **`host-growth` 5.5 -> 6**: calcified fingers absorbed mid-grip at one
+  edge; the growth grew over someone trying to hold on to the ground.
+- **`skeleton` 5.5 -> 6**: one hand ahead of the skull, fingers dug into the
+  dirt with the furrows still showing; they died crawling toward something.
+- **Milestone: every named row in the catalog now scores 6 or above**, with
+  only the by-design texture decals and size-capped pickup minis beneath,
+  both with recorded rationale.
+- Evidence: `honest-2026-07-10-trio33.png`.
+
+## Thirty-fourth pass: second strokes on the 7s (2026-07-10)
+
+- **Fallen cross-martyr 7 -> 7.5**: the carving knife dropped where the
+  cutter stood and one sacrament bowl overturned beside it; when the Saint
+  came down, they ran.
+- **`calcified-crossroad-brother` 7.5 -> 8**: travelers' prayer cords tied
+  along both outstretched arms; the crossroad made him a signpost, and the
+  road made him a saint.
+- **`chapel-banner` 7 -> 7.5**: the torn corner re-stitched in bright cord
+  with uneven loops; somebody repaired the desecration banner with the same
+  care they once gave the true one. Devotion survives its object.
+- Evidence: `honest-2026-07-10-martyr-fall-final.png`,
+  `honest-2026-07-10-trio34.png`.
+
+## Thirty-fifth pass: tongues, aim, and what came down (2026-07-10)
+
+- **`broken-bell` 8.5 -> 9**: the clapper lies in the dirt where they threw
+  it, its leather strap cut clean. They did not just crack the bell; they
+  cut out its tongue. The silencing now has every beat: crack, wedge, cut
+  pin, thrown tongue, the tally of ringings lost, the bitten lip below.
+- **`devil-target` 7 -> 7.5**: one quarrel stands dead centre in the devil's
+  chest. Somebody in this camp can shoot; the tally of misses is not theirs.
+- **`stone-stairwell` 8 -> 8.5**: over the climbing ash prints, a second set
+  coming down - longer stride, heavier, dragging at the heel. Someone went
+  up. Something came down.
+- Evidence: `honest-2026-07-10-trio35.png`.
+
+## Thirty-sixth pass: hollows, meals, and shrines (2026-07-10)
+
+- **`hay-rick` 6 -> 6.5**: a sleeping hollow burrowed into the shaded flank,
+  floor pressed flat, a corner of blanket still snagged. Someone hid in
+  here; the straw is not saying whether they left.
+- **`dining-table` 6.5 -> 7**: bowls at every place and one on the floor
+  below a shoved-back gap; the meal was set for a crowd that stood up all
+  at once.
+- **`ash-tree` 7 -> 7.5** (379 placements): one tree in six is a wayside
+  shrine - a small plank nailed at chest height, a scratched line of prayer,
+  a cord-wrapped gold token. The road prays to what it passes.
+- Evidence: `honest-2026-07-10-trio36.png`.
+
+## Thirty-seventh pass: the rite, the crow, the paperwork (2026-07-10)
+
+- **`dead-cultist` 6 -> 6.5**: their own carving knife still in the curled
+  hand, and beneath it three lines of a five-line star. Whatever interrupted
+  the rite did not wait for the geometry.
+- **`calcified-scarecrow-brother` 6 -> 7**: a single crow perched on the
+  outstretched arm, one bright eye, unbothered. It is the only living thing
+  in the valley that will touch him, and it knows it.
+- **`settlement-table` 6 -> 6.5**: writ papers weighted with a river stone
+  against the camp wind, and an ink pot gone dry with the nib still in it.
+  The paperwork of the end of the world continues on schedule.
+- Evidence: `honest-2026-07-10-trio37.png`.
+
+## Thirty-eighth pass: policy, standards, and mercy (2026-07-10)
+
+- **`host-wolf-remains` 6 -> 6.5**: a censure chalk ring drawn in tired
+  dashes around the remains, a cleared-tally beside it. Inspected, counted,
+  and left where it fell. Policy.
+- **`wash-tub` 6 -> 6.5**: a mirror shard propped against the rim, catching
+  what light there is. Somebody still shaves. Standards are standards.
+- **`bound-victim` 6.5 -> 7**: their shoes set neatly side by side at the
+  base of the post, toes pointing away. Somebody made them comfortable
+  first.
+- Evidence: `honest-2026-07-10-trio38.png`.
+
+## Thirty-ninth pass: what they carried (2026-07-10)
+
+- **`dead-host-wolf-spider` 6 -> 6.5**: a snapped spear still standing in
+  the ribs, its broken half an arm's reach away. Someone stood their ground
+  here and, for once, won.
+- **`corpse` 6 -> 6.5**: the satchel spilled where it dropped - a loaf of
+  bread in the dust, still whole. They were carrying it home.
+- **`calcified-grave-body` 6 -> 6.5**: a candle stub burned down to a wax
+  coin at the head. Someone sat with this one until the light went out.
+- Evidence: `honest-2026-07-10-trio39.png`.
+
+## Fortieth pass: precautions (2026-07-10)
+
+- **`dead-host-wolf-maw` 6 -> 6.5**: a fence stake wedged upright between
+  the jaws. Whoever killed it did not trust the mouth to stay shut.
+- **`dead-host-wolf-ribsplit` 6 -> 6.5**: salt thrown over the carcass in a
+  pale scatter, densest at the split; ritual disposal, done by the book even
+  out here.
+- **`cult-victim` 6.5 -> 7**: the guard's warning horn beside the outflung
+  hand, mouthpiece toward the fingers. He reached for it, and the reach is
+  the whole story.
+- Evidence: `honest-2026-07-10-trio40.png`.
+
+## Forty-first pass: session close (2026-07-10)
+
+- **`dining-bench` 6 -> 6.5**: two sets of initials carved into the seat
+  edge with a plus between them, older than everything else in the room.
+- **`kitchen-hearth` 6 -> 6.5**: a small pot still hangs over the embers,
+  spoon standing in it; supper was on when everything stopped.
+- **`wall-window` 7 -> 7.5**: one pane patched with oiled parchment where
+  the glass gave out; it glows duller than its neighbours.
+- Evidence: `honest-2026-07-10-trio41.png`. Session ended here at the
+  user's request; the loop's next candidates are whatever rows read lowest
+  in this document, method per game_art_skill Section 22.
+
+## Where the catalog stands
+
+Every audited row sits at 4.5 or above; the shipped slice's dominant surface
+at 6-6.5; set-piece assets at 7-8.5; all seven chapel windows cast cold
+light; every level has a mood pass; every light source casts a pool. Nothing
+misrepresents what it depicts. On this rubric 10 means "exemplar, copy it as
+a standard" - a relative ceiling that by definition only the best pieces
+hold. The path for the next pass is mechanical and documented: apply Section
+22's two uplift methods to whichever rows sit lowest in this table, verify
+with the Section 19 harnesses, and re-rate on evidence.
+
+## Evidence
+
+Fresh sheets from this pass live in `.ai/visual-audit/` with the
+`honest-2026-07-10` prefix (catalog categories, floors, ground items, actors,
+player variants) plus scene captures of the bell room and chapel nave. The
+harness pages under `.ai/map-review/` regenerate all of them on demand.
+
+## Verification
+
+`npm test` (45 suites) and `npm run check` pass after every fix above.

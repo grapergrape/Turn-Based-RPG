@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- Dev-only harness: renders the dialogue screen with a speaker portrait
+     through the real UIRenderer. Not part of the game. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#000;}canvas{display:block;image-rendering:pixelated;}</style>
+</head>
+<body>
+<canvas id="c" width="1280" height="960"></canvas>
+<script type="module">
+import { UIRenderer } from '/src/render/UIRenderer.js';
+import { buildSpriteAtlas } from '/src/render/SpriteAtlas.js';
+
+try {
+  const params = new URLSearchParams(location.search);
+  const speaker = params.get('speaker') ?? 'settlement-selka';
+  const atlas = buildSpriteAtlas();
+  const renderer = new UIRenderer(atlas);
+
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.scale(2, 2);
+
+  const ui = {
+    screen: 'dialogue',
+    dialogue: {
+      title: 'BELL CLERK SERA',
+      kind: 'dialogue',
+      speakerSpriteId: speaker,
+      lines: [
+        'The ledger is damp where the camp rain got through.',
+        'Sera keeps one finger on the latest bell tally.',
+        'She speaks low: the north road stayed quiet all morning.'
+      ],
+      choices: [{ label: 'Ask about the bells' }, { label: 'Leave' }],
+      options: ['1. ASK ABOUT THE BELLS', '2. LEAVE'],
+      scroll: 0,
+      maxScroll: 0
+    },
+    log: ['Bell Clerk Sera counts the writ tags.'],
+    actorName: 'MARA VEY',
+    actorRole: 'CULT-BREAKER',
+    hp: 17, maxHp: 22,
+    mode: 'explore',
+    carryWeight: 12.4, maxCarryWeight: 30,
+    controls: [],
+    cursor: null
+  };
+  renderer.draw(ctx, ui);
+  document.title = 'CAPTURE-READY';
+} catch (error) {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+}
+</script>
+</body>
+</html>

@@ -241,6 +241,14 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
   drawDoorWing('left', swing);
   drawDoorWing('right', swing);
   drawWallReveal();
+  // Axe bites clustered around the bar bracket: the doors held long enough
+  // to matter and not a moment longer.
+  px(ctx, cx - 2, cy - 14, PALETTE.void, 3, 2);
+  px(ctx, cx + 2, cy - 11, PALETTE.void, 2, 3);
+  px(ctx, cx - 4, cy - 9, PALETTE.void, 2, 2);
+  px(ctx, cx - 1, cy - 13, PALETTE.woodLight, 2, 1); // raw wood in the bite
+  px(ctx, cx + 3, cy - 10, PALETTE.woodLight, 1, 2);
+
 }
 
 export function drawChapelWindow(ctx, cx, cy, seed = 0, opts = {}) {
@@ -317,6 +325,12 @@ export function drawChapelWindow(ctx, cx, cy, seed = 0, opts = {}) {
     ctx.fillRect((cx - 17) - hw, cy + 4 + i * 5, hw * 2, 5);
   }
   ctx.restore();
+  // One pane patched with oiled parchment where the glass gave out: it
+  // glows duller than its neighbours and breathes when the wind does.
+  px(ctx, cx - 8, cy - 26, PALETTE.clothTan, 5, 6);
+  px(ctx, cx - 8, cy - 26, PALETTE.stoneDust, 5, 1); // its duller sheen
+  px(ctx, cx - 6, cy - 23, PALETTE.rustDark, 1, 3); // the tack line
+
 }
 
 function swFaceTop(cx, cy, x) { return (cy - 64) + (x - (cx - 32)) * 0.5; }
@@ -436,6 +450,15 @@ export function drawWallSafe(ctx, cx, cy, seed, opts = {}) {
     px(ctx, x, Math.round(swFaceTop(cx, cy, x) + topPad + 3 + rng() * 8), rng() < 0.5 ? PALETTE.stoneDust : PALETTE.void, 2, 1);
   }
   drawNoisePixels(ctx, xL, Math.round(swFaceTop(cx, cy, xL) + topPad), xR - xL, 14, [PALETTE.void, body], 0.05, seed);
+  // A scorch halo and drill scars around the dial: heat first, then patience,
+  // and the safe beat both.
+  px(ctx, cx - 8, cy - 22, PALETTE.hostBlack, 5, 2);
+  px(ctx, cx - 10, cy - 19, PALETTE.hostBlack, 3, 4);
+  px(ctx, cx - 4, cy - 24, PALETTE.hostBlack, 6, 1);
+  px(ctx, cx - 6, cy - 17, PALETTE.stoneLight, 1, 1); // drill scars
+  px(ctx, cx - 4, cy - 15, PALETTE.stoneLight, 1, 1);
+  px(ctx, cx - 7, cy - 14, PALETTE.stoneLight, 1, 1);
+
 }
 
 export function drawWallStash(ctx, cx, cy, seed, opts = {}) {
@@ -499,6 +522,12 @@ export function drawWallStash(ctx, cx, cy, seed, opts = {}) {
     px(ctx, keyX + 4, keyY - 1, PALETTE.hostGold, 1, 3);
   }
   drawNoisePixels(ctx, xL, Math.round(swFaceTop(cx, cy, xL) + topPad), xR - xL, 12, [PALETTE.stoneDark, PALETTE.stoneDust], 0.05, seed);
+  // Fingertip wear rounding the slab edges: found, emptied, refilled, and
+  // re-hidden more times than its owner would admit.
+  px(ctx, cx - 7, cy - 18, PALETTE.stoneLight, 2, 1);
+  px(ctx, cx + 5, cy - 17, PALETTE.stoneLight, 2, 1);
+  px(ctx, cx - 6, cy - 8, PALETTE.stoneDust, 3, 1);
+
 }
 
 export function drawWallStairDoor(ctx, cx, cy, seed) {
@@ -538,16 +567,17 @@ export function drawWallStairDoor(ctx, cx, cy, seed) {
   px(ctx, latchX, latchY - 3, PALETTE.rustDark, 3, 6);
   px(ctx, latchX + 1, latchY - 1, PALETTE.hostGold, 2, 1);
 
-  // Visible stair treads vanishing upward into black.
+  // Visible stair treads vanishing upward into black. The mouth treads carry
+  // real light or the whole fixture collapses into a dark slab at map scale.
   for (let i = 0; i < 4; i += 1) {
     const left = xL + 6 + i * 2;
     const right = xR - 7 - i * 2;
     if (right <= left) continue;
     for (let x = left; x <= right; x += 1) {
       const y = Math.round(swFaceBot(cx, cy, x) - botPad - 4 - i * 5);
-      px(ctx, x, y, i < 2 ? PALETTE.stoneMid : PALETTE.stoneDark, 1, 2);
+      px(ctx, x, y, i === 0 ? PALETTE.stoneDust : i === 1 ? PALETTE.stoneMid : PALETTE.stoneDark, 1, 2);
     }
-    linePx(ctx, left, Math.round(swFaceBot(cx, cy, left) - botPad - 5 - i * 5), right, Math.round(swFaceBot(cx, cy, right) - botPad - 5 - i * 5), i < 2 ? PALETTE.stoneDust : PALETTE.outline, 1);
+    linePx(ctx, left, Math.round(swFaceBot(cx, cy, left) - botPad - 5 - i * 5), right, Math.round(swFaceBot(cx, cy, right) - botPad - 5 - i * 5), i === 0 ? PALETTE.stoneLight : i === 1 ? PALETTE.stoneDust : PALETTE.outline, 1);
   }
   for (let i = 0; i < 3; i += 1) {
     const chipX = xL + 5 + i * 8;
@@ -560,4 +590,18 @@ export function drawWallStairDoor(ctx, cx, cy, seed) {
     px(ctx, x, y, x % 2 ? PALETTE.stoneMid : PALETTE.stoneDust, 1, 2);
   }
   drawNoisePixels(ctx, xL, Math.round(swFaceTop(cx, cy, xL) + topPad), xR - xL, 31, [PALETTE.void, PALETTE.stoneDark], 0.05, seed);
+  // A guide rope pinned down the jamb and a wedge of cold light from a
+  // grate somewhere above the turn: the stair goes somewhere lit, which in
+  // this chapel is not the same as somewhere safe.
+  linePx(ctx, xL + 2, Math.round(swFaceTop(cx, cy, xL + 2) + topPad + 3), xL + 4, Math.round(swFaceBot(cx, cy, xL + 4) - botPad - 4), PALETTE.rustDark, 1);
+  px(ctx, xL + 1, Math.round(swFaceTop(cx, cy, xL + 1) + topPad + 3), PALETTE.stoneLight, 2, 1);
+  ctx.save();
+  ctx.globalAlpha = 0.14;
+  ctx.fillStyle = PALETTE.stoneDust;
+  for (let x = xL + 8; x <= xR - 9; x += 1) {
+    const y = Math.round(swFaceTop(cx, cy, x) + topPad + 4);
+    ctx.fillRect(x, y, 1, 8 - Math.abs(x - (xL + xR) / 2) * 0.2);
+  }
+  ctx.restore();
+
 }

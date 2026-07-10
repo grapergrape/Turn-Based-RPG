@@ -48,7 +48,22 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
     px(ctx, p[0] - 4, p[1] - 7, PALETTE.outline, 9, 2);
     px(ctx, p[0] - 3, p[1] - 8, PALETTE.woodLight, 4, 1);
   }
-  for (const lift of [12, 20]) {
+  // 488 of these line the fields, so the run needs seeded variety: sound
+  // spans, one snapped rail drooping to the dirt, ash drifted at the posts,
+  // and the odd prayer cord someone tied on the way past.
+  const snapped = seed % 5 === 0;
+  for (const [idx, lift] of [12, 20].entries()) {
+    if (snapped && idx === 0) {
+      // The low rail is broken mid-span: both halves sag toward the break.
+      const mid = frame.point(0.04, 0, lift - 6);
+      linePx(ctx, a[0], a[1] - lift, mid[0] - 2, mid[1], PALETTE.outline, 5);
+      linePx(ctx, a[0], a[1] - lift - 1, mid[0] - 2, mid[1] - 1, PALETTE.woodMid, 2);
+      linePx(ctx, mid[0] + 3, mid[1] + 3, b[0], b[1] - lift, PALETTE.outline, 4);
+      linePx(ctx, mid[0] + 3, mid[1] + 2, b[0], b[1] - lift - 1, PALETTE.woodDark, 2);
+      px(ctx, mid[0] - 2, mid[1] - 1, PALETTE.stoneDust, 2, 2); // pale split ends
+      px(ctx, mid[0] + 2, mid[1] + 2, PALETTE.stoneDust, 2, 2);
+      continue;
+    }
     linePx(ctx, a[0], a[1] - lift, b[0], b[1] - lift + ((seed + lift) & 1), PALETTE.outline, 5);
     linePx(ctx, a[0], a[1] - lift - 1, b[0], b[1] - lift - 1 + ((seed + lift) & 1), PALETTE.woodMid, 2);
     linePx(ctx, a[0], a[1] - lift + 1, b[0], b[1] - lift + 1 + ((seed + lift) & 1), PALETTE.woodDark, 1);
@@ -59,6 +74,16 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
   if ((seed & 3) === 0) {
     linePx(ctx, cx - 8, cy - 5, cx + 7, cy - 28, PALETTE.outline, 3);
     linePx(ctx, cx - 7, cy - 6, cx + 6, cy - 27, PALETTE.woodDark, 1);
+  }
+  // Ash drifted against the windward post base.
+  px(ctx, a[0] - 6, a[1] - 1, PALETTE.stoneDust, 8, 2);
+  px(ctx, a[0] - 4, a[1] - 2, PALETTE.stoneMid, 5, 1);
+  if (seed % 7 === 3) {
+    // A knotted prayer cord left on the top rail.
+    const tie = frame.point(-0.18, 0, 20);
+    px(ctx, tie[0], tie[1] - 2, PALETTE.clothTan, 2, 6);
+    px(ctx, tie[0] - 1, tie[1] - 2, PALETTE.outline, 1, 4);
+    px(ctx, tie[0], tie[1] + 4, PALETTE.clothTan, 1, 2);
   }
   for (let i = 0; i < 3; i += 1) {
     const sx = cx - 20 + Math.floor(rng() * 41);
@@ -228,6 +253,14 @@ export function drawTrainingDummy(ctx, cx, cy, seed, opts = {}) {
   }
   drawRubbleCluster(ctx, cx + 20, cy + 8, seed + 63, 2);
   drawNoisePixels(ctx, cx - 15 + lean, cy - 62, 30, 42, [PALETTE.rustDark, PALETTE.woodDark, PALETTE.stoneDust], 0.035, seed);
+  // Straw guts bleed from a split seam and somebody's knife is still parked
+  // in its flank: the recruits practice what the Censure actually does.
+  px(ctx, cx - 6, cy - 26, PALETTE.void, 2, 5); // the split seam
+  px(ctx, cx - 5, cy - 24, PALETTE.clothTan, 3, 2); // straw pushing out
+  px(ctx, cx - 6, cy - 21, PALETTE.hostGold, 2, 1);
+  px(ctx, cx + 4, cy - 30, PALETTE.stoneLight, 4, 1); // the parked blade
+  px(ctx, cx + 7, cy - 31, PALETTE.woodDark, 3, 2); // its grip
+
 }
 
 export function drawDevilTarget(ctx, cx, cy, seed, opts = {}) {
@@ -254,28 +287,40 @@ export function drawDevilTarget(ctx, cx, cy, seed, opts = {}) {
   face.line(0.18, 0.5, 0.82, 0.5, PALETTE.rustDark, 1);
   face.line(0.5, 0.18, 0.5, 0.86, PALETTE.rustDark, 1);
 
-  face.line(0.32, 0.35, 0.42, 0.18, PALETTE.outline, 2);
-  face.line(0.68, 0.35, 0.58, 0.18, PALETTE.outline, 2);
-  face.line(0.34, 0.36, 0.43, 0.22, PALETTE.hostRed, 1);
-  face.line(0.66, 0.36, 0.57, 0.22, PALETTE.hostRed, 1);
-  face.rect(0.38, 0.34, 0.62, 0.61, PALETTE.outline);
-  face.rect(0.42, 0.38, 0.58, 0.58, PALETTE.hostBone);
-  face.line(0.44, 0.47, 0.47, 0.47, PALETTE.void, 1);
-  face.line(0.54, 0.47, 0.57, 0.47, PALETTE.void, 1);
-  face.line(0.45, 0.58, 0.56, 0.55, PALETTE.hostRed, 1);
-  face.line(0.5, 0.59, 0.5, 0.75, PALETTE.outline, 1);
-  face.line(0.28, 0.74, 0.72, 0.74, PALETTE.outline, 2);
-  face.line(0.31, 0.73, 0.69, 0.73, PALETTE.rustDark, 1);
-  face.line(0.25, 0.2, 0.18, 0.08, PALETTE.outline, 2);
-  face.line(0.75, 0.2, 0.82, 0.08, PALETTE.outline, 2);
-  face.line(0.27, 0.2, 0.2, 0.1, PALETTE.hostRed, 1);
-  face.line(0.73, 0.2, 0.8, 0.1, PALETTE.hostRed, 1);
+  // The devil is painted BOLD, the way a bored guard with one pot of red
+  // paint would do it: solid body, crooked horns, a scrawled pitchfork. The
+  // absurd humor lives in the crudeness, not in faint lines.
+  face.rect(0.4, 0.2, 0.6, 0.38, PALETTE.outline); // head
+  face.rect(0.42, 0.22, 0.58, 0.36, PALETTE.hostRed);
+  face.line(0.42, 0.22, 0.32, 0.06, PALETTE.hostRed, 2); // crooked horns
+  face.line(0.58, 0.22, 0.66, 0.09, PALETTE.hostRed, 2);
+  face.rect(0.38, 0.38, 0.62, 0.7, PALETTE.outline); // body
+  face.rect(0.4, 0.4, 0.6, 0.68, PALETTE.hostRed);
+  face.line(0.4, 0.45, 0.22, 0.58, PALETTE.hostRed, 2); // arms flung wide
+  face.line(0.6, 0.45, 0.76, 0.4, PALETTE.hostRed, 2);
+  face.line(0.78, 0.28, 0.78, 0.52, PALETTE.rustDark, 1); // scrawled pitchfork
+  face.line(0.74, 0.3, 0.82, 0.3, PALETTE.rustDark, 1);
+  px(ctx, face.point(0.46, 0.27)[0], face.point(0.46, 0.27)[1], PALETTE.void, 2, 2); // eyes
+  px(ctx, face.point(0.55, 0.27)[0], face.point(0.55, 0.27)[1], PALETTE.void, 2, 2);
+  face.line(0.44, 0.33, 0.56, 0.33, PALETTE.void, 1); // flat grin
+  // A tally of misses scratched in the corner. Someone is a bad shot.
+  face.line(0.1, 0.62, 0.1, 0.7, PALETTE.woodDark, 1);
+  face.line(0.13, 0.62, 0.13, 0.7, PALETTE.woodDark, 1);
+  face.line(0.16, 0.62, 0.16, 0.7, PALETTE.woodDark, 1);
 
   const rng = rngFrom(hash2D(seed + 127, seed * 13 + 7));
+  // Shot holes: punched-through voids with torn pale edges, clustered around
+  // the body where the shooters were aiming.
   for (let i = 0; i < 6; i += 1) {
-    const p = face.point(0.18 + rng() * 0.65, 0.2 + rng() * 0.62);
-    px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 3);
-    px(ctx, p[0], p[1], PALETTE.stoneDark, 1, 1);
+    const p = face.point(0.3 + rng() * 0.4, 0.24 + rng() * 0.5);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.void, 3, 3);
+    px(ctx, p[0] - 2, p[1] - 1, PALETTE.stoneDust, 1, 1);
+    px(ctx, p[0] + 2, p[1] + 1, PALETTE.stoneDust, 1, 1);
+  }
+  // And two wide misses in the frame margin.
+  for (const [u, v] of [[0.08, 0.3], [0.92, 0.6]]) {
+    const p = face.point(u, v);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.void, 2, 2);
   }
   for (const [u, v] of [[0.12, 0.12], [0.88, 0.13], [0.13, 0.88], [0.86, 0.87]]) {
     const p = face.point(u, v);
@@ -288,6 +333,13 @@ export function drawDevilTarget(ctx, cx, cy, seed, opts = {}) {
   linePx(ctx, postL[0] - 7, postL[1] + 1, postR[0] + 7, postR[1] + 1, PALETTE.woodMid, 1);
   drawRubbleCluster(ctx, cx + 22, cy + 8, seed + 221, 2);
   drawNoisePixels(ctx, Math.min(topLeft[0], topRight[0]) - 3, Math.min(topLeft[1], topRight[1]) - 2, Math.abs(topRight[0] - topLeft[0]) + 8, 39, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
+  // One quarrel stands dead centre in the devil's chest. Somebody in this
+  // camp can shoot; the tally of misses in the corner is not theirs.
+  const heart = face.point(0.5, 0.52);
+  px(ctx, heart[0] - 1, heart[1] - 1, PALETTE.outline, 3, 3);
+  px(ctx, heart[0], heart[1] - 4, PALETTE.woodDark, 1, 4); // the shaft
+  px(ctx, heart[0] - 1, heart[1] - 6, PALETTE.clothTan, 3, 2); // fletching
+
 }
 const FARM_VARIANTS = new Set(['farmhouse', 'barn', 'storage-shed', 'grain-shed', 'tool-shed']);
 
@@ -623,6 +675,17 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
   drawNoisePixels(ctx, cx - 33, cy - roofLift - 14, 66, 36, [style.roofShade, style.wallShade], 0.018, seed);
   drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wallTop, base, roof, roofLift);
   if (!connected.yPlus || !connected.xPlus) drawRubbleCluster(ctx, cx + 24, cy + 8, seed + 227, 2);
+  // One block in five carries a boarded window with a red ward brushed over
+  // the planks: they shut the house up from the inside before they left, or
+  // before they stopped leaving.
+  if (seed % 5 === 2) {
+    px(ctx, cx - 7, cy - 26, PALETTE.outline, 12, 9);
+    px(ctx, cx - 6, cy - 25, PALETTE.woodDark, 10, 7);
+    linePx(ctx, cx - 6, cy - 24, cx + 3, cy - 20, PALETTE.woodLight, 1);
+    linePx(ctx, cx - 6, cy - 20, cx + 3, cy - 24, PALETTE.woodMid, 1);
+    px(ctx, cx - 2, cy - 24, PALETTE.hostRed, 1, 5);
+    px(ctx, cx - 4, cy - 22, PALETTE.hostRed, 5, 1);
+  }
 }
 
 const FARM_DOOR_STYLES = {
@@ -681,6 +744,7 @@ const FARM_DOOR_STYLES = {
     trim: PALETTE.rustDark,
     metal: PALETTE.rustLight
   }
+
 };
 
 function farmDoorStyle(variant) {
@@ -912,6 +976,15 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
 
   drawRubbleCluster(ctx, cx + 18, cy + 7, seed + 257, 2);
   drawNoisePixels(ctx, left, top, right - left, bottom - top, [style.shade, PALETTE.rustDark], 0.025, seed);
+  if (locked) {
+    // The Remnant sealed it: a chalked barred cross at eye height. Locked
+    // doors in this valley are not locked by their owners.
+    const sealY = top + Math.floor((bottom - top) * 0.35);
+    px(ctx, cx - 1 + lean, sealY, PALETTE.stoneLight, 2, 7);
+    px(ctx, cx - 3 + lean, sealY + 2, PALETTE.stoneLight, 6, 2);
+    linePx(ctx, cx - 4 + lean, sealY + 8, cx + 3 + lean, sealY - 1, PALETTE.stoneLight, 1);
+  }
+
 }
 
 function drawFarmWheel(ctx, cx, cy, radius = 7, opts = {}) {
@@ -952,6 +1025,7 @@ function drawFarmWheel(ctx, cx, cy, radius = 7, opts = {}) {
   px(ctx, cx - 4, cy - 4, PALETTE.outline, 8, 8);
   px(ctx, cx - 2, cy - 2, hub, 4, 4);
   px(ctx, cx - 1, cy - 1, PALETTE.void, 2, 2);
+
 }
 
 export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
@@ -995,6 +1069,22 @@ export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
     shade: PALETTE.outline,
     hub: PALETTE.rustDark
   });
+  // The load explains the cart: two grain sacks and a lashed tarp, abandoned
+  // mid-haul like everything else on this road.
+  const sackA = frame.point(-0.16, -0.02, 16);
+  const sackB = frame.point(0.08, 0.06, 15);
+  for (const [s, lit] of [[sackA, true], [sackB, false]]) {
+    px(ctx, s[0] - 5, s[1] - 8, PALETTE.outline, 11, 10);
+    px(ctx, s[0] - 4, s[1] - 7, lit ? PALETTE.clothTan : PALETTE.stoneDust, 9, 8);
+    px(ctx, s[0] - 4, s[1] - 7, PALETTE.hostBone, 4, 1); // lit shoulder
+    px(ctx, s[0] - 1, s[1] - 8, PALETTE.rustDark, 3, 2); // tied neck
+    px(ctx, s[0] - 2, s[1] - 3, PALETTE.stoneDark, 6, 1); // sag crease
+  }
+  const tarp = frame.point(-0.42, 0.1, 15);
+  px(ctx, tarp[0] - 6, tarp[1] - 5, PALETTE.outline, 12, 7);
+  px(ctx, tarp[0] - 5, tarp[1] - 4, PALETTE.clothDark, 10, 5);
+  px(ctx, tarp[0] - 5, tarp[1] - 4, PALETTE.stoneDark, 10, 1);
+  linePx(ctx, tarp[0] - 3, tarp[1] - 4, tarp[0] - 3, tarp[1] + 1, PALETTE.rustDark, 1); // lash cord
   px(ctx, box.cap.left[0] + 2, box.cap.left[1] - 1, PALETTE.stoneDust, 18, 2);
   const sack = frame.point(-0.08, -0.06, 24);
   px(ctx, sack[0] - 5, sack[1] - 8, PALETTE.outline, 11, 9);
@@ -1019,32 +1109,60 @@ export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
 }
 
 export function drawHayRick(ctx, cx, cy, seed) {
+  // A dead farm's hay rick: a sagging cone of grey straw built around a
+  // centre pole, tied with cord, rotting at one flank. Ashen straw tones,
+  // never a bright gold dome.
   const rng = rngFrom(hash2D(seed + 83, seed * 5 + 21));
   drawShadowBlob(ctx, cx, cy + 4, 42, 15);
-  for (let row = 0; row < 18; row += 1) {
-    const t = row / 17;
-    const half = Math.round(7 + Math.sin(t * Math.PI) * 16);
-    const y = cy - 18 + row;
-    px(ctx, cx - half - 1, y, PALETTE.outline, half * 2 + 2, 1);
-    px(ctx, cx - half, y, row < 4 ? PALETTE.hostBone : PALETTE.clothTan, half, 1);
-    px(ctx, cx, y, row < 5 ? PALETTE.clothTan : PALETTE.hostGold, half, 1);
-    if (row % 4 === 0) px(ctx, cx - half + 3, y, PALETTE.woodDark, Math.max(3, half * 2 - 6), 1);
+
+  // Centre pole first, sticking out of the crown.
+  px(ctx, cx - 1, cy - 30, PALETTE.outline, 4, 10);
+  px(ctx, cx, cy - 30, PALETTE.woodDark, 2, 9);
+  px(ctx, cx, cy - 30, PALETTE.woodMid, 1, 3);
+
+  // Cone of straw, wider toward the ground, with a sag on the right flank.
+  for (let row = 0; row < 20; row += 1) {
+    const t = row / 19;
+    const sag = row > 12 ? Math.round((row - 12) * 0.6) : 0;
+    const half = Math.round(4 + t * 16);
+    const y = cy - 21 + row;
+    px(ctx, cx - half - 1, y, PALETTE.outline, half * 2 + 2 + sag, 1);
+    px(ctx, cx - half, y, row < 5 ? PALETTE.stoneDust : PALETTE.clothTan, half, 1);
+    px(ctx, cx, y, PALETTE.stoneDust, half + sag, 1);
+    // Straw lies downhill: short diagonal strands, not row bands.
+    if (row > 2 && row % 3 === 0) {
+      px(ctx, cx - half + 2 + Math.floor(rng() * 4), y, PALETTE.woodDark, 3, 1);
+      px(ctx, cx + Math.floor(half * 0.4), y, PALETTE.woodDark, 2, 1);
+    }
   }
-  for (let i = 0; i < 10; i += 1) {
-    const x = cx - 18 + Math.floor(rng() * 37);
-    const y = cy - 17 + Math.floor(rng() * 19);
-    px(ctx, x, y, rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
+  // Shade the whole lower-right quarter so the cone turns.
+  for (let row = 10; row < 20; row += 1) {
+    const half = Math.round(4 + (row / 19) * 16);
+    px(ctx, cx + Math.floor(half * 0.35), cy - 21 + row, PALETTE.woodDark, Math.ceil(half * 0.65), 1);
   }
-  linePx(ctx, cx - 19, cy - 12, cx + 18, cy - 9, PALETTE.outline, 2);
-  linePx(ctx, cx - 18, cy - 13, cx + 17, cy - 10, PALETTE.woodDark, 1);
-  linePx(ctx, cx - 15, cy - 2, cx + 15, cy, PALETTE.outline, 2);
-  linePx(ctx, cx - 14, cy - 3, cx + 14, cy - 1, PALETTE.rustDark, 1);
-  px(ctx, cx - 4, cy - 22, PALETTE.outline, 9, 3);
-  px(ctx, cx - 3, cy - 23, PALETTE.hostBone, 6, 1);
+
+  // Cord ties keeping the stack from slumping further.
+  linePx(ctx, cx - 12, cy - 10, cx + 12, cy - 8, PALETTE.rustDark, 1);
+  linePx(ctx, cx - 16, cy - 4, cx + 17, cy - 2, PALETTE.rustDark, 1);
+  px(ctx, cx + 13, cy - 9, PALETTE.clothTan, 2, 2); // knot
+
+  // Rot hole eaten into one flank, dark with a wet edge.
+  px(ctx, cx + 6, cy - 7, PALETTE.outline, 7, 6);
+  px(ctx, cx + 7, cy - 6, PALETTE.void, 5, 4);
+  px(ctx, cx + 7, cy - 2, PALETTE.woodDark, 6, 1);
+
+  // Loose straw shed around the base.
   for (let i = 0; i < 8; i += 1) {
-    px(ctx, cx - 22 + Math.floor(rng() * 45), cy + 1 + Math.floor(rng() * 7), rng() < 0.5 ? PALETTE.clothTan : PALETTE.woodDark, 2, 1);
+    px(ctx, cx - 22 + Math.floor(rng() * 45), cy + 1 + Math.floor(rng() * 7), rng() < 0.5 ? PALETTE.clothTan : PALETTE.woodDark, 3, 1);
   }
   drawRubbleCluster(ctx, cx + 21, cy + 8, seed + 89, 2);
+  // A sleeping hollow burrowed into the shaded flank, floor pressed flat, a
+  // corner of blanket still snagged in the straw. Someone hid in here.
+  px(ctx, cx - 12, cy - 4, PALETTE.outline, 8, 6);
+  px(ctx, cx - 11, cy - 3, PALETTE.hostBlack, 6, 4); // the hollow
+  px(ctx, cx - 10, cy, PALETTE.woodDark, 4, 1); // pressed floor
+  px(ctx, cx - 7, cy - 4, PALETTE.clothDark, 3, 2); // the snagged blanket corner
+
 }
 
 export function drawFieldPlow(ctx, cx, cy, seed, opts = {}) {
@@ -1115,6 +1233,14 @@ export function drawFieldPlow(ctx, cx, cy, seed, opts = {}) {
   }
   drawRubbleCluster(ctx, soil[0] + 12, soil[1] + 4, seed + 217, 2);
   drawNoisePixels(ctx, cx - 22, cy - 18, 44, 24, [PALETTE.rustDark, PALETTE.stoneDark], 0.04, seed);
+  // Earth still caked dark on the share, and a bird's nest wedged in the
+  // frame: the plow has been still long enough to become a hedge.
+  px(ctx, cx + 6, cy + 2, PALETTE.woodDark, 6, 2);
+  px(ctx, cx + 7, cy + 3, PALETTE.hostBlack, 4, 1);
+  px(ctx, cx - 8, cy - 10, PALETTE.outline, 7, 4);
+  px(ctx, cx - 7, cy - 9, PALETTE.clothTan, 5, 2); // the nest
+  px(ctx, cx - 5, cy - 10, PALETTE.woodLight, 2, 1);
+
 }
 
 export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
@@ -1129,11 +1255,13 @@ export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
     frame.point(ha, hb, 8),
     frame.point(-ha, hb, 8)
   ];
+  // A heavy timber lattice is the harrow's identity; the frame must outweigh
+  // the tines or the whole thing reads as a row of spikes.
   for (let i = 0; i < corners.length; i += 1) {
     const a = corners[i];
     const b = corners[(i + 1) % corners.length];
-    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 3);
-    linePx(ctx, a[0], a[1] - 1, b[0], b[1] - 1, PALETTE.woodMid, 1);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 4);
+    linePx(ctx, a[0], a[1] - 1, b[0], b[1] - 1, PALETTE.woodMid, 2);
   }
   linePx(ctx, corners[0][0], corners[0][1], corners[2][0], corners[2][1], PALETTE.outline, 3);
   linePx(ctx, corners[0][0], corners[0][1] - 1, corners[2][0], corners[2][1] - 1, PALETTE.woodDark, 1);
@@ -1149,12 +1277,14 @@ export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
     const b = frame.point(ha, lb, 10);
     linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.woodDark, 2);
   }
-  for (const lb of [-0.14, 0.06, 0.22]) {
+  // Iron tines point down INTO the soil: slim, dark, one lit tip each, so
+  // they read as teeth under the frame rather than red studs on top of it.
+  for (const lb of [-0.12, 0.16]) {
     for (const la of [-0.36, -0.12, 0.12, 0.36]) {
-      const p = frame.point(la, lb, 7);
-      px(ctx, p[0] - 2, p[1] - 1, PALETTE.outline, 4, 11);
-      px(ctx, p[0] - 1, p[1], PALETTE.rustMid, 2, 8);
-      px(ctx, p[0], p[1] + 7, PALETTE.rustDark, 2, 3);
+      const p = frame.point(la, lb, 6);
+      px(ctx, p[0] - 1, p[1], PALETTE.outline, 3, 8);
+      px(ctx, p[0], p[1] + 1, PALETTE.rustDark, 1, 6);
+      px(ctx, p[0], p[1] + 7, PALETTE.stoneLight, 1, 1);
     }
   }
   const tongueA = frame.point(0.5, 0, 8);
@@ -1228,6 +1358,13 @@ export function drawWagonWheel(ctx, cx, cy, seed) {
     px(ctx, cx - 18 + Math.floor(rng() * 37), cy - 7 + Math.floor(rng() * 9), rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
   }
   drawRubbleCluster(ctx, cx + 20 * lean, cy + 7, seed + 239, 2);
+  // One spoke snapped out of the ring and a rust bleed down into the dirt:
+  // this wheel is never going back on a cart.
+  px(ctx, cx - 2, cy - 26, PALETTE.void, 3, 4);
+  px(ctx, cx - 3, cy - 22, PALETTE.woodDark, 2, 2); // the stub
+  px(ctx, cx + 2, cy - 2, PALETTE.rustDark, 2, 5);
+  px(ctx, cx + 2, cy + 3, PALETTE.rustDark, 4, 2);
+
 }
 
 export function drawFeedTrough(ctx, cx, cy, seed, opts = {}) {
@@ -1270,6 +1407,13 @@ export function drawFeedTrough(ctx, cx, cy, seed, opts = {}) {
     px(ctx, spill[0] - 16 + Math.floor(rng() * 33), spill[1] - 4 + Math.floor(rng() * 9), rng() < 0.6 ? PALETTE.hostGold : PALETTE.clothTan, 1 + (i & 1), 1);
   }
   drawRubbleCluster(ctx, spill[0] + 15, spill[1] + 2, seed + 247, 2);
+  // The animals it fed are gone; a small dead bird lies in the dry feed,
+  // wing splayed. Nothing else came for the grain.
+  const bird = frame.point(-0.18, 0, 13);
+  px(ctx, bird[0] - 2, bird[1] - 2, PALETTE.outline, 6, 3);
+  px(ctx, bird[0] - 1, bird[1] - 2, PALETTE.stoneDark, 4, 2);
+  px(ctx, bird[0] + 2, bird[1] - 3, PALETTE.stoneDust, 3, 1); // the splayed wing
+  px(ctx, bird[0] - 2, bird[1] - 1, PALETTE.rustDark, 1, 1); // the head, dropped
   drawNoisePixels(ctx, cx - 18, cy - 14, 36, 20, [PALETTE.woodDark, PALETTE.stoneDark], 0.035, seed);
 }
 
@@ -1339,6 +1483,11 @@ export function drawToolRack(ctx, cx, cy, seed) {
   px(ctx, cx - 12, cy - 14, PALETTE.rustLight, 8, 2);
   px(ctx, cx - 4, cy - 11, PALETTE.stoneDust, 10, 2);
   px(ctx, cx + 4, cy - 16, PALETTE.rustLight, 8, 2);
+  // One peg hangs empty, a paler ghost of the taken tool still on the wood:
+  // somebody armed themselves on the way out.
+  px(ctx, cx + 9, cy - 33, PALETTE.outline, 2, 3); // the bare peg
+  px(ctx, cx + 8, cy - 30, PALETTE.stoneDust, 3, 14); // dust silhouette
+  px(ctx, cx + 8, cy - 17, PALETTE.stoneDust, 5, 3); // where the head hung
   linePx(ctx, cx - 14, cy - 31, cx + 13, cy - 4, PALETTE.outline, 2);
   linePx(ctx, cx - 13, cy - 31, cx + 12, cy - 5, PALETTE.woodDark, 1);
   for (const [dx, h, tone] of [[-13, 13, PALETTE.stoneDust], [12, 20, PALETTE.rustLight]]) {
@@ -1384,6 +1533,15 @@ export function drawWoodpile(ctx, cx, cy, seed) {
   for (let i = 0; i < 8; i += 1) {
     px(ctx, cx - 24 + Math.floor(rng() * 49), cy + 1 + Math.floor(rng() * 8), rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 2, 1);
   }
+  // The chopping block out front, the axe still standing in it. Whoever was
+  // splitting wood stopped mid-swing and never came back to finish.
+  px(ctx, cx + 28, cy + 1, PALETTE.outline, 12, 8);
+  px(ctx, cx + 29, cy + 1, PALETTE.woodMid, 10, 6);
+  px(ctx, cx + 29, cy + 1, PALETTE.woodLight, 5, 1);
+  linePx(ctx, cx + 33, cy - 1, cx + 36, cy - 12, PALETTE.outline, 2); // the haft
+  linePx(ctx, cx + 34, cy - 1, cx + 36, cy - 11, PALETTE.woodDark, 1);
+  px(ctx, cx + 31, cy - 2, PALETTE.stoneLight, 4, 2); // the bitten-in head
+  px(ctx, cx + 31, cy, PALETTE.void, 4, 1); // the split it sits in
   drawRubbleCluster(ctx, cx + 26, cy + 8, seed + 101, 2);
 }
 
@@ -1455,4 +1613,11 @@ export function drawRoadSignPost(ctx, cx, cy, seed) {
   linePx(ctx, cx + side * 7, cy - 32, cx + side * 19, cy - 25, PALETTE.woodDark, 1);
   drawRubbleCluster(ctx, cx - side * 10, cy + 5, seed + 269, 2);
   drawNoisePixels(ctx, Math.min(rootX, tipX), topY + 2, Math.abs(tipX - rootX), 16, [PALETTE.woodDark, PALETTE.stoneDark], 0.03, seed);
+  // Carved letter ticks on the board, and below it the stub of a second
+  // board torn off: a direction nobody needs anymore.
+  for (let t = 0; t < 4; t += 1) px(ctx, cx + side * (12 + t * 5), midY - 5 + (t % 2), PALETTE.woodLight, 2, 1);
+  px(ctx, cx + side * 4, cy - 26, PALETTE.outline, 6, 3);
+  px(ctx, cx + side * 4, cy - 25, PALETTE.woodDark, 5, 1); // the torn stub
+  px(ctx, cx + side * 8, cy - 26, PALETTE.woodLight, 2, 1); // its splinter
+
 }

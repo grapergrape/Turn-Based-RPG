@@ -442,8 +442,10 @@ function drawGroundShard(ctx, cx, cy, back) {
 }
 
 function drawGroundCoat(ctx, cx, cy, back) {
-  const cloth = back ? PALETTE.clothDark : PALETTE.clothBlueDark;
-  const hi = back ? PALETTE.stoneMid : PALETTE.clothBlue;
+  // A dropped censure field coat matches the coat the player wears: ash-pale
+  // wool, not blue guide-cloth.
+  const cloth = back ? PALETTE.stoneMid : PALETTE.stoneDust;
+  const hi = back ? PALETTE.stoneDust : PALETTE.hostBone;
   poly(ctx, PALETTE.outline, [
     [cx - 16, cy - 10],
     [cx, cy - 17],
@@ -476,8 +478,9 @@ function drawGroundCoat(ctx, cx, cy, back) {
 }
 
 function drawGroundHood(ctx, cx, cy, back) {
-  const cloth = back ? PALETTE.clothDark : PALETTE.clothBlueDark;
-  const hi = back ? PALETTE.stoneMid : PALETTE.clothBlue;
+  // Matches the worn censure hood: smoke-dark cloth.
+  const cloth = back ? PALETTE.void : PALETTE.clothDark;
+  const hi = back ? PALETTE.stoneDark : PALETTE.stoneMid;
   poly(ctx, PALETTE.outline, [
     [cx - 14, cy - 5],
     [cx - 8, cy - 17],

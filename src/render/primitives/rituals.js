@@ -69,6 +69,14 @@ export function drawPrayerLectern(ctx, cx, cy, seed) {
     px(ctx, cx - 12 + Math.floor(rng() * 25), cy - 51 + Math.floor(rng() * 8), rng() < 0.5 ? PALETTE.stoneDark : PALETTE.rustDark, 1 + (i & 1), 1);
   }
   drawRubbleCluster(ctx, cx + 19, cy + 7, seed + 47, 2);
+  // The chained book is gone; the chain hangs cut and a torn page corner is
+  // still pinched under the clasp. The Choir wanted the words, not the wood.
+  px(ctx, cx + 6, cy - 22, PALETTE.stoneLight, 1, 2); // cut chain links
+  px(ctx, cx + 7, cy - 19, PALETTE.stoneLight, 1, 2);
+  px(ctx, cx + 8, cy - 16, PALETTE.stoneDark, 1, 2); // the cut end, dark
+  px(ctx, cx - 3, cy - 25, PALETTE.hostBone, 4, 2); // the torn page corner
+  px(ctx, cx - 2, cy - 24, PALETTE.stoneDust, 2, 1);
+
 }
 
 export function drawRitualBowl(ctx, cx, cy, seed) {
@@ -90,10 +98,16 @@ export function drawRitualBowl(ctx, cx, cy, seed) {
   drawIsoDiamond(ctx, cx, cy - 8, 23, 11, PALETTE.outline);
   drawIsoDiamond(ctx, cx, cy - 9, 20, 9, PALETTE.void);
   drawIsoDiamond(ctx, cx + 1, cy - 9, 13, 6, PALETTE.hostBlack);
-  px(ctx, cx - 8, cy - 13, PALETTE.hostBone, 5, 1);
-  px(ctx, cx + 1, cy - 12, PALETTE.hostBone, 7, 1);
-  px(ctx, cx - 2, cy - 10, PALETTE.hostGold, 3, 2);
-  px(ctx, cx - 1, cy - 11, PALETTE.flash, 1, 1);
+  // What the quest log says is in them: strips of pale flesh laid to dry
+  // across the rim, one hanging over the edge. Sacrament, not soup.
+  px(ctx, cx - 8, cy - 13, PALETTE.skinMid, 6, 2);
+  px(ctx, cx - 8, cy - 13, PALETTE.skinLight, 3, 1);
+  px(ctx, cx + 1, cy - 12, PALETTE.skinMid, 7, 2);
+  px(ctx, cx + 5, cy - 12, PALETTE.skinDark, 3, 1);
+  px(ctx, cx + 6, cy - 10, PALETTE.skinMid, 2, 5); // the strip over the edge
+  px(ctx, cx + 6, cy - 5, PALETTE.skinDark, 2, 1);
+  px(ctx, cx - 2, cy - 10, PALETTE.hostRed, 4, 1); // wet beneath them
+  px(ctx, cx - 1, cy - 11, PALETTE.hostGold, 1, 1); // one gold fleck: it is still His
   for (const dx of [-13, 12]) {
     px(ctx, cx + dx - 2, cy - 5, PALETTE.outline, 5, 9);
     px(ctx, cx + dx - 1, cy - 4, PALETTE.rustDark, 3, 7);
@@ -149,6 +163,18 @@ export function drawDamagedAltar(ctx, cx, cy, seed, pulse = 0) {
     const sy = cy - 35 + Math.floor(rng() * 13);
     px(ctx, sx, sy, rng() < 0.5 ? PALETTE.stoneDark : PALETTE.rustDark, 1, 1);
   }
+  // The working edge: knife grooves worn into the slab lip where the same
+  // cuts land day after day, and the soak line down the front face beneath
+  // them. The altar is a butcher's table that still remembers being holy.
+  for (const gx of [-8, -3, 2, 6]) {
+    px(ctx, cx + gx, cy - 37, PALETTE.stoneDark, 2, 1);
+    px(ctx, cx + gx, cy - 36, PALETTE.void, 1, 1);
+  }
+  px(ctx, cx - 6, cy - 35, PALETTE.rustDark, 12, 2); // the stained lip
+  px(ctx, cx - 3, cy - 33, PALETTE.rustDark, 2, 9); // soak line down the face
+  px(ctx, cx - 2, cy - 24, PALETTE.hostRed, 2, 3);
+  px(ctx, cx + 3, cy - 33, PALETTE.rustDark, 1, 6); // a second, older run
+
   // Host tissue splitting it from below.
   drawHostGrowth(ctx, cx, cy + 4, seed + 7, pulse);
   drawHostGrowth(ctx, cx - 18, cy - 4, seed + 19, pulse);
@@ -194,12 +220,18 @@ export function drawLooseFlagstone(ctx, cx, cy, seed) {
     px(ctx, x, y, rng() < 0.55 ? PALETTE.stoneDust : PALETTE.rustDark, 1 + (i & 1), 1);
   }
   drawNoisePixels(ctx, cx - 24, cy - 13, 48, 24, [PALETTE.stoneDark, PALETTE.stoneDust, PALETTE.rustDark], 0.06, seed);
+  // The pry bar that lifted it, left leaning across the slab edge. Whoever
+  // hid something here meant to come back.
+  linePx(ctx, cx - 14, cy - 12, cx - 2, cy + 2, PALETTE.outline, 2);
+  linePx(ctx, cx - 13, cy - 12, cx - 2, cy + 1, PALETTE.stoneLight, 1);
+  px(ctx, cx - 15, cy - 14, PALETTE.stoneLight, 3, 2); // the flattened tip
+
 }
 
 export function drawChalkDrawing(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 307, seed * 5 + 83));
   ctx.save();
-  ctx.globalAlpha = 0.72;
+  ctx.globalAlpha = 0.88;
   const chalk = PALETTE.hostBone;
   const shadow = PALETTE.outline;
   for (let a = 0; a < 30; a += 1) {
@@ -216,12 +248,18 @@ export function drawChalkDrawing(ctx, cx, cy, seed) {
   // The bore shaft dropping below the world.
   px(ctx, cx - 8, cy, chalk, 1, 8);
   px(ctx, cx - 10, cy + 8, chalk, 5, 1);
-  // A small stick figure looking up at it.
+  // Two small stick figures looking up at it, the smaller one holding the
+  // taller one's hand. Corin and Eda drew themselves watching the world.
   px(ctx, cx + 10, cy - 4, chalk, 1, 1);
   px(ctx, cx + 10, cy - 2, chalk, 1, 5);
   px(ctx, cx + 8, cy - 1, chalk, 5, 1);
   px(ctx, cx + 8, cy + 3, chalk, 1, 2);
   px(ctx, cx + 12, cy + 3, chalk, 1, 2);
+  px(ctx, cx + 16, cy - 2, chalk, 1, 1); // the smaller one
+  px(ctx, cx + 16, cy, chalk, 1, 4);
+  px(ctx, cx + 13, cy + 1, chalk, 4, 1); // held hand meets the taller arm
+  px(ctx, cx + 15, cy + 4, chalk, 1, 1);
+  px(ctx, cx + 17, cy + 4, chalk, 1, 1);
   px(ctx, cx + 15, cy + 5, PALETTE.outline, 7, 2);
   px(ctx, cx + 16, cy + 4, PALETTE.hostBone, 5, 1);
   for (let i = 0; i < 6; i += 1) {
@@ -268,9 +306,11 @@ export function drawBloodSigil(ctx, cx, cy, seed) {
   ctx.globalAlpha = 0.95;
   drawIsoDiamond(ctx, cx + 1, cy + 1, 52, 23, PALETTE.outline);
   drawIsoDiamond(ctx, cx + 1, cy + 1, 46, 19, PALETTE.hostBlack);
+  // hostRed on hostBlack is nearly invisible; every ritual stroke carries a
+  // rust edge so the sigil reads at gameplay zoom.
   for (let n = 0; n < 34; n += 1) {
     const a = (Math.PI * 2 * n) / 34;
-    px(ctx, cx + Math.round(Math.cos(a) * 17), cy + Math.round(Math.sin(a) * 8), n % 2 ? blood : dark, n % 5 === 0 ? 2 : 1, 1);
+    px(ctx, cx + Math.round(Math.cos(a) * 17), cy + Math.round(Math.sin(a) * 8), n % 2 ? PALETTE.rustMid : dark, n % 5 === 0 ? 2 : 1, 1);
   }
   for (let n = 0; n < 18; n += 1) {
     const a = (Math.PI * 2 * n) / 18;
@@ -278,8 +318,10 @@ export function drawBloodSigil(ctx, cx, cy, seed) {
   }
   px(ctx, cx - 1, cy - 9, PALETTE.outline, 4, 20);
   px(ctx, cx, cy - 8, blood, 2, 18); // upright
+  px(ctx, cx, cy - 8, PALETTE.rustMid, 1, 17); // lit wet edge
   px(ctx, cx - 7, cy + 4, PALETTE.outline, 16, 4);
   px(ctx, cx - 6, cy + 5, blood, 14, 2); // crossbar set low => inverted
+  px(ctx, cx - 6, cy + 5, PALETTE.rustMid, 13, 1);
   px(ctx, cx - 13, cy - 2, dark, 26, 1);
   px(ctx, cx - 9, cy + 9, dark, 18, 1);
   linePx(ctx, cx - 16, cy - 5, cx + 15, cy + 7, PALETTE.outline, 2);
@@ -322,8 +364,10 @@ export function drawRitualCircle(ctx, cx, cy, seed) {
   }
   px(ctx, cx - 1, cy - 14, PALETTE.outline, 5, 30);
   px(ctx, cx, cy - 13, blood, 3, 28); // upright
+  px(ctx, cx, cy - 13, PALETTE.rustMid, 1, 27); // wet lit edge
   px(ctx, cx - 10, cy + 7, PALETTE.outline, 22, 5);
   px(ctx, cx - 9, cy + 8, blood, 20, 3); // low crossbar => inverted
+  px(ctx, cx - 9, cy + 8, PALETTE.rustMid, 19, 1);
   for (const [dx, dy] of [[0, -15], [0, 15], [31, 0], [-31, 0], [22, -10], [-22, 10]]) px(ctx, cx + dx, cy + dy, PALETTE.hostBone, 3, 2);
   for (const [dx, dy] of [[0, -15], [0, 15], [31, 0], [-31, 0]]) {
     px(ctx, cx + dx - 2, cy + dy - 1, PALETTE.outline, 6, 4);

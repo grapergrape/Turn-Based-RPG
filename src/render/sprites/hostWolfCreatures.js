@@ -10,69 +10,111 @@ function wolfSeg(ctx, x0, y0, x1, y1, color, size = 1) {
   linePx(ctx, x0, y0, x1, y1, color, size);
 }
 
-function drawHorn(ctx, x0, y0, x1, y1, broken = false) {
-  wolfSeg(ctx, x0, y0, x1, y1, PALETTE.outline, 3);
-  wolfSeg(ctx, x0, y0, x1, y1, PALETTE.hostBone, 1);
-  const notchCount = broken ? 2 : 4;
-  for (let i = 1; i <= notchCount; i += 1) {
-    const t = i / (notchCount + 1);
-    const x = Math.round(x0 + (x1 - x0) * t);
-    const y = Math.round(y0 + (y1 - y0) * t);
-    px(ctx, x, y, PALETTE.stoneDust, 2, 1);
+// A ridged, curling horn drawn from a base point along an offset path. The
+// notch highlights and the dark socket read as ram/goat bone, not a smooth spike.
+function drawHorn(ctx, baseX, baseY, path, broken = false) {
+  for (const [dx, dy] of path) px(ctx, baseX + dx - 1, baseY + dy - 1, PALETTE.outline, 4, 4);
+  for (let i = 0; i < path.length; i += 1) {
+    const [dx, dy] = path[i];
+    px(ctx, baseX + dx, baseY + dy, PALETTE.hostBone, 2, 2);
+    if (i % 2 === 1) px(ctx, baseX + dx, baseY + dy, PALETTE.stoneDust, 1, 1); // ridge notch
   }
-  if (broken) px(ctx, x1 - 1, y1, PALETTE.outline, 3, 1);
+  if (broken) {
+    const [dx, dy] = path[path.length - 1];
+    px(ctx, baseX + dx, baseY + dy - 1, PALETTE.hostBlack, 2, 2); // snapped, jagged tip
+  }
 }
 
-function drawSkullHead(ctx, headX, headY, side, pose, opts = {}) {
+// A profile goat/ram skull for a fully opened Host head. The long muzzle that
+// drops forward and down is the silhouette tell; the horns are asymmetric (one
+// long ram curl, one snapped stump) per the Vale Imprint standard.
+function drawSkullHead(ctx, hx, hy, s, pose, opts = {}, back = false) {
   const attack = pose.attack ?? 0;
-  const maw = opts.maw ?? false;
-  const open = maw || attack > 6;
+  const open = (opts.maw ?? false) || attack > 6;
+  const glow = pose.bob ? PALETTE.hostGlow : PALETTE.hostGold;
+  const bone = PALETTE.hostBone;
+  const boneLo = PALETTE.stoneDust;
 
-  px(ctx, headX - 7, headY - 6, PALETTE.outline, 16, 11);
-  px(ctx, headX - 6, headY - 5, PALETTE.hostBone, 13, 8);
-  px(ctx, headX + side * 3, headY - 2, PALETTE.void, 3, 3);
-  px(ctx, headX + side * 6, headY + 1, PALETTE.hostBlack, 7, 3);
-  px(ctx, headX + side * 9, headY + 2, PALETTE.hostBone, 5, 2);
-  px(ctx, headX + side * 1, headY - 1, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold, 1, 1);
+  // Elongated cranium at the back of the head: taller than wide, not a ball.
+  for (let row = 0; row < 9; row += 1) {
+    const w = 8 - (row < 2 ? 2 : 0) - (row > 6 ? row - 6 : 0);
+    const x = hx - s * 4 - Math.floor(w / 2);
+    px(ctx, x - 1, hy - 5 + row, PALETTE.outline, w + 2, 1);
+    px(ctx, x, hy - 5 + row, row < 3 ? bone : boneLo, w, 1);
+    px(ctx, x, hy - 5 + row, bone, 1, 1); // lit crown, upper-left
+  }
+  px(ctx, hx - s * 7, hy - 3, PALETTE.hostBlack, 2, 3); // shaded back of the skull
 
-  drawHorn(ctx, headX - side * 4, headY - 7, headX - side * 12, headY - 15, false);
-  drawHorn(ctx, headX + side * 3, headY - 7, headX + side * 8, headY - 10, true);
+  // Long muzzle dropping forward and down: the goat/ram silhouette tell.
+  for (let i = 0; i < 9; i += 1) {
+    const w = Math.max(2, 6 - Math.floor(i / 2));
+    const mx = hx + s * (i - 1);
+    const my = hy - 1 + Math.floor(i * 0.55);
+    const left = mx - Math.floor(w / 2);
+    px(ctx, left - 1, my, PALETTE.outline, w + 2, 1);
+    px(ctx, left, my, i < 5 ? bone : boneLo, w, 1);
+    px(ctx, left, my, bone, 1, 1);
+    if (i > 2 && i < 8) px(ctx, left, my + 1, PALETTE.hostBlack, w, 1); // muzzle seam / underside
+  }
+  px(ctx, hx + s * 6, hy + 3, PALETTE.void, 1, 2); // nostril pit
 
-  if (!open) return;
-  px(ctx, headX + side * 5, headY + 5, PALETTE.outline, 13, 6);
-  px(ctx, headX + side * 5, headY + 5, PALETTE.void, 11, 4);
-  for (let t = 0; t < 6; t += 1) {
-    px(ctx, headX + side * (5 + t * 2), headY + 4 + (t % 2), PALETTE.hostBone, 1, 3);
+  // Deep angled socket where the cranium meets the muzzle; a gold goat-pupil
+  // when the head is alive.
+  px(ctx, hx - s * 1, hy - 2, PALETTE.void, 3, 3);
+  if (!back) px(ctx, hx - (s > 0 ? 0 : -1), hy - 1, glow, 1, 1);
+
+  // Horns from the top of the cranium: the near horn is a long ram curl, the
+  // far one is snapped to a stub.
+  drawHorn(ctx, hx - s * 3, hy - 5, [
+    [0, 0], [-s * 2, -2], [-s * 4, -3], [-s * 6, -1], [-s * 7, 2], [-s * 6, 5], [-s * 4, 6]
+  ]);
+  drawHorn(ctx, hx - s * 1, hy - 5, [[0, 0], [s * 1, -2], [s * 2, -3]], true);
+
+  // Jaw: torn open with bone teeth when attacking or a maw form, else a clenched
+  // seam. A little light sits in the throat when alive.
+  if (open) {
+    const jy = hy + 5;
+    const left = Math.min(hx, hx + s * 9) - 1;
+    px(ctx, left, jy, PALETTE.outline, 11, 1);
+    px(ctx, left, jy - 1, PALETTE.void, 11, 4);
+    for (let i = 0; i < 6; i += 1) {
+      const tx = Math.round(hx + s * (i * 1.6));
+      px(ctx, tx, jy - 1, bone, 1, 2); // upper fang
+      px(ctx, tx, jy + 3, bone, 1, 2); // lower fang
+    }
+    if (!back) px(ctx, hx + s * 3, jy + 1, glow, 1, 1);
+  } else {
+    px(ctx, hx - 2, hy + 4, PALETTE.hostBlack, 7, 1); // clenched jaw seam
   }
 }
 
 function drawWolfValeMarks(ctx, bodyCx, bodyY, side, pose) {
-  const glow = pose.bob ? PALETTE.hostGlow : PALETTE.hostGold;
-  for (let i = 0; i < 7; i += 1) {
-    const rootX = bodyCx - 18 + i * 6;
-    const tipX = rootX + (i - 3) * 2;
-    const tipY = bodyY - 29 - (i % 2);
-    wolfSeg(ctx, rootX, bodyY - 16, tipX, tipY, PALETTE.outline, 2);
-    wolfSeg(ctx, rootX, bodyY - 16, tipX, tipY, i % 2 ? PALETTE.stoneDust : PALETTE.hostBone, 1);
+  // Uneven bone thorns erupt along the spine, snapped to different lengths so
+  // the row of them never reads as a tidy fin. One is broken to a stub.
+  const spikes = [-16, -9, -2, 5, 12];
+  for (let i = 0; i < spikes.length; i += 1) {
+    const rootX = bodyCx + spikes[i];
+    const len = i === 2 ? 4 : 8 + ((i * 5 + 3) % 6);
+    const tipX = rootX + (i % 2 ? 2 : -2);
+    const tipY = bodyY - 15 - len;
+    wolfSeg(ctx, rootX, bodyY - 14, tipX, tipY, PALETTE.outline, 3);
+    wolfSeg(ctx, rootX, bodyY - 14, tipX, tipY, i % 2 ? PALETTE.hostBone : PALETTE.stoneDust, 1);
+    if (i === 2) px(ctx, tipX, tipY, PALETTE.hostBlack, 2, 1); // snapped stub
   }
-  const haloX = bodyCx + side * 3;
-  for (const mark of [
-    [-10, -28, -3, -35],
-    [-3, -31, 4, -39],
-    [5, -30, 13, -36]
-  ]) {
-    wolfSeg(ctx, haloX + mark[0], bodyY + mark[1], haloX + mark[2], bodyY + mark[3], PALETTE.outline, 3);
-    wolfSeg(ctx, haloX + mark[0], bodyY + mark[1], haloX + mark[2], bodyY + mark[3], PALETTE.hostBone, 1);
-  }
-  const handY = bodyY + 2;
-  for (const hand of [-1, 1]) {
-    const wristX = bodyCx + side * 4 + hand * 4;
-    wolfSeg(ctx, wristX, handY - 8, wristX + hand * 4, handY + 5, PALETTE.outline, 2);
-    wolfSeg(ctx, wristX, handY - 8, wristX + hand * 4, handY + 4, PALETTE.skinDark, 1);
-    px(ctx, wristX + hand * 4 - 2, handY + 4, PALETTE.hostBone, 5, 2);
-    for (let f = 0; f < 3; f += 1) px(ctx, wristX + hand * 4 - 2 + f * 2, handY + 6, PALETTE.hostBone, 1, 3);
-  }
-  px(ctx, bodyCx + side * 2, bodyY - 17, glow, 2, 3);
+
+  // A single fused prayer-hand knot pressed to the chest (one knot, not a tidy
+  // symmetric pair): human skin fingers gone to bone at the tips.
+  const handX = bodyCx + side * 7;
+  const handY = bodyY - 2;
+  wolfSeg(ctx, handX, handY - 8, handX + side * 2, handY + 3, PALETTE.outline, 3);
+  wolfSeg(ctx, handX, handY - 8, handX + side * 2, handY + 3, PALETTE.skinDark, 1);
+  px(ctx, handX + side * 2 - 1, handY + 3, PALETTE.hostBone, 4, 2);
+  for (let f = 0; f < 3; f += 1) px(ctx, handX + side * 2 - 1 + f, handY + 5, PALETTE.hostBone, 1, 2);
+
+  // Thin black-gold seams run under the hide (a trace, not a flood). The pulsing
+  // wound itself belongs to each variant body.
+  px(ctx, bodyCx - side * 3, bodyY - 10, PALETTE.hostGold, 1, 1);
+  px(ctx, bodyCx + side * 4, bodyY - 6, PALETTE.hostGold, 1, 1);
 }
 
 function drawWolfBody(ctx, w, h, facing, pose, opts = {}) {
@@ -128,7 +170,7 @@ function drawWolfBody(ctx, w, h, facing, pose, opts = {}) {
 
   const headX = bodyCx + side * (23 + Math.floor(attack / 2));
   const headY = bodyY - 11 + Math.floor(attack / 5) + (meta.back ? -1 : 0);
-  drawSkullHead(ctx, headX, headY, side, pose, opts);
+  drawSkullHead(ctx, headX, headY, side, pose, opts, !!meta.back);
 
   return { bodyCx, bodyY, footY, headX, headY, side, meta };
 }

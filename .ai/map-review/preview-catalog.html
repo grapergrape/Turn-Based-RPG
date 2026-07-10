@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!-- Dev-only gallery harness: renders every registered kind for one catalog
+     category (or floors / ground-items / actors) with labels and seed
+     variations, for honest visual review. Not part of the game. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#14110c;}canvas{display:block;image-rendering:pixelated;}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import * as P from '/src/render/PixelPrimitives.js';
+import { SPRITE_CATALOG, CATEGORY, displayNameForKind } from '/src/render/spriteCatalog.js';
+import { FLOOR_STYLE_IDS } from '/src/render/primitives/terrain.js';
+import { PALETTE } from '/src/render/palette.js';
+import { buildSpriteAtlas, getFrame, SPRITE_ATLAS_IDS } from '/src/render/SpriteAtlas.js';
+
+try {
+  const params = new URLSearchParams(location.search);
+  const SCALE = Number(params.get('scale') ?? '3');
+  const section = params.get('section') ?? 'furniture';
+  const SEEDS = Number(params.get('seeds') ?? '3');
+
+  const GROUND_MODELS = ['ball', 'boots', 'coat', 'hood', 'vest', 'ribguard', 'ring', 'necklace', 'key', 'paper', 'vial', 'dressing', 'food', 'rounds', 'sidearm', 'chit', 'shard', 'token'];
+
+  const CELL_W = 150;
+  const CELL_H = 185;
+  const COLS = Number(params.get('cols') ?? '8');
+
+  function floorPatch(ctx, cx, cy) {
+    for (let gy = -1; gy <= 1; gy += 1) {
+      for (let gx = -1; gx <= 1; gx += 1) {
+        const sx = cx + (gx - gy) * 32;
+        const sy = cy + (gx + gy) * 16;
+        P.drawStyledFloorCell(ctx, sx, sy, gx + 4, gy + 4, 'stone');
+      }
+    }
+  }
+
+  let entries = [];
+  if (section === 'floors') {
+    entries = FLOOR_STYLE_IDS.map((id) => ({ label: id, draw: (ctx, cx, cy, seed) => {
+      for (let gy = 0; gy < 3; gy += 1) {
+        for (let gx = 0; gx < 3; gx += 1) {
+          const sx = cx + (gx - gy) * 32;
+          const sy = cy - 32 + (gx + gy) * 16;
+          P.drawStyledFloorCell(ctx, sx, sy, gx + seed, gy + seed * 2, id);
+        }
+      }
+    } }));
+  } else if (section === 'ground-items') {
+    entries = GROUND_MODELS.map((model) => ({ label: model, draw: (ctx, cx, cy, seed) => {
+      floorPatch(ctx, cx, cy);
+      P.drawGroundItem(ctx, cx, cy, seed, { model, count: 1, drop: 1, pickup: 0 });
+    } }));
+  } else if (section === 'actors') {
+    const atlas = buildSpriteAtlas();
+    const facing = params.get('facing') ?? 'se';
+    entries = SPRITE_ATLAS_IDS.map((id) => ({ label: id, draw: (ctx, cx, cy) => {
+      floorPatch(ctx, cx, cy);
+      const resolved = getFrame(atlas, id, 'idle', facing, 0);
+      if (!resolved?.frame) return;
+      const { sprite, frame, mirror } = resolved;
+      P.drawShadowBlob(ctx, cx, cy, Math.round(sprite.width * 0.6), Math.round(sprite.width * 0.25));
+      if (mirror) {
+        ctx.save();
+        ctx.translate(Math.round(cx), Math.round(cy - sprite.anchorY));
+        ctx.scale(-1, 1);
+        ctx.drawImage(frame, -sprite.anchorX, 0);
+        ctx.restore();
+      } else {
+        ctx.drawImage(frame, Math.round(cx - sprite.anchorX), Math.round(cy - sprite.anchorY));
+      }
+    } }));
+  } else {
+    const kinds = params.get('kinds')
+      ? params.get('kinds').split(',')
+      : Object.keys(SPRITE_CATALOG).filter((k) => SPRITE_CATALOG[k].category === section);
+    entries = kinds.map((kind) => ({ label: kind, draw: (ctx, cx, cy, seed) => {
+      const entry = SPRITE_CATALOG[kind];
+      if (!entry) throw new Error('unknown kind ' + kind);
+      floorPatch(ctx, cx, cy);
+      const extra = params.get('prop') ? JSON.parse(params.get('prop')) : {};
+      const prop = {
+        kind, x: 4, y: 4, orient: seed % 2 ? 'se' : 'sw',
+        connected: {}, opened: seed === 2, consumed: false,
+        model: 'key', count: 1, lit: true, state: seed === 2 ? 'opened' : undefined,
+        ...extra
+      };
+      const anim = { pulse: 0.5, flicker: 0.5, tick: 0, idleFrame: 0, bob: 0 };
+      entry.draw(ctx, cx, cy, seed * 7 + 3, { prop, anim, pulse: 0.5, flicker: 0.5, player: null });
+    } }));
+  }
+
+  const totalCells = entries.length * SEEDS;
+  const gridRows = Math.ceil(totalCells / COLS);
+  const canvas = document.getElementById('c');
+  canvas.width = (COLS * CELL_W + 20) * SCALE;
+  canvas.height = (gridRows * CELL_H + 20) * SCALE;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#14110c';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(SCALE, SCALE);
+  ctx.font = '11px monospace';
+
+  entries.forEach((entry, kindIdx) => {
+    for (let s = 0; s < SEEDS; s += 1) {
+      const index = kindIdx * SEEDS + s;
+      const col = index % COLS;
+      const row = Math.floor(index / COLS);
+      const cx = 10 + col * CELL_W + Math.round(CELL_W / 2);
+      const cy = 20 + row * CELL_H + Math.round(CELL_H * 0.58);
+      try {
+        entry.draw(ctx, cx, cy, s + 1);
+      } catch (error) {
+        ctx.fillStyle = '#c0392b';
+        ctx.fillText('ERR ' + String(error?.message ?? error).slice(0, 16), cx - 65, cy);
+      }
+      if (s === 0) {
+        ctx.fillStyle = '#c8b89a';
+        ctx.fillText(entry.label.slice(0, 20), 10 + col * CELL_W + 4, 20 + row * CELL_H + CELL_H - 8);
+      }
+    }
+  });
+
+  document.title = 'CAPTURE-READY';
+} catch (error) {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+}
+</script>
+</body>
+</html>

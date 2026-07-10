@@ -30,6 +30,13 @@
   "width": 40,
   "height": 30,
   "tileSize": 64,
+  "mood": {
+    "floorShade": "#10141c",
+    "floorShadeAlpha": 0.4,
+    "ambient": "#0e141d",
+    "ambientAlpha": 0.1,
+    "vignette": 1.3
+  },
   "quests": [
     "investigate-ash-chapel-cult"
   ],
@@ -2018,6 +2025,31 @@
       "kind": "corpse",
       "x": 35,
       "y": 14
+    },
+    {
+      "kind": "window-light-pool",
+      "x": 14,
+      "y": 1
+    },
+    {
+      "kind": "window-light-pool",
+      "x": 17,
+      "y": 1
+    },
+    {
+      "kind": "window-light-pool",
+      "x": 20,
+      "y": 1
+    },
+    {
+      "kind": "window-light-pool",
+      "x": 23,
+      "y": 1
+    },
+    {
+      "kind": "window-light-pool",
+      "x": 26,
+      "y": 1
     }
   ],
   "victoryLog": "The chapel falls quiet. No cultist answers the bells now."

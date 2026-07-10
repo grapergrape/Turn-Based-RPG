@@ -258,9 +258,12 @@ const tentSpecs = [
     interiorFlap: { x: 6, y: 9 },
     approach: { x: 16, y: 41 },
     clickAreas: [
-      { x0: 12, y0: 36, x1: 14, y1: 40 },
-      { x0: 16, y0: 35, x1: 18, y1: 40 },
-      { x0: 20, y0: 36, x1: 22, y1: 40 }
+      { x0: 11, y0: 31, x1: 13, y1: 34 },
+      { x0: 15, y0: 31, x1: 17, y1: 34 },
+      { x0: 19, y0: 31, x1: 21, y1: 34 },
+      { x0: 11, y0: 37, x1: 13, y1: 40 },
+      { x0: 15, y0: 37, x1: 17, y1: 40 },
+      { x0: 19, y0: 37, x1: 21, y1: 40 }
     ]
   }
 ];
@@ -404,8 +407,14 @@ const tentSpecs = [
   assert.equal(objectById(level, 'censure-road-evidence-shed-door').variant, 'storage-shed');
   assert.equal(level.legend.S.kind, 'storage-shed-building-block', 'evidence shed uses the existing storage shed block');
   assert.ok(tileComponents(level, 'C').length >= 10, 'camp tents are arranged as separate chapel, command, supply, trade, medical, and quarters footprints');
-  assert.equal(level.tiles[36][15], '.', 'cult-breaker quarters keep a lane gap between tent bays');
-  assert.equal(level.tiles[36][19], '.', 'cult-breaker quarters keep a second lane gap between tent bays');
+  for (const [label, point] of [
+    ['first bay lane', { x: 14, y: 38 }],
+    ['second bay lane', { x: 18, y: 38 }],
+    ['row walk lane', { x: 16, y: 35 }]
+  ]) {
+    assert.notEqual(tileAt(level, point), 'C', `cult-breaker quarters keep a ${label} between tents`);
+    assert.equal(grid.isWalkable(point.x, point.y), true, `cult-breaker quarters ${label} is walkable`);
+  }
   assert.notEqual(level.tiles[34][39], 'C', 'supply tents keep a work lane between the two supply bays');
   assert.equal(grid.isWalkable(39, 34), true, 'supply tent work lane is walkable');
   assert.ok(level.objects.filter((object) => object.id?.startsWith('censure-road-drill-yard-rope-')).length >= 6, 'drill yard has rope and stake detail');

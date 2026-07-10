@@ -78,6 +78,17 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
     ])
   },
   {
+    id: 'anatomy',
+    label: 'Anatomy',
+    kind: 'option',
+    options: Object.freeze([
+      { id: 'vulva', label: 'Vulva' },
+      { id: 'penis', label: 'Penis' },
+      { id: 'intersex', label: 'Both' },
+      { id: 'smooth', label: 'None' }
+    ])
+  },
+  {
     id: 'breastSize',
     label: 'Breast Scale',
     kind: 'range',
@@ -126,7 +137,11 @@ export function changeCustomizationOption(state, delta) {
   if (field.kind === 'range') {
     const appearance = { ...(state.appearance ?? {}) };
     const current = clampWhole(appearance[field.id], field.min ?? BODY_FEATURE_MIN, field.max ?? BODY_FEATURE_MAX);
-    appearance[field.id] = clampWhole(current + delta, field.min ?? BODY_FEATURE_MIN, field.max ?? BODY_FEATURE_MAX);
+    const next = clampWhole(current + delta, field.min ?? BODY_FEATURE_MIN, field.max ?? BODY_FEATURE_MAX);
+    appearance[field.id] = next;
+    if (field.id === 'penisSize' && next > 0 && appearance.anatomy !== 'penis' && appearance.anatomy !== 'intersex') {
+      appearance.anatomy = 'penis';
+    }
     return {
       ...state,
       appearance: normalizePlayerAppearance(appearance)
@@ -141,6 +156,11 @@ export function changeCustomizationOption(state, delta) {
     delete appearance.anatomy;
     delete appearance.breastSize;
     delete appearance.penisSize;
+  }
+  // Picking a penis with the groin slider still at zero would show nothing;
+  // start it at the middle of the scale so the change is visible at once.
+  if (field.id === 'anatomy' && (next.id === 'penis' || next.id === 'intersex') && !(appearance.penisSize > 0)) {
+    appearance.penisSize = 5;
   }
   return {
     ...state,
@@ -185,6 +205,7 @@ export function customizationResult(state) {
       hairColor: appearance.hairColor,
       hairStyle: appearance.hairStyle,
       facialHair: appearance.facialHair,
+      anatomy: appearance.anatomy,
       breastSize: appearance.breastSize,
       penisSize: appearance.penisSize
     }

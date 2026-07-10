@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- Dev-only render harness: every character-creation trait, clothed and bare. Not part of the game. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#14110c;}canvas{display:block;image-rendering:pixelated;}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+window.onerror = (msg) => { document.title = 'CAPTURE-ERROR'; document.body.textContent = String(msg); };
+import { bakePlayerCharacter } from '/src/render/SpriteAtlas.js';
+import { MARA_DEFAULT_EQUIPMENT } from '/src/render/sprites/maraAppearance.js';
+try {
+
+const params = new URLSearchParams(location.search);
+const SCALE = Number(params.get('scale') ?? '2');
+
+const base = {
+  genderModel: 'female', bodyType: 'medium', skinTone: 'tan', hairColor: 'brown',
+  hairStyle: 'cropped', facialHair: 'none', breastSize: 5, penisSize: 0
+};
+
+const variants = [
+  ['base (mara default)', base],
+  ['gender male', { ...base, genderModel: 'male' }],
+  ['gender androgynous', { ...base, genderModel: 'androgynous' }],
+  ['body skinny', { ...base, bodyType: 'skinny' }],
+  ['body fat', { ...base, bodyType: 'fat' }],
+  ['body buff', { ...base, bodyType: 'buff' }],
+  ['skin light', { ...base, skinTone: 'light' }],
+  ['skin brown', { ...base, skinTone: 'brown' }],
+  ['skin dark', { ...base, skinTone: 'dark' }],
+  ['hair black', { ...base, hairColor: 'black' }],
+  ['hair blond', { ...base, hairColor: 'blond' }],
+  ['hair grey', { ...base, hairColor: 'grey' }],
+  ['style loose', { ...base, hairStyle: 'loose' }],
+  ['style shaved', { ...base, hairStyle: 'shaved' }],
+  ['beard', { ...base, facialHair: 'beard', genderModel: 'male' }],
+  ['stubble', { ...base, facialHair: 'stubble', genderModel: 'male' }],
+  ['breast 0', { ...base, breastSize: 0 }],
+  ['breast 10', { ...base, breastSize: 10 }]
+];
+
+const only = params.get('only');
+const shown = only
+  ? variants.filter(([label]) => only.split(',').some((term) => label.includes(term)))
+  : variants;
+
+const COLS = ['clothed s', 'clothed se', 'clothed e', 'bare s', 'bare se'];
+const CELL_W = 60;
+const CELL_H = 72;
+const LABEL_W = 150;
+
+const canvas = document.getElementById('c');
+canvas.width = (LABEL_W + COLS.length * CELL_W + 10) * SCALE;
+canvas.height = (30 + shown.length * CELL_H) * SCALE;
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+ctx.fillStyle = '#14110c';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.scale(SCALE, SCALE);
+ctx.font = '10px monospace';
+
+ctx.fillStyle = '#c8b89a';
+COLS.forEach((label, i) => ctx.fillText(label, LABEL_W + i * CELL_W, 14));
+
+const bare = { ...MARA_DEFAULT_EQUIPMENT, clothes: null, armor: null, boots: null, helmet: null };
+
+shown.forEach(([label, appearance], row) => {
+  const y = 30 + row * CELL_H;
+  ctx.fillStyle = '#c8b89a';
+  ctx.fillText(label, 6, y + 40);
+  const clothed = bakePlayerCharacter(MARA_DEFAULT_EQUIPMENT, {}, appearance);
+  const naked = bakePlayerCharacter(bare, {}, appearance);
+  const cells = [
+    [clothed, 's'], [clothed, 'se'], [clothed, 'e'], [naked, 's'], [naked, 'se']
+  ];
+  cells.forEach(([sprite, facing], col) => {
+    const frame = sprite.frames.idle[facing][0];
+    ctx.drawImage(frame, LABEL_W + col * CELL_W + 8, y + 4);
+  });
+});
+
+document.title = 'CAPTURE-READY';
+} catch (error) {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+}
+</script>
+</body>
+</html>

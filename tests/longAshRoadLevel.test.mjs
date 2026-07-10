@@ -674,7 +674,17 @@ const farmExitDialogues = new Map([
   const graveyardHeadstones = graveyardObjects.filter((object) => object.kind === 'calcified-headstone');
   assert.ok(graveyardWalls.length >= 60, 'expanded graveyard has a full low perimeter wall');
   assert.ok(graveyardPlots.length >= 24, 'expanded graveyard has dense repeated grave plots');
-  assert.ok(graveyardHeadstones.length >= 24, 'expanded graveyard has upright repeated headstones');
+  assert.ok(graveyardHeadstones.length >= 12, 'plots without a standing body keep a broken headstone stump');
+  const graveMarkerCells = new Set(
+    graveyardObjects
+      .filter((object) => object.kind === 'calcified-headstone' || object.kind === 'calcified-grave-body')
+      .map((object) => `${object.x},${object.y}`)
+  );
+  assert.equal(
+    graveyardPlots.every((object) => graveMarkerCells.has(`${object.x},${object.y - 1}`)),
+    true,
+    'every plot is marked at its head by a calcified body or a broken headstone'
+  );
   assert.equal(graveyardWalls.every((object) => object.blocking === true), true, 'graveyard wall blocks its perimeter cells');
   assert.equal(graveyardHeadstones.every((object) => object.blocking === true), true, 'headstones block their occupied cells');
   assert.equal(graveyardPlots.every((object) => !object.blocking), true, 'grave plots are visual slabs, not path blockers');

@@ -521,6 +521,13 @@ export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
     px(ctx, cx - 12 + Math.floor(rng() * 25), cy + 2 + Math.floor(rng() * 7), rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark, 2, 1);
   }
   drawRubbleCluster(ctx, cx + side * 18, cy + 7, seed + 137, 2);
+  // Their shoes set neatly side by side at the base of the post, toes
+  // pointing away. Somebody made them comfortable first.
+  px(ctx, cx - 12, footY + 1, PALETTE.outline, 4, 3);
+  px(ctx, cx - 11, footY + 1, PALETTE.woodDark, 2, 2);
+  px(ctx, cx - 7, footY + 1, PALETTE.outline, 4, 3);
+  px(ctx, cx - 6, footY + 1, PALETTE.woodDark, 2, 2);
+
 }
 
 export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
@@ -584,12 +591,13 @@ export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
     px(ctx, hx, hy, n % 3 === 0 ? bone : boneLo, n % 4 === 0 ? 2 : 1, 1);
   }
 
-  // Long bowed skull, not a clean square face. The lower jaw hangs crooked and
-  // the sockets read as holes, not eyes or a smile.
+  // The head thrown back in a scream the Stilling froze halfway through. The
+  // face is a stretched agony mask gone to stone: sockets torn wide, the jaw
+  // wrenched down further than a jaw should go, all of it drained grey.
   const skullX = cx + tilt + side * 2;
-  const skullY = headY + 3;
+  const skullY = headY + 2;
   const skullRows = [
-    [3, 0], [6, -1], [8, -1], [7, 0], [6, 1], [5, 1], [4, 2], [3, 3], [2, 4]
+    [4, 0], [7, -1], [9, -1], [8, 0], [7, 1], [6, 1], [5, 2], [5, 2], [4, 3]
   ];
   for (let row = 0; row < skullRows.length; row += 1) {
     const [w, off] = skullRows[row];
@@ -599,12 +607,19 @@ export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
     px(ctx, x, y, row < 3 ? bone : boneLo, w, 1);
     px(ctx, x, y, grey, 1, 1);
   }
-  px(ctx, skullX - 3, skullY + 4, PALETTE.void, 2, 3);
-  px(ctx, skullX + 2, skullY + 3, PALETTE.void, 2, 3);
-  px(ctx, skullX + side, skullY + 7, PALETTE.void, 3, 3); // broken open jaw
-  px(ctx, skullX + side * 2, skullY + 9, boneLo, 3, 1);
+  px(ctx, skullX - 3, skullY + 3, PALETTE.void, 2, 4); // sockets pulled long, not round
+  px(ctx, skullX + 2, skullY + 2, PALETTE.void, 2, 4); // one higher: the face is wrenched
+  px(ctx, skullX - side * 1, skullY + 6, boneDk, 4, 1); // cheek sunk to the bone
+  // The jaw dropped to the collarbone: a black open mouth walled in stone teeth.
+  px(ctx, skullX + side - 2, skullY + 7, PALETTE.outline, 6, 5);
+  px(ctx, skullX + side - 1, skullY + 7, PALETTE.void, 4, 4);
+  for (let t = 0; t < 3; t += 1) px(ctx, skullX + side - 1 + t, skullY + 7, boneLo, 1, 1); // upper teeth row
+  px(ctx, skullX + side, skullY + 11, boneLo, 3, 1); // slack lower jaw rim
   px(ctx, skullX - side * 5, skullY + 1, bone, 2, 2); // snapped horn/halo stub
   px(ctx, skullX - side * 7, skullY, PALETTE.outline, 2, 1);
+  // Calcification has run down from the mouth like frozen wax.
+  px(ctx, skullX + side, skullY + 12, boneLo, 1, 3);
+  px(ctx, skullX + side * 2, skullY + 12, boneDk, 1, 2);
 
   // Iron collar and throat chain, cutting the neck line instead of forming a face.
   px(ctx, cx - 5 + tilt, shoulderY - 1, iron, 11, 2);
@@ -624,20 +639,28 @@ export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
     if (y % 5 === 0) px(ctx, lx + 2, y, boneDk, Math.max(2, w - 5), 1);
   }
 
-  // Ribcage cracked open and frozen shut around a dead cavity. No glow.
-  const cavX = cx + tilt - 3 + side;
-  const cavY = chestY - 1;
-  px(ctx, cavX, cavY, PALETTE.void, 8, 12);
-  px(ctx, cavX + 1, cavY + 2, vein, 5, 7);
+  // Ribcage cracked open and frozen mid-bloom: the wings of bone got halfway
+  // out before the Stilling caught them. Dead cavity, no glow, drained veins.
+  const cavX = cx + tilt - 4 + side;
+  const cavY = chestY - 2;
+  px(ctx, cavX - 1, cavY - 1, boneDk, 11, 15); // bruised calcified lip
+  px(ctx, cavX, cavY, PALETTE.void, 9, 13);
+  px(ctx, cavX + 1, cavY + 2, vein, 7, 9);
+  px(ctx, cavX + 2, cavY + 4, PALETTE.void, 5, 5); // deeper hollow behind the dead veins
+  for (let v = 0; v < 4; v += 1) px(ctx, cavX + 4, cavY + 2 + v * 3, boneLo, 2, 2); // bared grey spine
   for (const s of [-1, 1]) {
-    const baseX = s < 0 ? cavX : cavX + 7;
-    for (let r = 0; r < 4; r += 1) {
+    const baseX = s < 0 ? cavX : cavX + 8;
+    for (let r = 0; r < 5; r += 1) {
       const y = cavY + 1 + r * 3;
-      const len = 5 - (r === 3 ? 1 : 0);
-      seg(baseX, y, baseX + s * len, y + (r - 1), bone, 1);
+      const len = 7 - Math.abs(r - 2); // middle ribs reach furthest
+      seg(baseX, y, baseX + s * len, y + (r - 2), bone, 1);
+      px(ctx, baseX + s * len, y + (r - 2) - 1, boneLo, 1, 1); // lifted bone tip
     }
   }
-  px(ctx, cavX + 3, cavY - 1, boneDk, 1, 13); // split sternum, drained dark
+  px(ctx, cavX + 3, cavY - 1, boneDk, 1, 14); // split sternum, drained dark
+  // The dead wound at the heart of it: sunken, grey, a socket where light was.
+  px(ctx, cavX + 3, cavY + 5, PALETTE.void, 3, 4);
+  px(ctx, cavX + 4, cavY + 6, boneDk, 1, 2);
 
   // Fused prayer-hands caught at the wound, with one side cracked away.
   const handY = cavY + 8;
@@ -758,6 +781,12 @@ function drawThrownRoadOfferings(ctx, cx, cy, seed) {
   px(ctx, cx - 30, cy - 7, PALETTE.rustDark, 8, 3);
   px(ctx, cx + 22, cy - 7, PALETTE.outline, 8, 4);
   px(ctx, cx + 23, cy - 6, PALETTE.stoneDust, 6, 2);
+  // The near shoulder is polished smooth and pale: every survivor who
+  // passes touches the same spot for luck. Grief becomes a habit, a habit
+  // becomes a shrine.
+  px(ctx, cx + side * 6, shoulderY + 1, PALETTE.stoneLight, 3, 2);
+  px(ctx, cx + side * 7, shoulderY, PALETTE.hostBone, 2, 1);
+
 }
 
 export function drawCalcifiedCrossroadBrother(ctx, cx, cy, seed) {
@@ -840,6 +869,16 @@ export function drawCalcifiedCrossroadBrother(ctx, cx, cy, seed) {
   drawSpeakingCalcifiedFace(ctx, cx + lean + side, headY, side);
   px(ctx, cx + lean - side * 8, headY + 1, PALETTE.hostBone, 2, 3);
   px(ctx, cx + lean - side * 10, headY, PALETTE.outline, 2, 1);
+  // Travelers' prayer cords tied along both outstretched arms, dozens of
+  // them: the crossroad made him a signpost, and the road made him a saint.
+  for (const s of [-1, 1]) {
+    for (let t = 0; t < 3; t += 1) {
+      const ax = cx + s * (10 + t * 7);
+      const ay = cy - 44 + t * 2;
+      px(ctx, ax, ay, t === 0 ? PALETTE.rustMid : t === 1 ? PALETTE.clothTan : PALETTE.stoneDust, 1, 4);
+    }
+  }
+
 }
 
 export function drawCalcifiedScarecrowBrother(ctx, cx, cy, seed) {
@@ -931,6 +970,15 @@ export function drawCalcifiedScarecrowBrother(ctx, cx, cy, seed) {
   px(ctx, cx + 17, headY + 3, PALETTE.stoneDust, 2, 1);
   px(ctx, cx - 19, cy - 13, PALETTE.outline, 5, 4);
   px(ctx, cx - 18, cy - 12, PALETTE.rustDark, 3, 2);
+  // A single crow perched on the outstretched arm, unbothered. It is the
+  // only living thing in the valley that will touch him, and it knows it.
+  px(ctx, cx + 14, cy - 46, PALETTE.outline, 6, 4);
+  px(ctx, cx + 15, cy - 45, PALETTE.hostBlack, 4, 2); // the body
+  px(ctx, cx + 18, cy - 47, PALETTE.hostBlack, 2, 2); // the head
+  px(ctx, cx + 20, cy - 46, PALETTE.hostGold, 1, 1); // one bright eye
+  px(ctx, cx + 15, cy - 43, PALETTE.stoneDark, 1, 3); // legs
+  px(ctx, cx + 17, cy - 43, PALETTE.stoneDark, 1, 3);
+
 }
 
 export function drawCultVictim(ctx, cx, cy, seed) {
@@ -1015,4 +1063,11 @@ export function drawCultVictim(ctx, cx, cy, seed) {
     px(ctx, cx - 25 + Math.floor(rng() * 52), cy - 9 + Math.floor(rng() * 21), rng() < 0.5 ? dark : blood, 1 + (i & 1), 1);
   }
   drawRubbleCluster(ctx, cx + 24, cy + 9, seed + 23, 2);
+  // The guard's warning horn beside the outflung hand, mouthpiece toward
+  // the fingers: he reached for it, and the reach is the whole story.
+  px(ctx, cx - 8, cy + 8, PALETTE.outline, 7, 4);
+  px(ctx, cx - 7, cy + 8, PALETTE.rustMid, 5, 2); // the horn's curve
+  px(ctx, cx - 2, cy + 9, PALETTE.rustLight, 2, 1); // the brass mouthpiece
+  px(ctx, cx - 9, cy + 10, PALETTE.void, 2, 2); // the bell mouth, silent
+
 }

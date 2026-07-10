@@ -283,6 +283,31 @@ export function drawWarmLightPool(ctx, cx, cy, seed = 0, flicker = 0) {
   }
 }
 
+export function drawWindowLightPool(ctx, cx, cy, seed = 0) {
+  // Cold daylight falling through a chapel window onto the floor: a pale
+  // slanted shaft in stepped alpha bands (no gradients), skewed toward the
+  // viewer because the window sits in the wall behind the tile.
+  ctx.save();
+  ctx.globalAlpha = 0.2;
+  drawIsoDiamond(ctx, cx + 4, cy + 4, 74, 33, PALETTE.stoneDust);
+  ctx.globalAlpha = 0.16;
+  drawIsoDiamond(ctx, cx + 2, cy + 2, 50, 22, PALETTE.clothTan);
+  ctx.globalAlpha = 0.13;
+  drawIsoDiamond(ctx, cx, cy, 28, 12, PALETTE.hostBone);
+  // Mullion shadow: the window's cross bars out of the light.
+  ctx.globalAlpha = 0.1;
+  ctx.fillStyle = PALETTE.stoneDark;
+  ctx.fillRect(cx - 1, cy - 5, 2, 11);
+  ctx.fillRect(cx - 10, cy - 1, 20, 2);
+  ctx.restore();
+  const rng = rngFrom(hash2D(seed + 31, seed * 5 + 41));
+  for (let i = 0; i < 5; i += 1) {
+    const x = cx - 18 + Math.floor(rng() * 37);
+    const y = cy - 8 + Math.floor(rng() * 16);
+    px(ctx, x, y, i % 2 ? PALETTE.stoneDust : PALETTE.hostBone, 1, 1); // dust in the beam
+  }
+}
+
 export function drawDitherRect(ctx, x, y, w, h, colorA, colorB, seed = 0) {
   const ox = seed & 1;
   for (let j = 0; j < h; j += 1) {
@@ -530,42 +555,51 @@ export function drawRubbleDecal(ctx, cx, cy, seed) {
 
 export function drawHostGrowth(ctx, cx, cy, seed, pulse = 0) {
   const rng = rngFrom(hash2D(seed + 41, seed * 11 + 9));
-  // Ragged base mass: a wounded plate with a dark lower edge, not loose noise.
-  for (let row = 0; row < 7; row += 1) {
-    const w = 22 - Math.abs(row - 3) * 3 + ((seed >> row) & 1);
-    const x = cx - Math.floor(w / 2) + Math.floor((rng() - 0.5) * 3);
-    const y = cy - 4 + row;
-    px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
-    px(ctx, x, y, row < 2 ? PALETTE.hostBlack : row < 5 ? PALETTE.rustDark : PALETTE.hostBlack, w, 1);
-    if (row === 2 || row === 4) px(ctx, x + 2, y, PALETTE.hostRed, Math.max(3, w - 7), 1);
+  // A rooted knot of Host flesh breaking out of the ground: raised meat with
+  // a lit crown, one living wound, sparse black-gold seams, and uneven bone
+  // thorns. It must have MASS; a flat dark plate reads as a floor scratch.
+  for (let row = 0; row < 10; row += 1) {
+    const t = row / 9;
+    const half = Math.round(13 * Math.sin(Math.min(1, t + 0.15) * Math.PI * 0.5) + 2);
+    const y = cy + 4 - row;
+    px(ctx, cx - half - 1, y, PALETTE.outline, half * 2 + 2, 1);
+    const tone = row < 3 ? PALETTE.hostBlack : row < 7 ? PALETTE.rustDark : PALETTE.rustMid;
+    px(ctx, cx - half, y, tone, half * 2, 1);
+    if (row >= 7) px(ctx, cx - half + 2, y, PALETTE.rustLight, Math.max(2, Math.floor(half * 0.6)), 1);
+  }
+  // Root lobes gripping the ground at the base.
+  for (const [dx, w] of [[-14, 6], [9, 7], [-3, 5]]) {
+    px(ctx, cx + dx, cy + 4, PALETTE.outline, w, 3);
+    px(ctx, cx + dx + 1, cy + 4, PALETTE.hostBlack, w - 2, 2);
   }
 
-  // One controlled living wound in the plate.
-  px(ctx, cx - 3, cy - 3, PALETTE.outline, 8, 5);
-  px(ctx, cx - 2, cy - 2, PALETTE.hostRed, 6, 3);
-  px(ctx, cx, cy - 2, pulse ? PALETTE.hostGlow : PALETTE.hostGold, 2, 2);
-  if (pulse) px(ctx, cx + 1, cy - 3, PALETTE.flash, 1, 1);
+  // One controlled living wound in the crown.
+  px(ctx, cx - 4, cy - 5, PALETTE.outline, 9, 6);
+  px(ctx, cx - 3, cy - 4, PALETTE.hostRed, 7, 4);
+  px(ctx, cx - 1, cy - 3, pulse ? PALETTE.hostGlow : PALETTE.hostGold, 3, 2);
+  if (pulse) px(ctx, cx, cy - 4, PALETTE.flash, 1, 1);
 
-  // Thin black-gold seams under the skin. Keep them sparse and directional.
+  // Thin black-gold seams running out of the wound into the soil.
   const veinEnds = [
-    [cx - 12, cy - 7],
-    [cx + 13, cy - 6],
-    [cx - 10, cy + 4],
-    [cx + 11, cy + 3]
+    [cx - 14, cy - 8],
+    [cx + 15, cy - 7],
+    [cx - 12, cy + 6],
+    [cx + 13, cy + 5]
   ];
   for (const [vx, vy] of veinEnds) {
-    linePx(ctx, cx, cy - 1, vx, vy, PALETTE.hostBlack, 1);
-    linePx(ctx, cx + (vx < cx ? -1 : 1), cy - 2, vx, vy - 1, PALETTE.hostGold, 1);
+    linePx(ctx, cx, cy - 2, vx, vy, PALETTE.hostBlack, 1);
+    linePx(ctx, cx + (vx < cx ? -1 : 1), cy - 3, vx, vy - 1, PALETTE.hostGold, 1);
   }
 
-  // Uneven bone thorns with dark sockets and a lit left edge.
+  // Uneven bone thorns out of the meat, dark sockets, lit left edges.
   for (let i = 0; i < 5; i += 1) {
     const bx = cx - 10 + i * 5 + Math.floor((rng() - 0.5) * 4);
     const lean = i % 2 === 0 ? -1 : 1;
-    const len = 5 + Math.floor(rng() * 7);
-    linePx(ctx, bx, cy - 1, bx + lean * 2, cy - len, PALETTE.outline, 3);
-    linePx(ctx, bx, cy - 2, bx + lean * 2, cy - len, i % 2 ? PALETTE.hostBone : PALETTE.stoneDust, 1);
+    const len = 7 + Math.floor(rng() * 8);
+    linePx(ctx, bx, cy - 2, bx + lean * 2, cy - len, PALETTE.outline, 3);
+    linePx(ctx, bx, cy - 3, bx + lean * 2, cy - len, i % 2 ? PALETTE.hostBone : PALETTE.stoneDust, 1);
     px(ctx, bx + lean * 2, cy - len - 1, PALETTE.hostBone, 1, 1);
+    px(ctx, bx - 1, cy - 1, PALETTE.void, 3, 1); // socket where it broke the skin
   }
 
   // Small torn flesh tags at the lower edge.
@@ -576,4 +610,11 @@ export function drawHostGrowth(ctx, cx, cy, seed, pulse = 0) {
     linePx(ctx, x, cy + 2, endX, endY, i % 2 ? PALETTE.rustDark : PALETTE.hostBlack, 1);
     px(ctx, endX, endY, PALETTE.hostGold, 1, 1);
   }
+  // At one edge, calcified fingers absorbed mid-grip: the growth grew over
+  // someone who was trying to hold on to the ground.
+  px(ctx, cx - 14, cy + 1, PALETTE.hostBone, 2, 1);
+  px(ctx, cx - 12, cy + 2, PALETTE.hostBone, 2, 1);
+  px(ctx, cx - 10, cy + 3, PALETTE.hostBone, 2, 1);
+  px(ctx, cx - 13, cy + 3, PALETTE.stoneDust, 2, 1); // the knuckle ridge
+
 }

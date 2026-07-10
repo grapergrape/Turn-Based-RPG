@@ -94,6 +94,19 @@ export function drawBrokenPew(ctx, cx, cy, seed) {
   for (let i = 0; i < 9; i += 1) {
     px(ctx, cx + 18 + Math.floor(rng() * 18), cy - 6 + Math.floor((rng() - 0.5) * 13), PALETTE.woodDark);
   }
+  // What the congregation left: a hymn sheet still on the seat and a prayer
+  // cord dropped where the rail broke.
+  if ((seed & 1) === 0) {
+    px(ctx, cx - 12, cy - 12, PALETTE.outline, 8, 6);
+    px(ctx, cx - 11, cy - 11, PALETTE.hostBone, 6, 4);
+    px(ctx, cx - 10, cy - 10, PALETTE.stoneDark, 4, 1); // a line of hymn text
+    px(ctx, cx - 10, cy - 8, PALETTE.stoneDark, 3, 1);
+  } else {
+    px(ctx, cx + 12, cy + 2, PALETTE.clothTan, 5, 1);
+    px(ctx, cx + 11, cy + 3, PALETTE.clothTan, 2, 1);
+    px(ctx, cx + 16, cy + 3, PALETTE.clothTan, 2, 1);
+    px(ctx, cx + 13, cy + 4, PALETTE.rustLight, 1, 1); // the cord's worn token
+  }
   drawRubbleCluster(ctx, cx + 28, cy + 12, seed + 33, 2);
 }
 
@@ -145,6 +158,10 @@ export function drawCanvasTent(ctx, cx, cy, seed) {
     px(ctx, cx + rope[2] - 1, cy + rope[3] - 1, PALETTE.outline, 5, 3);
     px(ctx, cx + rope[2], cy + rope[3] - 1, PALETTE.woodDark, 3, 1);
   }
+  // A chalked billet tally beside the door: the quartermaster counts heads,
+  // even now. Four strokes and a bar.
+  for (let t = 0; t < 4; t += 1) px(ctx, cx + 9 + lean + t * 2, cy - 8, PALETTE.stoneLight, 1, 4);
+  linePx(ctx, cx + 8 + lean, cy - 6, cx + 16 + lean, cy - 7, PALETTE.stoneLight, 1);
   for (const [dx, dy, w, h, color] of [
     [-24, -8, 11, 7, PALETTE.stoneDust],
     [12, -5, 9, 6, PALETTE.clothDark],
@@ -318,78 +335,138 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
 
   drawShadowBlob(ctx, cx, cy + 5, 68, 22);
 
-  const drawCanvasFace = (face, lit) => {
+  // Weathered Censure field canvas: ash-grey with dark repairs, never bright.
+  // Ramp: clothTan (worn hi) / stoneDust (mid) / stoneLight (lo) / clothDark (dk).
+  const drawCanvasFace = (face, lit, faceSeed) => {
+    const mid = lit ? PALETTE.stoneDust : PALETTE.stoneLight;
+    const hi = lit ? PALETTE.clothTan : PALETTE.stoneDust;
+    const lo = lit ? PALETTE.stoneLight : PALETTE.clothDark;
+    const dk = lit ? PALETTE.clothDark : PALETTE.outline;
+
     face.rect(0, 0, 1, 1, PALETTE.outline);
-    face.rect(0.025, 0.025, 0.975, 0.985, lit ? PALETTE.clothTan : PALETTE.stoneDust);
-    for (const u of [0.22, 0.44, 0.66, 0.86]) {
-      face.line(u, 0.08, u, 0.96, lit ? PALETTE.stoneDust : PALETTE.stoneDark, 1);
+    face.rect(0.025, 0.025, 0.975, 0.985, mid);
+    // Eave shadow band under the roof overhang.
+    face.rect(0.025, 0.025, 0.975, 0.13, lo);
+    face.line(0.04, 0.13, 0.96, 0.13, dk, 1);
+    // One worn highlight where rain has bleached the weave.
+    face.line(0.08, 0.19, 0.9, 0.18, hi, 1);
+    // Mud-splashed skirt where boots and runoff hit the canvas.
+    face.rect(0.025, 0.82, 0.975, 0.985, lo);
+    face.line(0.04, 0.82, 0.96, 0.81, PALETTE.stoneDark, 1);
+    face.line(0.06, 0.9, 0.94, 0.9, PALETTE.rustDark, 1);
+    // Panel seams sag off-true; each face leans its own way.
+    for (const u of [0.26, 0.5, 0.74]) {
+      const sag = (((hash2D(seed + Math.floor(u * 100), faceSeed + 5) % 3) - 1)) * 0.03;
+      face.line(u, 0.06, u + sag, 0.94, lo, 1);
     }
-    face.line(0.05, 0.17, 0.94, 0.17, lit ? PALETTE.hostBone : PALETTE.clothTan, 2);
-    face.line(0.06, 0.42, 0.92, 0.42, lit ? PALETTE.stoneDust : PALETTE.outline, 1);
-    face.line(0.06, 0.62, 0.92, 0.62, lit ? PALETTE.clothDark : PALETTE.outline, 1);
-    face.line(0.1, 0.84, 0.9, 0.84, PALETTE.rustDark, 2);
-    face.line(0.14, 0.13, 0.42, 0.88, lit ? PALETTE.stoneDust : PALETTE.stoneDark, 1);
-    face.line(0.58, 0.12, 0.86, 0.86, lit ? PALETTE.clothDark : PALETTE.outline, 1);
-    for (const [u, v] of [[0.14, 0.2], [0.34, 0.43], [0.72, 0.3], [0.84, 0.72]]) {
+    // Horizontal slack creases where the guy lines pull.
+    face.line(0.08, 0.44, 0.5, 0.48, dk, 1);
+    face.line(0.5, 0.48, 0.92, 0.45, lo, 1);
+    face.line(0.1, 0.66, 0.88, 0.68, PALETTE.stoneDark, 1);
+    // Seeded lash points along the seam line.
+    for (const [u, v] of [[0.16, 0.3], [0.62, 0.36], [0.84, 0.58]]) {
+      if ((hash2D(seed + Math.floor(u * 90), faceSeed + 11) % 3) === 0) continue;
       const p = face.point(u, v);
       px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 2);
-      px(ctx, p[0], p[1] - 2, lit ? PALETTE.hostBone : PALETTE.clothDark, 1, 1);
+      px(ctx, p[0], p[1] - 2, lit ? PALETTE.clothTan : PALETTE.stoneDust, 1, 1);
     }
-    if ((seed + (lit ? 3 : 7)) % 5 === 0) {
-      face.rect(0.3, 0.32, 0.55, 0.47, PALETTE.outline);
-      face.rect(0.33, 0.35, 0.52, 0.44, lit ? PALETTE.stoneDust : PALETTE.clothDark);
-      face.line(0.31, 0.46, 0.55, 0.46, PALETTE.rustDark, 1);
+    // Seeded dark repair patch, stitched at the top edge.
+    if ((hash2D(seed + 41, faceSeed + 17) % 3) !== 2) {
+      const patchU = ((hash2D(seed + 53, faceSeed + 23) % 3) * 0.17) + 0.22;
+      const patchV = 0.3 + ((hash2D(seed + 61, faceSeed + 29) % 2) * 0.2);
+      face.rect(patchU - 0.012, patchV - 0.015, patchU + 0.2, patchV + 0.17, PALETTE.outline);
+      face.rect(patchU, patchV, patchU + 0.19, patchV + 0.15, (hash2D(seed + 67, faceSeed) & 1) ? dk : PALETTE.rustDark);
+      face.line(patchU, patchV, patchU + 0.19, patchV, hi, 1);
     }
+    // Faded Censure cross stenciled on some lit faces: the office marks its rows.
+    if (lit && (hash2D(seed + 71, faceSeed + 31) % 4) === 0) {
+      const p = face.point(0.5, 0.56);
+      px(ctx, p[0] - 1, p[1] - 6, PALETTE.outline, 4, 13);
+      px(ctx, p[0] - 4, p[1] - 3, PALETTE.outline, 10, 4);
+      px(ctx, p[0], p[1] - 5, PALETTE.hostBone, 2, 11);
+      px(ctx, p[0] - 3, p[1] - 2, PALETTE.hostBone, 8, 2);
+      px(ctx, p[0], p[1] + 3, PALETTE.stoneDust, 2, 3);
+    }
+    // Ash grime worked into the weave, heaviest near the ground.
+    const a = face.point(0.05, 0.62);
+    const b = face.point(0.95, 0.98);
+    drawNoisePixels(
+      ctx,
+      Math.min(a[0], b[0]),
+      Math.min(a[1], b[1]),
+      Math.abs(b[0] - a[0]),
+      Math.max(6, Math.abs(b[1] - a[1])),
+      [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.clothDark],
+      0.06,
+      seed + faceSeed
+    );
   };
 
   if (!connected.yPlus) {
     poly(ctx, PALETTE.outline, [wallTop.left, wallTop.bottom, base.bottom, base.left]);
-    poly(ctx, PALETTE.clothTan, [wallTop.left, wallTop.bottom, base.bottom, base.left]);
-    drawCanvasFace(faceTools(ctx, wallTop.left, wallTop.bottom, base.bottom, base.left), true);
+    drawCanvasFace(faceTools(ctx, wallTop.left, wallTop.bottom, base.bottom, base.left), true, 3);
   }
 
   if (!connected.xPlus) {
     poly(ctx, PALETTE.outline, [wallTop.bottom, wallTop.right, base.right, base.bottom]);
-    poly(ctx, PALETTE.stoneDust, [wallTop.bottom, wallTop.right, base.right, base.bottom]);
-    drawCanvasFace(faceTools(ctx, wallTop.bottom, wallTop.right, base.right, base.bottom), false);
+    drawCanvasFace(faceTools(ctx, wallTop.bottom, wallTop.right, base.right, base.bottom), false, 7);
   }
 
   if (!interior) {
     const interiorCell = connected.xMinus && connected.xPlus && connected.yMinus && connected.yPlus;
-    poly(ctx, PALETTE.clothTan, [roof.top, roof.left, roof.bottom, roof.right]);
+    // Roof canvas: mid ash-grey, pitched darker toward the exposed SE eaves.
+    poly(ctx, PALETTE.stoneDust, [roof.top, roof.left, roof.bottom, roof.right]);
     if (!connected.xPlus || !connected.yPlus) {
-      poly(ctx, PALETTE.stoneDust, [
-        mixPoint(roof.top, roof.right, 0.64),
+      poly(ctx, PALETTE.stoneLight, [
+        mixPoint(roof.top, roof.right, 0.55),
         roof.right,
         roof.bottom,
-        mixPoint(roof.bottom, roof.left, 0.22),
-        mixPoint(roof.top, roof.left, 0.42)
+        mixPoint(roof.bottom, roof.left, 0.3),
+        mixPoint(roof.top, roof.left, 0.55),
+        [cx, cy - roofLift]
+      ]);
+      poly(ctx, PALETTE.clothDark, [
+        mixPoint(roof.right, roof.bottom, 0.15),
+        roof.bottom,
+        mixPoint(roof.bottom, roof.left, 0.18),
+        mixPoint(roof.bottom, roof.left, 0.14),
+        mixPoint(roof.right, roof.bottom, 0.12)
       ]);
     }
 
     if (!interiorCell) {
+      // Canvas seams running down the pitch, with seeded sag.
       for (const t of [0.3, 0.58]) {
         const a = mixPoint(roof.left, roof.top, t);
         const b = mixPoint(roof.bottom, roof.right, t);
-        linePx(ctx, a[0], a[1], b[0], b[1], t < 0.5 ? PALETTE.stoneDust : PALETTE.clothDark, 1);
+        const dip = ((hash2D(seed + Math.floor(t * 100), 91) % 3) - 1);
+        const m = mixPoint(a, b, 0.5);
+        linePx(ctx, a[0], a[1], m[0], m[1] + dip, t < 0.5 ? PALETTE.stoneLight : PALETTE.clothDark, 1);
+        linePx(ctx, m[0], m[1] + dip, b[0], b[1], t < 0.5 ? PALETTE.stoneLight : PALETTE.clothDark, 1);
       }
       for (const t of [0.46, 0.72]) {
         const a = mixPoint(roof.top, roof.right, t);
         const b = mixPoint(roof.left, roof.bottom, t);
-        linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.rustDark, 1);
+        linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.stoneLight, 1);
       }
-      for (const [ox, oy, w, tone] of [
-        [-22, -6, 9, PALETTE.hostBone],
-        [-4, 2, 11, PALETTE.clothDark],
-        [13, -3, 8, PALETTE.rustDark]
-      ]) {
-        px(ctx, cx + ox, cy - roofLift + oy, PALETTE.outline, w + 2, 2);
-        px(ctx, cx + ox + 1, cy - roofLift + oy - 1, tone, w, 1);
+      // Rain stain bleeding from a seam toward the low eave.
+      if ((hash2D(seed + 87, 13) % 3) !== 0) {
+        const from = mixPoint(roof.top, roof.bottom, 0.35 + ((hash2D(seed + 97, 17) % 3) * 0.12));
+        const to = mixPoint(roof.bottom, (hash2D(seed + 99, 19) & 1) ? roof.right : roof.left, 0.3);
+        linePx(ctx, from[0], from[1], to[0], to[1], PALETTE.rustDark, 1);
+      }
+      // Seeded roof patches: dark tarred squares, one lit stitch edge.
+      for (const [tu, tv, salt] of [[0.34, 0.3, 43], [0.62, 0.62, 47], [0.3, 0.68, 53]]) {
+        if ((hash2D(seed + salt, salt * 3 + 1) % 3) !== 0) continue;
+        const top = mixPoint(mixPoint(roof.top, roof.right, tu), mixPoint(roof.left, roof.bottom, tu), tv);
+        px(ctx, top[0] - 6, top[1] - 3, PALETTE.outline, 13, 7);
+        px(ctx, top[0] - 5, top[1] - 2, (salt & 1) ? PALETTE.clothDark : PALETTE.rustDark, 11, 5);
+        px(ctx, top[0] - 5, top[1] - 3, PALETTE.stoneDust, 8, 1);
       }
     }
     if (!connected.yMinus) {
       linePx(ctx, roof.top[0], roof.top[1], roof.left[0], roof.left[1], PALETTE.outline, 2);
-      linePx(ctx, roof.top[0] - 1, roof.top[1], roof.left[0] - 1, roof.left[1], PALETTE.hostBone, 1);
+      linePx(ctx, roof.top[0] - 1, roof.top[1], roof.left[0] - 1, roof.left[1], PALETTE.clothTan, 1);
     }
     if (!connected.xMinus) {
       linePx(ctx, roof.top[0], roof.top[1], roof.right[0], roof.right[1], PALETTE.outline, 2);
@@ -401,25 +478,40 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
     }
     if (!connected.xPlus) {
       linePx(ctx, roof.bottom[0], roof.bottom[1] + 1, roof.right[0], roof.right[1] + 1, PALETTE.outline, 2);
-      linePx(ctx, roof.bottom[0], roof.bottom[1], roof.right[0], roof.right[1], PALETTE.stoneDark, 1);
+      linePx(ctx, roof.bottom[0], roof.bottom[1], roof.right[0], roof.right[1], PALETTE.clothDark, 1);
     }
-    for (const [ox, oy] of [[-21, -5], [-7, 4], [13, -1], [24, 6]]) {
-      if ((hash2D(seed + ox, seed + oy) % 3) === 0) {
-        px(ctx, cx + ox, cy - roofLift + oy, interiorCell ? PALETTE.stoneDark : PALETTE.rustDark, interiorCell ? 2 : 4, 1);
+    // Sparse seeded wear ticks instead of a mechanical grid.
+    for (const [ox, oy] of [[-21, -5], [-7, 4], [13, -1], [24, 6], [2, -7]]) {
+      if ((hash2D(seed + ox, seed + oy) % 4) === 0) {
+        px(ctx, cx + ox, cy - roofLift + oy, PALETTE.stoneLight, 3, 1);
       }
     }
-    for (const [ox, oy, sx] of [
-      [-30, 7, -1],
-      [30, 7, 1],
-      [-15, -7, -1],
-      [16, -7, 1]
-    ]) {
-      linePx(ctx, cx + ox, cy - roofLift + oy, cx + ox + sx * 14, cy - roofLift + oy + 14, PALETTE.outline, 2);
-      linePx(ctx, cx + ox, cy - roofLift + oy - 1, cx + ox + sx * 14, cy - roofLift + oy + 13, PALETTE.rustDark, 1);
-      px(ctx, cx + ox + sx * 14 - 2, cy - roofLift + oy + 13, PALETTE.outline, 5, 3);
-      px(ctx, cx + ox + sx * 14 - 1, cy - roofLift + oy + 12, PALETTE.woodDark, 3, 1);
+    // Guy ropes only off exposed roof corners, and some have snapped.
+    const corners = [
+      [!connected.yPlus && !connected.xMinus, roof.left, -1, 61],
+      [!connected.yPlus && !connected.xPlus, roof.bottom, 1, 63],
+      [!connected.xPlus && !connected.yMinus, roof.right, 1, 69]
+    ];
+    for (const [exposed, corner, sx, salt] of corners) {
+      if (!exposed || (hash2D(seed + salt, salt) % 3) === 0) continue;
+      const gx = corner[0] + sx * 13;
+      const gy = corner[1] + 16;
+      linePx(ctx, corner[0], corner[1], gx, gy, PALETTE.outline, 2);
+      linePx(ctx, corner[0], corner[1] - 1, gx, gy - 1, PALETTE.rustDark, 1);
+      px(ctx, gx - 2, gy - 1, PALETTE.outline, 5, 3);
+      px(ctx, gx - 1, gy - 2, PALETTE.woodDark, 3, 1);
     }
-    drawNoisePixels(ctx, cx - 34, cy - roofLift - 14, 68, 38, [PALETTE.clothDark, PALETTE.rustDark], interiorCell ? 0.006 : 0.01, seed);
+    // Settled ash over the whole roof plane.
+    drawNoisePixels(
+      ctx,
+      cx - 40,
+      cy - roofLift - 20,
+      80,
+      42,
+      [PALETTE.stoneLight, PALETTE.stoneDark, PALETTE.clothDark],
+      interiorCell ? 0.02 : 0.03,
+      seed
+    );
   }
 
   if (!connected.yPlus && !connected.xMinus) {
@@ -458,27 +550,27 @@ export function drawCanvasTentFlap(ctx, cx, cy, seed, opts = {}) {
   );
 
   face.rect(0, 0, 1, 1, PALETTE.outline);
-  face.rect(0.04, 0.04, 0.96, 0.98, PALETTE.clothTan);
-  face.line(0.06, 0.05, 0.06, 0.94, PALETTE.hostBone, 1);
+  face.rect(0.04, 0.04, 0.96, 0.98, PALETTE.stoneDust);
+  face.line(0.06, 0.05, 0.06, 0.94, PALETTE.clothTan, 1);
   face.line(0.94, 0.05, 0.94, 0.94, PALETTE.clothDark, 1);
-  face.line(0.08, 0.12, 0.92, 0.12, PALETTE.stoneDust, 1);
+  face.line(0.08, 0.12, 0.92, 0.12, PALETTE.stoneLight, 1);
   face.line(0.08, 0.84, 0.92, 0.84, PALETTE.rustDark, 2);
-  face.line(0.18, 0.1, 0.2, 0.88, PALETTE.stoneDust, 1);
+  face.line(0.18, 0.1, 0.2, 0.88, PALETTE.stoneLight, 1);
   face.line(0.8, 0.1, 0.78, 0.88, PALETTE.clothDark, 1);
   face.line(0.28, 0.18, 0.32, 0.82, PALETTE.rustDark, 1);
-  face.line(0.68, 0.18, 0.64, 0.82, PALETTE.stoneDust, 1);
+  face.line(0.68, 0.18, 0.64, 0.82, PALETTE.stoneLight, 1);
   for (const u of [0.18, 0.34, 0.66, 0.82]) {
     face.rect(u - 0.025, 0.14, u + 0.025, 0.2, PALETTE.outline);
-    face.rect(u - 0.012, 0.15, u + 0.012, 0.18, PALETTE.hostBone);
+    face.rect(u - 0.012, 0.15, u + 0.012, 0.18, PALETTE.clothTan);
   }
   for (const [u, v, w, h, color] of [
-    [0.18, 0.34, 0.2, 0.16, PALETTE.stoneDust],
+    [0.18, 0.34, 0.2, 0.16, PALETTE.stoneLight],
     [0.68, 0.42, 0.16, 0.14, PALETTE.rustDark],
     [0.34, 0.68, 0.18, 0.12, PALETTE.clothDark]
   ]) {
     face.rect(u - 0.01, v - 0.01, u + w + 0.01, v + h + 0.01, PALETTE.outline);
     face.rect(u, v, u + w, v + h, color);
-    face.line(u + 0.02, v + 0.02, u + w - 0.02, v + 0.02, PALETTE.hostBone, 1);
+    face.line(u + 0.02, v + 0.02, u + w - 0.02, v + 0.02, PALETTE.clothTan, 1);
   }
 
   const top = face.point(0.5, 0.13);
@@ -486,20 +578,25 @@ export function drawCanvasTentFlap(ctx, cx, cy, seed, opts = {}) {
   const right = face.point(0.82, 0.96);
   const mid = face.point(0.5, 0.96);
   poly(ctx, PALETTE.outline, [top, right, mid]);
-  poly(ctx, PALETTE.stoneDust, [
+  poly(ctx, PALETTE.stoneLight, [
     face.point(0.52, 0.18),
     face.point(0.79, 0.91),
     face.point(0.53, 0.9)
   ]);
   poly(ctx, PALETTE.outline, [top, mid, left]);
-  poly(ctx, PALETTE.clothTan, [
+  poly(ctx, PALETTE.stoneDust, [
     face.point(0.48, 0.18),
     face.point(0.47, 0.9),
     face.point(0.21, 0.91)
   ]);
   linePx(ctx, top[0], top[1], mid[0], mid[1], unlocked ? PALETTE.void : PALETTE.clothDark, 2);
-  linePx(ctx, top[0] - 4, top[1] + 5, left[0] + 4, left[1] - 8, PALETTE.stoneDust, 1);
+  linePx(ctx, top[0] - 4, top[1] + 5, left[0] + 4, left[1] - 8, PALETTE.clothTan, 1);
   linePx(ctx, top[0] + 4, top[1] + 5, right[0] - 4, right[1] - 8, PALETTE.clothDark, 1);
+  // Painted Censure cross over the lintel: the office marks every working mouth.
+  px(ctx, top[0] - 1, top[1] - 12, PALETTE.outline, 4, 10);
+  px(ctx, top[0] - 4, top[1] - 10, PALETTE.outline, 10, 4);
+  px(ctx, top[0], top[1] - 11, PALETTE.hostBone, 2, 8);
+  px(ctx, top[0] - 3, top[1] - 9, PALETTE.hostBone, 8, 2);
   for (const t of [0.24, 0.38, 0.62, 0.76]) {
     const p = face.point(t, 0.31);
     const q = face.point(t + (t < 0.5 ? -0.04 : 0.04), 0.38);
@@ -539,6 +636,12 @@ export function drawCanvasTentFlap(ctx, cx, cy, seed, opts = {}) {
     px(ctx, p[0], p[1] - 1, PALETTE.woodDark, 2, 1);
   }
   drawNoisePixels(ctx, Math.min(sillA[0], sillB[0]) - 4, Math.min(sillA[1], sillB[1]) - 42, Math.abs(sillB[0] - sillA[0]) + 8, 45, [PALETTE.clothDark, PALETTE.rustDark], 0.018, seed);
+  // A ward painted small on the flap in red: a barred cross. Whoever sleeps
+  // here trusts the paint more than the canvas.
+  px(ctx, cx + 3, cy - 26, PALETTE.hostRed, 1, 5);
+  px(ctx, cx + 1, cy - 24, PALETTE.hostRed, 5, 1);
+  linePx(ctx, cx, cy - 21, cx + 6, cy - 27, PALETTE.rustMid, 1);
+
 }
 
 export function drawCampBedroll(ctx, cx, cy, seed) {
@@ -575,6 +678,13 @@ export function drawCampBedroll(ctx, cx, cy, seed) {
   px(ctx, cx - 3 * flip, cy - 15, PALETTE.clothTan, 7, 1);
   px(ctx, cx + 4 * flip, cy - 12, PALETTE.stoneDark, 11, 2);
   px(ctx, cx + 5 * flip, cy - 13, PALETTE.hostBone, 7, 1);
+  // What they kept by their head: a folded spare shirt and the saint token
+  // they touched before sleep.
+  px(ctx, cx + 18 * flip, cy - 10, PALETTE.outline, 8, 5);
+  px(ctx, cx + 19 * flip, cy - 10, PALETTE.stoneDust, 6, 3);
+  px(ctx, cx + 19 * flip, cy - 10, PALETTE.hostBone, 3, 1);
+  px(ctx, cx + 21 * flip, cy - 4, PALETTE.hostGold, 2, 1); // the token
+  px(ctx, cx + 22 * flip, cy - 5, PALETTE.flash, 1, 1);
   for (const t of [-14, 3, 17]) {
     linePx(ctx, cx + t * flip, cy - 10, cx + (t + 6) * flip, cy + 5, PALETTE.outline, 2);
     linePx(ctx, cx + t * flip, cy - 9, cx + (t + 6) * flip, cy + 4, PALETTE.rustDark, 1);
@@ -670,6 +780,16 @@ export function drawSettlementTable(ctx, cx, cy, seed) {
     px(ctx, cx - 28 + Math.floor(rng() * 55), cy - 20 + Math.floor(rng() * 18), color);
   }
   drawRubbleCluster(ctx, cx + 28, cy + 12, seed + 71, 2);
+  // Writ papers weighted with a river stone against the wind through camp,
+  // and an ink pot gone dry with the nib still in it: the paperwork of the
+  // end of the world continues on schedule.
+  px(ctx, cx + 4, cy - 20, PALETTE.hostBone, 6, 4); // the writ stack
+  px(ctx, cx + 5, cy - 19, PALETTE.stoneDark, 3, 1); // a line of script
+  px(ctx, cx + 6, cy - 22, PALETTE.stoneMid, 3, 2); // the river stone
+  px(ctx, cx - 8, cy - 21, PALETTE.outline, 3, 3);
+  px(ctx, cx - 7, cy - 21, PALETTE.hostBlack, 1, 2); // the dry ink pot
+  px(ctx, cx - 6, cy - 23, PALETTE.stoneLight, 1, 2); // the nib
+
 }
 
 export function drawLowStool(ctx, cx, cy, seed) {
@@ -711,6 +831,15 @@ export function drawLowStool(ctx, cx, cy, seed) {
   }
   px(ctx, cx + 13 + lean, cy + 7, PALETTE.outline, 5, 3);
   px(ctx, cx + 14 + lean, cy + 7, PALETTE.woodDark, 3, 1);
+  // Someone sat here whittling: curls of shaving under the seat edge, and on
+  // some stools the tin cup they never came back for.
+  px(ctx, cx - 15 + lean, cy + 8, PALETTE.woodLight, 3, 1);
+  px(ctx, cx - 12 + lean, cy + 9, PALETTE.woodLight, 2, 1);
+  if ((seed & 3) === 1) {
+    px(ctx, cx + 2 + lean, cy - 16, PALETTE.outline, 5, 5);
+    px(ctx, cx + 3 + lean, cy - 15, PALETTE.stoneMid, 3, 3);
+    px(ctx, cx + 3 + lean, cy - 16, PALETTE.stoneLight, 2, 1);
+  }
   linePx(ctx, cx - 13 + lean, cy + 5, cx + 13 + lean, cy - 3, PALETTE.outline, 2);
   linePx(ctx, cx - 12 + lean, cy + 4, cx + 12 + lean, cy - 4, PALETTE.woodDark, 1);
   px(ctx, cx + 11 + lean, cy - 11, PALETTE.outline, 5, 3);
@@ -772,10 +901,19 @@ export function drawKitchenHearth(ctx, cx, cy, seed) {
   ]);
   px(ctx, cx - 11, cy - 5, PALETTE.rustDark, 17, 3);
   px(ctx, cx - 3, cy - 8, PALETTE.stoneDark, 6, 2);
+  // Banked embers in the ash bed: a hearth with no fire read is a black box.
+  px(ctx, cx - 8, cy - 6, PALETTE.rustMid, 4, 1);
+  px(ctx, cx - 7, cy - 6, PALETTE.hostGold, 2, 1);
+  px(ctx, cx - 1, cy - 5, PALETTE.hostGold, 1, 1);
+  px(ctx, cx + 2, cy - 6, PALETTE.rustMid, 2, 1);
+  px(ctx, cx - 4, cy - 4, PALETTE.hostGlow, 1, 1); // one live coal
   px(ctx, cx - 18, cy - 15, PALETTE.stoneDust, 7, 1);
   px(ctx, cx + 7, cy - 16, PALETTE.stoneDust, 5, 1);
   px(ctx, cx - 12, cy - 2, PALETTE.outline, 9, 2);
   px(ctx, cx - 10, cy - 3, PALETTE.rustDark, 5, 1);
+  // Soot licked up the breast above the mouth.
+  px(ctx, cx - 6, cy - 22, PALETTE.hostBlack, 8, 3);
+  px(ctx, cx - 3, cy - 24, PALETTE.hostBlack, 4, 2);
 
   drawIsoDiamond(ctx, cx + 16, cy - 15, 16, 8, PALETTE.outline);
   drawIsoDiamond(ctx, cx + 16, cy - 16, 13, 6, PALETTE.rustDark);
@@ -797,6 +935,14 @@ export function drawKitchenHearth(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 27, cy + 11, seed + 91, 2);
   drawNoisePixels(ctx, cx - 25, cy - 22, 50, 24, [PALETTE.stoneDark, PALETTE.rustDark], 0.06, seed);
+  // A small pot still hangs over the embers with the spoon standing in it:
+  // supper was on when everything stopped, and nobody took it off the heat.
+  px(ctx, cx - 2, cy - 18, PALETTE.stoneDark, 1, 4); // the hook chain
+  px(ctx, cx - 5, cy - 14, PALETTE.outline, 7, 5);
+  px(ctx, cx - 4, cy - 13, PALETTE.stoneDark, 5, 3); // the pot
+  px(ctx, cx - 3, cy - 13, PALETTE.stoneMid, 2, 1); // its lit rim
+  px(ctx, cx + 1, cy - 17, PALETTE.woodLight, 1, 4); // the spoon, standing
+
 }
 
 export function drawPantryShelf(ctx, cx, cy, seed) {
@@ -853,6 +999,13 @@ export function drawPantryShelf(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 18 + lean, cy + 7, seed + 101, 2);
   drawNoisePixels(ctx, cx - 22, cy - 52, 43, 49, [PALETTE.woodDark, PALETTE.stoneDark], 0.045, seed);
+  // One jar lies tipped and licked clean, and a thin trail of droppings runs
+  // along the bottom shelf: the shortage arrived before the cult did.
+  px(ctx, cx - 2, cy - 6, PALETTE.outline, 6, 4);
+  px(ctx, cx - 1, cy - 5, PALETTE.stoneMid, 4, 2); // the tipped jar
+  px(ctx, cx + 3, cy - 4, PALETTE.void, 2, 1); // its empty mouth
+  for (let d = 0; d < 4; d += 1) px(ctx, cx - 10 + d * 4, cy - 2, PALETTE.hostBlack, 1, 1);
+
 }
 
 export function drawWashTub(ctx, cx, cy, seed) {
@@ -890,6 +1043,10 @@ export function drawWashTub(ctx, cx, cy, seed) {
   drawIsoDiamond(ctx, cx + shift, cy - 11, 35, 14, PALETTE.stoneDark);
   drawIsoDiamond(ctx, cx - 1 + shift, cy - 12, 25, 9, PALETTE.stoneMid);
   drawIsoDiamond(ctx, cx - 2 + shift, cy - 13, 19, 6, PALETTE.stoneLight);
+  // The water remembers the wash: a faint red bloom where blood came out of
+  // someone's coat, and the scrub ring it left on the staves.
+  drawIsoDiamond(ctx, cx + 4 + shift, cy - 12, 9, 4, PALETTE.rustDark);
+  px(ctx, cx + 3 + shift, cy - 13, PALETTE.hostRed, 3, 1);
   px(ctx, cx - 19 + shift, cy - 7, PALETTE.rustDark, 35, 2);
   px(ctx, cx - 20 + shift, cy - 3, PALETTE.outline, 36, 2);
   px(ctx, cx - 18 + shift, cy - 2, PALETTE.rustDark, 31, 1);
@@ -917,6 +1074,12 @@ export function drawWashTub(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx - 24 + shift, cy + 8, seed + 197, 2);
   drawNoisePixels(ctx, cx - 21, cy - 18, 42, 22, [PALETTE.woodDark, PALETTE.stoneDark], 0.055, seed);
+  // A mirror shard propped against the rim, catching what light there is:
+  // somebody still shaves. Standards are standards.
+  px(ctx, cx + 18 + shift, cy - 16, PALETTE.outline, 4, 6);
+  px(ctx, cx + 19 + shift, cy - 15, PALETTE.stoneLight, 2, 4); // the shard
+  px(ctx, cx + 19 + shift, cy - 15, PALETTE.hostBone, 1, 1); // its catch of light
+
 }
 
 export function drawDiningTable(ctx, cx, cy, seed, opts = {}) {
@@ -999,6 +1162,18 @@ export function drawDiningTable(ctx, cx, cy, seed, opts = {}) {
   }
   const tableDebris = frame.point(0.82, 0.42);
   drawRubbleCluster(ctx, tableDebris[0], tableDebris[1] + 4, seed + 79, 2);
+  // Bowls at every place and one on the floor below a shoved-back gap: the
+  // meal was set for a crowd that stood up all at once.
+  const placeA = frame.point(-0.5, -0.2, setTop);
+  const placeB = frame.point(0.45, 0.18, setTop);
+  for (const p of [placeA, placeB]) {
+    px(ctx, p[0] - 2, p[1] - 1, PALETTE.outline, 5, 3);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.stoneDust, 3, 2);
+  }
+  const dropped = frame.point(0.62, 0.4, 0);
+  px(ctx, dropped[0] - 2, dropped[1] + 2, PALETTE.outline, 5, 3);
+  px(ctx, dropped[0] - 1, dropped[1] + 2, PALETTE.stoneMid, 3, 2); // on its rim
+
 }
 
 export function drawDiningBench(ctx, cx, cy, seed, opts = {}) {
@@ -1045,8 +1220,22 @@ export function drawDiningBench(ctx, cx, cy, seed, opts = {}) {
     const p = frame.point(-ha + rng() * lenA, -hb + rng() * lenB, legH + slabT);
     px(ctx, p[0], p[1], PALETTE.woodLight, 1, 1);
   }
+  // A child's chalk game scratched on one bench end, half rubbed out.
+  if (seed % 4 === 2) {
+    const chalk = frame.point(ha - 0.22, 0, legH + slabT);
+    px(ctx, chalk[0] - 2, chalk[1] - 1, PALETTE.stoneDust, 2, 1);
+    px(ctx, chalk[0] + 1, chalk[1] - 2, PALETTE.stoneDust, 1, 2);
+    px(ctx, chalk[0] - 1, chalk[1] + 1, PALETTE.stoneDust, 1, 1);
+  }
   const benchDebris = frame.point(-0.78, 0.24);
   drawRubbleCluster(ctx, benchDebris[0], benchDebris[1] + 3, seed + 37, 2);
+  // Two sets of initials carved into the seat edge with a plus between
+  // them, older than everything else in the room. Somebody was young here.
+  const carve = frame.point(-0.5, 0.1, legH + slabT);
+  px(ctx, carve[0], carve[1], PALETTE.woodLight, 2, 2);
+  px(ctx, carve[0] + 3, carve[1] + 1, PALETTE.woodLight, 1, 1); // the plus
+  px(ctx, carve[0] + 5, carve[1], PALETTE.woodLight, 2, 2);
+
 }
 
 export function drawKitchenCounter(ctx, cx, cy, seed, opts = {}) {
@@ -1133,6 +1322,12 @@ export function drawKitchenCounter(ctx, cx, cy, seed, opts = {}) {
   if (rng() < 0.5) px(ctx, top.cap.top[0] - 4, top.cap.top[1] - 1, PALETTE.hostBone, 2, 1);
   const counterDebris = frame.point(0.62, 0.44);
   drawRubbleCluster(ctx, counterDebris[0], counterDebris[1] + 4, seed + 61, 2);
+  // A floured handprint on the counter edge, fingers spread: the last touch
+  // before whatever made them stop touching things.
+  const hand = frame.point(-0.3, 0.14, workTop ?? 16);
+  px(ctx, hand[0] - 2, hand[1] - 1, PALETTE.stoneDust, 5, 3); // the palm
+  for (let f = 0; f < 4; f += 1) px(ctx, hand[0] - 2 + f * 2, hand[1] - 3, PALETTE.stoneDust, 1, 2);
+
 }
 
 export function drawFarmPrepTable(ctx, cx, cy, seed, opts = {}) {
@@ -1209,6 +1404,14 @@ export function drawFarmPrepTable(ctx, cx, cy, seed, opts = {}) {
   }
   const prepDebris = frame.point(0.62, 0.38);
   drawRubbleCluster(ctx, prepDebris[0], prepDebris[1] + 4, seed + 113, 2);
+  // The knife stands mid-chop in a split root: the meal nobody finished
+  // making is still waiting to be finished.
+  const chop = frame.point(0.1, -0.1, legH + slabT);
+  px(ctx, chop[0] - 3, chop[1] - 1, PALETTE.clothTan, 6, 3); // the split root
+  px(ctx, chop[0] - 1, chop[1], PALETTE.void, 1, 2); // the cut
+  px(ctx, chop[0], chop[1] - 5, PALETTE.stoneLight, 1, 5); // the blade, standing
+  px(ctx, chop[0] - 1, chop[1] - 7, PALETTE.woodDark, 3, 2); // its grip
+
 }
 
 export function drawFarmKitchenHearth(ctx, cx, cy, seed) {
@@ -1263,6 +1466,11 @@ export function drawFarmKitchenHearth(ctx, cx, cy, seed) {
     [cx - 5, cy - 4],
     [cx - 11, cy - 7]
   ]);
+  // Banked embers so the farm hearth reads as recently lived-with.
+  px(ctx, cx - 6, cy - 7, PALETTE.rustMid, 4, 1);
+  px(ctx, cx - 5, cy - 7, PALETTE.hostGold, 2, 1);
+  px(ctx, cx + 1, cy - 8, PALETTE.hostGold, 1, 1);
+  px(ctx, cx - 2, cy - 6, PALETTE.hostGlow, 1, 1);
 
   linePx(ctx, cx - 24, cy - 18, cx + 24, cy - 17, PALETTE.woodDark, 3);
   linePx(ctx, cx - 23, cy - 19, cx + 23, cy - 18, PALETTE.woodLight, 1);
@@ -1377,6 +1585,15 @@ export function drawSealedStorageCrate(ctx, cx, cy, seed) {
     px(ctx, cx + dx + 1, cy + dy - 1, tone, 2, 1);
   }
 
+  // Sealed means SEALED: a stencilled requisition mark on the front board and
+  // a red wax blob pressed over the hasp cord.
+  px(ctx, cx - 20, cy - 6, PALETTE.hostBlack, 7, 5); // stencil field
+  px(ctx, cx - 18, cy - 5, PALETTE.stoneDust, 1, 3); // stencil cross
+  px(ctx, cx - 19, cy - 4, PALETTE.stoneDust, 3, 1);
+  px(ctx, cx + 1, cy + 5, PALETTE.hostRed, 3, 2); // wax seal on the hasp
+  px(ctx, cx + 2, cy + 5, PALETTE.rustMid, 1, 1);
+  px(ctx, cx - 2, cy + 6, PALETTE.clothTan, 3, 1); // the sealed cord tail
+
   for (let i = 0; i < 12; i += 1) {
     const x = cx - 30 + Math.floor(rng() * 58);
     const y = cy - 21 + Math.floor(rng() * 28);
@@ -1448,168 +1665,94 @@ export function drawRustedBarrel(ctx, cx, cy, seed, opts = {}) {
     px(ctx, lx - 4, top - 3, PALETTE.outline, 15, 4);
     px(ctx, lx - 2, top - 4, PALETTE.woodMid, 11, 2);
   }
+  // A rain line inside the rim and a shared tin cup on the lid: the camp
+  // drinks from this one, rust and all.
+  px(ctx, cx - 6, cy - 25, PALETTE.stoneDark, 12, 1);
+  px(ctx, cx + 3, cy - 30, PALETTE.outline, 5, 5);
+  px(ctx, cx + 4, cy - 29, PALETTE.stoneMid, 3, 3);
+  px(ctx, cx + 4, cy - 30, PALETTE.stoneLight, 2, 1);
+
 }
 
 export function drawStoneStairwell(ctx, cx, cy, seed) {
+  // A narrow stair cut through the chapel wall: a squat masonry portal with
+  // worn treads climbing into the dark. It must read as "stairs you can take
+  // through this wall" from gameplay distance, in both directions.
   const rng = rngFrom(hash2D(seed + 59, seed * 7 + 13));
-  drawShadowBlob(ctx, cx, cy + 10, 72, 26);
+  drawShadowBlob(ctx, cx, cy + 6, 58, 20);
 
-  const topY = cy - 15;
-  const ovalHalf = (rx, ry, dy) => Math.max(0, Math.round(rx * Math.sqrt(Math.max(0, 1 - (dy * dy) / (ry * ry)))));
+  const baseY = cy + 6; // floor line at the portal mouth
+  const jambH = 46; // masonry surround height
+  const innerW = 24; // dark passage width
 
-  // Dropped stone skirt under the round stair-head. It gives the opening weight
-  // without turning it back into a rectangular block.
-  for (let dy = 3; dy <= 20; dy += 1) {
-    const half = ovalHalf(35, 16, dy - 3);
-    if (half < 4) continue;
-    const y = topY + dy;
-    px(ctx, cx - half - 2, y, PALETTE.outline, half * 2 + 4, 1);
-    px(ctx, cx - half, y, PALETTE.stoneMid, half, 1);
-    px(ctx, cx, y, PALETTE.stoneDark, half, 1);
-    if (dy % 5 === 0) px(ctx, cx - half + 5, y, PALETTE.stoneDust, 4, 1);
-  }
-  for (const [dx, dy, w, tone] of [
-    [-33, 13, 7, PALETTE.stoneDark],
-    [-22, 19, 5, PALETTE.stoneDust],
-    [17, 18, 8, PALETTE.outline],
-    [25, 12, 5, PALETTE.stoneDark]
-  ]) {
-    px(ctx, cx + dx, topY + dy, tone, w, 1);
-  }
+  // Worn landing slab at the foot, the stone the log talks about.
+  drawIsoDiamond(ctx, cx + 2, baseY + 2, 40, 15, PALETTE.outline);
+  drawIsoDiamond(ctx, cx + 2, baseY + 1, 34, 12, PALETTE.stoneMid);
+  drawIsoDiamond(ctx, cx + 6, baseY + 2, 16, 6, PALETTE.stoneDust); // foot-polished centre
+  px(ctx, cx - 8, baseY + 3, PALETTE.stoneDark, 7, 1); // slab seam
+  px(ctx, cx + 9, baseY - 1, PALETTE.stoneDark, 5, 1);
 
-  // Stepped oval rim: a broken masonry ring around the stair void.
-  for (let dy = -15; dy <= 15; dy += 1) {
-    const half = ovalHalf(37, 15, dy);
-    if (half < 4) continue;
-    const y = topY + dy;
-    const leftTone = dy < -6 ? PALETTE.stoneDust : dy < 4 ? PALETTE.stoneMid : PALETTE.stoneLight;
-    const rightTone = dy < 0 ? PALETTE.stoneMid : PALETTE.stoneDark;
-    px(ctx, cx - half - 2, y, PALETTE.outline, half * 2 + 4, 1);
-    px(ctx, cx - half, y, leftTone, half, 1);
-    px(ctx, cx, y, rightTone, half, 1);
-  }
-  for (const [dx, dy, w, tone] of [
-    [-36, -3, 6, PALETTE.void],
-    [-29, -10, 9, PALETTE.stoneLight],
-    [-12, -16, 7, PALETTE.stoneDust],
-    [14, -15, 8, PALETTE.stoneDark],
-    [28, -7, 6, PALETTE.outline],
-    [31, 3, 5, PALETTE.stoneDark],
-    [-24, 11, 8, PALETTE.outline]
-  ]) {
-    px(ctx, cx + dx, topY + dy, tone, w, 1);
-    if (tone !== PALETTE.outline) px(ctx, cx + dx + 1, topY + dy - 1, PALETTE.outline, Math.max(2, Math.floor(w / 2)), 1);
-  }
-  for (let dy = -10; dy <= 12; dy += 1) {
-    const half = ovalHalf(26, 11, dy);
-    if (half < 3) continue;
-    const y = topY + dy;
-    px(ctx, cx - half - 2, y, PALETTE.outline, half * 2 + 4, 1);
-    px(ctx, cx - half, y, PALETTE.void, half * 2, 1);
-    if (dy < -5) px(ctx, cx - half, y, PALETTE.stoneDark, Math.max(4, Math.floor(half * 0.45)), 1);
-  }
-
-  // Curving treads, bright near the entry and fading into the stairwell.
-  for (let i = 0; i < 8; i += 1) {
-    const y = topY - 7 + i * 4;
-    const w = 41 - i * 4;
-    const lean = i < 4 ? i * 2 : 8 - i;
-    const tone = i < 2 ? PALETTE.stoneDust : i < 5 ? PALETTE.stoneMid : PALETTE.stoneDark;
-    linePx(ctx, cx - Math.floor(w / 2) + lean, y + 1, cx + Math.floor(w / 2) - lean, y - 3, PALETTE.outline, 2);
-    linePx(ctx, cx - Math.floor(w / 2) + lean + 2, y, cx + Math.floor(w / 2) - lean - 2, y - 3, tone, 1);
-  }
-  linePx(ctx, cx + 9, topY - 8, cx - 5, topY + 12, PALETTE.outline, 2);
-  linePx(ctx, cx + 8, topY - 9, cx - 6, topY + 11, PALETTE.rustMid, 1);
-  linePx(ctx, cx - 15, topY - 4, cx - 24, topY + 7, PALETTE.stoneDark, 1);
-  linePx(ctx, cx + 16, topY - 1, cx + 23, topY + 8, PALETTE.void, 1);
-
-  const rail = (points, color, size = 1) => {
-    for (let i = 1; i < points.length; i += 1) {
-      linePx(ctx, points[i - 1][0], points[i - 1][1], points[i][0], points[i][1], color, size);
+  // Masonry surround: two block jambs and a heavy lintel, chipped.
+  const jamb = (jx, lit) => {
+    px(ctx, jx - 1, baseY - jambH, PALETTE.outline, 9, jambH);
+    px(ctx, jx, baseY - jambH + 1, lit ? PALETTE.stoneMid : PALETTE.stoneDark, 7, jambH - 2);
+    for (let b = 1; b < 6; b += 1) {
+      const by = baseY - jambH + 2 + b * 7 + (b % 2);
+      px(ctx, jx, by, PALETTE.outline, 7, 1); // block courses
+      if (b % 2 === 0) px(ctx, jx + (lit ? 1 : 4), by - 3, lit ? PALETTE.stoneDust : PALETTE.stoneMid, 2, 2);
     }
+    px(ctx, jx + (lit ? 0 : 5), baseY - 8, PALETTE.void, 2, 3); // chipped base
   };
-  const shifted = (points, y) => points.map((point) => [point[0], point[1] + y]);
-  const post = (x, baseY, height, lit = false) => {
-    px(ctx, x - 2, baseY - height, PALETTE.outline, 5, height + 3);
-    px(ctx, x - 1, baseY - height + 1, PALETTE.rustDark, 3, height);
-    px(ctx, x, baseY - height + 1, lit ? PALETTE.stoneLight : PALETTE.rustMid, 1, height - 2);
-    px(ctx, x - 4, baseY + 1, PALETTE.outline, 9, 3);
-    px(ctx, x - 3, baseY + 1, PALETTE.rustDark, 7, 1);
-  };
+  jamb(cx - Math.floor(innerW / 2) - 8, true);
+  jamb(cx + Math.floor(innerW / 2) + 1, false);
+  px(ctx, cx - Math.floor(innerW / 2) - 10, baseY - jambH - 5, PALETTE.outline, innerW + 20, 7); // lintel
+  px(ctx, cx - Math.floor(innerW / 2) - 9, baseY - jambH - 4, PALETTE.stoneMid, innerW + 18, 4);
+  px(ctx, cx - Math.floor(innerW / 2) - 9, baseY - jambH - 4, PALETTE.stoneDust, 12, 1); // lit top edge
+  px(ctx, cx + 4, baseY - jambH - 2, PALETTE.void, 5, 2); // broken lintel bite
+  px(ctx, cx - 2, baseY - jambH + 2, PALETTE.stoneDark, 10, 1); // soot line under the lintel
 
-  const backArc = [
-    [cx - 34, topY - 25],
-    [cx - 24, topY - 33],
-    [cx - 8, topY - 37],
-    [cx + 9, topY - 37],
-    [cx + 25, topY - 33],
-    [cx + 34, topY - 25]
-  ];
-  const leftArc = [
-    [cx - 34, topY - 25],
-    [cx - 38, topY - 14],
-    [cx - 35, topY - 2],
-    [cx - 25, topY + 6]
-  ];
-  const rightArc = [
-    [cx + 34, topY - 25],
-    [cx + 38, topY - 14],
-    [cx + 35, topY - 2],
-    [cx + 25, topY + 6]
-  ];
+  // The passage void behind the treads.
+  px(ctx, cx - Math.floor(innerW / 2), baseY - jambH + 3, PALETTE.void, innerW, jambH - 3);
 
-  rail(shifted(backArc, 12), PALETTE.outline, 2);
-  rail(shifted(backArc, 12), PALETTE.rustDark, 1);
-  rail(shifted(leftArc, 11), PALETTE.outline, 2);
-  rail(shifted(leftArc, 11), PALETTE.rustDark, 1);
-  rail(shifted(rightArc, 11), PALETTE.outline, 2);
-  rail(shifted(rightArc, 11), PALETTE.rustDark, 1);
-
-  for (const spec of [
-    [cx - 31, topY - 1, 31, true],
-    [cx - 10, topY - 12, 27, true],
-    [cx + 11, topY - 12, 27, false],
-    [cx + 31, topY - 1, 31, false],
-    [cx - 24, topY + 15, 42, true],
-    [cx + 24, topY + 15, 42, false]
-  ]) post(spec[0], spec[1], spec[2], spec[3]);
-  for (const [dx, dy, tone] of [
-    [-31, -20, PALETTE.stoneLight],
-    [-10, -29, PALETTE.stoneLight],
-    [11, -29, PALETTE.rustMid],
-    [31, -20, PALETTE.rustDark],
-    [-24, -9, PALETTE.stoneLight],
-    [24, -9, PALETTE.rustDark]
-  ]) {
-    px(ctx, cx + dx - 1, topY + dy, PALETTE.outline, 3, 2);
-    px(ctx, cx + dx, topY + dy, tone, 1, 1);
+  // Treads climbing into the dark: wide and lit at the mouth, narrower and
+  // darker with height until the black swallows them.
+  for (let i = 0; i < 6; i += 1) {
+    const w = innerW - i * 3;
+    const y = baseY - 2 - i * 7;
+    const x = cx - Math.floor(w / 2) + Math.round(i * 1.2); // drift right: the stair bends into the wall
+    const top = i < 2 ? PALETTE.stoneDust : i < 4 ? PALETTE.stoneMid : PALETTE.stoneDark;
+    px(ctx, x - 1, y - 2, PALETTE.outline, w + 2, 5);
+    px(ctx, x, y - 2, top, w, 2); // tread top catches the light
+    px(ctx, x, y, i < 4 ? PALETTE.stoneDark : PALETTE.void, w, 2); // riser in shadow
+    if (i === 1) px(ctx, x + 3, y - 2, PALETTE.stoneLight, 4, 1); // one foot-worn tread
+    if (i === 2) px(ctx, x + w - 4, y - 1, PALETTE.void, 3, 1); // a broken tread corner
   }
 
-  rail(backArc, PALETTE.outline, 3);
-  rail(backArc, PALETTE.rustDark, 2);
-  rail(backArc.slice(0, 4), PALETTE.stoneLight, 1);
-  rail(leftArc, PALETTE.outline, 3);
-  rail(leftArc, PALETTE.rustDark, 2);
-  rail(leftArc.slice(0, 3), PALETTE.stoneLight, 1);
-  rail(rightArc, PALETTE.outline, 3);
-  rail(rightArc, PALETTE.rustDark, 2);
-  rail(rightArc, PALETTE.rustMid, 1);
+  // Rope rail pinned to the lit jamb, sagging between iron pins.
+  const railX = cx - Math.floor(innerW / 2) - 4;
+  linePx(ctx, railX, baseY - 12, railX + 4, baseY - 26, PALETTE.rustDark, 1);
+  linePx(ctx, railX + 4, baseY - 26, railX + 7, baseY - 38, PALETTE.rustMid, 1);
+  px(ctx, railX - 1, baseY - 12, PALETTE.stoneLight, 2, 1); // iron pins
+  px(ctx, railX + 3, baseY - 26, PALETTE.stoneLight, 2, 1);
+  px(ctx, railX + 6, baseY - 38, PALETTE.stoneLight, 2, 1);
 
-  // Short entry rails sell the spiral route down through the gap.
-  linePx(ctx, cx - 10, topY + 5, cx - 1, topY + 17, PALETTE.outline, 3);
-  linePx(ctx, cx - 9, topY + 5, cx, topY + 16, PALETTE.rustMid, 1);
-  linePx(ctx, cx + 11, topY + 5, cx + 2, topY + 17, PALETTE.outline, 3);
-  linePx(ctx, cx + 10, topY + 5, cx + 1, topY + 16, PALETTE.rustDark, 1);
+  // Ash footprints climbing the lower treads: someone went up, recently,
+  // and did not sweep behind themselves.
+  px(ctx, cx - 4, baseY - 3, PALETTE.stoneDust, 3, 2);
+  px(ctx, cx + 2, baseY - 4, PALETTE.stoneDust, 3, 2);
+  px(ctx, cx - 1, baseY - 10, PALETTE.stoneDust, 3, 1);
+  // A censure chalk tally on the lit jamb: the sweeps this passage has seen.
+  px(ctx, cx - Math.floor(innerW / 2) - 6, baseY - 32, PALETTE.stoneLight, 1, 4);
+  px(ctx, cx - Math.floor(innerW / 2) - 4, baseY - 32, PALETTE.stoneLight, 1, 4);
+  px(ctx, cx - Math.floor(innerW / 2) - 7, baseY - 30, PALETTE.stoneLight, 5, 1);
 
-  drawNoisePixels(ctx, cx - 34, topY - 13, 68, 35, [PALETTE.stoneDark, PALETTE.stoneDust], 0.045, seed);
-  for (let i = 0; i < 5; i += 1) {
-    px(ctx, cx - 26 + Math.floor(rng() * 52), topY - 10 + Math.floor(rng() * 24), PALETTE.void, 1, 1);
-  }
-  for (let i = 0; i < 7; i += 1) {
-    const sx = cx - 39 + Math.floor(rng() * 78);
-    const sy = cy + 8 + Math.floor(rng() * 11);
-    px(ctx, sx, sy, PALETTE.outline, 2, 1);
-    px(ctx, sx, sy - 1, i % 2 === 0 ? PALETTE.stoneDust : PALETTE.stoneDark, 1, 1);
-  }
-  drawRubbleCluster(ctx, cx - 31, cy + 17, seed + 212, 3);
+  // Rubble and grit where the wall was cut.
+  drawRubbleCluster(ctx, cx + Math.floor(innerW / 2) + 8, baseY + 1, seed + 91, 2);
+  drawNoisePixels(ctx, cx - 20, baseY - 4, 40, 8, [PALETTE.stoneDust, PALETTE.stoneDark], 0.05, seed);
+  // Over the climbing footprints, a second set coming DOWN - longer stride,
+  // heavier, dragging at the heel. Someone went up. Something came down.
+  px(ctx, cx - 8, baseY - 6, PALETTE.stoneDark, 4, 2);
+  px(ctx, cx + 1, baseY - 1, PALETTE.stoneDark, 4, 2);
+  px(ctx, cx + 3, baseY + 1, PALETTE.stoneDark, 5, 1); // the heel drag
+
 }

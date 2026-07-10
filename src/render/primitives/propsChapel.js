@@ -125,6 +125,9 @@ export function drawFieldSatchel(ctx, cx, cy, seed) {
   linePx(ctx, cx - 4, cy - 15, cx + 4, cy - 15, PALETTE.clothDark, 1);
   linePx(ctx, cx + 4, cy - 15, cx + 13, cy - 7, PALETTE.clothDark, 1);
   px(ctx, cx - 1, cy - 10, PALETTE.rustLight, 3, 3);
+  // Censure issue-stamp on the flap: these satchels are standard kit.
+  px(ctx, cx - 6, cy - 12, PALETTE.hostBone, 1, 3);
+  px(ctx, cx - 7, cy - 11, PALETTE.hostBone, 3, 1);
   px(ctx, cx - 8, cy - 7, PALETTE.stoneDust, 7, 1);
   px(ctx, cx + 6, cy - 3, PALETTE.clothDark, 5, 1);
   px(ctx, cx - 14, cy + 1, PALETTE.outline, 8, 2);
@@ -175,10 +178,17 @@ export function drawQuarantineSign(ctx, cx, cy, seed) {
     right: PALETTE.rustDark,
     outline: PALETTE.outline
   });
-  // Faded warning marks + a split down the middle.
-  px(ctx, cx - 11, cy - 54, PALETTE.hostRed, 4, 8);
+  // The Remnant's actual quarantine mark, painted big enough to read from
+  // the road: a red cross barred through. Under it, the older faded smears.
+  px(ctx, cx - 3, cy - 56, PALETTE.hostRed, 3, 13);
+  px(ctx, cx - 3, cy - 56, PALETTE.rustMid, 1, 12); // wet lit edge
+  px(ctx, cx - 8, cy - 52, PALETTE.hostRed, 12, 3);
+  px(ctx, cx - 8, cy - 52, PALETTE.rustMid, 11, 1);
+  linePx(ctx, cx - 9, cy - 44, cx + 6, cy - 58, PALETTE.hostRed, 2); // the bar: NO ENTRY
+  linePx(ctx, cx - 8, cy - 44, cx + 6, cy - 57, PALETTE.rustMid, 1);
+  px(ctx, cx - 11, cy - 54, PALETTE.hostRed, 3, 6);
   px(ctx, cx - 2, cy - 56, PALETTE.stoneDark, 2, 15);
-  px(ctx, cx + 6, cy - 52, PALETTE.rustMid, 5, 4);
+  px(ctx, cx + 6, cy - 52, PALETTE.rustMid, 4, 3);
   px(ctx, cx - 15, cy - 50, PALETTE.outline, 5, 2);
   px(ctx, cx - 14, cy - 51, PALETTE.stoneDust, 3, 1);
   px(ctx, cx + 9, cy - 58, PALETTE.void, 4, 3);
@@ -282,6 +292,14 @@ export function drawRubblePile(ctx, cx, cy, seed) {
   px(ctx, cx - 13, cy - 9, PALETTE.outline, 27, 3);
   px(ctx, cx - 11, cy - 10, PALETTE.stoneDust, 23, 1);
   px(ctx, cx - 2, cy - 17, PALETTE.hostBone, 7, 2);
+  // A carved stone hand from some shattered saint, still reaching out of the
+  // heap: this was a chapel before it was rubble.
+  px(ctx, cx + 4, cy - 14, PALETTE.outline, 8, 4);
+  px(ctx, cx + 5, cy - 13, PALETTE.stoneLight, 6, 2); // the forearm fragment
+  px(ctx, cx + 10, cy - 15, PALETTE.stoneLight, 2, 2); // heel of the hand
+  px(ctx, cx + 12, cy - 16, PALETTE.stoneDust, 1, 2); // two broken fingers
+  px(ctx, cx + 13, cy - 15, PALETTE.stoneDust, 1, 1);
+  px(ctx, cx + 9, cy - 12, PALETTE.stoneDark, 3, 1); // shadow under the wrist
   px(ctx, cx + 12, cy - 7, PALETTE.rustDark, 9, 1);
   linePx(ctx, cx - 18, cy - 3, cx - 6, cy - 9, PALETTE.outline, 1);
   linePx(ctx, cx + 2, cy - 12, cx + 17, cy - 6, PALETTE.outline, 1);
@@ -334,6 +352,13 @@ export function drawCaveStalagmite(ctx, cx, cy, seed) {
     drawIsoDiamond(ctx, cx + dx, cy + dy - 1, Math.max(4, w - 3), Math.max(3, Math.floor(w * 0.32)), PALETTE.stoneDark);
   }
   drawNoisePixels(ctx, cx - 19, cy - 12, 38, 16, [PALETTE.stoneDust, PALETTE.stoneDark], 0.05, seed + 19);
+  // Wet drip line down the tallest spike and a flowstone ring at the base:
+  // the cave is still growing these.
+  px(ctx, cx - 9, cy - 20, PALETTE.stoneDust, 1, 8);
+  px(ctx, cx - 9, cy - 12, PALETTE.stoneLight, 1, 2);
+  drawIsoDiamond(ctx, cx - 6, cy + 2, 18, 7, PALETTE.stoneDark);
+  px(ctx, cx - 12, cy + 1, PALETTE.stoneDust, 5, 1);
+
 }
 
 export function drawCaveStalactites(ctx, cx, cy, seed) {
@@ -384,6 +409,10 @@ export function drawCaveStalactites(ctx, cx, cy, seed) {
     const y = anchorY + 4 + Math.floor(rng() * 19);
     px(ctx, x, y, i % 2 ? PALETTE.stoneDust : PALETTE.stoneDark, 2, 1);
   }
+  // One spike still drips: a falling bead and the dark spot where it lands.
+  px(ctx, cx + 2, cy + 6, PALETTE.stoneLight, 1, 1); // the bead mid-fall
+  px(ctx, cx + 2, cy + 14, PALETTE.stoneDark, 3, 1); // the wet landing spot
+
 }
 
 export function drawCaveFlowstone(ctx, cx, cy, seed) {
@@ -552,6 +581,14 @@ export function drawInfectedCaveEntrance(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx - 72, cy + 16, seed + 281, 4);
   drawRubbleCluster(ctx, cx + 75, cy + 17, seed + 283, 4);
+  // A Censure guide-rope staked at the mouth runs in and simply stops: they
+  // measured how far they dared go, and the rope remembers the number.
+  px(ctx, cx - 26, cy + 6, PALETTE.outline, 3, 5); // the stake
+  px(ctx, cx - 25, cy + 6, PALETTE.woodDark, 1, 4);
+  linePx(ctx, cx - 24, cy + 7, cx - 10, cy + 3, PALETTE.rustDark, 1);
+  linePx(ctx, cx - 10, cy + 3, cx - 1, cy + 2, PALETTE.woodDark, 1);
+  px(ctx, cx - 1, cy + 1, PALETTE.rustDark, 2, 1); // the frayed stop
+
 }
 
 export function drawRustedCrate(ctx, cx, cy, seed) {
@@ -641,6 +678,15 @@ export function drawRustedCrate(ctx, cx, cy, seed) {
   for (const dx of [-24, -9, 7, 21]) px(ctx, cx + dx, cy - 8, PALETTE.rustLight, 1, 1);
   drawRubbleCluster(ctx, cx + 26, cy + 13, seed + 37, 2);
   drawNoisePixels(ctx, cx - 31, cy - 23, 62, 34, [PALETTE.rustDark, PALETTE.stoneDark], 0.03, seed);
+  // Somebody tried this one already: pry gouges at the lid seam and a faded
+  // requisition stencil half rusted away.
+  px(ctx, cx - 12, cy - 12, PALETTE.stoneLight, 4, 1);
+  px(ctx, cx - 8, cy - 13, PALETTE.stoneLight, 3, 1);
+  px(ctx, cx - 12, cy - 11, PALETTE.void, 5, 1);
+  px(ctx, cx + 6, cy - 4, PALETTE.hostBlack, 6, 4);
+  px(ctx, cx + 8, cy - 3, PALETTE.stoneDust, 1, 2);
+  px(ctx, cx + 7, cy - 2, PALETTE.stoneDust, 3, 1);
+
 }
 
 export function drawPaperScraps(ctx, cx, cy, seed) {
@@ -761,6 +807,13 @@ export function drawCrackedColumn(ctx, cx, cy, seed) {
     px(ctx, x, cy + 1 + Math.floor(rng() * 7), PALETTE.hostBone, 3, 1);
   }
   drawRubbleCluster(ctx, cx - 18, cy + 8, seed + 91, 3);
+  // Votive wax pooled and hardened at the base in old layers: people prayed
+  // at this column long before anyone bled on it.
+  px(ctx, cx - 8, cy + 1, PALETTE.hostBone, 6, 2);
+  px(ctx, cx - 7, cy - 1, PALETTE.stoneDust, 4, 2);
+  px(ctx, cx - 9, cy + 3, PALETTE.stoneDust, 8, 1);
+  px(ctx, cx - 5, cy, PALETTE.rustDark, 2, 1); // one wick stump
+
 }
 
 export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
@@ -798,13 +851,16 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 4, shoulderY + 8, lo, 1, plinthTop - shoulderY - 9);
   px(ctx, cx + 3, shoulderY + 6, lo, 1, plinthTop - shoulderY - 7);
   px(ctx, cx - 1, shoulderY + 14, lo, 1, plinthTop - shoulderY - 16);
-  // An empty hood/cowl where the head was: a dark hollow, broken at the rim.
+  // The struck neck: a jagged stump of raw stone standing out of the cowl.
+  // The break is paler than the weathered robe because the cut is recent.
   px(ctx, cx - 4, shoulderY - 6, stone, 9, 7); // cowl shell
   px(ctx, cx - 4, shoulderY - 6, hi, 1, 7);
   px(ctx, cx + 4, shoulderY - 6, lo, 1, 7);
   px(ctx, cx - 2, shoulderY - 5, PALETTE.void, 5, 6); // hollow interior (no head)
-  px(ctx, cx - 3, shoulderY - 7, lo, 3, 2); // jagged struck rim
-  px(ctx, cx + 1, shoulderY - 7, dust, 3, 1);
+  px(ctx, cx - 2, shoulderY - 8, dust, 2, 3); // raw stump spike, left tall
+  px(ctx, cx - 2, shoulderY - 8, PALETTE.stoneLight, 1, 2); // fresh unweathered break
+  px(ctx, cx + 1, shoulderY - 6, dust, 2, 1); // second lower snag
+  px(ctx, cx - 3, shoulderY - 7, lo, 1, 2); // shadowed side of the strike
   for (let i = 0; i < 3; i += 1) px(ctx, cx - 8 + i * 7, shoulderY - 8 + Math.floor(rng() * 3), dust, 1, 1); // chips
   for (let i = 0; i < 17; i += 1) {
     if (i > 9 && i < 13) continue;
@@ -817,17 +873,27 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx + 13, shoulderY - 4, dust, 3, 1);
   px(ctx, cx - 14, shoulderY + 5, PALETTE.outline, 5, 2);
   px(ctx, cx - 13, shoulderY + 4, PALETTE.hostBone, 3, 1);
-  // Hands fused in prayer at the breast: a lit vertical bump with a centre seam.
-  px(ctx, cx - 2, shoulderY + 6, dust, 4, 7);
-  px(ctx, cx - 2, shoulderY + 6, hi, 1, 7);
-  px(ctx, cx, shoulderY + 6, lo, 1, 7); // seam between the palms
-  // Defacement: a point-down wound-star daubed on the breast in red.
+  // Hands fused in prayer at the breast; the cult has hacked the fingertips
+  // off, so the prayer ends in a broken flat.
+  px(ctx, cx - 2, shoulderY + 6, dust, 4, 6);
+  px(ctx, cx - 2, shoulderY + 6, hi, 1, 6);
+  px(ctx, cx, shoulderY + 6, lo, 1, 6); // seam between the palms
+  px(ctx, cx - 2, shoulderY + 5, PALETTE.void, 4, 1); // the hacked-off top of the hands
+  px(ctx, cx - 3, shoulderY + 5, dust, 1, 1); // one chip still hanging on
+  // Defacement: a point-down wound-star CUT into the breast, the carve lines
+  // dark where the chisel went deep and red where it was painted after.
+  px(ctx, cx - 4, shoulderY + 14, PALETTE.void, 9, 1); // chisel gouges under the paint
+  px(ctx, cx - 3, shoulderY + 15, PALETTE.void, 7, 1);
   px(ctx, cx - 3, shoulderY + 15, wet, 7, 1);
   px(ctx, cx - 2, shoulderY + 16, wet, 5, 1);
   px(ctx, cx - 1, shoulderY + 17, wet, 3, 1);
   px(ctx, cx, shoulderY + 18, wet, 1, 1);
   px(ctx, cx - 3, shoulderY + 15, wet, 1, 4);
   px(ctx, cx + 3, shoulderY + 15, wet, 1, 4);
+  // The paint ran before it dried: thin red trails down the robe folds.
+  px(ctx, cx - 1, shoulderY + 19, PALETTE.rustDark, 1, plinthTop - shoulderY - 21);
+  px(ctx, cx + 2, shoulderY + 19, PALETTE.rustDark, 1, 5);
+  px(ctx, cx + 2, shoulderY + 24, wet, 1, 2);
   // Asymmetry: a crack down the robe and a chipped plinth corner.
   px(ctx, cx + 5, plinthTop - 12, lo, 1, 11);
   px(ctx, cx + 14, cy - 4, PALETTE.void, 4, 3);
@@ -841,7 +907,25 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
     px(ctx, cx + dx - 1, cy + dy - 1, PALETTE.outline, 4, 3);
     px(ctx, cx + dx, cy + dy - 1, rng() < 0.5 ? PALETTE.hostBone : lo, 2, 1);
   }
+  // The struck-off head lies face down at the plinth base where it rolled,
+  // split by the blow, the hood rim still readable on the back of it.
+  const headX = cx + ((seed & 1) ? 16 : -17);
+  const headY = cy + 6;
+  px(ctx, headX - 4, headY - 4, PALETTE.outline, 9, 7);
+  px(ctx, headX - 3, headY - 3, stone, 7, 5);
+  px(ctx, headX - 3, headY - 3, dust, 4, 1); // lit crown
+  px(ctx, headX - 3, headY, lo, 7, 2); // face pressed into the floor
+  px(ctx, headX + 1, headY - 3, PALETTE.void, 1, 4); // the split from the blow
+  px(ctx, headX - 4, headY - 2, dust, 1, 2); // hood rim
+  px(ctx, headX + 4, headY + 2, lo, 3, 1); // chip thrown off it
   drawNoisePixels(ctx, cx - 10, shoulderY, 20, plinthTop - shoulderY, [lo, stone], 0.04, seed);
+  // Pilgrim candle stubs on the plinth step, burned to nothing at different
+  // ages: the statue lost its head, not its congregation.
+  px(ctx, cx - 12, cy - 14, PALETTE.hostBone, 2, 3);
+  px(ctx, cx - 9, cy - 13, PALETTE.hostBone, 2, 2);
+  px(ctx, cx - 6, cy - 14, PALETTE.stoneDust, 2, 1);
+  px(ctx, cx - 11, cy - 11, PALETTE.stoneDust, 6, 1); // the shared wax pool
+
 }
 
 export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
@@ -852,18 +936,22 @@ export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
   const lo = PALETTE.stoneDark;
   const dust = PALETTE.stoneDust;
 
-  drawShadowBlob(ctx, cx, cy + 3, 28, 13);
-  // Pedestal.
-  drawIsoPrism(ctx, cx, cy, 14, 8, 15, { top: stone, left: lo, right: PALETTE.void, outline: PALETTE.outline });
-  const by = cy - 15; // basin rim height
-  // Basin.
-  drawIsoDiamond(ctx, cx, by + 1, 28, 14, PALETTE.outline);
-  drawIsoDiamond(ctx, cx, by, 27, 13, lo);
-  drawIsoDiamond(ctx, cx, by - 1, 27, 13, stone);
-  drawIsoDiamond(ctx, cx - 1, by - 2, 24, 11, hi); // lit upper-left rim
-  drawIsoDiamond(ctx, cx, by - 1, 18, 9, lo); // inner basin
-  drawIsoDiamond(ctx, cx, by - 1, 13, 6, PALETTE.rustDark); // dried blood, not holy water
-  drawIsoDiamond(ctx, cx, by - 1, 7, 3, PALETTE.hostRed);
+  drawShadowBlob(ctx, cx, cy + 3, 34, 14);
+  // Pedestal: tall enough to read as chapel furniture, not a floor stone.
+  drawIsoPrism(ctx, cx, cy, 17, 10, 21, { top: stone, left: lo, right: PALETTE.void, outline: PALETTE.outline });
+  // A carved cross on the pedestal face, scratched through by the cult.
+  px(ctx, cx - 6, cy - 15, dust, 2, 7);
+  px(ctx, cx - 8, cy - 13, dust, 6, 2);
+  linePx(ctx, cx - 9, cy - 16, cx - 3, cy - 8, PALETTE.void, 1);
+  const by = cy - 21; // basin rim height
+  // Basin: wide bowl with a bright lit rim so the silhouette carries.
+  drawIsoDiamond(ctx, cx, by + 1, 34, 16, PALETTE.outline);
+  drawIsoDiamond(ctx, cx, by, 33, 15, lo);
+  drawIsoDiamond(ctx, cx, by - 1, 33, 15, stone);
+  drawIsoDiamond(ctx, cx - 1, by - 2, 30, 13, hi); // lit upper-left rim
+  drawIsoDiamond(ctx, cx, by - 1, 23, 10, lo); // inner basin
+  drawIsoDiamond(ctx, cx, by - 1, 16, 7, PALETTE.rustDark); // dried blood, not holy water
+  drawIsoDiamond(ctx, cx, by - 1, 9, 4, PALETTE.hostRed);
   // Chipped rim and a crack down the pedestal.
   px(ctx, cx + 11, by, PALETTE.void, 3, 2);
   px(ctx, cx - 13, by - 2, PALETTE.outline, 6, 2);
@@ -921,6 +1009,15 @@ export function drawQuarantineBarricade(ctx, cx, cy, seed) {
     px(ctx, sx, sy - 1, rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDust, 1, 1);
   }
   drawRubbleCluster(ctx, cx + 24, cy + 10, seed + 177, 2);
+  // On the road side, painted crude and large: the barred cross and an arrow
+  // pointing back the way you came. The barricade is polite exactly once.
+  px(ctx, cx - 10, cy - 16, PALETTE.hostRed, 2, 7);
+  px(ctx, cx - 13, cy - 14, PALETTE.hostRed, 8, 2);
+  linePx(ctx, cx - 14, cy - 9, cx - 5, cy - 17, PALETTE.rustMid, 1);
+  linePx(ctx, cx + 4, cy - 12, cx + 14, cy - 12, PALETTE.hostRed, 2); // the arrow shaft
+  px(ctx, cx + 12, cy - 15, PALETTE.hostRed, 2, 2); // its head
+  px(ctx, cx + 12, cy - 10, PALETTE.hostRed, 2, 2);
+
 }
 
 export function drawCampfire(ctx, cx, cy, seed, flicker = 0) {
@@ -950,15 +1047,26 @@ export function drawCampfire(ctx, cx, cy, seed, flicker = 0) {
   px(ctx, cx - 10, cy - 2, PALETTE.rustDark, 21, 6);
   px(ctx, cx - 7, cy, PALETTE.hostRed, 15, 4);
 
+  // Tapered ragged flame drawn row by row: tongues jag sideways and the
+  // column narrows to a tip, so it reads as fire, not a lit pillar.
   const flame = flicker ? PALETTE.flash : PALETTE.ember;
-  px(ctx, cx - 7, cy - 12, PALETTE.outline, 15, 16);
-  px(ctx, cx - 5, cy - 11, PALETTE.rustDark, 11, 14);
-  px(ctx, cx - 3, cy - 15, flame, 7, 15);
-  px(ctx, cx, cy - 19, PALETTE.hostGold, 3, 10);
-  px(ctx, cx - 5, cy - 8, PALETTE.hostRed, 3, 8);
+  for (let row = 0; row < 17; row += 1) {
+    const t = row / 16; // 0 at the coals, 1 at the tip
+    const w = Math.max(1, Math.round(12 * (1 - t * t)));
+    const jag = ((row * 5 + seed) % 3) - 1;
+    const x = cx - Math.floor(w / 2) + jag;
+    const y = cy + 2 - row;
+    px(ctx, x - 1, y, PALETTE.outline, w + 2, 1);
+    px(ctx, x, y, row < 4 ? PALETTE.rustDark : flame, w, 1);
+    if (w > 3) px(ctx, x + Math.floor(w / 3), y, PALETTE.hostGold, Math.max(1, Math.floor(w / 3)), 1);
+  }
+  // One side tongue licking off the main body.
+  px(ctx, cx + 5, cy - 9, PALETTE.outline, 3, 4);
+  px(ctx, cx + 5, cy - 8, flame, 2, 3);
+  px(ctx, cx - 5, cy - 4, PALETTE.hostRed, 3, 5); // deep red at the coal line
   if (flicker) {
-    px(ctx, cx + 3, cy - 20, PALETTE.flash, 2, 4);
-    px(ctx, cx - 1, cy - 17, PALETTE.flash, 1, 3);
+    px(ctx, cx + 3, cy - 18, PALETTE.flash, 2, 3);
+    px(ctx, cx - 2, cy - 20, PALETTE.flash, 1, 3);
   }
   for (let i = 0; i < 5; i += 1) {
     const sx = cx - 18 + Math.floor(rng() * 37);
@@ -1001,6 +1109,14 @@ export function drawChapelBanner(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 13, cy + 8, seed + 151, 2);
   drawNoisePixels(ctx, cx + 4, cy - 56, 17, 34, [PALETTE.rustDark, PALETTE.clothDark], 0.04, seed);
+  // The bottom corner was torn away and re-stitched with bright cord in
+  // uneven loops: somebody repaired the desecration banner with the same
+  // care they once gave the true one. Devotion survives its object.
+  px(ctx, cx + 4, cy - 12, PALETTE.clothTan, 1, 2);
+  px(ctx, cx + 6, cy - 10, PALETTE.clothTan, 1, 2);
+  px(ctx, cx + 8, cy - 12, PALETTE.clothTan, 1, 2);
+  linePx(ctx, cx + 3, cy - 10, cx + 9, cy - 11, PALETTE.stoneDust, 1); // the seam
+
 }
 
 export function drawBrokenBell(ctx, cx, cy, seed) {
@@ -1035,28 +1151,52 @@ export function drawBrokenBell(ctx, cx, cy, seed) {
   px(ctx, cx + 6, cy - 62, PALETTE.hostGold, 4, 3);
   px(ctx, cx + 9, cy - 61, PALETTE.void, 5, 2);
 
-  // Bell body: stepped rows, wider at the mouth, lit on the upper-left.
+  // Bell body: a true bell profile so it reads as cast metal, not cloth.
+  // Rounded shoulder, near-vertical waist, then a late sound-bow flare.
   for (let row = 0; row < 36; row += 1) {
     const t = row / 35;
-    const half = Math.round(12 + t * 19 + (row > 27 ? 3 : 0));
+    let half;
+    if (row < 7) half = Math.round(8 + Math.sqrt(row) * 2.6); // shoulder curve
+    else if (row < 27) half = Math.round(15 + (row - 7) * 0.1); // waist, almost straight
+    else half = Math.round(16 + (row - 27) * 0.9); // sound bow flares late
     const y = cy - 55 + row;
     px(ctx, cx - half - 1, y, PALETTE.outline, half * 2 + 2, 1);
     px(ctx, cx - half, y, row < 5 ? PALETTE.rustLight : PALETTE.rustMid, half, 1);
     px(ctx, cx, y, row < 6 ? PALETTE.rustMid : PALETTE.rustDark, half, 1);
-    if (row % 7 === 1) px(ctx, cx - half + 4, y, PALETTE.rustLight, 4, 1);
   }
-  px(ctx, cx - 32, cy - 18, PALETTE.outline, 65, 6);
-  px(ctx, cx - 29, cy - 17, PALETTE.rustLight, 24, 2);
-  px(ctx, cx - 3, cy - 17, PALETTE.rustDark, 31, 2);
-  px(ctx, cx - 13, cy - 16, PALETTE.void, 27, 3);
-  px(ctx, cx - 27, cy - 20, PALETTE.void, 8, 3);
-  px(ctx, cx + 18, cy - 18, PALETTE.outline, 10, 3);
-  px(ctx, cx + 19, cy - 19, PALETTE.rustMid, 6, 1);
+  // Specular streak down the lit flank: the long highlight is what makes the
+  // waist read as smooth cast bronze.
+  px(ctx, cx - 9, cy - 50, PALETTE.rustLight, 2, 28);
+  px(ctx, cx - 8, cy - 46, PALETTE.hostGold, 1, 6);
+  // Two cast ridge lines around the waist.
+  px(ctx, cx - 15, cy - 40, PALETTE.rustDark, 30, 1);
+  px(ctx, cx - 15, cy - 39, PALETTE.rustLight, 12, 1);
+  px(ctx, cx - 16, cy - 28, PALETTE.rustDark, 32, 1);
+  // Mouth: bright cast lip over a dark interior, the clapper long gone.
+  px(ctx, cx - 24, cy - 20, PALETTE.outline, 49, 5);
+  px(ctx, cx - 23, cy - 19, PALETTE.rustLight, 20, 2);
+  px(ctx, cx - 3, cy - 19, PALETTE.rustMid, 26, 2);
+  px(ctx, cx - 18, cy - 17, PALETTE.void, 37, 3); // hollow mouth
+  px(ctx, cx - 6, cy - 16, PALETTE.hostGold, 2, 1); // gold sheen inside the lip
 
   // Jagged crack, missing clapper, and wooden wedge jammed under the crown.
-  linePx(ctx, cx + 5, cy - 49, cx - 1, cy - 39, PALETTE.void, 2);
+  // The crack opens as it falls: a hairline at the shoulder becoming a black
+  // split at the sound bow, with one bitten-out chunk missing from the lip.
+  linePx(ctx, cx + 5, cy - 49, cx - 1, cy - 39, PALETTE.void, 1);
   linePx(ctx, cx - 1, cy - 39, cx + 8, cy - 31, PALETTE.void, 2);
-  linePx(ctx, cx + 8, cy - 31, cx + 2, cy - 22, PALETTE.void, 2);
+  linePx(ctx, cx + 8, cy - 31, cx + 2, cy - 22, PALETTE.void, 3);
+  px(ctx, cx + 1, cy - 21, PALETTE.void, 5, 3); // the bite out of the lip
+  px(ctx, cx + 1, cy - 18, PALETTE.rustLight, 5, 1); // raw bronze at the break
+  // The missing lip chunk lies where it fell, inner curve up.
+  px(ctx, cx + 26, cy + 2, PALETTE.outline, 8, 4);
+  px(ctx, cx + 27, cy + 2, PALETTE.rustMid, 6, 2);
+  px(ctx, cx + 28, cy + 2, PALETTE.rustLight, 3, 1);
+  px(ctx, cx + 27, cy + 4, PALETTE.void, 5, 1);
+  // Tally scratches on the waist: the congregation counted its ringings.
+  for (let t = 0; t < 5; t += 1) {
+    px(ctx, cx - 13 + t * 2, cy - 36, PALETTE.rustLight, 1, 3);
+  }
+  linePx(ctx, cx - 14, cy - 35, cx - 4, cy - 35, PALETTE.rustDark, 1);
   linePx(ctx, cx - 12, cy - 47, cx - 18, cy - 34, PALETTE.rustDark, 1);
   linePx(ctx, cx + 14, cy - 42, cx + 20, cy - 30, PALETTE.outline, 1);
   px(ctx, cx + 1, cy - 40, PALETTE.hostGold, 2, 1);
@@ -1072,6 +1212,14 @@ export function drawBrokenBell(ctx, cx, cy, seed) {
   }
   drawNoisePixels(ctx, cx - 30, cy - 56, 60, 39, [PALETTE.rustDark, PALETTE.stoneDark], 0.045, seed);
   drawRubbleCluster(ctx, cx + 29, cy + 9, seed + 241, 2);
+  // The clapper lies in the dirt where they threw it, its leather strap cut
+  // clean: they did not just crack the bell, they cut out its tongue.
+  px(ctx, cx - 34, cy + 6, PALETTE.outline, 8, 5);
+  px(ctx, cx - 33, cy + 6, PALETTE.rustMid, 6, 3); // the clapper ball
+  px(ctx, cx - 32, cy + 6, PALETTE.rustLight, 2, 1);
+  px(ctx, cx - 28, cy + 4, PALETTE.woodDark, 4, 2); // the cut strap
+  px(ctx, cx - 25, cy + 3, PALETTE.clothTan, 2, 1); // its clean-cut end
+
 }
 
 export function drawBellRope(ctx, cx, cy, seed, opts = {}) {
@@ -1112,16 +1260,20 @@ export function drawBellRope(ctx, cx, cy, seed, opts = {}) {
     px(ctx, ropeX - 3, cy - 20, PALETTE.hostGold, 5, 2);
     linePx(ctx, ropeX - 6, cy - 15, ropeX + 5, cy - 9, PALETTE.woodMid, 1);
   } else {
-    px(ctx, ropeX - 7, cy - 20, PALETTE.outline, 13, 7);
-    px(ctx, ropeX - 5, cy - 19, PALETTE.woodDark, 9, 4);
-    for (const fray of [-6, -2, 3, 6]) {
-      linePx(ctx, ropeX + fray, cy - 14, ropeX + fray + Math.sign(fray || 1) * 4, cy - 7, PALETTE.clothTan, 1);
-      px(ctx, ropeX + fray, cy - 14, PALETTE.woodDark, 1, 5);
-    }
-    for (const fray of [-8, 8]) {
-      linePx(ctx, ropeX + fray, cy - 18, ropeX + fray + Math.sign(fray) * 5, cy - 24, PALETTE.woodDark, 1);
-      px(ctx, ropeX + fray, cy - 19, PALETTE.clothTan, 1, 4);
-    }
+    // The cut rope ends in a hard whipping knot, and the slack below it lies
+    // in a limp coil on the stone. A frayed starburst reads as a claw.
+    px(ctx, ropeX - 3, cy - 18, PALETTE.outline, 7, 5);
+    px(ctx, ropeX - 2, cy - 17, PALETTE.woodDark, 5, 3);
+    px(ctx, ropeX - 1, cy - 16, PALETTE.clothTan, 2, 1);
+    // Coil: two flattened loops with a lit top edge.
+    drawIsoDiamond(ctx, ropeX + 1, cy - 8, 16, 7, PALETTE.outline);
+    drawIsoDiamond(ctx, ropeX + 1, cy - 9, 14, 6, PALETTE.woodDark);
+    drawIsoDiamond(ctx, ropeX + 1, cy - 9, 8, 3, PALETTE.outline);
+    px(ctx, ropeX - 4, cy - 11, PALETTE.clothTan, 4, 1);
+    px(ctx, ropeX + 3, cy - 8, PALETTE.clothTan, 3, 1);
+    // One loose strand escaping the coil.
+    linePx(ctx, ropeX + 7, cy - 7, ropeX + 12, cy - 4, PALETTE.woodDark, 1);
+    px(ctx, ropeX + 12, cy - 4, PALETTE.clothTan, 1, 1);
     px(ctx, ropeX - 10, cy - 87, PALETTE.woodDark, 21, 4);
     px(ctx, ropeX - 8, cy - 86, PALETTE.woodMid, 15, 1);
   }
@@ -1144,7 +1296,7 @@ export function drawCobweb(ctx, cx, cy, seed) {
   const ax = cx + sx * 18; // anchor in one corner of the tile
   const ay = cy + sy * 9;
   ctx.save();
-  ctx.globalAlpha = 0.62;
+  ctx.globalAlpha = 0.9;
   const base = Math.atan2(-sy, -sx); // fan toward the tile centre
   const tips = [];
   for (let i = 0; i < 5; i += 1) {
@@ -1166,6 +1318,12 @@ export function drawCobweb(ctx, cx, cy, seed) {
     const p = tips[Math.floor(rng() * tips.length)];
     px(ctx, ax + (p[0] - ax) * t, ay + (p[1] - ay) * t, i % 2 ? PALETTE.hostBone : PALETTE.stoneDust, 1, 1);
   }
+  // A wrapped husk and dust caught in the strands give the web a read
+  // beyond thin lines: something died here and hangs in it.
+  px(ctx, Math.round(ax - sx * 8), Math.round(ay - sy * 4), PALETTE.outline, 4, 3);
+  px(ctx, Math.round(ax - sx * 8) + 1, Math.round(ay - sy * 4), PALETTE.hostBone, 2, 2);
+  px(ctx, Math.round(ax - sx * 13), Math.round(ay - sy * 6), col, 2, 1);
+  px(ctx, Math.round(ax - sx * 5), Math.round(ay - sy * 8), col, 2, 1);
   ctx.restore();
   drawNoisePixels(ctx, cx - 21, cy - 10, 42, 20, [PALETTE.stoneDark, PALETTE.stoneDust], 0.025, seed + 97);
   ctx.save();

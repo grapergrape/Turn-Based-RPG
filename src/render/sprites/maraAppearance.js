@@ -125,22 +125,27 @@ export const PLAYER_HAIR_STYLE_IDS = Object.freeze(['cropped', 'loose', 'shaved'
 export const PLAYER_FACIAL_HAIR_IDS = Object.freeze(['none', 'stubble', 'beard']);
 
 const PLAYER_GENDER_MODELS = Object.freeze({
-  female: Object.freeze({ bodyFrame: 'feminine', anatomy: 'vulva', breastSize: 5, penisSize: 0, shoulders: 15, waist: 9, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
-  male: Object.freeze({ bodyFrame: 'masculine', anatomy: 'penis', breastSize: 1, penisSize: 5, shoulders: 17, waist: 10, torsoLength: 17, legLength: 24, legSize: 2, armSize: 2 }),
-  androgynous: Object.freeze({ bodyFrame: 'androgynous', anatomy: 'smooth', breastSize: 2, penisSize: 0, shoulders: 15, waist: 8, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
+  female: Object.freeze({ bodyFrame: 'feminine', anatomy: 'vulva', breastSize: 5, penisSize: 0, shoulders: 14, waist: 8, hipFlare: 3, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
+  male: Object.freeze({ bodyFrame: 'masculine', anatomy: 'penis', breastSize: 1, penisSize: 5, shoulders: 18, waist: 11, hipFlare: 0, torsoLength: 17, legLength: 24, legSize: 2, armSize: 3 }),
+  androgynous: Object.freeze({ bodyFrame: 'androgynous', anatomy: 'smooth', breastSize: 2, penisSize: 0, shoulders: 15, waist: 9, hipFlare: 1, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
 });
 
+// Silhouette per frame: feminine narrows the shoulders and flares the hips,
+// masculine broadens the shoulders and thickens the arms, androgynous sits
+// between both. These must stay in step with PLAYER_GENDER_MODELS above.
 const MARA_BODY_FRAMES = Object.freeze({
-  feminine: Object.freeze({ shoulders: 15, waist: 9, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
-  masculine: Object.freeze({ shoulders: 17, waist: 10, torsoLength: 17, legLength: 24, legSize: 2, armSize: 2 }),
-  androgynous: Object.freeze({ shoulders: 15, waist: 8, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
+  feminine: Object.freeze({ shoulders: 14, waist: 8, hipFlare: 3, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 }),
+  masculine: Object.freeze({ shoulders: 18, waist: 11, hipFlare: 0, torsoLength: 17, legLength: 24, legSize: 2, armSize: 3 }),
+  androgynous: Object.freeze({ shoulders: 15, waist: 9, hipFlare: 1, torsoLength: 16, legLength: 24, legSize: 2, armSize: 2 })
 });
 
+// legSize/armSize are deltas on top of the gender frame's limb thickness,
+// so a buff male stays thicker-armed than a buff female.
 const BODY_TYPE_OVERLAYS = Object.freeze({
-  skinny: Object.freeze({ shoulders: -2, waist: -2, torsoLength: 0, legLength: 1, legSize: 1, armSize: 1, coatTailMin: 5 }),
+  skinny: Object.freeze({ shoulders: -2, waist: -2, torsoLength: 0, legLength: 1, legSize: -1, armSize: -1, coatTailMin: 5 }),
   medium: Object.freeze({}),
-  fat: Object.freeze({ shoulders: 1, waist: 4, torsoLength: 1, legLength: -2, legSize: 2, armSize: 2, coatTailMin: 8 }),
-  buff: Object.freeze({ shoulders: 4, waist: 2, torsoLength: 1, legLength: 0, legSize: 2, armSize: 3, coatTailMin: 7 })
+  fat: Object.freeze({ shoulders: 1, waist: 4, torsoLength: 1, legLength: -2, legSize: 0, armSize: 0, coatTailMin: 8 }),
+  buff: Object.freeze({ shoulders: 4, waist: 2, torsoLength: 1, legLength: 0, legSize: 0, armSize: 1, coatTailMin: 7 })
 });
 
 const SKIN_TONE_RAMPS = Object.freeze({
@@ -358,8 +363,8 @@ function applyBodyType(style, bodyType) {
   for (const key of ['shoulders', 'waist', 'torsoLength', 'legLength']) {
     if (typeof overlay[key] === 'number') style[key] = Math.max(1, style[key] + overlay[key]);
   }
-  if (typeof overlay.legSize === 'number') style.legSize = Math.max(1, overlay.legSize);
-  if (typeof overlay.armSize === 'number') style.armSize = Math.max(1, overlay.armSize);
+  if (typeof overlay.legSize === 'number') style.legSize = Math.max(1, (style.legSize ?? 2) + overlay.legSize);
+  if (typeof overlay.armSize === 'number') style.armSize = Math.max(1, (style.armSize ?? 2) + overlay.armSize);
 }
 
 function applySkinTone(style, skinTone) {

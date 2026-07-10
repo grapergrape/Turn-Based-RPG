@@ -158,12 +158,15 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
   const seed = hash2D(gx + 701, gy + 719);
   const rng = rngFrom(seed);
   const d = diamond(cx, cy, TILE_WIDTH - 10, TILE_HEIGHT - 5);
-  if (!['ash-dirt', 'wheat-field', 'furrow-field', 'mud-track', 'worn-canvas', 'cave-river'].includes(style)) {
+  // Chips on every tile read as wallpaper; less than half the tiles carry
+  // them so the quiet ground lets the marked tiles speak.
+  if (!['ash-dirt', 'wheat-field', 'furrow-field', 'mud-track', 'worn-canvas', 'cave-river'].includes(style) && (seed % 20) < 9) {
     drawFloorChipRun(ctx, cx, cy, seed, PALETTE.stoneDust, PALETTE.stoneDark);
   }
 
   switch (style) {
     case 'stone': {
+      if ((seed % 20) >= 9) break; // quiet tiles between events
       const a = mixPoint(d.left, d.bottom, 0.35 + rng() * 0.18);
       const b = mixPoint(d.top, d.right, 0.58 + rng() * 0.17);
       linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
@@ -174,6 +177,7 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'ash-dirt': {
+      if ((seed % 20) >= 11) break;
       for (const off of [-5, 5]) {
         linePx(ctx, cx - 19, cy + off * 0.35, cx + 16, cy - 3 + off * 0.35, PALETTE.outline, 1);
         linePx(ctx, cx - 16, cy - 1 + off * 0.35, cx + 13, cy - 4 + off * 0.35, PALETTE.stoneMid, 1);
@@ -196,6 +200,7 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'road-shoulder': {
+      if ((seed % 20) >= 12) break;
       const a = mixPoint(d.left, d.top, 0.18);
       const b = mixPoint(d.left, d.bottom, 0.78);
       linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
@@ -230,6 +235,7 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'forest-floor': {
+      if ((seed % 20) >= 10) break;
       drawRootThreads(ctx, cx, cy, seed + 19);
       px(ctx, cx - 5, cy - 4, PALETTE.outline, 11, 6);
       px(ctx, cx - 4, cy - 5, PALETTE.woodDark, 8, 4);
@@ -242,7 +248,9 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       const topB = mixPoint(d.top, d.right, 0.64);
       const botA = mixPoint(d.left, d.bottom, 0.36);
       const botB = mixPoint(d.bottom, d.right, 0.66);
-      linePx(ctx, topA[0], topA[1], topB[0], topB[1], PALETTE.hostBone, 1);
+      // Burial seams read as cold packed edges, not glowing marks: keep them
+      // one step above the soil, never bone-white.
+      linePx(ctx, topA[0], topA[1], topB[0], topB[1], PALETTE.stoneDust, 1);
       linePx(ctx, botA[0], botA[1], botB[0], botB[1], PALETTE.outline, 1);
       drawFloorTallyScratches(ctx, cx, cy, seed + 11, PALETTE.stoneDust);
       break;
@@ -259,6 +267,7 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'packed-earth': {
+      if ((seed % 20) >= 8) break; // peg holes are events, not wallpaper
       for (const [dx, dy] of [[-18, -3], [-2, -7], [15, 0]]) {
         px(ctx, cx + dx - 2, cy + dy - 2, PALETTE.outline, 6, 5);
         px(ctx, cx + dx - 1, cy + dy - 1, PALETTE.rustDark, 4, 3);
@@ -269,6 +278,7 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'mud-track': {
+      if ((seed % 20) >= 8) break; // the base cell already carries the ruts
       for (const t of [0.34, 0.58]) {
         const a = mixPoint(d.left, d.top, t);
         const b = mixPoint(d.bottom, d.right, Math.min(0.9, t + 0.18));
@@ -279,6 +289,7 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'ash-gravel': {
+      if ((seed % 20) >= 13) break;
       for (let i = 0; i < 12; i += 1) {
         const x = cx - 27 + Math.floor(rng() * 55);
         const y = cy - 10 + Math.floor(rng() * 20);
@@ -305,6 +316,7 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'cave-stone': {
+      if ((seed % 20) >= 13) break;
       for (const t of [0.24, 0.54, 0.8]) {
         const a = mixPoint(d.left, d.bottom, t);
         const b = mixPoint(d.top, d.right, Math.min(0.92, t + 0.08));
@@ -728,12 +740,16 @@ function drawMudTrackFloorCell(ctx, cx, cy, gx, gy) {
   ctx.restore();
 
   const d = diamond(cx, cy, TILE_WIDTH - 10, TILE_HEIGHT - 5);
+  // The dark rut stays continuous tile to tile; the pale wet glint on its lip
+  // only catches on some tiles, or the whole field turns to scratch noise.
   for (const t of [0.3, 0.56]) {
     const wobble = Math.floor(r() * 3) - 1;
     const a = mixPoint(d.left, d.top, t);
     const b = mixPoint(d.bottom, d.right, Math.min(0.86, t + 0.18));
     linePx(ctx, a[0], a[1] + wobble, b[0], b[1] + wobble, PALETTE.outline, 1);
-    linePx(ctx, a[0] + 1, a[1] + wobble - 1, b[0] + 1, b[1] + wobble - 1, PALETTE.woodMid, 1);
+    if ((seed + Math.round(t * 10)) % 3 === 0) {
+      linePx(ctx, a[0] + 1, a[1] + wobble - 1, b[0] + 1, b[1] + wobble - 1, PALETTE.woodMid, 1);
+    }
   }
 
   for (let i = 0; i < 5; i += 1) {
@@ -914,21 +930,23 @@ function drawCaveRiverFloorCell(ctx, cx, cy, gx, gy) {
   drawIsoDiamond(ctx, cx + 1, cy - 1, TILE_WIDTH - 18, TILE_HEIGHT - 9, PALETTE.stoneDark);
   drawIsoDiamond(ctx, cx - 1, cy, TILE_WIDTH - 25, TILE_HEIGHT - 12, PALETTE.clothBlue);
 
+  // Water in a lightless cave: near-black blue with a few dim current lines.
+  // Bright banding makes the river shout over every prop standing in it.
   const d = diamond(cx, cy, TILE_WIDTH - 8, TILE_HEIGHT - 4);
-  for (let i = 0; i < 7; i += 1) {
-    const t = (i + 1) / 8;
+  for (let i = 0; i < 4; i += 1) {
+    const t = (i + 1) / 5;
     const wobble = Math.floor(r() * 5) - 2;
     const a = mixPoint(d.left, d.top, Math.max(0.08, t - 0.1));
     const b = mixPoint(d.bottom, d.right, Math.min(0.92, t + 0.1));
-    const color = i % 3 === 0 ? PALETTE.hostBone : i % 2 === 0 ? PALETTE.clothBlue : PALETTE.stoneDust;
-    linePx(ctx, a[0] + wobble, a[1] + 1, b[0] + wobble, b[1] - 1, color, i % 3 === 0 ? 1 : 2);
+    const color = i % 3 === 0 ? PALETTE.stoneDust : PALETTE.clothBlue;
+    linePx(ctx, a[0] + wobble, a[1] + 1, b[0] + wobble, b[1] - 1, color, 1);
   }
 
-  for (let i = 0; i < 13; i += 1) {
+  for (let i = 0; i < 6; i += 1) {
     const x = cx - 25 + Math.floor(r() * 51);
     const y = cy - 10 + Math.floor(r() * 20);
-    const color = r() < 0.52 ? PALETTE.hostBone : PALETTE.stoneDust;
-    px(ctx, x, y, color, 1 + Math.floor(r() * 4), 1);
+    const color = r() < 0.25 ? PALETTE.hostBone : PALETTE.stoneDust;
+    px(ctx, x, y, color, 1 + Math.floor(r() * 2), 1);
   }
 
   if ((gx + gy) % 2 === 0) {
@@ -1010,14 +1028,17 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
       drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'road-shoulder');
       return;
     case 'wheat-field':
+      // A dead field under ashfall: pale grey-straw ground, not saturated
+      // gold. The only gold left is the odd Host-touched grain head drawn by
+      // the story marks.
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
-        base: PALETTE.hostGold,
+        base: PALETTE.stoneDust,
         alt: PALETTE.woodLight,
         hi: PALETTE.clothTan,
         lo: PALETTE.woodDark,
         row: PALETTE.woodDark,
         stalk: PALETTE.clothTan
-      }, { noise: 0.022, rows: true, rowStep: 3, rowAlpha: 0.13, stalks: true, patchRate: 0.18, patchAlpha: 0.05, altModulo: 8, crackEvery: 23 });
+      }, { noise: 0.028, rows: true, rowStep: 3, rowAlpha: 0.18, stalks: true, patchRate: 0.22, patchAlpha: 0.07, altModulo: 8, crackEvery: 23 });
       drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'wheat-field');
       return;
     case 'furrow-field':

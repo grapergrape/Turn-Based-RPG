@@ -214,7 +214,9 @@ function drawHumanHair(ctx, x, y, meta, hit, style, crown, crownHi) {
 }
 
 function drawFacialHair(ctx, x, y, meta, hit, style) {
-  if (!style.bareHead || meta.back || !style.facialHair || style.facialHair === 'none') return;
+  // Beards stay visible with the hood up: the cowl frames the face, it does
+  // not erase it. Only back views hide the jaw.
+  if (meta.back || !style.facialHair || style.facialHair === 'none') return;
   const hair = style.hair;
   const side = directionSide(meta);
   if (meta.view === 'side') {
@@ -300,7 +302,19 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
     px(ctx, x + (side > 0 ? 4 : -1) + hit, y + 4, skin.mid, 2, 2);
     px(ctx, x + (side > 0 ? 2 : 3) + hit, y + 4, skin.dk, 2, 1);
     drawFacialHair(ctx, x, y, meta, hit, style);
-    if (bare) px(ctx, x + hit, y + 2, skin.hi, 2, 1); // lit temple
+    if (bare) {
+      px(ctx, x + hit, y + 2, skin.hi, 2, 1); // lit temple
+    } else {
+      // Hood worn open in profile: the front crown keeps real hair (scalp
+      // when shaved) and loose locks spill down the nape.
+      if (style.hairStyle === 'shaved') {
+        px(ctx, x + (side > 0 ? 0 : -2) + hit, y - 1, skin.mid, 3, 2);
+      } else {
+        px(ctx, x + (side > 0 ? 0 : -2) + hit, y - 1, style.hair, 3, 2);
+        px(ctx, x + (side > 0 ? 1 : -1) + hit, y - 1, style.hairHi ?? style.hair, 1, 1);
+      }
+      if (style.hairStyle === 'loose') px(ctx, x - side * 4 + hit, y + 4, style.hair, 1, 5);
+    }
     return;
   }
 
@@ -308,20 +322,42 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
   drawHumanHair(ctx, x, y, meta, hit, { ...style, hairStyle, bareHead: bare }, crown, crownHi);
   if (meta.back) {
     px(ctx, x - 3 + hit, y + 2, crown, 6, 6);
+    // Loose hair shows from behind whether the hood is up or down.
+    if (style.hairStyle === 'loose') px(ctx, x - 2 + hit, y + 8, style.hair, 5, 2);
     return;
   }
-  px(ctx, x - 2 + hit, y + 4, skin.dk, 2, 1);
-  px(ctx, x + 1 + hit, y + 4, skin.dk, 1, 1);
-  px(ctx, x + hit, y + 6, skin.lo, 2, 1);
-  drawFacialHair(ctx, x, y, meta, hit, style);
   if (bare) {
     // A brighter brow and cheek so the open face reads as skin, not shadow.
     px(ctx, x - 1 + hit, y + 2, skin.hi, 3, 1);
     px(ctx, x - 2 + hit, y + 3, skin.mid, 5, 1);
   } else {
-    // Hood up: a narrow brow-guard shadow keeps the face in cowl shadow.
-    px(ctx, x - 2 + hit, y + 3, PALETTE.void, 5, 1);
+    // Hood worn open: the cowl rings the skull while the front crown keeps
+    // real hair (scalp when shaved) and the face stays lit, so hair colour,
+    // hairstyle, and skin tone all survive the raised hood.
+    if (style.hairStyle === 'shaved') {
+      px(ctx, x - 2 + hit, y - 1, skin.mid, 5, 2);
+      px(ctx, x - 1 + hit, y - 1, skin.hi, 2, 1);
+    } else {
+      px(ctx, x - 2 + hit, y - 1, style.hair, 5, 3);
+      px(ctx, x - 1 + hit, y - 1, style.hairHi ?? style.hair, 2, 1);
+    }
+    px(ctx, x - 1 + hit, y + 2, skin.hi, 2, 1); // lit brow under the hairline
+    if (style.hairStyle === 'loose') {
+      // Loose hair escapes the cowl and hangs at both jaw lines.
+      px(ctx, x - 4 + hit, y + 3, style.hair, 1, 5);
+      px(ctx, x + 3 + hit, y + 3, style.hair, 1, 5 + (side > 0 ? 1 : 0));
+    }
   }
+  // The face draws last so no brow or cowl row buries it. It has to survive
+  // being blown up 2.4x in the dialogue portrait plate: a browline shadow, a
+  // nose hint, and one lit cheekbone turn two dark pixels into a face.
+  px(ctx, x - 2 + hit, y + 3, skin.lo, 4, 1); // browline
+  px(ctx, x - 2 + hit, y + 4, skin.dk, 2, 1);
+  px(ctx, x + 1 + hit, y + 4, skin.dk, 1, 1);
+  px(ctx, x + hit, y + 5, skin.lo, 1, 1); // the nose
+  px(ctx, x - 2 + hit, y + 5, skin.hi, 1, 1); // lit cheekbone
+  px(ctx, x + hit, y + 6, skin.lo, 2, 1);
+  drawFacialHair(ctx, x, y, meta, hit, style);
 }
 
 export function drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style) {
@@ -330,18 +366,28 @@ export function drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style) {
   const side = directionSide(meta);
   const shoulderW = Math.max(7, Math.round(style.shoulders * scale));
   const waistW = Math.max(6, Math.round(style.waist * scale));
+  const flare = Math.max(0, Math.round((style.hipFlare ?? 0) * scale));
+  const hipW = waistW + flare;
   const lean = (pose.lean ?? 0) * side + Math.round(meta.bodyTurn * 1.2);
   const bodyCx = cx + lean;
   const bodyH = hipY - shoulderY;
 
-  taperedSpan(ctx, bodyCx, shoulderY, shoulderW, waistW, bodyH, coat, lean * 0.16, pose.cloth ?? 0);
-  px(ctx, bodyCx - Math.floor(waistW / 2), hipY - 1, style.belt, waistW, 2);
+  if (flare > 0 && bodyH > 6) {
+    // Feminine frames: taper to the waist, then widen again into the hips.
+    const flareH = Math.min(6, Math.max(3, Math.floor(bodyH * 0.32)));
+    const upperH = bodyH - flareH;
+    taperedSpan(ctx, bodyCx, shoulderY, shoulderW, waistW, upperH + 1, coat, lean * 0.16, pose.cloth ?? 0);
+    taperedSpan(ctx, bodyCx, shoulderY + upperH, waistW, hipW, flareH, coat, lean * 0.16, pose.cloth ?? 0);
+  } else {
+    taperedSpan(ctx, bodyCx, shoulderY, shoulderW, waistW, bodyH, coat, lean * 0.16, pose.cloth ?? 0);
+  }
+  px(ctx, bodyCx - Math.floor(hipW / 2), hipY - 1, style.belt, hipW, 2);
 
   if (style.coatTail) {
     const tailY = hipY + 1;
     const tailH = style.coatTail;
     const split = meta.view === 'side' ? 0 : 2;
-    taperedSpan(ctx, bodyCx - split, tailY, Math.max(4, waistW - 2), Math.max(3, waistW - 5), tailH, coat, -0.35, pose.cloth ?? 0);
+    taperedSpan(ctx, bodyCx - split, tailY, Math.max(4, hipW - 2), Math.max(3, hipW - 5), tailH, coat, -0.35, pose.cloth ?? 0);
     px(ctx, bodyCx, tailY + 2, coat.dk, 1, Math.max(4, tailH - 3));
   }
 
@@ -350,7 +396,45 @@ export function drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style) {
   if (!style.anatomyVisible) {
     dither(ctx, bodyCx - Math.floor(shoulderW / 2) + 2, shoulderY + 3, Math.max(4, shoulderW - 4), bodyH - 4, coat.lo, pose.cloth ?? 0);
   }
-  return { bodyCx, shoulderW, waistW, lean };
+  return { bodyCx, shoulderW, waistW, hipW, lean };
+}
+
+function drawVest(ctx, torso, shoulderY, hipY, meta, style) {
+  // Equipped body armor was styled but never painted; a vest has to read as a
+  // separate layer strapped over the coat from every facing.
+  if (!style.vest) return;
+  const v = style.vest;
+  const side = directionSide(meta);
+  const bodyH = hipY - shoulderY;
+  const vestTop = shoulderY + 2;
+  const vestH = Math.max(4, bodyH - 6);
+  const vestW = Math.max(4, (torso.waistW ?? 8) - (meta.view === 'side' ? 2 : 0));
+  const vx = torso.bodyCx - Math.floor(vestW / 2) + Math.round(meta.bodyTurn);
+  px(ctx, vx, vestTop, v.mid, vestW, vestH);
+  px(ctx, vx, vestTop, v.hi, Math.max(2, vestW - 1), 1);
+  px(ctx, vx + vestW - 1, vestTop + 1, v.lo, 1, vestH - 1);
+  px(ctx, vx, vestTop + vestH - 1, v.lo, vestW, 1);
+  if (!meta.back && v.plate) {
+    // One stitched-on plate, off centre, so the armor stays field-made.
+    const plateX = vx + (side >= 0 ? 1 : vestW - 3);
+    px(ctx, plateX, vestTop + 2, v.plate, 2, 3);
+    px(ctx, plateX, vestTop + 5, v.lo, 2, 1);
+  }
+}
+
+function drawKitOverlay(ctx, torso, shoulderY, hipY, meta, style) {
+  // Harness strap and trinket sit on top of coat, vest, and bust so the
+  // equipped kit stays readable.
+  const side = directionSide(meta);
+  if (style.fieldHarness && !meta.back) {
+    const strapTopX = torso.bodyCx + side * (Math.floor((torso.shoulderW ?? 10) / 2) - 2);
+    const strapBotX = torso.bodyCx - side * (Math.floor((torso.waistW ?? 8) / 2) - 1);
+    linePx(ctx, strapTopX, shoulderY + 1, strapBotX, hipY - 2, PALETTE.rustDark, 1);
+    px(ctx, torso.bodyCx, shoulderY + Math.floor((hipY - shoulderY) / 2), PALETTE.stoneLight, 1, 1);
+  }
+  if (style.pendant && !meta.back) {
+    px(ctx, torso.bodyCx + side, shoulderY + 3, style.pendant, 1, 2);
+  }
 }
 
 function bodyFeatureSize(value, fallback = 0) {
@@ -359,9 +443,46 @@ function bodyFeatureSize(value, fallback = 0) {
 }
 
 export function drawAdultChest(ctx, torso, shoulderY, meta, pose, style) {
-  if (!style.anatomyVisible || meta.back) return;
+  if (meta.back) return;
   const size = bodyFeatureSize(style.breastSize);
   if (size <= 0) return;
+  if (!style.anatomyVisible) {
+    // Clothed: the bust still shapes the outer layer. A lit shelf with a
+    // shadow row under it, in the colours of whatever sits on top (vest or
+    // coat), so the build chosen at creation reads through field kit.
+    if (size < 2) return;
+    const over = style.vest
+      ? { hi: style.vest.hi, mid: style.vest.mid, dk: style.vest.lo }
+      : (() => { const coat = ramp(style, 'coat'); return { hi: coat.hi, mid: coat.mid, dk: coat.dk }; })();
+    const side = directionSide(meta);
+    const chestY = shoulderY + 5 + Math.floor((pose.bob ?? 0) * 0.5);
+    if (meta.view === 'side') {
+      // In profile the bust pushes the chest line forward past the layer.
+      const fx = torso.bodyCx + side * Math.max(2, Math.round((torso.waistW ?? 8) * 0.35));
+      const reach = size >= 8 ? 2 : 1;
+      px(ctx, fx, chestY, over.hi, 2, 1);
+      px(ctx, fx + side, chestY, over.mid, reach, size >= 5 ? 3 : 2);
+      px(ctx, fx + side * (reach + 1), chestY + 1, over.dk, 1, size >= 5 ? 2 : 1);
+      px(ctx, fx, chestY + (size >= 5 ? 3 : 2), over.dk, 2, 1);
+      return;
+    }
+    // The bust widens the outer layer's silhouette; a silhouette change
+    // survives gameplay distance where interior shading disappears.
+    const bustW = size >= 8 ? 8 : size >= 5 ? 6 : 4;
+    const bulge = size >= 8 ? 2 : size >= 5 ? 1 : 0;
+    const rows = size >= 5 ? 3 : 2;
+    const bx = torso.bodyCx - Math.floor(bustW / 2);
+    if (bulge > 0) {
+      px(ctx, bx - bulge, chestY, over.mid, bulge, rows);
+      px(ctx, bx - bulge, chestY, over.hi, 1, rows - 1);
+      px(ctx, bx + bustW, chestY, over.mid, bulge, rows);
+      px(ctx, bx + bustW + bulge - 1, chestY, over.dk, 1, rows);
+    }
+    px(ctx, bx + 1, chestY, over.hi, bustW - 2, 1);
+    px(ctx, bx, chestY + rows - 1, over.dk, bustW, 1);
+    if (size >= 5) px(ctx, torso.bodyCx, chestY, over.dk, 1, 2);
+    return;
+  }
   const skin = ramp(style, 'skin');
   const side = directionSide(meta);
   const chestY = shoulderY + 6 + Math.floor((pose.bob ?? 0) * 0.5);
@@ -396,55 +517,70 @@ export function drawAdultAnatomy(ctx, torso, hipY, meta, pose, style) {
   const skin = ramp(style, 'skin');
   const side = directionSide(meta);
   const bob = pose.bob ?? 0;
+  const anatomy = style.anatomy;
   const x = torso.bodyCx + Math.round(meta.bodyTurn * 0.5);
   const y = hipY + 1 + Math.floor(bob * 0.5);
-  const penisSize = bodyFeatureSize(style.penisSize, style.anatomy === 'penis' || style.anatomy === 'intersex' ? 5 : 0);
-  const drawPenis = penisSize > 0;
-  if (style.anatomy === 'smooth' && !drawPenis) return;
-  const pelvisW = meta.view === 'side' ? 4 : Math.max(4, Math.round((torso.waistW ?? 8) * 0.58));
+  const penisSize = bodyFeatureSize(style.penisSize, anatomy === 'penis' || anatomy === 'intersex' ? 5 : 0);
+  const hasPenis = anatomy === 'penis' || anatomy === 'intersex';
+
+  // Pelvis and groin shading shared by every anatomy.
+  const pelvisW = meta.view === 'side' ? 4 : Math.max(4, Math.round((torso.hipW ?? torso.waistW ?? 8) * 0.58));
   const pelvisX = x - Math.floor(pelvisW / 2);
   px(ctx, pelvisX, hipY - 1, skin.mid, pelvisW, 5);
   px(ctx, pelvisX, hipY - 1, skin.hi, Math.max(2, pelvisW - 1), 1);
   px(ctx, pelvisX + pelvisW - 1, hipY, skin.lo, 1, 4);
   px(ctx, pelvisX + 1, hipY + 4, skin.dk, Math.max(2, pelvisW - 2), 1);
 
-  if (style.anatomy === 'vulva' && !drawPenis) {
+  if (anatomy === 'smooth') return;
+
+  if (anatomy === 'vulva') {
+    // A shaded mons and a short vertical cleft. Read, not shouted.
     if (meta.view === 'side') {
+      px(ctx, x + side, y + 1, skin.lo, 2, 1);
       px(ctx, x + side, y + 2, skin.dk, 1, 1);
-      px(ctx, x, y + 1, skin.lo, 1, 1);
       return;
     }
-    px(ctx, x, y + 1, skin.lo, 1, 1);
-    px(ctx, x, y + 2, skin.dk, 1, 2);
+    px(ctx, x - 1, y, skin.lo, 3, 1); // mons shadow
+    px(ctx, x, y + 1, skin.dk, 1, 2); // cleft
     return;
   }
 
-  if (style.anatomy === 'intersex') {
-    const length = penisSize >= 8 ? 3 : penisSize >= 4 ? 2 : 1;
-    if (meta.view === 'side') {
-      px(ctx, x + side, y, skin.lo, length + 1, 1);
-      px(ctx, x + side, y + 1, skin.mid, length, 1);
-      px(ctx, x + side * Math.max(1, length), y + 2, skin.dk, 1, 1);
-      return;
-    }
-    px(ctx, x - 1, y, skin.lo, Math.max(2, length + 1), 1);
-    px(ctx, x, y + 1, skin.mid, Math.max(1, length), 1);
-    px(ctx, x, y + 2, skin.dk, 1, Math.max(1, Math.min(2, length)));
-    px(ctx, x - 1, y + 2, skin.dk, 1, 1);
-    return;
-  }
+  if (hasPenis) {
+    // A flaccid set built like the real thing at pixel scale: the scrotum sits
+    // behind and below, the shaft hangs over it and ends in a darker glans.
+    // The groin scale drives the hang length; zero leaves only the scrotum.
+    const len = penisSize >= 8 ? 5 : penisSize >= 6 ? 4 : penisSize >= 3 ? 3 : penisSize >= 1 ? 2 : 0;
+    const sackW = penisSize >= 6 ? 4 : 3;
+    const shaftW = penisSize >= 6 ? 2 : 1;
 
-  if (style.anatomy === 'penis' || drawPenis) {
-    const width = penisSize >= 8 ? 4 : penisSize >= 4 ? 3 : 2;
-    const length = penisSize >= 8 ? 4 : penisSize >= 4 ? 3 : 2;
     if (meta.view === 'side') {
-      px(ctx, x + side, y, skin.lo, length, 2);
-      px(ctx, x + side * Math.max(1, length - 1), y + 1, skin.dk, 2, 1);
+      // Scrotum tucked at the base, shaft dropping forward and down in profile.
+      px(ctx, x - side, y + 1, skin.mid, 2, 2);
+      px(ctx, x - side, y + 2, skin.lo, 2, 1);
+      if (len > 0) {
+        px(ctx, x + side, y, skin.mid, 2, 1); // root
+        px(ctx, x + side * 2, y + 1, skin.mid, 1, Math.max(1, len - 2)); // hang
+        px(ctx, x + side * 2, y + Math.max(1, len - 1), skin.dk, 1, 1); // glans
+      }
+      if (anatomy === 'intersex') px(ctx, x, y + 3, skin.dk, 1, 1);
       return;
     }
-    px(ctx, x - Math.floor(width / 2), y, skin.lo, width, 2);
-    px(ctx, x, y + 2, skin.lo, Math.max(1, Math.floor(width / 2)), length - 1);
-    px(ctx, x + Math.floor(width / 2) - 1, y + length, skin.dk, 1, 1);
+
+    // Front and three-quarter views. Scrotum first: two lobes with a centre
+    // seam, lit upper-left, shaded along the bottom.
+    const sackX = x - Math.floor(sackW / 2);
+    px(ctx, sackX, y + 1, skin.mid, sackW, 2);
+    px(ctx, sackX, y + 2, skin.lo, sackW, 1);
+    px(ctx, sackX, y + 1, skin.hi, 1, 1);
+    px(ctx, x, y + 1, skin.dk, 1, 2); // seam between the lobes
+    if (len > 0) {
+      // Shaft hanging over the scrotum, a lit left edge, a darker glans tip.
+      px(ctx, x - Math.floor(shaftW / 2), y, skin.mid, shaftW, len);
+      px(ctx, x - Math.floor(shaftW / 2), y, skin.hi, 1, Math.max(1, len - 2));
+      px(ctx, x - Math.floor(shaftW / 2) + shaftW - 1, y + 1, skin.lo, 1, Math.max(1, len - 1));
+      px(ctx, x - Math.floor(shaftW / 2), y + len, skin.dk, shaftW, 1); // glans
+    }
+    if (anatomy === 'intersex') px(ctx, x, y + 3, skin.dk, 1, 1); // cleft below the sack
   }
 }
 
@@ -498,7 +634,9 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
   drawBoot(ctx, nearLeg.foot.x, nearLeg.foot.y, side, style, false);
 
   const torso = drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style);
+  drawVest(ctx, torso, shoulderY, hipY, meta, style);
   drawAdultChest(ctx, torso, shoulderY, meta, pose, style);
+  drawKitOverlay(ctx, torso, shoulderY, hipY, meta, style);
   drawAdultAnatomy(ctx, torso, hipY, meta, pose, style);
   const shoulderHalf = Math.floor(torso.shoulderW / 2);
   const farShoulder = { x: torso.bodyCx - shoulderHalf, y: shoulderY + 3 };

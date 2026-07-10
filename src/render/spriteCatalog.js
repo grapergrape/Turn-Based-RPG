@@ -93,8 +93,8 @@ const DISPLAY_NAMES = {
   'calcified-crossroad-brother': 'Calcified Sign Brother',
   'calcified-scarecrow-brother': 'Calcified Field Brother',
   'graveyard-wall': 'Graveyard Wall',
-  'calcified-grave-plot': 'Calcified Grave',
-  'calcified-headstone': 'Headstone',
+  'calcified-grave-plot': 'Empty Grave',
+  'calcified-headstone': 'Broken Calcified Marker',
   'graveyard-tomb-slab': 'Tomb Slab',
   'graveyard-catacomb-mouth': 'Catacomb Mouth',
   'graveyard-bone-marker': 'Bone Marker',
@@ -415,6 +415,10 @@ export const SPRITE_CATALOG = {
       P.drawWarmLightPool(ctx, x, y, seed, c.flicker);
       P.drawCandleCluster(ctx, x, y, seed, c.flicker);
     }
+  },
+  'window-light-pool': {
+    category: CATEGORY.LIGHT, layer: 0,
+    draw: (ctx, x, y, seed) => P.drawWindowLightPool(ctx, x, y, seed)
   },
   'campfire': {
     category: CATEGORY.LIGHT, layer: 2,

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<!-- Dev-only full-map capture harness. Not part of the game. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#000;}canvas{display:block;image-rendering:pixelated;}</style>
+</head>
+<body>
+<canvas id="out"></canvas>
+<script type="module">
+import { loadLevel } from '/src/core/LevelLoader.js';
+import { buildSpriteAtlas, getFrame } from '/src/render/SpriteAtlas.js';
+import { computeSceneBounds, gridToScreen, sortKey } from '/src/render/isoMath.js';
+import * as P from '/src/render/PixelPrimitives.js';
+import { getSprite, FLAT_KINDS } from '/src/render/spriteCatalog.js';
+import { PALETTE } from '/src/render/palette.js';
+
+const params = new URLSearchParams(location.search);
+const levelPath = params.get('level') ?? './data/levels/censure_road_camp.json';
+const scale = Number(params.get('scale') ?? '0.5');
+const cropX0 = params.has('x0') ? Number(params.get('x0')) : null;
+
+async function main() {
+  const level = await loadLevel(levelPath);
+  const atlas = buildSpriteAtlas();
+  const grid = level.grid;
+  const bounds = computeSceneBounds(grid.width, grid.height);
+  const origin = bounds.origin;
+
+  const scene = document.createElement('canvas');
+  scene.width = bounds.width;
+  scene.height = bounds.height;
+  const ctx = scene.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = PALETTE.void;
+  ctx.fillRect(0, 0, scene.width, scene.height);
+
+  // Floor pass.
+  for (let y = 0; y < grid.height; y += 1) {
+    for (let x = 0; x < grid.width; x += 1) {
+      const def = grid.getTileDef(x, y);
+      if (!def || def.kind === 'wall') continue;
+      const s = gridToScreen(x, y, 0, origin);
+      P.drawStyledFloorCell(ctx, s.x, s.y, x, y, def.floor ?? 'stone');
+    }
+  }
+
+  const flatProps = level.props.filter((p) => FLAT_KINDS.has(p.kind));
+  const volumeProps = level.props.filter((p) => !FLAT_KINDS.has(p.kind));
+
+  for (const prop of flatProps) {
+    const s = gridToScreen(prop.x, prop.y, 0, origin);
+    const seed = prop.seed ?? P.hash2D(prop.x + 5, prop.y + 5);
+    const entry = getSprite(prop.kind);
+    if (entry && entry.flat) entry.draw(ctx, s.x, s.y, seed, { prop });
+  }
+
+  if (level.mood?.floorShade) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = level.mood.floorShadeAlpha ?? 0.5;
+    ctx.fillStyle = level.mood.floorShade;
+    ctx.fillRect(0, 0, scene.width, scene.height);
+    ctx.restore();
+  }
+
+  // Depth-sorted volumetric props + actors.
+  const anim = { pulse: 0, flicker: 0, tick: 0, idleFrame: 0, bob: 0 };
+  const queue = [];
+  for (const prop of volumeProps) {
+    const zLayer = getSprite(prop.kind)?.layer ?? 2;
+    queue.push({
+      key: sortKey(prop.x, prop.y, zLayer),
+      draw: () => {
+        const s = gridToScreen(prop.x, prop.y, 0, origin);
+        const seed = prop.seed ?? P.hash2D(prop.x + 1, prop.y + 1);
+        const entry = getSprite(prop.kind);
+        if (entry && !entry.flat) entry.draw(ctx, s.x, s.y, seed, { prop, anim, pulse: 0, flicker: 0, player: null });
+      }
+    });
+  }
+  const actors = [level.player, ...(level.npcs ?? []), ...(level.enemies ?? [])];
+  for (const actor of actors) {
+    queue.push({
+      key: sortKey(actor.x, actor.y, 3),
+      draw: () => {
+        const s = gridToScreen(actor.x, actor.y, 0, origin);
+        const resolved = getFrame(atlas, actor.spriteId, 'idle', actor.facing ?? 'se', 0);
+        if (!resolved || !resolved.frame) return;
+        const { sprite, frame, mirror } = resolved;
+        P.drawShadowBlob(ctx, s.x, s.y, Math.round(sprite.width * 0.6), Math.round(sprite.width * 0.25));
+        if (mirror) {
+          ctx.save();
+          ctx.translate(Math.round(s.x), Math.round(s.y - sprite.anchorY));
+          ctx.scale(-1, 1);
+          ctx.drawImage(frame, -sprite.anchorX, 0);
+          ctx.restore();
+        } else {
+          ctx.drawImage(frame, Math.round(s.x - sprite.anchorX), Math.round(s.y - sprite.anchorY));
+        }
+      }
+    });
+  }
+  queue.sort((a, b) => a.key - b.key);
+  for (const item of queue) item.draw();
+
+  const out = document.getElementById('out');
+  let srcX = 0;
+  let srcY = 0;
+  let srcW = scene.width;
+  let srcH = scene.height;
+  if (cropX0 !== null) {
+    const x0 = Number(params.get('x0'));
+    const y0 = Number(params.get('y0'));
+    const x1 = Number(params.get('x1'));
+    const y1 = Number(params.get('y1'));
+    const a = gridToScreen(x0, y1, 0, origin);
+    const b = gridToScreen(x1, y0, 0, origin);
+    const top = gridToScreen(x0, y0, 0, origin);
+    const bot = gridToScreen(x1, y1, 0, origin);
+    srcX = Math.max(0, a.x - 64);
+    srcW = Math.min(scene.width, b.x + 64) - srcX;
+    srcY = Math.max(0, top.y - 120);
+    srcH = Math.min(scene.height, bot.y + 64) - srcY;
+  }
+  out.width = Math.round(srcW * scale);
+  out.height = Math.round(srcH * scale);
+  const octx = out.getContext('2d');
+  octx.imageSmoothingEnabled = false;
+  octx.drawImage(scene, srcX, srcY, srcW, srcH, 0, 0, out.width, out.height);
+  document.title = 'CAPTURE-READY';
+}
+
+main().catch((error) => {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+});
+</script>
+</body>
+</html>

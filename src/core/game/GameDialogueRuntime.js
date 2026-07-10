@@ -57,6 +57,9 @@ class GameDialogueRuntime {
       nodeId,
       title: node.title ?? definition.title ?? 'Inspect',
       kind: 'dialogue',
+      // The talking head above the window: only actor conversations carry a
+      // speaker sprite; prop and note dialogues stay text-only.
+      speakerSpriteId: this.dialogueActor?.spriteId ?? null,
       lines,
       choices,
       mustChoose: Boolean(definition.mustChoose || node.mustChoose),

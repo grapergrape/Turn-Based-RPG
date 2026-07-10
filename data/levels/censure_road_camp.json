@@ -60,20 +60,20 @@
     "vuvuuuv.................CCCCCCCCCmmmgggmsssrrrrrrrsssmmmmmmmmmmm...lvu",
     "luvvvut................gCCCCCCCCCmmmgggsssrrrrrrssssmmmmmmmmmmmm...lvl",
     "ulvuvlv................ggggpppmmmmmmggsssrrrrrrsss.................vuv",
-    "vluuuuu................ggggpppmmmmmCCCCsCCCCrrsss.............mmmm.uvu",
-    "vuvltvu................ggggmmmmmmmmCCCCrCCCCrsssCCCCCC........mmmm.uvu",
-    "vvvuvlu................ggggggggggmmCCCCrCCCCsss.CCCCCC........mmmm.vlv",
-    "vtuultt..........................msCCCCrCCCCssggCCCCCCggg.....mmmm.lvv",
-    "llutvuv.........CCC..............msCCCCrCCCCsmmmCCCCCCggg..........luu",
-    "vuluvvv.....CCC.CCC.CCC..........sssrrrrrsssmmmmCCCCCCggg..........vll",
-    "tuutvvu.....CCC.CCC.CCC..........ssrrrrrssmmmmmmmpppggggSSSSSSS....uvv",
-    "utvuvvu...mmCCCmCCCmCCCmm.......sssrrrrsssgggggggpppggggSSSSSSS....vlu",
-    "luuvuvv...mmCCCmCCCmCCCmm.......ssrrrrrss...............SSSSSSS....vvl",
-    "uuuutuu...mmCCCpCCCmCCCmmmmmmmmsssrrrrsssmmmmmmmmmmmmmmgSSSSSSS....vul",
+    "vluuuuu....CCC.CCC.CCC.ggggpppmmmmmCCCCsCCCCrrsss.............mmmm.uvu",
+    "vuvltvu....CCC.CCC.CCC.ggggmmmmmmmmCCCCrCCCCrsssCCCCCC........mmmm.uvu",
+    "vvvuvlu....CCC.CCC.CCC.ggggggggggmmCCCCrCCCCsss.CCCCCC........mmmm.vlv",
+    "vtuultt....CCC.CCC.CCC...........msCCCCrCCCCssggCCCCCCggg.....mmmm.lvv",
+    "llutvuv..........................msCCCCrCCCCsmmmCCCCCCggg..........luu",
+    "vuluvvv..........................sssrrrrrsssmmmmCCCCCCggg..........vll",
+    "tuutvvu....CCC.CCC.CCC...........ssrrrrrssmmmmmmmpppggggSSSSSSS....uvv",
+    "utvuvvu...mCCCmCCCmCCCmmm.......sssrrrrsssgggggggpppggggSSSSSSS....vlu",
+    "luuvuvv...mCCCmCCCmCCCmmm.......ssrrrrrss...............SSSSSSS....vvl",
+    "uuuutuu...mCCCmCCCmCCCmmmmmmmmmsssrrrrsssmmmmmmmmmmmmmmgSSSSSSS....vul",
     "lvluvlv...mmmmmpppmmmmmmmmmmmmmssrrrrrssmmmmmmmmmmmmmmmggggggm.....vuu",
     "vvulull..mmmmmmpppmmmmmmmmmmmmsssrrrrsssmmmmmmmmmmmmmmmggggggCCCCC.vuv",
-    "vvlvvvl..mmmmmmmmmmmmmmmm.....ssrrrrrss.mmmmmmmmm.......mmmmmCCCCC.vlv",
-    "uuuuuvvvlmmmmmmm..............ssrrrrrss.mmmmmmmmm.......mmmmmCCCCC.uvv",
+    "vvlvvvl..mSSSmmmmmmmmmmmm.....ssrrrrrss.mmmmmmmmm.......mmmmmCCCCC.vlv",
+    "uuuuuvvvlmSSSmmm..............ssrrrrrss.mmmmmmmmm.......mmmmmCCCCC.uvv",
     "uvuvvluuummmmmmm..............ssrrrrrss.mmmmmmmmm.......mmmmpCCCCC.tul",
     "vlvvulvuv.....................ssrrrrrss.................mmmmpCCCCC.lvv",
     "vuuvluutu.....................ssrrrrrss.....................ppp....uuv",
@@ -2620,6 +2620,20 @@
       "id": "farm-fence-169"
     },
     {
+      "kind": "camp-bedroll",
+      "x": 14,
+      "y": 35,
+      "id": "censure-road-bedroll-14-35",
+      "seed": 2439803127
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 18,
+      "y": 35,
+      "id": "censure-road-bedroll-18-35",
+      "seed": 3812098218
+    },
+    {
       "kind": "canvas-tent-flap",
       "x": 38,
       "y": 35,
@@ -2800,13 +2814,6 @@
     },
     {
       "kind": "camp-bedroll",
-      "x": 11,
-      "y": 38,
-      "id": "censure-road-bedroll-11-38",
-      "seed": 1927765586
-    },
-    {
-      "kind": "camp-bedroll",
       "x": 23,
       "y": 38,
       "id": "censure-road-bedroll-23-38",
@@ -2956,13 +2963,6 @@
       "id": "censure-road-quarters-kit-14-41",
       "blocking": true,
       "seed": 1572884449
-    },
-    {
-      "kind": "camp-bedroll",
-      "x": 16,
-      "y": 41,
-      "id": "censure-road-bedroll-16-41",
-      "seed": 2173856531
     },
     {
       "kind": "field-satchel",
@@ -3156,12 +3156,13 @@
       "id": "farm-fence-187"
     },
     {
-      "kind": "field-harrow",
+      "kind": "farm-door",
       "x": 11,
       "y": 44,
       "id": "censure-road-ash-latrines",
       "blocking": true,
-      "orient": "se",
+      "wallPlane": "sw",
+      "variant": "storage-shed",
       "name": "Ash Latrines",
       "seed": 3645221387,
       "interact": {
@@ -4026,21 +4027,39 @@
       },
       "clickAreas": [
         {
-          "x0": 12,
-          "y0": 36,
-          "x1": 14,
+          "x0": 11,
+          "y0": 31,
+          "x1": 13,
+          "y1": 34
+        },
+        {
+          "x0": 15,
+          "y0": 31,
+          "x1": 17,
+          "y1": 34
+        },
+        {
+          "x0": 19,
+          "y0": 31,
+          "x1": 21,
+          "y1": 34
+        },
+        {
+          "x0": 11,
+          "y0": 37,
+          "x1": 13,
           "y1": 40
         },
         {
-          "x0": 16,
-          "y0": 35,
-          "x1": 18,
+          "x0": 15,
+          "y0": 37,
+          "x1": 17,
           "y1": 40
         },
         {
-          "x0": 20,
-          "y0": 36,
-          "x1": 22,
+          "x0": 19,
+          "y0": 37,
+          "x1": 21,
           "y1": 40
         }
       ]

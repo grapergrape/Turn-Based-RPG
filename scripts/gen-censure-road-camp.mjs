@@ -747,9 +747,16 @@ function placeMedicTent() {
 }
 
 function placeQuarters() {
-  paintTentFootprint(12, 36, 14, 40);
-  paintTentFootprint(16, 35, 18, 40);
-  paintTentFootprint(20, 36, 22, 40);
+  // Two rows of three sleeping bays, as on the planning map.
+  const bays = [
+    [11, 31, 13, 34],
+    [15, 31, 17, 34],
+    [19, 31, 21, 34],
+    [11, 37, 13, 40],
+    [15, 37, 17, 40],
+    [19, 37, 21, 40]
+  ];
+  for (const [x0, y0, x1, y1] of bays) paintTentFootprint(x0, y0, x1, y1);
   addTentFlap(
     'censure-road-quarters-tent-flap',
     'Cult-Breaker Quarters',
@@ -758,11 +765,7 @@ function placeQuarters() {
     {
       path: './data/levels/censure_road_quarters_tent.json',
       approach: { x: 16, y: 41 },
-      clickAreas: [
-        clickArea(12, 36, 14, 40),
-        clickArea(16, 35, 18, 40),
-        clickArea(20, 36, 22, 40)
-      ]
+      clickAreas: bays.map(([x0, y0, x1, y1]) => clickArea(x0, y0, x1, y1))
     },
     {
       salt: 113,
@@ -770,7 +773,7 @@ function placeQuarters() {
     }
   );
   for (const [x, y] of [
-    [11, 38], [23, 38], [16, 41]
+    [14, 35], [18, 35], [23, 38]
   ]) {
     addObject('camp-bedroll', x, y, { id: `censure-road-bedroll-${x}-${y}`, seed: hash(x, y, 115) });
   }
@@ -812,10 +815,13 @@ function placeWritBoardAndWorkSites() {
     },
     mapMarker: { label: 'Tether Line', kind: 'note', reveal: 'always' }
   });
-  addObject('field-harrow', 11, 44, {
+  // A low stall shed, not open ground: the planning map gives the latrines a hut.
+  paintRect(10, 43, 12, 44, 'S');
+  addObject('farm-door', 11, 44, {
     id: 'censure-road-ash-latrines',
     blocking: true,
-    orient: 'se',
+    wallPlane: 'sw',
+    variant: 'storage-shed',
     name: 'Ash Latrines',
     seed: hash(11, 44, 125),
     interact: {

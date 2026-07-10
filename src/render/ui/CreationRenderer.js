@@ -14,10 +14,11 @@ export function drawCharacterCreation(ctx, ui, tools) {
   tools.inset(ctx, PREVIEW_BOX);
 
   tools.text(ctx, 'FIELD AGENT RECORD', LIST_BOX.x + 12, LIST_BOX.y + 10, PALETTE.uiBorderLight);
+  // Ten rows at 20px spacing fill the 230px inset without overflowing it.
   let y = LIST_BOX.y + 30;
   for (const row of creation.rows ?? []) {
     drawOptionRow(ctx, tools, row, LIST_BOX.x + 10, y, LIST_BOX.w - 20);
-    y += 22;
+    y += 20;
   }
 
   drawPlayerPreview(ctx, tools, PREVIEW_BOX, creation.previewSpriteId ?? ui.figureSpriteId ?? 'mara-vey');

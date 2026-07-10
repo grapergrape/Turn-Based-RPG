@@ -592,6 +592,7 @@ function placeGraveyardWalls() {
 }
 
 function placeGraveyardPlots() {
+  const bodyPlots = new Set(GRAVEYARD_BODIES.map((body) => key(body.x, body.y)));
   for (const [x, y] of GRAVEYARD_PLOTS) {
     const plotOrient = ((x + y) & 1) ? 'sw' : 'se';
     addObject('graveyard-packed-ash', x, y, {
@@ -601,10 +602,14 @@ function placeGraveyardPlots() {
       orient: plotOrient,
       seed: hash(x, y, 65)
     });
-    addObject('calcified-headstone', x, y - 1, {
-      blocking: true,
-      seed: hash(x, y, 66)
-    });
+    // A grave with a calcified body gets no cut stone: the dead were stood
+    // upright at the head of their own plots and left as the markers.
+    if (!bodyPlots.has(key(x, y))) {
+      addObject('calcified-headstone', x, y - 1, {
+        blocking: true,
+        seed: hash(x, y, 66)
+      });
+    }
   }
   for (const tomb of GRAVEYARD_TOMBS) {
     addObject('graveyard-tomb-slab', tomb.x, tomb.y, {
@@ -680,8 +685,10 @@ function placeGraveyard() {
   placeGraveyardPlots();
   placeGraveyardCatacomb();
   placeGraveyardDressing();
+  // Each body stands one tile up from its plot, planted where a headstone
+  // would go: the dead mark their own graves.
   for (const body of GRAVEYARD_BODIES) {
-    addObject('calcified-grave-body', body.x, body.y, {
+    addObject('calcified-grave-body', body.x, body.y - 1, {
       id: body.id,
       blocking: true,
       name: body.name,
@@ -1011,7 +1018,7 @@ objects.sort((a, b) => (a.y - b.y) || (a.x - b.x) || a.kind.localeCompare(b.kind
 const level = {
   id: 'long-ash-road-approach',
   name: 'Long Ash Road Approach',
-  intro: 'The Hallowfen road opens into dead wheat, dark tree cover, and a graveyard where the infected were buried standing.',
+  intro: 'The Hallowfen road opens into dead wheat, dark tree cover, and a graveyard where no one dug graves for the calcified. They planted each one upright to stand watch over an empty plot.',
   width: WIDTH,
   height: HEIGHT,
   tileSize: 64,

@@ -247,6 +247,16 @@
       "kind": "rubble-decal",
       "x": 8,
       "y": 6
+    },
+    {
+      "kind": "window-light-pool",
+      "x": 5,
+      "y": 2
+    },
+    {
+      "kind": "window-light-pool",
+      "x": 8,
+      "y": 2
     }
   ]
 }

@@ -137,6 +137,17 @@ function buildGateGame() {
 
 {
   let state = createCustomizationState({ name: 'Mara Vey' });
+  assert.equal(state.appearance.genderModel, 'female');
+  assert.equal(state.appearance.anatomy, 'vulva');
+  state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === 'penisSize');
+  state = changeCustomizationOption(state, 1);
+  assert.equal(state.appearance.genderModel, 'female');
+  assert.equal(state.appearance.anatomy, 'penis');
+  assert.equal(state.appearance.penisSize, 1);
+}
+
+{
+  let state = createCustomizationState({ name: 'Mara Vey' });
   state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === 'genderModel');
   state = changeCustomizationOption(state, 1);
   assert.equal(state.appearance.genderModel, 'male');

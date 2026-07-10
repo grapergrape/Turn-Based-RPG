@@ -14,13 +14,15 @@ function ratSeg(ctx, x0, y0, x1, y1, color, size = 1) {
 
 function drawRatPrayerRibs(ctx, bodyCx, bodyY, side, pose) {
   const glow = pose.bob ? PALETTE.hostGlow : PALETTE.hostGold;
+  // Rib-thorns of uneven length so the row never reads as a comb; the tallest
+  // sit off-center, per the Vale Imprint asymmetry rule.
+  const lens = [6, 11, 8, 12, 7];
   for (let i = 0; i < 5; i += 1) {
     const rootX = bodyCx - 10 + i * 5;
     const tipX = rootX + (i - 2) * 2;
-    const tipY = bodyY - 21 - (i % 2);
+    const tipY = bodyY - 12 - lens[i];
     ratSeg(ctx, rootX, bodyY - 12, tipX, tipY, PALETTE.outline, 2);
-    ratSeg(ctx, rootX, bodyY - 12, tipX, tipY, PALETTE.hostBone, 1);
-    if (i === 1 || i === 3) px(ctx, tipX - 2, tipY - 1, PALETTE.stoneDust, 4, 1);
+    ratSeg(ctx, rootX, bodyY - 12, tipX, tipY, i % 2 ? PALETTE.hostBone : PALETTE.stoneDust, 1);
   }
   const crossX = bodyCx - side * 2;
   ratSeg(ctx, crossX, bodyY - 13, crossX, bodyY - 24, PALETTE.outline, 2);
@@ -31,15 +33,15 @@ function drawRatPrayerRibs(ctx, bodyCx, bodyY, side, pose) {
 }
 
 function drawRatFusedHands(ctx, bodyCx, bodyY, side) {
-  const wristX = bodyCx + side * 5;
-  const wristY = bodyY - 3;
-  for (const hand of [-1, 1]) {
-    const palmX = wristX + hand * 4;
-    ratSeg(ctx, wristX, wristY, palmX, wristY + 9, PALETTE.outline, 2);
-    ratSeg(ctx, wristX, wristY, palmX, wristY + 8, PALETTE.skinDark, 1);
-    px(ctx, palmX - 2, wristY + 8, PALETTE.hostBone, 5, 2);
-    for (let f = 0; f < 3; f += 1) px(ctx, palmX - 2 + f * 2, wristY + 10, PALETTE.hostBone, 1, 3);
-  }
+  // A single human hand fused to the underside, fingers pressed together in a
+  // half-prayer and gone to bone at the tips. One knot, never a tidy pair.
+  const wristX = bodyCx + side * 6;
+  const wristY = bodyY - 2;
+  const palmX = wristX + side * 3;
+  ratSeg(ctx, wristX, wristY, palmX, wristY + 9, PALETTE.outline, 3);
+  ratSeg(ctx, wristX, wristY, palmX, wristY + 8, PALETTE.skinDark, 1);
+  px(ctx, palmX - 2, wristY + 8, PALETTE.hostBone, 5, 2);
+  for (let f = 0; f < 3; f += 1) px(ctx, palmX - 2 + f * 2, wristY + 10, PALETTE.hostBone, 1, 2);
 }
 
 function drawRatBody(ctx, cx, cy, side, pose, opts = {}) {
@@ -53,27 +55,48 @@ function drawRatBody(ctx, cx, cy, side, pose, opts = {}) {
   const furLo = opts.furLo ?? PALETTE.void;
   const wound = opts.wound ?? PALETTE.hostRed;
 
+  // Starved, uneven flank: hard hide bands, no full-width stripes. The body
+  // reads as a wet-furred animal that has been reshaped, not a striped balloon.
   for (let row = 0; row < 13; row += 1) {
     const w = 28 - Math.abs(row - 6) * 2;
     const x = bodyCx - Math.floor(w / 2);
     const tone = row < 3 ? furHi : row < 10 ? fur : furLo;
     px(ctx, x, bodyY - 12 + row, PALETTE.outline, w + 2, 1);
     px(ctx, x + 1, bodyY - 12 + row, tone, w, 1);
-    if ((row & 3) === 0) px(ctx, x + 4, bodyY - 12 + row, wound, Math.max(3, w - 10), 1);
-    if (row === 2 || row === 7) px(ctx, x + w - 4, bodyY - 12 + row, PALETTE.hostGold, 2, 1);
+    if (row < 2) px(ctx, x + 3, bodyY - 12 + row, PALETTE.stoneDust, 3, 1); // lit spine
   }
+  // A single black-gold seam runs under the hide along the flank: a trace of
+  // the Host beneath, not a flood on the surface.
+  for (let i = 0; i < 4; i += 1) {
+    px(ctx, bodyCx - 8 + i * 5, bodyY - 8 + (i % 2 ? 1 : 3), PALETTE.hostGold, 1, 1);
+  }
+  // One pulsing open wound low on the flank: split hide, dark cavity, gold light.
+  const wx = bodyCx - side * 4;
+  const wy = bodyY - 4;
+  px(ctx, wx - 4, wy, PALETTE.hostBlack, 9, 4);
+  px(ctx, wx - 3, wy + 1, PALETTE.void, 7, 2);
+  px(ctx, wx - 2, wy + 1, wound, 5, 1);
+  px(ctx, wx, wy + 1, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold, 1, 1);
+  for (let i = 0; i < 3; i += 1) px(ctx, wx - 3 + i * 3, wy, PALETTE.hostBone, 1, 1); // torn hide teeth
 
+  // Head: skull pushing through thin fur, jaw wrenched down in a silent scream.
   const headX = bodyCx + side * (14 + Math.floor(attack / 3));
   const headY = bodyY - 10 + Math.floor(attack / 5);
   for (let row = 0; row < 8; row += 1) {
     const w = 10 - Math.abs(row - 3);
     const x = headX - Math.floor(w / 2);
     px(ctx, x - 1, headY + row, PALETTE.outline, w + 2, 1);
-    px(ctx, x, headY + row, row < 3 ? furHi : fur, w, 1);
+    px(ctx, x, headY + row, row < 2 ? furHi : row < 5 ? fur : PALETTE.hostBone, w, 1);
   }
-  px(ctx, headX + side * 4, headY + 2, PALETTE.hostBone, 4, 2);
-  px(ctx, headX + side * 6, headY + 3, PALETTE.void, 2, 2);
-  px(ctx, headX + side * 2, headY + 3, PALETTE.hostGold, 1, 1);
+  // Long exposed snout of bared bone teeth reaching forward.
+  px(ctx, headX + side * 3, headY + 3, PALETTE.hostBone, 6, 3);
+  px(ctx, headX + side * 3, headY + 4, PALETTE.void, 6, 1); // gum line gap
+  for (let i = 0; i < 4; i += 1) px(ctx, headX + side * (3 + i * 1.5), headY + 3, PALETTE.hostBone, 1, 3);
+  px(ctx, headX + side * 8, headY + 4, PALETTE.void, 2, 2); // nostril pit
+  // Sunken socket with a cold gold pupil; a bone ridge over the brow.
+  px(ctx, headX + side * 1, headY + 1, PALETTE.void, 3, 3);
+  if (!opts.back) px(ctx, headX + side * 2, headY + 2, PALETTE.hostGold, 1, 1);
+  px(ctx, headX - side * 1, headY, PALETTE.hostBone, 3, 1);
   ratSeg(ctx, bodyCx - side * 13, bodyY - 5, bodyCx - side * 25, bodyY - 9 + bob, PALETTE.hostBlack);
   ratSeg(ctx, bodyCx - side * 16, bodyY - 6, bodyCx - side * 26, bodyY - 8 + bob, PALETTE.hostGold);
   drawRatPrayerRibs(ctx, bodyCx, bodyY, side, pose);
@@ -90,7 +113,8 @@ export function drawSixLeggedRat(ctx, w, h, facing, pose) {
     fur: PALETTE.hostBlack,
     furHi: PALETTE.skinDark,
     furLo: PALETTE.void,
-    wound: PALETTE.hostRed
+    wound: PALETTE.hostRed,
+    back: !!meta.back
   });
   const step = pose.legA ?? 0;
   const legXs = [-10, -3, 5];
@@ -117,7 +141,8 @@ export function drawThroatMawRat(ctx, w, h, facing, pose) {
     fur: PALETTE.hostBlack,
     furHi: PALETTE.rustDark,
     furLo: PALETTE.void,
-    wound: PALETTE.hostRed
+    wound: PALETTE.hostRed,
+    back: !!meta.back
   });
   const mawX = info.bodyCx + side * 13;
   const mawY = info.bodyY - 7 + Math.floor((pose.attack ?? 0) / 5);
@@ -159,7 +184,8 @@ export function drawTendrilWalkerRat(ctx, w, h, facing, pose) {
     fur: PALETTE.hostBlack,
     furHi: PALETTE.skinDark,
     furLo: PALETTE.void,
-    wound: PALETTE.hostRed
+    wound: PALETTE.hostRed,
+    back: !!meta.back
   });
   const sway = pose.legB ?? pose.bob ?? 0;
   const roots = [-11, -5, 1, 7, 12];

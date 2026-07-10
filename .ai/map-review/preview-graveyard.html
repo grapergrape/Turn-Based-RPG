@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<!-- Dev-only isolated render harness for graveyard art. Not part of the game. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#1a1712;}canvas{display:block;image-rendering:pixelated;}</style>
+</head>
+<body>
+<canvas id="c" width="1680" height="2100"></canvas>
+<script type="module">
+import * as P from '/src/render/PixelPrimitives.js';
+import { PALETTE } from '/src/render/palette.js';
+
+const params = new URLSearchParams(location.search);
+const SCALE = Number(params.get('scale') ?? '3');
+const canvas = document.getElementById('c');
+canvas.width = 560 * SCALE;
+canvas.height = 700 * SCALE;
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+ctx.fillStyle = '#1a1712';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.scale(SCALE, SCALE);
+
+function floor(cx, cy) {
+  P.drawIsoDiamond(ctx, cx, cy, 64, 32, PALETTE.stoneDark);
+  P.drawIsoDiamond(ctx, cx, cy - 1, 56, 28, PALETTE.stoneMid);
+}
+
+const variants = [
+  'kneeling-fused-hands', 'broken-halo', 'rib-open-chest', 'reaching-arm',
+  'goat-skull', 'thorned-back', 'bell-jaw', 'half-prayer-twist',
+  'collapsed-shoulder', 'buried-lower-body', 'split-face'
+];
+
+let x = 70;
+let y = 110;
+for (let i = 0; i < variants.length; i += 1) {
+  floor(x, y);
+  P.drawCalcifiedGraveBody(ctx, x, y, 100 + i * 7, { variant: variants[i] });
+  x += 110;
+  if (x > 500) { x = 70; y += 130; }
+}
+
+// Plots and headstones row.
+x = 70; y += 130;
+for (let i = 0; i < 5; i += 1) {
+  floor(x, y);
+  P.drawCalcifiedGravePlot(ctx, x, y, 40 + i, { orient: i % 2 ? 'sw' : 'se' });
+  x += 110;
+}
+x = 70; y += 90;
+for (let i = 0; i < 5; i += 1) {
+  floor(x, y);
+  P.drawCalcifiedHeadstone(ctx, x, y, 60 + i);
+  x += 110;
+}
+x = 70; y += 110;
+for (let i = 0; i < 3; i += 1) {
+  floor(x, y);
+  P.drawCalcifiedGraveMarker(ctx, x, y, 80 + i * 3);
+  x += 110;
+}
+document.title = 'CAPTURE-READY';
+</script>
+</body>
+</html>

@@ -828,6 +828,28 @@ geometry in `UIRenderer.js` consts or the `ui/` layout modules.
    that every object `kind` and every non-walkable legend block is registered in
    the sprite catalog. Player-facing names and logs follow the anti-slop skill.
 
+**Ready-made harnesses (use these, do not improvise):** start the server with
+`PORT=8123 node scripts/serve.mjs`, then screenshot with headless Chrome:
+
+```text
+google-chrome --headless=new --disable-gpu --hide-scrollbars \
+  --virtual-time-budget=30000 --window-size=WxH --screenshot=out.png "URL"
+```
+
+- `.ai/map-review/preview-catalog.html?section=<category>&scale=3&seeds=2`
+  renders every registered kind of one catalog category on labeled floor
+  patches. `section` also accepts `floors`, `ground-items`, `actors`.
+  `kinds=a,b` isolates specific kinds; `prop=<url-encoded JSON>` forces prop
+  state (e.g. a released cross-martyr); `cols=` and `scale=` tune the sheet.
+- `.ai/map-review/preview-player-variants.html?scale=5&only=hair,beard`
+  renders the player bake for every creation trait, clothed and bare.
+- `.ai/map-review/capture-scene.html?level=./data/levels/X.json&scale=1.6&x0=..&y0=..&x1=..&y1=..`
+  renders a whole level (or a crop) with real props and actors.
+
+A blank capture usually means a module import error: re-run with
+`--enable-logging=stderr` and read the console line. If a page never sets its
+title to `CAPTURE-READY`, treat the render as failed, not as "probably fine".
+
 ---
 
 ## 20. Do and Don't
@@ -878,3 +900,76 @@ have not looked at on screen.
       `npm run check` passes. Player-facing text follows the anti-slop skill.
 
 If you cannot honor this, do not ship the art.
+
+---
+
+## 22. Honest review: score the render, not the intention
+
+When you audit existing art (or your own), score what the SCREENSHOT shows, not
+what the code comments promise. The July 2026 audit found pieces whose code
+described the right thing while the pixels showed something else entirely.
+
+**The scale (4 is average, not 7):**
+
+- 10 exemplar, copy it as a standard. 8-9 strong: distinct silhouette, correct
+  material, clear setting identity. 6-7 keep, but it is not a standard.
+- 4-5 functional placeholder: obeys the rules but generic, repetitive, or weak
+  at gameplay scale. Most first-pass art lands here. Say so.
+- 1-3 misleading: a player cannot name what it is, or names the wrong thing.
+  Redesign it; do not polish it.
+
+**The first question is always representational:** what is this piece supposed
+to BE, and would a player name it correctly from the render alone at gameplay
+zoom? "A stairwell" that reads as a ring of sticks is a 2 no matter how clean
+its pixels are.
+
+**Failure modes to hunt for (all found live in this repo, all since fixed):**
+
+1. **Confetti gore.** An even scatter of pale pixels instead of remains. A pile
+   needs a raised dark mound, black gaps, and a few LARGE namable bones (one
+   skull facing out, one femur across the crown) - never uniform speckle.
+2. **State-swap shrinkage.** A prop's second state (cut down, opened, broken)
+   drawn at a fraction of the first state's mass. The fallen Opened Saint must
+   stay a man-sized opened body, not become a small clean skeleton icon.
+3. **Floating icon marks.** A clean symbol hovering on or above a sprite (the
+   old bone-white "+" over every plant). Physical charms are lashed from twigs,
+   tilted, corded, planted in the dirt, and touch their shadow.
+4. **Flat saturated fill.** A base tile painted in a loud palette color
+   (hostGold wheat). Dead world ground is desaturated; the loud color is
+   reserved for sparse accents that MEAN something (Host-touched grain heads).
+5. **Cloth-profile metal.** A bell (or any cast object) drawn as a widening
+   cone reads as a draped tarp. Metal needs the true profile (shoulder, near
+   vertical waist, late flare) plus one long specular streak.
+6. **Function-blind props.** Stairs must show treads and a destination (a dark
+   doorway, a landing); a rope must hang from something; a target must face the
+   shooter. Draw the USE, not just the noun.
+7. **Traits invisible through kit.** Anything the player customizes must
+   survive worn equipment: silhouette changes (bust, shoulders, waist) and
+   reserved windows (the open hood shows the front crown of real hair, the
+   face stays lit, beards spill out). Verify with the player-variants harness,
+   clothed columns, before claiming it works.
+
+**Evidence or it did not happen:** a score only counts if it cites a fresh
+isolated render AND an in-scene capture. Store both under `.ai/visual-audit/`
+with a date suffix, and record scores in
+`docs/art-audio/visual_design_audit.md`. Never inherit an old score after
+changing a draw function.
+
+**Prioritize by placement count, not by list order.** Count how often each
+kind appears across `data/levels/*.json` (weight legend tiles heavily) and
+uplift the top of that list first: one point of quality on a kind placed 800
+times beats three points on a kind placed twice.
+
+**Two uplift methods that work on "average" (4-5) assets:**
+
+- *"What did people leave here?"* Give a functional object one human trace:
+  a hymn sheet on the broken pew, a wax seal on the sealed crate, banked
+  embers in the hearth, a prayer cord knotted to a fence rail. One trace, in
+  palette, seeded so it varies. This is also where the setting's absurd
+  humor lives (the crude painted devil on the training target, the tally of
+  misses beside it).
+- *Coherence beats randomness on mass-placed kinds.* A field of wheat clumps
+  reads weather-beaten when every clump shares one prevailing wind lean with
+  small jitter; fully random leans read as noise. For any kind placed in
+  runs or fields, derive one dominant direction/state from the seed and let
+  individual elements vary around it.
