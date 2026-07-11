@@ -37,7 +37,7 @@ const itemDefs = {
   'field-dressing': { name: 'Field Dressing', type: 'consumable', rarity: 'rare', weight: 0.2, groundModel: 'dressing', description: 'Sterile dressing.' }
 };
 
-function buildLootGame({ actions, loot }) {
+function buildLootGame({ actions, loot, inspect = null, maxCarryWeight = 10, startInLoot = true }) {
   const game = new Game({
     canvas: mockCanvas(),
     levelPath: './data/levels/ash_chapel_breach.json',
@@ -63,6 +63,7 @@ function buildLootGame({ actions, loot }) {
   });
   enemy.isDead = true;
   enemy.loot = loot;
+  enemy.inspect = inspect;
 
   game.ready = true;
   game.anim = { tick: 0, bob: 0, flicker: 0, pulse: 0 };
@@ -77,25 +78,68 @@ function buildLootGame({ actions, loot }) {
   game.pathQueue = [];
   game.pendingExploreTarget = null;
   game.mode = 'explore';
-  game.uiScreen = 'loot';
-  game.loot = { title: enemy.name, sourceType: 'enemy', source: enemy };
+  game.uiScreen = startInLoot ? 'loot' : null;
+  game.loot = startInLoot ? { title: enemy.name, sourceType: 'enemy', source: enemy } : null;
   game.lootIndex = 0;
   game.dialogue = null;
   game.log = [];
-  game.inventory = new Inventory(itemDefs, { maxCarryWeight: 10 });
+  game.inventory = new Inventory(itemDefs, { maxCarryWeight });
   game.inventoryOrder = [];
   game.level = { name: 'Test Level', interactables: [], props: [], mood: null };
+  game.dialogueDefs = {
+    'penitent-corpse': {
+      id: 'penitent-corpse',
+      title: 'The Turned Engine',
+      nodes: { start: { lines: ['Steel remains under the bone growth.'] } }
+    }
+  };
   game.questDefs = {};
   game.questStages = new Map();
   game.questReached = new Map();
   game.awardedQuestXp = new Set();
   game.appliedLevelEvents = new Set();
   game.clearedEncounters = new Set();
+  game.stealthRuntime = { registerSuspiciousAction: () => [] };
   game.input = {
     consume: () => actions.shift() ?? [],
     consumeClick: () => null
   };
   return { game, enemy };
+}
+
+{
+  const { game, enemy } = buildLootGame({
+    actions: [['confirm'], ['interact'], ['cancel']],
+    loot: [{ item: 'field-dressing', count: 1 }],
+    inspect: 'penitent-corpse',
+    maxCarryWeight: 0.1,
+    startInLoot: false
+  });
+
+  assert.deepEqual(
+    game._targetActionInfo({ type: 'corpse', enemy }),
+    { state: 'inspect', text: 'INSPECT: Dead Guard' }
+  );
+  game._interactWithCorpse(enemy);
+  assert.equal(game.uiScreen, 'dialogue');
+  assert.equal(game.dialogue.id, 'penitent-corpse');
+  assert.equal(game.pendingLootAfterDialogue.source, enemy);
+
+  game.update(0);
+  assert.equal(game.uiScreen, 'loot');
+  assert.equal(enemy.inspectShownBeforeLoot, true);
+  assert.deepEqual(
+    game._targetActionInfo({ type: 'corpse', enemy }),
+    { state: 'loot', text: 'LOOT: Dead Guard' }
+  );
+
+  game.update(0);
+  assert.equal(game.inventory.count('field-dressing'), 0);
+  assert.equal(game.uiScreen, 'loot');
+  assert.ok(game.log.some((line) => line.startsWith('Too much to carry.')));
+
+  game.update(0);
+  assert.equal(game.uiScreen, null);
 }
 
 function simpleGrid() {

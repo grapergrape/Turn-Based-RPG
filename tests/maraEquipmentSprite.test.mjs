@@ -3,8 +3,18 @@ import assert from 'node:assert/strict';
 import { createActor } from '../src/entities/ActorFactory.js';
 import { PALETTE } from '../src/render/palette.js';
 import {
+  MARA_DEFAULT_APPEARANCE,
+  PLAYER_AGE_IDS,
   PLAYER_BODY_TYPE_IDS,
+  PLAYER_FACE_MARK_IDS,
+  PLAYER_FACE_SHAPE_IDS,
+  PLAYER_FACIAL_HAIR_IDS,
   PLAYER_GENDER_MODEL_IDS,
+  PLAYER_HAIR_COLOR_IDS,
+  PLAYER_HAIR_STYLE_IDS,
+  PLAYER_POSTURE_IDS,
+  PLAYER_SKIN_TONE_IDS,
+  PLAYER_STATURE_IDS,
   SPRITE_POSE_FRAME_COUNTS,
   bakeMara,
   deriveMaraStyle
@@ -60,6 +70,11 @@ assert.equal(naked.bareHead, true);
 assert.equal(naked.fieldHarness, false);
 assert.equal(naked.vest, null);
 assert.equal(naked.bodyFrame, 'feminine');
+assert.equal(naked.stature, 'average');
+assert.equal(naked.posture, 'upright');
+assert.equal(naked.age, 'adult');
+assert.equal(naked.faceShape, 'oval');
+assert.equal(naked.faceMark, 'none');
 assert.equal(naked.anatomy, 'vulva');
 assert.equal(naked.breastSize, 5);
 assert.equal(naked.penisSize, 0);
@@ -153,6 +168,72 @@ const intersex = deriveMaraStyle({}, {}, {
 
 assert.equal(intersex.anatomy, 'intersex');
 assert.equal(intersex.anatomyVisible, true);
+
+const roadWorn = deriveMaraStyle({}, {}, {
+  stature: 'tall',
+  posture: 'stooped',
+  age: 'elder',
+  faceShape: 'long',
+  faceMark: 'eye-patch',
+  skinTone: 'ruddy',
+  hairColor: 'auburn',
+  hairStyle: 'braid',
+  facialHair: 'short-beard'
+});
+
+assert.equal(roadWorn.stature, 'tall');
+assert.equal(roadWorn.posture, 'stooped');
+assert.equal(roadWorn.age, 'elder');
+assert.equal(roadWorn.faceShape, 'long');
+assert.equal(roadWorn.faceMark, 'eye-patch');
+assert.equal(roadWorn.skinTone, 'ruddy');
+assert.equal(roadWorn.hairColor, 'auburn');
+assert.equal(roadWorn.hairStyle, 'braid');
+assert.equal(roadWorn.facialHair, 'short-beard');
+assert.ok(roadWorn.legLength > naked.legLength);
+assert.ok(roadWorn.hunch > naked.hunch);
+assert.ok(roadWorn.headHeight > naked.headHeight);
+
+const roadWornSprite = bakeMara({}, {}, {
+  age: 'elder',
+  faceShape: 'long',
+  faceMark: 'eye-patch',
+  hairColor: 'auburn',
+  hairStyle: 'braid',
+  facialHair: 'short-beard',
+  bodyType: 'stocky',
+  stature: 'tall',
+  posture: 'stooped'
+});
+for (const [state, count] of Object.entries(SPRITE_POSE_FRAME_COUNTS)) {
+  for (const facing of ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']) {
+    assert.equal(roadWornSprite.frames[state][facing].length, count);
+  }
+}
+assert.equal(roadWornSprite.death.length, 10);
+
+const shortUpright = deriveMaraStyle({}, {}, { stature: 'short', posture: 'upright' });
+assert.ok(shortUpright.legLength < naked.legLength);
+assert.equal(shortUpright.hunch, 0);
+
+for (const [key, ids] of Object.entries({
+  age: PLAYER_AGE_IDS,
+  bodyType: PLAYER_BODY_TYPE_IDS,
+  faceMark: PLAYER_FACE_MARK_IDS,
+  faceShape: PLAYER_FACE_SHAPE_IDS,
+  facialHair: PLAYER_FACIAL_HAIR_IDS,
+  genderModel: PLAYER_GENDER_MODEL_IDS,
+  hairColor: PLAYER_HAIR_COLOR_IDS,
+  hairStyle: PLAYER_HAIR_STYLE_IDS,
+  posture: PLAYER_POSTURE_IDS,
+  skinTone: PLAYER_SKIN_TONE_IDS,
+  stature: PLAYER_STATURE_IDS
+})) {
+  for (const id of ids) {
+    const style = deriveMaraStyle({}, {}, { ...MARA_DEFAULT_APPEARANCE, bodyFrame: undefined, [key]: id });
+    assert.equal(style[key], id, `${key} should accept ${id}`);
+  }
+}
 
 {
   const ctx = createRecordingContext();

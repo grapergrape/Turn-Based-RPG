@@ -168,13 +168,83 @@ export function directionSide(meta) {
   return meta.side || 1;
 }
 
+const HUMAN_FACE_SHAPES = Object.freeze({
+  narrow: Object.freeze({ frontTop: 5, frontBottom: 6, sideTop: 4, sideBottom: 5, height: 8 }),
+  oval: Object.freeze({ frontTop: 6, frontBottom: 7, sideTop: 5, sideBottom: 6, height: 8 }),
+  broad: Object.freeze({ frontTop: 7, frontBottom: 8, sideTop: 6, sideBottom: 7, height: 8 }),
+  long: Object.freeze({ frontTop: 6, frontBottom: 6, sideTop: 5, sideBottom: 6, height: 9 })
+});
+
+function drawBackHair(ctx, x, y, hit, style, hairStyle, crown, crownHi) {
+  const skin = ramp(style, 'skin');
+  if (hairStyle === 'hooded') {
+    px(ctx, x - 4 + hit, y - 2, crown, 9, 3);
+    px(ctx, x - 5 + hit, y, crown, 10, 7);
+    px(ctx, x - 3 + hit, y - 2, crownHi, 4, 1);
+    return;
+  }
+  if (hairStyle === 'shaved') {
+    px(ctx, x - 2 + hit, y - 1, crown, 5, 1);
+    px(ctx, x - 1 + hit, y - 1, crownHi, 2, 1);
+    return;
+  }
+  if (hairStyle === 'tonsure') {
+    px(ctx, x - 3 + hit, y - 1, crown, 7, 2);
+    px(ctx, x - 2 + hit, y, skin.mid, 5, 3);
+    px(ctx, x - 3 + hit, y + 2, crown, 2, 4);
+    px(ctx, x + 2 + hit, y + 2, crown, 2, 4);
+    px(ctx, x - 2 + hit, y + 5, crown, 5, 1);
+    return;
+  }
+
+  px(ctx, x - 3 + hit, y - 1, crown, 7, 2);
+  px(ctx, x - 2 + hit, y - 1, crownHi, 3, 1);
+  if (hairStyle === 'bobbed') {
+    px(ctx, x - 4 + hit, y + 1, crown, 9, 6);
+    px(ctx, x - 3 + hit, y + 7, crown, 7, 1);
+    return;
+  }
+  if (hairStyle === 'loose') {
+    px(ctx, x - 4 + hit, y + 1, crown, 9, 7);
+    px(ctx, x - 3 + hit, y + 8, crown, 7, 2);
+    return;
+  }
+
+  px(ctx, x - 3 + hit, y + 1, crown, 7, 5);
+  if (hairStyle === 'tied') {
+    px(ctx, x - 2 + hit, y + 5, crown, 5, 2);
+    px(ctx, x - 1 + hit, y + 7, crown, 3, 4);
+    px(ctx, x + hit, y + 10, crownHi, 1, 1);
+  }
+  if (hairStyle === 'braid') {
+    px(ctx, x - 2 + hit, y + 5, crown, 5, 2);
+    px(ctx, x - 1 + hit, y + 7, crown, 3, 2);
+    px(ctx, x + hit, y + 9, crownHi, 2, 2);
+    px(ctx, x - 1 + hit, y + 11, crown, 2, 2);
+  }
+}
+
 function drawHumanHair(ctx, x, y, meta, hit, style, crown, crownHi) {
   const hairStyle = style.bareHead ? (style.hairStyle ?? 'cropped') : 'hooded';
   const side = directionSide(meta);
+  const skin = ramp(style, 'skin');
+
+  if (meta.back && meta.view !== 'side') {
+    drawBackHair(ctx, x, y, hit, style, hairStyle, crown, crownHi);
+    return;
+  }
+
   if (meta.view === 'side') {
     if (hairStyle === 'shaved') {
       px(ctx, x - 2 + hit, y - 1, crown, 5, 1);
       px(ctx, x - 1 + hit, y - 1, crownHi, 2, 1);
+      return;
+    }
+    if (hairStyle === 'tonsure') {
+      const backX = x + (side > 0 ? -3 : 1) + hit;
+      px(ctx, x - 1 + hit, y - 1, skin.mid, 3, 2);
+      px(ctx, backX, y, crown, 2, 5);
+      px(ctx, backX + (side > 0 ? 0 : -1), y + 4, crownHi, 2, 1);
       return;
     }
     if (hairStyle === 'hooded') {
@@ -184,17 +254,47 @@ function drawHumanHair(ctx, x, y, meta, hit, style, crown, crownHi) {
       px(ctx, x - 3 + hit, y - 2, crownHi, 4, 1);
       return;
     }
+
+    const backX = x + (side > 0 ? -4 : 1) + hit;
     px(ctx, x - 2 + hit, y - 1, crown, 5, 1);
     px(ctx, x - 3 + hit, y, crown, 6, 1);
-    px(ctx, x - 3 + hit, y + 1, crown, 2, hairStyle === 'loose' ? 6 : 4);
-    if (hairStyle === 'loose') px(ctx, x - 4 + hit, y + 4, crown, 3, 4);
     px(ctx, x - 1 + hit, y - 1, crownHi, 2, 1);
+    if (hairStyle === 'bobbed') {
+      px(ctx, backX, y + 1, crown, 3, 7);
+      px(ctx, backX + (side > 0 ? 1 : -1), y + 7, crownHi, 2, 1);
+      return;
+    }
+    if (hairStyle === 'loose') {
+      px(ctx, backX, y + 1, crown, 3, 9);
+      px(ctx, backX + (side > 0 ? 0 : -1), y + 8, crownHi, 2, 1);
+      return;
+    }
+    if (hairStyle === 'tied') {
+      px(ctx, backX, y + 2, crown, 3, 3);
+      px(ctx, backX + (side > 0 ? 0 : 1), y + 5, crown, 2, 4);
+      return;
+    }
+    if (hairStyle === 'braid') {
+      px(ctx, backX, y + 2, crown, 3, 2);
+      px(ctx, backX + 1, y + 4, crown, 2, 2);
+      px(ctx, backX, y + 6, crownHi, 2, 2);
+      px(ctx, backX + 1, y + 8, crown, 2, 3);
+      return;
+    }
+    px(ctx, backX + 1, y + 1, crown, 2, 4);
     return;
   }
 
   if (hairStyle === 'shaved') {
     px(ctx, x - 2 + hit, y - 1, crown, 5, 1);
     px(ctx, x - 1 + hit, y - 1, crownHi, 2, 1);
+    return;
+  }
+  if (hairStyle === 'tonsure') {
+    px(ctx, x - 3 + hit, y - 1, crown, 7, 2);
+    px(ctx, x - 2 + hit, y - 1, skin.mid, 5, 2);
+    px(ctx, x - 4 + hit, y + 1, crown, 2, 4);
+    px(ctx, x + 3 + hit, y + 1, crown, 1, 4);
     return;
   }
   if (hairStyle === 'hooded') {
@@ -205,33 +305,185 @@ function drawHumanHair(ctx, x, y, meta, hit, style, crown, crownHi) {
     px(ctx, x - 3 + hit, y - 2, crownHi, 4, 1);
     return;
   }
+
   px(ctx, x - 2 + hit, y - 1, crown, 5, 1);
   px(ctx, x - 3 + hit, y, crown, 7, 1);
-  px(ctx, x - 4 + hit, y + 1, crown, 2, hairStyle === 'loose' ? 6 : 4);
-  px(ctx, x + 3 + hit, y + 1, crown, 1, hairStyle === 'loose' ? 6 : 4);
-  if (hairStyle === 'loose') px(ctx, x - 3 + hit, y + 6, crown, 7, 2);
   px(ctx, x - 1 + hit, y - 1, crownHi, 2, 1);
+  if (hairStyle === 'bobbed') {
+    px(ctx, x - 4 + hit, y + 1, crown, 2, 6);
+    px(ctx, x + 3 + hit, y + 1, crown, 2, 6);
+    px(ctx, x - 3 + hit, y + 6, crown, 2, 1);
+    px(ctx, x + 2 + hit, y + 6, crownHi, 2, 1);
+    return;
+  }
+  if (hairStyle === 'loose') {
+    px(ctx, x - 4 + hit, y + 1, crown, 2, 7);
+    px(ctx, x + 3 + hit, y + 1, crown, 2, 7);
+    px(ctx, x - 3 + hit, y + 7, crown, 7, 2);
+    return;
+  }
+  if ((hairStyle === 'tied' || hairStyle === 'braid') && meta.view === 'three') {
+    const backX = x + (side > 0 ? -5 : 4) + hit;
+    px(ctx, backX, y + 3, crown, 2, 3);
+    if (hairStyle === 'braid') {
+      px(ctx, backX + (side > 0 ? 0 : -1), y + 6, crownHi, 2, 2);
+      px(ctx, backX, y + 8, crown, 1, 3);
+    }
+  }
+  px(ctx, x - 4 + hit, y + 1, crown, 2, 4);
+  px(ctx, x + 3 + hit, y + 1, crown, 1, 4);
+}
+
+function drawHoodHairWindow(ctx, x, y, meta, hit, style) {
+  const hairStyle = style.hairStyle ?? 'cropped';
+  if (hairStyle === 'hooded') return;
+  const side = directionSide(meta);
+  const skin = ramp(style, 'skin');
+  if (meta.back) {
+    if (hairStyle === 'bobbed' || hairStyle === 'loose') {
+      const h = hairStyle === 'loose' ? 5 : 3;
+      px(ctx, x - 3 + hit, y + 6, style.hair, 7, h);
+    }
+    if (hairStyle === 'tied') {
+      px(ctx, x - 1 + hit, y + 6, style.hair, 3, 5);
+      px(ctx, x + hit, y + 10, style.hairHi ?? style.hair, 1, 1);
+    }
+    if (hairStyle === 'braid') {
+      px(ctx, x - 1 + hit, y + 6, style.hair, 3, 2);
+      px(ctx, x + hit, y + 8, style.hairHi ?? style.hair, 2, 2);
+      px(ctx, x - 1 + hit, y + 10, style.hair, 2, 3);
+    }
+    return;
+  }
+  if (hairStyle === 'shaved') {
+    px(ctx, x - 2 + hit, y - 1, skin.mid, 5, 2);
+    px(ctx, x - 1 + hit, y - 1, skin.hi, 2, 1);
+    return;
+  }
+  if (hairStyle === 'tonsure') {
+    px(ctx, x - 2 + hit, y - 1, skin.mid, 5, 2);
+    px(ctx, x - 3 + hit, y + 1, style.hair, 2, 3);
+    px(ctx, x + 2 + hit, y + 1, style.hair, 2, 3);
+    return;
+  }
+  px(ctx, x - 2 + hit, y - 1, style.hair, 5, 3);
+  px(ctx, x - 1 + hit, y - 1, style.hairHi ?? style.hair, 2, 1);
+  if (hairStyle === 'bobbed' || hairStyle === 'loose') {
+    const h = hairStyle === 'loose' ? 6 : 4;
+    px(ctx, x - 4 + hit, y + 3, style.hair, 1, h);
+    px(ctx, x + 3 + hit, y + 3, style.hair, 1, h + (side > 0 ? 1 : 0));
+  }
+  if ((hairStyle === 'tied' || hairStyle === 'braid') && meta.view !== 'front') {
+    const backX = x + (side > 0 ? -5 : 4) + hit;
+    px(ctx, backX, y + 3, style.hair, 2, hairStyle === 'braid' ? 5 : 3);
+    if (hairStyle === 'braid') px(ctx, backX + (side > 0 ? 0 : -1), y + 8, style.hairHi ?? style.hair, 2, 2);
+  }
+}
+
+function drawHumanFaceDetails(ctx, x, y, meta, hit, style) {
+  if (meta.back) return;
+  const skin = ramp(style, 'skin');
+  const side = directionSide(meta);
+  if (style.age === 'fresh') {
+    if (meta.view === 'side') {
+      px(ctx, x + (side > 0 ? 1 : -1) + hit, y + 5, skin.hi, 1, 1);
+    } else {
+      px(ctx, x + 2 + hit, y + 5, skin.hi, 1, 1);
+      px(ctx, x - 1 + hit, y + 6, skin.mid, 2, 1);
+    }
+  } else if (style.age === 'weathered' || style.age === 'elder') {
+    if (meta.view === 'side') {
+      px(ctx, x + (side > 0 ? 1 : -2) + hit, y + 5, skin.dk, 2, 1);
+    } else {
+      px(ctx, x + 2 + hit, y + 5, skin.dk, 2, 1);
+      if (style.age === 'elder') px(ctx, x + 2 + hit, y + 6, skin.lo, 1, 1);
+    }
+  }
+  if (style.age === 'elder' && style.hairStyle !== 'hooded') {
+    px(ctx, x - 2 + hit, y, PALETTE.stoneDust, 1, 2);
+  }
+
+  if (!style.faceMark || style.faceMark === 'none') return;
+  if (meta.view === 'side') {
+    const nearX = x + (side > 0 ? 2 : -3) + hit;
+    if (style.faceMark === 'eye-patch') {
+      px(ctx, nearX, y + 3, PALETTE.clothDark, 2, 2);
+      linePx(ctx, nearX - side * 2, y + 2, nearX + side * 2, y + 4, PALETTE.stoneDark);
+    } else if (style.faceMark === 'burn-scar') {
+      px(ctx, nearX, y + 4, PALETTE.rustDark, 2, 2);
+      px(ctx, nearX - side, y + 6, skin.dk, 1, 1);
+    } else if (style.faceMark === 'cheek-scar') {
+      px(ctx, nearX, y + 4, PALETTE.rustLight, 1, 1);
+      px(ctx, nearX - side, y + 5, skin.dk, 1, 1);
+    } else if (style.faceMark === 'split-brow') {
+      px(ctx, nearX, y + 2, PALETTE.rustLight, 1, 1);
+      px(ctx, nearX - side, y + 3, skin.dk, 1, 1);
+    }
+    return;
+  }
+  if (style.faceMark === 'eye-patch') {
+    px(ctx, x - 3 + hit, y + 3, PALETTE.clothDark, 3, 2);
+    linePx(ctx, x - 4 + hit, y + 2, x + 2 + hit, y + 4, PALETTE.stoneDark);
+  } else if (style.faceMark === 'burn-scar') {
+    px(ctx, x - 3 + hit, y + 3, PALETTE.rustDark, 2, 3);
+    px(ctx, x - 1 + hit, y + 5, skin.dk, 1, 1);
+  } else if (style.faceMark === 'cheek-scar') {
+    px(ctx, x - 2 + hit, y + 4, PALETTE.rustLight, 1, 1);
+    px(ctx, x - 1 + hit, y + 5, skin.dk, 1, 1);
+    px(ctx, x + hit, y + 6, PALETTE.rustDark, 1, 1);
+  } else if (style.faceMark === 'split-brow') {
+    px(ctx, x - 2 + hit, y + 2, PALETTE.rustLight, 1, 1);
+    px(ctx, x - 1 + hit, y + 3, skin.dk, 1, 1);
+  }
 }
 
 function drawFacialHair(ctx, x, y, meta, hit, style) {
-  // Beards stay visible with the hood up: the cowl frames the face, it does
-  // not erase it. Only back views hide the jaw.
+  // Facial hair stays visible with the hood up because the cowl frames the jaw.
   if (meta.back || !style.facialHair || style.facialHair === 'none') return;
   const hair = style.hair;
+  const hairHi = style.hairHi ?? hair;
   const side = directionSide(meta);
   if (meta.view === 'side') {
     const jawX = x + (side > 0 ? 1 : -3) + hit;
-    if (style.facialHair === 'beard') {
+    if (style.facialHair === 'moustache') {
+      px(ctx, jawX + side, y + 5, hair, 3, 1);
+      px(ctx, jawX + side, y + 5, hairHi, 1, 1);
+    } else if (style.facialHair === 'goatee') {
+      px(ctx, jawX + side, y + 6, hair, 2, 3);
+      px(ctx, jawX + side, y + 8, hairHi, 1, 1);
+    } else if (style.facialHair === 'short-beard') {
+      px(ctx, jawX, y + 5, hair, 4, 2);
+      px(ctx, jawX + side, y + 7, hair, 3, 1);
+      px(ctx, jawX, y + 5, hairHi, 1, 1);
+    } else if (style.facialHair === 'beard') {
       px(ctx, jawX, y + 5, hair, 4, 2);
       px(ctx, jawX + side, y + 7, hair, 3, 2);
+      px(ctx, jawX, y + 5, hairHi, 1, 1);
     } else {
       px(ctx, jawX, y + 5, hair, 3, 1);
     }
     return;
   }
+  if (style.facialHair === 'moustache') {
+    px(ctx, x - 2 + hit, y + 5, hair, 5, 1);
+    px(ctx, x - 1 + hit, y + 5, hairHi, 1, 1);
+    return;
+  }
+  if (style.facialHair === 'goatee') {
+    px(ctx, x - 1 + hit, y + 6, hair, 3, 3);
+    px(ctx, x + hit, y + 8, hairHi, 1, 1);
+    return;
+  }
+  if (style.facialHair === 'short-beard') {
+    px(ctx, x - 3 + hit, y + 5, hair, 7, 2);
+    px(ctx, x - 2 + hit, y + 7, hair, 5, 1);
+    px(ctx, x - 2 + hit, y + 5, hairHi, 2, 1);
+    return;
+  }
   if (style.facialHair === 'beard') {
     px(ctx, x - 3 + hit, y + 5, hair, 7, 2);
     px(ctx, x - 2 + hit, y + 7, hair, 5, 2);
+    px(ctx, x - 2 + hit, y + 5, hairHi, 2, 1);
     return;
   }
   px(ctx, x - 3 + hit, y + 5, hair, 7, 1);
@@ -243,6 +495,7 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
   const hit = pose.hit ? side : 0;
   const hood = style.hood ?? style.hair;
   const hoodHi = style.hoodHi ?? style.hairHi;
+  const faceShape = HUMAN_FACE_SHAPES[style.faceShape] ?? HUMAN_FACE_SHAPES.oval;
 
   if (style.hostHead) {
     const cx = x + hit + (meta.view === 'side' ? side : 0);
@@ -297,33 +550,24 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
   const crownHi = bare && hairStyle !== 'hooded' ? (style.hairHi ?? style.hair) : hoodHi;
 
   if (meta.view === 'side') {
-    taperedSpan(ctx, x + hit, y, 5, 6, 8, skin, side * 0.3);
+    taperedSpan(ctx, x + hit, y, faceShape.sideTop, faceShape.sideBottom, faceShape.height, skin, side * 0.3);
     drawHumanHair(ctx, x, y, meta, hit, { ...style, hairStyle, bareHead: bare }, crown, crownHi);
     px(ctx, x + (side > 0 ? 4 : -1) + hit, y + 4, skin.mid, 2, 2);
     px(ctx, x + (side > 0 ? 2 : 3) + hit, y + 4, skin.dk, 2, 1);
-    drawFacialHair(ctx, x, y, meta, hit, style);
     if (bare) {
       px(ctx, x + hit, y + 2, skin.hi, 2, 1); // lit temple
     } else {
-      // Hood worn open in profile: the front crown keeps real hair (scalp
-      // when shaved) and loose locks spill down the nape.
-      if (style.hairStyle === 'shaved') {
-        px(ctx, x + (side > 0 ? 0 : -2) + hit, y - 1, skin.mid, 3, 2);
-      } else {
-        px(ctx, x + (side > 0 ? 0 : -2) + hit, y - 1, style.hair, 3, 2);
-        px(ctx, x + (side > 0 ? 1 : -1) + hit, y - 1, style.hairHi ?? style.hair, 1, 1);
-      }
-      if (style.hairStyle === 'loose') px(ctx, x - side * 4 + hit, y + 4, style.hair, 1, 5);
+      drawHoodHairWindow(ctx, x, y, meta, hit, style);
     }
+    drawHumanFaceDetails(ctx, x, y, meta, hit, style);
+    drawFacialHair(ctx, x, y, meta, hit, style);
     return;
   }
 
-  taperedSpan(ctx, x + hit, y, 6, 7, 8, skin);
+  taperedSpan(ctx, x + hit, y, faceShape.frontTop, faceShape.frontBottom, faceShape.height, skin);
   drawHumanHair(ctx, x, y, meta, hit, { ...style, hairStyle, bareHead: bare }, crown, crownHi);
   if (meta.back) {
-    px(ctx, x - 3 + hit, y + 2, crown, 6, 6);
-    // Loose hair shows from behind whether the hood is up or down.
-    if (style.hairStyle === 'loose') px(ctx, x - 2 + hit, y + 8, style.hair, 5, 2);
+    if (!bare) drawHoodHairWindow(ctx, x, y, meta, hit, style);
     return;
   }
   if (bare) {
@@ -331,22 +575,9 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
     px(ctx, x - 1 + hit, y + 2, skin.hi, 3, 1);
     px(ctx, x - 2 + hit, y + 3, skin.mid, 5, 1);
   } else {
-    // Hood worn open: the cowl rings the skull while the front crown keeps
-    // real hair (scalp when shaved) and the face stays lit, so hair colour,
-    // hairstyle, and skin tone all survive the raised hood.
-    if (style.hairStyle === 'shaved') {
-      px(ctx, x - 2 + hit, y - 1, skin.mid, 5, 2);
-      px(ctx, x - 1 + hit, y - 1, skin.hi, 2, 1);
-    } else {
-      px(ctx, x - 2 + hit, y - 1, style.hair, 5, 3);
-      px(ctx, x - 1 + hit, y - 1, style.hairHi ?? style.hair, 2, 1);
-    }
+    // The raised cowl keeps a real hair window and leaves the face lit.
+    drawHoodHairWindow(ctx, x, y, meta, hit, style);
     px(ctx, x - 1 + hit, y + 2, skin.hi, 2, 1); // lit brow under the hairline
-    if (style.hairStyle === 'loose') {
-      // Loose hair escapes the cowl and hangs at both jaw lines.
-      px(ctx, x - 4 + hit, y + 3, style.hair, 1, 5);
-      px(ctx, x + 3 + hit, y + 3, style.hair, 1, 5 + (side > 0 ? 1 : 0));
-    }
   }
   // The face draws last so no brow or cowl row buries it. It has to survive
   // being blown up 2.4x in the dialogue portrait plate: a browline shadow, a
@@ -357,6 +588,7 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
   px(ctx, x + hit, y + 5, skin.lo, 1, 1); // the nose
   px(ctx, x - 2 + hit, y + 5, skin.hi, 1, 1); // lit cheekbone
   px(ctx, x + hit, y + 6, skin.lo, 2, 1);
+  drawHumanFaceDetails(ctx, x, y, meta, hit, style);
   drawFacialHair(ctx, x, y, meta, hit, style);
 }
 
@@ -593,8 +825,14 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
   const bob = pose.bob ?? 0;
   const sneak = pose.sneak ?? 0;
   const baseHunch = style.hunch ?? 0;
+  const postureCompression = style.postureCompression ?? 0;
+  const postureLean = meta.view === 'side'
+    ? directionSide(meta) * (style.postureLean ?? 0)
+    : meta.view === 'three'
+      ? directionSide(meta) * Math.round((style.postureLean ?? 0) * 0.66)
+      : 0;
   const hipY = footY - style.legLength + bob + Math.floor(baseHunch * 0.4) + Math.floor(sneak * 0.62);
-  const shoulderY = hipY - style.torsoLength + Math.floor(baseHunch * 0.55) + Math.floor(sneak * 0.72);
+  const shoulderY = hipY - style.torsoLength + Math.floor(baseHunch * 0.55) + postureCompression + Math.floor(sneak * 0.72);
   const headY = shoulderY - style.headHeight + Math.floor(baseHunch * 0.25) + Math.floor(sneak * 0.32);
 
   const pants = ramp(style, 'pants');
@@ -633,7 +871,7 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
   drawJointedLimb(ctx, [nearLeg.hip, nearLeg.knee, nearLeg.foot], pants, style.legSize, false);
   drawBoot(ctx, nearLeg.foot.x, nearLeg.foot.y, side, style, false);
 
-  const torso = drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style);
+  const torso = drawTorso(ctx, cx + postureLean, shoulderY, hipY, meta, pose, style);
   drawVest(ctx, torso, shoulderY, hipY, meta, style);
   drawAdultChest(ctx, torso, shoulderY, meta, pose, style);
   drawKitOverlay(ctx, torso, shoulderY, hipY, meta, style);
@@ -696,6 +934,70 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
   if (pose.hit) px(ctx, torso.bodyCx - 8, shoulderY + 8, PALETTE.flash, 16, 2);
 }
 
+function drawCorpseHair(ctx, hx, bodyTop, style, cult) {
+  const hairStyle = style.hairStyle ?? 'cropped';
+  const hair = style.hair ?? style.hood;
+  const hairHi = style.hairHi ?? hair;
+  const covered = cult || style.bareHead === false || hairStyle === 'hooded';
+  if (covered) {
+    px(ctx, hx - 1, bodyTop, style.hood ?? hair, 7, 3);
+    if (hairStyle === 'bobbed' || hairStyle === 'loose') {
+      px(ctx, hx + 4, bodyTop + 2, hair, 3, hairStyle === 'loose' ? 4 : 3);
+    }
+    if (hairStyle === 'tied') {
+      px(ctx, hx - 2, bodyTop + 2, hair, 3, 2);
+      px(ctx, hx - 4, bodyTop + 3, hair, 3, 2);
+    }
+    if (hairStyle === 'braid') {
+      px(ctx, hx - 2, bodyTop + 2, hair, 3, 2);
+      px(ctx, hx - 4, bodyTop + 4, hairHi, 2, 2);
+      px(ctx, hx - 6, bodyTop + 5, hair, 2, 2);
+    }
+    return;
+  }
+  if (hairStyle === 'shaved') {
+    px(ctx, hx + 1, bodyTop, hair, 4, 1);
+    px(ctx, hx + 1, bodyTop, hairHi, 1, 1);
+    return;
+  }
+  if (hairStyle === 'tonsure') {
+    px(ctx, hx, bodyTop, hair, 6, 1);
+    px(ctx, hx + 1, bodyTop + 1, style.skin, 4, 1);
+    px(ctx, hx + 4, bodyTop + 2, hair, 2, 2);
+    return;
+  }
+  px(ctx, hx, bodyTop, hair, 6, hairStyle === 'bobbed' || hairStyle === 'loose' ? 3 : 2);
+  px(ctx, hx, bodyTop, hairHi, 2, 1);
+  if (hairStyle === 'bobbed') px(ctx, hx + 4, bodyTop + 2, hair, 3, 2);
+  if (hairStyle === 'loose') px(ctx, hx + 4, bodyTop + 2, hair, 4, 4);
+  if (hairStyle === 'tied') {
+    px(ctx, hx + 3, bodyTop + 1, hair, 3, 2);
+    px(ctx, hx + 5, bodyTop + 2, hair, 3, 2);
+  }
+  if (hairStyle === 'braid') {
+    px(ctx, hx + 3, bodyTop + 1, hair, 3, 2);
+    px(ctx, hx + 5, bodyTop + 3, hairHi, 2, 2);
+    px(ctx, hx + 6, bodyTop + 4, hair, 2, 3);
+  }
+}
+
+function drawCorpseFaceDetails(ctx, hx, bodyTop, style) {
+  if (style.faceMark === 'eye-patch') {
+    px(ctx, hx + 1, bodyTop + 3, PALETTE.clothDark, 3, 2);
+    linePx(ctx, hx, bodyTop + 2, hx + 5, bodyTop + 4, PALETTE.stoneDark);
+  } else if (style.faceMark === 'burn-scar') {
+    px(ctx, hx + 1, bodyTop + 3, PALETTE.rustDark, 2, 2);
+  } else if (style.faceMark === 'cheek-scar') {
+    px(ctx, hx + 2, bodyTop + 3, PALETTE.rustLight, 1, 1);
+    px(ctx, hx + 3, bodyTop + 4, style.skinDk, 1, 1);
+  } else if (style.faceMark === 'split-brow') {
+    px(ctx, hx + 1, bodyTop + 2, PALETTE.rustLight, 1, 1);
+  }
+  if (style.age === 'elder' && style.hairStyle !== 'hooded') {
+    px(ctx, hx + 1, bodyTop, PALETTE.stoneDust, 1, 1);
+  }
+}
+
 export function drawDeath(ctx, w, h, style, frame) {
   const cx = Math.floor(w / 2);
   const groundY = h - 6;
@@ -745,15 +1047,13 @@ export function drawDeath(ctx, w, h, style, frame) {
     // Human corpse: head + boots at the ends, a slack outflung arm, belt.
     const hx = cx + 13;
     px(ctx, hx, bodyTop + 1, skin.mid, 6, 6);
-    const corpseHair = style.bareHead === false || style.hairStyle === 'hooded' ? style.hood : style.hair;
-    if (cult) px(ctx, hx - 1, bodyTop, style.hood, 7, 3); // cowl over the face
-    else if (style.hairStyle === 'shaved') px(ctx, hx + 1, bodyTop, corpseHair, 4, 1);
-    else {
-      px(ctx, hx, bodyTop, corpseHair, 6, style.hairStyle === 'loose' ? 3 : 2);
-      if (style.hairStyle === 'loose') px(ctx, hx + 4, bodyTop + 2, corpseHair, 3, 3);
-    }
-    if (!cult && style.bareHead !== false && style.facialHair && style.facialHair !== 'none') {
-      px(ctx, hx + 1, bodyTop + 4, style.hair, 4, style.facialHair === 'beard' ? 2 : 1);
+    drawCorpseHair(ctx, hx, bodyTop, style, cult);
+    if (!cult) drawCorpseFaceDetails(ctx, hx, bodyTop, style);
+    if (!cult && style.facialHair && style.facialHair !== 'none') {
+      const beardH = style.facialHair === 'beard' ? 3 : style.facialHair === 'short-beard' || style.facialHair === 'goatee' ? 2 : 1;
+      const beardW = style.facialHair === 'goatee' ? 2 : style.facialHair === 'moustache' ? 3 : 4;
+      px(ctx, hx + 1, bodyTop + 4, style.hair, beardW, beardH);
+      px(ctx, hx + 1, bodyTop + 4, style.hairHi ?? style.hair, 1, 1);
     } else if (!cult) {
       px(ctx, hx + 1, bodyTop + 4, skin.dk, 3, 1); // slack jaw
     }

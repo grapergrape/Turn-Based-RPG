@@ -759,7 +759,12 @@ Minimal actor shape:
   "appearance": {
     "genderModel": "female",
     "bodyType": "medium",
+    "stature": "average",
+    "posture": "upright",
     "skinTone": "tan",
+    "age": "adult",
+    "faceShape": "oval",
+    "faceMark": "none",
     "hairColor": "brown",
     "hairStyle": "cropped",
     "facialHair": "none",
@@ -822,15 +827,25 @@ Rules:
   `src/render/SpriteAtlas.js`. When omitted, the actor id is used as the sprite
   key.
 - Player `appearance` is optional sprite-baking metadata. Character creation
-  writes `genderModel`, `bodyType`, `skinTone`, `hairColor`, `hairStyle`,
-  `facialHair`, and `anatomy`, plus `breastSize` and `penisSize` as 0 to 10
-  values. `genderModel` is visual model selection, not a pronoun field. It
-  changes the baked frame (shoulders, waist, hip flare) and resets `anatomy`
-  and the size sliders to that model's defaults, after which the player can set
-  `anatomy` to any of `vulva`, `penis`, `intersex`, or `smooth` regardless of
-  model. Legacy `bodyFrame` values still load for old data. Anatomy and breast
-  detail render only when the player has no clothes equipped; equipped clothes
-  cover them. New player data should use the explicit customization fields.
+  writes `genderModel`, `bodyType`, `stature`, `posture`, `skinTone`, `age`,
+  `faceShape`, `faceMark`, `hairColor`, `hairStyle`, `facialHair`, and `anatomy`,
+  plus `breastSize` and `penisSize` as 0 to 10 values. `genderModel` is visual
+  model selection, not a pronoun field. It changes the baked frame (shoulders,
+  waist, hip flare) and resets `anatomy` and the size sliders to that model's
+  defaults. The player can then set `anatomy` to any of `vulva`, `penis`,
+  `intersex`, or `smooth` regardless of model. Legacy `bodyFrame` values still
+  load for old data. Anatomy detail renders only when the player has no clothes
+  equipped. Bust scale still changes the clothed silhouette. Hair, facial hair,
+  face marks, stature, and posture remain readable through the field kit. New
+  player data should use the explicit customization fields.
+- Current player option ids are: `skinny`, `medium`, `stocky`, `fat`, and `buff`
+  for `bodyType`; `short`, `average`, and `tall` for `stature`; `upright`,
+  `guarded`, and `stooped` for `posture`; `fresh`, `adult`, `weathered`, and
+  `elder` for `age`; `narrow`, `oval`, `broad`, and `long` for `faceShape`; and
+  `none`, `split-brow`, `cheek-scar`, `burn-scar`, and `eye-patch` for
+  `faceMark`. Hair and skin option ids are exported by `src/render/SpriteAtlas.js`
+  and validated by `npm run check` so actor data cannot silently request a
+  missing visual.
 - Human NPCs and human enemies can also use composable appearance fields:
   `body`, `outfit`, `gear`, and `accent`. These bake a unique sprite at level
   load. Example: `{ "body": "broad", "outfit": "settlement-work-coat", "gear":

@@ -214,7 +214,9 @@ export class LootSession {
 
     if (sourceType === 'enemy' && source) {
       source.lootClaimed = true;
-      if (source.inspect) this.callbacks.openDialogueById?.(source.inspect);
+      if (source.inspect && !source.inspectShownBeforeLoot) {
+        this.callbacks.openDialogueById?.(source.inspect);
+      }
       return true;
     }
     if (sourceType === 'object' && source) {

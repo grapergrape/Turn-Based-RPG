@@ -55,5 +55,16 @@ export const PALETTE = {
   uiEpic: '#76518a',
   uiLegendary: '#c4632a',
   uiFailure: '#7e2c21',
-  uiBad: '#9a3322'
+  uiBad: '#9a3322',
+
+  // Journal-only paper ramp. Kept here so the filing pages follow the same
+  // central palette discipline as every other visible interface surface.
+  uiPaperInk: '#1c150f',
+  uiPaperInkDim: '#51432d',
+  uiPaperFox: '#8e6738',
+  uiPaperLow: '#8f7b50',
+  uiPaperRule: '#aa9564',
+  uiPaperBase: '#bdab7d',
+  uiPaperFlap: '#c8b681',
+  uiPaperHigh: '#d4c493'
 };

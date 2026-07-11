@@ -1,31 +1,95 @@
-export const JOURNAL_BOOK = Object.freeze({ x: 48, y: 16, w: 544, h: 352 });
+export const JOURNAL_BOOK = Object.freeze({ x: 18, y: 14, w: 604, h: 356 });
 
 export const JOURNAL_PAGES = Object.freeze({
   left: Object.freeze({
-    x: JOURNAL_BOOK.x + 16,
-    y: JOURNAL_BOOK.y + 14,
-    w: 244,
-    h: JOURNAL_BOOK.h - 26
+    x: JOURNAL_BOOK.x + 14,
+    y: JOURNAL_BOOK.y + 17,
+    w: 274,
+    h: JOURNAL_BOOK.h - 34
   }),
   right: Object.freeze({
-    x: JOURNAL_BOOK.x + 284,
-    y: JOURNAL_BOOK.y + 14,
-    w: 244,
-    h: JOURNAL_BOOK.h - 26
+    x: JOURNAL_BOOK.x + JOURNAL_BOOK.w - 288,
+    y: JOURNAL_BOOK.y + 17,
+    w: 274,
+    h: JOURNAL_BOOK.h - 34
   })
 });
 
 export const JOURNAL_MAP_FIELD_BOX = Object.freeze({
   x: JOURNAL_PAGES.left.x + 12,
-  y: JOURNAL_PAGES.left.y + 41,
+  y: JOURNAL_PAGES.left.y + 45,
   w: JOURNAL_PAGES.left.w - 24,
-  h: JOURNAL_PAGES.left.h - 76
+  h: JOURNAL_PAGES.left.h - 82
 });
 
 export const JOURNAL_ARROW_BOXES = Object.freeze({
-  prev: Object.freeze({ x: JOURNAL_BOOK.x + 18, y: JOURNAL_BOOK.y + JOURNAL_BOOK.h - 39, w: 34, h: 28 }),
-  next: Object.freeze({ x: JOURNAL_BOOK.x + JOURNAL_BOOK.w - 52, y: JOURNAL_BOOK.y + JOURNAL_BOOK.h - 39, w: 34, h: 28 })
+  prev: Object.freeze({ x: 2, y: 155, w: 28, h: 58 }),
+  next: Object.freeze({ x: 610, y: 155, w: 28, h: 58 })
 });
+
+export const JOURNAL_TECHNIQUE_LIST = Object.freeze({
+  x: JOURNAL_PAGES.left.x + 7,
+  y: JOURNAL_PAGES.left.y + 87,
+  w: JOURNAL_PAGES.left.w - 14,
+  rowHeight: 14,
+  textOffset: 3,
+  visibleRows: 14
+});
+
+export function journalTabBoxes(count) {
+  const safeCount = Math.max(0, Math.floor(Number(count) || 0));
+  if (safeCount === 0) return [];
+  const gap = 4;
+  const margin = 20;
+  const tabW = Math.floor((JOURNAL_BOOK.w - margin * 2 - gap * (safeCount - 1)) / safeCount);
+  const total = safeCount * tabW + (safeCount - 1) * gap;
+  const startX = JOURNAL_BOOK.x + Math.floor((JOURNAL_BOOK.w - total) / 2);
+  return Array.from({ length: safeCount }, (_, index) => Object.freeze({
+    x: startX + index * (tabW + gap),
+    y: JOURNAL_BOOK.y - 12,
+    w: tabW,
+    h: 25
+  }));
+}
+
+export function journalTabAt(point, count) {
+  if (!point) return null;
+  const boxes = journalTabBoxes(count);
+  const index = boxes.findIndex((box) => pointInBox(point, box));
+  return index >= 0 ? index : null;
+}
+
+export function journalTechniqueWindow(entries, selectedIndex, visibleRows = JOURNAL_TECHNIQUE_LIST.visibleRows) {
+  const list = Array.isArray(entries) ? entries : [];
+  const count = list.length;
+  const rows = Math.max(1, Math.floor(Number(visibleRows) || 1));
+  const selected = count > 0
+    ? Math.max(0, Math.min(count - 1, Math.floor(Number(selectedIndex) || 0)))
+    : 0;
+  const start = Math.max(0, Math.min(Math.max(0, count - rows), selected - rows + 1));
+  const end = Math.min(count, start + rows);
+  return {
+    count,
+    selected,
+    start,
+    end,
+    selectedRow: count > 0 ? selected - start : 0,
+    entries: list.slice(start, end),
+    hasPrevious: start > 0,
+    hasNext: end < count
+  };
+}
+
+export function journalTechniqueRowAt(point, entries, selectedIndex) {
+  if (!point || !pointInBox(point, {
+    ...JOURNAL_TECHNIQUE_LIST,
+    h: JOURNAL_TECHNIQUE_LIST.rowHeight * JOURNAL_TECHNIQUE_LIST.visibleRows
+  })) return null;
+  const window = journalTechniqueWindow(entries, selectedIndex);
+  const row = Math.floor((point.y - JOURNAL_TECHNIQUE_LIST.y) / JOURNAL_TECHNIQUE_LIST.rowHeight);
+  const index = window.start + row;
+  return index >= window.start && index < window.end ? index : null;
+}
 
 export function journalArrowAt(point) {
   if (!point) return null;

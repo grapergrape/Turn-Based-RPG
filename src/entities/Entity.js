@@ -33,6 +33,7 @@ export class Entity {
     this.background = background;
     // Dialogue id shown when the player inspects this actor's corpse, if any.
     this.inspect = inspect;
+    this.inspectShownBeforeLoot = false;
     this.loot = Array.isArray(loot) ? loot.map((entry) => ({ ...entry })) : [];
     this.lootClaimed = false;
     this.trade = trade ? JSON.parse(JSON.stringify(trade)) : null;

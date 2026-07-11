@@ -10,37 +10,66 @@
 <canvas id="c"></canvas>
 <script type="module">
 window.onerror = (msg) => { document.title = 'CAPTURE-ERROR'; document.body.textContent = String(msg); };
-import { bakePlayerCharacter } from '/src/render/SpriteAtlas.js';
+import {
+  MARA_DEFAULT_APPEARANCE,
+  PLAYER_AGE_IDS,
+  PLAYER_BODY_TYPE_IDS,
+  PLAYER_FACE_MARK_IDS,
+  PLAYER_FACE_SHAPE_IDS,
+  PLAYER_FACIAL_HAIR_IDS,
+  PLAYER_GENDER_MODEL_IDS,
+  PLAYER_HAIR_COLOR_IDS,
+  PLAYER_HAIR_STYLE_IDS,
+  PLAYER_POSTURE_IDS,
+  PLAYER_SKIN_TONE_IDS,
+  PLAYER_STATURE_IDS,
+  bakePlayerCharacter
+} from '/src/render/SpriteAtlas.js';
 import { MARA_DEFAULT_EQUIPMENT } from '/src/render/sprites/maraAppearance.js';
 try {
 
 const params = new URLSearchParams(location.search);
 const SCALE = Number(params.get('scale') ?? '2');
+const STATE = params.get('state') ?? 'idle';
+const FRAME = Math.max(0, Number(params.get('frame') ?? '0'));
 
-const base = {
-  genderModel: 'female', bodyType: 'medium', skinTone: 'tan', hairColor: 'brown',
-  hairStyle: 'cropped', facialHair: 'none', breastSize: 5, penisSize: 0
-};
+const { bodyFrame: _legacyBodyFrame, ...base } = MARA_DEFAULT_APPEARANCE;
+
+const optionRows = (prefix, ids, key, overrides = {}) => ids
+  .filter((id) => id !== base[key])
+  .map((id) => [`${prefix} ${id}`, { ...base, ...overrides, [key]: id }]);
 
 const variants = [
   ['base (mara default)', base],
-  ['gender male', { ...base, genderModel: 'male' }],
-  ['gender androgynous', { ...base, genderModel: 'androgynous' }],
-  ['body skinny', { ...base, bodyType: 'skinny' }],
-  ['body fat', { ...base, bodyType: 'fat' }],
-  ['body buff', { ...base, bodyType: 'buff' }],
-  ['skin light', { ...base, skinTone: 'light' }],
-  ['skin brown', { ...base, skinTone: 'brown' }],
-  ['skin dark', { ...base, skinTone: 'dark' }],
-  ['hair black', { ...base, hairColor: 'black' }],
-  ['hair blond', { ...base, hairColor: 'blond' }],
-  ['hair grey', { ...base, hairColor: 'grey' }],
-  ['style loose', { ...base, hairStyle: 'loose' }],
-  ['style shaved', { ...base, hairStyle: 'shaved' }],
-  ['beard', { ...base, facialHair: 'beard', genderModel: 'male' }],
-  ['stubble', { ...base, facialHair: 'stubble', genderModel: 'male' }],
+  ...optionRows('gender', PLAYER_GENDER_MODEL_IDS, 'genderModel'),
+  ...optionRows('body', PLAYER_BODY_TYPE_IDS, 'bodyType'),
+  ...optionRows('stature', PLAYER_STATURE_IDS, 'stature'),
+  ...optionRows('posture', PLAYER_POSTURE_IDS, 'posture'),
+  ...optionRows('skin', PLAYER_SKIN_TONE_IDS, 'skinTone'),
+  ...optionRows('age', PLAYER_AGE_IDS, 'age'),
+  ...optionRows('face', PLAYER_FACE_SHAPE_IDS, 'faceShape'),
+  ...optionRows('mark', PLAYER_FACE_MARK_IDS, 'faceMark'),
+  ...optionRows('hair', PLAYER_HAIR_COLOR_IDS, 'hairColor'),
+  ...optionRows('style', PLAYER_HAIR_STYLE_IDS, 'hairStyle'),
+  ...optionRows('facial hair', PLAYER_FACIAL_HAIR_IDS, 'facialHair'),
   ['breast 0', { ...base, breastSize: 0 }],
-  ['breast 10', { ...base, breastSize: 10 }]
+  ['breast 10', { ...base, breastSize: 10 }],
+  ['anatomy penis', { ...base, anatomy: 'penis', penisSize: 5 }],
+  ['anatomy intersex', { ...base, anatomy: 'intersex', penisSize: 5 }],
+  ['anatomy smooth', { ...base, anatomy: 'smooth', breastSize: 0 }],
+  ['groin 10', { ...base, anatomy: 'penis', penisSize: 10 }],
+  ['mix road worn', {
+    ...base,
+    age: 'elder',
+    faceShape: 'long',
+    faceMark: 'eye-patch',
+    hairColor: 'auburn',
+    hairStyle: 'braid',
+    facialHair: 'short-beard',
+    bodyType: 'stocky',
+    stature: 'tall',
+    posture: 'stooped'
+  }]
 ];
 
 const only = params.get('only');
@@ -48,8 +77,11 @@ const shown = only
   ? variants.filter(([label]) => only.split(',').some((term) => label.includes(term)))
   : variants;
 
-const COLS = ['clothed s', 'clothed se', 'clothed e', 'bare s', 'bare se'];
-const CELL_W = 60;
+const ALL_FACINGS = params.get('allFacings') === '1';
+const COLS = ALL_FACINGS
+  ? ['clothed n', 'clothed ne', 'clothed e', 'clothed se', 'clothed s', 'clothed sw', 'clothed w', 'clothed nw', 'bare s', 'bare se', 'bare e']
+  : ['clothed s', 'clothed se', 'clothed e', 'bare s', 'bare se'];
+const CELL_W = ALL_FACINGS ? 85 : 70;
 const CELL_H = 72;
 const LABEL_W = 150;
 
@@ -64,6 +96,7 @@ ctx.scale(SCALE, SCALE);
 ctx.font = '10px monospace';
 
 ctx.fillStyle = '#c8b89a';
+ctx.fillText(`state ${STATE} frame ${FRAME}`, 6, 14);
 COLS.forEach((label, i) => ctx.fillText(label, LABEL_W + i * CELL_W, 14));
 
 const bare = { ...MARA_DEFAULT_EQUIPMENT, clothes: null, armor: null, boots: null, helmet: null };
@@ -74,11 +107,12 @@ shown.forEach(([label, appearance], row) => {
   ctx.fillText(label, 6, y + 40);
   const clothed = bakePlayerCharacter(MARA_DEFAULT_EQUIPMENT, {}, appearance);
   const naked = bakePlayerCharacter(bare, {}, appearance);
-  const cells = [
-    [clothed, 's'], [clothed, 'se'], [clothed, 'e'], [naked, 's'], [naked, 'se']
-  ];
+  const cells = ALL_FACINGS
+    ? ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'].map((facing) => [clothed, facing]).concat([[naked, 's'], [naked, 'se'], [naked, 'e']])
+    : [[clothed, 's'], [clothed, 'se'], [clothed, 'e'], [naked, 's'], [naked, 'se']];
   cells.forEach(([sprite, facing], col) => {
-    const frame = sprite.frames.idle[facing][0];
+    const frames = STATE === 'dead' ? sprite.death : (sprite.frames[STATE]?.[facing] ?? sprite.frames.idle[facing]);
+    const frame = frames[Math.min(frames.length - 1, FRAME)];
     ctx.drawImage(frame, LABEL_W + col * CELL_W + 8, y + 4);
   });
 });

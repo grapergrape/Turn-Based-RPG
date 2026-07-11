@@ -17,12 +17,17 @@ import { bakeHostRat, drawSixLeggedRat, drawTendrilWalkerRat, drawThroatMawRat }
 export { SPRITE_POSE_FRAME_COUNTS, getFrame } from './sprites/spriteBake.js';
 export {
   MARA_DEFAULT_APPEARANCE,
+  PLAYER_AGE_IDS,
   PLAYER_BODY_TYPE_IDS,
+  PLAYER_FACE_MARK_IDS,
+  PLAYER_FACE_SHAPE_IDS,
   PLAYER_FACIAL_HAIR_IDS,
   PLAYER_GENDER_MODEL_IDS,
   PLAYER_HAIR_COLOR_IDS,
   PLAYER_HAIR_STYLE_IDS,
+  PLAYER_POSTURE_IDS,
   PLAYER_SKIN_TONE_IDS,
+  PLAYER_STATURE_IDS,
   bakeMara,
   bakePlayerCharacter,
   deriveMaraStyle,

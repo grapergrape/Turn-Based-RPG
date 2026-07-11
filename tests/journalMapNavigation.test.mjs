@@ -4,7 +4,12 @@ import { Game } from '../src/core/Game.js';
 import { JOURNAL_SECTIONS } from '../src/core/JournalState.js';
 import { Entity } from '../src/entities/Entity.js';
 import { Grid } from '../src/world/Grid.js';
-import { journalMapCellAt, journalMapGridMetrics } from '../src/ui/journalLayout.js';
+import {
+  JOURNAL_TECHNIQUE_LIST,
+  journalMapCellAt,
+  journalMapGridMetrics,
+  journalTabBoxes
+} from '../src/ui/journalLayout.js';
 
 function mockCanvas() {
   return {
@@ -203,4 +208,48 @@ function mapClickFor(game, x, y) {
 
   assert.equal(game.uiScreen, 'journal');
   assert.deepEqual(game.pathQueue, []);
+}
+
+{
+  const game = makeGame();
+  game.uiScreen = 'journal';
+  game.journalSection = JOURNAL_SECTIONS.indexOf('QUESTS');
+  game.journalTurn = null;
+  const techniquesTab = journalTabBoxes(JOURNAL_SECTIONS.length)[JOURNAL_SECTIONS.indexOf('TECHNIQUES')];
+
+  game._handleJournalScreen([], {
+    x: techniquesTab.x + 3,
+    y: techniquesTab.y + 3,
+    button: 0
+  });
+
+  assert.equal(game.journalTurn?.to, JOURNAL_SECTIONS.indexOf('TECHNIQUES'));
+  game._advanceJournalTurn(game.journalTurn.duration);
+  assert.equal(JOURNAL_SECTIONS[game.journalSection], 'TECHNIQUES');
+}
+
+{
+  const game = makeGame();
+  game.uiScreen = 'journal';
+  game.journalSection = JOURNAL_SECTIONS.indexOf('TECHNIQUES');
+  game.journalTurn = null;
+  game.journalTechniqueIndex = 25;
+  game.techniqueDefs = Object.fromEntries(Array.from({ length: 26 }, (_, index) => {
+    const number = String(index + 1).padStart(2, '0');
+    return [`method-${number}`, {
+      id: `method-${number}`,
+      name: `Method ${number}`,
+      type: 'active',
+      summary: 'Test method.',
+      requirements: {}
+    }];
+  }));
+
+  game._handleJournalScreen([], {
+    x: JOURNAL_TECHNIQUE_LIST.x + 3,
+    y: JOURNAL_TECHNIQUE_LIST.y + 2,
+    button: 0
+  });
+
+  assert.equal(game.journalTechniqueIndex, 12);
 }

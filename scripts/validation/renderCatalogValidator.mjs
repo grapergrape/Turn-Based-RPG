@@ -24,7 +24,13 @@ import {
 
   LEVEL_CAP,
 
+  PLAYER_AGE_ID_SET,
+
   PLAYER_BODY_TYPE_ID_SET,
+
+  PLAYER_FACE_MARK_ID_SET,
+
+  PLAYER_FACE_SHAPE_ID_SET,
 
   PLAYER_FACIAL_HAIR_ID_SET,
 
@@ -34,7 +40,11 @@ import {
 
   PLAYER_HAIR_STYLE_ID_SET,
 
+  PLAYER_POSTURE_ID_SET,
+
   PLAYER_SKIN_TONE_ID_SET,
+
+  PLAYER_STATURE_ID_SET,
 
   PRIMARY_ATTRIBUTES,
 
@@ -129,12 +139,17 @@ export function validateActorAppearance(name, appearance, fieldName = 'appearanc
       errors.push(`${name}: ${fieldName}.bodyType must be one of ${[...PLAYER_BODY_TYPE_ID_SET].join(', ')}.`);
     }
   }
+  validateAppearanceOption(name, appearance, fieldName, 'stature', PLAYER_STATURE_ID_SET);
+  validateAppearanceOption(name, appearance, fieldName, 'posture', PLAYER_POSTURE_ID_SET);
   if (appearance.skinTone !== undefined) {
     requireString(name, appearance.skinTone, `${fieldName}.skinTone`);
     if (typeof appearance.skinTone === 'string' && !PLAYER_SKIN_TONE_ID_SET.has(appearance.skinTone)) {
       errors.push(`${name}: ${fieldName}.skinTone must be one of ${[...PLAYER_SKIN_TONE_ID_SET].join(', ')}.`);
     }
   }
+  validateAppearanceOption(name, appearance, fieldName, 'age', PLAYER_AGE_ID_SET);
+  validateAppearanceOption(name, appearance, fieldName, 'faceShape', PLAYER_FACE_SHAPE_ID_SET);
+  validateAppearanceOption(name, appearance, fieldName, 'faceMark', PLAYER_FACE_MARK_ID_SET);
   if (appearance.hairColor !== undefined) {
     requireString(name, appearance.hairColor, `${fieldName}.hairColor`);
     if (typeof appearance.hairColor === 'string' && !PLAYER_HAIR_COLOR_ID_SET.has(appearance.hairColor)) {
@@ -194,6 +209,14 @@ export function validateActorAppearance(name, appearance, fieldName = 'appearanc
         seenGear.add(gearId);
       }
     }
+  }
+}
+
+function validateAppearanceOption(name, appearance, fieldName, key, allowed) {
+  if (appearance[key] === undefined) return;
+  requireString(name, appearance[key], `${fieldName}.${key}`);
+  if (typeof appearance[key] === 'string' && !allowed.has(appearance[key])) {
+    errors.push(`${name}: ${fieldName}.${key} must be one of ${[...allowed].join(', ')}.`);
   }
 }
 

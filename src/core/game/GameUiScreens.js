@@ -15,7 +15,12 @@ import {
 import { PRIMARY_ATTRIBUTES, normalizeProgression, spendPrimaryPoint } from '../Progression.js';
 import { learnTechnique, techniqueList } from '../TechniqueSystem.js';
 import { JOURNAL_SECTIONS, JOURNAL_TURN_DURATION, journalConditionMet } from '../JournalState.js';
-import { journalArrowAt, journalMapCellAt } from '../../ui/journalLayout.js';
+import {
+  journalArrowAt,
+  journalMapCellAt,
+  journalTabAt,
+  journalTechniqueRowAt
+} from '../../ui/journalLayout.js';
 import { tradeActionAt, tradePlayerIndexAt, tradeTraderIndexAt } from '../../ui/tradeLayout.js';
 import { installGameMethods } from './installGameMethods.js';
 
@@ -227,9 +232,17 @@ class GameUiScreens {
 
   _handleJournalScreen(actions, click = null) {
     if (click) {
+      if (click.button !== 0 || this.journalTurn) return;
+      const tab = journalTabAt(click, JOURNAL_SECTIONS.length);
       const arrow = journalArrowAt(click);
-      if (arrow === 'prev') this._cycleJournalSection(-1);
+      if (tab !== null) this._turnJournalToSection(tab);
+      else if (arrow === 'prev') this._cycleJournalSection(-1);
       else if (arrow === 'next') this._cycleJournalSection(1);
+      else if (this._currentJournalSectionId() === 'TECHNIQUES') {
+        const entries = techniqueList(this.techniqueDefs);
+        const technique = journalTechniqueRowAt(click, entries, this.journalTechniqueIndex);
+        if (technique !== null) this.journalTechniqueIndex = technique;
+      }
       else if (this._currentJournalSectionId() === 'MAP') this._handleJournalMapClick(click);
       return;
     }
@@ -272,6 +285,22 @@ class GameUiScreens {
       age: 0,
       duration: JOURNAL_TURN_DURATION
     };
+  }
+
+  _turnJournalToSection(target) {
+    if (this.journalTurn) return false;
+    const count = JOURNAL_SECTIONS.length;
+    const from = this.journalSection ?? 0;
+    const to = Math.max(0, Math.min(count - 1, Math.floor(Number(target) || 0)));
+    if (to === from) return false;
+    this.journalTurn = {
+      from,
+      to,
+      direction: to < from ? -1 : 1,
+      age: 0,
+      duration: JOURNAL_TURN_DURATION
+    };
+    return true;
   }
 
   _advanceJournalTurn(dt) {

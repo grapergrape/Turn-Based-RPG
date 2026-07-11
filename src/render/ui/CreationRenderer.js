@@ -5,6 +5,7 @@ const CREATION_BOX = { x: 58, y: 34, w: 524, h: 342 };
 const PREVIEW_BOX = { x: 386, y: 76, w: 142, h: 230 };
 const LIST_BOX = { x: 88, y: 76, w: 270, h: 230 };
 const PRIMARY_BOX = { x: 72, y: 46, w: 496, h: 318 };
+const CREATION_VISIBLE_ROWS = 10;
 
 export function drawCharacterCreation(ctx, ui, tools) {
   const creation = ui.characterCreation ?? {};
@@ -13,13 +14,22 @@ export function drawCharacterCreation(ctx, ui, tools) {
   tools.inset(ctx, LIST_BOX);
   tools.inset(ctx, PREVIEW_BOX);
 
+  const rows = creation.rows ?? [];
+  const selectedIndex = Math.max(0, rows.findIndex((row) => row.selected));
+  const maxStart = Math.max(0, rows.length - CREATION_VISIBLE_ROWS);
+  const start = Math.max(0, Math.min(maxStart, selectedIndex - 4));
+  const end = Math.min(rows.length, start + CREATION_VISIBLE_ROWS);
+
   tools.text(ctx, 'FIELD AGENT RECORD', LIST_BOX.x + 12, LIST_BOX.y + 10, PALETTE.uiBorderLight);
-  // Ten rows at 20px spacing fill the 230px inset without overflowing it.
+  const range = `${start + 1} TO ${end} OF ${rows.length}`;
+  tools.text(ctx, range, LIST_BOX.x + LIST_BOX.w - 12 - tools.textWidth(range), LIST_BOX.y + 10, PALETTE.uiDim);
   let y = LIST_BOX.y + 30;
-  for (const row of creation.rows ?? []) {
+  for (const row of rows.slice(start, end)) {
     drawOptionRow(ctx, tools, row, LIST_BOX.x + 10, y, LIST_BOX.w - 20);
     y += 20;
   }
+  if (start > 0) tools.scrollArrow(ctx, LIST_BOX.x + LIST_BOX.w - 13, LIST_BOX.y + 25, -1, PALETTE.uiBorderLight);
+  if (end < rows.length) tools.scrollArrow(ctx, LIST_BOX.x + LIST_BOX.w - 13, LIST_BOX.y + LIST_BOX.h - 12, 1, PALETTE.uiWarn);
 
   drawPlayerPreview(ctx, tools, PREVIEW_BOX, creation.previewSpriteId ?? ui.figureSpriteId ?? 'mara-vey');
   const previewName = tools.clip(creation.name ?? ui.actorName ?? 'AGENT', 18);

@@ -4,20 +4,48 @@ import {
   JOURNAL_BOOK,
   JOURNAL_MAP_FIELD_BOX,
   JOURNAL_PAGES,
-  journalMapGridMetrics
+  JOURNAL_TECHNIQUE_LIST,
+  journalMapGridMetrics,
+  journalTabBoxes,
+  journalTechniqueWindow
 } from '../../ui/journalLayout.js';
+import {
+  clipLedgerText,
+  ledgerText,
+  ledgerTextWidth
+} from './JournalTypography.js';
 
 // Aged-paper palette for the journal book (dark ink on dirty parchment).
 const PARCHMENT = {
-  base: '#c7b487',
-  hi: '#d8c79a',
-  lo: '#9a8a60',
-  rule: '#bca877',
-  fox: '#a07c44',
-  ink: '#241b12',
-  inkDim: '#5e4f35',
-  flap: '#cfbd88'
+  base: PALETTE.uiPaperBase,
+  hi: PALETTE.uiPaperHigh,
+  lo: PALETTE.uiPaperLow,
+  rule: PALETTE.uiPaperRule,
+  fox: PALETTE.uiPaperFox,
+  ink: PALETTE.uiPaperInk,
+  inkDim: PALETTE.uiPaperInkDim,
+  flap: PALETTE.uiPaperFlap
 };
+
+const SECTION_LABELS = Object.freeze({
+  QUESTS: 'WRITS',
+  MAP: 'MAP',
+  NOTES: 'EVIDENCE',
+  FACTIONS: 'DOSSIERS',
+  CHARACTER: 'AGENT',
+  SCARS: 'SCARS',
+  TECHNIQUES: 'METHODS'
+});
+
+const SECTION_FORMS = Object.freeze({
+  QUESTS: 'C-12',
+  MAP: 'C-4',
+  NOTES: 'C-19',
+  FACTIONS: 'C-22',
+  CHARACTER: 'C-1',
+  SCARS: 'C-31',
+  TECHNIQUES: 'C-8'
+});
 
 export function drawJournal(ctx, ui, tools) {
   tools.screenBackdrop(ctx);
@@ -25,8 +53,9 @@ export function drawJournal(ctx, ui, tools) {
   const B = JOURNAL_BOOK;
   const noise = (n) => { const s = Math.sin(n * 12.9898) * 43758.5453; return s - Math.floor(s); };
 
-  // Soft drop shadow, then scuffed leather with brass corner fittings.
-  tools.rect(ctx, B.x + 5, B.y + 7, B.w, B.h, 'rgba(5, 5, 5, 0.5)');
+  // Stepped shadow, then a scarred field ledger with brass fittings.
+  tools.rect(ctx, B.x + 6, B.y + 7, B.w, B.h, 'rgba(5, 5, 5, 0.48)');
+  tools.rect(ctx, B.x + 3, B.y + 4, B.w, B.h, 'rgba(5, 5, 5, 0.3)');
   tools.rect(ctx, B.x - 1, B.y - 1, B.w + 2, B.h + 2, PALETTE.outline);
   tools.rect(ctx, B.x, B.y, B.w, B.h, PALETTE.woodDark);
   tools.rect(ctx, B.x + 1, B.y + 1, B.w - 2, B.h - 2, PALETTE.woodMid);
@@ -35,6 +64,8 @@ export function drawJournal(ctx, ui, tools) {
   tools.rect(ctx, B.x + 1, B.y + B.h - 2, B.w - 2, 1, PALETTE.outline);
   tools.rect(ctx, B.x + B.w - 2, B.y + 1, 1, B.h - 2, PALETTE.outline);
   tools.rect(ctx, B.x + 8, B.y + B.h - 5, B.w - 16, 2, PALETTE.outline);
+  tools.rect(ctx, B.x + 9, B.y + 6, 34, B.h - 18, PALETTE.woodDark);
+  tools.rect(ctx, B.x + B.w - 43, B.y + 6, 34, B.h - 18, PALETTE.woodDark);
   for (let i = 0; i < 12; i += 1) {
     const sx = B.x + 12 + Math.floor(noise(i + 1) * (B.w - 28));
     const sy = B.y + 10 + Math.floor(noise(i * 2 + 3) * (B.h - 20));
@@ -76,6 +107,7 @@ export function drawJournal(ctx, ui, tools) {
   const section = journal.section ?? 0;
   const turn = journal.turn ?? null;
   const contentSection = turn ? turn.from : section;
+  const sectionId = (journal.sections ?? [])[contentSection] ?? 'QUESTS';
   journalTabs(ctx, B, journal.sections ?? [], section, tools);
 
   journalContent(ctx, left, right, contentSection, journal, tools);
@@ -83,7 +115,7 @@ export function drawJournal(ctx, ui, tools) {
   journalArrowButton(ctx, JOURNAL_ARROW_BOXES.prev, 'prev', tools);
   journalArrowButton(ctx, JOURNAL_ARROW_BOXES.next, 'next', tools);
 
-  journalFooter(ctx, B, journal.time, tools);
+  journalFooter(ctx, B, journal.time, sectionId, tools);
 }
 
 function journalContent(ctx, left, right, section, journal, tools) {
@@ -97,18 +129,28 @@ function journalContent(ctx, left, right, section, journal, tools) {
   else journalQuestsPage(ctx, left, right, journal.quests ?? [], journal.character ?? {}, tools);
 }
 
-function journalFooter(ctx, B, time, tools) {
-  const controls = 'A/D PAGE   M MAP   J CLOSE';
-  const y = B.y + B.h - 11;
-  const controlsX = B.x + B.w - tools.textWidth(controls) - 24;
-  const stampX = B.x + 72;
-  const stampMax = Math.max(12, Math.floor((controlsX - stampX - 12) / 6));
+function journalFooter(ctx, B, time, sectionId, tools) {
+  const controls = journalUsageLine(sectionId);
+  const y = B.y + B.h - 9;
+  const controlsX = B.x + B.w - ledgerTextWidth(controls) - 14;
+  const stampX = B.x + 48;
+  const stampMax = Math.max(12, Math.floor((controlsX - stampX - 12) / 5));
   const stamp = time
-    ? `${time.dateLabel ?? 'FIELD DAY 1, YEAR 130 AFTER DESCENT'}   ${time.timeLabel ?? '08:00'} ${time.phaseLabel ?? 'MORNING'}`
+    ? `${time.dateLabel ?? 'FIELD DAY 1, YEAR 130 AFTER DESCENT'}  ${time.timeLabel ?? '08:00'}`
     : '';
 
-  if (stamp) tools.text(ctx, tools.clip(stamp, stampMax), stampX, y, PALETTE.clothTan);
-  tools.text(ctx, controls, controlsX, y, PALETTE.clothTan);
+  tools.rect(ctx, B.x + 42, y - 3, B.w - 84, 10, PALETTE.woodDark);
+  tools.rect(ctx, B.x + 43, y - 2, B.w - 86, 1, PALETTE.woodLight);
+  if (stamp) ledgerText(ctx, clipLedgerText(stamp, stampMax), stampX, y, PALETTE.clothTan, tools);
+  ledgerText(ctx, controls, controlsX, y, PALETTE.uiBorderLight, tools);
+}
+
+function journalUsageLine(sectionId) {
+  if (sectionId === 'MAP') return '[CLICK] ROUTE  [A D] TURN  [J/ESC] CLOSE';
+  if (sectionId === 'FACTIONS') return '[UP DN] SELECT  [A D] TURN  [J/ESC] CLOSE';
+  if (sectionId === 'CHARACTER') return '[UP DN] SELECT  [ENTER] SPEND  [J/ESC] CLOSE';
+  if (sectionId === 'TECHNIQUES') return '[CLICK/UP DN] SELECT  [ENTER] LEARN  [J/ESC] CLOSE';
+  return '[A D] TURN  [M] MAP  [J/ESC] CLOSE';
 }
 
 function journalCoverWear(ctx, B, noise, tools) {
@@ -143,6 +185,8 @@ function journalArrowButton(ctx, box, direction, tools) {
   tools.rect(ctx, box.x + 2, box.y + 2, box.w - 4, box.h - 4, PALETTE.woodMid);
   tools.rect(ctx, box.x + 3, box.y + 3, box.w - 6, 1, PALETTE.woodLight);
   journalArrowGlyph(ctx, box.x + Math.floor(box.w / 2), box.y + Math.floor(box.h / 2), direction, lit, tools);
+  const key = direction === 'prev' ? 'A' : 'D';
+  ledgerText(ctx, key, box.x + Math.floor((box.w - ledgerTextWidth(key)) / 2), box.y + box.h - 13, PALETTE.clothTan, tools);
 }
 
 function journalArrowGlyph(ctx, cx, cy, direction, color, tools) {
@@ -199,28 +243,29 @@ function journalPageTurn(ctx, left, right, turn, tools) {
 // Section tabs sticking up from the top edge; the active one is parchment and
 // sits a little proud of the leather ones.
 function journalTabs(ctx, B, sections, active, tools) {
-  const gap = 6;
-  const tabW = Math.min(96, Math.floor((B.w - 24 - Math.max(0, sections.length - 1) * gap) / Math.max(1, sections.length)));
-  const total = sections.length * tabW + Math.max(0, sections.length - 1) * gap;
-  let x = B.x + Math.floor((B.w - total) / 2);
+  const boxes = journalTabBoxes(sections.length);
   for (let i = 0; i < sections.length; i += 1) {
+    const box = boxes[i];
     const on = i === active;
-    const h = on ? 19 : 15;
-    const y = on ? B.y - 10 : B.y - 6;
-    tools.rect(ctx, x - 1, y - 1, tabW + 2, h + 2, PALETTE.outline);
-    tools.rect(ctx, x, y, tabW, h, on ? PARCHMENT.base : PALETTE.woodMid);
-    tools.rect(ctx, x, y, tabW, 1, on ? PARCHMENT.hi : PALETTE.woodLight);
-    const label = sections[i];
-    const lw = tools.textWidth(label);
-    tools.text(ctx, label, x + Math.floor((tabW - lw) / 2), y + Math.floor((h - 7) / 2) + 1, on ? PARCHMENT.ink : PALETTE.clothTan);
-    x += tabW + gap;
+    const h = on ? 22 : 17;
+    const y = on ? box.y : box.y + 5;
+    tools.rect(ctx, box.x - 1, y - 1, box.w + 2, h + 2, PALETTE.outline);
+    tools.rect(ctx, box.x, y, box.w, h, on ? PARCHMENT.base : PALETTE.woodMid);
+    tools.rect(ctx, box.x, y, box.w, 1, on ? PARCHMENT.hi : PALETTE.woodLight);
+    tools.rect(ctx, box.x + 3, y + h - 3, box.w - 6, 1, on ? PARCHMENT.rule : PALETTE.woodDark);
+    const label = `${i + 1} ${SECTION_LABELS[sections[i]] ?? sections[i]}`;
+    const lw = ledgerTextWidth(label);
+    ledgerText(ctx, label, box.x + Math.floor((box.w - lw) / 2), y + Math.floor((h - 6) / 2), on ? PARCHMENT.ink : PALETTE.clothTan, tools);
   }
 }
 
-function journalHeader(ctx, page, label, tools) {
-  tools.text(ctx, label, page.x + 12, page.y + 6, PARCHMENT.ink);
-  tools.rect(ctx, page.x + 10, page.y + 17, page.w - 20, 1, PARCHMENT.inkDim);
-  return page.y + 26;
+function journalHeader(ctx, page, label, tools, form = '') {
+  tools.text(ctx, label, page.x + 14, page.y + 7, PARCHMENT.ink, 2);
+  const filing = form ? `FORM ${form}` : 'CENSURE FILE';
+  ledgerText(ctx, filing, page.x + page.w - ledgerTextWidth(filing) - 13, page.y + 8, PALETTE.clothRed, tools);
+  tools.rect(ctx, page.x + 12, page.y + 24, page.w - 24, 2, PARCHMENT.inkDim);
+  tools.rect(ctx, page.x + 12, page.y + 27, 54, 1, PALETTE.clothRed);
+  return page.y + 34;
 }
 
 function journalSeal(ctx, page, tools, character = {}) {
@@ -238,26 +283,44 @@ function journalSeal(ctx, page, tools, character = {}) {
 function journalQuestsPage(ctx, left, right, quests, character, tools) {
   const C = PARCHMENT;
   const INK_RED = PALETTE.clothRed;
-  const lx = left.x + 12;
-  let y = left.y + 8;
+  const lx = left.x + 14;
+  let y = journalHeader(ctx, left, 'ACTIVE WRITS', tools, SECTION_FORMS.QUESTS);
+  ledgerText(ctx, 'CASE STATUS AND REQUIRED ACTS', lx, y, C.inkDim, tools);
+  y += 12;
   if (!quests.length) tools.text(ctx, 'NO ACTIVE WRIT.', lx, y, C.inkDim);
-  for (const quest of quests) {
-    const title = tools.clip(quest.title, 30);
+  for (let questIndex = 0; questIndex < quests.length; questIndex += 1) {
+    const quest = quests[questIndex];
+    if (y > left.y + left.h - 44) {
+      ledgerText(ctx, 'MORE WRITS HELD IN OFFICE FILE', lx, left.y + left.h - 22, INK_RED, tools);
+      break;
+    }
+    const caseLabel = `CASE ${String(questIndex + 1).padStart(2, '0')}  ${quest.complete ? 'CLOSED' : 'OPEN'}`;
+    tools.rect(ctx, lx - 3, y - 3, left.w - 22, 13, quest.complete ? C.rule : C.hi);
+    ledgerText(ctx, caseLabel, lx + 3, y, quest.complete ? C.inkDim : INK_RED, tools);
+    y += 14;
+    const title = tools.clip(quest.title, 36);
     tools.text(ctx, title, lx, y, C.ink);
     tools.rect(ctx, lx, y + 9, tools.textWidth(title), 1, C.inkDim);
     y += 16;
     if (quest.task) {
-      tools.text(ctx, 'TASK', lx, y, C.inkDim);
-      tools.text(ctx, tools.clip(quest.task, 26), lx + 30, y, quest.complete ? C.inkDim : INK_RED);
+      ledgerText(ctx, 'ORDER', lx, y + 1, C.inkDim, tools);
+      tools.text(ctx, tools.clip(quest.task, 31), lx + 34, y, quest.complete ? C.inkDim : INK_RED);
       y += 15;
     }
     for (const obj of quest.objectives ?? []) {
       const color = obj.lead ? INK_RED : obj.done ? C.inkDim : C.ink;
-      const wrapped = tools.wrap(obj.text, 33);
-      const tx = lx + 13;
-      if (obj.active) tools.rect(ctx, lx - 3, y - 2, left.w - 18, wrapped.length * 10 + 3, C.hi);
-      if (obj.lead) tools.text(ctx, '>>', lx, y, INK_RED);
-      else journalCheckbox(ctx, lx, y - 1, obj.done, tools);
+      const wrapped = tools.wrap(obj.text, 36);
+      const tx = lx + 16;
+      if (y + wrapped.length * 10 > left.y + left.h - 28) {
+        ledgerText(ctx, 'CONTINUED IN CASE FILE', lx, left.y + left.h - 22, INK_RED, tools);
+        y = left.y + left.h;
+        break;
+      }
+      if (obj.active) {
+        tools.rect(ctx, lx - 4, y - 3, left.w - 20, wrapped.length * 10 + 5, C.hi);
+        tools.rect(ctx, lx - 4, y - 3, 2, wrapped.length * 10 + 5, INK_RED);
+      }
+      journalObjectiveMark(ctx, lx, y - 1, obj, tools);
       let ly = y;
       for (const line of wrapped) {
         tools.text(ctx, line, tx, ly, color);
@@ -269,37 +332,43 @@ function journalQuestsPage(ctx, left, right, quests, character, tools) {
     y += 6;
   }
 
-  let ry = journalHeader(ctx, right, 'CURRENT ORDERS', tools);
-  const rx = right.x + 12;
+  let ry = journalHeader(ctx, right, 'FIELD ORDER', tools, SECTION_FORMS.QUESTS);
+  const rx = right.x + 14;
+  ledgerText(ctx, 'CULT BREAKER COPY. CENSURE PROPERTY.', rx, ry, INK_RED, tools);
+  ry += 14;
   const note = quests.find((q) => q.note)?.note ?? '';
   if (note) {
-    for (const line of tools.wrap(note, 36)) { tools.text(ctx, line, rx, ry, C.inkDim); ry += 11; }
+    for (const line of tools.wrap(note, 40).slice(0, 13)) {
+      tools.text(ctx, line, rx, ry, C.inkDim);
+      ry += 11;
+    }
   } else {
     tools.text(ctx, 'NOTHING SET DOWN YET.', rx, ry, C.inkDim);
   }
+  journalObjectiveLegend(ctx, right, tools);
   journalSeal(ctx, right, tools, character);
 }
 
 function journalMapPage(ctx, left, right, map, tools) {
   const C = PARCHMENT;
-  let y = journalHeader(ctx, left, 'AREA MAP', tools);
-  const lx = left.x + 12;
+  let y = journalHeader(ctx, left, 'FIELD MAP', tools, SECTION_FORMS.MAP);
+  const lx = left.x + 14;
   if (!map) {
     tools.text(ctx, 'NO AREA MAP.', lx, y, C.inkDim);
     return;
   }
 
-  tools.text(ctx, tools.clip(map.name ?? 'AREA MAP', 31), lx, y, C.ink);
+  tools.text(ctx, tools.clip(map.name ?? 'AREA MAP', 34), lx, y, C.ink);
   const total = Math.max(1, map.totalCells ?? 1);
   const percent = Math.round(((map.exploredCount ?? 0) / total) * 100);
-  tools.text(ctx, `${percent}% FILED`, left.x + left.w - 76, y, C.inkDim);
+  ledgerText(ctx, `${percent}% FILED`, left.x + left.w - ledgerTextWidth(`${percent}% FILED`) - 14, y + 1, C.inkDim, tools);
   y += 15;
 
   drawMapField(ctx, JOURNAL_MAP_FIELD_BOX, map, tools);
 
   const footerY = left.y + left.h - 36;
-  tools.text(ctx, 'BLACK GROUND IS UNSEEN.', lx, footerY, C.inkDim);
-  tools.text(ctx, 'SECRET ROOMS STAY DARK.', lx, footerY + 11, C.inkDim);
+  ledgerText(ctx, '[CLICK] SETS A WALK ROUTE', lx, footerY, PALETTE.clothRed, tools);
+  ledgerText(ctx, 'BLACK GROUND HAS NOT BEEN CLEARED', lx, footerY + 10, C.inkDim, tools);
 
   journalMapNotes(ctx, right, map, tools);
 }
@@ -328,12 +397,12 @@ function drawMapField(ctx, box, map, tools) {
 
 function journalMapNotes(ctx, right, map, tools) {
   const C = PARCHMENT;
-  let y = journalHeader(ctx, right, 'MAP NOTES', tools);
-  const rx = right.x + 12;
-  tools.text(ctx, tools.clip(map.name ?? 'AREA', 32), rx, y, C.ink);
+  let y = journalHeader(ctx, right, 'ROUTE MARKS', tools, SECTION_FORMS.MAP);
+  const rx = right.x + 14;
+  tools.text(ctx, tools.clip(map.name ?? 'AREA', 36), rx, y, C.ink);
   y += 14;
 
-  tools.text(ctx, 'KEY', rx, y, C.inkDim);
+  ledgerText(ctx, 'MAP KEY', rx, y + 1, C.inkDim, tools);
   y += 12;
   const legend = [
     ['OPEN', mapCellColor({ explored: true, type: 'floor' })],
@@ -350,11 +419,11 @@ function journalMapNotes(ctx, right, map, tools) {
     const rowY = y + (i % 4) * 11;
     tools.rect(ctx, col, rowY + 1, 7, 7, PARCHMENT.inkDim);
     tools.rect(ctx, col + 1, rowY + 2, 5, 5, legend[i][1]);
-    tools.text(ctx, legend[i][0], col + 12, rowY, C.inkDim);
+    ledgerText(ctx, legend[i][0], col + 12, rowY + 1, C.inkDim, tools);
   }
   y += 52;
 
-  tools.text(ctx, 'MARKS', rx, y, C.inkDim);
+  ledgerText(ctx, 'CLEARED MARKS', rx, y + 1, C.inkDim, tools);
   y += 12;
   const markers = (map.markers ?? []).filter((marker) => marker.kind !== 'player');
   if (!markers.length) {
@@ -365,8 +434,8 @@ function journalMapNotes(ctx, right, map, tools) {
     const color = mapMarkerColor(marker.kind);
     tools.rect(ctx, rx, y + 1, 7, 7, PARCHMENT.inkDim);
     tools.rect(ctx, rx + 1, y + 2, 5, 5, color);
-    tools.text(ctx, markerKindLabel(marker.kind), rx + 12, y, color);
-    tools.text(ctx, tools.clip(marker.label ?? 'MARK', 21), rx + 56, y, C.inkDim);
+    ledgerText(ctx, markerKindLabel(marker.kind), rx + 12, y + 1, color, tools);
+    tools.text(ctx, tools.clip(marker.label ?? 'MARK', 27), rx + 48, y, C.inkDim);
     y += 12;
     if (y > right.y + right.h - 18) {
       tools.text(ctx, '. . .', rx, y, C.inkDim);
@@ -428,25 +497,35 @@ function journalNotesPage(ctx, left, right, findings, tools) {
   const pages = [left, right];
   let pi = 0;
   let page = pages[0];
-  let y = journalHeader(ctx, page, 'FINDINGS', tools);
+  let y = journalHeader(ctx, page, 'EVIDENCE LOG', tools, SECTION_FORMS.NOTES);
   if (!findings.length) {
-    tools.text(ctx, 'YOU HAVE WRITTEN NOTHING DOWN YET.', page.x + 12, y, C.inkDim);
+    tools.text(ctx, 'NO EVIDENCE FILED.', page.x + 14, y, C.inkDim);
     return;
   }
-  for (const finding of findings) {
+  for (let findingIndex = 0; findingIndex < findings.length; findingIndex += 1) {
+    const finding = findings[findingIndex];
     const wrapped = tools.wrap(finding, 34);
-    const blockH = wrapped.length * 10 + 9;
-    if (y + blockH > page.y + page.h - 8) {
-      if (pi + 1 >= pages.length) { tools.text(ctx, '. . .', page.x + 12, y, C.inkDim); break; }
+    const blockH = wrapped.length * 10 + 16;
+    if (y + blockH > page.y + page.h - 14) {
+      if (pi + 1 >= pages.length) {
+        ledgerText(ctx, 'MORE EVIDENCE HELD FOR NEXT REVIEW', page.x + 14, page.y + page.h - 20, PALETTE.clothRed, tools);
+        break;
+      }
       pi += 1; page = pages[pi];
-      y = journalHeader(ctx, page, 'FINDINGS', tools);
+      y = journalHeader(ctx, page, 'EVIDENCE LOG', tools, SECTION_FORMS.NOTES);
     }
-    tools.text(ctx, '+', page.x + 12, y, PALETTE.clothRed);
+    const tag = `E${String(findingIndex + 1).padStart(2, '0')}`;
+    tools.rect(ctx, page.x + 11, y - 3, 29, 11, C.hi);
+    tools.rect(ctx, page.x + 11, y - 3, 2, 11, PALETTE.clothRed);
+    ledgerText(ctx, tag, page.x + 17, y, PALETTE.clothRed, tools);
     let ly = y;
-    for (const line of wrapped) { tools.text(ctx, line, page.x + 22, ly, C.ink); ly += 10; }
+    for (const line of wrapped) {
+      tools.text(ctx, line, page.x + 46, ly, C.ink);
+      ly += 10;
+    }
     y = ly + 3;
-    tools.rect(ctx, page.x + 12, y, page.w - 24, 1, C.rule);
-    y += 7;
+    tools.rect(ctx, page.x + 14, y, page.w - 28, 1, C.rule);
+    y += 10;
   }
 }
 
@@ -457,53 +536,79 @@ function journalFactionsPage(ctx, left, right, factions, selected, tools) {
   const known = factions.filter((f) => f.known);
   const hasLocked = factions.some((f) => !f.known);
 
-  // Left page: the index of what you have on file.
-  let y = journalHeader(ctx, left, 'FACTIONS', tools);
-  const lx = left.x + 12;
+  let y = journalHeader(ctx, left, 'KNOWN CELLS', tools, SECTION_FORMS.FACTIONS);
+  const lx = left.x + 14;
+  ledgerText(ctx, 'PERSONS, ORDERS, AND HOST CULTS', lx, y, C.inkDim, tools);
+  y += 13;
   if (!known.length) tools.text(ctx, 'NO RECORDS YET.', lx, y, C.inkDim);
   const sel = Math.max(0, Math.min(known.length - 1, selected));
-  for (let i = 0; i < known.length; i += 1) {
+  const maxRows = 17;
+  const start = Math.max(0, Math.min(Math.max(0, known.length - maxRows), sel - maxRows + 1));
+  const end = Math.min(known.length, start + maxRows);
+  if (start > 0) tools.scrollArrow(ctx, left.x + left.w - 14, y - 8, -1, PALETTE.clothRed);
+  for (let i = start; i < end; i += 1) {
     const on = i === sel;
-    if (on) tools.rect(ctx, left.x + 6, y - 2, left.w - 12, 12, C.hi);
-    tools.text(ctx, on ? '>' : ' ', lx, y, PALETTE.clothRed);
-    tools.text(ctx, tools.clip(known[i].name, 27), lx + 10, y, on ? C.ink : C.inkDim);
-    y += 13;
+    if (on) {
+      tools.rect(ctx, left.x + 7, y - 3, left.w - 14, 13, C.hi);
+      tools.rect(ctx, left.x + 7, y - 3, 2, 13, PALETTE.clothRed);
+    }
+    ledgerText(ctx, on ? 'OPEN' : 'FILE', lx, y + 1, on ? PALETTE.clothRed : C.inkDim, tools);
+    tools.text(ctx, tools.clip(known[i].name, 30), lx + 31, y, on ? C.ink : C.inkDim);
+    y += 14;
   }
+  if (end < known.length) tools.scrollArrow(ctx, left.x + left.w - 14, y - 7, 1, PALETTE.clothRed);
   if (hasLocked) {
     y += 6;
-    tools.text(ctx, '[ unfiled records remain ]', lx, y, C.inkDim);
+    ledgerText(ctx, '[REDACTED FILES REMAIN]', lx, y, C.inkDim, tools);
   }
 
-  // Right page: the open record.
-  let ry = journalHeader(ctx, right, 'RECORD', tools);
-  const rx = right.x + 12;
+  let ry = journalHeader(ctx, right, 'CENSURE DOSSIER', tools, SECTION_FORMS.FACTIONS);
+  const rx = right.x + 14;
   const entry = known[sel];
   if (!entry) { tools.text(ctx, 'NOTHING ON FILE.', rx, ry, C.inkDim); return; }
-  tools.text(ctx, tools.clip(entry.name, 30), rx, ry, C.ink);
-  tools.rect(ctx, rx, ry + 9, tools.textWidth(tools.clip(entry.name, 30)), 1, C.inkDim);
-  ry += 14;
-  if (entry.kind) { tools.text(ctx, tools.clip(entry.kind, 36), rx, ry, PALETTE.clothRed); ry += 13; }
-  for (const line of tools.wrap(entry.summary, 36)) { tools.text(ctx, line, rx, ry, C.inkDim); ry += 10; }
+  journalStamp(ctx, right.x + right.w - 69, ry - 3, 'ON FILE', PALETTE.clothRed, tools);
+  tools.text(ctx, tools.clip(entry.name, 33), rx, ry, C.ink);
+  tools.rect(ctx, rx, ry + 9, tools.textWidth(tools.clip(entry.name, 33)), 1, C.inkDim);
+  ry += 15;
+  if (entry.kind) {
+    ledgerText(ctx, `CLASS ${clipLedgerText(entry.kind, 38)}`, rx, ry + 1, PALETTE.clothRed, tools);
+    ry += 14;
+  }
+  ledgerText(ctx, 'ASSESSMENT', rx, ry + 1, C.inkDim, tools);
+  ry += 12;
+  for (const line of tools.wrap(entry.summary, 40).slice(0, 8)) {
+    tools.text(ctx, line, rx, ry, C.inkDim);
+    ry += 10;
+  }
   ry += 4;
+  ledgerText(ctx, 'KNOWN FACTS', rx, ry + 1, C.inkDim, tools);
+  ry += 12;
   for (const fact of entry.facts ?? []) {
-    tools.text(ctx, '-', rx, ry, C.inkDim);
+    if (ry > right.y + right.h - 27) {
+      ledgerText(ctx, 'FILE CONTINUES', rx, right.y + right.h - 20, PALETTE.clothRed, tools);
+      break;
+    }
+    journalEvidenceTick(ctx, rx, ry - 1, tools);
     let ly = ry;
-    for (const line of tools.wrap(fact, 34)) { tools.text(ctx, line, rx + 8, ly, C.inkDim); ly += 10; }
+    for (const line of tools.wrap(fact, 38).slice(0, 3)) {
+      tools.text(ctx, line, rx + 12, ly, C.inkDim);
+      ly += 10;
+    }
     ry = ly + 2;
   }
 }
 
 function journalCharacterPage(ctx, left, right, character, selectedPrimary, tools) {
   const C = PARCHMENT;
-  const lx = left.x + 12;
-  let y = journalHeader(ctx, left, 'CHARACTER SHEET', tools);
+  const lx = left.x + 14;
+  let y = journalHeader(ctx, left, 'AGENT RECORD', tools, SECTION_FORMS.CHARACTER);
 
   tools.text(ctx, tools.clip(character.name ?? 'UNKNOWN AGENT', 30), lx, y, C.ink);
   y += 13;
   tools.text(ctx, tools.clip(character.role ?? 'ASHEN CENSURE', 34), lx, y, PALETTE.clothRed);
   y += 18;
 
-  tools.text(ctx, `LEVEL ${character.level ?? 1}`, lx, y, C.ink);
+  ledgerText(ctx, `CLEARANCE ${character.level ?? 1}`, lx, y + 1, C.inkDim, tools);
   tools.text(ctx, tools.clip(character.build?.label ?? 'FIELD AGENT', 22), lx + 78, y, PALETTE.clothRed);
   y += 13;
   const xp = character.xp ?? {};
@@ -511,103 +616,148 @@ function journalCharacterPage(ctx, left, right, character, selectedPrimary, tool
   tools.text(ctx, tools.clip(xpLabel, 18), lx, y, C.inkDim);
   journalValueBar(ctx, lx + 78, y + 2, 114, 5, xp.intoLevel ?? 0, Math.max(1, xp.needed ?? 1), PALETTE.clothRed, C.rule, tools);
   y += 13;
-  tools.text(ctx, `PRIMARY POINTS ${character.primaryPoints ?? 0}`, lx, y, C.inkDim);
+  ledgerText(ctx, `PRIMARY POINTS ${character.primaryPoints ?? 0}`, lx, y + 1, C.inkDim, tools);
   y += 18;
-  tools.text(ctx, `ACTIVE TP ${character.activeTechniquePoints ?? 0}   PASSIVE TP ${character.passiveTechniquePoints ?? 0}`, lx, y, C.inkDim);
+  ledgerText(ctx, `ACTIVE TP ${character.activeTechniquePoints ?? 0}  PASSIVE TP ${character.passiveTechniquePoints ?? 0}`, lx, y + 1, C.inkDim, tools);
   y += 14;
 
   tools.text(ctx, `TRACE ${character.trace?.label ?? 'CLEAN'}`, lx, y, C.ink);
   y += 13;
-  tools.text(ctx, `ICON RISK ${tools.clip(character.iconRisk?.label ?? 'NOT ASSESSED', 22)}`, lx, y, C.inkDim);
+  ledgerText(ctx, `ICON RISK ${clipLedgerText(character.iconRisk?.label ?? 'NOT ASSESSED', 28)}`, lx, y + 1, PALETTE.clothRed, tools);
   y += 18;
 
-  tools.text(ctx, 'PRIMARY ATTRIBUTES', lx, y, C.inkDim);
+  ledgerText(ctx, 'PRIMARY ATTRIBUTES', lx, y + 1, C.inkDim, tools);
   y += 13;
   const primaries = character.primaries ?? [];
   const sel = Math.max(0, Math.min(primaries.length - 1, selectedPrimary));
   for (let i = 0; i < primaries.length; i += 1) {
     const primary = primaries[i];
     const on = i === sel;
-    if (on) tools.rect(ctx, left.x + 6, y - 2, left.w - 12, 12, C.hi);
-    tools.text(ctx, on ? '>' : ' ', lx, y, PALETTE.clothRed);
-    tools.text(ctx, tools.clip(primary.label, 13), lx + 10, y, C.ink);
-    tools.text(ctx, `${primary.value ?? 0}/10`, lx + 90, y, C.inkDim);
-    journalValueBar(ctx, lx + 121, y + 2, 72, 5, primary.value ?? 0, 10, PALETTE.clothRed, C.rule, tools);
+    if (on) {
+      tools.rect(ctx, left.x + 7, y - 3, left.w - 14, 13, C.hi);
+      tools.rect(ctx, left.x + 7, y - 3, 2, 13, PALETTE.clothRed);
+    }
+    ledgerText(ctx, on ? 'SEL' : '   ', lx, y + 1, PALETTE.clothRed, tools);
+    ledgerText(ctx, clipLedgerText(primary.label, 14), lx + 24, y + 1, C.ink, tools);
+    tools.text(ctx, `${primary.value ?? 0}/10`, lx + 96, y, C.inkDim);
+    journalValueBar(ctx, lx + 128, y + 2, 92, 5, primary.value ?? 0, 10, PALETTE.clothRed, C.rule, tools);
     y += 13;
   }
-  if ((character.primaryPoints ?? 0) > 0) tools.text(ctx, 'ENTER SPENDS PRIMARY POINT', lx, left.y + left.h - 15, C.inkDim);
+  if ((character.primaryPoints ?? 0) > 0) {
+    journalStamp(ctx, left.x + 14, left.y + left.h - 24, 'ENTER SPENDS POINT', PALETTE.clothRed, tools);
+  }
 
-  let ry = journalHeader(ctx, right, 'FIELD RATINGS', tools);
+  let ry = journalHeader(ctx, right, 'FIELD RATINGS', tools, SECTION_FORMS.CHARACTER);
   const fields = character.fields ?? [];
   const topFields = new Set((character.topFields ?? []).map((field) => field.id));
   const leftFields = fields.slice(0, Math.ceil(fields.length / 2));
   const rightFields = fields.slice(Math.ceil(fields.length / 2));
   journalFieldColumn(ctx, right.x + 12, ry, leftFields, topFields, 100, tools);
-  journalFieldColumn(ctx, right.x + 124, ry, rightFields, topFields, 92, tools);
+  journalFieldColumn(ctx, right.x + 124, ry, rightFields, topFields, 100, tools);
   journalSeal(ctx, right, tools, character);
 }
 
 function journalTechniquesPage(ctx, left, right, techniques, tools) {
   const C = PARCHMENT;
   const entries = techniques.entries ?? [];
-  const selected = Math.max(0, Math.min(entries.length - 1, techniques.selectedIndex ?? 0));
-  const lx = left.x + 12;
-  let y = journalHeader(ctx, left, 'TECHNIQUES', tools);
-  tools.text(ctx, `ACTIVE POINTS ${techniques.activePoints ?? 0}`, lx, y, C.inkDim);
-  y += 12;
-  tools.text(ctx, `PASSIVE POINTS ${techniques.passivePoints ?? 0}`, lx, y, C.inkDim);
-  y += 18;
+  const listWindow = journalTechniqueWindow(entries, techniques.selectedIndex);
+  const selected = listWindow.selected;
+  const lx = left.x + 14;
+  let y = journalHeader(ctx, left, 'FIELD METHODS', tools, SECTION_FORMS.TECHNIQUES);
+  techniquePointBox(ctx, lx, y, 'ACTIVE', techniques.activePoints ?? 0, tools);
+  techniquePointBox(ctx, lx + 115, y, 'PASSIVE', techniques.passivePoints ?? 0, tools);
+  const range = entries.length
+    ? `${listWindow.start + 1}-${listWindow.end} OF ${entries.length}`
+    : '0 OF 0';
+  ledgerText(ctx, range, left.x + left.w - ledgerTextWidth(range) - 14, y + 27, C.inkDim, tools);
+  ledgerText(ctx, '[X] FILED  [+] READY  [ ] LOCKED', lx, y + 40, C.inkDim, tools);
 
   if (!entries.length) {
-    tools.text(ctx, 'NO TECHNIQUES FILED.', lx, y, C.inkDim);
+    tools.text(ctx, 'NO METHODS FILED.', lx, JOURNAL_TECHNIQUE_LIST.y + JOURNAL_TECHNIQUE_LIST.textOffset, C.inkDim);
   }
-  for (let i = 0; i < entries.length && i < 14; i += 1) {
-    const entry = entries[i];
-    const on = i === selected;
+  if (listWindow.hasPrevious) {
+    tools.scrollArrow(ctx, left.x + left.w - 13, JOURNAL_TECHNIQUE_LIST.y - 6, -1, PALETTE.clothRed);
+  }
+  for (let row = 0; row < listWindow.entries.length; row += 1) {
+    const entry = listWindow.entries[row];
+    const index = listWindow.start + row;
+    const on = index === selected;
     const known = entry.known;
     const available = entry.canLearn;
     const color = known ? PALETTE.clothRed : available ? C.ink : C.inkDim;
-    if (on) tools.rect(ctx, left.x + 6, y - 2, left.w - 12, 12, C.hi);
-    tools.text(ctx, on ? '>' : ' ', lx, y, PALETTE.clothRed);
-    tools.text(ctx, tools.clip(entry.name ?? entry.id ?? 'TECHNIQUE', 23), lx + 10, y, color);
-    tools.text(ctx, entry.type === 'passive' ? 'P' : 'A', left.x + left.w - 25, y, C.inkDim);
-    y += 13;
+    const rowY = JOURNAL_TECHNIQUE_LIST.y + row * JOURNAL_TECHNIQUE_LIST.rowHeight;
+    if (on) {
+      tools.rect(ctx, JOURNAL_TECHNIQUE_LIST.x, rowY, JOURNAL_TECHNIQUE_LIST.w, 13, C.hi);
+      tools.rect(ctx, JOURNAL_TECHNIQUE_LIST.x, rowY, 2, 13, PALETTE.clothRed);
+    }
+    techniqueStatusMark(ctx, JOURNAL_TECHNIQUE_LIST.x + 5, rowY + 2, entry, tools);
+    tools.text(
+      ctx,
+      tools.clip(entry.name ?? entry.id ?? 'METHOD', 28),
+      JOURNAL_TECHNIQUE_LIST.x + 20,
+      rowY + JOURNAL_TECHNIQUE_LIST.textOffset,
+      color
+    );
+    ledgerText(
+      ctx,
+      entry.type === 'passive' ? 'PAS' : 'ACT',
+      left.x + left.w - 31,
+      rowY + JOURNAL_TECHNIQUE_LIST.textOffset + 1,
+      on ? PALETTE.clothRed : C.inkDim,
+      tools
+    );
+  }
+  if (listWindow.hasNext) {
+    const bottomY = JOURNAL_TECHNIQUE_LIST.y + JOURNAL_TECHNIQUE_LIST.visibleRows * JOURNAL_TECHNIQUE_LIST.rowHeight + 1;
+    tools.scrollArrow(ctx, left.x + left.w - 13, bottomY, 1, PALETTE.clothRed);
   }
 
-  let ry = journalHeader(ctx, right, 'DETAIL', tools);
-  const rx = right.x + 12;
+  let ry = journalHeader(ctx, right, 'METHOD FILE', tools, SECTION_FORMS.TECHNIQUES);
+  const rx = right.x + 14;
   const entry = entries[selected];
   if (!entry) {
     tools.text(ctx, 'NOTHING SELECTED.', rx, ry, C.inkDim);
     return;
   }
-  tools.text(ctx, tools.clip(entry.name ?? 'TECHNIQUE', 30), rx, ry, C.ink);
-  tools.text(ctx, entry.type === 'passive' ? 'PASSIVE' : 'ACTIVE', right.x + right.w - 62, ry, PALETTE.clothRed);
-  ry += 14;
-  for (const line of tools.wrap(entry.summary ?? '', 36).slice(0, 4)) {
-    tools.text(ctx, line, rx, ry, C.inkDim);
-    ry += 10;
-  }
-  ry += 6;
-  tools.text(ctx, 'REQUIRES', rx, ry, C.ink);
+  const stateLabel = entry.known ? 'FILED' : entry.canLearn ? 'READY' : 'LOCKED';
+  journalStamp(ctx, right.x + right.w - 61, ry - 3, stateLabel, entry.canLearn || entry.known ? PALETTE.clothRed : C.inkDim, tools);
+  tools.text(ctx, tools.clip(entry.name ?? 'METHOD', 31), rx, ry, C.ink);
+  ry += 16;
+  ledgerField(ctx, rx, ry, 'USE', entry.type === 'passive' ? 'ALWAYS IN FORCE' : 'COMBAT ACTION', tools);
+  ry += 13;
+  ledgerField(ctx, rx, ry, 'TARGET', techniqueTargetText(entry), tools);
+  ry += 17;
+
+  ledgerText(ctx, 'FIELD EFFECT', rx, ry + 1, C.inkDim, tools);
   ry += 12;
-  for (const line of tools.wrap(entry.requirementText ?? 'No requirements', 36).slice(0, 4)) {
+  for (const line of tools.wrap(entry.summary ?? '', 40).slice(0, 6)) {
     tools.text(ctx, line, rx, ry, C.inkDim);
     ry += 10;
   }
   ry += 7;
-  if (entry.known) tools.text(ctx, 'KNOWN', rx, ry, PALETTE.clothRed);
-  else if (entry.canLearn) tools.text(ctx, 'READY TO LEARN', rx, ry, PALETTE.clothRed);
-  else tools.text(ctx, tools.clip(entry.disabledReason ?? 'LOCKED', 32), rx, ry, C.inkDim);
-  if (entry.canLearn) tools.text(ctx, 'ENTER LEARNS TECHNIQUE', rx, right.y + right.h - 15, C.inkDim);
+  ledgerText(ctx, 'ENTRY TEST', rx, ry + 1, C.inkDim, tools);
+  ry += 12;
+  for (const line of tools.wrap(entry.requirementText ?? 'No requirements', 40).slice(0, 5)) {
+    tools.text(ctx, line, rx, ry, C.inkDim);
+    ry += 10;
+  }
+  ry += 7;
+  ledgerText(ctx, 'FILING STATE', rx, ry + 1, C.inkDim, tools);
+  ry += 11;
+  if (entry.known) tools.text(ctx, 'METHOD FILED.', rx, ry, PALETTE.clothRed);
+  else if (entry.canLearn) tools.text(ctx, 'CLEARED TO LEARN.', rx, ry, PALETTE.clothRed);
+  else tools.text(ctx, tools.clip(entry.disabledReason ?? 'LOCKED', 38), rx, ry, C.inkDim);
+  if (entry.canLearn) {
+    journalStamp(ctx, rx, right.y + right.h - 24, 'ENTER LEARNS METHOD', PALETTE.clothRed, tools);
+  }
 }
 
 function journalScarsPage(ctx, left, right, character, tools) {
   const C = PARCHMENT;
   const scars = character.scars ?? [];
-  const lx = left.x + 12;
-  let y = journalHeader(ctx, left, 'SCARS', tools);
-  tools.text(ctx, `UNSPENT POINTS ${character.scarPoints ?? 0}`, lx, y, C.inkDim);
+  const lx = left.x + 14;
+  let y = journalHeader(ctx, left, 'SCAR RECORD', tools, SECTION_FORMS.SCARS);
+  ledgerText(ctx, `UNSPENT POINTS ${character.scarPoints ?? 0}`, lx, y + 1, C.inkDim, tools);
   y += 17;
 
   if (!scars.length) {
@@ -631,8 +781,8 @@ function journalScarsPage(ctx, left, right, character, tools) {
     y += 3;
   }
 
-  let ry = journalHeader(ctx, right, 'SCAR EFFECTS', tools);
-  const rx = right.x + 12;
+  let ry = journalHeader(ctx, right, 'FIELD COST', tools, SECTION_FORMS.SCARS);
+  const rx = right.x + 14;
   for (const scar of scars.slice(0, 6)) {
     tools.text(ctx, tools.clip(scar.name ?? 'SCAR', 28), rx, ry, C.ink);
     ry += 12;
@@ -651,15 +801,101 @@ function journalScarsPage(ctx, left, right, character, tools) {
   journalSeal(ctx, right, tools, character);
 }
 
+function journalObjectiveMark(ctx, x, y, objective, tools) {
+  const done = Boolean(objective?.done);
+  const active = Boolean(objective?.active);
+  const lead = Boolean(objective?.lead);
+  tools.rect(ctx, x, y, 10, 10, PARCHMENT.ink);
+  tools.rect(ctx, x + 1, y + 1, 8, 8, PARCHMENT.base);
+  if (done) {
+    tools.rect(ctx, x + 2, y + 5, 2, 2, PARCHMENT.ink);
+    tools.rect(ctx, x + 4, y + 3, 2, 4, PARCHMENT.ink);
+    tools.rect(ctx, x + 6, y + 2, 2, 2, PARCHMENT.ink);
+  } else if (lead) {
+    ledgerText(ctx, '?', x + 3, y + 2, PALETTE.clothRed, tools);
+  } else if (active) {
+    tools.rect(ctx, x + 2, y + 2, 6, 6, PALETTE.clothRed);
+    tools.rect(ctx, x + 4, y + 2, 2, 6, PARCHMENT.hi);
+  }
+}
+
+function journalObjectiveLegend(ctx, page, tools) {
+  const x = page.x + 14;
+  const y = page.y + page.h - 88;
+  ledgerText(ctx, 'ORDER MARKS', x, y, PARCHMENT.inkDim, tools);
+  const entries = [
+    [{ done: true }, 'DONE'],
+    [{ active: true }, 'CURRENT'],
+    [{ lead: true }, 'LEAD'],
+    [{}, 'PENDING']
+  ];
+  entries.forEach(([state, label], index) => {
+    const column = index % 2;
+    const row = Math.floor(index / 2);
+    const markX = x + column * 106;
+    const markY = y + 11 + row * 13;
+    journalObjectiveMark(ctx, markX, markY - 2, state, tools);
+    ledgerText(ctx, label, markX + 14, markY, PARCHMENT.inkDim, tools);
+  });
+}
+
+function journalEvidenceTick(ctx, x, y, tools) {
+  tools.rect(ctx, x, y, 8, 8, PARCHMENT.inkDim);
+  tools.rect(ctx, x + 1, y + 1, 6, 6, PARCHMENT.base);
+  tools.rect(ctx, x + 2, y + 4, 2, 2, PALETTE.clothRed);
+  tools.rect(ctx, x + 4, y + 2, 2, 4, PALETTE.clothRed);
+}
+
+function journalStamp(ctx, x, y, label, color, tools) {
+  const text = clipLedgerText(label, 28);
+  const width = ledgerTextWidth(text) + 10;
+  tools.rect(ctx, x - 1, y - 1, width + 2, 12, PARCHMENT.inkDim);
+  tools.rect(ctx, x, y, width, 10, PARCHMENT.base);
+  tools.rect(ctx, x + 2, y + 2, width - 4, 1, color);
+  tools.rect(ctx, x + 2, y + 7, width - 4, 1, color);
+  ledgerText(ctx, text, x + 5, y + 2, color, tools);
+}
+
+function techniquePointBox(ctx, x, y, label, value, tools) {
+  const box = { x, y: y - 3, w: 102, h: 25 };
+  tools.rect(ctx, box.x, box.y, box.w, box.h, PARCHMENT.inkDim);
+  tools.rect(ctx, box.x + 1, box.y + 1, box.w - 2, box.h - 2, PARCHMENT.hi);
+  ledgerText(ctx, `${label} POINTS`, box.x + 6, box.y + 4, PARCHMENT.inkDim, tools);
+  tools.text(ctx, String(value), box.x + box.w - 18, box.y + 8, PALETTE.clothRed);
+}
+
+function techniqueStatusMark(ctx, x, y, entry, tools) {
+  tools.rect(ctx, x, y, 10, 10, PARCHMENT.ink);
+  tools.rect(ctx, x + 1, y + 1, 8, 8, PARCHMENT.base);
+  if (entry?.known) {
+    ledgerText(ctx, 'X', x + 3, y + 2, PALETTE.clothRed, tools);
+  } else if (entry?.canLearn) {
+    ledgerText(ctx, '+', x + 3, y + 2, PALETTE.clothRed, tools);
+  }
+}
+
+function ledgerField(ctx, x, y, label, value, tools) {
+  ledgerText(ctx, label, x, y + 1, PARCHMENT.inkDim, tools);
+  const valueX = x + 52;
+  tools.rect(ctx, valueX - 4, y - 2, 188, 11, PARCHMENT.hi);
+  ledgerText(ctx, clipLedgerText(value, 35), valueX, y + 1, PARCHMENT.ink, tools);
+}
+
+function techniqueTargetText(entry) {
+  const targets = Array.isArray(entry?.targets) ? entry.targets : [];
+  if (!targets.length) return entry?.type === 'passive' ? 'SELF' : 'FIELD CHOICE';
+  return targets.map((target) => String(target).toUpperCase()).join(' / ');
+}
+
 function journalFieldColumn(ctx, x, y, fields, topFields, barW, tools) {
   const C = PARCHMENT;
   for (const field of fields) {
     const value = field.value ?? 0;
     const highlighted = topFields.has(field.id);
     const color = highlighted ? C.ink : C.inkDim;
-    tools.text(ctx, highlighted ? '*' : ' ', x, y, PALETTE.clothRed);
-    tools.text(ctx, tools.clip(field.label ?? 'FIELD', 12), x + 8, y, color);
-    tools.text(ctx, String(value).padStart(3, ' '), x + 79, y, color);
+    ledgerText(ctx, highlighted ? '*' : ' ', x, y + 1, PALETTE.clothRed, tools);
+    ledgerText(ctx, clipLedgerText(field.label ?? 'FIELD', 15), x + 8, y + 1, color, tools);
+    tools.text(ctx, String(value).padStart(3, ' '), x + 86, y, color);
     journalValueBar(ctx, x + 8, y + 9, barW, 3, value, 100, highlighted ? PALETTE.clothRed : C.inkDim, C.rule, tools);
     y += 17;
   }
@@ -699,8 +935,26 @@ function journalPage(ctx, p, opts = {}, tools) {
     if (noise(i * 3 + p.y) > 0.52) tools.rect(ctx, cx, p.y, chip, 2, PALETTE.woodDark);
     else tools.rect(ctx, cx, p.y + p.h - 2, chip, 2, PALETTE.woodDark);
   }
-  // faint ruled lines
-  for (let yy = p.y + 18; yy < p.y + p.h - 4; yy += 11) tools.rect(ctx, p.x + 6, yy, p.w - 12, 1, C.rule);
+  // Ruled evidence paper with an official red filing margin.
+  for (let yy = p.y + 39; yy < p.y + p.h - 5; yy += 11) {
+    tools.rect(ctx, p.x + 8, yy, p.w - 16, 1, C.rule);
+  }
+  tools.rect(ctx, p.x + 9, p.y + 34, 1, p.h - 44, PALETTE.clothRed);
+  tools.rect(ctx, p.x + 11, p.y + 34, 1, p.h - 44, 'rgba(122, 36, 31, 0.28)');
+
+  // A hard metal filing clip at the crown of each leaf.
+  const clipX = p.x + Math.floor(p.w / 2) - 18;
+  tools.rect(ctx, clipX, p.y - 2, 36, 7, PALETTE.outline);
+  tools.rect(ctx, clipX + 1, p.y - 1, 34, 5, PALETTE.uiBorderDark);
+  tools.rect(ctx, clipX + 3, p.y, 30, 1, PALETTE.uiBorderLight);
+  tools.rect(ctx, clipX + 7, p.y + 2, 22, 1, PALETTE.uiDark);
+
+  // Binding holes remain visible beside the stitched spine.
+  const holeX = opts.dogEar === 'bl' ? p.x + p.w - 8 : p.x + 4;
+  for (const holeY of [p.y + 70, p.y + 154, p.y + 238]) {
+    tools.rect(ctx, holeX, holeY, 5, 5, C.lo);
+    tools.rect(ctx, holeX + 1, holeY + 1, 3, 3, PALETTE.woodDark);
+  }
   // specks and brown foxing spots
   for (let i = 0; i < 24; i += 1) {
     const sx = p.x + 8 + Math.floor(noise(p.x + i * 3.1 + 1) * (p.w - 16));
@@ -726,8 +980,8 @@ function journalPage(ctx, p, opts = {}, tools) {
   tools.rect(ctx, bx + 2, by + 1, 2, 3, C.ink);
   tools.rect(ctx, bx - 1, by + 2, 2, 1, C.ink);
   tools.rect(ctx, bx + 3, by - 1, 1, 1, C.ink);
-  tools.rect(ctx, p.x + 18, p.y + 28, 16, 1, 'rgba(78, 46, 22, 0.25)');
-  tools.rect(ctx, p.x + 21, p.y + 29, 1, 18, 'rgba(78, 46, 22, 0.2)');
+  tools.rect(ctx, p.x + 18, p.y + 31, 16, 1, 'rgba(78, 46, 22, 0.25)');
+  tools.rect(ctx, p.x + 21, p.y + 32, 1, 18, 'rgba(78, 46, 22, 0.2)');
   tools.rect(ctx, p.x + p.w - 45, p.y + 33, 22, 2, 'rgba(78, 46, 22, 0.16)');
   // a folded-over dog-ear at the bottom outer corner
   if (opts.dogEar === 'bl' || opts.dogEar === 'br') {
@@ -750,18 +1004,5 @@ function journalDisc(ctx, cx, cy, r, color, tools) {
   for (let dy = -r; dy <= r; dy += 1) {
     const half = Math.floor(Math.sqrt(Math.max(0, r * r - dy * dy)));
     tools.rect(ctx, cx - half, cy + dy, half * 2 + 1, 1, color);
-  }
-}
-
-function journalCheckbox(ctx, x, y, done, tools) {
-  const INK = '#241b12';
-  tools.rect(ctx, x, y, 8, 8, INK);
-  tools.rect(ctx, x + 1, y + 1, 6, 6, '#c7b487');
-  if (done) {
-    tools.rect(ctx, x + 1, y + 4, 2, 2, INK);
-    tools.rect(ctx, x + 2, y + 5, 2, 2, INK);
-    tools.rect(ctx, x + 3, y + 3, 2, 2, INK);
-    tools.rect(ctx, x + 4, y + 2, 2, 2, INK);
-    tools.rect(ctx, x + 5, y + 1, 2, 2, INK);
   }
 }

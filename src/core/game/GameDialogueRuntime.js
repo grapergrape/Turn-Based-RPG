@@ -283,6 +283,9 @@ class GameDialogueRuntime {
     if (pendingLoot.sourceType === 'object' && this._objectShouldOpenLoot(pendingLoot.source)) {
       pendingLoot.source.dialogueShownBeforeLoot = true;
       this._openObjectLootScreen(pendingLoot.source, { log: false });
+    } else if (pendingLoot.sourceType === 'enemy') {
+      pendingLoot.source.inspectShownBeforeLoot = true;
+      this._openEnemyLootScreen(pendingLoot.source);
     }
   }
 

@@ -3,7 +3,19 @@ import assert from 'node:assert/strict';
 import { buildCharacterSheet } from '../src/core/Progression.js';
 import { JOURNAL_SECTIONS } from '../src/core/JournalState.js';
 import { UIRenderer } from '../src/render/UIRenderer.js';
-import { JOURNAL_ARROW_BOXES, journalArrowAt } from '../src/ui/journalLayout.js';
+import {
+  JOURNAL_ARROW_BOXES,
+  JOURNAL_TECHNIQUE_LIST,
+  journalArrowAt,
+  journalTabAt,
+  journalTabBoxes,
+  journalTechniqueRowAt,
+  journalTechniqueWindow
+} from '../src/ui/journalLayout.js';
+import {
+  ledgerTextWidth,
+  normalizeLedgerText
+} from '../src/render/ui/JournalTypography.js';
 
 function mockCtx() {
   return {
@@ -64,6 +76,16 @@ const baseUi = {
 };
 
 const renderer = new UIRenderer();
+const denseTechniques = Array.from({ length: 26 }, (_, index) => ({
+  id: `method-${String(index + 1).padStart(2, '0')}`,
+  name: `Filed Method ${String(index + 1).padStart(2, '0')}`,
+  type: index % 3 === 0 ? 'passive' : 'active',
+  known: index < 3,
+  canLearn: index === 25,
+  summary: 'A controlled field procedure for breaking a hostile rite.',
+  requirementText: index === 25 ? 'Nerve 6+' : 'No requirements',
+  disabledReason: index === 25 ? '' : 'Requirements not met.'
+}));
 
 const map = {
   id: 'test-map',
@@ -111,10 +133,10 @@ for (let section = 0; section < JOURNAL_SECTIONS.length; section += 1) {
       factions: [],
       character,
       techniques: {
-        activePoints: 0,
-        passivePoints: 0,
-        selectedIndex: 0,
-        entries: []
+        activePoints: 1,
+        passivePoints: 1,
+        selectedIndex: section === JOURNAL_SECTIONS.indexOf('TECHNIQUES') ? 25 : 0,
+        entries: denseTechniques
       }
     }
   });
@@ -151,3 +173,30 @@ assert.equal(journalArrowAt({
   y: JOURNAL_ARROW_BOXES.next.y + 2
 }), 'next');
 assert.equal(journalArrowAt({ x: 320, y: 200 }), null);
+
+const tabBoxes = journalTabBoxes(JOURNAL_SECTIONS.length);
+assert.equal(tabBoxes.length, JOURNAL_SECTIONS.length);
+assert.deepEqual(journalTabBoxes(0), []);
+assert.equal(journalTabAt({ x: tabBoxes[6].x + 2, y: tabBoxes[6].y + 2 }, JOURNAL_SECTIONS.length), 6);
+assert.equal(journalTabAt({ x: 320, y: 200 }, JOURNAL_SECTIONS.length), null);
+
+const firstTechniqueWindow = journalTechniqueWindow(denseTechniques, 0);
+assert.equal(firstTechniqueWindow.start, 0);
+assert.equal(firstTechniqueWindow.end, JOURNAL_TECHNIQUE_LIST.visibleRows);
+assert.equal(firstTechniqueWindow.hasPrevious, false);
+assert.equal(firstTechniqueWindow.hasNext, true);
+
+const lastTechniqueWindow = journalTechniqueWindow(denseTechniques, 25);
+assert.equal(lastTechniqueWindow.start, 12);
+assert.equal(lastTechniqueWindow.end, 26);
+assert.equal(lastTechniqueWindow.selectedRow, 13);
+assert.equal(lastTechniqueWindow.hasPrevious, true);
+assert.equal(lastTechniqueWindow.hasNext, false);
+assert.equal(journalTechniqueRowAt({
+  x: JOURNAL_TECHNIQUE_LIST.x + 3,
+  y: JOURNAL_TECHNIQUE_LIST.y + 13 * JOURNAL_TECHNIQUE_LIST.rowHeight + 2
+}, denseTechniques, 25), 25);
+assert.equal(journalTechniqueRowAt({ x: 320, y: 200 }, denseTechniques, 25), null);
+
+assert.equal(normalizeLedgerText('censure file x 2'), 'CENSURE FILE X 2');
+assert.equal(ledgerTextWidth('C-8'), 15);

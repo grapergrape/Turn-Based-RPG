@@ -152,6 +152,9 @@ class GameRenderState {
       return { state: 'talk', text: `TALK: ${target.actor.name}` };
     }
     if (target?.type === 'corpse') {
+      if (target.enemy?.inspect && !target.enemy.inspectShownBeforeLoot) {
+        return { state: 'inspect', text: `INSPECT: ${target.enemy.name}` };
+      }
       if (this._enemyHasUnclaimedLoot(target.enemy)) {
         return { state: 'loot', text: `LOOT: ${target.enemy.name}` };
       }

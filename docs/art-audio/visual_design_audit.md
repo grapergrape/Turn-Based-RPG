@@ -53,7 +53,7 @@ claim without a fresh render behind it is worthless and none are made here.
 | Ritual marks | 5 | Pentagram fine; blood-sigil and ritual-circle small and dark (4). |
 | Lights | 6.5 | Candle cluster is strong; campfire flame slightly icon-like. |
 | UI surfaces (HUD, inventory, dialogue, journal) | 7 | Re-reviewed this pass from the evidence captures: cohesive riveted hard-pixel chrome, bitmap font, no browser leakage; the paper doll reflects the real player bake. Honest 7, not the old 9: panels are spare, and dialogue lacks the era's signature NPC portraits (the single biggest UI uplift available). |
-| Player customization (in game, clothed) | 7 | **Fixed this pass** (was 1: traits pixel-invisible under the default kit). See below. |
+| Player customization (in game, clothed) | 7.5 | The creator now carries 15 fields. Stature, posture, hair silhouettes, facial hair, and strong face marks remain legible through field kit. Fine scars stay deliberately subtle. |
 
 ## Fixed this pass (2026-07-10)
 
@@ -602,6 +602,42 @@ rationale recorded. The distribution: floor 6, surface 6.5+, set pieces
 - Evidence: `honest-2026-07-10-trio41.png`. Session ended here at the
   user's request; the loop's next candidates are whatever rows read lowest
   in this document, method per game_art_skill Section 22.
+
+## Forty-second pass: Censure field ledger (2026-07-10)
+
+- **Journal surface 7 -> 8.5**: the old worn book was serviceable but generic.
+  The new spread is an Ashen Censure case ledger with numbered file tabs,
+  ruled evidence leaves, filing margins, crown clips, form numbers, case
+  stamps, objective marks, dossier ticks, a wax office seal, and a compact
+  4x6 filing face beside the readable 5x7 body face. The interface now has a
+  distinct cult-breaker identity instead of a general fantasy notebook.
+- Every interactive section states its controls in the leather footer. Tabs
+  accept direct clicks. Methods distinguish filed, ready, and locked states,
+  identify active and passive use, expose target and entry requirements, and
+  keep the selected method inside a 14-row window. The real 26-entry method
+  list was driven to row 26 in the running app; Wire Snare remained visible
+  with the range reading 13 to 26 of 26.
+- Detached 2x evidence: `honest-2026-07-10-journal-dossier.png`. Running-game
+  native evidence: `honest-2026-07-10-journal-method-scroll.png`. The reusable
+  harness is `.ai/map-review/preview-journal.html` and renders every section
+  through the real `UIRenderer`.
+
+## Forty-third pass: field agent faces (2026-07-11)
+
+- **Player customization 7 -> 7.5**: the creator grew from 10 fixed rows to 15
+  scrollable rows. New physical controls cover age, face shape, face marks,
+  stature, and posture. Existing families gained stocky build, six skin tones,
+  six hair colors, eight hair shapes, and six facial hair shapes.
+- The options stay human and setting-bound. The strongest reads are a broken
+  brow, a burned cheek, an eye patch, road stoop, tonsure, tied hair, and braid.
+  Nothing adds fantasy ancestry or supernatural anatomy.
+- Detached 3x evidence: `2026-07-11-player-face-options-isolated.png`,
+  `2026-07-11-player-hair-options-isolated.png`, and
+  `2026-07-11-player-body-options-isolated.png`. The combined road-worn
+  model was checked in all eight facings while walking and in its settled death
+  frame. Running-screen evidence covers both scroll positions:
+  `2026-07-11-character-creator-top-in-screen.png` and
+  `2026-07-11-character-creator-more-options-in-screen.png`.
 
 ## Where the catalog stands
 

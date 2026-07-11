@@ -28,10 +28,46 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
     label: 'Skin Color',
     kind: 'option',
     options: Object.freeze([
+      { id: 'pale', label: 'Pale' },
       { id: 'light', label: 'Light' },
       { id: 'tan', label: 'Tan' },
+      { id: 'ruddy', label: 'Ruddy' },
       { id: 'brown', label: 'Brown' },
       { id: 'dark', label: 'Dark' }
+    ])
+  },
+  {
+    id: 'age',
+    label: 'Age',
+    kind: 'option',
+    options: Object.freeze([
+      { id: 'fresh', label: 'Fresh Faced' },
+      { id: 'adult', label: 'Adult' },
+      { id: 'weathered', label: 'Weathered' },
+      { id: 'elder', label: 'Elder' }
+    ])
+  },
+  {
+    id: 'faceShape',
+    label: 'Face Shape',
+    kind: 'option',
+    options: Object.freeze([
+      { id: 'narrow', label: 'Narrow' },
+      { id: 'oval', label: 'Oval' },
+      { id: 'broad', label: 'Broad' },
+      { id: 'long', label: 'Long' }
+    ])
+  },
+  {
+    id: 'faceMark',
+    label: 'Face Mark',
+    kind: 'option',
+    options: Object.freeze([
+      { id: 'none', label: 'None' },
+      { id: 'split-brow', label: 'Split Brow' },
+      { id: 'cheek-scar', label: 'Cheek Scar' },
+      { id: 'burn-scar', label: 'Burn Scar' },
+      { id: 'eye-patch', label: 'Eye Patch' }
     ])
   },
   {
@@ -41,8 +77,10 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
     options: Object.freeze([
       { id: 'black', label: 'Black' },
       { id: 'brown', label: 'Brown' },
+      { id: 'auburn', label: 'Auburn' },
       { id: 'blond', label: 'Blond' },
-      { id: 'grey', label: 'Grey' }
+      { id: 'grey', label: 'Grey' },
+      { id: 'white', label: 'White' }
     ])
   },
   {
@@ -51,7 +89,11 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
     kind: 'option',
     options: Object.freeze([
       { id: 'cropped', label: 'Cropped' },
+      { id: 'bobbed', label: 'Bobbed' },
       { id: 'loose', label: 'Loose' },
+      { id: 'tied', label: 'Tied Back' },
+      { id: 'braid', label: 'Braid' },
+      { id: 'tonsure', label: 'Tonsure' },
       { id: 'shaved', label: 'Shaved' },
       { id: 'hooded', label: 'Hooded' }
     ])
@@ -63,6 +105,9 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
     options: Object.freeze([
       { id: 'none', label: 'None' },
       { id: 'stubble', label: 'Stubble' },
+      { id: 'moustache', label: 'Moustache' },
+      { id: 'goatee', label: 'Goatee' },
+      { id: 'short-beard', label: 'Short Beard' },
       { id: 'beard', label: 'Beard' }
     ])
   },
@@ -73,8 +118,29 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
     options: Object.freeze([
       { id: 'skinny', label: 'Skinny' },
       { id: 'medium', label: 'Medium' },
+      { id: 'stocky', label: 'Stocky' },
       { id: 'fat', label: 'Fat' },
       { id: 'buff', label: 'Buff' }
+    ])
+  },
+  {
+    id: 'stature',
+    label: 'Stature',
+    kind: 'option',
+    options: Object.freeze([
+      { id: 'short', label: 'Short' },
+      { id: 'average', label: 'Average' },
+      { id: 'tall', label: 'Tall' }
+    ])
+  },
+  {
+    id: 'posture',
+    label: 'Posture',
+    kind: 'option',
+    options: Object.freeze([
+      { id: 'upright', label: 'Upright' },
+      { id: 'guarded', label: 'Guarded' },
+      { id: 'stooped', label: 'Stooped' }
     ])
   },
   {
@@ -201,7 +267,12 @@ export function customizationResult(state) {
     appearance: {
       genderModel: appearance.genderModel,
       bodyType: appearance.bodyType,
+      stature: appearance.stature,
+      posture: appearance.posture,
       skinTone: appearance.skinTone,
+      age: appearance.age,
+      faceShape: appearance.faceShape,
+      faceMark: appearance.faceMark,
       hairColor: appearance.hairColor,
       hairStyle: appearance.hairStyle,
       facialHair: appearance.facialHair,

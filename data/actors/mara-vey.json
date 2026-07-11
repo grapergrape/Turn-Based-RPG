@@ -8,7 +8,12 @@
   "appearance": {
     "genderModel": "female",
     "bodyType": "medium",
+    "stature": "average",
+    "posture": "upright",
     "skinTone": "tan",
+    "age": "adult",
+    "faceShape": "oval",
+    "faceMark": "none",
     "hairColor": "brown",
     "hairStyle": "cropped",
     "facialHair": "none",

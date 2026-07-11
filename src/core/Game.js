@@ -935,10 +935,15 @@ export class Game {
 
   _interactWithCorpse(enemy) {
     if (!enemy) return;
-    if (this._lootSourceHasItems({ sourceType: 'enemy', source: enemy })) {
-      this._registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
-      if (this.mode !== 'explore') return;
-      this._openLootScreen({ title: enemy.name, sourceType: 'enemy', source: enemy });
+    const lootSource = { sourceType: 'enemy', source: enemy };
+    if (this._lootSourceHasItems(lootSource)) {
+      if (enemy.inspect && !enemy.inspectShownBeforeLoot) {
+        this.pendingLootAfterDialogue = lootSource;
+        this._openDialogueById(enemy.inspect);
+        if (this.uiScreen === 'dialogue') return;
+        this.pendingLootAfterDialogue = null;
+      }
+      this._openEnemyLootScreen(enemy);
       return;
     }
 
@@ -947,6 +952,15 @@ export class Game {
     } else if (this._enemyHasLoot(enemy) && enemy.lootClaimed) {
       this._openDialogue(enemy.name, ['Nothing useful remains.'], 'corpse');
     }
+  }
+
+  _openEnemyLootScreen(enemy) {
+    const lootSource = { sourceType: 'enemy', source: enemy };
+    if (!this._lootSourceHasItems(lootSource)) return false;
+    this._registerSuspiciousAction(SUSPICION_SEVERITY.LOW, 'looting');
+    if (this.mode !== 'explore') return false;
+    this._openLootScreen({ title: enemy.name, ...lootSource });
+    return true;
   }
 
   _interactWithObject(object, { bypassSearch = false } = {}) {

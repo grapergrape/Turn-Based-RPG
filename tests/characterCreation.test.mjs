@@ -104,6 +104,29 @@ function buildGateGame() {
   const groin = CHARACTER_CUSTOMIZATION_FIELDS.find((field) => field.id === 'penisSize');
   assert.equal(breast.label, 'Breast Scale');
   assert.equal(groin.label, 'Groin Scale');
+  assert.deepEqual(
+    CHARACTER_CUSTOMIZATION_FIELDS.map((field) => field.id),
+    [
+      'name',
+      'genderModel',
+      'skinTone',
+      'age',
+      'faceShape',
+      'faceMark',
+      'hairColor',
+      'hairStyle',
+      'facialHair',
+      'bodyType',
+      'stature',
+      'posture',
+      'anatomy',
+      'breastSize',
+      'penisSize'
+    ]
+  );
+  assert.equal(CHARACTER_CUSTOMIZATION_FIELDS.find((field) => field.id === 'hairStyle').options.length, 8);
+  assert.equal(CHARACTER_CUSTOMIZATION_FIELDS.find((field) => field.id === 'facialHair').options.length, 6);
+  assert.equal(CHARACTER_CUSTOMIZATION_FIELDS.find((field) => field.id === 'faceMark').options.length, 5);
 }
 
 {
@@ -120,8 +143,51 @@ function buildGateGame() {
   assert.equal(result.name, 'Jo Vey');
   assert.equal(result.appearance.genderModel, 'female');
   assert.equal(result.appearance.bodyType, 'medium');
+  assert.equal(result.appearance.stature, 'average');
+  assert.equal(result.appearance.posture, 'upright');
+  assert.equal(result.appearance.age, 'adult');
+  assert.equal(result.appearance.faceShape, 'oval');
+  assert.equal(result.appearance.faceMark, 'none');
   assert.equal(result.appearance.breastSize, 5);
   assert.equal(result.appearance.penisSize, 0);
+}
+
+{
+  let state = createCustomizationState({ name: 'Mara Vey' });
+  const change = (fieldId, amount) => {
+    state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === fieldId);
+    state = changeCustomizationOption(state, amount);
+  };
+  change('age', 1);
+  change('faceShape', 1);
+  change('faceMark', 3);
+  change('hairStyle', 4);
+  change('facialHair', 3);
+  change('bodyType', 1);
+  change('stature', 1);
+  change('posture', 1);
+  const result = customizationResult(state);
+  assert.equal(result.appearance.age, 'weathered');
+  assert.equal(result.appearance.faceShape, 'broad');
+  assert.equal(result.appearance.faceMark, 'burn-scar');
+  assert.equal(result.appearance.hairStyle, 'braid');
+  assert.equal(result.appearance.facialHair, 'goatee');
+  assert.equal(result.appearance.bodyType, 'stocky');
+  assert.equal(result.appearance.stature, 'tall');
+  assert.equal(result.appearance.posture, 'guarded');
+}
+
+{
+  const base = createCustomizationState({ name: 'Mara Vey' });
+  for (const field of CHARACTER_CUSTOMIZATION_FIELDS.filter((entry) => entry.kind === 'option')) {
+    for (const option of field.options) {
+      const result = customizationResult({
+        ...base,
+        appearance: { ...base.appearance, [field.id]: option.id }
+      });
+      assert.equal(result.appearance[field.id], option.id, `${field.id} should preserve ${option.id}`);
+    }
+  }
 }
 
 {

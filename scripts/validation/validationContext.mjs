@@ -15,12 +15,17 @@ import {
   HUMAN_BODY_IDS,
   HUMAN_GEAR_IDS,
   HUMAN_OUTFIT_IDS,
+  PLAYER_AGE_IDS,
   PLAYER_BODY_TYPE_IDS,
+  PLAYER_FACE_MARK_IDS,
+  PLAYER_FACE_SHAPE_IDS,
   PLAYER_FACIAL_HAIR_IDS,
   PLAYER_GENDER_MODEL_IDS,
   PLAYER_HAIR_COLOR_IDS,
   PLAYER_HAIR_STYLE_IDS,
+  PLAYER_POSTURE_IDS,
   PLAYER_SKIN_TONE_IDS,
+  PLAYER_STATURE_IDS,
   SPRITE_ATLAS_IDS
 } from '../../src/render/SpriteAtlas.js';
 import { getSprite } from '../../src/render/spriteCatalog.js';
@@ -61,7 +66,12 @@ export const ACTOR_ANATOMY = new Set(['vulva', 'penis', 'smooth', 'intersex']);
 export const ACTOR_SPRITE_IDS = new Set(SPRITE_ATLAS_IDS);
 export const PLAYER_GENDER_MODEL_ID_SET = new Set(PLAYER_GENDER_MODEL_IDS);
 export const PLAYER_BODY_TYPE_ID_SET = new Set(PLAYER_BODY_TYPE_IDS);
+export const PLAYER_STATURE_ID_SET = new Set(PLAYER_STATURE_IDS);
+export const PLAYER_POSTURE_ID_SET = new Set(PLAYER_POSTURE_IDS);
 export const PLAYER_SKIN_TONE_ID_SET = new Set(PLAYER_SKIN_TONE_IDS);
+export const PLAYER_AGE_ID_SET = new Set(PLAYER_AGE_IDS);
+export const PLAYER_FACE_SHAPE_ID_SET = new Set(PLAYER_FACE_SHAPE_IDS);
+export const PLAYER_FACE_MARK_ID_SET = new Set(PLAYER_FACE_MARK_IDS);
 export const PLAYER_HAIR_COLOR_ID_SET = new Set(PLAYER_HAIR_COLOR_IDS);
 export const PLAYER_HAIR_STYLE_ID_SET = new Set(PLAYER_HAIR_STYLE_IDS);
 export const PLAYER_FACIAL_HAIR_ID_SET = new Set(PLAYER_FACIAL_HAIR_IDS);
