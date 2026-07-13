@@ -349,6 +349,26 @@ wall-set blocks are layer 0; free props are layer 2; actors are layer 3 (1 when
 dead). If a new prop sorts wrong against actors, check its `layer`, not the
 renderer.
 
+**Placement occlusion (a layout rule, learned the hard way).** A prop draws at
+its tile's floor centre; tiles with a greater `x + y` draw *after* it and paint
+over it. So a *low* prop dropped on a floor tile that is boxed in by walls in
+front of it (any neighbour at greater `x + y` that is a wall) is invisible - the
+front walls swallow it, no matter how bright you make it. Two consequences when
+you place or review props in level data:
+- Low props (landings, rugs, floor caches, bodies) belong on *open* floor, with
+  open floor or lower-`x+y` (back) walls around them - never in a one-tile wall
+  pocket. If the design needs to mark a walled pocket, use a *wall-face* fixture
+  (a `wall-*` block-set kind drawn on the wall itself, like `wall-stair-door`),
+  which is always visible, or a tall structure that pokes above the front wall
+  line.
+- When two adjacent objects describe one thing (e.g. a stair: a wall-face door
+  plus a floor landing), make sure each is placed where it can actually be seen,
+  and orient the floor piece so its directional wear points at the fixture. If a
+  piece can't be seen, cut it - do not ship an occluded prop. Verify placement by
+  cropping the exact tile in the scene harness; if unsure a prop is even drawing,
+  add a temporary tall bright locator spike at `(cx, cy-90)` (it pokes above the
+  occluders), screenshot, then remove it.
+
 ---
 
 ## 8. Furniture, props, caches, and ground items

@@ -20,9 +20,32 @@ const params = new URLSearchParams(location.search);
 const levelPath = params.get('level') ?? './data/levels/censure_road_camp.json';
 const scale = Number(params.get('scale') ?? '0.5');
 const cropX0 = params.has('x0') ? Number(params.get('x0')) : null;
+const openDoorGroups = new Set((params.get('openDoorGroups') ?? '').split(',').filter(Boolean));
+const actorOverrideId = params.get('actorId');
 
 async function main() {
   const level = await loadLevel(levelPath);
+  for (const prop of level.props ?? []) {
+    if (prop.doorGroup && openDoorGroups.has(prop.doorGroup)) prop.opened = true;
+  }
+  const hiddenCells = new Set();
+  for (const region of level.hiddenRegions ?? []) {
+    const revealed = (level.props ?? []).some((prop) =>
+      prop.doorGroup === region.doorGroup && prop.opened
+    );
+    if (revealed) continue;
+    for (let y = region.y; y < region.y + region.height; y += 1) {
+      for (let x = region.x; x < region.x + region.width; x += 1) hiddenCells.add(`${x},${y}`);
+    }
+  }
+  if (actorOverrideId) {
+    const actor = [level.player, ...(level.npcs ?? []), ...(level.enemies ?? [])]
+      .find((entry) => entry?.id === actorOverrideId || entry?.spawnId === actorOverrideId);
+    const actorX = Number(params.get('actorX'));
+    const actorY = Number(params.get('actorY'));
+    if (actor && Number.isFinite(actorX) && Number.isFinite(actorY)) actor.moveTo(actorX, actorY);
+    if (actor && params.get('actorFacing')) actor.facing = params.get('actorFacing');
+  }
   const atlas = buildSpriteAtlas();
   const grid = level.grid;
   const bounds = computeSceneBounds(grid.width, grid.height);
@@ -41,13 +64,18 @@ async function main() {
     for (let x = 0; x < grid.width; x += 1) {
       const def = grid.getTileDef(x, y);
       if (!def || def.kind === 'wall') continue;
+      if (hiddenCells.has(`${x},${y}`)) continue;
       const s = gridToScreen(x, y, 0, origin);
       P.drawStyledFloorCell(ctx, s.x, s.y, x, y, def.floor ?? 'stone');
     }
   }
 
-  const flatProps = level.props.filter((p) => FLAT_KINDS.has(p.kind));
-  const volumeProps = level.props.filter((p) => !FLAT_KINDS.has(p.kind));
+  const propIsVisible = (prop) => (
+    (!prop.hiddenUntilOpened || prop.opened || prop.consumed) &&
+    !hiddenCells.has(`${prop.x},${prop.y}`)
+  );
+  const flatProps = level.props.filter((p) => propIsVisible(p) && FLAT_KINDS.has(p.kind));
+  const volumeProps = level.props.filter((p) => propIsVisible(p) && !FLAT_KINDS.has(p.kind));
 
   for (const prop of flatProps) {
     const s = gridToScreen(prop.x, prop.y, 0, origin);
@@ -82,6 +110,7 @@ async function main() {
   }
   const actors = [level.player, ...(level.npcs ?? []), ...(level.enemies ?? [])];
   for (const actor of actors) {
+    if (actor.type !== 'player' && hiddenCells.has(`${actor.x},${actor.y}`)) continue;
     queue.push({
       key: sortKey(actor.x, actor.y, 3),
       draw: () => {
@@ -132,7 +161,7 @@ async function main() {
   document.title = 'CAPTURE-READY';
 }
 
-main().catch((error) => {
+await main().catch((error) => {
   document.title = 'CAPTURE-ERROR';
   document.body.textContent = String(error?.stack ?? error);
 });

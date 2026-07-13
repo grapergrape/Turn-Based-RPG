@@ -1,7 +1,7 @@
 {
   "id": "long-ash-grain-shed-interior",
   "name": "Long Ash Grain Shed",
-  "intro": "The grain shed is dry and tight. Hay ricks slump against the walls, with mouse holes cut through the packed straw.",
+  "intro": "The grain shed is dry and tight. Board bins line the back wall, with sacked seed stacked clear of the mouse holes.",
   "width": 12,
   "height": 10,
   "tileSize": 64,
@@ -45,7 +45,7 @@
     "player": {
       "actor": "mara-vey",
       "x": 6,
-      "y": 7
+      "y": 8
     },
     "enemies": [],
     "npcs": []
@@ -54,9 +54,10 @@
     {
       "kind": "farm-door",
       "x": 6,
-      "y": 8,
+      "y": 9,
       "blocking": true,
       "variant": "grain-shed",
+      "wallPlane": "sw",
       "id": "grain-shed-exit-door",
       "name": "Grain Shed Door",
       "interact": {
@@ -66,34 +67,76 @@
       }
     },
     {
-      "kind": "hay-rick",
-      "x": 3,
-      "y": 3,
-      "blocking": true
-    },
-    {
-      "kind": "hay-rick",
-      "x": 8,
-      "y": 3,
-      "blocking": true
-    },
-    {
-      "kind": "feed-trough",
-      "x": 6,
-      "y": 5,
+      "kind": "grain-bin",
+      "x": 2,
+      "y": 2,
       "blocking": true,
-      "orient": "sw"
+      "orient": "se",
+      "seed": 5701
     },
     {
-      "kind": "woodpile",
-      "x": 3,
+      "kind": "grain-bin",
+      "x": 5,
+      "y": 2,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5702
+    },
+    {
+      "kind": "grain-bin",
+      "x": 8,
+      "y": 2,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5703
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 2,
+      "y": 4,
+      "blocking": true,
+      "seed": 5704
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 2,
       "y": 6,
-      "blocking": true
+      "blocking": true,
+      "seed": 5705
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 9,
+      "y": 4,
+      "blocking": true,
+      "seed": 5706
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 9,
+      "y": 6,
+      "blocking": true,
+      "seed": 5707
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 7,
+      "y": 7,
+      "blocking": true,
+      "seed": 5708
+    },
+    {
+      "kind": "farm-prep-table",
+      "x": 3,
+      "y": 7,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5709
     },
     {
       "kind": "rusted-barrel",
       "x": 9,
-      "y": 6,
+      "y": 7,
       "blocking": true,
       "id": "grain-shed-barrel",
       "name": "Grain Barrel",
@@ -107,9 +150,10 @@
       }
     },
     {
-      "kind": "road-dust",
+      "kind": "chaff-scatter",
       "x": 5,
-      "y": 4
+      "y": 4,
+      "seed": 5710
     },
     {
       "kind": "floor-crack",

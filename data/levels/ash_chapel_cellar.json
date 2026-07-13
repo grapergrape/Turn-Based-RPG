@@ -268,7 +268,8 @@
       "kind": "prayer-lectern",
       "x": 13,
       "y": 6,
-      "blocking": true
+      "blocking": true,
+      "defiled": true
     },
     {
       "kind": "candle-cluster",

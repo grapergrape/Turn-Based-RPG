@@ -999,13 +999,17 @@ function drawCorpseFaceDetails(ctx, hx, bodyTop, style) {
 }
 
 export function drawDeath(ctx, w, h, style, frame) {
+  if (typeof style.drawDeath === 'function') {
+    style.drawDeath({ ctx, w, h, style, frame, px, linePx, dither });
+    return;
+  }
   const cx = Math.floor(w / 2);
   const groundY = h - 6;
   const fall = Math.min(1, frame / 4);
   const settle = Math.min(1, Math.max(0, (frame - 3) / 6));
   const coat = ramp(style, 'coat');
   const skin = ramp(style, 'skin');
-  const host = Boolean(style.hostHead);
+  const host = Boolean(style.hostHead || style.hostCorpse);
   const cult = Boolean(style.maskedHead);
 
   const lift = Math.round((1 - fall) * 20); // body drops to the floor
@@ -1040,7 +1044,8 @@ export function drawDeath(ctx, w, h, style, frame) {
       px(ctx, cx + dx, bodyTop + dy, PALETTE.hostBone, 2, 1);
     }
     linePx(ctx, cx + 7, bodyTop + 2, cx + 13, bodyTop - 3, PALETTE.hostBone, 1);
-    px(ctx, cx, bodyTop + 4, frame % 2 ? PALETTE.hostGlow : PALETTE.hostGold, 2, 2);
+    const deadWound = style.deadWound ?? (frame % 2 ? PALETTE.hostGlow : PALETTE.hostGold);
+    px(ctx, cx, bodyTop + 4, deadWound, 2, 2);
     px(ctx, cx - 20, bodyTop + 1, PALETTE.hostBone, 5, 5); // skull at head end
     px(ctx, cx - 19, bodyTop + 2, PALETTE.void, 1, 1);
   } else {

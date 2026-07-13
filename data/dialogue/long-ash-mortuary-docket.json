@@ -1,0 +1,67 @@
+{
+  "id": "long-ash-mortuary-docket",
+  "title": "Mortuary Examination Docket",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "heard-bell-docket-read"
+        ]
+      },
+      "else": "reread",
+      "lines": [
+        "The docket records response widths, pin settings, and bell intervals. Names appear once on an intake sheet. Every later page uses subject numbers.",
+        "The test columns are bell, familiar voice, prayer office, and pressure pin. The clerk filed each answer as settling.",
+        "Subject Seven responded before the bell was struck. Brother Cal wrote \"woke\" in the first copy, so I burned it and replaced the word with \"settled.\"",
+        "Sava Rell was Subject Twelve. His head turned toward Hallowfen before its bells sounded, so the wardens transferred him to the listening niche.",
+        "The old measurements end decades ago. Fresh scoring beside the last pin shows the needle has begun moving north again."
+      ],
+      "choices": [
+        {
+          "label": "Keep the office finding in mind",
+          "conditions": {
+            "flagsAbsent": [
+              "heard-bell-register-read"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-docket-read",
+            "log": "The road office measured the calcified and filed their answers as settling."
+          },
+          "close": true
+        },
+        {
+          "label": "Set the docket beside Hessa's names",
+          "conditions": {
+            "flag": "heard-bell-register-read"
+          },
+          "effects": {
+            "setFlag": [
+              "heard-bell-docket-read",
+              "heard-bell-truth-joined"
+            ],
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "judge-vigil",
+              "log": "Quest updated: find Sava Rell and decide what remains."
+            },
+            "log": "The subject numbers match Hessa's names. Sava answered Hallowfen before the road bells rang."
+          },
+          "close": true
+        }
+      ]
+    },
+    "reread": {
+      "lines": [
+        "The clerk called every answer settling. Sava's response came before the bell, and the last needle marks are fresh.",
+        "One correction is underlined twice: never write woke."
+      ],
+      "choices": [
+        {
+          "label": "Close the docket",
+          "close": true
+        }
+      ]
+    }
+  }
+}

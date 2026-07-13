@@ -1,0 +1,400 @@
+{
+  "id": "long-ash-vigil-chapel",
+  "name": "Long Ash Vigil Chapel",
+  "intro": "Cold wax stripes the walls. Twelve candle cups face a chair worn smooth by one body.",
+  "width": 10,
+  "height": 9,
+  "tileSize": 64,
+  "quests": [
+    "those-who-heard-the-bell"
+  ],
+  "dialogue": [
+    "long-ash-vigil-chapel-exit",
+    "long-ash-vigil-panel",
+    "long-ash-book-of-kept-names",
+    "long-ash-vigil-name-rack",
+    "long-ash-vigil-dusk-watch",
+    "long-ash-heard-bell-judgment"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.42,
+    "ambient": "#2a160e",
+    "ambientAlpha": 0.09,
+    "vignette": 1.25
+  },
+  "journalNotes": [
+    {
+      "flag": "heard-bell-register-read",
+      "text": "Hessa Marr recorded deliberate responses from the calcified people in the graveyard."
+    },
+    {
+      "flag": "heard-bell-docket-read",
+      "text": "The road office measured those responses and filed them as settling."
+    },
+    {
+      "flag": "heard-bell-truth-joined",
+      "text": "Sava Rell reacted to Hallowfen before its bells sounded."
+    },
+    {
+      "flag": "heard-bell-resolved-vigil",
+      "text": "The twelve names remain together. The listening niche is quiet for now."
+    },
+    {
+      "flag": "heard-bell-resolved-censure",
+      "text": "The road office has the graveyard location. A purgation order will follow."
+    },
+    {
+      "flag": "heard-bell-resolved-evidence",
+      "text": "Hessa's register and the mortuary docket are in your pack."
+    }
+  ],
+  "tiles": [
+    "##########",
+    "#........#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "#........#",
+    "##########"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 4,
+      "y": 7
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "objects": [
+    {
+      "id": "vigil-window-west",
+      "kind": "wall-window",
+      "x": 2,
+      "y": 0,
+      "blocking": true,
+      "dim": true,
+      "name": "Dim Vigil Window"
+    },
+    {
+      "id": "vigil-twelve-cup-rack",
+      "kind": "vigil-candle-rack",
+      "x": 4,
+      "y": 0,
+      "wallPlane": "sw",
+      "name": "Twelve-Cup Vigil Rack",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-vigil-name-rack",
+        "log": "Twelve cups sit in two rows. The last has been hammered flat against its shelf."
+      },
+      "mapMarker": {
+        "label": "Twelve Candle Cups",
+        "kind": "note",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "vigil-window-east",
+      "kind": "wall-window",
+      "x": 6,
+      "y": 0,
+      "blocking": true,
+      "dim": true,
+      "name": "Dim Vigil Window"
+    },
+    {
+      "id": "hessa-concealed-panel",
+      "kind": "wall-stash",
+      "x": 0,
+      "y": 2,
+      "blocking": true,
+      "name": "Hessa's Concealed Panel",
+      "doorGroup": "vigil-hidden-panel",
+      "closedWhenFlags": [
+        "heard-bell-register-rehidden"
+      ],
+      "disabledWhenFlags": [
+        "heard-bell-register-rehidden"
+      ],
+      "interact": {
+        "type": "door",
+        "dialogue": "long-ash-vigil-panel",
+        "log": "The soot-lined stone draws away from a narrow wall compartment.",
+        "lock": {
+          "id": "hessa-concealed-panel-lock",
+          "title": "Hessa's Concealed Panel",
+          "lines": [
+            "A fitted stone sits behind the chair line. Soot fills a narrow seam around it."
+          ],
+          "methods": [
+            {
+              "id": "use-hessas-ring",
+              "label": "Set Hessa's mourning ring in the socket",
+              "requiresItem": "mourning-ring",
+              "conditions": {
+                "flag": "looted-ilyen-marr-grave"
+              },
+              "successLog": "The ring turns inside the stone. The panel releases without taking a chip.",
+              "success": {
+                "setFlag": [
+                  "heard-bell-vigil-panel-opened",
+                  "heard-bell-vigil-panel-opened-ring"
+                ]
+              }
+            },
+            {
+              "id": "read-soot-seam",
+              "label": "Read the soot-lined seam",
+              "field": "search",
+              "dc": 40,
+              "successLog": "Finger wear marks the catch. It yields under steady pressure.",
+              "failLog": "The soot breaks into old smears. The catch stays hidden.",
+              "success": {
+                "setFlag": [
+                  "heard-bell-vigil-panel-opened",
+                  "heard-bell-vigil-panel-opened-search"
+                ]
+              }
+            },
+            {
+              "id": "restore-vigil-line",
+              "label": "Restore the omitted vigil line",
+              "field": "doctrine",
+              "dc": 40,
+              "successLog": "The missing prayer names a hand at the left edge. The prayer catch opens there.",
+              "failLog": "The surviving words do not give up their order.",
+              "success": {
+                "setFlag": [
+                  "heard-bell-vigil-panel-opened",
+                  "heard-bell-vigil-panel-opened-doctrine"
+                ]
+              }
+            },
+            {
+              "id": "force-panel",
+              "label": "Force the fitted stone",
+              "primary": "body",
+              "dc": 4,
+              "successLog": "The stone tears free. Paper catches under it and parts at the binding.",
+              "failLog": "The stone bites into your palm and does not move.",
+              "success": {
+                "setFlag": [
+                  "heard-bell-vigil-panel-opened",
+                  "heard-bell-vigil-panel-forced",
+                  "heard-bell-register-damaged"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Soot-Lined Panel",
+        "kind": "search",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "vigil-candle-west",
+      "kind": "candle-cluster",
+      "x": 3,
+      "y": 2,
+      "name": "Vigil Candles"
+    },
+    {
+      "id": "vigil-book-of-kept-names",
+      "kind": "paper-scraps",
+      "x": 1,
+      "y": 2,
+      "doorGroup": "vigil-hidden-panel",
+      "hiddenUntilOpened": true,
+      "name": "Book of Kept Names",
+      "hiddenWhenFlags": [
+        "heard-bell-register-rehidden",
+        "heard-bell-records-carried"
+      ],
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-book-of-kept-names",
+        "log": "A waxed burial register rests behind the moved stone. Twelve name slips are tied into its spine."
+      },
+      "mapMarker": {
+        "label": "Book of Kept Names",
+        "kind": "note",
+        "reveal": "explored"
+      }
+    },
+    {
+      "kind": "wax-stain",
+      "x": 3,
+      "y": 2,
+      "id": "vigil-wax-west"
+    },
+    {
+      "id": "vigil-font",
+      "kind": "chapel-font",
+      "x": 4,
+      "y": 2,
+      "blocking": true,
+      "dim": true,
+      "dry": true,
+      "name": "Dry Vigil Font"
+    },
+    {
+      "id": "vigil-candle-east",
+      "kind": "candle-cluster",
+      "x": 6,
+      "y": 2,
+      "name": "Vigil Candles"
+    },
+    {
+      "kind": "wax-stain",
+      "x": 6,
+      "y": 2,
+      "id": "vigil-wax-east"
+    },
+    {
+      "id": "vigil-cut-bell-rope",
+      "kind": "bell-rope",
+      "x": 7,
+      "y": 2,
+      "name": "Cut Bell Rope",
+      "interact": {
+        "type": "note",
+        "log": "The rope ends above head height. A bare iron hook waits beside it, polished where the clapper once hung."
+      }
+    },
+    {
+      "id": "hessa-gravekeeper-chair",
+      "kind": "gravekeeper-chair",
+      "x": 4,
+      "y": 4,
+      "blocking": true,
+      "orient": "ne",
+      "name": "Hessa's Chair",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-vigil-dusk-watch",
+        "log": "The seat has been worn pale at the center. One arm bears twelve shallow nail marks."
+      }
+    },
+    {
+      "id": "vigil-prayer-lectern",
+      "kind": "prayer-lectern",
+      "x": 6,
+      "y": 4,
+      "blocking": true,
+      "name": "Vigil Lectern"
+    },
+    {
+      "id": "vigil-alms-box",
+      "kind": "wall-stash",
+      "x": 0,
+      "y": 6,
+      "blocking": true,
+      "name": "Vigil Alms Box",
+      "interact": {
+        "type": "container",
+        "log": "Three old ducats sit under a mat of candle stubs.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 3
+          }
+        ],
+        "search": {
+          "title": "Vigil Alms Box",
+          "lines": [
+            "Wax fills the corners. The inside depth does not match the box outside."
+          ],
+          "useLabel": "Take the old alms",
+          "methods": [
+            {
+              "id": "find-false-tray",
+              "label": "Press along the shallow floor",
+              "field": "search",
+              "dc": 25,
+              "successLog": "A false tray lifts under your nail. A rubbed saint token lies beneath it.",
+              "failLog": "Wax and warped wood hide the join.",
+              "success": {
+                "inventory": {
+                  "add": [
+                    {
+                      "item": "tarnished-saint-token",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "vigil-exit-door-north",
+      "kind": "chapel-double-door",
+      "x": 4,
+      "y": 8,
+      "blocking": true,
+      "name": "Vigil Chapel Doors",
+      "doorGroup": "vigil-chapel-exit",
+      "doorLeaf": "north",
+      "wallPlane": "sw",
+      "interact": {
+        "type": "door",
+        "dialogue": "long-ash-vigil-chapel-exit",
+        "log": "Cold graveyard air enters through the open doors."
+      }
+    },
+    {
+      "id": "vigil-exit-door-south",
+      "kind": "chapel-double-door",
+      "x": 5,
+      "y": 8,
+      "blocking": true,
+      "name": "Vigil Chapel Doors",
+      "doorGroup": "vigil-chapel-exit",
+      "doorLeaf": "south",
+      "wallPlane": "sw",
+      "interact": {
+        "type": "door",
+        "dialogue": "long-ash-vigil-chapel-exit",
+        "log": "Cold graveyard air enters through the open doors."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 6,
+      "y": 5,
+      "id": "vigil-lectern-pages"
+    },
+    {
+      "kind": "floor-crack",
+      "x": 5,
+      "y": 6,
+      "id": "vigil-floor-crack"
+    },
+    {
+      "kind": "dust",
+      "x": 4,
+      "y": 5,
+      "id": "vigil-chair-wear"
+    }
+  ]
+}

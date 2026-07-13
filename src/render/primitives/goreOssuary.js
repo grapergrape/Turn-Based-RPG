@@ -219,29 +219,38 @@ export function drawSkeleton(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - flip * 14, cy - 1, PALETTE.clothDark, 8, 4); // rotted coat rag
   px(ctx, cx - flip * 13, cy - 1, PALETTE.stoneDark, 5, 1);
 
-  const hx = cx + flip * 9; // skull at one end
-  const hy = cy - 1;
-  // Spine running from the skull toward the pelvis.
-  for (let i = 0; i < 9; i += 1) {
-    px(ctx, Math.round(hx - flip * (3 + i * 1.5)), hy + 1 + (i % 2), bone, 2, 1);
+  // Seed-driven pose so 191 placements do not read as one stamp: the spine
+  // length, rib count, how far the limbs are flung, and how disturbed the body
+  // is all vary. `jit` is a small deterministic wobble.
+  const jit = (n) => Math.floor((rng() - 0.5) * n);
+  const spread = 1 + rng() * 0.5; // some bodies more disarticulated than others
+  const hx = cx + flip * (8 + Math.floor(rng() * 3)); // skull at one end
+  const hy = cy - 1 + jit(2);
+  // Spine running from the skull toward the pelvis, drifting as it goes.
+  const vert = 8 + Math.floor(rng() * 3);
+  for (let i = 0; i < vert; i += 1) {
+    px(ctx, Math.round(hx - flip * (3 + i * 1.5 * spread)), hy + 1 + (i % 2) + (i > 5 ? jit(2) : 0), bone, 2, 1);
   }
-  // Ribcage: a few curved ribs off the upper spine.
-  for (let r = 0; r < 4; r += 1) {
-    const rx = Math.round(hx - flip * (4 + r * 2));
-    boneStroke(ctx, rx, hy - 4, rx - flip * 2, hy - 1, bone, 1);
-    boneStroke(ctx, rx, hy + 4, rx - flip * 2, hy + 1, bone, 1);
-    px(ctx, rx - (flip > 0 ? 1 : 0), hy - 4, hi, 2, 1);
+  // Ribcage: a few curved ribs off the upper spine (count and splay vary).
+  const ribs = 3 + Math.floor(rng() * 3);
+  for (let r = 0; r < ribs; r += 1) {
+    const rx = Math.round(hx - flip * (4 + r * 2 * spread));
+    const ry = hy + jit(2);
+    boneStroke(ctx, rx, ry - 4, rx - flip * 2, ry - 1, bone, 1);
+    boneStroke(ctx, rx, ry + 4, rx - flip * 2, ry + 1, bone, 1);
+    px(ctx, rx - (flip > 0 ? 1 : 0), ry - 4, hi, 2, 1);
   }
   // Pelvis at the far end.
-  const pelX = Math.round(hx - flip * 17);
-  px(ctx, pelX - 3, hy - 1, PALETTE.outline, 8, 5);
-  px(ctx, pelX - 2, hy - 1, bone, 6, 4);
-  px(ctx, pelX, hy, dark, 2, 2);
-  // Splayed limb long-bones.
-  drawOssuaryLongBone(ctx, Math.round(hx - flip * 8), hy + 5, Math.round(hx - flip * 1), hy + 9, true);
-  drawOssuaryLongBone(ctx, Math.round(hx - flip * 12), hy + 5, Math.round(hx - flip * 20), hy + 8, true);
-  drawOssuaryLongBone(ctx, pelX - flip * 1, hy + 3, pelX - flip * 10, hy + 11, true);
-  drawOssuaryLongBone(ctx, pelX + flip * 2, hy + 2, pelX + flip * 8, hy + 8, true);
+  const pelX = Math.round(hx - flip * (15 + Math.floor(rng() * 5)));
+  const pelY = hy + jit(2);
+  px(ctx, pelX - 3, pelY - 1, PALETTE.outline, 8, 5);
+  px(ctx, pelX - 2, pelY - 1, bone, 6, 4);
+  px(ctx, pelX, pelY, dark, 2, 2);
+  // Splayed limb long-bones, each flung at a slightly different angle.
+  drawOssuaryLongBone(ctx, Math.round(hx - flip * 8), hy + 5, Math.round(hx - flip * (1 + jit(4))), hy + 9 + jit(3), true);
+  drawOssuaryLongBone(ctx, Math.round(hx - flip * 12), hy + 5, Math.round(hx - flip * (20 + jit(5))), hy + 8 + jit(3), true);
+  drawOssuaryLongBone(ctx, pelX - flip * 1, pelY + 3, pelX - flip * (10 + jit(4)), pelY + 11 + jit(3), true);
+  drawOssuaryLongBone(ctx, pelX + flip * 2, pelY + 2, pelX + flip * (8 + jit(4)), pelY + 8 + jit(3), true);
   drawOssuarySkull(ctx, hx, hy - 1, false, flip);
   px(ctx, hx + flip * 5, hy - 6, PALETTE.outline, 5, 3);
   px(ctx, hx + flip * 5, hy - 7, PALETTE.stoneDust, 3, 1);
@@ -252,14 +261,22 @@ export function drawSkeleton(ctx, cx, cy, seed, opts = {}) {
   }
   drawRubbleCluster(ctx, cx + flip * 18, cy + 8, seed + 27, 2);
   drawNoisePixels(ctx, cx - 15, cy - 6, 30, 14, [PALETTE.stoneDust, PALETTE.rustDark], 0.02, seed);
-  // One hand ahead of the skull, fingers dug into the dirt: they died
-  // crawling toward something, and the direction still shows.
-  const reach = flip * 16;
-  px(ctx, cx + reach, cy - 2, PALETTE.hostBone, 2, 1);
-  px(ctx, cx + reach + flip * 2, cy - 1, PALETTE.hostBone, 1, 1);
-  px(ctx, cx + reach + flip * 3, cy, PALETTE.hostBone, 1, 1);
-  px(ctx, cx + reach, cy, PALETTE.stoneDark, 3, 1); // the furrows they left
-
+  // Scavengers have dragged a long-bone clear of some bodies; the gap where it
+  // used to lie still reads.
+  if (rng() < 0.4) {
+    const dragX = cx - flip * (22 + Math.floor(rng() * 8));
+    const dragY = cy + 4 + jit(6);
+    drawOssuaryLongBone(ctx, dragX, dragY, dragX - flip * 7, dragY + 2 + jit(3), true);
+  }
+  // Some died crawling: one hand ahead of the skull, fingers dug in, and the
+  // furrows still point the way. Others simply fell.
+  if (rng() < 0.6) {
+    const reach = flip * (14 + Math.floor(rng() * 5));
+    px(ctx, cx + reach, cy - 2, PALETTE.hostBone, 2, 1);
+    px(ctx, cx + reach + flip * 2, cy - 1, PALETTE.hostBone, 1, 1);
+    px(ctx, cx + reach + flip * 3, cy, PALETTE.hostBone, 1, 1);
+    px(ctx, cx + reach, cy, PALETTE.stoneDark, 3, 1); // the furrows they left
+  }
 }
 
 export function drawBoneNiche(ctx, cx, cy, seed, opts = {}) {
@@ -493,6 +510,371 @@ export function drawGraveyardWall(ctx, cx, cy, seed, opts = {}) {
   }
   drawNoisePixels(ctx, cx - 26, cy - 15, 52, 19, [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.stoneDust], 0.045, seed);
   drawRubbleCluster(ctx, cx + (seed & 1 ? 18 : -18), cy + 6, seed + 13, 2);
+}
+
+const GRAVEYARD_CHAPEL_STYLES = {
+  mortuary: {
+    wallH: 52,
+    roofRise: 28,
+    bellHeight: 23,
+    wallLit: PALETTE.stoneMid,
+    wallShade: PALETTE.stoneDark,
+    trim: PALETTE.stoneDust,
+    roof: PALETTE.woodDark,
+    roofShade: PALETTE.outline,
+    roofLight: PALETTE.stoneMid
+  },
+  vigil: {
+    wallH: 48,
+    roofRise: 25,
+    bellHeight: 18,
+    wallLit: PALETTE.stoneMid,
+    wallShade: PALETTE.stoneDark,
+    trim: PALETTE.stoneDust,
+    roof: PALETTE.stoneDark,
+    roofShade: PALETTE.outline,
+    roofLight: PALETTE.stoneMid
+  }
+};
+
+function graveyardChapelStyle(variant) {
+  return GRAVEYARD_CHAPEL_STYLES[variant] ?? GRAVEYARD_CHAPEL_STYLES.mortuary;
+}
+
+function chapelLift(point, amount) {
+  return [point[0], point[1] - amount];
+}
+
+function drawGraveyardChapelFace(ctx, face, style, seed, opts = {}) {
+  // Course lines and narrow buttresses keep the masonry from becoming a flat
+  // slab at gameplay scale. The upper-left side stays visibly lighter.
+  for (const v of [0.16, 0.38, 0.63, 0.84]) {
+    face.line(0.04, v, 0.96, v, PALETTE.stoneDark, 1);
+  }
+  const bands = [[0.05, 0.16], [0.16, 0.38], [0.38, 0.63], [0.63, 0.84], [0.84, 0.97]];
+  for (let row = 0; row < bands.length; row += 1) {
+    const [v0, v1] = bands[row];
+    const offset = ((seed + row) & 1) ? 0.08 : -0.02;
+    for (const u of [0.24 + offset, 0.57 + offset, 0.84 + offset]) {
+      if (u <= 0.08 || u >= 0.92) continue;
+      face.line(u, v0 + 0.015, u, v1 - 0.015, row === 0 && u < 0.4 ? PALETTE.stoneDust : PALETTE.stoneDark, 1);
+    }
+  }
+  const buttresses = [];
+  if (opts.leftEdge !== false) buttresses.push([0.06, 0.14]);
+  if (opts.rightEdge !== false) buttresses.push([0.86, 0.94]);
+  for (const [u0, u1] of buttresses) {
+    face.rect(u0, 0.12, u1, 0.98, PALETTE.outline);
+    face.rect(u0 + 0.025, 0.15, u1 - 0.02, 0.94, style.wallShade);
+    face.line(u0 + 0.03, 0.16, u0 + 0.03, 0.93, style.trim, 1);
+  }
+
+  if (opts.doorHalf === 'left' || opts.doorHalf === 'right') {
+    const left = opts.doorHalf === 'left';
+    const shoulder = left ? 0.61 : 0.39;
+    const seam = left ? 1 : 0;
+    const outline = left
+      ? [face.point(shoulder, 0.36), face.point(seam, 0.04), face.point(seam, 1), face.point(shoulder, 1)]
+      : [face.point(seam, 0.04), face.point(shoulder, 0.36), face.point(shoulder, 1), face.point(seam, 1)];
+    const recess = left
+      ? [face.point(0.66, 0.39), face.point(seam, 0.09), face.point(seam, 0.98), face.point(0.66, 0.98)]
+      : [face.point(seam, 0.09), face.point(0.34, 0.39), face.point(0.34, 0.98), face.point(seam, 0.98)];
+    const leaf = left
+      ? [face.point(0.69, 0.42), face.point(seam, 0.13), face.point(seam, 0.96), face.point(0.69, 0.96)]
+      : [face.point(seam, 0.13), face.point(0.31, 0.42), face.point(0.31, 0.96), face.point(seam, 0.96)];
+    poly(ctx, PALETTE.outline, outline);
+    poly(ctx, PALETTE.void, recess);
+    poly(ctx, PALETTE.woodDark, leaf);
+
+    const outer = left ? 0.69 : 0.31;
+    face.line(outer, 0.44, seam, 0.15, left ? style.trim : PALETTE.stoneDark, 1);
+    for (const v of [0.67, 0.84]) {
+      face.line(left ? 0.7 : 0.03, v, left ? 0.97 : 0.3, v, PALETTE.rustDark, 1);
+    }
+    face.line(left ? 0.83 : 0.08, 0.42, left ? 0.83 : 0.08, 0.94, PALETTE.outline, 1);
+    const handle = face.point(left ? 0.91 : 0.09, 0.73);
+    px(ctx, handle[0] - 1, handle[1] - 1, PALETTE.rustLight, 2, 2);
+    face.line(left ? 0.58 : 0, 0.96, left ? 1 : 0.42, 0.96, style.trim, 2);
+    return;
+  }
+
+  // One centered lancet per side bay. It is a deep blind opening rather than a
+  // light source, with a pale upper-left jamb and a dark lower-right jamb.
+  if (opts.window === false) return;
+  face.rect(0.34, 0.34, 0.66, 0.69, PALETTE.outline);
+  face.rect(0.39, 0.38, 0.61, 0.68, PALETTE.void);
+  face.line(0.34, 0.35, 0.5, 0.17, PALETTE.outline, 2);
+  face.line(0.5, 0.17, 0.66, 0.35, PALETTE.outline, 2);
+  face.line(0.38, 0.36, 0.5, 0.21, style.trim, 1);
+  face.line(0.5, 0.21, 0.62, 0.36, PALETTE.stoneDark, 1);
+  face.line(0.5, 0.31, 0.5, 0.67, PALETTE.stoneDark, 1);
+  face.line(0.37, 0.71, 0.63, 0.71, PALETTE.stoneDust, 2);
+}
+
+function drawChapelGableOculus(ctx, center, style, variant) {
+  const radius = variant === 'vigil' ? 4 : 5;
+  const outer = [
+    [center[0], center[1] - radius],
+    [center[0] + radius, center[1] - 1],
+    [center[0] + radius - 1, center[1] + radius],
+    [center[0] - radius + 1, center[1] + radius],
+    [center[0] - radius, center[1] - 1]
+  ];
+  poly(ctx, PALETTE.outline, outer);
+  px(ctx, center[0] - radius + 2, center[1] - radius + 2, style.trim, radius * 2 - 3, 2);
+  px(ctx, center[0] - radius + 2, center[1], PALETTE.void, radius * 2 - 3, radius - 1);
+  px(ctx, center[0] - 1, center[1] - radius + 2, PALETTE.stoneDark, 2, radius * 2 - 2);
+  px(ctx, center[0] - radius + 2, center[1], PALETTE.stoneDark, radius * 2 - 3, 1);
+}
+
+function drawChapelBellCot(ctx, ridge, style, variant, seed) {
+  const compact = variant === 'vigil';
+  const height = style.bellHeight;
+  const half = compact ? 9 : 11;
+  const pierW = compact ? 3 : 4;
+  const innerHalf = half - pierW - 1;
+  const roofPeak = compact ? 5 : 7;
+
+  // The cot is an extension of the front gable wall. Its local horizontal
+  // axis therefore follows the same 2:1 isometric wall run, instead of using
+  // screen-horizontal rectangles that read as floating crossbars.
+  const point = (along, up) => [
+    ridge[0] + along,
+    ridge[1] + 3 + along * 0.5 - up
+  ];
+
+  // A shallow stone saddle straddles the ridge and lands on the supporting
+  // wall plane below. Both long edges keep the facade's projected slope.
+  poly(ctx, PALETTE.outline, [
+    point(-half - 2, 6),
+    point(half + 2, 6),
+    point(half + 2, 0),
+    point(-half - 2, 0)
+  ]);
+  poly(ctx, style.wallShade, [
+    point(-half, 5),
+    point(half, 5),
+    point(half, 2),
+    point(-half, 2)
+  ]);
+  linePx(ctx, ...point(-half + 1, 6), ...point(half - 1, 6), style.trim, 1);
+
+  const pierTop = height - 6;
+  // Deep pointed opening first, then the two piers that frame it. The left
+  // pier catches the upper-left light while the right pier stays shaded.
+  poly(ctx, PALETTE.void, [
+    point(-innerHalf, 6),
+    point(-innerHalf, pierTop - 2),
+    point(0, height - 1),
+    point(innerHalf, pierTop - 2),
+    point(innerHalf, 6)
+  ]);
+  poly(ctx, PALETTE.outline, [
+    point(-half - 1, 5),
+    point(-innerHalf + 1, 5),
+    point(-innerHalf + 1, pierTop),
+    point(-half - 1, pierTop)
+  ]);
+  poly(ctx, style.wallLit, [
+    point(-half, 6),
+    point(-innerHalf, 6),
+    point(-innerHalf, pierTop - 1),
+    point(-half, pierTop - 1)
+  ]);
+  poly(ctx, PALETTE.outline, [
+    point(innerHalf - 1, 5),
+    point(half + 1, 5),
+    point(half + 1, pierTop),
+    point(innerHalf - 1, pierTop)
+  ]);
+  poly(ctx, style.wallShade, [
+    point(innerHalf, 6),
+    point(half, 6),
+    point(half, pierTop - 1),
+    point(innerHalf, pierTop - 1)
+  ]);
+  linePx(ctx, ...point(-half + 1, 7), ...point(-half + 1, pierTop - 2), style.trim, 1);
+
+  // A small cast bell hangs inside the opening. Rust is metal weathering here,
+  // not ritual color, and the bright pixels stay to one hard specular edge.
+  const bell = point(0, 10);
+  px(ctx, bell[0] - 3, bell[1] - 5, PALETTE.rustDark, 7, 5);
+  px(ctx, bell[0] - 2, bell[1] - 6, PALETTE.rustMid, 5, 2);
+  px(ctx, bell[0] - 3, bell[1], PALETTE.outline, 7, 2);
+  px(ctx, bell[0] - 2, bell[1], PALETTE.rustLight, 4, 1);
+  px(ctx, bell[0], bell[1] + 2, PALETTE.rustLight, 1, 2);
+
+  // The little gable roof shares the wall plane too. Its eaves and both stone
+  // courses are projected from the same point helper as the piers and saddle.
+  poly(ctx, PALETTE.outline, [
+    point(-half - 2, pierTop - 1),
+    point(0, height + roofPeak),
+    point(half + 2, pierTop - 1),
+    point(half + 1, pierTop - 4),
+    point(0, height + roofPeak - 3),
+    point(-half - 1, pierTop - 4)
+  ]);
+  linePx(ctx, ...point(-half, pierTop), ...point(0, height + roofPeak - 1), style.roofLight, 1);
+  linePx(ctx, ...point(0, height + roofPeak - 1), ...point(half, pierTop), style.roofShade, 1);
+  linePx(ctx, ...point(-half + 2, pierTop - 3), ...point(half - 2, pierTop - 3), PALETTE.stoneDark, 1);
+  if ((seed & 1) === 0) {
+    const chip = point(half - 2, pierTop - 2);
+    px(ctx, chip[0] - 1, chip[1] - 1, PALETTE.stoneDust, 3, 2);
+  }
+}
+
+function drawChapelButtress(ctx, foot, style, height, seed, lit = true) {
+  drawIsoPrism(ctx, foot[0], foot[1], 16, 8, 5, {
+    left: lit ? style.wallLit : style.wallShade,
+    right: PALETTE.stoneDark,
+    top: style.trim,
+    outline: PALETTE.outline
+  });
+  drawIsoPrism(ctx, foot[0], foot[1] - 4, 11, 6, height, {
+    left: lit ? style.wallLit : PALETTE.stoneDark,
+    right: style.wallShade,
+    top: PALETTE.stoneDust,
+    outline: PALETTE.outline
+  });
+  px(ctx, foot[0] - 4, foot[1] - height - 7, style.trim, 5, 1);
+  if ((seed & 3) === 0) px(ctx, foot[0] + 1, foot[1] - Math.floor(height * 0.55), PALETTE.outline, 2, 5);
+}
+
+// Connected cemetery chapel tiles. The two authored variants share a cold
+// masonry body, steep slate roof, pointed recesses, and one broken bell-cot.
+// They are full tile blocks so their walkability matches the visible footprint.
+export function drawGraveyardChapelBlock(ctx, cx, cy, seed, opts = {}) {
+  const connected = opts.connected ?? {};
+  const style = graveyardChapelStyle(opts.variant);
+  const rng = rngFrom(hash2D(seed + 307, seed * 11 + 83));
+  const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+  const wallTop = diamond(cx, cy - style.wallH, TILE_WIDTH, TILE_HEIGHT);
+
+  drawShadowBlob(ctx, cx, cy + 5, 66, 22);
+
+  if (!connected.yPlus) {
+    poly(ctx, style.wallLit, [wallTop.left, wallTop.bottom, base.bottom, base.left]);
+    const face = faceTools(ctx, wallTop.left, wallTop.bottom, base.bottom, base.left);
+    drawGraveyardChapelFace(ctx, face, style, seed, {
+      doorHalf: !connected.xMinus ? 'left' : !connected.xPlus ? 'right' : null,
+      leftEdge: !connected.xMinus,
+      rightEdge: !connected.xPlus,
+      window: false
+    });
+    face.line(0.03, 0.04, 0.97, 0.04, style.trim, 2);
+
+    // The end wall rises into the roof instead of stopping at a flat cap. A
+    // two-cell-wide footprint contributes one half-gable from each front cell.
+    if (!connected.xMinus) {
+      const ridge = chapelLift(wallTop.bottom, style.roofRise);
+      poly(ctx, style.wallLit, [wallTop.left, ridge, wallTop.bottom]);
+      linePx(ctx, wallTop.left[0], wallTop.left[1], ridge[0], ridge[1], style.trim, 2);
+    }
+    if (!connected.xPlus) {
+      const ridge = chapelLift(wallTop.left, style.roofRise);
+      poly(ctx, style.wallShade, [wallTop.left, ridge, wallTop.bottom]);
+      linePx(ctx, ridge[0], ridge[1], wallTop.bottom[0], wallTop.bottom[1], PALETTE.stoneDark, 2);
+      const oculus = mixPoint(ridge, wallTop.left, 0.58);
+      drawChapelGableOculus(ctx, oculus, style, opts.variant);
+    }
+  }
+  if (!connected.xPlus) {
+    poly(ctx, style.wallShade, [wallTop.bottom, wallTop.right, base.right, base.bottom]);
+    const face = faceTools(ctx, wallTop.bottom, wallTop.right, base.right, base.bottom);
+    drawGraveyardChapelFace(ctx, face, style, seed + 19, {
+      leftEdge: !connected.yPlus,
+      rightEdge: !connected.yMinus,
+      window: true
+    });
+    face.line(0.04, 0.04, 0.96, 0.04, PALETTE.stoneDark, 2);
+  }
+
+  // The roof now has two true slopes. The left cell rises from its outer wall
+  // to the shared centreline, and the right cell falls from that same ridge to
+  // its outer wall. Every eave point is derived from wallTop, so roof and walls
+  // cannot drift apart as the footprint changes.
+  const leftSlope = !connected.xMinus;
+  const plane = leftSlope
+    ? [wallTop.top, chapelLift(wallTop.right, style.roofRise), chapelLift(wallTop.bottom, style.roofRise), wallTop.left]
+    : [chapelLift(wallTop.top, style.roofRise), wallTop.right, wallTop.bottom, chapelLift(wallTop.left, style.roofRise)];
+  poly(ctx, leftSlope ? style.roof : style.roofShade, plane);
+
+  // Slate courses run parallel to the eave and ridge. Short staggered joints
+  // cross only one course at a time, avoiding the old roof-wide checker grid.
+  for (const t of [0.18, 0.36, 0.54, 0.72, 0.88]) {
+    const back = mixPoint(plane[0], plane[1], t);
+    const front = mixPoint(plane[3], plane[2], t);
+    linePx(ctx, back[0], back[1], front[0], front[1], leftSlope && t < 0.55 ? style.roofLight : PALETTE.stoneDark, 1);
+  }
+  const roofPoint = (slope, depth) => {
+    const back = mixPoint(plane[0], plane[1], slope);
+    const front = mixPoint(plane[3], plane[2], slope);
+    return mixPoint(back, front, depth);
+  };
+  const courseStops = [0.08, 0.18, 0.36, 0.54, 0.72, 0.88];
+  for (let course = 0; course < courseStops.length - 1; course += 1) {
+    const depth = 0.24 + (((seed + course * 3) & 3) * 0.17);
+    const a = roofPoint(courseStops[course], depth);
+    const b = roofPoint(courseStops[course + 1], depth);
+    linePx(ctx, a[0], a[1], b[0], b[1], style.roofShade, 1);
+  }
+  if (leftSlope) {
+    linePx(ctx, plane[1][0], plane[1][1], plane[2][0], plane[2][1], PALETTE.outline, 2);
+    linePx(ctx, plane[1][0] - 1, plane[1][1] - 1, plane[2][0] - 1, plane[2][1] - 1, style.roofLight, 1);
+    for (const t of [0.22, 0.5, 0.78]) {
+      const cap = mixPoint(plane[1], plane[2], t);
+      px(ctx, cap[0] - 2, cap[1] - 2, style.roofLight, 4, 1);
+      px(ctx, cap[0] - 1, cap[1], PALETTE.stoneDark, 4, 1);
+    }
+  }
+  if ((!connected.xMinus && leftSlope) || (!connected.xPlus && !leftSlope)) {
+    linePx(ctx, plane[0][0], plane[0][1], plane[3][0], plane[3][1], PALETTE.outline, 2);
+  }
+  if (!connected.yPlus) {
+    linePx(ctx, plane[3][0], plane[3][1], plane[2][0], plane[2][1], PALETTE.outline, 2);
+  }
+  if ((seed & 3) === 1) {
+    const missing = roofPoint(0.42, 0.62);
+    px(ctx, missing[0] - 3, missing[1] - 1, PALETTE.outline, 6, 3);
+    px(ctx, missing[0] - 2, missing[1] - 1, PALETTE.stoneDark, 3, 1);
+  }
+
+  // A continuous sill keeps the façade and long wall on one architectural
+  // base line. It is drawn in face coordinates, not as a screen-horizontal bar.
+  if (!connected.yPlus) {
+    const front = faceTools(ctx, wallTop.left, wallTop.bottom, base.bottom, base.left);
+    front.line(0.02, 0.9, 0.98, 0.9, PALETTE.outline, 3);
+    front.line(0.04, 0.86, 0.96, 0.86, style.trim, 1);
+  }
+  if (!connected.xPlus) {
+    const side = faceTools(ctx, wallTop.bottom, wallTop.right, base.right, base.bottom);
+    side.line(0.02, 0.9, 0.98, 0.9, PALETTE.outline, 3);
+    side.line(0.04, 0.86, 0.96, 0.86, PALETTE.stoneDark, 1);
+  }
+
+  // The front-right cell draws last within this footprint, so the ridge-mounted
+  // bell cot remains in front of both roof slopes and cannot float behind them.
+  if (!connected.xPlus && !connected.yPlus) {
+    const ridgeFront = chapelLift(wallTop.left, style.roofRise);
+    drawChapelBellCot(ctx, ridgeFront, style, opts.variant, seed);
+  }
+
+  const buttressH = Math.round(style.wallH * 0.72);
+  if (!connected.xMinus && !connected.yPlus) {
+    drawChapelButtress(ctx, base.left, style, buttressH, seed + 17, true);
+  }
+  if (!connected.xPlus && !connected.yPlus) {
+    drawChapelButtress(ctx, base.bottom, style, buttressH + 1, seed + 23, false);
+  }
+  if (!connected.xPlus && !connected.yMinus) {
+    drawChapelButtress(ctx, base.right, style, buttressH - 2, seed + 29, false);
+  }
+
+  if (!connected.yPlus || !connected.xPlus) {
+    const edge = !connected.yPlus ? base.bottom : base.right;
+    px(ctx, edge[0] - 7, edge[1] - 2, PALETTE.stoneDust, 13, 2);
+    if (rng() < 0.68) drawRubbleCluster(ctx, cx + (seed & 1 ? 24 : -23), cy + 7, seed + 313, 2);
+  }
 }
 
 export function drawCalcifiedGravePlot(ctx, cx, cy, seed, opts = {}) {

@@ -9,6 +9,20 @@
       ],
       "choices": [
         {
+          "label": "Collect the graveyard censure bundle",
+          "conditions": {
+            "flags": [
+              "heard-bell-resolved-censure",
+              "heard-bell-censure-report-filed",
+              "heard-bell-censure-report-acknowledged"
+            ],
+            "flagsAbsent": [
+              "heard-bell-censure-reward-claimed"
+            ]
+          },
+          "next": "heard-bell-censure-reward"
+        },
+        {
           "label": "Collect Voss's issue bundle",
           "conditions": {
             "flag": "censure-road-voss-report-perfect",
@@ -40,6 +54,20 @@
         "\"Reasons spoil faster than fish. I stopped taking them.\""
       ],
       "choices": [
+        {
+          "label": "Collect the graveyard censure bundle",
+          "conditions": {
+            "flags": [
+              "heard-bell-resolved-censure",
+              "heard-bell-censure-report-filed",
+              "heard-bell-censure-report-acknowledged"
+            ],
+            "flagsAbsent": [
+              "heard-bell-censure-reward-claimed"
+            ]
+          },
+          "next": "heard-bell-censure-reward"
+        },
         {
           "label": "Collect Voss's issue bundle",
           "conditions": {
@@ -94,6 +122,46 @@
         },
         {
           "label": "Leave the bundle for now",
+          "close": true
+        }
+      ]
+    },
+    "heard-bell-censure-reward": {
+      "lines": [
+        "Maev checks Voss's black seal, then sets a paper writ beneath three cartridges so the wind cannot take it.",
+        "\"Ten ducats, one dressing, and a burn writ. The rounds are not a sermon. Put them where the writ fails.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the censure bundle",
+          "effects": {
+            "setFlag": "heard-bell-censure-reward-claimed",
+            "inventory": {
+              "add": [
+                {
+                  "item": "road-purgation-writ",
+                  "count": 1
+                },
+                {
+                  "item": "relic-rounds",
+                  "count": 3
+                },
+                {
+                  "item": "field-dressing",
+                  "count": 1
+                },
+                {
+                  "item": "ducat",
+                  "count": 10
+                }
+              ]
+            },
+            "log": "Maev issues the graveyard censure bundle."
+          },
+          "close": true
+        },
+        {
+          "label": "Leave the bundle with Maev",
           "close": true
         }
       ]

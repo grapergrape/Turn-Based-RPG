@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- Dev-only: the stone-stairwell landing on the real chapel floor, all four
+     orients, with the breach mood multiply so contrast reads truthfully. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#000;}canvas{display:block;image-rendering:pixelated;}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+window.onerror = (msg) => { document.title = 'CAPTURE-ERROR'; document.body.textContent = String(msg); };
+import * as P from '/src/render/PixelPrimitives.js';
+import { PALETTE } from '/src/render/palette.js';
+import { gridToScreen } from '/src/render/isoMath.js';
+try {
+  const params = new URLSearchParams(location.search);
+  const SCALE = Number(params.get('scale') ?? '5');
+  const MOOD = params.get('mood') !== '0';
+  const canvas = document.getElementById('c');
+  const CW = 210, CH = 150;
+  const orients = ['se', 'sw', 'nw', 'ne'];
+  canvas.width = CW * orients.length * SCALE;
+  canvas.height = CH * SCALE;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = PALETTE.void;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(SCALE, SCALE);
+
+  orients.forEach((o, i) => {
+    const ox = i * CW + CW / 2;
+    const oy = CH / 2 + 8;
+    // A 5x5 patch of the real chapel stone floor behind the landing.
+    const origin = { x: ox, y: oy };
+    for (let gy = -2; gy <= 2; gy += 1) {
+      for (let gx = -2; gx <= 2; gx += 1) {
+        const s = gridToScreen(gx, gy, 0, origin);
+        P.drawStyledFloorCell(ctx, s.x, s.y, gx + 40, gy + 40, 'stone');
+      }
+    }
+    const c = gridToScreen(0, 0, 0, origin);
+    P.drawStoneStairwell(ctx, c.x, c.y, 7, { orient: o });
+  });
+
+  if (MOOD) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = 0.4;
+    ctx.fillStyle = '#10141c';
+    ctx.fillRect(0, 0, canvas.width / SCALE, canvas.height / SCALE);
+    ctx.restore();
+  }
+
+  ctx.font = '9px monospace';
+  ctx.fillStyle = '#c8b89a';
+  orients.forEach((o, i) => ctx.fillText('orient ' + o, i * CW + 8, 12));
+  document.title = 'CAPTURE-READY';
+} catch (e) {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(e?.stack ?? e);
+}
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 {
   "id": "censure-road-odran-tent-interior",
   "name": "Father Odran's Tent",
-  "intro": "Lamp oil, damp linen, and ledger dust crowd the private tent.",
+  "intro": "Lamp oil and ledger dust have worked into the damp linen. The private tent never quite airs out.",
   "width": 12,
   "height": 10,
   "tileSize": 64,

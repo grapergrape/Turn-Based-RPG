@@ -1,0 +1,9 @@
+{
+  "id": "mortuary-examination-docket",
+  "name": "Mortuary Examination Docket",
+  "type": "evidence",
+  "rarity": "rare",
+  "weight": 0.2,
+  "groundModel": "paper",
+  "description": "A road office docket that calls movement settling and pain response contraction. The last transfer points north."
+}

@@ -1,0 +1,34 @@
+{
+  "id": "long-ash-mortuary-stair",
+  "title": "Mortuary Stair",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The stair drops beneath the washing room. Copper wire follows the wall into air that tastes of old salt."
+      ],
+      "choices": [
+        {
+          "label": "Descend to the Listening Vault",
+          "effects": {
+            "log": "You descend beneath the mortuary.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_listening_vault.json",
+              "player": {
+                "x": 7,
+                "y": 13
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Remain in the washing room",
+          "effects": {
+            "log": "You leave the lower stair alone."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

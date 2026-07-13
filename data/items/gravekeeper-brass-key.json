@@ -1,0 +1,9 @@
+{
+  "id": "gravekeeper-brass-key",
+  "name": "Gravekeeper's Brass Key",
+  "type": "key",
+  "rarity": "uncommon",
+  "weight": 0.1,
+  "groundModel": "key",
+  "description": "A short brass key worn smooth at the bow. Candle soot fills one tooth, and pale stone dust fills another."
+}

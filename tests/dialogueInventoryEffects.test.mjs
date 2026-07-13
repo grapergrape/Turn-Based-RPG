@@ -22,16 +22,34 @@ const itemDefs = {
     weight: 0,
     groundModel: 'chit',
     description: 'Stamped absolution proof.'
+  },
+  'packed-ledger': {
+    id: 'packed-ledger',
+    name: 'Packed Ledger',
+    type: 'evidence',
+    rarity: 'common',
+    weight: 0.5,
+    groundModel: 'paper',
+    description: 'A heavy test ledger.'
+  },
+  'kept-record': {
+    id: 'kept-record',
+    name: 'Kept Record',
+    type: 'evidence',
+    rarity: 'common',
+    weight: 0.2,
+    groundModel: 'paper',
+    description: 'A test record.'
   }
 };
 
-function buildRuntime(ducats) {
+function buildRuntime(ducats, { maxCarryWeight = 10 } = {}) {
   const logs = [];
   let questUpdate = null;
   const game = {
     flags: new Set(),
     clock: { yearAfterDescent: 130, fieldDay: 1, minuteOfDay: 480, minuteCarry: 0 },
-    inventory: new Inventory(itemDefs, { maxCarryWeight: 10 })
+    inventory: new Inventory(itemDefs, { maxCarryWeight })
   };
   if (ducats > 0) game.inventory.add('ducat', ducats);
   const effects = new DialogueEffects(game, {
@@ -81,12 +99,85 @@ function buildRuntime(ducats) {
     log: 'Payment accepted.'
   });
 
-  assert.equal(didTransition, false);
+  assert.equal(didTransition, true);
   assert.equal(game.inventory.count('ducat'), 4);
   assert.equal(game.inventory.count('censure-absolution-chit'), 0);
   assert.equal(game.flags.has('paid-confession'), false);
   assert.equal(questUpdate(), null);
   assert.deepEqual(logs, ['Missing fifth ducat.']);
+}
+
+{
+  const { game, effects, logs, questUpdate } = buildRuntime(0, { maxCarryWeight: 0.5 });
+  game.inventory.add('packed-ledger', 1);
+  const handled = effects.apply({
+    setFlag: 'records-carried',
+    inventory: {
+      add: [
+        { item: 'kept-record', count: 2 }
+      ]
+    },
+    questUpdate: { quest: 'test-records', stage: 'complete' },
+    log: 'The records leave the wall.'
+  });
+
+  assert.equal(handled, true);
+  assert.equal(game.inventory.count('packed-ledger'), 1);
+  assert.equal(game.inventory.count('kept-record'), 0);
+  assert.equal(game.flags.has('records-carried'), false);
+  assert.equal(questUpdate(), null);
+  assert.deepEqual(logs, [
+    'Too much to carry. Pack 0.5/0.5 kg.',
+    'Need 0.4 kg free.'
+  ]);
+}
+
+{
+  const { game, effects } = buildRuntime(0, { maxCarryWeight: 0.5 });
+  game.inventory.add('packed-ledger', 1);
+  effects.apply({
+    setFlag: 'records-exchanged',
+    inventory: {
+      requireAll: true,
+      remove: [
+        { item: 'packed-ledger', count: 1 }
+      ],
+      add: [
+        { item: 'kept-record', count: 2 }
+      ]
+    }
+  });
+
+  assert.equal(game.inventory.count('packed-ledger'), 0);
+  assert.equal(game.inventory.count('kept-record'), 2);
+  assert.equal(game.flags.has('records-exchanged'), true);
+}
+
+{
+  const calls = [];
+  const game = {
+    flags: new Set(),
+    clock: { yearAfterDescent: 130, fieldDay: 1, minuteOfDay: 480, minuteCarry: 0 },
+    inventory: new Inventory(itemDefs, { maxCarryWeight: 10 })
+  };
+  const effects = new DialogueEffects(game, {
+    syncFlagConditionalObjects: () => calls.push('sync'),
+    openDoorGroup: (groupId) => calls.push(`open:${groupId}`),
+    closeUiScreen: () => calls.push('close'),
+    startCombat: (encounterId) => calls.push(`combat:${encounterId}`)
+  });
+
+  assert.equal(effects.apply({
+    setFlag: 'sava-opened',
+    openDoorGroup: 'sava-listening-niche',
+    startCombat: 'sava-listening-niche'
+  }), true);
+  assert.deepEqual(calls, [
+    'sync',
+    'open:sava-listening-niche',
+    'close',
+    'combat:sava-listening-niche'
+  ]);
 }
 
 {

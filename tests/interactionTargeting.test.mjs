@@ -56,6 +56,27 @@ const player = { name: 'Mara Vey', x: 2, y: 2, position: { x: 2, y: 2 } };
 }
 
 {
+  const object = {
+    kind: 'paper-scraps',
+    x: 4,
+    y: 5,
+    clickAreas: [{ x0: 2, y0: 2, x1: 3, y1: 3 }],
+    interact: { type: 'note' }
+  };
+  const target = resolveInteractionTargetAtCell({
+    cell: { x: 3, y: 3 },
+    grid: grid({ blocked: ['3,3'] }),
+    player,
+    actors: [player],
+    interactables: [object]
+  });
+  assert.equal(target.type, 'object');
+  assert.equal(target.object, object);
+  assert.deepEqual(target.cell, { x: 4, y: 5 });
+  assert.deepEqual(target.sourceCell, { x: 3, y: 3 });
+}
+
+{
   const object = { kind: 'chapel-double-door', x: 3, y: 3, opened: true, interact: { type: 'door' } };
   const target = resolveInteractionTargetAtCell({
     cell: { x: 3, y: 3 },

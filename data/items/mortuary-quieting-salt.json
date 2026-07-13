@@ -1,0 +1,9 @@
+{
+  "id": "mortuary-quieting-salt",
+  "name": "Mortuary Quieting Salt",
+  "type": "tool",
+  "rarity": "uncommon",
+  "weight": 0.1,
+  "groundModel": "dressing",
+  "description": "Waxed paper folded around bitter grey salt. The label orders a pinch at the tongue and another at the bell hinge."
+}

@@ -93,6 +93,8 @@ const DISPLAY_NAMES = {
   'calcified-crossroad-brother': 'Calcified Sign Brother',
   'calcified-scarecrow-brother': 'Calcified Field Brother',
   'graveyard-wall': 'Graveyard Wall',
+  'graveyard-mortuary-chapel-block': 'Mortuary Chapel',
+  'graveyard-vigil-chapel-block': 'Vigil Chapel',
   'calcified-grave-plot': 'Empty Grave',
   'calcified-headstone': 'Broken Calcified Marker',
   'graveyard-tomb-slab': 'Tomb Slab',
@@ -121,7 +123,21 @@ const DISPLAY_NAMES = {
   'practice-scars': 'Practice Scars',
   'spent-casings': 'Spent Casings',
   'farm-prep-table': 'Farm Prep Table',
-  'farm-kitchen-hearth': 'Farm Hearth'
+  'farm-kitchen-hearth': 'Farm Hearth',
+  'farm-bed': 'Farm Bed',
+  'grain-sack-stack': 'Grain Sacks',
+  'grain-bin': 'Grain Bin',
+  'farm-workbench': 'Farm Workbench',
+  'stable-divider': 'Stable Divider',
+  'vigil-candle-rack': 'Twelve-Cup Vigil Rack',
+  'gravekeeper-chair': "Hessa's Chair",
+  'mortuary-washing-table': 'Mortuary Washing Table',
+  'examiner-assay-case': "Examiner's Assay Case",
+  'mortuary-drain': 'Mortuary Drain',
+  'mortuary-tag-board': 'Mortuary Tag Board',
+  'listening-apparatus': 'Listening Apparatus',
+  'listening-wire': 'Listening Wire',
+  'sealed-listening-niche': 'Sealed Listening Niche'
 };
 
 export function displayNameForKind(kind) {
@@ -148,6 +164,13 @@ const farmBuildingBlock = (variant = null) => ({
   draw: (ctx, x, y, seed, c) => P.drawFarmBuildingBlock(ctx, x, y, seed, {
     connected: c.prop.connected,
     variant: c.prop.variant ?? variant
+  })
+});
+const graveyardChapelBlock = (variant) => ({
+  category: CATEGORY.STRUCTURE, layer: 0, block: true, cover: 'hard',
+  draw: (ctx, x, y, seed, c) => P.drawGraveyardChapelBlock(ctx, x, y, seed, {
+    connected: c.prop.connected,
+    variant
   })
 });
 
@@ -228,22 +251,41 @@ export const SPRITE_CATALOG = {
       P.drawWallStairDoor(ctx, x, y, seed);
     }
   },
+  'vigil-candle-rack': {
+    category: CATEGORY.FIXTURE, layer: 0,
+    draw: (ctx, x, y, seed, c) => P.drawVigilCandleRack(ctx, x, y, seed, {
+      wallPlane: c.prop.wallPlane,
+      wallSide: c.prop.wallSide
+    })
+  },
+  'mortuary-tag-board': {
+    category: CATEGORY.FIXTURE, layer: 0,
+    draw: (ctx, x, y, seed, c) => P.drawMortuaryTagBoard(ctx, x, y, seed, {
+      wallPlane: c.prop.wallPlane,
+      wallSide: c.prop.wallSide
+    })
+  },
 
   // --- Structures (free-standing architecture) ---------------------------
   'cracked-column': cover(simple(P.drawCrackedColumn, CATEGORY.STRUCTURE), 'hard'),
-  'saint-statue': simple(P.drawSaintStatue, CATEGORY.STRUCTURE),
+  'saint-statue': {
+    category: CATEGORY.STRUCTURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSaintStatue(ctx, x, y, seed, {
+      dim: c.prop.dim,
+      defiled: c.prop.defiled
+    })
+  },
   'stone-tomb': cover(simple(P.drawStoneTomb, CATEGORY.STRUCTURE), 'hard'),
   'graveyard-wall': cover(oriented(P.drawGraveyardWall, CATEGORY.STRUCTURE), 'hard'),
+  'graveyard-mortuary-chapel-block': graveyardChapelBlock('mortuary'),
+  'graveyard-vigil-chapel-block': graveyardChapelBlock('vigil'),
   'calcified-grave-plot': oriented(P.drawCalcifiedGravePlot, CATEGORY.STRUCTURE, 1),
   'calcified-headstone': cover(simple(P.drawCalcifiedHeadstone, CATEGORY.STRUCTURE), 'light'),
   'graveyard-tomb-slab': oriented(P.drawGraveyardTombSlab, CATEGORY.STRUCTURE),
   'graveyard-catacomb-mouth': oriented(P.drawGraveyardCatacombMouth, CATEGORY.STRUCTURE, 4),
   'graveyard-bone-marker': simple(P.drawCalcifiedGraveMarker, CATEGORY.STRUCTURE),
   'graveyard-remnant-cross': simple(P.drawGraveyardRemnantCross, CATEGORY.STRUCTURE),
-  'stone-stairwell': {
-    category: CATEGORY.STRUCTURE, layer: 18,
-    draw: (ctx, x, y, seed) => P.drawStoneStairwell(ctx, x, y, seed)
-  },
+  'stone-stairwell': oriented(P.drawStoneStairwell, CATEGORY.STRUCTURE, 1),
   'quarantine-barricade': cover(simple(P.drawQuarantineBarricade, CATEGORY.STRUCTURE), 'hard'),
   'broken-bell': simple(P.drawBrokenBell, CATEGORY.STRUCTURE),
   'bell-rope': {
@@ -306,6 +348,15 @@ export const SPRITE_CATALOG = {
   'farm-fence': cover(oriented(P.drawFarmFence, CATEGORY.STRUCTURE), 'light'),
   'road-sign-post': simple(P.drawRoadSignPost, CATEGORY.STRUCTURE),
   'infected-cave-entrance': simple(P.drawInfectedCaveEntrance, CATEGORY.STRUCTURE, 4),
+  'listening-apparatus': simple(P.drawListeningApparatus, CATEGORY.STRUCTURE),
+  'sealed-listening-niche': {
+    category: CATEGORY.STRUCTURE, layer: 18, cover: 'hard',
+    draw: (ctx, x, y, seed, c) => P.drawSealedListeningNiche(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed),
+      wallPlane: c.prop.wallPlane,
+      wallSide: c.prop.wallSide
+    })
+  },
 
   // --- Furniture (placed objects) ----------------------------------------
   'broken-pew': cover(simple(P.drawBrokenPew, CATEGORY.FURNITURE), 'light'),
@@ -331,14 +382,40 @@ export const SPRITE_CATALOG = {
   'dining-bench': oriented(P.drawDiningBench, CATEGORY.FURNITURE),
   'kitchen-counter': oriented(P.drawKitchenCounter, CATEGORY.FURNITURE),
   'farm-prep-table': oriented(P.drawFarmPrepTable, CATEGORY.FURNITURE),
+  'farm-bed': cover(oriented(P.drawFarmBed, CATEGORY.FURNITURE), 'light'),
+  'grain-sack-stack': cover(simple(P.drawGrainSackStack, CATEGORY.FURNITURE), 'light'),
+  'grain-bin': cover(oriented(P.drawGrainBin, CATEGORY.FURNITURE), 'hard'),
+  'farm-workbench': cover(oriented(P.drawFarmWorkbench, CATEGORY.FURNITURE), 'hard'),
+  'stable-divider': cover(oriented(P.drawStableDivider, CATEGORY.FURNITURE), 'light'),
+  'gravekeeper-chair': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawGravekeeperChair(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: c.prop.variant
+    })
+  }, 'light'),
+  'mortuary-washing-table': cover(oriented(P.drawMortuaryWashingTable, CATEGORY.FURNITURE), 'hard'),
+  'examiner-assay-case': cover(oriented(P.drawExaminerAssayCase, CATEGORY.FURNITURE), 'light'),
   'kitchen-hearth': simple(P.drawKitchenHearth, CATEGORY.FURNITURE),
   'farm-kitchen-hearth': simple(P.drawFarmKitchenHearth, CATEGORY.FURNITURE),
   'pantry-shelf': simple(P.drawPantryShelf, CATEGORY.FURNITURE),
   'wash-tub': simple(P.drawWashTub, CATEGORY.FURNITURE),
   'chapel-banner': simple(P.drawChapelBanner, CATEGORY.FURNITURE),
-  'prayer-lectern': simple(P.drawPrayerLectern, CATEGORY.FURNITURE),
+  'prayer-lectern': {
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawPrayerLectern(ctx, x, y, seed, {
+      defiled: c.prop.defiled
+    })
+  },
   'ritual-bowl': simple(P.drawRitualBowl, CATEGORY.FURNITURE),
-  'chapel-font': simple(P.drawChapelFont, CATEGORY.FURNITURE),
+  'chapel-font': {
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawChapelFont(ctx, x, y, seed, {
+      dim: c.prop.dim,
+      dry: c.prop.dry,
+      defiled: c.prop.defiled
+    })
+  },
   'rusted-barrel': {
     category: CATEGORY.FURNITURE, layer: 2, cover: 'light',
     draw: (ctx, x, y, seed, c) => P.drawRustedBarrel(ctx, x, y, seed, {
@@ -505,6 +582,8 @@ export const SPRITE_CATALOG = {
   'spent-casings': decal((ctx, x, y, seed) => P.drawSpentCasings(ctx, x, y, seed)),
   'chalk-drawing': decal((ctx, x, y, seed) => P.drawChalkDrawing(ctx, x, y, seed)),
   'machine-oil': decal((ctx, x, y, seed) => P.drawMachineOil(ctx, x, y, seed)),
+  'mortuary-drain': decal((ctx, x, y, seed) => P.drawMortuaryDrain(ctx, x, y, seed)),
+  'listening-wire': decal((ctx, x, y, seed) => P.drawListeningWire(ctx, x, y, seed)),
   'cobweb': decal((ctx, x, y, seed) => P.drawCobweb(ctx, x, y, seed)),
   'blood-sigil': { category: CATEGORY.RITUAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => P.drawBloodSigil(ctx, x, y, seed) },
   'ritual-circle': { category: CATEGORY.RITUAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => P.drawRitualCircle(ctx, x, y, seed) }

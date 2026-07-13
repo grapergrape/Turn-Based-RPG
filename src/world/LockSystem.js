@@ -16,6 +16,7 @@ function clampPercent(value) {
 }
 
 function methodRequiredItem(method) {
+  if (method?.field === 'security' && method?.requiresSecurityTool === false) return null;
   const authored = typeof method?.requiresItem === 'string' ? method.requiresItem : null;
   return authored ?? (method?.field === 'security' ? SECURITY_TOOL_ITEM : null);
 }

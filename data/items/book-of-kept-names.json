@@ -1,0 +1,9 @@
+{
+  "id": "book-of-kept-names",
+  "name": "Book of Kept Names",
+  "type": "evidence",
+  "rarity": "rare",
+  "weight": 0.2,
+  "groundModel": "paper",
+  "description": "Hessa Marr's burial register. Each name has a candle mark beside it. The twelfth mark was crushed into the paper with a thumbnail."
+}

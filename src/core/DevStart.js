@@ -1,6 +1,8 @@
 // Parses optional local-dev URL parameters into startup options. This keeps the
 // normal game path unchanged while making scene and prop checks easy to reach.
 
+import { PRIMARY_ATTRIBUTES } from './Progression.js';
+
 const DEFAULT_LEVEL_PATH = './data/levels/ash_chapel_breach.json';
 
 const LEVEL_ALIASES = {
@@ -64,6 +66,16 @@ function readPoint(params) {
   return x === null || y === null ? null : { x, y };
 }
 
+function readPrimaryOverrides(params) {
+  const primaries = {};
+  for (const primary of PRIMARY_ATTRIBUTES) {
+    const value = readInt(params, [primary.id]);
+    if (value === null) continue;
+    primaries[primary.id] = Math.max(0, Math.min(10, value));
+  }
+  return Object.keys(primaries).length > 0 ? primaries : null;
+}
+
 function resolveLevelPath(value) {
   if (!value) return DEFAULT_LEVEL_PATH;
   const raw = String(value).trim().replaceAll('\\', '/');
@@ -83,16 +95,18 @@ export function resolveDevStart(location) {
   const params = url.searchParams;
   const levelValue = firstParam(params, ['level', 'area', 'dev']);
   const player = readPoint(params);
+  const primaries = readPrimaryOverrides(params);
   const debugGrid = readFlag(params, ['grid', 'debugGrid']);
   const enemies = readFlag(params, ['enemies']);
   const noCombat = readFlag(params, ['noCombat', 'peaceful', 'noEnemies'], false) || enemies === false;
   const skipIntroParam = readFlag(params, ['skipIntro', 'skipWrit']);
   const intro = readFlag(params, ['intro']);
-  const enabled = Boolean(levelValue || player || debugGrid !== null || noCombat || skipIntroParam !== null || intro !== null);
+  const enabled = Boolean(levelValue || player || primaries || debugGrid !== null || noCombat || skipIntroParam !== null || intro !== null);
   const skipIntro = skipIntroParam ?? (intro === null ? enabled : !intro);
 
   const bootOptions = {};
   if (player) bootOptions.player = player;
+  if (primaries) bootOptions.primaries = primaries;
   if (noCombat) bootOptions.noCombat = true;
   if (skipIntro) bootOptions.skipIntro = true;
 
@@ -102,4 +116,29 @@ export function resolveDevStart(location) {
     debugGrid,
     bootOptions
   };
+}
+
+export function applyDevPrimaryOverrides(player, overrides) {
+  if (!player || !overrides || typeof overrides !== 'object' || Array.isArray(overrides)) return false;
+
+  const progression = player.progression ?? {};
+  const current = progression.basePrimaries ?? progression.primaries ?? {};
+  const basePrimaries = { ...current };
+  let changed = false;
+
+  for (const primary of PRIMARY_ATTRIBUTES) {
+    const value = overrides[primary.id];
+    if (!Number.isFinite(value)) continue;
+    basePrimaries[primary.id] = Math.max(0, Math.min(10, Math.round(value)));
+    changed = true;
+  }
+  if (!changed) return false;
+
+  player.progression = {
+    ...progression,
+    basePrimaries,
+    primaries: { ...basePrimaries }
+  };
+  player.refreshProgressionStats?.();
+  return true;
 }

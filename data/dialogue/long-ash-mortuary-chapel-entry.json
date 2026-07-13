@@ -1,0 +1,35 @@
+{
+  "id": "long-ash-mortuary-chapel-entry",
+  "title": "Mortuary Chapel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The mortuary door bears old wash marks below its latch. Three brass nail heads have been driven through the road office seal."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Mortuary Chapel",
+          "effects": {
+            "setFlag": "heard-bell-mortuary-entered",
+            "log": "You enter the Mortuary Chapel.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_mortuary_chapel.json",
+              "player": {
+                "x": 6,
+                "y": 9
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in the graveyard",
+          "effects": {
+            "log": "You leave the mortuary shut."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

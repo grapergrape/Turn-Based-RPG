@@ -1,0 +1,142 @@
+{
+  "id": "long-ash-book-of-kept-names",
+  "title": "Book of Kept Names",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "heard-bell-register-read"
+        ]
+      },
+      "else": "reread",
+      "lines": [
+        "Hessa Marr wrote names where a road clerk would have written numbers. Candle grease stiffens the page edges.",
+        "The first leaf begins after the Stilling. Hessa crossed out the office heading, REMAINS RECEIVED, and wrote NAMES KEPT.",
+        "Twelve marks run down the inside cover. The last was pressed so hard that the paper split."
+      ],
+      "choices": [
+        {
+          "label": "Read the intact entries",
+          "conditions": {
+            "flagsAbsent": [
+              "heard-bell-register-damaged"
+            ]
+          },
+          "next": "entries-intact",
+          "close": false
+        },
+        {
+          "label": "Read what survived",
+          "conditions": {
+            "flag": "heard-bell-register-damaged"
+          },
+          "next": "entries-damaged",
+          "close": false
+        },
+        {
+          "label": "Close the register",
+          "close": true
+        }
+      ]
+    },
+    "entries-intact": {
+      "lines": [
+        "I asked Eren if the stone still hurt. Two cracks came through the chair beneath my hand, and I did not ask him again.",
+        "Lysa heard the bell while the rope was still in my fist. She struck her teeth until I cut out the clapper.",
+        "Ilyen knew my step. The ash moved at his feet before I touched the gate.",
+        "Margin cuts beside Maud show a broken circle. Toma is marked by opened ribs; Lysa by the bell mouth.",
+        "A final page names Sava Rell. Hessa wrote that the wardens took him below the washing house because he turned north before Hallowfen's bells sounded."
+      ],
+      "choices": [
+        {
+          "label": "Remember the twelve names",
+          "conditions": {
+            "flagsAbsent": [
+              "heard-bell-docket-read"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-register-read",
+            "log": "Hessa kept twelve names. Only eleven remain in the graveyard."
+          },
+          "close": true
+        },
+        {
+          "label": "Set Hessa's record beside the docket",
+          "conditions": {
+            "flag": "heard-bell-docket-read"
+          },
+          "effects": {
+            "setFlag": [
+              "heard-bell-register-read",
+              "heard-bell-truth-joined"
+            ],
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "judge-vigil",
+              "log": "Quest updated: find Sava Rell and decide what remains."
+            },
+            "log": "Names and subject numbers join. Sava answered Hallowfen before the road bells rang."
+          },
+          "close": true
+        }
+      ]
+    },
+    "entries-damaged": {
+      "lines": [
+        "The forced stone tore several leaves from the binding. Hessa's cramped hand survives along the inner margins.",
+        "I asked Eren if the stone still hurt. Two cracks came through the chair beneath my hand, and I did not ask him again.",
+        "Lysa heard the bell while the rope was still in my fist. She struck her teeth until I cut out the clapper.",
+        "Ilyen knew my step. The ash moved at his feet before I touched the gate.",
+        "One inner margin survives intact. Maud bears a broken circle, Toma opened ribs, and Lysa the bell mouth.",
+        "Sava Rell's page is split, but the last sentence remains: the wardens took him below after he turned north before the Hallowfen bells."
+      ],
+      "choices": [
+        {
+          "label": "Remember what remains",
+          "conditions": {
+            "flagsAbsent": [
+              "heard-bell-docket-read"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-register-read",
+            "log": "The damaged register still keeps twelve names."
+          },
+          "close": true
+        },
+        {
+          "label": "Set the torn record beside the docket",
+          "conditions": {
+            "flag": "heard-bell-docket-read"
+          },
+          "effects": {
+            "setFlag": [
+              "heard-bell-register-read",
+              "heard-bell-truth-joined"
+            ],
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "judge-vigil",
+              "log": "Quest updated: find Sava Rell and decide what remains."
+            },
+            "log": "Enough survives to join names with numbers. Sava answered Hallowfen before the road bells rang."
+          },
+          "close": true
+        }
+      ]
+    },
+    "reread": {
+      "lines": [
+        "Hessa's book keeps twelve names. Sava Rell is the only one without a place in the graveyard.",
+        "The removed clapper lies beside the entry where Lysa heard a bell that had not yet moved."
+      ],
+      "choices": [
+        {
+          "label": "Close the register",
+          "close": true
+        }
+      ]
+    }
+  }
+}

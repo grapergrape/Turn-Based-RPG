@@ -22,7 +22,7 @@ const SPEECH_PAD_X = 7;
 const SPEECH_PAD_Y = 5;
 const SPEECH_LINE_HEIGHT = 11;
 const SPEECH_VIEWPORT_PAD = 4;
-const SUN_SHADOW_SKIP_KINDS = new Set(['wheat-clump', 'ash-sapling', 'scrub-bush']);
+const SUN_SHADOW_SKIP_KINDS = new Set(['wheat-clump', 'ash-sapling', 'scrub-bush', 'stone-stairwell']);
 const TIME_OF_DAY_WASHES = Object.freeze({
   dawn: Object.freeze([
     Object.freeze({ color: PALETTE.clothBlueDark, alpha: 0.1 }),
@@ -118,6 +118,7 @@ export class IsometricRenderer {
 
     // Flat decals baked on top of the floor.
     for (const prop of this.flatProps) {
+      if (this.#isPropConcealed(prop)) continue;
       if (this.#isHiddenCell(prop.x, prop.y)) continue;
       const s = gridToScreen(prop.x, prop.y, 0, this.sceneOrigin);
       this.#drawFlatDecal(ctx, prop, s);
@@ -213,6 +214,7 @@ export class IsometricRenderer {
     const player = (state.actors ?? []).find((actor) => actor.type === 'player') ?? null;
 
     for (const prop of this.volumeProps) {
+      if (this.#isPropConcealed(prop)) continue;
       if (this.#isHiddenCell(prop.x, prop.y)) continue;
       const zLayer = getSprite(prop.kind)?.layer ?? 2;
       queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
@@ -242,6 +244,7 @@ export class IsometricRenderer {
     if (alpha <= 0) return;
 
     for (const prop of this.volumeProps) {
+      if (this.#isPropConcealed(prop)) continue;
       if (this.#isHiddenCell(prop.x, prop.y)) continue;
       const entry = getSprite(prop.kind);
       const size = this.#sunShadowSizeForProp(prop, entry);
@@ -528,6 +531,13 @@ export class IsometricRenderer {
 
   #isHiddenCell(x, y) {
     return this.hiddenTiles?.has?.(`${x},${y}`) ?? false;
+  }
+
+  #isPropConcealed(prop) {
+    return Boolean(
+      prop?.hiddenByFlag ||
+      (prop?.hiddenUntilOpened && !prop.opened && !prop.consumed)
+    );
   }
 
   #isHiddenKey(key) {

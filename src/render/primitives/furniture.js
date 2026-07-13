@@ -1674,85 +1674,115 @@ export function drawRustedBarrel(ctx, cx, cy, seed, opts = {}) {
 
 }
 
-export function drawStoneStairwell(ctx, cx, cy, seed) {
-  // A narrow stair cut through the chapel wall: a squat masonry portal with
-  // worn treads climbing into the dark. It must read as "stairs you can take
-  // through this wall" from gameplay distance, in both directions.
+export function drawStoneStairwell(ctx, cx, cy, seed, opts = {}) {
+  // A worn threshold landing: the flat stone you stand on before taking the
+  // narrow stair cut through the chapel wall. The stair itself descends INSIDE
+  // the wall (the adjacent wall-stair-door fixture), so this is the approach,
+  // not a second portal - deliberately low and grounded so it never floats off
+  // the floor plane. The local +A axis points at the door, so the foot-polish,
+  // the dropping lip, and the guide rope always face the wall the stair goes
+  // through, in both placements (breach corridor and bell-room floor).
   const rng = rngFrom(hash2D(seed + 59, seed * 7 + 13));
-  drawShadowBlob(ctx, cx, cy + 6, 58, 20);
+  const frame = isoFrame(cx, cy, opts.orient);
+  const at = (la, lb, h = 0) => frame.point(la, lb, h);
 
-  const baseY = cy + 6; // floor line at the portal mouth
-  const jambH = 46; // masonry surround height
-  const innerW = 24; // dark passage width
+  drawShadowBlob(ctx, cx, cy + 3, 62, 24);
 
-  // Worn landing slab at the foot, the stone the log talks about.
-  drawIsoDiamond(ctx, cx + 2, baseY + 2, 40, 15, PALETTE.outline);
-  drawIsoDiamond(ctx, cx + 2, baseY + 1, 34, 12, PALETTE.stoneMid);
-  drawIsoDiamond(ctx, cx + 6, baseY + 2, 16, 6, PALETTE.stoneDust); // foot-polished centre
-  px(ctx, cx - 8, baseY + 3, PALETTE.stoneDark, 7, 1); // slab seam
-  px(ctx, cx + 9, baseY - 1, PALETTE.stoneDark, 5, 1);
+  const H = 6; // the laid landing block rises above the floor plane so it reads
+  // The set flagstone: a full-tile block with real thickness, cut from paler
+  // stone than the surrounding floor and worn bone-pale by traffic, so it does
+  // not vanish into the dark chapel tiles or the mood wash. Light rakes the
+  // upper-left, so the top cap is the brightest plane, the lower-left face
+  // catches some light, and the down-right face falls into shadow.
+  const box = orientedBox(ctx, frame, 0.96, 0.94, H, {
+    top: PALETTE.stoneDust,
+    lit: PALETTE.stoneMid,
+    shade: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+  // A crisp lit masonry lip on the upper edges, deep shadow on the lower edges,
+  // so the block has a raised-stone silhouette instead of a flat fill.
+  linePx(ctx, box.cap.left[0], box.cap.left[1], box.cap.top[0], box.cap.top[1], PALETTE.stoneLight, 2);
+  linePx(ctx, box.cap.top[0], box.cap.top[1], box.cap.right[0], box.cap.right[1], PALETTE.stoneLight, 2);
+  linePx(ctx, box.cap.left[0], box.cap.left[1] + 1, box.cap.bottom[0], box.cap.bottom[1] + 1, PALETTE.outline, 1);
+  linePx(ctx, box.cap.bottom[0], box.cap.bottom[1] + 1, box.cap.right[0], box.cap.right[1] + 1, PALETTE.stoneDark, 1);
+  // The shaded side faces read darker at their foot to seat the block.
+  linePx(ctx, box.base.left[0], box.base.left[1], box.base.bottom[0], box.base.bottom[1], PALETTE.void, 1);
+  linePx(ctx, box.base.bottom[0], box.base.bottom[1], box.base.right[0], box.base.right[1], PALETTE.void, 1);
 
-  // Masonry surround: two block jambs and a heavy lintel, chipped.
-  const jamb = (jx, lit) => {
-    px(ctx, jx - 1, baseY - jambH, PALETTE.outline, 9, jambH);
-    px(ctx, jx, baseY - jambH + 1, lit ? PALETTE.stoneMid : PALETTE.stoneDark, 7, jambH - 2);
-    for (let b = 1; b < 6; b += 1) {
-      const by = baseY - jambH + 2 + b * 7 + (b % 2);
-      px(ctx, jx, by, PALETTE.outline, 7, 1); // block courses
-      if (b % 2 === 0) px(ctx, jx + (lit ? 1 : 4), by - 3, lit ? PALETTE.stoneDust : PALETTE.stoneMid, 2, 2);
-    }
-    px(ctx, jx + (lit ? 0 : 5), baseY - 8, PALETTE.void, 2, 3); // chipped base
-  };
-  jamb(cx - Math.floor(innerW / 2) - 8, true);
-  jamb(cx + Math.floor(innerW / 2) + 1, false);
-  px(ctx, cx - Math.floor(innerW / 2) - 10, baseY - jambH - 5, PALETTE.outline, innerW + 20, 7); // lintel
-  px(ctx, cx - Math.floor(innerW / 2) - 9, baseY - jambH - 4, PALETTE.stoneMid, innerW + 18, 4);
-  px(ctx, cx - Math.floor(innerW / 2) - 9, baseY - jambH - 4, PALETTE.stoneDust, 12, 1); // lit top edge
-  px(ctx, cx + 4, baseY - jambH - 2, PALETTE.void, 5, 2); // broken lintel bite
-  px(ctx, cx - 2, baseY - jambH + 2, PALETTE.stoneDark, 10, 1); // soot line under the lintel
-
-  // The passage void behind the treads.
-  px(ctx, cx - Math.floor(innerW / 2), baseY - jambH + 3, PALETTE.void, innerW, jambH - 3);
-
-  // Treads climbing into the dark: wide and lit at the mouth, narrower and
-  // darker with height until the black swallows them.
-  for (let i = 0; i < 6; i += 1) {
-    const w = innerW - i * 3;
-    const y = baseY - 2 - i * 7;
-    const x = cx - Math.floor(w / 2) + Math.round(i * 1.2); // drift right: the stair bends into the wall
-    const top = i < 2 ? PALETTE.stoneDust : i < 4 ? PALETTE.stoneMid : PALETTE.stoneDark;
-    px(ctx, x - 1, y - 2, PALETTE.outline, w + 2, 5);
-    px(ctx, x, y - 2, top, w, 2); // tread top catches the light
-    px(ctx, x, y, i < 4 ? PALETTE.stoneDark : PALETTE.void, w, 2); // riser in shadow
-    if (i === 1) px(ctx, x + 3, y - 2, PALETTE.stoneLight, 4, 1); // one foot-worn tread
-    if (i === 2) px(ctx, x + w - 4, y - 1, PALETTE.void, 3, 1); // a broken tread corner
+  // A worn stone grain over the cap (scattered inside the flag, never off its
+  // edge), then two cut joints splitting it into laid flags.
+  for (let i = 0; i < 18; i += 1) {
+    const gp = at((rng() - 0.5) * 0.8, (rng() - 0.5) * 0.8, H);
+    px(ctx, gp[0], gp[1], rng() < 0.5 ? PALETTE.stoneMid : PALETTE.stoneDark, 1, 1);
+  }
+  for (const jb of [-0.16, 0.2]) {
+    const a0 = at(-0.42, jb, H);
+    const a1 = at(0.42, jb, H);
+    linePx(ctx, a0[0], a0[1], a1[0], a1[1], PALETTE.stoneDark, 1);
   }
 
-  // Rope rail pinned to the lit jamb, sagging between iron pins.
-  const railX = cx - Math.floor(innerW / 2) - 4;
-  linePx(ctx, railX, baseY - 12, railX + 4, baseY - 26, PALETTE.rustDark, 1);
-  linePx(ctx, railX + 4, baseY - 26, railX + 7, baseY - 38, PALETTE.rustMid, 1);
-  px(ctx, railX - 1, baseY - 12, PALETTE.stoneLight, 2, 1); // iron pins
-  px(ctx, railX + 3, baseY - 26, PALETTE.stoneLight, 2, 1);
-  px(ctx, railX + 6, baseY - 38, PALETTE.stoneLight, 2, 1);
+  // The foot-polished path: countless boots crossing toward the door have worn
+  // a pale channel down the centre line, widening as it nears the drop.
+  for (let i = 0; i <= 8; i += 1) {
+    const la = -0.34 + (i / 8) * 0.7;
+    const p = at(la, 0, H);
+    const w = 3 + i; // fans out toward the door
+    px(ctx, p[0] - Math.floor(w / 2), p[1] - 1, PALETTE.stoneLight, w, 2); // polished smooth
+  }
 
-  // Ash footprints climbing the lower treads: someone went up, recently,
-  // and did not sweep behind themselves.
-  px(ctx, cx - 4, baseY - 3, PALETTE.stoneDust, 3, 2);
-  px(ctx, cx + 2, baseY - 4, PALETTE.stoneDust, 3, 2);
-  px(ctx, cx - 1, baseY - 10, PALETTE.stoneDust, 3, 1);
-  // A censure chalk tally on the lit jamb: the sweeps this passage has seen.
-  px(ctx, cx - Math.floor(innerW / 2) - 6, baseY - 32, PALETTE.stoneLight, 1, 4);
-  px(ctx, cx - Math.floor(innerW / 2) - 4, baseY - 32, PALETTE.stoneLight, 1, 4);
-  px(ctx, cx - Math.floor(innerW / 2) - 7, baseY - 30, PALETTE.stoneLight, 5, 1);
+  // The dropping lip at the door edge: the floor opens here into the stair that
+  // runs down through the wall. A dark recess with a bright near-lip you would
+  // catch your boot on, and two receding tread shadows falling into the black.
+  const lipNear = [at(0.34, -0.34, H), at(0.34, 0.34, H)];
+  const lipFar = [at(0.47, -0.3, H), at(0.47, 0.3, H)];
+  poly(ctx, PALETTE.void, [lipNear[0], lipNear[1], lipFar[1], lipFar[0]]);
+  linePx(ctx, lipNear[0][0], lipNear[0][1], lipNear[1][0], lipNear[1][1], PALETTE.stoneLight, 1); // lit near lip
+  for (let t = 0; t < 2; t += 1) {
+    const s = 0.36 + t * 0.05;
+    const d = 3 + t * 3;
+    const e0 = at(s, -0.28 + t * 0.03, H - d);
+    const e1 = at(s, 0.28 - t * 0.03, H - d);
+    linePx(ctx, e0[0], e0[1], e1[0], e1[1], t === 0 ? PALETTE.stoneDark : PALETTE.hostBlack, 1);
+  }
 
-  // Rubble and grit where the wall was cut.
-  drawRubbleCluster(ctx, cx + Math.floor(innerW / 2) + 8, baseY + 1, seed + 91, 2);
-  drawNoisePixels(ctx, cx - 20, baseY - 4, 40, 8, [PALETTE.stoneDust, PALETTE.stoneDark], 0.05, seed);
-  // Over the climbing footprints, a second set coming DOWN - longer stride,
-  // heavier, dragging at the heel. Someone went up. Something came down.
-  px(ctx, cx - 8, baseY - 6, PALETTE.stoneDark, 4, 2);
-  px(ctx, cx + 1, baseY - 1, PALETTE.stoneDark, 4, 2);
-  px(ctx, cx + 3, baseY + 1, PALETTE.stoneDark, 5, 1); // the heel drag
+  // Guide rope: an iron ring bolted into the landing by the drop, its rope
+  // running on toward the door jamb where the wall-stair-door picks it up.
+  const ring = at(0.24, 0.26, H);
+  px(ctx, ring[0] - 2, ring[1] - 2, PALETTE.outline, 5, 4);
+  px(ctx, ring[0] - 1, ring[1] - 1, PALETTE.rustMid, 3, 2);
+  px(ctx, ring[0], ring[1] - 2, PALETTE.stoneLight, 1, 1); // lit rivet
+  const ropeEnd = at(0.47, 0.16, H - 1);
+  linePx(ctx, ring[0], ring[1], ropeEnd[0], ropeEnd[1], PALETTE.rustDark, 1);
 
+  // Ash tracked across the landing toward the door - a climbing set going in,
+  // and a heavier, heel-dragging set that came back down.
+  const upPrints = [[-0.22, -0.12], [-0.02, 0.06], [0.16, -0.08]];
+  for (const [la, lb] of upPrints) {
+    const p = at(la, lb, H);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.stoneMid, 3, 2); // grime tracked onto the pale stone
+  }
+  const downPrints = [[-0.28, 0.16], [-0.06, -0.2]];
+  for (const [la, lb] of downPrints) {
+    const p = at(la, lb, H);
+    px(ctx, p[0] - 1, p[1] - 1, PALETTE.stoneDark, 4, 2);
+  }
+  const drag = at(0.06, 0.24, H);
+  px(ctx, drag[0] - 2, drag[1], PALETTE.stoneDark, 5, 1); // the heel drag
+
+  // A censure chalk tally scratched into a corner flag: sweeps this passage has
+  // counted through.
+  const tally = at(-0.3, -0.22, H);
+  for (let i = 0; i < 4; i += 1) px(ctx, tally[0] + i * 2, tally[1] - 2, PALETTE.stoneLight, 1, 4);
+  px(ctx, tally[0] - 1, tally[1], PALETTE.stoneLight, 9, 1); // the crossing stroke
+
+  // Grit and a chip of broken masonry where the wall was cut through, on the
+  // near corner away from the traffic line.
+  const grit = at(-0.36, 0.3, H);
+  drawRubbleCluster(ctx, grit[0], grit[1], seed + 91, 2);
+  if (rng() < 0.6) {
+    const chip = at(-0.14, 0.34, H);
+    px(ctx, chip[0], chip[1] - 2, PALETTE.outline, 4, 3);
+    px(ctx, chip[0] + 1, chip[1] - 2, PALETTE.stoneDust, 2, 1);
+  }
 }

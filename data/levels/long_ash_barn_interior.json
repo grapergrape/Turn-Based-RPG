@@ -1,7 +1,7 @@
 {
   "id": "long-ash-barn-interior",
   "name": "Long Ash Barn",
-  "intro": "The barn smells of chaff, old animal sweat, and cold iron. The floor is swept clear where a cart used to stand.",
+  "intro": "The barn smells of chaff and old animal sweat, a cold thread of iron underneath. The floor is swept clear where a cart used to stand.",
   "width": 16,
   "height": 13,
   "tileSize": 64,
@@ -48,7 +48,7 @@
     "player": {
       "actor": "mara-vey",
       "x": 8,
-      "y": 10
+      "y": 11
     },
     "enemies": [],
     "npcs": []
@@ -57,9 +57,10 @@
     {
       "kind": "farm-door",
       "x": 8,
-      "y": 11,
+      "y": 12,
       "blocking": true,
       "variant": "barn",
+      "wallPlane": "sw",
       "id": "barn-exit-door",
       "name": "Barn Door",
       "interact": {
@@ -70,25 +71,117 @@
     },
     {
       "kind": "hay-rick",
-      "x": 3,
-      "y": 3,
-      "blocking": true
+      "x": 4,
+      "y": 2,
+      "blocking": true,
+      "seed": 5501
     },
     {
       "kind": "hay-rick",
-      "x": 12,
-      "y": 3,
-      "blocking": true
+      "x": 4,
+      "y": 5,
+      "blocking": true,
+      "seed": 5502
     },
     {
-      "kind": "candle-cluster",
-      "x": 8,
-      "y": 3
+      "kind": "hay-rick",
+      "x": 4,
+      "y": 8,
+      "blocking": true,
+      "seed": 5503
+    },
+    {
+      "kind": "feed-trough",
+      "x": 2,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 5504
+    },
+    {
+      "kind": "feed-trough",
+      "x": 2,
+      "y": 6,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 5505
+    },
+    {
+      "kind": "feed-trough",
+      "x": 2,
+      "y": 9,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 5506
+    },
+    {
+      "kind": "stable-divider",
+      "x": 2,
+      "y": 4,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5507
+    },
+    {
+      "kind": "stable-divider",
+      "x": 3,
+      "y": 4,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5508
+    },
+    {
+      "kind": "stable-divider",
+      "x": 4,
+      "y": 4,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5509
+    },
+    {
+      "kind": "stable-divider",
+      "x": 5,
+      "y": 4,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5510
+    },
+    {
+      "kind": "stable-divider",
+      "x": 2,
+      "y": 7,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5511
+    },
+    {
+      "kind": "stable-divider",
+      "x": 3,
+      "y": 7,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5512
+    },
+    {
+      "kind": "stable-divider",
+      "x": 4,
+      "y": 7,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5513
+    },
+    {
+      "kind": "stable-divider",
+      "x": 5,
+      "y": 7,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5514
     },
     {
       "kind": "rusted-barrel",
-      "x": 3,
-      "y": 6,
+      "x": 2,
+      "y": 10,
       "blocking": true,
       "id": "barn-feed-barrel",
       "name": "Feed Barrel",
@@ -101,41 +194,74 @@
       }
     },
     {
-      "kind": "feed-trough",
+      "kind": "grain-sack-stack",
       "x": 8,
-      "y": 6,
+      "y": 2,
       "blocking": true,
-      "orient": "se"
+      "seed": 5515
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 10,
+      "y": 2,
+      "blocking": true,
+      "seed": 5516
     },
     {
       "kind": "field-cart",
       "x": 12,
-      "y": 7,
+      "y": 3,
       "blocking": true,
-      "orient": "sw"
+      "orient": "sw",
+      "seed": 5517
+    },
+    {
+      "kind": "farm-workbench",
+      "x": 12,
+      "y": 6,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 5518
+    },
+    {
+      "kind": "tool-rack",
+      "x": 13,
+      "y": 8,
+      "blocking": true,
+      "seed": 5520
     },
     {
       "kind": "field-plow",
-      "x": 6,
+      "x": 11,
       "y": 9,
       "blocking": true,
-      "orient": "se"
+      "orient": "se",
+      "seed": 5522
     },
     {
-      "kind": "hay-rick",
-      "x": 4,
+      "kind": "field-harrow",
+      "x": 13,
       "y": 10,
-      "blocking": true
+      "blocking": true,
+      "orient": "sw",
+      "seed": 5523
+    },
+    {
+      "kind": "wagon-wheel",
+      "x": 13,
+      "y": 5,
+      "blocking": true,
+      "seed": 5524
     },
     {
       "kind": "road-dust",
-      "x": 10,
+      "x": 8,
       "y": 9
     },
     {
       "kind": "floor-crack",
-      "x": 13,
-      "y": 10
+      "x": 12,
+      "y": 9
     },
     {
       "kind": "chaff-scatter",

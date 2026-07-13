@@ -166,14 +166,16 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
 
   switch (style) {
     case 'stone': {
-      if ((seed % 20) >= 9) break; // quiet tiles between events
-      const a = mixPoint(d.left, d.bottom, 0.35 + rng() * 0.18);
-      const b = mixPoint(d.top, d.right, 0.58 + rng() * 0.17);
-      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
-      linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.stoneDust, 1);
-      px(ctx, cx - 7, cy - 4, PALETTE.outline, 13, 3);
-      px(ctx, cx - 5, cy - 4, PALETTE.stoneLight, 5, 1);
-      px(ctx, cx + 1, cy - 3, PALETTE.stoneDark, 4, 1);
+      // A crack is damage, not texture. Only a quarter of tiles carry one
+      // (decorrelated from the chip run above so marks spread out instead of
+      // clumping on the same tiles), and most are hairline - only the odd flag
+      // has split wide enough to catch light in the break.
+      if (seed % 4 !== 0) break;
+      const wide = seed % 3 === 0;
+      const a = mixPoint(d.left, d.bottom, 0.3 + rng() * 0.22);
+      const b = mixPoint(d.top, d.right, 0.54 + rng() * 0.2);
+      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, wide ? 2 : 1);
+      if (wide) linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.stoneDust, 1);
       break;
     }
     case 'ash-dirt': {
@@ -200,14 +202,13 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'road-shoulder': {
-      if ((seed % 20) >= 12) break;
+      if ((seed % 20) >= 7) break; // loose stones gather in spots, not everywhere
       const a = mixPoint(d.left, d.top, 0.18);
       const b = mixPoint(d.left, d.bottom, 0.78);
-      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
-      linePx(ctx, a[0] + 1, a[1], b[0] + 1, b[1], PALETTE.stoneDust, 1);
-      for (let i = 0; i < 6; i += 1) {
-        const x = cx - 22 + Math.floor(rng() * 22);
-        const y = cy - 9 + Math.floor(rng() * 17);
+      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
+      for (let i = 0; i < 3; i += 1) {
+        const x = cx - 20 + Math.floor(rng() * 22);
+        const y = cy - 8 + Math.floor(rng() * 15);
         px(ctx, x, y, PALETTE.outline, 3, 2);
         px(ctx, x + 1, y - 1, i % 2 ? PALETTE.stoneLight : PALETTE.rustDark, 1, 1);
       }
@@ -249,10 +250,15 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       const botA = mixPoint(d.left, d.bottom, 0.36);
       const botB = mixPoint(d.bottom, d.right, 0.66);
       // Burial seams read as cold packed edges, not glowing marks: keep them
-      // one step above the soil, never bone-white.
-      linePx(ctx, topA[0], topA[1], topB[0], topB[1], PALETTE.stoneDust, 1);
-      linePx(ctx, botA[0], botA[1], botB[0], botB[1], PALETTE.outline, 1);
-      drawFloorTallyScratches(ctx, cx, cy, seed + 11, PALETTE.stoneDust);
+      // one step above the soil, never bone-white. Most tiles carry a seam so
+      // the plot grid is implied, but a few are undisturbed.
+      if (seed % 5 !== 0) {
+        linePx(ctx, topA[0], topA[1], topB[0], topB[1], PALETTE.stoneDust, 1);
+        linePx(ctx, botA[0], botA[1], botB[0], botB[1], PALETTE.outline, 1);
+      }
+      // A scratched grave-count is a specific act on a specific plot, not a
+      // texture on every patch of earth.
+      if (seed % 7 === 0) drawFloorTallyScratches(ctx, cx, cy, seed + 11, PALETTE.stoneDust);
       break;
     }
     case 'farm-plank': {
@@ -267,14 +273,12 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'packed-earth': {
-      if ((seed % 20) >= 8) break; // peg holes are events, not wallpaper
-      for (const [dx, dy] of [[-18, -3], [-2, -7], [15, 0]]) {
+      if ((seed % 20) >= 5) break; // tent-stake holes are events, not wallpaper
+      for (const [dx, dy] of [[-14, -3], [4, -6], [15, 1]]) {
         px(ctx, cx + dx - 2, cy + dy - 2, PALETTE.outline, 6, 5);
         px(ctx, cx + dx - 1, cy + dy - 1, PALETTE.rustDark, 4, 3);
         px(ctx, cx + dx, cy + dy - 2, PALETTE.clothTan, 2, 1);
       }
-      linePx(ctx, cx - 25, cy + 6, cx + 18, cy - 5, PALETTE.outline, 1);
-      linePx(ctx, cx - 22, cy + 5, cx + 16, cy - 6, PALETTE.woodMid, 1);
       break;
     }
     case 'mud-track': {
@@ -289,14 +293,12 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'ash-gravel': {
-      if ((seed % 20) >= 13) break;
-      for (let i = 0; i < 12; i += 1) {
-        const x = cx - 27 + Math.floor(rng() * 55);
-        const y = cy - 10 + Math.floor(rng() * 20);
-        px(ctx, x, y, PALETTE.outline, 3, 2);
-        px(ctx, x + 1, y - 1, i % 3 === 0 ? PALETTE.stoneLight : PALETTE.stoneDust, 1, 1);
-      }
-      drawGroundScratchMarks(ctx, cx, cy, seed + 13, PALETTE.stoneDust, 2);
+      // The base cell already carries the gravel; marks here are sparse events,
+      // not another dozen chips. A drag where something heavy was hauled over
+      // it, or a set of boot scuffs.
+      if (seed % 4 !== 0) break;
+      if (seed % 8 === 0) drawPairedFootprints(ctx, cx, cy, seed + 5, PALETTE.stoneDark);
+      else drawGroundScratchMarks(ctx, cx, cy, seed + 13, PALETTE.stoneDust, 2);
       break;
     }
     case 'worn-canvas': {
@@ -316,15 +318,19 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
       break;
     }
     case 'cave-stone': {
-      if ((seed % 20) >= 13) break;
-      for (const t of [0.24, 0.54, 0.8]) {
-        const a = mixPoint(d.left, d.bottom, t);
-        const b = mixPoint(d.top, d.right, Math.min(0.92, t + 0.08));
-        linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
-        linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.stoneDust, 1);
+      // The base rock already fractures; marks here are the occasional damp
+      // seep or dropped bone-fleck, not more cracks stacked on the same tiles.
+      if (seed % 4 !== 0) break;
+      if (seed % 3 === 0) {
+        // A dark damp seep pooled in a low spot.
+        ctx.save();
+        ctx.globalAlpha = 0.16;
+        drawIsoDiamond(ctx, cx + 4, cy + 2, 20, 9, PALETTE.void);
+        ctx.restore();
+        px(ctx, cx + 2, cy - 1, PALETTE.stoneLight, 3, 1); // one wet glint
+      } else {
+        drawAshBoneFlecks(ctx, cx, cy, seed + 23, 3);
       }
-      px(ctx, cx + 8, cy - 4, PALETTE.stoneLight, 9, 1);
-      px(ctx, cx + 11, cy - 2, PALETTE.outline, 6, 1);
       break;
     }
     case 'cave-river': {
@@ -347,12 +353,58 @@ function drawFloorStoryMarks(ctx, cx, cy, gx, gy, style) {
 export function drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy) {
   const seed = hash2D(gx, gy);
   const r = rngFrom(seed);
-  // Coarse wear zone: cells in the same ~2x2 block share a base tone, so the
-  // floor breaks into a few large stained areas instead of a fine checker.
+  // Irregular flagstones: tiles are grouped into multi-tile slabs (2 wide,
+  // 2 tall, staggered like brick courses every other row) so the floor is not a
+  // rigid one-tile grid. Slab membership is a pure function of the coordinates,
+  // so a tile and its neighbour always agree on whether the edge between them
+  // is a joint. A whole slab shares one base tone.
+  const slabId = (x, y) => hash2D(Math.floor((x + (Math.floor(y / 2) & 1)) / 2) + 1, (y >> 1) + 1);
+  const my = slabId(gx, gy);
+  const jNW = slabId(gx - 1, gy) !== my; // up-left edge sits on a slab boundary
+  const jNE = slabId(gx, gy - 1) !== my; // up-right edge
+  const jSW = slabId(gx, gy + 1) !== my; // down-left edge
+  const jSE = slabId(gx + 1, gy) !== my; // down-right edge
   const zone = hash2D((gx >> 1) + 1, (gy >> 1) + 1);
-  // Base tones are deliberately close in value (no bright full-tile dust).
-  const base = zone % 6 === 0 ? PALETTE.stoneLight : PALETTE.stoneMid;
+  const base = my % 6 === 0 ? PALETTE.stoneLight : my % 5 === 0 ? PALETTE.stoneDark : PALETTE.stoneMid;
   drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  // Fitted-flag bevel, drawn ONLY on slab boundaries: the lit lip on the two
+  // upper edges, shadow on the two lower edges. Interior tiles of a slab draw
+  // no joint, so adjacent tiles read as one large laid stone with light raking
+  // across it - bevelled masonry, not a stamped grid.
+  const d = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+  ctx.save();
+  ctx.globalAlpha = 0.14;
+  if (jNW) linePx(ctx, d.left[0] + 1, d.left[1], d.top[0], d.top[1] + 1, PALETTE.stoneDust, 1);
+  if (jNE) linePx(ctx, d.top[0], d.top[1] + 1, d.right[0] - 1, d.right[1], PALETTE.stoneDust, 1);
+  ctx.globalAlpha = 0.24;
+  if (jSW) linePx(ctx, d.left[0] + 1, d.left[1], d.bottom[0], d.bottom[1] - 1, PALETTE.outline, 1);
+  if (jSE) linePx(ctx, d.bottom[0], d.bottom[1] - 1, d.right[0] - 1, d.right[1], PALETTE.outline, 1);
+  ctx.restore();
+
+  // Zone-scale bloom: whole wear-zones occasionally darken under one broad
+  // soot/damp stain that spans several tiles, giving the floor big soft shapes
+  // instead of only per-tile spots.
+  if (zone % 7 === 0) {
+    ctx.save();
+    ctx.globalAlpha = 0.12;
+    drawIsoDiamond(ctx, cx, cy, TILE_WIDTH + 6, TILE_HEIGHT + 3, PALETTE.void);
+    ctx.restore();
+  }
+
+  // Traffic-worn polish: whole slabs on the old walking lines have been buffed
+  // smooth by generations of feet and catch a soft sheen toward the light. Two
+  // faint layers so it reads as polish, not paint; keyed to the slab so a whole
+  // stone glows rather than a single tile - the lived-in read that separates a
+  // grand floor from a merely tidy one.
+  if (my % 5 === 0) {
+    ctx.save();
+    ctx.globalAlpha = 0.06;
+    drawIsoDiamond(ctx, cx - 3, cy - 1, TILE_WIDTH - 14, TILE_HEIGHT - 7, PALETTE.stoneLight);
+    ctx.globalAlpha = 0.05;
+    drawIsoDiamond(ctx, cx - 5, cy - 2, TILE_WIDTH - 26, TILE_HEIGHT - 13, PALETTE.stoneDust);
+    ctx.restore();
+  }
 
   const slab = diamond(cx, cy, TILE_WIDTH - 10, TILE_HEIGHT - 5);
   if ((seed & 3) !== 1) {
@@ -364,7 +416,24 @@ export function drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy) {
   if (seed % 5 === 0) {
     drawRubbleCluster(ctx, cx + Math.floor((r() - 0.5) * 18), cy + Math.floor((r() - 0.5) * 8), seed + 97, 4);
   }
-  drawFloorEdgeWear(ctx, cx, cy, seed);
+
+  // A flagstone that has broken away entirely, rare enough to read as an event:
+  // a shallow recess of dirt and rubble where the chapel floor gave out. Most
+  // tiles stay whole, so the missing flag draws the eye instead of becoming
+  // texture. The lit upper lip and dark far rim seat it below the floor plane.
+  if (seed % 13 === 4) {
+    const rx = cx + Math.floor((r() - 0.5) * 8);
+    const ry = cy + Math.floor((r() - 0.5) * 4);
+    const rw = 22 + Math.floor(r() * 10);
+    const rh = 10 + Math.floor(r() * 4);
+    drawIsoDiamond(ctx, rx, ry + 1, rw + 4, rh + 3, PALETTE.outline); // broken rim in shadow
+    drawIsoDiamond(ctx, rx, ry, rw, rh, PALETTE.woodDark); // exposed packed dirt below
+    drawNoisePixels(ctx, rx - Math.floor(rw / 2) + 3, ry - Math.floor(rh / 2) + 1, rw - 6, rh - 2, [PALETTE.rustDark, PALETTE.stoneDark], 0.16, seed + 3);
+    drawRubbleCluster(ctx, rx + Math.floor((r() - 0.5) * 8), ry + 1, seed + 41, 2);
+    const lip = diamond(rx, ry, rw, rh);
+    linePx(ctx, lip.left[0], lip.left[1], lip.top[0], lip.top[1], PALETTE.stoneLight, 1); // lit break edge
+    linePx(ctx, lip.bottom[0], lip.bottom[1], lip.right[0], lip.right[1], PALETTE.stoneDark, 1);
+  }
 
   // A faint, off-centre pale scuff — a partial diamond, never the whole tile.
   if (r() < 0.5) {
@@ -394,24 +463,6 @@ export function drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy) {
     );
     ctx.restore();
   }
-
-  // Broken flag-joint: a faint dark line along ONE lower edge, so a stone-flag
-  // grid is only implied, not stamped onto every tile as a hard outline.
-  const d = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
-  ctx.save();
-  ctx.globalAlpha = 0.1;
-  ctx.strokeStyle = PALETTE.stoneDark;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  if ((seed & 1) === 0) {
-    ctx.moveTo(d.left[0] + 2, d.left[1]);
-    ctx.lineTo(d.bottom[0], d.bottom[1] - 1);
-  } else {
-    ctx.moveTo(d.bottom[0], d.bottom[1] - 1);
-    ctx.lineTo(d.right[0] - 2, d.right[1]);
-  }
-  ctx.stroke();
-  ctx.restore();
 
   // Sparse grit; rare hairline cracks.
   drawNoisePixels(ctx, cx - 28, cy - 11, 56, 22, [PALETTE.stoneDark, PALETTE.stoneDust], 0.022, seed);
@@ -663,6 +714,15 @@ function drawPackedEarthFloorCell(ctx, cx, cy, gx, gy) {
   const base = zone % 4 === 0 ? PALETTE.stoneDark : PALETTE.woodDark;
   drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
 
+  // Zone-scale bloom: broad damp/trodden-dark patches spanning several tiles,
+  // for the same atmospheric depth as the chapel stone floor.
+  if (zone % 6 === 0) {
+    ctx.save();
+    ctx.globalAlpha = 0.13;
+    drawIsoDiamond(ctx, cx, cy, TILE_WIDTH + 6, TILE_HEIGHT + 3, PALETTE.void);
+    ctx.restore();
+  }
+
   if (r() < 0.62) {
     drawIsoDiamond(
       ctx,
@@ -674,40 +734,32 @@ function drawPackedEarthFloorCell(ctx, cx, cy, gx, gy) {
     );
   }
 
-  if ((seed % 5) === 0) {
+  // Marks are events on a fraction of tiles, not stamped on every one, so the
+  // packed earth reads as quiet trodden ground with the odd trace on it rather
+  // than a scribbled mess. Each trace fires on a decorrelated subset so they
+  // spread across the floor instead of clumping.
+  if (seed % 3 === 0) drawPairedFootprints(ctx, cx, cy, seed + 13, PALETTE.woodMid);
+  if (seed % 4 === 1) {
     const d = diamond(cx, cy, TILE_WIDTH - 12, TILE_HEIGHT - 6);
-    const a = mixPoint(d.left, d.top, 0.2 + r() * 0.25);
-    const b = mixPoint(d.bottom, d.right, 0.64 + r() * 0.22);
-    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.woodMid, 2);
-    linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.woodLight, 1);
+    for (const t of [0.3, 0.62]) {
+      const a = mixPoint(d.left, d.bottom, t);
+      const b = mixPoint(d.top, d.right, Math.min(0.9, t + 0.16));
+      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
+      linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.woodMid, 1);
+    }
   }
-
-  for (let i = 0; i < 7; i += 1) {
-    if (r() > 0.72) continue;
-    const x = cx - 22 + Math.floor(r() * 44);
-    const y = cy - 8 + Math.floor(r() * 16);
-    linePx(ctx, x, y, x + 2 + Math.floor(r() * 6), y - 1 + Math.floor(r() * 3), r() < 0.6 ? PALETTE.clothTan : PALETTE.woodMid, 1);
+  if (seed % 5 === 2) {
+    for (let i = 0; i < 3; i += 1) {
+      const x = cx - 16 + Math.floor(r() * 33);
+      const y = cy - 6 + Math.floor(r() * 13);
+      px(ctx, x - 1, y - 1, PALETTE.outline, 4, 3);
+      px(ctx, x, y, i % 2 ? PALETTE.rustDark : PALETTE.stoneMid, 2, 2);
+    }
   }
-
-  drawPairedFootprints(ctx, cx, cy, seed + 13, PALETTE.woodMid);
-  for (const t of [0.22, 0.5, 0.78]) {
-    const d = diamond(cx, cy, TILE_WIDTH - 12, TILE_HEIGHT - 6);
-    const a = mixPoint(d.left, d.bottom, t);
-    const b = mixPoint(d.top, d.right, Math.min(0.9, t + 0.16));
-    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
-    linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, t === 0.5 ? PALETTE.clothTan : PALETTE.woodMid, 1);
-  }
-  for (let i = 0; i < 4; i += 1) {
-    const x = cx - 18 + Math.floor(r() * 37);
-    const y = cy - 6 + Math.floor(r() * 13);
-    px(ctx, x - 1, y - 1, PALETTE.outline, 4, 4);
-    px(ctx, x, y, i % 2 ? PALETTE.rustDark : PALETTE.stoneMid, 2, 2);
-  }
-  drawAshBoneFlecks(ctx, cx, cy, seed + 19, 7);
-  drawGroundScratchMarks(ctx, cx, cy, seed + 101, PALETTE.clothTan, 2);
+  if (seed % 6 === 3) drawAshBoneFlecks(ctx, cx, cy, seed + 19, 4);
   drawFloorEdgeWear(ctx, cx, cy, seed, PALETTE.stoneMid, PALETTE.woodDark);
 
-  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.rustDark, PALETTE.stoneDark, PALETTE.woodMid], 0.044, seed);
+  drawNoisePixels(ctx, cx - 29, cy - 12, 58, 24, [PALETTE.rustDark, PALETTE.stoneDark, PALETTE.woodMid], 0.04, seed);
   if (seed % 17 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 2);
 }
 
@@ -898,6 +950,16 @@ function drawCaveStoneFloorCell(ctx, cx, cy, gx, gy) {
   const zone = hash2D((gx >> 1) + 43, (gy >> 1) + 47);
   const base = zone % 4 === 0 ? PALETTE.stoneMid : PALETTE.stoneDark;
   drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  // Zone-scale damp bloom: whole patches of the cave floor darken under one
+  // broad wet shadow spanning several tiles, matching the atmospheric depth of
+  // the chapel stone floor instead of only per-tile spots.
+  if (zone % 6 === 0) {
+    ctx.save();
+    ctx.globalAlpha = 0.14;
+    drawIsoDiamond(ctx, cx, cy, TILE_WIDTH + 6, TILE_HEIGHT + 3, PALETTE.void);
+    ctx.restore();
+  }
 
   if (r() < 0.7) {
     drawIsoDiamond(
@@ -1230,6 +1292,24 @@ function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false)
   nailHeads([0.18, 0.57, 0.79], [0.28, 0.58, 0.86], shaded ? PALETTE.void : PALETTE.rustLight);
 }
 
+// Weather individual blocks a shade off the base fill so a wall face reads as
+// many fitted stones, not one flat plane. Painted before the course/seam lines
+// so those still sit crisply on top. Kept to close tones and ~35% of blocks so
+// it is a texture of age, not a checkerboard.
+function drawStoneBlockTones(ctx, face, seed, shaded = false) {
+  const lighter = shaded ? PALETTE.stoneMid : PALETTE.stoneLight;
+  const darker = shaded ? PALETTE.outline : PALETTE.stoneDark;
+  const us = [0, 0.16, 0.34, 0.51, 0.69, 0.86, 1];
+  const vs = [0, 0.2, 0.38, 0.57, 0.75, 0.9, 1];
+  for (let c = 0; c < us.length - 1; c += 1) {
+    for (let row = 0; row < vs.length - 1; row += 1) {
+      const k = (seed + c * 17 + row * 31) & 7;
+      if (k >= 3) continue; // most blocks keep the base tone
+      face.rect(us[c] + 0.012, vs[row] + 0.012, us[c + 1] - 0.012, vs[row + 1] - 0.012, k === 0 ? lighter : darker);
+    }
+  }
+}
+
 function drawBrokenStoneCourse(ctx, face, seed, shaded = false) {
   const course = shaded ? PALETTE.outline : PALETTE.stoneDark;
   const highlight = shaded ? PALETTE.stoneMid : PALETTE.stoneDust;
@@ -1355,6 +1435,8 @@ export function drawIsoWallBlock(ctx, cx, cy, heightPx, seed) {
 
   const leftFace = faceTools(ctx, cap.left, cap.bottom, base.bottom, base.left);
   const rightFace = faceTools(ctx, cap.bottom, cap.right, base.right, base.bottom);
+  drawStoneBlockTones(ctx, leftFace, seed + 11, false);
+  drawStoneBlockTones(ctx, rightFace, seed + 29, true);
   drawBrokenStoneCourse(ctx, leftFace, seed + 11, false);
   drawBrokenStoneCourse(ctx, rightFace, seed + 29, true);
 

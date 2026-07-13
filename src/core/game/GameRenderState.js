@@ -84,7 +84,8 @@ class GameRenderState {
       if (hover) overlay.hoverTile = hover;
       const actionTarget = this._nearbyActionTargetInfo();
       if (actionTarget?.target?.cell && !this.uiScreen && !this.moving) {
-        overlay.interactionTile = `${actionTarget.target.cell.x},${actionTarget.target.cell.y}`;
+        const marker = actionTarget.target.object?.interactionMarker ?? actionTarget.target.cell;
+        overlay.interactionTile = `${marker.x},${marker.y}`;
       }
       const target = this._currentTarget();
       if (target) overlay.targetTile = `${target.position.x},${target.position.y}`;
@@ -200,7 +201,9 @@ class GameRenderState {
     const coverText = cover ? ` ${cover}` : '';
     const statuses = visibleStatuses(target).map((status) => status.label.toUpperCase().slice(0, 3));
     const statusText = statuses.length ? ` ${statuses.slice(0, 2).join(' ')}` : '';
-    return `${this._shortName(target.name)} ${target.hp}/${target.maxHp}${coverText}${statusText}`;
+    const fullName = String(target.name ?? 'Target');
+    const displayName = fullName.length <= 12 ? fullName : this._shortName(fullName);
+    return `${displayName} ${target.hp}/${target.maxHp}${coverText}${statusText}`;
   }
 
   _attackCursorText(prefix, target) {
@@ -359,6 +362,10 @@ class GameRenderState {
       maxAp: this.player.maxAp,
       statuses: visibleStatuses(this.player),
       action: this._attackReadout(attack, attackPreview),
+      actionName: attack?.name ?? '-',
+      actionChance: attackPreview?.enabled ? attackPreview.chanceText ?? '' : '',
+      actionDamage: attackPreview?.enabled ? attackPreview.damageText ?? '' : '',
+      actionReason: attackPreview && !attackPreview.enabled ? attackPreview.reason ?? '' : '',
       target: this._targetReadout(target, attackPreview),
       inventory: this.inventory.summary(),
       inventoryItems: this._inventoryEntries(),
@@ -374,7 +381,7 @@ class GameRenderState {
       equipmentIndex: this.equipmentIndex ?? 0,
       carryWeight: this.inventory.currentWeight(),
       maxCarryWeight: this.inventory.maxCarryWeight,
-      areaTitle: this.areaTitleTimer > 0
+      areaTitle: this.areaTitleTimer > 0 && this.mode !== 'combat'
         ? { text: this.areaTitle, ttl: this.areaTitleTimer, duration: AREA_TITLE_DURATION }
         : null,
       screen: this.uiScreen,

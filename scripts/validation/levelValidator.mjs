@@ -166,7 +166,7 @@ export function validateLevel(filePath, data) {
 
   const objects = Array.isArray(data.objects) ? data.objects : [];
   validateObjectIds(name, objects);
-  for (const object of objects) {
+  for (const [objectIndex, object] of objects.entries()) {
     if (object.x !== undefined || object.y !== undefined) {
       if (!inBounds(data, object)) {
         errors.push(`${name}: object ${object.kind ?? 'unknown'} at (${object.x}, ${object.y}) is out of bounds.`);
@@ -178,6 +178,10 @@ export function validateLevel(filePath, data) {
     if (object.orient !== undefined && !PROP_ORIENTS.has(object.orient)) {
       errors.push(`${name}: object ${object.kind ?? 'unknown'} orient "${object.orient}" must be one of ${[...PROP_ORIENTS].join(', ')}.`);
     }
+    validateWallMountedObject(name, data, object);
+    validateStringList(name, object.hiddenWhenFlags, 'objects[].hiddenWhenFlags');
+    validateStringList(name, object.disabledWhenFlags, 'objects[].disabledWhenFlags');
+    validateStringList(name, object.closedWhenFlags, 'objects[].closedWhenFlags');
     validateDialogueReference(name, object.interact?.dialogue, 'objects[].interact.dialogue');
     validateDialogueReference(name, object.interact?.lockedDialogue, 'objects[].interact.lockedDialogue');
     validateLoot(name, object.interact?.loot);
@@ -186,6 +190,13 @@ export function validateLevel(filePath, data) {
     validateDoorObject(name, object);
     validateMapMarker(name, object.mapMarker, 'objects[].mapMarker');
     validateCoverValue(name, object.cover, `object ${object.kind ?? 'unknown'} cover`);
+    validateClickAreas(name, data, object, `objects[${objectIndex}]`);
+    if (object.interactionMarker !== undefined) {
+      validateGridPoint(name, object.interactionMarker, `objects[${objectIndex}].interactionMarker`);
+      if (!inBounds(data, object.interactionMarker)) {
+        errors.push(`${name}: objects[${objectIndex}].interactionMarker must stay inside the level bounds.`);
+      }
+    }
   }
   validateLevelTransitions(name, data, objects);
   validateCombatTriggerMapMarkers(name, data);
@@ -273,7 +284,7 @@ function validateLevelTransitions(name, data, objects) {
     if (inBounds(data, transition) && !grid.isWalkable(transition.x, transition.y)) {
       errors.push(`${name}: ${fieldName} (${transition.x}, ${transition.y}) must be on a walkable tile.`);
     }
-    validateTransitionClickAreas(name, data, transition, fieldName);
+    validateClickAreas(name, data, transition, fieldName);
 
     const loadLevel = transition.loadLevel;
     if (!loadLevel || typeof loadLevel !== 'object' || Array.isArray(loadLevel)) {
@@ -285,13 +296,13 @@ function validateLevelTransitions(name, data, objects) {
   }
 }
 
-function validateTransitionClickAreas(name, data, transition, fieldName) {
-  if (transition.clickAreas === undefined) return;
-  if (!Array.isArray(transition.clickAreas)) {
+function validateClickAreas(name, data, source, fieldName) {
+  if (source.clickAreas === undefined) return;
+  if (!Array.isArray(source.clickAreas)) {
     errors.push(`${name}: ${fieldName}.clickAreas must be an array.`);
     return;
   }
-  for (const [index, area] of transition.clickAreas.entries()) {
+  for (const [index, area] of source.clickAreas.entries()) {
     const areaName = `${fieldName}.clickAreas[${index}]`;
     if (!area || typeof area !== 'object' || Array.isArray(area)) {
       errors.push(`${name}: ${areaName} must be an object.`);
@@ -646,6 +657,10 @@ function validateLock(name, lock, fieldName) {
       requireString(name, method.requiresItem, `${methodName}.requiresItem`);
       if (typeof method.requiresItem === 'string') referencedItemIds.add(method.requiresItem);
     }
+    validateOptionalBoolean(name, method.requiresSecurityTool, `${methodName}.requiresSecurityTool`);
+    if (method.requiresSecurityTool !== undefined && method.field !== 'security') {
+      errors.push(`${name}: ${methodName}.requiresSecurityTool is only valid for Security methods.`);
+    }
 
     const hasField = method.field !== undefined;
     const hasPrimary = method.primary !== undefined;
@@ -758,14 +773,26 @@ function validateDoorObject(name, object) {
   if (object.doorLeaf !== undefined && !DOOR_LEAVES.has(object.doorLeaf)) {
     errors.push(`${name}: objects[].doorLeaf must be one of ${[...DOOR_LEAVES].join(', ')}.`);
   }
+  if (object.kind === 'chapel-double-door' && !object.doorLeaf) {
+    errors.push(`${name}: chapel-double-door objects must define doorLeaf.`);
+  }
+}
+
+function validateWallMountedObject(name, data, object) {
   if (object.wallPlane !== undefined && !WALL_PLANES.has(object.wallPlane)) {
     errors.push(`${name}: objects[].wallPlane must be one of ${[...WALL_PLANES].join(', ')}.`);
   }
   if (object.wallSide !== undefined && !WALL_SIDES.has(object.wallSide)) {
     errors.push(`${name}: objects[].wallSide must be one of ${[...WALL_SIDES].join(', ')}.`);
   }
-  if (object.kind === 'chapel-double-door' && !object.doorLeaf) {
-    errors.push(`${name}: chapel-double-door objects must define doorLeaf.`);
+  if (object.kind !== 'farm-door') return;
+  if (object.wallPlane === undefined) {
+    errors.push(`${name}: farm-door "${object.id ?? 'unnamed'}" must define wallPlane.`);
+  }
+  const tileChar = data.tiles?.[object.y]?.[object.x];
+  const tileDef = data.legend?.[tileChar];
+  if (!tileDef || tileDef.walkable !== false) {
+    errors.push(`${name}: farm-door "${object.id ?? 'unnamed'}" must be placed on a non-walkable wall cell.`);
   }
 }
 

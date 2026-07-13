@@ -1,0 +1,12 @@
+{
+  "id": "keepers-vigil-cord",
+  "name": "Keeper's Vigil Cord",
+  "type": "trinket",
+  "rarity": "rare",
+  "weight": 0.1,
+  "groundModel": "necklace",
+  "equipment": {
+    "slot": "trinket"
+  },
+  "description": "Black grave cord with twelve waxed knots. Mercy sisters know the promise it records: remember the name before judging the body."
+}

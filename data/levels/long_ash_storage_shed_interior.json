@@ -45,7 +45,7 @@
     "player": {
       "actor": "mara-vey",
       "x": 6,
-      "y": 7
+      "y": 8
     },
     "enemies": [],
     "npcs": []
@@ -54,9 +54,10 @@
     {
       "kind": "farm-door",
       "x": 6,
-      "y": 8,
+      "y": 9,
       "blocking": true,
       "variant": "storage-shed",
+      "wallPlane": "sw",
       "id": "storage-shed-exit-door",
       "name": "Storage Shed Door",
       "interact": {
@@ -67,9 +68,10 @@
     },
     {
       "kind": "sealed-storage-crate",
-      "x": 3,
-      "y": 3,
+      "x": 2,
+      "y": 2,
       "blocking": true,
+      "seed": 5601,
       "id": "storage-shed-food-crate",
       "name": "Food Crate",
       "interact": {
@@ -82,9 +84,10 @@
     },
     {
       "kind": "sealed-storage-crate",
-      "x": 8,
-      "y": 3,
+      "x": 5,
+      "y": 2,
       "blocking": true,
+      "seed": 5602,
       "id": "storage-shed-supply-crate",
       "name": "Supply Crate",
       "interact": {
@@ -97,21 +100,44 @@
       }
     },
     {
-      "kind": "pantry-shelf",
-      "x": 2,
-      "y": 5,
-      "blocking": true
+      "kind": "sealed-storage-crate",
+      "x": 8,
+      "y": 2,
+      "blocking": true,
+      "seed": 5603
     },
     {
-      "kind": "rusted-crate",
-      "x": 5,
+      "kind": "pantry-shelf",
+      "x": 2,
+      "y": 4,
+      "blocking": true,
+      "seed": 5604
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 2,
       "y": 6,
-      "blocking": true
+      "blocking": true,
+      "seed": 5605
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 5,
+      "y": 4,
+      "blocking": true,
+      "seed": 5606
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 9,
+      "y": 3,
+      "blocking": true,
+      "seed": 5607
     },
     {
       "kind": "rusted-barrel",
-      "x": 8,
-      "y": 6,
+      "x": 9,
+      "y": 5,
       "blocking": true,
       "id": "storage-shed-barrel",
       "name": "Storage Barrel",
@@ -123,6 +149,27 @@
           { "item": "ducat", "count": 3 }
         ]
       }
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 9,
+      "y": 7,
+      "blocking": true,
+      "seed": 5608
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 3,
+      "y": 7,
+      "blocking": true,
+      "seed": 5609
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 8,
+      "y": 7,
+      "blocking": true,
+      "seed": 5610
     },
     {
       "kind": "road-dust",

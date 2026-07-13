@@ -1,7 +1,6 @@
 import { PALETTE } from '../palette.js';
 import { getFrame } from '../SpriteAtlas.js';
 import {
-  DIALOGUE_BOX,
   DIALOGUE_LINE_HEIGHT,
   DIALOGUE_OPTION_LINE_HEIGHT,
   buildDialogueLayout
@@ -10,19 +9,18 @@ import {
 // The talking-head plate perched above the dialogue window, the way the era
 // did it: the speaker's own baked sprite blown up to a bust, hard pixels kept
 // hard. Only actor conversations get one.
-const PORTRAIT_BOX = { x: DIALOGUE_BOX.x, y: DIALOGUE_BOX.y - 100, w: 96, h: 100 };
-
-function drawSpeakerPortrait(ctx, tools, spriteId) {
+function drawSpeakerPortrait(ctx, tools, spriteId, dialogueBox) {
   if (!spriteId || !tools.atlas) return;
   const resolved = getFrame(tools.atlas, spriteId, 'idle', 's', 0);
   if (!resolved?.frame) return;
   const { sprite, frame } = resolved;
-  tools.window(ctx, PORTRAIT_BOX, 'SPEAKER');
+  const portraitBox = { x: dialogueBox.x, y: dialogueBox.y - 100, w: 96, h: 100 };
+  tools.window(ctx, portraitBox, 'SPEAKER');
   const inner = {
-    x: PORTRAIT_BOX.x + 6,
-    y: PORTRAIT_BOX.y + 20,
-    w: PORTRAIT_BOX.w - 12,
-    h: PORTRAIT_BOX.h - 26
+    x: portraitBox.x + 6,
+    y: portraitBox.y + 20,
+    w: portraitBox.w - 12,
+    h: portraitBox.h - 26
   };
   tools.inset(ctx, inner);
   ctx.imageSmoothingEnabled = false;
@@ -46,15 +44,27 @@ function drawSpeakerPortrait(ctx, tools, spriteId) {
 export function drawDialogue(ctx, ui, tools) {
   const dialogue = ui.dialogue ?? { title: 'INSPECT', lines: [] };
   const layout = buildDialogueLayout(dialogue);
-  const { body, responseBox, scroll, maxScroll } = layout;
+  const { box, body, responseBox, scroll, maxScroll } = layout;
   tools.screenBackdrop(ctx, true);
-  tools.window(ctx, DIALOGUE_BOX, dialogue.title ?? 'INSPECT');
-  drawSpeakerPortrait(ctx, tools, dialogue.speakerSpriteId);
+  tools.window(ctx, box, dialogue.title ?? 'INSPECT');
+  drawSpeakerPortrait(ctx, tools, dialogue.speakerSpriteId, box);
   tools.inset(ctx, body);
 
   let y = body.y + 8;
+  let paragraphStart = true;
   for (const line of layout.lines) {
-    tools.outcomeText(ctx, line, body.x + 8, y, PALETTE.uiText);
+    if (line === '') {
+      paragraphStart = true;
+      y += DIALOGUE_LINE_HEIGHT;
+      continue;
+    }
+    if (paragraphStart) {
+      tools.rect(ctx, body.x + 3, y + 1, 5, 1, PALETTE.uiBorderDark);
+      tools.rect(ctx, body.x + 3, y + 1, 1, 5, PALETTE.uiBorderDark);
+      tools.rect(ctx, body.x + 4, y + 2, 2, 1, PALETTE.uiBorderLight);
+    }
+    tools.outcomeText(ctx, line, body.x + 12, y, PALETTE.uiText);
+    paragraphStart = false;
     y += DIALOGUE_LINE_HEIGHT;
   }
   if (scroll > 0) tools.scrollArrow(ctx, body.x + body.w - 12, body.y + 7, -1, PALETTE.uiBorderLight);
@@ -62,8 +72,32 @@ export function drawDialogue(ctx, ui, tools) {
 
   tools.inset(ctx, responseBox);
   y = responseBox.y + 7;
-  for (const option of layout.options) {
-    tools.text(ctx, option, responseBox.x + 8, y, PALETTE.uiGood);
+  for (const option of layout.optionDetails) {
+    drawResponseOption(ctx, tools, responseBox, option, y);
     y += DIALOGUE_OPTION_LINE_HEIGHT;
   }
+}
+
+function drawResponseOption(ctx, tools, responseBox, option, y) {
+  const colors = {
+    danger: PALETTE.uiBad,
+    commit: PALETTE.uiWarn,
+    quiet: PALETTE.uiGood,
+    normal: PALETTE.uiGood
+  };
+  const color = colors[option.tone] ?? PALETTE.uiGood;
+  const match = option.text.match(/^(\d+)\.\s*(.*)$/);
+  if (!match) {
+    tools.text(ctx, option.text, responseBox.x + 8, y, color);
+    return;
+  }
+
+  const plateX = responseBox.x + 7;
+  tools.rect(ctx, plateX, y - 1, 11, 9, PALETTE.outline);
+  tools.rect(ctx, plateX + 1, y, 9, 7, PALETTE.uiDark);
+  tools.rect(ctx, plateX + 1, y, 9, 1, color);
+  tools.rect(ctx, plateX + 1, y, 1, 7, PALETTE.uiBorderLight);
+  tools.text(ctx, match[1], plateX + 3, y, color);
+  tools.text(ctx, match[2], plateX + 16, y, color);
+  tools.rect(ctx, plateX + 16, y + 8, responseBox.w - 32, 1, PALETTE.uiDark);
 }

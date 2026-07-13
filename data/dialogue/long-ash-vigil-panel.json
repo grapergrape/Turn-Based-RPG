@@ -1,0 +1,24 @@
+{
+  "id": "long-ash-vigil-panel",
+  "title": "Hessa's Wall Compartment",
+  "nodes": {
+    "start": {
+      "effects": {
+        "setFlag": "heard-bell-vigil-panel-opened"
+      },
+      "lines": [
+        "The stone draws aside on two blackened pins. A burial register rests behind it with a bell clapper wrapped in grave cloth.",
+        "Waxed name slips fill the space around the book. None of them use the road office numbers."
+      ],
+      "choices": [
+        {
+          "label": "Leave the compartment open",
+          "effects": {
+            "log": "The register remains within reach."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

@@ -3,6 +3,7 @@
 import { bakeActor } from './sprites/spriteBake.js';
 import { bakeMara, MARA_DEFAULT_EQUIPMENT } from './sprites/maraAppearance.js';
 import { CUT_STYLE, CHOIR_STYLE, PEN_STYLE } from './sprites/hostCreatures.js';
+import { SAVA_RELL_STYLE } from './sprites/savaRell.js';
 import {
   HUMAN_MODEL_DEFS,
   HUMAN_MODEL_IDS,
@@ -67,6 +68,7 @@ const BASE_SPRITE_ATLAS_IDS = Object.freeze([
   'red-tithe-cutthroat',
   'host-penitent-bastion',
   'host-touched-penitent',
+  'host-sava-rell',
   'host-rat-sixlegs',
   'host-rat-throat-maw',
   'host-rat-tendril-walker',
@@ -99,6 +101,7 @@ export function buildSpriteAtlas() {
     'red-tithe-cutthroat': bakeActor(44, 64, CUT_STYLE),
     'host-penitent-bastion': bakeActor(64, 92, PEN_STYLE),
     'host-touched-penitent': bakeActor(64, 92, PEN_STYLE),
+    'host-sava-rell': bakeActor(46, 68, SAVA_RELL_STYLE),
     'host-rat-sixlegs': bakeHostRat('sixlegs', drawSixLeggedRat),
     'host-rat-throat-maw': bakeHostRat('maw', drawThroatMawRat),
     'host-rat-tendril-walker': bakeHostRat('tendril', drawTendrilWalkerRat),

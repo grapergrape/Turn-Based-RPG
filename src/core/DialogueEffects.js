@@ -27,16 +27,24 @@ export class DialogueEffects {
 
   apply(effects) {
     if (!effects) return false;
-    if (!this.canApplyInventoryEffects(effects.inventory)) return false;
+    // A blocked inventory transaction is handled even though it applies no
+    // effects. Returning true keeps the current dialogue or lock choice open so
+    // the player can make room and try again without losing flags or rewards.
+    if (!this.canApplyInventoryEffects(effects.inventory)) return true;
     for (const line of [].concat(effects.log ?? [])) this.callbacks.log?.(line);
-    for (const flag of [].concat(effects.setFlag ?? [])) this.game.flags.add(flag);
+    const setFlags = [].concat(effects.setFlag ?? []);
+    for (const flag of setFlags) this.game.flags.add(flag);
     this.applyInventoryEffects(effects.inventory);
+    if (setFlags.length > 0) this.callbacks.syncFlagConditionalObjects?.();
     this.callbacks.applyQuestUpdate?.(effects.questUpdate);
     if (effects.xp !== undefined) this.callbacks.awardPlayerExperience?.(effects.xp);
     if (effects.kill) this.callbacks.silenceProp?.(effects.kill);
     if (effects.teleport) this.callbacks.teleportPlayer?.(effects.teleport);
     this.applyClockEffect(effects.clock);
     this.applyMoveActorEffects(effects.moveActor);
+    if (effects.openDoorGroup) {
+      this.callbacks.openDoorGroup?.(effects.openDoorGroup);
+    }
     if (effects.trade) {
       return this.callbacks.openTradeScreen?.(effects.trade) ?? false;
     }
@@ -86,15 +94,57 @@ export class DialogueEffects {
   }
 
   canApplyInventoryEffects(inventoryEffects) {
-    if (!inventoryEffects?.requireAll) return true;
+    if (!inventoryEffects) return true;
     const removeEntries = [].concat(inventoryEffects.remove ?? []);
+    if (inventoryEffects.requireAll) {
+      for (const entry of removeEntries) {
+        if (!entry?.item) continue;
+        const count = entry.count ?? 1;
+        if ((this.game.inventory.count(entry.item) ?? 0) < count) {
+          this.callbacks.log?.(entry.failLog ?? `${this.game.inventory.displayName(entry.item)} is not in the pack.`);
+          return false;
+        }
+      }
+    }
+
+    const addEntries = [].concat(inventoryEffects.add ?? []).filter((entry) => entry?.item);
+    if (addEntries.length === 0) return true;
+
+    const inventory = this.game.inventory;
+    const current = inventory.currentWeight?.() ?? 0;
+    const max = Number.isFinite(inventory.maxCarryWeight) ? inventory.maxCarryWeight : Number.POSITIVE_INFINITY;
+    const removalCounts = new Map();
     for (const entry of removeEntries) {
       if (!entry?.item) continue;
-      const count = entry.count ?? 1;
-      if ((this.game.inventory.count(entry.item) ?? 0) < count) {
-        this.callbacks.log?.(entry.failLog ?? `${this.game.inventory.displayName(entry.item)} is not in the pack.`);
-        return false;
+      removalCounts.set(entry.item, (removalCounts.get(entry.item) ?? 0) + (entry.count ?? 1));
+    }
+    let removed = 0;
+    for (const [itemId, requested] of removalCounts) {
+      const available = inventory.count?.(itemId) ?? 0;
+      removed += (inventory.itemWeight?.(itemId) ?? 0) * Math.min(available, requested);
+    }
+    let added = 0;
+    for (const entry of addEntries) {
+      added += (inventory.itemWeight?.(entry.item) ?? 0) * (entry.count ?? 1);
+    }
+    const projected = Math.round(Math.max(0, current - removed + added) * 10) / 10;
+    const overBy = Math.max(0, Math.round((projected - max) * 10) / 10);
+    if (projected > max + 0.0001) {
+      const carry = {
+        ok: false,
+        current,
+        added: Math.round(added * 10) / 10,
+        projected,
+        overBy
+      };
+      if (this.callbacks.logCarryFailure) {
+        this.callbacks.logCarryFailure(carry);
+      } else {
+        const format = (value) => Number.isInteger(value) ? String(value) : value.toFixed(1);
+        this.callbacks.log?.(`Too much to carry. Pack ${format(current)}/${format(max)} kg.`);
+        this.callbacks.log?.(`Need ${format(overBy)} kg free.`);
       }
+      return false;
     }
     return true;
   }

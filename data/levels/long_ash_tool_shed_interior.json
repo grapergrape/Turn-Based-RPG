@@ -1,7 +1,7 @@
 {
   "id": "long-ash-tool-shed-interior",
   "name": "Long Ash Tool Shed",
-  "intro": "The locked tool shed is narrow and crowded with iron teeth, splintered handles, and wheels pulled from farm machines.",
+  "intro": "The locked tool shed is narrow and crowded: iron teeth, splintered handles, wheels pulled from farm machines.",
   "width": 12,
   "height": 10,
   "tileSize": 64,
@@ -45,7 +45,7 @@
     "player": {
       "actor": "mara-vey",
       "x": 6,
-      "y": 7
+      "y": 8
     },
     "enemies": [],
     "npcs": []
@@ -54,9 +54,10 @@
     {
       "kind": "farm-door",
       "x": 6,
-      "y": 8,
+      "y": 9,
       "blocking": true,
       "variant": "tool-shed",
+      "wallPlane": "sw",
       "id": "tool-shed-exit-door",
       "name": "Tool Shed Door",
       "interact": {
@@ -67,34 +68,75 @@
     },
     {
       "kind": "tool-rack",
-      "x": 3,
-      "y": 3,
-      "blocking": true
+      "x": 2,
+      "y": 2,
+      "blocking": true,
+      "seed": 5801
+    },
+    {
+      "kind": "tool-rack",
+      "x": 5,
+      "y": 2,
+      "blocking": true,
+      "seed": 5802
+    },
+    {
+      "kind": "tool-rack",
+      "x": 8,
+      "y": 2,
+      "blocking": true,
+      "seed": 5803
     },
     {
       "kind": "field-plow",
-      "x": 8,
-      "y": 3,
+      "x": 3,
+      "y": 4,
       "blocking": true,
-      "orient": "se"
+      "orient": "se",
+      "seed": 5804
     },
     {
       "kind": "field-harrow",
-      "x": 7,
-      "y": 5,
+      "x": 4,
+      "y": 6,
       "blocking": true,
-      "orient": "sw"
+      "orient": "se",
+      "seed": 5805
     },
     {
       "kind": "wagon-wheel",
-      "x": 3,
+      "x": 2,
       "y": 6,
-      "blocking": true
+      "blocking": true,
+      "seed": 5806
+    },
+    {
+      "kind": "woodpile",
+      "x": 2,
+      "y": 7,
+      "blocking": true,
+      "seed": 5807
+    },
+    {
+      "kind": "farm-workbench",
+      "x": 9,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 5808
+    },
+    {
+      "kind": "farm-workbench",
+      "x": 9,
+      "y": 5,
+      "blocking": true,
+      "orient": "sw",
+      "seed": 5809
     },
     {
       "kind": "rusted-crate",
-      "x": 8,
-      "y": 6,
+      "x": 9,
+      "y": 7,
       "blocking": true,
       "id": "tool-shed-rusted-crate",
       "name": "Tool Crate",
@@ -134,7 +176,7 @@
     },
     {
       "kind": "candle-cluster",
-      "x": 5,
+      "x": 7,
       "y": 3
     },
     {
@@ -144,8 +186,8 @@
     },
     {
       "kind": "machine-oil",
-      "x": 7,
-      "y": 6,
+      "x": 9,
+      "y": 5,
       "seed": 5811
     },
     {

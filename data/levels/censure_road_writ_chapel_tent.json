@@ -1,7 +1,7 @@
 {
   "id": "censure-road-writ-chapel-tent",
   "name": "Writ Chapel",
-  "intro": "Wax, incense, and field orders make a chapel out of canvas.",
+  "intro": "Wax and incense hang under the pinned field orders, enough to make a chapel out of canvas.",
   "width": 12,
   "height": 10,
   "tileSize": 64,

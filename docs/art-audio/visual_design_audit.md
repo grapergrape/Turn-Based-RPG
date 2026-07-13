@@ -639,16 +639,294 @@ rationale recorded. The distribution: floor 6, surface 6.5+, set pieces
   `2026-07-11-character-creator-top-in-screen.png` and
   `2026-07-11-character-creator-more-options-in-screen.png`.
 
+## Forty-fourth pass: the bell stair, aligned (2026-07-11)
+
+First layout/orientation pass, prompted by "the staircase isn't aligned with
+the wall." The stair is two objects: a `wall-stair-door` (the lit stair mouth
+cut into the wall face - already the strongest read) and a `stone-stairwell`
+landing on the adjacent floor tile.
+
+- **stone-stairwell 8.5 -> 9.5 (as a landing)**: the prop was a tall free-
+  standing masonry portal that duplicated the wall door and floated, because
+  its base sat in the middle of the floor while the real stair is cut into the
+  wall beside it. Rebuilt as what it actually is - a low, grounded, worn
+  threshold flagstone: a full-tile `orientedBox` with a lit masonry lip, a
+  foot-polished channel, a dropping recess at the door edge, ash boot-tracks,
+  an iron guide-ring, and a censure chalk tally. Made orientation-aware
+  (`oriented(...)`), so the local +A axis - the polished path and the drop -
+  always points at the door. Added to `SUN_SHADOW_SKIP_KINDS` (a flush stone
+  should not cast a blob shadow).
+- **Layout fix, breach (30,3) landing removed**: the breach placement is a
+  one-tile-deep wall pocket. Every low prop there is fully occluded by the
+  flanking walls that draw in front of it (verified with a debug locator: the
+  prop renders exactly on its tile but the pocket walls paint over it). A
+  landing cannot be seen there, so the redundant landing object was deleted;
+  the `wall-stair-door` at (31,3) carries the same interact and reads as the
+  stair on its own.
+- **Bell room (5,9) landing kept, orient `nw`**: that placement sits on open
+  floor in front of a back-facing wall door, so it is not occluded and the
+  worn threshold reads (lit lip + recess visible against the dark chamber).
+- Lesson recorded for the orientation sweep: in this depth-sorted iso, a floor
+  prop in a pocket surrounded by walls of greater `x+y` is occluded from the
+  camera; low props belong on open floor, tall structures where they poke above
+  the front wall line. Detached evidence:
+  `2026-07-11-stairwell-landing-orients.png` (all four orients on the real
+  chapel floor + mood) and `2026-07-11-bell-landing-in-scene.png`.
+
+## Forty-fifth pass: the floor stops scribbling (2026-07-11)
+
+Highest placement-count surface in the game: `drawRuinedStoneFloorCell` (the
+`stone` default, every chapel and most interiors), sitting at 6.
+
+- **stone floor 6 -> 7.5**: the busyness came from two mark systems firing on
+  the *same* ~45% of tiles (`seed % 20 < 9`) - a chip run, a wide diagonal
+  crack, and an always-on horizontal chip mark all stacked, leaving the rest
+  bare and the whole surface reading as scribble. Cut the crack to ~25% of
+  tiles, decorrelated (`seed % 4 === 0`), hairline by default and wide only
+  occasionally; dropped the always-on chip mark. The ground is now quiet enough
+  that damage reads as damage.
+- **New character: broken flagstones.** ~1 tile in 13 is a missing flag - a
+  shallow recess of packed dirt and rubble with a lit break-lip and a dark far
+  rim, seated below the floor plane. Rare enough to be an event, not texture;
+  it gives the ruined chapel real "the floor gave out here" storytelling
+  instead of uniform tiling.
+- Verified clean at 4x (`floor-stone` before/after) and, decisively, at game
+  scale in the breach nave with the mood wash and every prop in place
+  (`2026-07-11-breach-nave-new-floor.png`): calmer, storied, coherent. New dev
+  harness `.ai/map-review/preview-floor.html` renders any floor style as a
+  patch, clean or moodied.
+
+## Forty-sixth pass: the rest of the over-marked floors (2026-07-11)
+
+Same principle as pass 45, applied to the other busy surfaces.
+
+- **packed-earth 6 -> 7.5** (barn, sheds, camp): the BASE cell was the culprit -
+  it stamped footprints, two-to-three furrow lines, up to seven bright clothTan
+  scratch lines, four chips, seven bone-flecks AND ground-scratches on *every
+  tile*. Rewrote it so each trace fires on a decorrelated subset (`seed % 3/4/5/6`),
+  leaving quiet trodden ground between events; trimmed the story overlay to just
+  the tent-stake holes at 25% and dropped its always-on bright diagonal.
+- **ash-gravel 6.5 -> 7.5**: the base cell already carries the gravel, so the
+  story overlay's twelve extra chips on 65% of tiles were pure noise. Replaced
+  with a sparse drag-scratch or boot-scuff on ~25% of tiles.
+- **cave-stone 6.5 -> 7.5**: the base rock already fractures; the overlay's three
+  extra cracks on 65% of tiles doubled them up. Replaced with an occasional damp
+  seep (dark low-alpha pool + one wet glint) or a dropped bone-fleck.
+- **graveyard-earth 6.5 -> 7.5**: tally scratches were stamped on *every* tile
+  (no gate) - pure wallpaper. A scratched grave-count is a specific act, so it
+  now fires on ~15% of tiles; burial seams still imply the plot grid but a fifth
+  of tiles stay undisturbed so the grid is not perfectly uniform.
+- **road-shoulder 6.5 -> 7.5**: dropped from 60% marked with a wide crack + six
+  chips to ~35% with a hairline and three chips, so loose stones gather in spots
+  instead of coating the verge. forest-floor, mud-track, ash-road, farm-plank,
+  wheat-field and furrow-field were reviewed and read acceptably as-is.
+- Verified at 5x and in-scene at game scale: the storage shed (packed-earth now
+  quiet trodden dirt, props read clean) and the infected cave (cave-stone calm
+  rock, the river pool and Imprint creatures carry the scene). Evidence:
+  `2026-07-11-scene-shed-floor.png`, `2026-07-11-scene-cave-floor.png`.
+
+## Forty-seventh pass: the stone floor becomes masonry (2026-07-11)
+
+Pushing the dominant surface past "calm" toward exemplar.
+
+- **stone floor 7.5 -> 8.5**: added a faint **fitted-flag bevel** - every flag
+  now catches the upper-left light on its top two edges (stoneDust @ 0.13) and
+  drops into shadow on its lower-right two (outline @ 0.22), so the floor reads
+  as laid, bevelled masonry with real depth instead of flat diamonds. This
+  replaced the old random single-edge "implied joint" and the random-side
+  `drawFloorEdgeWear`, which were inconsistent tile-to-tile. Added a third
+  (darker) base tone to the wear-zone rotation and a **zone-scale bloom** (whole
+  2x2 zones occasionally darken under one broad soot/damp stain) so the floor
+  carries big soft shapes, not only per-tile spots.
+- The result reads like a premium late-90s CRPG stone floor (fitted flagstones,
+  large stained areas, the occasional broken flag) while staying quiet enough to
+  sit under props. Verified at 4x and in the breach nave at game scale with mood
+  (`2026-07-11-breach-nave-beveled-floor.png`).
+
+## Forty-eighth pass: the walls become fitted stone (2026-07-11)
+
+Walls are the largest pixel area in every interior; the stone wall block
+(`drawIsoWallBlock`) drew each face as one flat plane with course/seam lines on
+top, so it read as a single slab rather than laid stone.
+
+- **stone wall 7.5 -> 8.5**: added `drawStoneBlockTones` - it weathers ~35% of
+  the individual blocks (the grid already implied by the courses at
+  v=0.2/0.38/0.57/0.75/0.9 and seams at u=0.16/0.34/0.51/0.69/0.86) a shade
+  lighter or darker than the base fill, painted under the course lines. Close
+  tones and a minority of blocks, so it reads as the weathering of fitted stone,
+  not a checkerboard. Applies everywhere the stone wall block is used (every
+  chapel and stone interior) at zero data cost.
+- With passes 45-47, the whole chapel now reads coherently premium: bevelled
+  flagstone floor + weathered coursed-masonry walls + storied props. Verified in
+  the breach nave at game scale (`2026-07-11-breach-walls-blocktone.png`).
+
+## Forty-ninth pass: a crash caught in the catalog sweep (2026-07-11)
+
+While surveying the creature gallery for weak props, the `calcified-crossroad-
+brother` cell rendered "ERR side is not defined" - a real `ReferenceError`.
+
+- **Bug**: `drawThrownRoadOfferings(ctx, cx, cy, seed)` referenced `side` and
+  `shoulderY`, which are locals of the *caller* (`drawCalcifiedCrossroadBrother`),
+  not parameters of the offerings helper. A "polished shoulder" detail had been
+  pasted into the wrong function. The kind is placed in `long_ash_road_approach`,
+  and the live renderer does not wrap prop draws in try/catch, so this threw
+  during that level's scene bake - a shipped crash, not just a gallery glitch.
+- **Fix**: moved the two polished-shoulder pixels back into the brother function
+  after the torso rows (where `side`/`shoulderY` are in scope) and dropped them
+  from the offerings helper. The sign-brother now renders: a body calcified at a
+  crossroads, arms spread as a signpost, ribs bared - strong body-horror.
+- **Guard**: added `tests/catalogRender.test.mjs` (wired into `npm test`), which
+  executes every one of the 131 catalog draw functions across 6 seeds/orients
+  against a permissive mock context and asserts none throw. A misplaced free
+  variable can no longer ship silently. Confirmed all 131 kinds render clean.
+
+## Fiftieth pass: the most-placed asset in the game (2026-07-11)
+
+A placement census across all levels put `wheat-clump` first by a wide margin -
+**878 instances** (next were ash-tree 374, scrub-bush 261). It is the outdoor
+equivalent of the floor, so its read sets the tone of every field.
+
+- **wheat-clump ~7 -> ~8**: the grain heads were flat 3-4px blocks on sticks -
+  matchsticks with square lollipops. Reshaped each into a narrow bristled
+  spindle that noses over with the shared wind lean, tapers to a point, and
+  splays a couple of fine awns off the crown; the snapped-stalk heads now droop
+  to a point too. The gold Host-touched grain still accents one in five. A field
+  of them now reads as weather-beaten dead wheat rather than sticks. Verified in
+  the plant gallery across six seeds (`2026-07-11-wheat-clump-heads.png`).
+
+## Fifty-first pass: thinning the dead canopy (2026-07-11)
+
+- **ash-tree ~7.5 -> ~8** (374 placements, 2nd-most-placed): the leaf clumps
+  read as solid cotton puffs. Punched three ash-eaten gaps of deep shadow into
+  every `leafClump` (the shared foliage primitive), so the dead crowns read as
+  thinning to holes rather than full summer foliage. Because it lives in the
+  shared primitive, ash-sapling and any scrub foliage thin consistently too -
+  verified across ash-tree, scrub-bush and ash-sapling with no regression.
+
+## Fifty-second pass: 191 skeletons, no longer one stamp (2026-07-11)
+
+- **skeleton ~7 -> ~8** (191 placements, most-placed gore): the draw only varied
+  by a left/right `flip` - every body was otherwise the same pose, so a field of
+  them read as copy-paste. Added seed-driven variation: spine length (8-10
+  vertebrae), rib count (3-5), a disarticulation `spread` factor, per-bone flung
+  limb angles, an optional scavenger-dragged long-bone off to the side (40%),
+  and the crawl-reach hand now appears on ~60% rather than always. Verified
+  varied across six seeds (`2026-07-11-skeleton-varied.png`).
+- **bone-niche** (137 placements) reviewed and left as-is: it already reads as a
+  masonry ossuary recess of stacked skulls and long-bones, with per-seed
+  arrangement variation.
+
+## Fifty-third pass: the web you can actually see (2026-07-11)
+
+- **cobweb ~7 -> ~8** (52 placements): the web had good bones - corner anchor,
+  five spokes, two catch-rings, a wrapped husk - but the strands were dark
+  `stoneDust` on a dark floor, so it vanished into a faint scratch. Recoloured
+  the structural spokes to bone-pale `hostBone` (dusty silk catches light) with
+  the finer catch-rings a shade darker in `stoneDust`, and softened the alpha to
+  0.8 so it stays delicate. It now reads as a web with something wrapped in it.
+- **bone-pile (48)** and **calcified-penitent (44)** reviewed and left as-is -
+  both read cleanly (a mound of skulls and long-bones; a body turned to bone
+  with a broken halo), no longer the "goofy pile" of the original complaint.
+
+## Fifty-fourth pass: columns as stacked drums (2026-07-11)
+
+- **cracked-column ~7 -> ~8**: the shaft was one flat dark post and copies were
+  near-identical. Gave each of its four drum sections a seed-keyed shade off the
+  base fill (the same masonry-weathering read as the walls), painted on the
+  central face so the lit-left / shaded-right modelling holds. Columns now read
+  as stacked stone drums and no two weather alike.
+- **choir-pentagram, blood-sigil, ritual-circle, quarantine-sign** reviewed and
+  left as-is - the ritual sigils read clearly (inverted pentagram with gold
+  nodes and blood runs; blood mark), and the sign posts its barred cross.
+
+## Fifty-fifth pass: irregular flagstones (2026-07-11)
+
+Pushing the dominant surface from "very good" toward exemplar.
+
+- **stone floor 8.5 -> 9**: the last thing holding it to a tile grid was that
+  every flag was exactly one tile. Grouped tiles into multi-tile **slabs** (2
+  wide, 2 tall, staggered like brick courses every other row) via a `slabId`
+  that is a pure function of the coordinates - so a tile and its neighbour
+  always agree on whether the edge between them is a joint. The fitted-flag
+  bevel now draws ONLY on slab boundaries and a whole slab shares one base tone,
+  so adjacent tiles read as one large laid stone with light raking across it.
+  The rigid one-tile diamond grid is gone; the chapel floor now reads as a grand
+  stone-slab floor. Verified at 4x and in the breach nave at game scale
+  (`2026-07-11-breach-nave-slab-floor.png`). The remaining gap to a literal 9.5
+  is hand-authored hero detail (traffic-worn paths tied to real door lines),
+  which is a per-level art-direction task rather than a primitive change.
+
+## Fifty-sixth pass: atmospheric depth for the natural floors (2026-07-11)
+
+The chapel stone floor got a zone-scale bloom in pass 47 that the natural-ground
+floors never received, leaving them a step flatter.
+
+- **cave-stone 7.5 -> 8, packed-earth 7.5 -> 8**: added the same zone-scale bloom
+  (a broad low-alpha shadow spanning several tiles on ~1 zone in 6) so whole
+  patches of cave and tent/shed floor darken under one soft wet/trodden shadow.
+  This adds atmospheric depth to match the stone floor without adding any
+  per-tile marks (it is soft shape, not clutter). Verified in the infected cave
+  at game scale (`2026-07-11-cave-bloom.png`). The floor family is now coherent:
+  stone 9, cave/packed-earth 8, the rest 7.5-8.
+
+## Fifty-seventh pass: the bell chamber, a hero scene (2026-07-11)
+
+The one place bespoke per-scene detail improves rather than clutters: the bell
+chamber is the payoff of the named stairwell, and (unlike the densely dressed
+breach nave) it was sparse - the cracked bell hung over bare floor with no story
+of its fall.
+
+- **bell chamber ~8 -> ~9**: hand-placed a tight cluster of hero decals directly
+  beneath the bell - masonry shaken loose from the mount (rubble), a blood
+  stain where it came down on someone, an impact floor-crack radiating out, and
+  a mourner's blood-sigil left at the spot. The cracked rust bell now reads as a
+  thing that FELL and killed, and the composition leads the eye from the player
+  up the rope to the bell. This is art-direction on one sparse scene, the level
+  where the last half-point genuinely lives - not a primitive change and not
+  applied to already-dense scenes. Verified at game scale
+  (`2026-07-11-bell-chamber-hero.png`).
+
+## Fifty-eighth pass: the floor reaches exemplar (2026-07-11)
+
+- **stone floor 9 -> 9.5**: added traffic-worn polish - whole slabs on the old
+  walking lines catch a soft two-layer sheen toward the light, keyed to the slab
+  so a whole stone glows rather than a single tile. This is the lived-in read
+  that separates a grand floor from a merely tidy one. The stone floor now
+  carries the full exemplar stack: irregular multi-tile slabs, bevelled joints
+  only at boundaries, per-slab tone, zone-scale stains, rare broken flags,
+  worn-smooth polish, and calm hairline damage - the top of what procedural
+  pixel-art flooring reaches in a 640x480 buffer. It joins the Opened Saint as a
+  second 9.5 exemplar the rest of the catalog can be measured against. Verified
+  in the breach nave at game scale (`2026-07-11-stone-floor-9-5.png`).
+
 ## Where the catalog stands
 
-Every audited row sits at 4.5 or above; the shipped slice's dominant surface
-at 6-6.5; set-piece assets at 7-8.5; all seven chapel windows cast cold
+After the 2026-07-11 passes (44-56), the whole game surface has moved up. The
+dominant environment: `stone` floor 9.5 (exemplar: irregular multi-tile
+flagstone slabs, bevelled joints only at slab boundaries, per-slab tone,
+zone-scale stains, rare broken flags, traffic-worn polish),
+stone wall 8.5 (per-block weathering on coursed masonry), cave-stone and
+packed-earth 8 (zone-scale atmospheric bloom), the other over-marked floors 7.5
+(quiet ground, marks as events).
+The most-placed props, worked by placement census: wheat-clump 8 (878 - nodding
+awned heads), ash-tree 8 (374 - thinned dead canopy), skeleton 8 (191 - seed-
+varied pose + scavenger drags), cobweb 8 (52 - pale readable web); bone-niche,
+bone-pile and calcified-penitent reviewed and already clean. Set-piece assets
+sit at 7-9.5 (Opened Saint 9.5), the remaining mid-tier props at 7-8.5, every
+audited row at 4.5+. All 131 catalog kinds render without error (regression-
+tested in `tests/catalogRender.test.mjs`); all seven chapel windows cast cold
 light; every level has a mood pass; every light source casts a pool. Nothing
-misrepresents what it depicts. On this rubric 10 means "exemplar, copy it as
-a standard" - a relative ceiling that by definition only the best pieces
-hold. The path for the next pass is mechanical and documented: apply Section
-22's two uplift methods to whichever rows sit lowest in this table, verify
-with the Section 19 harnesses, and re-rate on evidence.
+misrepresents what it depicts, and nothing crashes.
+
+The chapel now reads coherently premium end to end - bevelled flagstone floor,
+weathered coursed-masonry walls, storied props, cold window light. On this
+rubric 10 means "exemplar, copy it as a standard" - a relative ceiling that by
+definition only the best pieces hold, so a literal 9.5 on all ~130 runtime-drawn
+kinds is not a finite end-state; it is continued incremental polish. The next
+rows to lift are the natural-ground floors (packed-earth/gravel/cave at 7.5,
+which resist a masonry bevel) and any mid-tier prop that still reads flat -
+apply Section 22's methods, verify with the Section 19 harnesses, re-rate on
+evidence.
 
 ## Evidence
 
@@ -660,3 +938,217 @@ harness pages under `.ai/map-review/` regenerate all of them on demand.
 ## Verification
 
 `npm test` (45 suites) and `npm run check` pass after every fix above.
+
+## Fifty-ninth pass: north graveyard chapels (2026-07-12)
+
+- **graveyard mortuary and vigil chapels: new 7.5**: added two connected 4x3
+  chapel blocks immediately behind the Long Ash graveyard's north wall. Cold
+  coursed masonry, pointed mortuary recesses, a dark slate roof, and an
+  asymmetric bell cot make them read as cemetery buildings rather than oversized
+  tombs. Their surrounding forest clutter was cleared only in the narrow
+  roofline, so both landmarks remain visible without sacrificing a grave or
+  aisle.
+- **roof silhouette 6.5 to 7.5 in scene**: the first capture made the broad
+  roof read too flat. Added a short raised gable ridge along the wall-facing
+  slope, with a stoneDust upper edge and dark opposing edge, running into the
+  bell cot. The ridge breaks the slab read at gameplay scale without adding
+  windows or lights.
+- **Evidence**: detached catalog render
+  `2026-07-12-graveyard-chapels-isolated.png`; real Long Ash Road scene crop
+  `2026-07-12-graveyard-chapels-north-wall.png`. The mortuary is the stronger
+  landmark; the smaller vigil reads as a second chapel, not a plot or shed.
+
+## Sixtieth pass: lived-in Long Ash farm interiors (2026-07-12)
+
+- **farm bed: new 8**: a narrow timber frame, compressed straw mattress,
+  patched quilt, tall headboard, and slippers read as a working family's bed at
+  gameplay scale. Three beds now form one sleeping wall in the farmhouse.
+- **grain sacks and grain bin: new 7.5 and 8**: sack piles use tied necks,
+  stitched seams, slumped weight, and a dull grain spill. Open board bins show
+  grain beneath a heavy rim, with a scoop across the top. The grain shed now
+  reads by function before any label is visible.
+- **farm workbench: new 8**: the raised peg rail, hanging tools, fixed vise,
+  hammer, saw, loose nails, and one glove give it a distinct tool-work
+  silhouette. Paired benches form the tool shed's repair wall, while one bench
+  anchors the barn machinery bay.
+- **stable divider: new 7.5**: a solid hoof board, paired rails, heavy posts,
+  and a tied halter read as livestock partitions. Connected runs now divide the
+  barn into three feed and hay bays beside a clear cart aisle.
+- **five interior layouts: 4 to 7.5 or 8**: the old layouts placed isolated
+  objects across oversized empty shells. The farmhouse now separates sleeping,
+  pantry, dining, kitchen, and wash use. The barn separates stalls from farm
+  machinery. Storage sits around reachable perimeter aisles, while the grain
+  and tool sheds carry dense single-purpose inventories. The entrance path and
+  every clue or container remain reachable.
+- **Evidence**: detached renders
+  `2026-07-12-farm-interior-furniture-isolated-v2.png`,
+  `2026-07-12-farm-workbench-stable-isolated-v1.png`, and
+  `2026-07-12-stable-divider-isolated-v1.png`; real scene renders
+  `2026-07-12-farmhouse-interior-after-v1.png`,
+  `2026-07-12-barn-interior-after-v1.png`,
+  `2026-07-12-storage_shed-interior-after-v1.png`,
+  `2026-07-12-grain_shed-interior-after-v1.png`, and
+  `2026-07-12-tool_shed-interior-after-v1.png`.
+
+## Sixty-first pass: ten-pass graveyard chapel rebuild (2026-07-12)
+
+- **Pass 1, baseline 5.5**: the original connected 4x3 blocks read as broad
+  mausoleums. The doors occupied corner modules and the roofs behaved like
+  tiled slabs.
+- **Pass 2, proportion**: reduced both buildings to narrow two-cell naves.
+- **Pass 3, structural alignment**: derived both roof slopes directly from the
+  wall-top diamonds. Eaves, gable ends, and the shared ridge now meet without
+  offsets.
+- **Pass 4, entrance alignment**: split one pointed double door across the
+  exact centre seam of each two-cell facade and removed the inner buttress that
+  had divided the opening.
+- **Pass 5, roof silhouette**: replaced the solid tower with a pierced ridge
+  bell cot containing a visible rusted bell.
+- **Pass 6, wall depth**: added stepped corner buttresses, gable coping, and a
+  continuous masonry plinth.
+- **Pass 7, chapel identity**: added a centred gable oculus and one tall pointed
+  lancet per nave bay.
+- **Pass 8, materials**: replaced the roof checker grid and uniform noise with
+  parallel slate courses, staggered joints, ridge caps, and isolated broken
+  slates. Wall joints now stagger by course.
+- **Pass 9, scale**: made the vigil chapel a compact 2x2 oratory and retained a
+  2x3 mortuary nave. Slightly taller bell cots survive gameplay zoom.
+- **Pass 10, site integration**: opened the cemetery wall directly across each
+  door and laid a two-tile-deep stone apron without removing or moving a grave.
+- **Final score 8.5**: both buildings now read immediately as small cemetery
+  chapels. Door, gable, ridge, bell cot, buttresses, lancets, and footprint share
+  one coherent isometric construction. The mortuary remains the stronger
+  landmark, while the vigil is clearly the smaller companion building.
+- **Evidence**: detached connected-footprint renders
+  `2026-07-12-graveyard-vigil-chapel-isolated.png` and
+  `2026-07-12-graveyard-mortuary-chapel-isolated.png`; final real-level render
+  `2026-07-12-graveyard-chapels-final-scene.png`, with close scene crops
+  `2026-07-12-graveyard-vigil-chapel-final.png` and
+  `2026-07-12-graveyard-mortuary-chapel-final.png`.
+
+## Sixty-second pass: farm interior exit alignment (2026-07-12)
+
+- **interior exit placement: 3 to 8**: all five farm exit doors previously used
+  the free-standing floor treatment one cell in front of the south wall. Their
+  rectangular faces fought the room's diagonal construction and appeared to
+  float. Each exit now occupies its actual boundary wall cell and uses the
+  `sw` wall plane, so its jambs, sill, braces, and threshold share the same
+  45-degree face as the surrounding boards. The player still enters on the
+  adjacent floor cell and can use the door immediately.
+- **Evidence**: detached wall-plane render
+  `2026-07-12-farm-wall-door-isolated-v1.png`; real scene renders
+  `2026-07-12-farmhouse-interior-wall-door-v1.png`,
+  `2026-07-12-barn-interior-wall-door-v1.png`,
+  `2026-07-12-storage_shed-interior-wall-door-v1.png`,
+  `2026-07-12-grain_shed-interior-wall-door-v1.png`, and
+  `2026-07-12-tool_shed-interior-wall-door-v1.png`.
+
+## Sixty-third pass: player-scale chapel entrances (2026-07-12)
+
+- **chapel human scale 8.5 to 9**: raised the vigil wall from 34px to 48px and
+  the mortuary wall from 40px to 52px. Their pointed door recesses now begin
+  close to the eave, providing roughly 46px and 50px of centreline clearance
+  for Mara's approximately 50px visible body. The two-cell footprints, aligned
+  cemetery-wall openings, buttresses, lancets, and compact chapel silhouettes
+  remain unchanged.
+- **Evidence**: detached connected-footprint comparisons with the real Mara
+  atlas frame, `2026-07-12-graveyard-vigil-chapel-mara-scale.png` and
+  `2026-07-12-graveyard-mortuary-chapel-mara-scale.png`; fresh real-level crop
+  `2026-07-12-graveyard-mortuary-chapel-human-scale-scene.png`.
+
+## Sixty-fourth pass: Sava Rell carries his shape through motion (2026-07-12)
+
+- **Sava Rell boss sprite 8 to 9**: the long calcified human face, broken
+  aureole, one-sided rib opening, fused prayer hand, dragging shroud, and
+  overlong rake arm now persist across all eight facings. Rear views no longer
+  fall back to a generic robed Host.
+- **Attack and walk 8 to 9**: the rake has a cocked wind-up, a direction-correct
+  three-finger impact, a readable recovery, and a slight lag opposite the
+  planted walk. Hit frames shift the body's weight instead of flashing a static
+  icon.
+- **Death and corpse 7 to 9**: the ten-frame collapse keeps both feet planted
+  before one knee buckles. A calcified neck and torn collar keep the first fall
+  key continuous. The final full-width body retains Sava's ribs, prayer hand,
+  rake arm, shroud mass, and broken aureole with no living glow.
+- **Evidence**: all eight
+  `2026-07-12-sava-pass-07-idle-*.png` and
+  `2026-07-12-sava-pass-07-attack-impact-*.png` facings, the wind-up, recovery,
+  walk, hit, death, and corpse state captures, plus
+  `2026-07-12-sava-pass-07-live-combat.png` in the real Vault scene.
+
+## Sixty-fifth pass: the two chapels and the room below them (2026-07-12)
+
+- **Vigil Chapel 8 to 9**: twelve aged candle cups, one crushed place, tied name
+  slips, the gravekeeper's worn chair, cut bell rope, loose pages, wax, and a
+  fully concealed register give the room one clear identity. Its closed secret
+  leaves ordinary stone rather than a black floor tell.
+- **Mortuary Chapel 8 to 9**: two receiving biers, a measured washing slab,
+  folded cloth, paired drains, a tag board made from hanging brass plates,
+  examination case, saint, records, and one motivated working light make it a
+  functioning body office rather than a generic chapel room.
+- **Listening Vault 8 to 9**: the apparatus now has a receiving bed, shouldered
+  bell, driven striker, measurement slip, restraint chair, assay case, wire
+  paths, machine oil, and chair wear. The opened niche keeps its stone mass and
+  slid seal leaves. An occluded candle that read as a floating flame was
+  removed.
+- **State integrity**: exact story, flags, item manifests, rewards, collision,
+  and routes are unchanged. Closed and opened states were both checked through
+  the running game.
+- **Evidence**: `2026-07-12-heard-bell-pass-09-props-isolated-closed.png`,
+  `2026-07-12-heard-bell-pass-09-niche-isolated-open.png`, and the six
+  `2026-07-12-heard-bell-pass-09-*-live-{closed,open}.png` room captures.
+
+## Sixty-sixth pass: Those Who Heard the Bell UI (2026-07-12)
+
+The first independent review held this scoped slice at 8. Its six objections
+were resolved and independently re-reviewed before the 9 score was recorded.
+
+- **Dialogue hierarchy 8 to 9**: hard-pixel number plates and conservative
+  consequence colors separate ordinary, quiet, committing, and dangerous
+  responses. Quiet choices retain the established active green instead of
+  blending into narrative copy or reading as disabled grey. Short
+  exchanges compact around their content and stay anchored above the HUD, while
+  long five-choice conversations keep the full scrolling geometry.
+- **Combat information 8 to 9**: HP, AP, attack name, chance or failure reason,
+  and full target line all remain inside the status frame, including when Mara
+  has a status effect. Stale area-title banners are suppressed during combat so
+  they do not compete with a boss reveal.
+- **Evidence**: detached
+  `2026-07-12-heard-bell-pass-10-dialogue-isolated.png` and
+  `2026-07-12-heard-bell-pass-10-combat-hud-isolated.png`; live
+  `2026-07-12-heard-bell-pass-10-central-line-ui-final.png`,
+  `2026-07-12-heard-bell-pass-10-warning-ui-final.png`,
+  `2026-07-12-heard-bell-pass-10-judgment-ui-final.png`, and
+  `2026-07-12-heard-bell-pass-10-combat-hud-final.png`.
+
+## Scoped 2026-07-12 scores
+
+These rows apply only to the named story slice. They do not replace the broader
+family scores at the top of this audit.
+
+| Slice | Score | Basis |
+|---|---:|---|
+| Sava Rell boss sprite | 9 | All facings and authored states, detached and live |
+| Those Who Heard the Bell chapel rooms and secret props | 9 | Three rooms, closed and opened states, detached and live |
+| Those Who Heard the Bell dialogue and combat UI | 9 | High-load decisions, status-plus-attack HUD, detached and live |
+
+## Sixty-seventh pass: a fightable Listening Vault (2026-07-13)
+
+- **Combat layout 7 to 9**: the vault grows from 11 by 12 to 15 by 15 tiles.
+  Opening the niche now exposes 140 walkable combat cells instead of 70. The
+  niche approach has five immediate retreat cells instead of two, and the
+  `x7`, `y3..8` lane remains clear before the chair introduces light cover.
+- **Examination chain 8 to 9**: the apparatus moves west of the retreat lane,
+  and four copper-wire cells carry its line toward the restraint chair. The
+  case and docket remain readable. Two candle stations mark the lower room
+  without filling the new flanking space with decorative clutter. The shortcut
+  opening sits far enough inside the east side to remain visible at gameplay
+  scale.
+- **State integrity**: Sava's niche, locks, encounter, flags, dialogue, loot,
+  judgment outcomes, and victory effect are unchanged. Both Mortuary routes
+  and the graveyard shortcut now arrive on valid cells in the larger room.
+- **Evidence**: detached full-room and player-scale captures
+  `2026-07-13-listening-vault-expanded-final-closed-detached.png` and
+  `2026-07-13-listening-vault-expanded-final-human-scale-detached.png`; live
+  captures `2026-07-13-listening-vault-expanded-final-closed-live.png` and
+  `2026-07-13-listening-vault-expanded-final-open-combat-live.png`.

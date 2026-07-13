@@ -47,6 +47,7 @@ class GameDialogueRuntime {
     // re-reading the same note is safe; one-shot effects stay on choices.
     if (node.effects?.setFlag) {
       for (const flag of [].concat(node.effects.setFlag)) this.flags.add(flag);
+      this._syncFlagConditionalObjects?.();
     }
     const lines = [].concat(node.lines ?? node.text ?? []).filter(Boolean);
     const choices = (node.choices ?? [])

@@ -32,6 +32,8 @@ import { validateLoot } from './itemValidator.mjs';
 
 import { validateBriefingPage, validateStringList } from './textRules.mjs';
 
+const DIALOGUE_CHOICE_TONES = new Set(['normal', 'quiet', 'commit', 'danger']);
+
 
 
 export function validateQuest(filePath, data) {
@@ -88,6 +90,12 @@ export function validateDialogue(filePath, data) {
       } else {
         for (const choice of node.choices) {
           requireString(name, choice.label, `nodes.${nodeId}.choices[].label`);
+          if (choice.tone !== undefined) {
+            requireString(name, choice.tone, `nodes.${nodeId}.choices[].tone`);
+            if (typeof choice.tone === 'string' && !DIALOGUE_CHOICE_TONES.has(choice.tone)) {
+              errors.push(`${name}: nodes.${nodeId}.choices[].tone must be normal, quiet, commit, or danger.`);
+            }
+          }
           validateDialogueConditions(name, choice.conditions, `nodes.${nodeId}.choices[].conditions`);
           validateDialogueEffects(name, choice.effects, `nodes.${nodeId}.choices[].effects`);
         }
@@ -253,6 +261,9 @@ export function validateDialogueEffects(name, effects, fieldName) {
   }
 
   validateInventoryEffects(name, effects.inventory, `${fieldName}.inventory`);
+  if (effects.openDoorGroup !== undefined) {
+    requireString(name, effects.openDoorGroup, `${fieldName}.openDoorGroup`);
+  }
   validateClockEffect(name, effects.clock, `${fieldName}.clock`);
   validateXpNumber(name, effects.xp, `${fieldName}.xp`);
   validateMoveActorEffects(name, effects.moveActor, `${fieldName}.moveActor`);

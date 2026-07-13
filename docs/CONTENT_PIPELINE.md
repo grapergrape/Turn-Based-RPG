@@ -195,6 +195,14 @@ Rules:
   block is not drawn twice. The player reaches it from the floor tile in front.
 - `blocking: true` makes the object's tile impassable (collision uses the same
   rule in explore and combat).
+- `hiddenUntilOpened: true` keeps an authored prop concealed until an object in
+  its shared `doorGroup` opens. The floor remains visible, so use this for a
+  secret prop on an ordinary floor cell rather than for a hidden room.
+- `hiddenWhenFlags`, `disabledWhenFlags`, and `closedWhenFlags` accept a flag id
+  or list of flag ids. Any matching run flag respectively conceals the prop,
+  removes it from targeting and map markers, or forces an opened object closed.
+  Use these for physical consequences that must survive level transitions,
+  such as taking a document or resealing a compartment.
 - `cover` is optional on level objects and legend entries. Valid values are
   `"none"`, `"light"`, and `"hard"`. Most cover should come from
   `src/render/spriteCatalog.js`, where the prop kind is already registered.
@@ -209,6 +217,15 @@ Rules:
   reference `dialogue` by id and apply a `questUpdate`.
 - Corpse loot uses the same inventory and carry-weight rules as containers, but
   the body stays visible and can still open its inspect dialogue after looting.
+- Interactable objects can define `clickAreas` rectangles when raised or wide
+  art inverse-projects to cells other than the object's logical `x` and `y`.
+  Clicking any covered cell targets the object, while movement and interaction
+  range still use its logical cell. Keep that logical cell walkable or adjacent
+  to reachable floor. Exact actors, corpses, and objects take priority over a
+  click area.
+- `interactionMarker` can set the grid cell used by the nearby green brackets.
+  Use it when the logical approach cell is not the visual center of the object,
+  such as a wall-mounted door above a walkable apron.
 - `levelTransitions` is an optional array of walk-on level exits. Each entry has
   a stable `id`, a walkable `x` and `y` tile, and a `loadLevel` object with the
   target `path` plus the destination player tile. Use this for open thresholds
@@ -286,6 +303,9 @@ Lock rules:
   required. After a successful Security pick, the current Security rating is
   the percent chance that one roll survives. If the check breaks the tool, one
   `censure-entry-roll` is removed from the pack.
+- Set `requiresSecurityTool: false` only when the authored mechanism can be
+  worked bare-handed and the route is intentionally a Security rating check
+  without the Censure Entry Roll.
 - Field and primary checks are deterministic. Current rating greater than or
   equal to `dc` succeeds. Lower rating fails and leaves the lock shut.
 - `successLog`, `failLog`, and `unavailableLog` are optional player-facing log
@@ -364,8 +384,9 @@ Search rules:
   the run direction, so a wall fixture can never come out as a flat horizontal
   face: match the plane to the wall the doorway is cut into. Use it so a door's
   rails, jambs, and opening frame follow the same plane as the surrounding wall.
-  Exterior `farm-door` objects on farm building wall cells should define it;
-  interior exit `farm-door` objects omit it and use the floor-door path.
+  Every `farm-door` belongs on a non-walkable wall cell and must define it.
+  Interior exits on the south boundary wall normally use `"sw"`, because that
+  wall runs along +x. The player uses the door from the adjacent floor cell.
 - Farm building exteriors on Long Ash Road use separate generator tile chars and
   block kinds so each footprint has its own silhouette: `H` maps to
   `farmhouse-building-block`, `B` maps to `barn-building-block`, `T` maps to
@@ -375,11 +396,11 @@ Search rules:
 - Farm building interiors use separate wall-grid block kinds so they do not
   reuse chapel stone: `farmhouse-interior-wall`, `barn-interior-wall`, and
   `shed-interior-wall`.
-- `farm-door.variant` selects both wall-mounted exterior door art and interior
-  floor-door art. Valid values are `"farmhouse"`, `"barn"`,
+- `farm-door.variant` selects the wall-mounted door art. Valid values are
+  `"farmhouse"`, `"barn"`,
   `"storage-shed"`, `"grain-shed"`, and `"tool-shed"`. Exterior doors usually
-  pair `variant` with `wallPlane`; interior exit doors keep the same `variant`
-  and omit `wallPlane`.
+  pair `variant` with the plane of their exposed building face. Interior exits
+  use the same variant and the plane of their boundary wall.
 - `wallSide` (optional, `"near"` default or `"far"`) picks which of the wall's
   two parallel faces the fixture hangs on. `"near"` is the camera-facing front;
   `"far"` is the back face one tile-thickness behind it, which is visible through
@@ -391,8 +412,9 @@ Search rules:
   along either diagonal, a counter facing the room or the wall). The facing
   names the screen direction the prop's front points. Only kinds registered with
   the `oriented()` helper in `src/render/spriteCatalog.js` read it (currently
-  `dining-table`, `dining-bench`, `kitchen-counter`, and `farm-prep-table`);
-  other kinds ignore it.
+  `dining-table`, `dining-bench`, `kitchen-counter`, `farm-prep-table`,
+  `farm-bed`, `grain-bin`, `farm-workbench`, `stable-divider`, and the existing
+  oriented field, graveyard, and stair pieces); other kinds ignore it.
   Lighting stays correct at every facing because the renderer colors faces by
   screen position, so a rotated copy is never lit from the wrong side. To make a
   new kind orientation-aware, give its draw function an `opts.orient` and build
@@ -580,6 +602,19 @@ Search rules:
 }
 ```
 
+- Dialogue choice effects can use `openDoorGroup` to open every object in an
+  authored door group. Passability and hidden regions refresh before combat if
+  the same effect also defines `startCombat`:
+
+```json
+{
+  "effects": {
+    "openDoorGroup": "sava-listening-niche",
+    "startCombat": "sava-listening-niche"
+  }
+}
+```
+
 - Dialogue choice effects can use `showBriefing` to open a full-screen black
   briefing or interlude card using the same renderer as the opening writ.
   `pages` are always shown. `conditionalPages` add pages only when their
@@ -638,6 +673,11 @@ Search rules:
   }
 }
 ```
+
+  Item additions are capacity-checked as one bundle before logs, flags, quest
+  updates, removals, or additions apply. Planned removals count toward the
+  available capacity. If the complete bundle does not fit, the current choice
+  remains open and no part of its effect is applied.
 
 - Dialogue choice effects can grant explicit XP:
 
@@ -1055,6 +1095,10 @@ Rules:
 - `id`, `title`, `nodes`, and `nodes.start` are required.
 - Each node needs a non-empty `lines` array.
 - A node may have one to five choices. Number keys `1` through `5` choose them.
+- A choice may set `tone` to `normal`, `quiet`, `commit`, or `danger` for its
+  response color. Use this only when the consequence is clearer to the author
+  than to the renderer. Combat starts infer `danger`, completed quest decisions
+  infer `commit`, and effect-free exits infer `quiet` when `tone` is omitted.
 - Choice `effects` can log text, teleport the player within a level, load
   another level, update a quest, and add or remove inventory items.
 - Node and choice `conditions` can gate content with `flag`, `flags`,

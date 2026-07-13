@@ -1,0 +1,139 @@
+{
+  "id": "long-ash-sava-niche",
+  "title": "Sealed Listening Niche",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "heard-bell-sava-killed"
+      },
+      "else": "resealed",
+      "lines": [
+        "The niche stands open. Broken seal stone surrounds the place where Sava waited. Nothing remains to answer the pins."
+      ],
+      "choices": [
+        {
+          "label": "Step away",
+          "close": true
+        }
+      ]
+    },
+    "resealed": {
+      "conditions": {
+        "flag": "heard-bell-sava-resealed"
+      },
+      "else": "quieted",
+      "lines": [
+        "The pins hold Hessa's last cadence. Twelve names have been pressed into fresh wax across the niche seal.",
+        "Sava does not answer, and the seal gives no reason to call that safety."
+      ],
+      "choices": [
+        {
+          "label": "Leave the vigil sealed",
+          "close": true
+        }
+      ]
+    },
+    "quieted": {
+      "conditions": {
+        "flag": "heard-bell-sava-quieted"
+      },
+      "else": "cracked",
+      "lines": [
+        "The listening wire has gone still. A long face presses faintly against the back of the seal, turned north.",
+        "Opening the niche now would undo the quieting."
+      ],
+      "choices": [
+        {
+          "label": "Leave Sava quiet",
+          "effects": {
+            "setFlag": "heard-bell-sava-found",
+            "log": "You leave the listening niche sealed."
+          },
+          "close": true
+        },
+        {
+          "label": "Mark the seal for a later judgment",
+          "effects": {
+            "setFlag": "heard-bell-sava-found",
+            "log": "The niche is quiet, not empty."
+          },
+          "close": true
+        },
+        {
+          "label": "Undo the quieting and open the niche",
+          "next": "break-quiet-warning",
+          "close": false
+        }
+      ]
+    },
+    "break-quiet-warning": {
+      "lines": [
+        "The pins are holding Sava in Hessa's cadence. Releasing them will wake him before the niche can open clear."
+      ],
+      "choices": [
+        {
+          "label": "Release the pins and face Sava",
+          "effects": {
+            "setFlag": [
+              "heard-bell-test-third",
+              "heard-bell-sava-thawing",
+              "heard-bell-sava-found"
+            ],
+            "openDoorGroup": "sava-listening-niche",
+            "startCombat": "sava-listening-niche",
+            "log": "The quieting pins lift. Sava pulls one prayer-bound hand free as the niche opens."
+          },
+          "close": true
+        },
+        {
+          "label": "Keep the pins in place",
+          "close": true
+        }
+      ]
+    },
+    "cracked": {
+      "conditions": {
+        "flag": "heard-bell-test-third"
+      },
+      "else": "sealed",
+      "lines": [
+        "A fresh crack divides the seal. Pale fingertips meet behind it in a prayer grip that has not fully fused.",
+        "The opening pins can release the niche now. The body behind it is breathing."
+      ],
+      "choices": [
+        {
+          "label": "Inspect the broken seal",
+          "effects": {
+            "setFlag": "heard-bell-sava-found",
+            "log": "Sava Rell waits behind the cracked niche seal."
+          },
+          "close": true
+        },
+        {
+          "label": "Leave it closed",
+          "close": true
+        }
+      ]
+    },
+    "sealed": {
+      "lines": [
+        "Measurement cuts climb the niche stone by finger widths. A copper pin enters at the height of a man's jaw.",
+        "The ash at the base is newly disturbed. Something behind the wall has been turning toward Hallowfen."
+      ],
+      "choices": [
+        {
+          "label": "Inspect the niche",
+          "effects": {
+            "setFlag": "heard-bell-sava-found",
+            "log": "The measurements name Sava Rell as the subject inside."
+          },
+          "close": true
+        },
+        {
+          "label": "Step away",
+          "close": true
+        }
+      ]
+    }
+  }
+}

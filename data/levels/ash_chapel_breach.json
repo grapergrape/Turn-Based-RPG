@@ -771,13 +771,15 @@
       "kind": "prayer-lectern",
       "x": 14,
       "y": 5,
-      "blocking": true
+      "blocking": true,
+      "defiled": true
     },
     {
       "kind": "prayer-lectern",
       "x": 25,
       "y": 5,
-      "blocking": true
+      "blocking": true,
+      "defiled": true
     },
     {
       "kind": "chapel-banner",
@@ -912,6 +914,7 @@
       "x": 16,
       "y": 8,
       "blocking": true,
+      "defiled": true,
       "name": "Beheaded Saint",
       "interact": {
         "type": "note",
@@ -925,6 +928,7 @@
       "x": 23,
       "y": 8,
       "blocking": true,
+      "defiled": true,
       "name": "Beheaded Saint",
       "interact": {
         "type": "note",
@@ -1547,6 +1551,7 @@
       "x": 21,
       "y": 25,
       "blocking": true,
+      "defiled": true,
       "name": "Fouled Font",
       "interact": {
         "type": "note",
@@ -1966,23 +1971,6 @@
         "type": "secret-entrance",
         "dialogue": "ash-chapel-bell-stairs",
         "log": "A narrow service door is cut into the chapel wall. Behind it, stone steps climb toward the bell chamber."
-      },
-      "mapMarker": {
-        "label": "Bell Stair",
-        "kind": "exit"
-      }
-    },
-    {
-      "id": "bell-stair-landing-30-3",
-      "kind": "stone-stairwell",
-      "x": 30,
-      "y": 3,
-      "blocking": true,
-      "name": "Bell Stair Landing",
-      "interact": {
-        "type": "secret-entrance",
-        "dialogue": "ash-chapel-bell-stairs",
-        "log": "A worn landing stone points into the narrow stair cut through the chapel wall."
       },
       "mapMarker": {
         "label": "Bell Stair",

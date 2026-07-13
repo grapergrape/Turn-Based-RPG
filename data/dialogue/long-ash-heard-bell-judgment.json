@@ -1,0 +1,261 @@
+{
+  "id": "long-ash-heard-bell-judgment",
+  "title": "The Twelve Names",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flags": [
+          "heard-bell-truth-joined",
+          "heard-bell-sava-found"
+        ]
+      },
+      "else": "incomplete",
+      "lines": [
+        "Hessa kept the names. The road office kept the measurements. Sava Rell waits where both records point."
+      ],
+      "choices": [
+        {
+          "label": "Decide what the road will remember",
+          "next": "unresolved",
+          "close": false
+        },
+        {
+          "label": "Wait before judging",
+          "close": true
+        }
+      ]
+    },
+    "unresolved": {
+      "conditions": {
+        "flagsAbsent": [
+          "heard-bell-resolved"
+        ]
+      },
+      "else": "resolved-vigil",
+      "lines": [
+        "Eleven people stand in the graveyard. The twelfth is sealed beneath your feet. Every answer carries a risk beyond this room."
+      ],
+      "choices": [
+        {
+          "label": "Weigh the judgment",
+          "next": "living",
+          "close": false
+        },
+        {
+          "label": "Leave the records where they are",
+          "close": true
+        }
+      ]
+    },
+    "living": {
+      "conditions": {
+        "flagsAbsent": [
+          "heard-bell-sava-killed"
+        ]
+      },
+      "else": "killed",
+      "lines": [
+        "Sava still lives behind the listening seal. Whatever holds him is weakening, but his breath still follows Hessa's count."
+      ],
+      "choices": [
+        {
+          "label": "Keep the vigil and restore the names",
+          "effects": {
+            "setFlag": [
+              "heard-bell-resolved",
+              "heard-bell-resolved-vigil",
+              "heard-bell-sava-quieted",
+              "heard-bell-sava-resealed",
+              "heard-bell-names-restored",
+              "heard-bell-register-rehidden"
+            ],
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "complete",
+              "log": "Quest complete: Those Who Heard the Bell."
+            },
+            "log": "You restore the twelve names and reseal Hessa's register. Sava's niche is quiet for now."
+          },
+          "close": true
+        },
+        {
+          "label": "Perform censure and destroy Sava",
+          "effects": {
+            "setFlag": [
+              "heard-bell-test-third",
+              "heard-bell-sava-thawing",
+              "heard-bell-sava-found"
+            ],
+            "openDoorGroup": "sava-listening-niche",
+            "startCombat": "sava-listening-niche",
+            "log": "The niche opens under censure. Sava unfolds from the stone before the seal can fall clear."
+          },
+          "close": true
+        },
+        {
+          "label": "Take both records as evidence",
+          "effects": {
+            "setFlag": [
+              "heard-bell-resolved",
+              "heard-bell-resolved-evidence",
+              "heard-bell-records-carried",
+              "heard-bell-sava-left-sealed"
+            ],
+            "inventory": {
+              "add": [
+                {
+                  "item": "book-of-kept-names",
+                  "count": 1
+                },
+                {
+                  "item": "mortuary-examination-docket",
+                  "count": 1
+                }
+              ]
+            },
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "complete",
+              "log": "Quest complete: Those Who Heard the Bell."
+            },
+            "log": "You wrap Hessa's register with the mortuary docket. Sava remains sealed below."
+          },
+          "close": true
+        },
+        {
+          "label": "Make no judgment yet",
+          "close": true
+        }
+      ]
+    },
+    "killed": {
+      "lines": [
+        "Sava is dead. The choice now concerns the eleven who remain and the records that proved he could answer."
+      ],
+      "choices": [
+        {
+          "label": "Keep the vigil and restore the names",
+          "effects": {
+            "setFlag": [
+              "heard-bell-resolved",
+              "heard-bell-resolved-vigil",
+              "heard-bell-names-restored",
+              "heard-bell-register-rehidden"
+            ],
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "complete",
+              "log": "Quest complete: Those Who Heard the Bell."
+            },
+            "log": "You restore all twelve names after killing Sava. The writing cannot return him, but it refuses the office number."
+          },
+          "close": true
+        },
+        {
+          "label": "File censure on the graveyard",
+          "effects": {
+            "setFlag": [
+              "heard-bell-resolved",
+              "heard-bell-resolved-censure",
+              "heard-bell-censure-report-filed",
+              "heard-bell-graveyard-purge-requested",
+              "heard-bell-sava-killed"
+            ],
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "complete",
+              "log": "Quest complete: Those Who Heard the Bell."
+            },
+            "log": "You copy the graveyard coordinates into a Censure report. A purgation order will follow."
+          },
+          "close": true
+        },
+        {
+          "label": "Take both records as evidence",
+          "effects": {
+            "setFlag": [
+              "heard-bell-resolved",
+              "heard-bell-resolved-evidence",
+              "heard-bell-records-carried"
+            ],
+            "inventory": {
+              "add": [
+                {
+                  "item": "book-of-kept-names",
+                  "count": 1
+                },
+                {
+                  "item": "mortuary-examination-docket",
+                  "count": 1
+                }
+              ]
+            },
+            "questUpdate": {
+              "quest": "those-who-heard-the-bell",
+              "stage": "complete",
+              "log": "Quest complete: Those Who Heard the Bell."
+            },
+            "log": "You take both records. Sava's empty niche remains as part of their evidence."
+          },
+          "close": true
+        },
+        {
+          "label": "Make no judgment yet",
+          "close": true
+        }
+      ]
+    },
+    "resolved-vigil": {
+      "conditions": {
+        "flag": "heard-bell-resolved-vigil"
+      },
+      "else": "resolved-censure",
+      "lines": [
+        "The twelve names remain together. The listening niche is quiet for now."
+      ],
+      "choices": [
+        {
+          "label": "Leave the vigil undisturbed",
+          "close": true
+        }
+      ]
+    },
+    "resolved-censure": {
+      "conditions": {
+        "flag": "heard-bell-resolved-censure"
+      },
+      "else": "resolved-evidence",
+      "lines": [
+        "The road office has the graveyard location. A purgation order will follow."
+      ],
+      "choices": [
+        {
+          "label": "Leave the report to travel",
+          "close": true
+        }
+      ]
+    },
+    "resolved-evidence": {
+      "lines": [
+        "Hessa's register and the mortuary docket are in your pack. The road office no longer owns the only account."
+      ],
+      "choices": [
+        {
+          "label": "Carry the records north",
+          "close": true
+        }
+      ]
+    },
+    "incomplete": {
+      "lines": [
+        "The two chapels keep different counts. There is not enough here yet to judge what happened to the missing name."
+      ],
+      "choices": [
+        {
+          "label": "Keep searching",
+          "close": true
+        }
+      ]
+    }
+  }
+}

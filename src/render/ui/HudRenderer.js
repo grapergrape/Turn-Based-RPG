@@ -35,6 +35,10 @@ function drawStatus(ctx, ui, tools) {
   const statuses = Array.isArray(ui.statuses) ? ui.statuses : [];
   tools.text(ctx, tools.clip(ui.actorName ?? 'AGENT', 21), x, y, PALETTE.uiText);
   y += 8;
+  if (ui.mode === 'COMBAT') {
+    drawCombatStatus(ctx, ui, tools, { x, y, statuses });
+    return;
+  }
   if (statuses.length > 0) {
     const labels = statuses.map((status) => {
       const suffix = status.stacks > 1 ? `${status.stacks}` : '';
@@ -62,21 +66,43 @@ function drawStatus(ctx, ui, tools) {
     tools.rect(ctx, x + 104, y + 5, 8, 1, PALETTE.uiBorderLight);
   }
   y += 9;
-  if (ui.mode === 'COMBAT') {
-    tools.text(ctx, `AP ${ui.ap}/${ui.maxAp}`, x, y, PALETTE.uiGood);
-    tools.apPips(ctx, x + 45, y, ui.ap, ui.maxAp);
+  const itemCount = (ui.inventoryItems ?? []).reduce((total, item) => total + item.count, 0);
+  const hasCarry = typeof ui.carryWeight === 'number' && typeof ui.maxCarryWeight === 'number';
+  const packLine = hasCarry
+    ? `PACK ${tools.formatWeight(ui.carryWeight)}/${tools.formatWeight(ui.maxCarryWeight)} KG`
+    : itemCount === 0 ? 'PACK EMPTY' : `PACK ${itemCount} ITEM${itemCount === 1 ? '' : 'S'}`;
+  tools.text(ctx, packLine, x, y, PALETTE.uiDim);
+}
+
+function drawCombatStatus(ctx, ui, tools, { x, y, statuses }) {
+  const maxChars = 20;
+  if (statuses.length > 0) {
+    const labels = statuses.map((status) => {
+      const suffix = status.stacks > 1 ? `${status.stacks}` : '';
+      return `${status.label}${suffix}`;
+    });
+    tools.text(ctx, tools.clip(`FX ${labels.join(' ')}`, maxChars), x, y, PALETTE.uiWarn);
     y += 9;
-    tools.text(ctx, tools.clip(ui.action ?? '-', 19), x, y, PALETTE.uiGood);
-    y += 9;
-    tools.text(ctx, tools.clip(`> ${ui.target ?? '-'}`, 19), x, y, PALETTE.uiBad);
   } else {
-    const itemCount = (ui.inventoryItems ?? []).reduce((total, item) => total + item.count, 0);
-    const hasCarry = typeof ui.carryWeight === 'number' && typeof ui.maxCarryWeight === 'number';
-    const packLine = hasCarry
-      ? `PACK ${tools.formatWeight(ui.carryWeight)}/${tools.formatWeight(ui.maxCarryWeight)} KG`
-      : itemCount === 0 ? 'PACK EMPTY' : `PACK ${itemCount} ITEM${itemCount === 1 ? '' : 'S'}`;
-    tools.text(ctx, packLine, x, y, PALETTE.uiDim);
+    y += 1;
   }
+
+  const hpRatio = ui.maxHp > 0 ? ui.hp / ui.maxHp : 0;
+  const hpColor = hpRatio <= 0.34 ? PALETTE.uiBad : PALETTE.uiText;
+  tools.text(ctx, `HP ${ui.hp}/${ui.maxHp}`, x, y, hpColor);
+  tools.bar(ctx, x, y + 8, 94, 6, hpRatio, hpColor);
+  y += 17;
+
+  tools.text(ctx, `AP ${ui.ap}/${ui.maxAp}`, x, y, PALETTE.uiGood);
+  tools.apPips(ctx, x + 45, y, ui.ap, ui.maxAp);
+  y += 9;
+
+  tools.text(ctx, tools.clip(`ATK ${ui.actionName ?? '-'}`, maxChars), x, y, PALETTE.uiGood);
+  y += 9;
+  const detail = [ui.actionChance, ui.actionDamage].filter(Boolean).join(' ') || ui.actionReason || '-';
+  tools.text(ctx, tools.clip(detail, maxChars), x, y, ui.actionReason ? PALETTE.uiWarn : PALETTE.uiDim);
+  y += 9;
+  tools.text(ctx, tools.clip(`> ${ui.target ?? '-'}`, maxChars), x, y, PALETTE.uiBad);
 }
 
 function drawCommands(ctx, ui, tools) {

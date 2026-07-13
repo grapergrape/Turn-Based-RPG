@@ -1,0 +1,107 @@
+{
+  "id": "long-ash-mortuary-tags",
+  "title": "Mortuary Tag Board",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "heard-bell-tags-matched"
+        ]
+      },
+      "else": "opened",
+      "lines": [
+        "Three brass tags turn on square pins. Their marks show a broken circle, an opened ribcage, and a mouth drawn like a bell.",
+        "A counterweight cable disappears into the north wall. The board is its release."
+      ],
+      "choices": [
+        {
+          "label": "Set broken circle, opened ribs, bell mouth",
+          "effects": {
+            "setFlag": [
+              "heard-bell-tags-matched",
+              "heard-bell-mortuary-stair-opened"
+            ],
+            "openDoorGroup": "mortuary-counterweight-stair",
+            "log": "The third tag seats. A counterweight drops inside the north wall, and the stair door draws open."
+          },
+          "close": true
+        },
+        {
+          "label": "Set bell mouth, broken circle, opened ribs",
+          "next": "wrong-order",
+          "close": false
+        },
+        {
+          "label": "Set opened ribs, bell mouth, broken circle",
+          "next": "wrong-order",
+          "close": false
+        },
+        {
+          "label": "Read the marks as Host changes",
+          "conditions": {
+            "fieldRatings": {
+              "hostSigns": 40
+            }
+          },
+          "next": "host-signs",
+          "close": false
+        },
+        {
+          "label": "Leave the tags",
+          "close": true
+        }
+      ]
+    },
+    "wrong-order": {
+      "lines": [
+        "The cable lifts half a finger, then drops. Each tag turns back to its first mark. Nothing has jammed."
+      ],
+      "choices": [
+        {
+          "label": "Try another order",
+          "next": "start",
+          "close": false
+        },
+        {
+          "label": "Step away",
+          "close": true
+        }
+      ]
+    },
+    "host-signs": {
+      "lines": [
+        "These are not causes of death. The clerk reduced changed bodies to the parts no burial sheet could hide.",
+        "Sister Maud bears the broken bone circle. Toma Kest's ribs stand open. Lysa Orm's jaw holds the bell mark."
+      ],
+      "choices": [
+        {
+          "label": "Set the tags in grave order",
+          "effects": {
+            "setFlag": [
+              "heard-bell-tags-matched",
+              "heard-bell-mortuary-stair-opened"
+            ],
+            "openDoorGroup": "mortuary-counterweight-stair",
+            "log": "The marks align with the graves. The hidden counterweight opens the north stair."
+          },
+          "close": true
+        },
+        {
+          "label": "Leave the board",
+          "close": true
+        }
+      ]
+    },
+    "opened": {
+      "lines": [
+        "The three tags remain fixed in grave order. The counterweight cable is taut, holding the stair open."
+      ],
+      "choices": [
+        {
+          "label": "Step away",
+          "close": true
+        }
+      ]
+    }
+  }
+}

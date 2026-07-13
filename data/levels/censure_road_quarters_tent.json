@@ -1,7 +1,7 @@
 {
   "id": "censure-road-quarters-tent",
   "name": "Cult-Breaker Quarters",
-  "intro": "Bedrolls, damp coats, and old field dust fill the quarters tent.",
+  "intro": "Old field dust covers the quarters tent's bedrolls and damp coats.",
   "width": 12,
   "height": 10,
   "tileSize": 64,

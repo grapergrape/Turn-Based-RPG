@@ -1,0 +1,35 @@
+{
+  "id": "long-ash-vigil-chapel-entry",
+  "title": "Vigil Chapel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The little door sits square in its stone frame. Wax has run into the threshold, and somebody cut the bell rope close to the wall."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Vigil Chapel",
+          "effects": {
+            "setFlag": "heard-bell-vigil-entered",
+            "log": "You enter the Vigil Chapel.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_vigil_chapel.json",
+              "player": {
+                "x": 4,
+                "y": 7
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in the graveyard",
+          "effects": {
+            "log": "You leave the chapel door shut."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

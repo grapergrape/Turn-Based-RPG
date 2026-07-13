@@ -17,7 +17,7 @@
           "next": "training"
         },
         {
-          "label": "Ask how supplies move",
+          "label": "Ask about supplies and filed reports",
           "next": "supplies"
         },
         {
@@ -52,7 +52,41 @@
       ],
       "choices": [
         {
+          "label": "Give Voss the graveyard censure report",
+          "conditions": {
+            "flags": [
+              "heard-bell-resolved-censure",
+              "heard-bell-censure-report-filed"
+            ],
+            "flagsAbsent": [
+              "heard-bell-censure-report-acknowledged"
+            ]
+          },
+          "next": "heard-bell-censure-report"
+        },
+        {
           "label": "Leave Voss to the ledgers",
+          "close": true
+        }
+      ]
+    },
+    "heard-bell-censure-report": {
+      "lines": [
+        "Voss reads the twelve names without moving her pencil. She turns the page over before she marks the graveyard coordinates.",
+        "\"Eleven standing subjects and one destroyed below ground. Old office knowledge, never recalled. I can file the purgation request, but I will not call this a clean inheritance.\"",
+        "\"Maev will issue the road bundle. The writ covers one burn. It does not make the fire wise.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the report with Voss",
+          "effects": {
+            "setFlag": "heard-bell-censure-report-acknowledged",
+            "log": "Voss seals the graveyard report and sends the issue order to Maev."
+          },
+          "close": true
+        },
+        {
+          "label": "Keep the report for now",
           "close": true
         }
       ]

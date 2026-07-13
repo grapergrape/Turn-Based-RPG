@@ -1,0 +1,63 @@
+{
+  "id": "long-ash-listening-shortcut",
+  "title": "Ash-Choked Passage",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "heard-bell-catacomb-mouth-opened"
+        ]
+      },
+      "else": "opened",
+      "lines": [
+        "Packed ash blocks a low passage behind the assay shelf. Graveyard air leaks through roots at the far end."
+      ],
+      "choices": [
+        {
+          "label": "Clear the passage and climb out",
+          "effects": {
+            "setFlag": "heard-bell-catacomb-mouth-opened",
+            "log": "The ash gives way. You crawl out beside the graveyard catacomb mouth.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": {
+                "x": 143,
+                "y": 49
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Leave the passage blocked",
+          "close": true
+        }
+      ]
+    },
+    "opened": {
+      "lines": [
+        "The cleared passage rises to the graveyard mouth. Cold ash drifts down the crawlspace."
+      ],
+      "choices": [
+        {
+          "label": "Climb out to the graveyard",
+          "effects": {
+            "log": "You crawl out beside the graveyard catacomb mouth.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": {
+                "x": 143,
+                "y": 49
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Remain in the vault",
+          "close": true
+        }
+      ]
+    }
+  }
+}

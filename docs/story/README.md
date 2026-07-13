@@ -9,5 +9,10 @@ Use this folder for the game's game-facing narrative foundation. The full canon 
 - `quests.md` - campaign acts, critical path quests, faction questlines, and branching outcomes.
 - `originality.md` - audit of familiar CRPG risks, the story's original spine, and guardrails against generic drift.
 - `story-dialogue-workflow.md` - where story and dialogue are written, how scene packets work, and when dialogue moves to runtime data.
+- `locations/` - location-specific lore, characters, quest beats, scene packets, and downstream consequences.
+
+Current location plans:
+
+- `locations/ash-road-south.md` - South Measure, Brother Tarn's Ash Chapel connection, the refugee settlement's water crisis, and its Compact and Morrow Chain pressures.
 
 Keep canonical story decisions synchronized with `.ai/memory/story.md`.

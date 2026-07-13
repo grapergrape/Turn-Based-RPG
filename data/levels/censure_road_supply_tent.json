@@ -1,7 +1,7 @@
 {
   "id": "censure-road-supply-tent",
   "name": "Supply Tent",
-  "intro": "Crates, barrel hoops, and cut route tags make narrow lanes inside the supply tent.",
+  "intro": "Cut route tags are stacked between the crates and barrel hoops, narrowing the supply tent's lanes.",
   "width": 12,
   "height": 10,
   "tileSize": 64,

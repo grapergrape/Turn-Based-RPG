@@ -768,6 +768,16 @@ export function drawCrackedColumn(ctx, cx, cy, seed) {
   px(ctx, shaftX + 1, shaftTop, PALETTE.stoneMid, 16, 59);
   px(ctx, shaftX + 1, shaftTop, PALETTE.stoneDust, 4, 55);
   px(ctx, shaftX + 15, shaftTop + 3, PALETTE.stoneDark, 3, 53);
+  // Each drum of the shaft weathers a shade off the others - the column is
+  // stacked masonry, not one flat post (same read as the wall block-tone). The
+  // pattern is keyed to the seed so no two columns weather alike. The lit left
+  // strip and shaded right strip are left untouched so the modelling holds.
+  const drumY = [shaftTop, shaftTop + 12, shaftTop + 29, shaftTop + 46, shaftTop + 59];
+  for (let d = 0; d < drumY.length - 1; d += 1) {
+    const k = (seed + d * 13) & 3;
+    if (k >= 2) continue;
+    px(ctx, shaftX + 5, drumY[d] + 1, k === 0 ? PALETTE.stoneLight : PALETTE.stoneDark, 9, drumY[d + 1] - drumY[d] - 1);
+  }
   for (const y of [shaftTop + 12, shaftTop + 29, shaftTop + 46]) {
     px(ctx, shaftX - 2, y, PALETTE.outline, 24, 3);
     px(ctx, shaftX, y - 1, PALETTE.stoneDust, 10, 1);
@@ -818,6 +828,7 @@ export function drawCrackedColumn(ctx, cx, cy, seed) {
 
 export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
   const dim = Boolean(opts.dim);
+  const defiled = Boolean(opts.defiled);
   const stone = PALETTE.stoneMid;
   const hi = dim ? PALETTE.stoneMid : PALETTE.stoneLight;
   const lo = PALETTE.stoneDark;
@@ -830,7 +841,7 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
   drawIsoPrism(ctx, cx, cy, 38, 19, 13, { top: dust, left: stone, right: lo, outline: PALETTE.outline });
   drawIsoPrism(ctx, cx, cy - 12, 30, 15, 5, { top: hi, left: stone, right: lo, outline: PALETTE.outline });
   const plinthTop = cy - 12;
-  const shoulderY = plinthTop - 34; // top of the shoulders (the head is struck off above)
+  const shoulderY = plinthTop - 34;
   px(ctx, cx - 19, cy - 5, PALETTE.outline, 6, 4);
   px(ctx, cx - 18, cy - 6, PALETTE.stoneDust, 4, 1);
   px(ctx, cx + 12, cy - 17, PALETTE.outline, 8, 4);
@@ -851,49 +862,76 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 4, shoulderY + 8, lo, 1, plinthTop - shoulderY - 9);
   px(ctx, cx + 3, shoulderY + 6, lo, 1, plinthTop - shoulderY - 7);
   px(ctx, cx - 1, shoulderY + 14, lo, 1, plinthTop - shoulderY - 16);
-  // The struck neck: a jagged stump of raw stone standing out of the cowl.
-  // The break is paler than the weathered robe because the cut is recent.
-  px(ctx, cx - 4, shoulderY - 6, stone, 9, 7); // cowl shell
-  px(ctx, cx - 4, shoulderY - 6, hi, 1, 7);
-  px(ctx, cx + 4, shoulderY - 6, lo, 1, 7);
-  px(ctx, cx - 2, shoulderY - 5, PALETTE.void, 5, 6); // hollow interior (no head)
-  px(ctx, cx - 2, shoulderY - 8, dust, 2, 3); // raw stump spike, left tall
-  px(ctx, cx - 2, shoulderY - 8, PALETTE.stoneLight, 1, 2); // fresh unweathered break
-  px(ctx, cx + 1, shoulderY - 6, dust, 2, 1); // second lower snag
-  px(ctx, cx - 3, shoulderY - 7, lo, 1, 2); // shadowed side of the strike
-  for (let i = 0; i < 3; i += 1) px(ctx, cx - 8 + i * 7, shoulderY - 8 + Math.floor(rng() * 3), dust, 1, 1); // chips
-  for (let i = 0; i < 17; i += 1) {
-    if (i > 9 && i < 13) continue;
-    const a = Math.PI * (0.08 + i * 0.052);
-    const x = cx + Math.round(Math.cos(a) * 13);
-    const y = shoulderY - 2 - Math.round(Math.sin(a) * 9);
-    px(ctx, x, y, i % 3 === 0 ? PALETTE.hostBone : dust, i % 4 === 0 ? 2 : 1, 1);
+  if (defiled) {
+    // In the occupied Ash Chapel the cowl ends in a fresh stone stump, the
+    // fingertips have been hacked away, and a point-down wound-star was painted
+    // into the breast. This damage is opt-in and never appears in an ordinary
+    // graveyard or Censure chapel.
+    px(ctx, cx - 4, shoulderY - 6, stone, 9, 7);
+    px(ctx, cx - 4, shoulderY - 6, hi, 1, 7);
+    px(ctx, cx + 4, shoulderY - 6, lo, 1, 7);
+    px(ctx, cx - 2, shoulderY - 5, PALETTE.void, 5, 6);
+    px(ctx, cx - 2, shoulderY - 8, dust, 2, 3);
+    px(ctx, cx - 2, shoulderY - 8, PALETTE.stoneLight, 1, 2);
+    px(ctx, cx + 1, shoulderY - 6, dust, 2, 1);
+    px(ctx, cx - 3, shoulderY - 7, lo, 1, 2);
+    for (let i = 0; i < 3; i += 1) {
+      px(ctx, cx - 8 + i * 7, shoulderY - 8 + Math.floor(rng() * 3), dust, 1, 1);
+    }
+    for (let i = 0; i < 17; i += 1) {
+      if (i > 9 && i < 13) continue;
+      const a = Math.PI * (0.08 + i * 0.052);
+      const x = cx + Math.round(Math.cos(a) * 13);
+      const y = shoulderY - 2 - Math.round(Math.sin(a) * 9);
+      px(ctx, x, y, i % 3 === 0 ? PALETTE.hostBone : dust, i % 4 === 0 ? 2 : 1, 1);
+    }
+    px(ctx, cx + 12, shoulderY - 5, PALETTE.outline, 4, 2);
+    px(ctx, cx + 13, shoulderY - 4, dust, 3, 1);
+    px(ctx, cx - 14, shoulderY + 5, PALETTE.outline, 5, 2);
+    px(ctx, cx - 13, shoulderY + 4, PALETTE.hostBone, 3, 1);
+    px(ctx, cx - 2, shoulderY + 6, dust, 4, 6);
+    px(ctx, cx - 2, shoulderY + 6, hi, 1, 6);
+    px(ctx, cx, shoulderY + 6, lo, 1, 6);
+    px(ctx, cx - 2, shoulderY + 5, PALETTE.void, 4, 1);
+    px(ctx, cx - 3, shoulderY + 5, dust, 1, 1);
+    px(ctx, cx - 4, shoulderY + 14, PALETTE.void, 9, 1);
+    px(ctx, cx - 3, shoulderY + 15, PALETTE.void, 7, 1);
+    px(ctx, cx - 3, shoulderY + 15, wet, 7, 1);
+    px(ctx, cx - 2, shoulderY + 16, wet, 5, 1);
+    px(ctx, cx - 1, shoulderY + 17, wet, 3, 1);
+    px(ctx, cx, shoulderY + 18, wet, 1, 1);
+    px(ctx, cx - 3, shoulderY + 15, wet, 1, 4);
+    px(ctx, cx + 3, shoulderY + 15, wet, 1, 4);
+    px(ctx, cx - 1, shoulderY + 19, PALETTE.rustDark, 1, plinthTop - shoulderY - 21);
+    px(ctx, cx + 2, shoulderY + 19, PALETTE.rustDark, 1, 5);
+    px(ctx, cx + 2, shoulderY + 24, wet, 1, 2);
+  } else {
+    // The ordinary mortuary figure remains a small, intact human saint. A
+    // narrow hood, face, and separate prayer hands keep it devotional without
+    // borrowing the Host's broken-halo or wound-star language.
+    px(ctx, cx - 5, shoulderY - 11, PALETTE.outline, 11, 11);
+    px(ctx, cx - 4, shoulderY - 10, stone, 9, 10);
+    px(ctx, cx - 4, shoulderY - 10, hi, 2, 8);
+    px(ctx, cx + 3, shoulderY - 8, lo, 2, 8);
+    px(ctx, cx - 3, shoulderY - 12, PALETTE.outline, 7, 3);
+    px(ctx, cx - 2, shoulderY - 12, dust, 5, 2);
+    px(ctx, cx - 3, shoulderY - 8, PALETTE.stoneDark, 7, 7);
+    px(ctx, cx - 2, shoulderY - 8, stone, 5, 6);
+    px(ctx, cx - 2, shoulderY - 8, hi, 3, 1);
+    px(ctx, cx - 1, shoulderY - 5, PALETTE.void, 1, 1);
+    px(ctx, cx + 2, shoulderY - 5, PALETTE.void, 1, 1);
+    px(ctx, cx, shoulderY - 2, lo, 2, 1);
+    px(ctx, cx - 3, shoulderY + 4, dust, 3, 9);
+    px(ctx, cx + 1, shoulderY + 4, stone, 3, 9);
+    px(ctx, cx - 3, shoulderY + 4, hi, 1, 8);
+    px(ctx, cx + 3, shoulderY + 5, lo, 1, 8);
+    px(ctx, cx, shoulderY + 4, PALETTE.outline, 1, 9);
+    // A low-contrast upright cross is carved below the hands. Its crossbar sits
+    // high, clearly separating it from the Choir's inverted mark.
+    px(ctx, cx, shoulderY + 15, lo, 1, 9);
+    px(ctx, cx - 3, shoulderY + 17, lo, 7, 1);
+    px(ctx, cx - 1, shoulderY + 15, dust, 1, 7);
   }
-  px(ctx, cx + 12, shoulderY - 5, PALETTE.outline, 4, 2);
-  px(ctx, cx + 13, shoulderY - 4, dust, 3, 1);
-  px(ctx, cx - 14, shoulderY + 5, PALETTE.outline, 5, 2);
-  px(ctx, cx - 13, shoulderY + 4, PALETTE.hostBone, 3, 1);
-  // Hands fused in prayer at the breast; the cult has hacked the fingertips
-  // off, so the prayer ends in a broken flat.
-  px(ctx, cx - 2, shoulderY + 6, dust, 4, 6);
-  px(ctx, cx - 2, shoulderY + 6, hi, 1, 6);
-  px(ctx, cx, shoulderY + 6, lo, 1, 6); // seam between the palms
-  px(ctx, cx - 2, shoulderY + 5, PALETTE.void, 4, 1); // the hacked-off top of the hands
-  px(ctx, cx - 3, shoulderY + 5, dust, 1, 1); // one chip still hanging on
-  // Defacement: a point-down wound-star CUT into the breast, the carve lines
-  // dark where the chisel went deep and red where it was painted after.
-  px(ctx, cx - 4, shoulderY + 14, PALETTE.void, 9, 1); // chisel gouges under the paint
-  px(ctx, cx - 3, shoulderY + 15, PALETTE.void, 7, 1);
-  px(ctx, cx - 3, shoulderY + 15, wet, 7, 1);
-  px(ctx, cx - 2, shoulderY + 16, wet, 5, 1);
-  px(ctx, cx - 1, shoulderY + 17, wet, 3, 1);
-  px(ctx, cx, shoulderY + 18, wet, 1, 1);
-  px(ctx, cx - 3, shoulderY + 15, wet, 1, 4);
-  px(ctx, cx + 3, shoulderY + 15, wet, 1, 4);
-  // The paint ran before it dried: thin red trails down the robe folds.
-  px(ctx, cx - 1, shoulderY + 19, PALETTE.rustDark, 1, plinthTop - shoulderY - 21);
-  px(ctx, cx + 2, shoulderY + 19, PALETTE.rustDark, 1, 5);
-  px(ctx, cx + 2, shoulderY + 24, wet, 1, 2);
   // Asymmetry: a crack down the robe and a chipped plinth corner.
   px(ctx, cx + 5, plinthTop - 12, lo, 1, 11);
   px(ctx, cx + 14, cy - 4, PALETTE.void, 4, 3);
@@ -907,20 +945,20 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
     px(ctx, cx + dx - 1, cy + dy - 1, PALETTE.outline, 4, 3);
     px(ctx, cx + dx, cy + dy - 1, rng() < 0.5 ? PALETTE.hostBone : lo, 2, 1);
   }
-  // The struck-off head lies face down at the plinth base where it rolled,
-  // split by the blow, the hood rim still readable on the back of it.
-  const headX = cx + ((seed & 1) ? 16 : -17);
-  const headY = cy + 6;
-  px(ctx, headX - 4, headY - 4, PALETTE.outline, 9, 7);
-  px(ctx, headX - 3, headY - 3, stone, 7, 5);
-  px(ctx, headX - 3, headY - 3, dust, 4, 1); // lit crown
-  px(ctx, headX - 3, headY, lo, 7, 2); // face pressed into the floor
-  px(ctx, headX + 1, headY - 3, PALETTE.void, 1, 4); // the split from the blow
-  px(ctx, headX - 4, headY - 2, dust, 1, 2); // hood rim
-  px(ctx, headX + 4, headY + 2, lo, 3, 1); // chip thrown off it
+  if (defiled) {
+    // The struck-off head remains at the defiled statue's plinth base.
+    const headX = cx + ((seed & 1) ? 16 : -17);
+    const headY = cy + 6;
+    px(ctx, headX - 4, headY - 4, PALETTE.outline, 9, 7);
+    px(ctx, headX - 3, headY - 3, stone, 7, 5);
+    px(ctx, headX - 3, headY - 3, dust, 4, 1);
+    px(ctx, headX - 3, headY, lo, 7, 2);
+    px(ctx, headX + 1, headY - 3, PALETTE.void, 1, 4);
+    px(ctx, headX - 4, headY - 2, dust, 1, 2);
+    px(ctx, headX + 4, headY + 2, lo, 3, 1);
+  }
   drawNoisePixels(ctx, cx - 10, shoulderY, 20, plinthTop - shoulderY, [lo, stone], 0.04, seed);
-  // Pilgrim candle stubs on the plinth step, burned to nothing at different
-  // ages: the statue lost its head, not its congregation.
+  // Pilgrim candle stubs on the plinth step, burned down at different ages.
   px(ctx, cx - 12, cy - 14, PALETTE.hostBone, 2, 3);
   px(ctx, cx - 9, cy - 13, PALETTE.hostBone, 2, 2);
   px(ctx, cx - 6, cy - 14, PALETTE.stoneDust, 2, 1);
@@ -930,6 +968,8 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
 
 export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
   const dim = Boolean(opts.dim);
+  const dry = Boolean(opts.dry);
+  const defiled = Boolean(opts.defiled);
   const rng = rngFrom(hash2D(seed + 97, seed * 13 + 23));
   const stone = PALETTE.stoneMid;
   const hi = dim ? PALETTE.stoneMid : PALETTE.stoneLight;
@@ -939,10 +979,11 @@ export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
   drawShadowBlob(ctx, cx, cy + 3, 34, 14);
   // Pedestal: tall enough to read as chapel furniture, not a floor stone.
   drawIsoPrism(ctx, cx, cy, 17, 10, 21, { top: stone, left: lo, right: PALETTE.void, outline: PALETTE.outline });
-  // A carved cross on the pedestal face, scratched through by the cult.
+  // A small upright cross is carved into the pedestal face. Only the authored
+  // Ash Chapel variant carries the later diagonal defacement.
   px(ctx, cx - 6, cy - 15, dust, 2, 7);
   px(ctx, cx - 8, cy - 13, dust, 6, 2);
-  linePx(ctx, cx - 9, cy - 16, cx - 3, cy - 8, PALETTE.void, 1);
+  if (defiled) linePx(ctx, cx - 9, cy - 16, cx - 3, cy - 8, PALETTE.void, 1);
   const by = cy - 21; // basin rim height
   // Basin: wide bowl with a bright lit rim so the silhouette carries.
   drawIsoDiamond(ctx, cx, by + 1, 34, 16, PALETTE.outline);
@@ -950,8 +991,22 @@ export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
   drawIsoDiamond(ctx, cx, by - 1, 33, 15, stone);
   drawIsoDiamond(ctx, cx - 1, by - 2, 30, 13, hi); // lit upper-left rim
   drawIsoDiamond(ctx, cx, by - 1, 23, 10, lo); // inner basin
-  drawIsoDiamond(ctx, cx, by - 1, 16, 7, PALETTE.rustDark); // dried blood, not holy water
-  drawIsoDiamond(ctx, cx, by - 1, 9, 4, PALETTE.hostRed);
+  if (defiled) {
+    drawIsoDiamond(ctx, cx, by - 1, 16, 7, PALETTE.rustDark);
+    drawIsoDiamond(ctx, cx, by - 1, 9, 4, PALETTE.hostRed);
+  } else if (dry) {
+    // The Vigil font has stood empty for years. Pale mineral scale and one
+    // pocket of ash read as a dry bowl, not a dark pool.
+    drawIsoDiamond(ctx, cx, by - 1, 16, 7, PALETTE.stoneDark);
+    drawIsoDiamond(ctx, cx - 2, by - 1, 8, 3, PALETTE.stoneDust);
+    px(ctx, cx - 3, by - 3, PALETTE.stoneLight, 5, 1);
+  } else {
+    // Ordinary working fonts hold cold, clean water. Muted blue is reserved to
+    // this small hard-pixel surface and never treated as a glow.
+    drawIsoDiamond(ctx, cx, by - 1, 16, 7, PALETTE.clothBlueDark);
+    drawIsoDiamond(ctx, cx - 2, by - 2, 8, 3, PALETTE.clothBlue);
+    px(ctx, cx - 5, by - 4, PALETTE.stoneDust, 5, 1);
+  }
   // Chipped rim and a crack down the pedestal.
   px(ctx, cx + 11, by, PALETTE.void, 3, 2);
   px(ctx, cx - 13, by - 2, PALETTE.outline, 6, 2);
@@ -962,7 +1017,7 @@ export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 8, cy - 3, PALETTE.outline, 17, 4);
   px(ctx, cx - 6, cy - 4, stone, 13, 2);
   linePx(ctx, cx + 2, by + 2, cx + 8, cy - 5, PALETTE.outline, 1);
-  linePx(ctx, cx + 3, by + 1, cx + 9, cy - 5, PALETTE.hostRed, 1);
+  linePx(ctx, cx + 3, by + 1, cx + 9, cy - 5, defiled ? PALETTE.hostRed : lo, 1);
   for (let i = 0; i < 4; i += 1) {
     px(ctx, cx - 11 + Math.floor(rng() * 22), by - 4 + Math.floor(rng() * 9), rng() < 0.5 ? lo : dust, 1, 1);
   }
@@ -1283,12 +1338,15 @@ export function drawBellRope(ctx, cx, cy, seed, opts = {}) {
 
 export function drawCobweb(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 91, seed * 3 + 5));
-  const col = PALETTE.stoneDust;
-  const line = (x0, y0, x1, y1) => {
+  // Dusty web catches the light and reads pale against the dark floor; dark
+  // stoneDust strands vanished into it. Spokes are the bone-pale structural
+  // threads, rings a shade finer.
+  const col = PALETTE.hostBone;
+  const line = (x0, y0, x1, y1, c = col) => {
     const n = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
     for (let i = 0; i <= n; i += 1) {
       const t = i / n;
-      px(ctx, Math.round(x0 + (x1 - x0) * t), Math.round(y0 + (y1 - y0) * t), col, 1, 1);
+      px(ctx, Math.round(x0 + (x1 - x0) * t), Math.round(y0 + (y1 - y0) * t), c, 1, 1);
     }
   };
   const sx = rng() < 0.5 ? -1 : 1;
@@ -1296,7 +1354,7 @@ export function drawCobweb(ctx, cx, cy, seed) {
   const ax = cx + sx * 18; // anchor in one corner of the tile
   const ay = cy + sy * 9;
   ctx.save();
-  ctx.globalAlpha = 0.9;
+  ctx.globalAlpha = 0.8;
   const base = Math.atan2(-sy, -sx); // fan toward the tile centre
   const tips = [];
   for (let i = 0; i < 5; i += 1) {
@@ -1308,9 +1366,9 @@ export function drawCobweb(ctx, cx, cy, seed) {
     line(ax, ay, tx, ty); // spoke
   }
   for (let i = 0; i < tips.length - 1; i += 1) {
-    for (const f of [0.5, 0.82]) { // two rings
+    for (const f of [0.5, 0.82]) { // two catch-rings, finer than the spokes
       line(ax + (tips[i][0] - ax) * f, ay + (tips[i][1] - ay) * f,
-        ax + (tips[i + 1][0] - ax) * f, ay + (tips[i + 1][1] - ay) * f);
+        ax + (tips[i + 1][0] - ax) * f, ay + (tips[i + 1][1] - ay) * f, PALETTE.stoneDust);
     }
   }
   for (let i = 0; i < 7; i += 1) {

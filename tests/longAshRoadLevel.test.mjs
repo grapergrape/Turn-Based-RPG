@@ -67,6 +67,22 @@ function adjacentWalkable(grid, cell) {
   return null;
 }
 
+function hasReachableAdjacentCell(grid, start, cell) {
+  return [
+    { x: 0, y: 1 },
+    { x: 0, y: -1 },
+    { x: 1, y: 0 },
+    { x: -1, y: 0 },
+    { x: 1, y: 1 },
+    { x: -1, y: 1 },
+    { x: 1, y: -1 },
+    { x: -1, y: -1 }
+  ].some((offset) => {
+    const target = { x: cell.x + offset.x, y: cell.y + offset.y };
+    return grid.isWalkable(target.x, target.y) && pathExists(grid, start, target);
+  });
+}
+
 function visibleChoiceLabels(node, state = {}) {
   return (node.choices ?? [])
     .filter((choice) => meetsDialogueConditions(choice.conditions, state))
@@ -130,6 +146,11 @@ const FARM_BUILDING_SPECS = [
   { tile: 'G', kind: 'grain-shed-building-block', x0: 31, x1: 36, y0: 56, y1: 60, count: 30 }
 ];
 
+const GRAVEYARD_CHAPEL_SPECS = [
+  { tile: 'V', kind: 'graveyard-vigil-chapel-block', x0: 130, x1: 131, y0: 45, y1: 46, count: 4 },
+  { tile: 'M', kind: 'graveyard-mortuary-chapel-block', x0: 141, x1: 142, y0: 44, y1: 46, count: 6 }
+];
+
 function buildingCells(level, kind) {
   const cells = [];
   for (let y = 0; y < level.height; y += 1) {
@@ -168,51 +189,71 @@ const farmInteriors = [
     level: await readJson('../data/levels/long_ash_farmhouse_interior.json'),
     exitDialogue: 'long-ash-farmhouse-exit',
     doorVariant: 'farmhouse',
+    doorWallPlane: 'sw',
     wallKind: 'farmhouse-interior-wall',
     floorStyle: 'farm-plank',
-    requiredKinds: ['farm-door', 'dining-table', 'dining-bench', 'farm-kitchen-hearth', 'farm-prep-table', 'pantry-shelf', 'wash-tub'],
-    dressingKinds: ['wax-stain', 'paper-scraps']
+    requiredKinds: ['farm-door', 'farm-bed', 'dining-table', 'dining-bench', 'farm-kitchen-hearth', 'farm-prep-table', 'kitchen-counter', 'pantry-shelf', 'grain-sack-stack', 'wash-tub'],
+    dressingKinds: ['wax-stain', 'paper-scraps'],
+    minBlocking: 15,
+    minPerimeterBlocking: 11,
+    aisleTarget: { x: 9, y: 3 }
   },
   {
     key: 'barn',
     level: await readJson('../data/levels/long_ash_barn_interior.json'),
     exitDialogue: 'long-ash-barn-exit',
     doorVariant: 'barn',
+    doorWallPlane: 'sw',
     wallKind: 'barn-interior-wall',
     floorStyle: 'packed-earth',
-    requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'field-cart', 'field-plow', 'rusted-barrel'],
-    dressingKinds: ['chaff-scatter']
+    requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'stable-divider', 'grain-sack-stack', 'field-cart', 'field-plow', 'field-harrow', 'farm-workbench', 'tool-rack', 'rusted-barrel'],
+    dressingKinds: ['chaff-scatter'],
+    minBlocking: 23,
+    minPerimeterBlocking: 18,
+    aisleTarget: { x: 8, y: 3 }
   },
   {
     key: 'storage',
     level: await readJson('../data/levels/long_ash_storage_shed_interior.json'),
     exitDialogue: 'long-ash-storage-shed-exit',
     doorVariant: 'storage-shed',
+    doorWallPlane: 'sw',
     wallKind: 'shed-interior-wall',
     floorStyle: 'packed-earth',
-    requiredKinds: ['farm-door', 'sealed-storage-crate', 'rusted-crate', 'rusted-barrel', 'pantry-shelf'],
-    dressingKinds: ['paper-scraps', 'cobweb']
+    requiredKinds: ['farm-door', 'sealed-storage-crate', 'rusted-crate', 'rusted-barrel', 'pantry-shelf', 'grain-sack-stack'],
+    dressingKinds: ['paper-scraps', 'cobweb'],
+    minBlocking: 12,
+    minPerimeterBlocking: 10,
+    aisleTarget: { x: 6, y: 3 }
   },
   {
     key: 'grain',
     level: await readJson('../data/levels/long_ash_grain_shed_interior.json'),
     exitDialogue: 'long-ash-grain-shed-exit',
     doorVariant: 'grain-shed',
+    doorWallPlane: 'sw',
     wallKind: 'shed-interior-wall',
     floorStyle: 'packed-earth',
-    requiredKinds: ['farm-door', 'hay-rick', 'feed-trough', 'woodpile', 'rusted-barrel'],
-    dressingKinds: ['chaff-scatter']
+    requiredKinds: ['farm-door', 'grain-bin', 'grain-sack-stack', 'farm-prep-table', 'rusted-barrel'],
+    dressingKinds: ['chaff-scatter'],
+    minBlocking: 11,
+    minPerimeterBlocking: 10,
+    aisleTarget: { x: 6, y: 3 }
   },
   {
     key: 'tool',
     level: await readJson('../data/levels/long_ash_tool_shed_interior.json'),
     exitDialogue: 'long-ash-tool-shed-exit',
     doorVariant: 'tool-shed',
+    doorWallPlane: 'sw',
     wallKind: 'shed-interior-wall',
     floorStyle: 'packed-earth',
-    requiredKinds: ['farm-door', 'tool-rack', 'field-plow', 'field-harrow', 'wagon-wheel', 'rusted-crate'],
+    requiredKinds: ['farm-door', 'tool-rack', 'farm-workbench', 'field-plow', 'field-harrow', 'wagon-wheel', 'woodpile', 'rusted-crate'],
     dressingKinds: ['machine-oil', 'floor-crack'],
-    floorCrackMin: 2
+    floorCrackMin: 2,
+    minBlocking: 11,
+    minPerimeterBlocking: 9,
+    aisleTarget: { x: 6, y: 3 }
   }
 ];
 const farmExitDialogues = new Map([
@@ -403,7 +444,10 @@ const farmExitDialogues = new Map([
       'long-ash-wolf-cultist-evidence',
       'long-ash-censure-road-camp-exit',
       'long-ash-crossroad-brother',
-      'long-ash-field-brother'
+      'long-ash-field-brother',
+      'long-ash-vigil-chapel-entry',
+      'long-ash-mortuary-chapel-entry',
+      'long-ash-listening-shortcut-return'
     ],
     'farm door, cave entrance, camp exit, and calcified brother dialogues are loaded with the road level'
   );
@@ -659,6 +703,37 @@ const farmExitDialogues = new Map([
   assert.ok(level.tiles.slice(farmRange.y0, farmRange.y1 + 1).some((row) =>
     [...row.slice(farmRange.x0, farmRange.x1 + 1)].some((tile) => level.legend?.[tile]?.kind?.endsWith('building-block'))
   ));
+  for (const spec of GRAVEYARD_CHAPEL_SPECS) {
+    const chapel = getSprite(spec.kind);
+    assert.ok(chapel, `${spec.kind} is registered`);
+    assert.equal(chapel.category, 'structure', `${spec.kind} is a structure`);
+    assert.equal(chapel.block, true, `${spec.kind} is a tile block`);
+    assert.equal(chapel.cover, 'hard', `${spec.kind} provides hard cover`);
+    assert.equal(level.legend?.[spec.tile]?.kind, spec.kind, `${spec.tile} maps to ${spec.kind}`);
+    assert.equal(level.legend?.[spec.tile]?.walkable, false, `${spec.kind} blocks movement through its footprint`);
+    assert.deepEqual(
+      buildingCells(level, spec.kind),
+      expectedFootprintCells(spec),
+      `${spec.kind} keeps its planned north-wall footprint`
+    );
+    assert.equal(buildingCells(level, spec.kind).length, spec.count, `${spec.kind} has its planned tile count`);
+    assert.equal(
+      buildingCells(level, spec.kind).every((cell) => grid.isWalkable(cell.x, cell.y) === false),
+      true,
+      `${spec.kind} is impassable across the visible chapel`
+    );
+    for (let x = spec.x0; x <= spec.x1; x += 1) {
+      assert.equal(
+        level.objects.some((object) => object.kind === 'graveyard-wall' && object.x === x && object.y === graveyardRange.y0),
+        false,
+        `${spec.kind} door aligns with an opening in the north cemetery wall`
+      );
+      for (let y = graveyardRange.y0; y <= graveyardRange.y0 + 1; y += 1) {
+        assert.equal(level.tiles[y][x], 's', `${spec.kind} has a stone entrance apron at ${x},${y}`);
+        assert.equal(grid.isWalkable(x, y), true, `${spec.kind} entrance apron ${x},${y} is walkable`);
+      }
+    }
+  }
   for (const [kind, category] of [
     ['graveyard-wall', 'structure'],
     ['calcified-grave-plot', 'structure'],
@@ -1174,9 +1249,12 @@ const farmExitDialogues = new Map([
     const exit = interior.objects.find((object) => object.kind === 'farm-door' && object.interact?.dialogue === spec.exitDialogue);
     assert.ok(exit, `${spec.key} interior has a clickable exit door`);
     assert.equal(exit.blocking, true, `${spec.key} exit door blocks its tile`);
-    assert.equal(exit.wallPlane ?? null, null, `${spec.key} interior keeps the legacy floor-door render mode`);
+    assert.equal(exit.wallPlane, spec.doorWallPlane, `${spec.key} interior exit follows its angled boundary wall`);
     assert.equal(exit.variant, spec.doorVariant, `${spec.key} interior exit door uses the matching farm-door variant`);
-    assert.equal(interior.tiles[exit.y][exit.x], '.', `${spec.key} interior exit door remains on a floor tile`);
+    const exitTile = interior.legend[interior.tiles[exit.y][exit.x]];
+    assert.equal(exitTile?.kind, spec.wallKind, `${spec.key} interior exit is mounted on its farm wall block`);
+    assert.equal(exitTile?.walkable, false, `${spec.key} interior exit occupies a wall cell rather than floating on the floor`);
+    assert.equal(exit.y, interior.height - 1, `${spec.key} interior exit is mounted in the south boundary wall`);
     assert.equal(exit.interact?.type, 'secret-exit', `${spec.key} exit door returns to the farmyard`);
     assert.equal(
       Math.max(Math.abs(interior.spawns.player.x - exit.x), Math.abs(interior.spawns.player.y - exit.y)) <= 1,
@@ -1192,6 +1270,32 @@ const farmExitDialogues = new Map([
     for (const kind of spec.dressingKinds) {
       assert.ok(kinds.has(kind), `${spec.key} interior contains ${kind} dressing`);
       assert.ok(getSprite(kind), `${kind} is registered for ${spec.key} interior dressing`);
+    }
+    const blockingObjects = (interior.objects ?? []).filter((object) => object.blocking);
+    const blockingCells = new Set(blockingObjects.map((object) => `${object.x},${object.y}`));
+    assert.equal(blockingCells.size, blockingObjects.length, `${spec.key} interior does not stack blocking furniture on one cell`);
+    assert.ok(blockingObjects.length >= spec.minBlocking, `${spec.key} interior has enough functional furniture to fill the building`);
+    const perimeterBlocking = blockingObjects.filter((object) => (
+      object.x <= 3 ||
+      object.x >= interior.width - 4 ||
+      object.y <= 3 ||
+      object.y >= interior.height - 4
+    ));
+    assert.ok(
+      perimeterBlocking.length >= spec.minPerimeterBlocking,
+      `${spec.key} interior groups storage and work furniture along room edges`
+    );
+    assert.equal(
+      pathExists(interiorGrid, interior.spawns.player, spec.aisleTarget),
+      true,
+      `${spec.key} interior keeps a clear aisle from the entrance into the room`
+    );
+    for (const object of (interior.objects ?? []).filter((entry) => entry.interact)) {
+      assert.equal(
+        hasReachableAdjacentCell(interiorGrid, interior.spawns.player, object),
+        true,
+        `${spec.key} interactable ${object.id ?? object.kind} remains reachable around the denser furniture`
+      );
     }
     if (spec.floorCrackMin) {
       assert.ok(

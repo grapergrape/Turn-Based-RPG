@@ -1,7 +1,7 @@
 {
   "id": "censure-road-quartermaster-tent",
   "name": "Quartermaster Tent",
-  "intro": "The tent smells of ration wax, damp rope, and counted beans.",
+  "intro": "The tent smells of ration wax first, then damp rope, then counted beans underneath.",
   "width": 12,
   "height": 10,
   "tileSize": 64,

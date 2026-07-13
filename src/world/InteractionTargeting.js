@@ -4,6 +4,19 @@ function sameCell(subject, cell) {
   return subject?.x === cell?.x && subject?.y === cell?.y;
 }
 
+function cellInRect(cell, rect) {
+  if (!cell || !rect || typeof rect !== 'object') return false;
+  const left = Math.min(rect.x0, rect.x1);
+  const right = Math.max(rect.x0, rect.x1);
+  const top = Math.min(rect.y0, rect.y1);
+  const bottom = Math.max(rect.y0, rect.y1);
+  return cell.x >= left && cell.x <= right && cell.y >= top && cell.y <= bottom;
+}
+
+function matchesClickArea(subject, cell) {
+  return Array.isArray(subject?.clickAreas) && subject.clickAreas.some((area) => cellInRect(cell, area));
+}
+
 function chebyshev(a, b) {
   return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
 }
@@ -64,6 +77,18 @@ export function resolveInteractionTargetAtCell({
     !entry.consumed && !isOpenDoorObject(entry) && sameCell(entry, cell)
   ) ?? null;
   if (object) return { type: 'object', object, cell };
+
+  const footprintObject = interactables.find((entry) =>
+    !entry.consumed && !isOpenDoorObject(entry) && matchesClickArea(entry, cell)
+  ) ?? null;
+  if (footprintObject) {
+    return {
+      type: 'object',
+      object: footprintObject,
+      cell: { x: footprintObject.x, y: footprintObject.y },
+      sourceCell: cell
+    };
+  }
 
   if (grid.isWalkable(cell.x, cell.y)) return { type: 'move', cell };
   return { type: 'blocked', cell };

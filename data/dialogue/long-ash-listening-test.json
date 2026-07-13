@@ -1,0 +1,315 @@
+{
+  "id": "long-ash-listening-test",
+  "title": "Listening Bell",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "heard-bell-docket-read"
+      },
+      "else": "sava-gate",
+      "lines": [
+        "The docket gives the pin order. A short pull will strike the tongue against the frame without ringing the chapel above."
+      ],
+      "choices": [
+        {
+          "label": "Put your hand against the frame",
+          "next": "test-menu",
+          "close": false
+        },
+        {
+          "label": "Leave the apparatus still",
+          "close": true
+        }
+      ]
+    },
+    "sava-gate": {
+      "conditions": {
+        "flag": "heard-bell-sava-found"
+      },
+      "else": "unavailable",
+      "lines": [
+        "The copper pins lead from the bell frame to Sava's niche. Each has been filed to a different length."
+      ],
+      "choices": [
+        {
+          "label": "Put your hand against the frame",
+          "next": "test-menu",
+          "close": false
+        },
+        {
+          "label": "Leave the apparatus still",
+          "close": true
+        }
+      ]
+    },
+    "unavailable": {
+      "lines": [
+        "A bell tongue hangs inside a frame of copper pins. Without the docket or a known subject, striking it would be guesswork."
+      ],
+      "choices": [
+        {
+          "label": "Do not touch it",
+          "close": true
+        }
+      ]
+    },
+    "test-menu": {
+      "lines": [
+        "The bell tongue rests a finger's width from the copper frame. Every listening wire runs toward the sealed niche."
+      ],
+      "choices": [
+        {
+          "label": "Strike the frame once",
+          "conditions": {
+            "flagsAbsent": [
+              "heard-bell-test-first"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-test-first",
+            "log": "The tongue touches copper. One movement travels through the floor from inside the niche."
+          },
+          "next": "first-result",
+          "close": false
+        },
+        {
+          "label": "Strike a second time",
+          "conditions": {
+            "flag": "heard-bell-test-first",
+            "flagsAbsent": [
+              "heard-bell-test-second"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-test-second"
+          },
+          "next": "second-trace",
+          "close": false
+        },
+        {
+          "label": "Strike a third time",
+          "conditions": {
+            "flag": "heard-bell-test-second",
+            "flagsAbsent": [
+              "heard-bell-test-third",
+              "heard-bell-sava-quieted",
+              "heard-bell-sava-killed"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "heard-bell-test-third",
+              "heard-bell-sava-thawing"
+            ],
+            "log": "The third strike reaches the niche. A pale crack runs down its seal."
+          },
+          "next": "third-result",
+          "close": false
+        },
+        {
+          "label": "Quiet the listening niche",
+          "conditions": {
+            "flag": "heard-bell-test-second",
+            "flagsAbsent": [
+              "heard-bell-sava-quieted",
+              "heard-bell-sava-killed"
+            ]
+          },
+          "next": "quiet-menu",
+          "close": false
+        },
+        {
+          "label": "Take your hand from the frame",
+          "close": true
+        }
+      ]
+    },
+    "first-result": {
+      "lines": [
+        "The movement comes after the copper stops. It is too slow for an echo and too heavy for a loose stone."
+      ],
+      "choices": [
+        {
+          "label": "Return to the bell tongue",
+          "next": "test-menu",
+          "close": false
+        },
+        {
+          "label": "Stop the test",
+          "close": true
+        }
+      ]
+    },
+    "second-trace": {
+      "conditions": {
+        "traceMin": 1
+      },
+      "else": "second-medicine",
+      "lines": [
+        "The answer enters through your teeth instead of your ears. A man's voice holds inside the vibration.",
+        "The bell below us rang first."
+      ],
+      "choices": [
+        {
+          "label": "Return to the apparatus",
+          "next": "test-menu",
+          "close": false
+        },
+        {
+          "label": "Stop the test",
+          "close": true
+        }
+      ]
+    },
+    "second-medicine": {
+      "conditions": {
+        "fieldRatings": {
+          "medicine": 40
+        }
+      },
+      "else": "second-host-signs",
+      "lines": [
+        "A breath draws through the sealed space. It starts before the bell tongue lands, then stops as if somebody is holding it."
+      ],
+      "choices": [
+        {
+          "label": "Return to the apparatus",
+          "next": "test-menu",
+          "close": false
+        },
+        {
+          "label": "Stop the test",
+          "close": true
+        }
+      ]
+    },
+    "second-host-signs": {
+      "conditions": {
+        "fieldRatings": {
+          "hostSigns": 40
+        }
+      },
+      "else": "second-clean",
+      "lines": [
+        "The movement begins before the strike. Whatever waits in the wall has learned the pull of your hand. It is anticipating the sound."
+      ],
+      "choices": [
+        {
+          "label": "Return to the apparatus",
+          "next": "test-menu",
+          "close": false
+        },
+        {
+          "label": "Stop the test",
+          "close": true
+        }
+      ]
+    },
+    "second-clean": {
+      "lines": [
+        "A measured vibration crosses the floor before the copper is quiet. It has the spacing of words, but no sound reaches the room."
+      ],
+      "choices": [
+        {
+          "label": "Return to the apparatus",
+          "next": "test-menu",
+          "close": false
+        },
+        {
+          "label": "Stop the test",
+          "close": true
+        }
+      ]
+    },
+    "third-result": {
+      "lines": [
+        "Dust falls from the niche in a thin line. Something behind the seal draws a full breath and turns its face toward the north wall."
+      ],
+      "choices": [
+        {
+          "label": "Try to quiet it",
+          "next": "quiet-menu",
+          "close": false
+        },
+        {
+          "label": "Step away from the bell",
+          "close": true
+        }
+      ]
+    },
+    "quiet-menu": {
+      "lines": [
+        "The docket marks four ways to stop a response. Three are written by wardens. Hessa's cadence is pressed into the register margins."
+      ],
+      "choices": [
+        {
+          "label": "Set the containment pins in safe order",
+          "conditions": {
+            "fieldRatings": {
+              "containment": 40
+            }
+          },
+          "effects": {
+            "setFlag": "heard-bell-sava-quieted",
+            "log": "The pins take the strain one at a time. Sava's breathing slows until the wire lies still."
+          },
+          "close": true
+        },
+        {
+          "label": "Recite the mortuary quieting office",
+          "conditions": {
+            "fieldRatings": {
+              "doctrine": 40
+            }
+          },
+          "effects": {
+            "setFlag": "heard-bell-sava-quieted",
+            "log": "The old office fixes breath to count and count to silence. The niche stops answering."
+          },
+          "close": true
+        },
+        {
+          "label": "Use mortuary quieting salt",
+          "conditions": {
+            "items": {
+              "mortuary-quieting-salt": 1
+            }
+          },
+          "effects": {
+            "setFlag": "heard-bell-sava-quieted",
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                {
+                  "item": "mortuary-quieting-salt",
+                  "count": 1
+                }
+              ]
+            },
+            "log": "Salt bites at the bell hinge and the niche seam. The movement below the stone eases."
+          },
+          "close": true
+        },
+        {
+          "label": "Use Hessa's intact cadence",
+          "conditions": {
+            "flag": "heard-bell-register-read",
+            "flagsAbsent": [
+              "heard-bell-register-damaged"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-sava-quieted",
+            "log": "You keep Hessa's count and leave the last beat empty. Sava follows it into silence."
+          },
+          "close": true
+        },
+        {
+          "label": "Do not attempt the quieting",
+          "next": "test-menu",
+          "close": false
+        }
+      ]
+    }
+  }
+}

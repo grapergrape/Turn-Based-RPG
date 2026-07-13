@@ -1,0 +1,9 @@
+{
+  "id": "calibrated-listening-pin",
+  "name": "Calibrated Listening Pin",
+  "type": "tool",
+  "rarity": "rare",
+  "weight": 0.1,
+  "groundModel": "shard",
+  "description": "A Lumen needle tuned to catch movement inside calcified tissue. Its warning is cut beside the scale: do not call silence death."
+}

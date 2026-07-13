@@ -781,12 +781,6 @@ function drawThrownRoadOfferings(ctx, cx, cy, seed) {
   px(ctx, cx - 30, cy - 7, PALETTE.rustDark, 8, 3);
   px(ctx, cx + 22, cy - 7, PALETTE.outline, 8, 4);
   px(ctx, cx + 23, cy - 6, PALETTE.stoneDust, 6, 2);
-  // The near shoulder is polished smooth and pale: every survivor who
-  // passes touches the same spot for luck. Grief becomes a habit, a habit
-  // becomes a shrine.
-  px(ctx, cx + side * 6, shoulderY + 1, PALETTE.stoneLight, 3, 2);
-  px(ctx, cx + side * 7, shoulderY, PALETTE.hostBone, 2, 1);
-
 }
 
 export function drawCalcifiedCrossroadBrother(ctx, cx, cy, seed) {
@@ -836,6 +830,10 @@ export function drawCalcifiedCrossroadBrother(ctx, cx, cy, seed) {
   }
 
   drawCalcifiedTorsoRows(ctx, cx, shoulderY, hipY, lean, side, { phase: seed & 7 });
+  // The near shoulder is polished smooth and pale: every survivor who passes
+  // touches the same spot for luck. Grief becomes a habit, a habit a shrine.
+  px(ctx, cx + side * 6, shoulderY + 1, PALETTE.stoneLight, 3, 2);
+  px(ctx, cx + side * 7, shoulderY, PALETTE.hostBone, 2, 1);
   px(ctx, cx + lean - 5, chestY - 2, PALETTE.void, 10, 12);
   px(ctx, cx + lean - 3, chestY + 1, PALETTE.stoneDark, 5, 7);
   px(ctx, cx + lean - 6, chestY + 2, PALETTE.hostBone, 4, 1);

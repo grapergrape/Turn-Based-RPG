@@ -1,0 +1,440 @@
+{
+  "id": "long-ash-listening-vault",
+  "name": "Long Ash Listening Vault",
+  "intro": "Copper lines cross the floor toward one chair. Every instrument in the room faces a sealed place in the wall.",
+  "width": 15,
+  "height": 15,
+  "tileSize": 64,
+  "quests": [
+    "those-who-heard-the-bell"
+  ],
+  "dialogue": [
+    "long-ash-mortuary-docket",
+    "long-ash-listening-test",
+    "long-ash-sava-niche",
+    "long-ash-heard-bell-judgment",
+    "long-ash-listening-shortcut"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.64,
+    "ambient": "#172635",
+    "ambientAlpha": 0.13,
+    "vignette": 1.65
+  },
+  "journalNotes": [
+    {
+      "flag": "heard-bell-register-read",
+      "text": "Hessa Marr recorded deliberate responses from the calcified people in the graveyard."
+    },
+    {
+      "flag": "heard-bell-docket-read",
+      "text": "The road office measured those responses and filed them as settling."
+    },
+    {
+      "flag": "heard-bell-truth-joined",
+      "text": "Sava Rell reacted to Hallowfen before its bells sounded."
+    },
+    {
+      "flag": "heard-bell-resolved-vigil",
+      "text": "The twelve names remain together. The listening niche is quiet for now."
+    },
+    {
+      "flag": "heard-bell-resolved-censure",
+      "text": "The road office has the graveyard location. A purgation order will follow."
+    },
+    {
+      "flag": "heard-bell-resolved-evidence",
+      "text": "Hessa's register and the mortuary docket are in your pack."
+    }
+  ],
+  "hiddenRegions": [
+    {
+      "id": "sava-listening-niche-cell",
+      "doorGroup": "sava-listening-niche",
+      "x": 7,
+      "y": 1,
+      "width": 1,
+      "height": 1
+    }
+  ],
+  "tiles": [
+    "###############",
+    "#######.b######",
+    "#######.b######",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "#.............#",
+    "###############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    "b": {
+      "kind": "wall-broken",
+      "walkable": false,
+      "height": 26
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 7,
+      "y": 13
+    },
+    "enemies": [
+      {
+        "id": "host-sava-rell",
+        "spawnId": "sava-rell",
+        "x": 7,
+        "y": 1,
+        "facing": "s",
+        "encounter": "sava-listening-niche",
+        "aggroRadius": 0,
+        "mapMarker": false
+      }
+    ],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "listening-vault-mortuary-return",
+      "x": 7,
+      "y": 13,
+      "clickAreas": [
+        {
+          "x0": 7,
+          "y0": 14,
+          "x1": 7,
+          "y1": 14
+        }
+      ],
+      "loadLevel": {
+        "path": "./data/levels/long_ash_mortuary_chapel.json",
+        "player": {
+          "x": 7,
+          "y": 2
+        }
+      }
+    }
+  ],
+  "combatIntro": [
+    "The niche seal falls inward. Sava Rell unfolds from a century of stone, one rib seam opening as he draws breath."
+  ],
+  "victoryLog": "Sava Rell stops moving. The listening pins keep their last measure.",
+  "onVictory": {
+    "setFlag": "heard-bell-sava-killed"
+  },
+  "objects": [
+    {
+      "id": "sava-sealed-listening-niche",
+      "kind": "sealed-listening-niche",
+      "x": 7,
+      "y": 2,
+      "blocking": true,
+      "passableWhenOpen": true,
+      "wallPlane": "sw",
+      "name": "Sava Rell's Listening Niche",
+      "doorGroup": "sava-listening-niche",
+      "interact": {
+        "type": "door",
+        "dialogue": "long-ash-sava-niche",
+        "log": "The niche seal parts around Sava Rell.",
+        "lock": {
+          "id": "sava-listening-niche-seal",
+          "title": "Sava Rell's Listening Niche",
+          "lines": [
+            "The old seal has split along its right edge. The inner pins remain under load."
+          ],
+          "methods": [
+            {
+              "id": "pick-sava-niche-seal",
+              "label": "Walk the loaded pins",
+              "conditions": {
+                "flag": "heard-bell-test-third",
+                "flagsAbsent": [
+                  "heard-bell-sava-quieted"
+                ]
+              },
+              "requiresSecurityTool": false,
+              "field": "security",
+              "dc": 40,
+              "successLog": "The pins release in sequence. The stone frame opens around a held breath.",
+              "failLog": "The final pin holds under weight from the other side.",
+              "success": {
+                "setFlag": "heard-bell-sava-found",
+                "openDoorGroup": "sava-listening-niche",
+                "startCombat": "sava-listening-niche"
+              }
+            },
+            {
+              "id": "force-sava-niche-seal",
+              "label": "Break the weakened seal",
+              "conditions": {
+                "flag": "heard-bell-test-third",
+                "flagsAbsent": [
+                  "heard-bell-sava-quieted"
+                ]
+              },
+              "primary": "body",
+              "dc": 4,
+              "successLog": "The cracked side folds inward. Something inside finishes drawing breath.",
+              "failLog": "The slab jars your shoulder and settles deeper into its frame.",
+              "success": {
+                "setFlag": "heard-bell-sava-found",
+                "openDoorGroup": "sava-listening-niche",
+                "startCombat": "sava-listening-niche"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Sealed Listening Niche",
+        "kind": "danger",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "sava-niche-inspection-hatch",
+      "kind": "mortuary-drain",
+      "x": 7,
+      "y": 3,
+      "name": "Niche Listening Hatch",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-sava-niche",
+        "log": "A low grate carries breath and fresh stone dust from the sealed niche."
+      },
+      "mapMarker": {
+        "label": "Listening Hatch",
+        "kind": "search",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "examiner-assay-case",
+      "kind": "examiner-assay-case",
+      "x": 3,
+      "y": 8,
+      "orient": "se",
+      "blocking": true,
+      "name": "Examiner's Assay Case",
+      "interact": {
+        "type": "container",
+        "log": "A dressing and one cartridge remain in the examiner's case. Four ducats lie under the measurement slate.",
+        "lock": {
+          "id": "examiner-assay-case-lock",
+          "title": "Examiner's Assay Case",
+          "lines": [
+            "Measurement scratches cross the lid. The latch is small enough to work without touching the niche."
+          ],
+          "methods": [
+            {
+              "id": "pick-assay-case",
+              "label": "Work the case latch",
+              "requiresSecurityTool": false,
+              "field": "security",
+              "dc": 40,
+              "successLog": "The latch lifts without carrying sound across the wires.",
+              "failLog": "The latch turns under the roll and settles shut again."
+            },
+            {
+              "id": "read-assay-wear",
+              "label": "Read the lid wear",
+              "field": "search",
+              "dc": 40,
+              "successLog": "A bright scrape marks where the lid must be pressed before lifting.",
+              "failLog": "The measurement cuts hide the working scrape."
+            }
+          ]
+        },
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 4
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "relic-rounds",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "vault-listening-apparatus",
+      "kind": "listening-apparatus",
+      "x": 5,
+      "y": 6,
+      "blocking": true,
+      "name": "Listening Bell Apparatus",
+      "interact": {
+        "type": "bell",
+        "dialogue": "long-ash-listening-test",
+        "log": "A cast tongue hangs inside a measuring frame. Copper pins carry each strike toward the niche."
+      },
+      "mapMarker": {
+        "label": "Listening Bell",
+        "kind": "note",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "vault-examination-lectern",
+      "kind": "prayer-lectern",
+      "x": 10,
+      "y": 6,
+      "blocking": true,
+      "name": "Examination Lectern"
+    },
+    {
+      "kind": "listening-wire",
+      "x": 6,
+      "y": 7,
+      "id": "listening-wire-west"
+    },
+    {
+      "kind": "listening-wire",
+      "x": 7,
+      "y": 7,
+      "id": "listening-wire-center"
+    },
+    {
+      "kind": "listening-wire",
+      "x": 8,
+      "y": 7,
+      "id": "listening-wire-east"
+    },
+    {
+      "kind": "listening-wire",
+      "x": 7,
+      "y": 8,
+      "id": "listening-wire-chair-lead"
+    },
+    {
+      "id": "vault-restraint-chair",
+      "kind": "gravekeeper-chair",
+      "x": 7,
+      "y": 9,
+      "blocking": true,
+      "orient": "ne",
+      "variant": "restraint",
+      "name": "Examiner's Restraint Chair",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-heard-bell-judgment",
+        "log": "The chair faces Sava's niche. Its arm straps were cut away, then nailed back on."
+      }
+    },
+    {
+      "id": "vault-candle-west",
+      "kind": "candle-cluster",
+      "x": 3,
+      "y": 11,
+      "name": "Examiner's Candles"
+    },
+    {
+      "kind": "wax-stain",
+      "x": 3,
+      "y": 11,
+      "id": "vault-wax-west"
+    },
+    {
+      "id": "vault-candle-east",
+      "kind": "candle-cluster",
+      "x": 11,
+      "y": 11,
+      "name": "Examiner's Candles"
+    },
+    {
+      "kind": "wax-stain",
+      "x": 11,
+      "y": 11,
+      "id": "vault-wax-east"
+    },
+    {
+      "id": "listening-vault-catacomb-shortcut",
+      "kind": "graveyard-catacomb-mouth",
+      "x": 12,
+      "y": 10,
+      "blocking": true,
+      "orient": "nw",
+      "name": "Ash-Choked Catacomb Shortcut",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "long-ash-listening-shortcut",
+        "log": "Loose ash gives way around a stone throat. Graveyard air leaks through the gap."
+      },
+      "mapMarker": {
+        "label": "Graveyard Shortcut",
+        "kind": "exit",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "listening-vault-return-door",
+      "kind": "wall-stair-door",
+      "x": 7,
+      "y": 14,
+      "blocking": true,
+      "name": "Mortuary Stair"
+    },
+    {
+      "kind": "floor-crack",
+      "x": 6,
+      "y": 3,
+      "id": "niche-threshold-crack"
+    },
+    {
+      "kind": "machine-oil",
+      "x": 5,
+      "y": 6,
+      "id": "listening-apparatus-oil"
+    },
+    {
+      "kind": "dust",
+      "x": 7,
+      "y": 10,
+      "id": "restraint-chair-foot-wear"
+    },
+    {
+      "id": "mortuary-examination-docket",
+      "kind": "paper-scraps",
+      "x": 10,
+      "y": 6,
+      "name": "Mortuary Examination Docket",
+      "hiddenWhenFlags": [
+        "heard-bell-records-carried"
+      ],
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-mortuary-docket",
+        "log": "A road office docket lies open under a pin scale. Every margin correction uses the same hand."
+      },
+      "mapMarker": {
+        "label": "Examination Docket",
+        "kind": "note",
+        "reveal": "explored"
+      }
+    }
+  ]
+}

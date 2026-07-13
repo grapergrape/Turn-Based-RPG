@@ -145,7 +145,8 @@
       "mapMarker": {
         "label": "Back To Chapel",
         "kind": "exit"
-      }
+      },
+      "orient": "nw"
     },
     {
       "kind": "broken-bell",
@@ -257,6 +258,26 @@
       "kind": "window-light-pool",
       "x": 8,
       "y": 2
+    },
+    {
+      "x": 6,
+      "y": 4,
+      "kind": "rubble-decal"
+    },
+    {
+      "x": 7,
+      "y": 4,
+      "kind": "blood-stain"
+    },
+    {
+      "x": 5,
+      "y": 5,
+      "kind": "floor-crack"
+    },
+    {
+      "x": 6,
+      "y": 5,
+      "kind": "blood-sigil"
     }
   ]
 }

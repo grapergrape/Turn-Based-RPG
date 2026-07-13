@@ -79,7 +79,7 @@ Early player-facing text should call it the **blackened core**, **reliquary core
 
 - **Long Ash Road Approach:** 160x70, 11,200 tiles. Road scavengers and minor Host traces establish distance, silence, and Censure field work before camp.
 - **Censure Road Camp:** 70x50, 3,500 tiles. Holy Remnant and Ashen Censure officers give orders and official doctrine without revealing hidden history.
-- **Ash Road South:** 130x80, 10,400 tiles. Remnant patrols and refugees show stopped bells and renewed cult activity.
+- **Ash Road South:** 130x80, 10,400 tiles. South Measure is a permanent settlement still classified as a Bloom refugee camp. Its water crisis introduces Morrow Chain debt rule, Compact reintegration promises, and Brother Tarn's pursuit of a dead Hallowfen checkpoint code heard through a Host-touched Penitent. See `docs/story/locations/ash-road-south.md`.
 - **Old Pilgrim Way:** 120x70, 8,400 tiles. Pilgrims and road priests show how faith still organizes travel and fear.
 - **Quarantine Farms:** 110x80, 8,800 tiles. Free City farmers and Remnant quarantine law put food, carriers, abandoned families, and harvest law into play.
 - **Road Warden Toll:** 90x70, 6,300 tiles. Road wardens and Remnant doubts give the first hard proof that the Hallowfen perimeter is failing.
@@ -104,11 +104,12 @@ Early player-facing text should call it the **blackened core**, **reliquary core
 **Faction discovery order:**
 
 1. **Holy Remnant and Ashen Censure:** Censure Road Camp, Road Warden Toll, Shrine Rows and Bell Yard.
-2. **Ash Cartels:** Red Tithe Ford, Smuggler Switchbacks, Relic Market and Claim Dens.
-3. **Hallowfen citizens:** First Streets Inside Wall, Hallowfen Commons, East Barricades.
-4. **Lumen Compact:** Water Ledger Quarter, Wreckward Perimeter.
-5. **Bloomborn:** Bloomborn Refuge Rows and clinic-adjacent disputes.
-6. **Choir of the Open Wound:** Captured Checkpoint, Inspection Back Rooms, Choir Breach Lines.
+2. **Morrow Chain and Lumen field service:** South Measure on Ash Road South introduces cartel logistics and Compact reintegration through one community both powers keep provisional.
+3. **Other Ash Cartels:** Red Tithe Ford, Smuggler Switchbacks, Relic Market and Claim Dens.
+4. **Hallowfen citizens:** First Streets Inside Wall, Hallowfen Commons, East Barricades.
+5. **Lumen Compact institutional power:** Water Ledger Quarter and Wreckward Perimeter deepen the field-service introduction.
+6. **Bloomborn:** Bloomborn Refuge Rows and clinic-adjacent disputes.
+7. **Choir of the Open Wound:** Ash Road charity work foreshadows the Captured Checkpoint, Inspection Back Rooms, and Choir Breach Lines.
 
 **Act I lore discipline:** The player should feel that the official story is cracking, but Act I should not explain the Vale Imprint, Father Vale, Europa, or the Stilling. The blackened core is the hinge. Before decoding, it is a dangerous relic. After decoding, it becomes the first object every faction can use, hide, sell, or kill for.
 

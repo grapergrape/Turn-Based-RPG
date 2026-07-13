@@ -1,0 +1,73 @@
+{
+  "id": "long-ash-vigil-name-rack",
+  "title": "Twelve Candle Cups",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "heard-bell-register-read"
+      },
+      "else": "unread",
+      "lines": [
+        "Hessa's order matches the cups. Eleven hold old wick stubs. Sava Rell's place has been hammered flat."
+      ],
+      "choices": [
+        {
+          "label": "Speak Lysa Orm's name",
+          "conditions": {
+            "flagsAbsent": [
+              "heard-bell-lysa-answered"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-lysa-answered",
+            "log": "Outside, one of Lysa Orm's stone teeth clicks against another."
+          },
+          "close": true
+        },
+        {
+          "label": "Speak Ilyen Marr's name",
+          "conditions": {
+            "flagsAbsent": [
+              "heard-bell-ilyen-answered"
+            ]
+          },
+          "effects": {
+            "setFlag": "heard-bell-ilyen-answered",
+            "inventory": {
+              "add": [
+                {
+                  "item": "gravekeeper-brass-key",
+                  "count": 1
+                }
+              ]
+            },
+            "log": "Ash shifts beneath Ilyen's grave. A short brass key lies where his fingers point."
+          },
+          "close": true
+        },
+        {
+          "label": "Speak another kept name",
+          "effects": {
+            "log": "The chapel remains still. Wax and stone give no answer."
+          },
+          "close": true
+        },
+        {
+          "label": "Leave the names unspoken",
+          "close": true
+        }
+      ]
+    },
+    "unread": {
+      "lines": [
+        "Twelve candle cups are fixed to the rack. Eleven are black with use. Somebody crushed the last cup with a hammer."
+      ],
+      "choices": [
+        {
+          "label": "Step away",
+          "close": true
+        }
+      ]
+    }
+  }
+}

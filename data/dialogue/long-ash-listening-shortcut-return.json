@@ -1,0 +1,46 @@
+{
+  "id": "long-ash-listening-shortcut-return",
+  "title": "Graveyard Catacomb Mouth",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "heard-bell-catacomb-mouth-opened"
+      },
+      "else": "sealed",
+      "lines": [
+        "A cleared crawlspace runs beneath the mortuary wall. Copper wire catches the light farther in."
+      ],
+      "choices": [
+        {
+          "label": "Crawl into the Listening Vault",
+          "effects": {
+            "log": "You crawl beneath the mortuary into the Listening Vault.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_listening_vault.json",
+              "player": {
+                "x": 11,
+                "y": 10
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in the graveyard",
+          "close": true
+        }
+      ]
+    },
+    "sealed": {
+      "lines": [
+        "Roots and packed ash choke the low mouth. Nothing here gives enough room to clear it from outside."
+      ],
+      "choices": [
+        {
+          "label": "Leave the mouth blocked",
+          "close": true
+        }
+      ]
+    }
+  }
+}

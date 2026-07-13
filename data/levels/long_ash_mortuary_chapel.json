@@ -1,0 +1,437 @@
+{
+  "id": "long-ash-mortuary-chapel",
+  "name": "Long Ash Mortuary Chapel",
+  "intro": "Two stone biers wait under a dim window. Every drain leads toward a wall the wardens fitted twice.",
+  "width": 14,
+  "height": 11,
+  "tileSize": 64,
+  "quests": [
+    "those-who-heard-the-bell"
+  ],
+  "dialogue": [
+    "long-ash-mortuary-chapel-exit",
+    "long-ash-mortuary-tags",
+    "long-ash-mortuary-stair",
+    "long-ash-heard-bell-judgment"
+  ],
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.52,
+    "ambient": "#172635",
+    "ambientAlpha": 0.08,
+    "vignette": 1.35
+  },
+  "journalNotes": [
+    {
+      "flag": "heard-bell-register-read",
+      "text": "Hessa Marr recorded deliberate responses from the calcified people in the graveyard."
+    },
+    {
+      "flag": "heard-bell-docket-read",
+      "text": "The road office measured those responses and filed them as settling."
+    },
+    {
+      "flag": "heard-bell-truth-joined",
+      "text": "Sava Rell reacted to Hallowfen before its bells sounded."
+    },
+    {
+      "flag": "heard-bell-resolved-vigil",
+      "text": "The twelve names remain together. The listening niche is quiet for now."
+    },
+    {
+      "flag": "heard-bell-resolved-censure",
+      "text": "The road office has the graveyard location. A purgation order will follow."
+    },
+    {
+      "flag": "heard-bell-resolved-evidence",
+      "text": "Hessa's register and the mortuary docket are in your pack."
+    }
+  ],
+  "tiles": [
+    "##############",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "#............#",
+    "##############"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 6,
+      "y": 9
+    },
+    "enemies": [],
+    "npcs": []
+  },
+  "levelTransitions": [
+    {
+      "id": "mortuary-listening-vault-stair",
+      "x": 7,
+      "y": 1,
+      "conditions": {
+        "flag": "heard-bell-mortuary-stair-opened"
+      },
+      "clickAreas": [
+        {
+          "x0": 7,
+          "y0": 0,
+          "x1": 7,
+          "y1": 1
+        }
+      ],
+      "loadLevel": {
+        "path": "./data/levels/long_ash_listening_vault.json",
+        "player": {
+          "x": 7,
+          "y": 13
+        }
+      }
+    }
+  ],
+  "objects": [
+    {
+      "id": "mortuary-tag-board",
+      "kind": "mortuary-tag-board",
+      "x": 3,
+      "y": 0,
+      "wallPlane": "sw",
+      "name": "Mortuary Identification Board",
+      "interact": {
+        "type": "note",
+        "dialogue": "long-ash-mortuary-tags",
+        "log": "Three brass tags hang over scratched names: a broken circle, opened ribs, and a bell-shaped mouth."
+      },
+      "mapMarker": {
+        "label": "Identification Tags",
+        "kind": "note",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "mortuary-counterweight-panel",
+      "kind": "wall-stash",
+      "x": 7,
+      "y": 0,
+      "blocking": true,
+      "name": "Concealed Counterweight Door",
+      "doorGroup": "mortuary-counterweight-stair",
+      "interact": {
+        "type": "note",
+        "log": "A fitted stone carries old finger polish at one edge. Weight hangs behind it.",
+        "lock": {
+          "id": "mortuary-counterweight-lock",
+          "title": "Mortuary Counterweight",
+          "lines": [
+            "The tag cable enters above the fitted stone. A brass keyway and a narrow service slot offer quieter routes."
+          ],
+          "methods": [
+            {
+              "id": "use-gravekeeper-key",
+              "label": "Use the Gravekeeper's Brass Key",
+              "requiresItem": "gravekeeper-brass-key",
+              "successLog": "The short key takes the counterweight before the cable can knock.",
+              "success": {
+                "setFlag": [
+                  "heard-bell-stair-opened-key",
+                  "heard-bell-mortuary-stair-opened"
+                ],
+                "openDoorGroup": "mortuary-counterweight-stair"
+              }
+            },
+            {
+              "id": "pick-counterweight-keyway",
+              "label": "Walk the mortuary pins",
+              "requiresSecurityTool": false,
+              "field": "security",
+              "dc": 40,
+              "successLog": "The last pin releases. You catch the stone before its weight can slam.",
+              "failLog": "The keyway turns half a tooth and holds.",
+              "success": {
+                "setFlag": [
+                  "heard-bell-stair-opened-security",
+                  "heard-bell-mortuary-stair-opened"
+                ],
+                "openDoorGroup": "mortuary-counterweight-stair"
+              }
+            },
+            {
+              "id": "release-counterweight-service-slot",
+              "label": "Release the counterweight through its service slot",
+              "field": "engineering",
+              "dc": 40,
+              "successLog": "The retaining tooth lifts. The counterweight lowers into your hand.",
+              "failLog": "The retaining tooth stays hidden behind the guide plate.",
+              "success": {
+                "setFlag": [
+                  "heard-bell-stair-opened-engineering",
+                  "heard-bell-mortuary-stair-opened"
+                ],
+                "openDoorGroup": "mortuary-counterweight-stair"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Counterweight Wall",
+        "kind": "locked",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "mortuary-window",
+      "kind": "wall-window",
+      "x": 10,
+      "y": 0,
+      "blocking": true,
+      "dim": true,
+      "name": "Dim Mortuary Window"
+    },
+    {
+      "id": "mortuary-stair-landing",
+      "kind": "stone-stairwell",
+      "x": 7,
+      "y": 1,
+      "orient": "ne",
+      "doorGroup": "mortuary-counterweight-stair",
+      "hiddenUntilOpened": true,
+      "name": "Counterweight Stair Landing",
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "long-ash-mortuary-stair",
+        "log": "The counterweight door stands open over a stair cut into the wall."
+      },
+      "mapMarker": {
+        "label": "Listening Vault Stair",
+        "kind": "exit",
+        "reveal": "explored"
+      }
+    },
+    {
+      "id": "mortuary-west-bier",
+      "kind": "stone-tomb",
+      "x": 3,
+      "y": 3,
+      "blocking": true,
+      "name": "Western Preparation Bier"
+    },
+    {
+      "id": "mortuary-east-bier",
+      "kind": "stone-tomb",
+      "x": 10,
+      "y": 3,
+      "blocking": true,
+      "name": "Eastern Preparation Bier"
+    },
+    {
+      "id": "mortuary-working-candles",
+      "kind": "candle-cluster",
+      "x": 6,
+      "y": 4,
+      "name": "Mortuary Working Candles"
+    },
+    {
+      "kind": "wax-stain",
+      "x": 6,
+      "y": 4,
+      "id": "mortuary-working-wax"
+    },
+    {
+      "id": "mortuary-road-warden-lockbox",
+      "kind": "wall-safe",
+      "x": 0,
+      "y": 5,
+      "blocking": true,
+      "name": "Road Warden Lockbox",
+      "interact": {
+        "type": "container",
+        "log": "The lockbox holds road pay, two blessed cartridges, and a brass chit stamped for the old gate.",
+        "lock": {
+          "id": "mortuary-road-warden-lock",
+          "title": "Road Warden Lockbox",
+          "lines": [
+            "The early road office seal covers a small iron keyway. A pay catch sits behind the hinge."
+          ],
+          "methods": [
+            {
+              "id": "pick-road-lockbox",
+              "label": "Walk the old pins",
+              "requiresItem": "censure-entry-roll",
+              "field": "security",
+              "dc": 40,
+              "successLog": "The pins walk back in order. The pay lid opens.",
+              "failLog": "The last pin grinds against packed ash."
+            },
+            {
+              "id": "read-diocesan-pay-catch",
+              "label": "Release the diocesan pay catch",
+              "field": "doctrine",
+              "dc": 40,
+              "successLog": "The stamped verse names the catch. Pressure under the final word opens it.",
+              "failLog": "The seal gives you office rank, not the catch beneath it."
+            },
+            {
+              "id": "pry-road-lockbox",
+              "label": "Pry the hinge",
+              "primary": "body",
+              "dc": 4,
+              "successLog": "The hinge folds outward with one dry crack.",
+              "failLog": "The hinge holds. The blow carries through the washing table.",
+              "failure": {
+                "setFlag": "heard-bell-noisy-lockbox"
+              }
+            }
+          ]
+        },
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 6
+          },
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "road-warden-chit",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "mortuary-wash-tub",
+      "kind": "wash-tub",
+      "x": 2,
+      "y": 5,
+      "blocking": true,
+      "name": "Mortuary Wash Tub"
+    },
+    {
+      "id": "mortuary-washing-table",
+      "kind": "mortuary-washing-table",
+      "x": 6,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "name": "Mortuary Washing Table"
+    },
+    {
+      "id": "mortuary-linen-cabinet",
+      "kind": "wall-stash",
+      "x": 13,
+      "y": 5,
+      "blocking": true,
+      "name": "Mortuary Linen Cabinet",
+      "interact": {
+        "type": "container",
+        "log": "The linen has rotted around three sealed packets. Two bear field dressing stamps. The third smells of bitter salt.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 2
+          },
+          {
+            "item": "mortuary-quieting-salt",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "mortuary-drain",
+      "x": 5,
+      "y": 6,
+      "id": "mortuary-drain-west"
+    },
+    {
+      "kind": "mortuary-drain",
+      "x": 6,
+      "y": 6,
+      "id": "mortuary-drain-east"
+    },
+    {
+      "id": "mortuary-prayer-lectern",
+      "kind": "prayer-lectern",
+      "x": 3,
+      "y": 7,
+      "blocking": true,
+      "name": "Preparation Prayer Lectern"
+    },
+    {
+      "id": "mortuary-saint-statue",
+      "kind": "saint-statue",
+      "x": 10,
+      "y": 7,
+      "blocking": true,
+      "name": "Worn Mortuary Saint"
+    },
+    {
+      "id": "mortuary-exit-door-north",
+      "kind": "chapel-double-door",
+      "x": 6,
+      "y": 10,
+      "blocking": true,
+      "name": "Mortuary Chapel Doors",
+      "doorGroup": "mortuary-chapel-exit",
+      "doorLeaf": "north",
+      "wallPlane": "sw",
+      "interact": {
+        "type": "door",
+        "dialogue": "long-ash-mortuary-chapel-exit",
+        "log": "The mortuary doors open onto the graveyard path."
+      }
+    },
+    {
+      "id": "mortuary-exit-door-south",
+      "kind": "chapel-double-door",
+      "x": 7,
+      "y": 10,
+      "blocking": true,
+      "name": "Mortuary Chapel Doors",
+      "doorGroup": "mortuary-chapel-exit",
+      "doorLeaf": "south",
+      "wallPlane": "sw",
+      "interact": {
+        "type": "door",
+        "dialogue": "long-ash-mortuary-chapel-exit",
+        "log": "The mortuary doors open onto the graveyard path."
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 4,
+      "y": 7,
+      "id": "mortuary-prayer-pages"
+    },
+    {
+      "kind": "floor-crack",
+      "x": 8,
+      "y": 8,
+      "id": "mortuary-counterweight-crack"
+    },
+    {
+      "kind": "dust",
+      "x": 7,
+      "y": 2,
+      "id": "mortuary-counterweight-wear"
+    }
+  ]
+}

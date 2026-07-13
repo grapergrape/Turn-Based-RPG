@@ -10,8 +10,12 @@ const WIDTH = 160;
 const HEIGHT = 70;
 const START = { x: 142, y: 68 };
 const GRAVEYARD = { x0: 126, x1: 148, y0: 47, y1: 59 };
+const GRAVEYARD_CHAPELS = [
+  { tile: 'V', kind: 'graveyard-vigil-chapel-block', x0: 130, x1: 131, y0: 45, y1: 46 },
+  { tile: 'M', kind: 'graveyard-mortuary-chapel-block', x0: 141, x1: 142, y0: 44, y1: 46 }
+];
 const INFECTED_CAVE = { x: 90, y: 10 };
-const FARM_DOOR_DIALOGUES = [
+const LONG_ASH_DIALOGUES = [
   'long-ash-farmhouse-door',
   'long-ash-barn-door',
   'long-ash-storage-shed-door',
@@ -21,7 +25,10 @@ const FARM_DOOR_DIALOGUES = [
   'long-ash-wolf-cultist-evidence',
   'long-ash-censure-road-camp-exit',
   'long-ash-crossroad-brother',
-  'long-ash-field-brother'
+  'long-ash-field-brother',
+  'long-ash-vigil-chapel-entry',
+  'long-ash-mortuary-chapel-entry',
+  'long-ash-listening-shortcut-return'
 ];
 const INFECTED_CAVE_OUTSIDE_WOLVES = [
   { id: 'host-wolf-spider', x: 88, y: 13, facing: 'se' },
@@ -204,7 +211,7 @@ const ALL_ROADS = [ROAD_MAIN, ROAD_BRANCH, ROAD_CENSURE, ROAD_REMNANT];
 const tiles = Array.from({ length: HEIGHT }, () => Array.from({ length: WIDTH }, () => '.'));
 const objects = [];
 const reserved = new Set();
-const FARM_BUILDING_TILES = new Set(['H', 'B', 'T', 'S', 'G']);
+const EXTERIOR_BUILDING_TILES = new Set(['H', 'B', 'T', 'S', 'G', ...GRAVEYARD_CHAPELS.map((chapel) => chapel.tile)]);
 
 function key(x, y) {
   return `${x},${y}`;
@@ -276,9 +283,16 @@ function hasObjectAt(x, y) {
 function isProtectedRange(x, y) {
   if (x >= 95 && x <= 106 && y >= 31 && y <= 37) return true;
   if (x >= GRAVEYARD.x0 - 1 && x <= GRAVEYARD.x1 + 1 && y >= GRAVEYARD.y0 && y <= GRAVEYARD.y1) return true;
+  if (isGraveyardChapelCell(x, y)) return true;
   if (x >= 12 && x <= 37 && y >= 42 && y <= 61) return true;
   if (x >= START.x - 2 && x <= START.x + 2 && y >= START.y - 2 && y <= START.y + 1) return true;
   return false;
+}
+
+function isGraveyardChapelCell(x, y) {
+  return GRAVEYARD_CHAPELS.some((chapel) =>
+    x >= chapel.x0 && x <= chapel.x1 && y >= chapel.y0 && y <= chapel.y1
+  );
 }
 
 function isInfectedCaveClearance(x, y) {
@@ -296,7 +310,7 @@ function canBlock(x, y) {
   if (hasObjectAt(x, y)) return false;
   if (isProtectedRange(x, y)) return false;
   const tile = getTile(x, y);
-  if (tile === 'r' || tile === 's' || FARM_BUILDING_TILES.has(tile)) return false;
+  if (tile === 'r' || tile === 's' || EXTERIOR_BUILDING_TILES.has(tile)) return false;
   return true;
 }
 
@@ -343,7 +357,8 @@ function scatterForest() {
       const inRightForest = x >= 90 && y >= 20;
       const fringe = x >= 58 && x <= 90 && y >= 24 && y <= 63;
       if (!inTopForest && !inRightForest && !fringe) continue;
-      if (getTile(x, y) !== 'd' && !(fringe && getTile(x, y) === '.')) continue;
+      const chapelRoofCell = isGraveyardChapelCell(x, y);
+      if (getTile(x, y) !== 'd' && !(fringe && getTile(x, y) === '.') && !chapelRoofCell) continue;
       if (roadDistance(x, y) < 5.2) continue;
       const h = hash(x, y, 3);
       const dense = inTopForest || inRightForest ? 62 : 23;
@@ -375,10 +390,10 @@ function scatterForest() {
       const h = hash(x, y, 19);
       if ((h % 100) > 25) continue;
       if (roadDistance(x, y) < 4 || isProtectedRange(x, y)) continue;
-      if (FARM_BUILDING_TILES.has(getTile(x, y)) || reserved.has(key(x, y))) continue;
+      if (EXTERIOR_BUILDING_TILES.has(getTile(x, y)) || reserved.has(key(x, y))) continue;
       const bx = x + (h % 3) - 1;
       const by = y + ((h >> 4) % 3) - 1;
-      if (!inBounds(bx, by) || hasObjectAt(bx, by)) continue;
+      if (!inBounds(bx, by) || hasObjectAt(bx, by) || isProtectedRange(bx, by)) continue;
       addObject('scrub-bush', bx, by, { seed: h });
     }
   }
@@ -562,6 +577,48 @@ function paintGraveyardGround() {
   setTile(GRAVEYARD.x0 - 1, 57, 's');
 }
 
+function paintGraveyardChapels() {
+  for (const chapel of GRAVEYARD_CHAPELS) {
+    paintRect(chapel.x0, chapel.y0, chapel.x1, chapel.y1, chapel.tile);
+  }
+}
+
+function isGraveyardChapelClearance(x, y) {
+  return GRAVEYARD_CHAPELS.some((chapel) =>
+    x >= chapel.x0 - 1 && x <= chapel.x1 + 1 && y >= chapel.y0 - 2 && y <= chapel.y1
+  );
+}
+
+function isGraveyardChapelEntranceWall(x, y) {
+  return y === GRAVEYARD.y0 && GRAVEYARD_CHAPELS.some((chapel) => x >= chapel.x0 && x <= chapel.x1);
+}
+
+function clearGraveyardChapelViews() {
+  const removable = new Set(['ash-tree', 'ash-tree-stump', 'fallen-ash-log', 'ash-sapling', 'scrub-bush']);
+  for (let index = objects.length - 1; index >= 0; index -= 1) {
+    const object = objects[index];
+    if (!removable.has(object.kind) || !isGraveyardChapelClearance(object.x, object.y)) continue;
+    if (object.blocking) reserved.delete(key(object.x, object.y));
+    objects.splice(index, 1);
+  }
+  // The north perimeter yields to each chapel entrance. Removing these wall
+  // segments after placement preserves every later generated object id.
+  for (let index = objects.length - 1; index >= 0; index -= 1) {
+    const object = objects[index];
+    if (object.kind !== 'graveyard-wall' || !isGraveyardChapelEntranceWall(object.x, object.y)) continue;
+    if (object.blocking) reserved.delete(key(object.x, object.y));
+    objects.splice(index, 1);
+  }
+  // A narrow strip of cemetery earth keeps the chapels from reading as sheds
+  // dropped into the forest. It changes after forest scatter so existing ids
+  // on the long road remain stable when the generator is rerun.
+  for (const chapel of GRAVEYARD_CHAPELS) {
+    paintRect(chapel.x0 - 1, chapel.y0 - 1, chapel.x1 + 1, chapel.y1, 'g');
+    paintRect(chapel.x0, chapel.y0, chapel.x1, chapel.y1, chapel.tile);
+    paintRect(chapel.x0, GRAVEYARD.y0, chapel.x1, GRAVEYARD.y0 + 1, 's');
+  }
+}
+
 function placeGraveyardWalls() {
   for (let x = GRAVEYARD.x0; x <= GRAVEYARD.x1; x += 1) {
     addObject('graveyard-wall', x, GRAVEYARD.y0, {
@@ -631,7 +688,18 @@ function placeGraveyardCatacomb() {
     id: 'graveyard-catacomb-mouth',
     blocking: true,
     orient: GRAVEYARD_CATACOMB.orient,
-    seed: hash(GRAVEYARD_CATACOMB.x, GRAVEYARD_CATACOMB.y, 78)
+    seed: hash(GRAVEYARD_CATACOMB.x, GRAVEYARD_CATACOMB.y, 78),
+    name: 'Ash-Choked Catacomb Mouth',
+    interact: {
+      type: 'secret-entrance',
+      dialogue: 'long-ash-listening-shortcut-return',
+      log: 'Stone steps end at packed ash. A colder draft waits behind it.'
+    },
+    mapMarker: {
+      label: 'Catacomb Mouth',
+      kind: 'exit',
+      reveal: 'explored'
+    }
   });
   for (const [x, y, salt] of [
     [140, 48, 79],
@@ -641,6 +709,49 @@ function placeGraveyardCatacomb() {
     addObject('rubble-decal', x, y, { seed: hash(x, y, salt) });
   }
   addObject('floor-crack', 143, 49, { seed: hash(143, 49, 82) });
+}
+
+function placeGraveyardChapelEntries() {
+  addObject('graveyard-path-stones', 131, 47, {
+    id: 'long-ash-vigil-chapel-entry',
+    seed: hash(131, 47, 88),
+    name: 'Vigil Chapel Door',
+    clickAreas: [
+      { x0: 129, y0: 45, x1: 130, y1: 46 },
+      { x0: 130, y0: 46, x1: 131, y1: 47 }
+    ],
+    interactionMarker: { x: 130, y: 46 },
+    interact: {
+      type: 'secret-entrance',
+      dialogue: 'long-ash-vigil-chapel-entry',
+      log: 'A narrow chapel door stands beyond the graveyard wall gap.'
+    },
+    mapMarker: {
+      label: 'Vigil Chapel',
+      kind: 'exit',
+      reveal: 'explored'
+    }
+  });
+  addObject('graveyard-path-stones', 142, 47, {
+    id: 'long-ash-mortuary-chapel-entry',
+    seed: hash(142, 47, 89),
+    name: 'Mortuary Chapel Door',
+    clickAreas: [
+      { x0: 140, y0: 45, x1: 141, y1: 46 },
+      { x0: 141, y0: 46, x1: 142, y1: 47 }
+    ],
+    interactionMarker: { x: 141, y: 46 },
+    interact: {
+      type: 'secret-entrance',
+      dialogue: 'long-ash-mortuary-chapel-entry',
+      log: 'Broad steps rise to the mortuary door. Old wash water has whitened their edges.'
+    },
+    mapMarker: {
+      label: 'Mortuary Chapel',
+      kind: 'exit',
+      reveal: 'explored'
+    }
+  });
 }
 
 function placeGraveyardDressing() {
@@ -681,10 +792,12 @@ function placeGraveyardDressing() {
 
 function placeGraveyard() {
   paintGraveyardGround();
+  paintGraveyardChapels();
   placeGraveyardWalls();
   placeGraveyardPlots();
   placeGraveyardCatacomb();
   placeGraveyardDressing();
+  placeGraveyardChapelEntries();
   // Each body stands one tile up from its plot, planted where a headstone
   // would go: the dead mark their own graves.
   for (const body of GRAVEYARD_BODIES) {
@@ -1012,6 +1125,7 @@ placeFarmMachinery();
 placeFarmVictims();
 placeInfectedCave();
 placeRoadContentPass();
+clearGraveyardChapelViews();
 
 objects.sort((a, b) => (a.y - b.y) || (a.x - b.x) || a.kind.localeCompare(b.kind));
 
@@ -1023,7 +1137,7 @@ const level = {
   height: HEIGHT,
   tileSize: 64,
   quests: ['investigate-ash-chapel-cult', 'calcified-brothers'],
-  dialogue: FARM_DOOR_DIALOGUES,
+  dialogue: LONG_ASH_DIALOGUES,
   tiles: tiles.map((row) => row.join('')),
   legend: {
     '.': { kind: 'floor', floor: 'ash-dirt', walkable: true },
@@ -1037,7 +1151,10 @@ const level = {
     B: { kind: 'barn-building-block', walkable: false },
     T: { kind: 'tool-shed-building-block', walkable: false },
     S: { kind: 'storage-shed-building-block', walkable: false },
-    G: { kind: 'grain-shed-building-block', walkable: false }
+    G: { kind: 'grain-shed-building-block', walkable: false },
+    ...Object.fromEntries(
+      GRAVEYARD_CHAPELS.map((chapel) => [chapel.tile, { kind: chapel.kind, walkable: false }])
+    )
   },
   mood: {
     floorShade: '#15130e',

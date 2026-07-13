@@ -33,7 +33,8 @@ import {
 
 // Ritual markings, altar objects, and chapel ceremony props.
 
-export function drawPrayerLectern(ctx, cx, cy, seed) {
+export function drawPrayerLectern(ctx, cx, cy, seed, opts = {}) {
+  const defiled = Boolean(opts.defiled);
   const rng = rngFrom(hash2D(seed + 43, seed * 7 + 19));
   drawShadowBlob(ctx, cx, cy + 5, 34, 14);
   drawIsoPrism(ctx, cx, cy, 32, 18, 12, {
@@ -52,7 +53,7 @@ export function drawPrayerLectern(ctx, cx, cy, seed) {
   });
   px(ctx, cx - 10, cy - 52, PALETTE.rustDark, 20, 1);
   px(ctx, cx - 7, cy - 49, PALETTE.stoneDark, 14, 1);
-  if ((seed & 1) === 0) px(ctx, cx + 9, cy - 48, PALETTE.hostRed, 4, 2);
+  if (defiled && (seed & 1) === 0) px(ctx, cx + 9, cy - 48, PALETTE.hostRed, 4, 2);
   linePx(ctx, cx - 14, cy - 44, cx + 12, cy - 50, PALETTE.outline, 1);
   linePx(ctx, cx - 13, cy - 45, cx + 11, cy - 51, PALETTE.stoneDust, 1);
   px(ctx, cx - 13, cy - 47, PALETTE.outline, 9, 3);
@@ -69,13 +70,27 @@ export function drawPrayerLectern(ctx, cx, cy, seed) {
     px(ctx, cx - 12 + Math.floor(rng() * 25), cy - 51 + Math.floor(rng() * 8), rng() < 0.5 ? PALETTE.stoneDark : PALETTE.rustDark, 1 + (i & 1), 1);
   }
   drawRubbleCluster(ctx, cx + 19, cy + 7, seed + 47, 2);
-  // The chained book is gone; the chain hangs cut and a torn page corner is
-  // still pinched under the clasp. The Choir wanted the words, not the wood.
-  px(ctx, cx + 6, cy - 22, PALETTE.stoneLight, 1, 2); // cut chain links
-  px(ctx, cx + 7, cy - 19, PALETTE.stoneLight, 1, 2);
-  px(ctx, cx + 8, cy - 16, PALETTE.stoneDark, 1, 2); // the cut end, dark
-  px(ctx, cx - 3, cy - 25, PALETTE.hostBone, 4, 2); // the torn page corner
-  px(ctx, cx - 2, cy - 24, PALETTE.stoneDust, 2, 1);
+  if (defiled) {
+    // The occupied Ash Chapel keeps its authored damage: the chained book is
+    // gone, the chain hangs cut, and one torn page remains under the clasp.
+    px(ctx, cx + 6, cy - 22, PALETTE.stoneLight, 1, 2);
+    px(ctx, cx + 7, cy - 19, PALETTE.stoneLight, 1, 2);
+    px(ctx, cx + 8, cy - 16, PALETTE.stoneDark, 1, 2);
+    px(ctx, cx - 3, cy - 25, PALETTE.hostBone, 4, 2);
+    px(ctx, cx - 2, cy - 24, PALETTE.stoneDust, 2, 1);
+  } else {
+    // Ordinary chapels retain the book and its complete chain. The pale page
+    // block, dark cover, central gutter, and brass clasp survive at map scale.
+    px(ctx, cx - 10, cy - 52, PALETTE.outline, 21, 6);
+    px(ctx, cx - 9, cy - 53, PALETTE.woodDark, 19, 2);
+    px(ctx, cx - 8, cy - 51, PALETTE.clothTan, 17, 3);
+    px(ctx, cx, cy - 52, PALETTE.stoneDark, 1, 4);
+    px(ctx, cx + 7, cy - 51, PALETTE.rustLight, 2, 2);
+    for (const [dx, dy] of [[7, -46], [8, -42], [8, -38], [7, -34], [6, -30], [6, -26], [6, -22]]) {
+      px(ctx, cx + dx, cy + dy, PALETTE.stoneLight, 2, 1);
+      px(ctx, cx + dx + 1, cy + dy + 1, PALETTE.stoneDark, 1, 1);
+    }
+  }
 
 }
 

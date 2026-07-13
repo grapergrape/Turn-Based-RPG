@@ -163,6 +163,13 @@ function makeGame() {
   assert.equal(frame().overlay.targetTile, '2,1');
   assert.equal(frame().ui.target, 'Cutthroat 8/8');
   assert.equal(frame().ui.action, 'Knife 95% D5');
+  assert.equal(frame().ui.actionName, 'Knife');
+  assert.equal(frame().ui.actionChance, '95%');
+  assert.equal(frame().ui.actionDamage, 'D5');
+  assert.equal(frame().ui.actionReason, '');
+  target.name = 'Sava Rell';
+  assert.equal(game._targetReadout(target, null), 'Sava Rell 8/8');
+  target.name = 'Choir Cutthroat';
   assert.ok(frame().ui.controls.includes('Space Attack'));
 
   const previousRandom = Math.random;
@@ -187,6 +194,10 @@ function makeGame() {
   assert.equal(game.preCombatTarget, null);
   assert.ok(game.log.some((line) => line.includes('Sneak attack hit. Chance 95%, roll 1. Sneak. 5 damage to Choir Cutthroat.')));
   assert.equal(game.log.some((line) => line.includes('Not enough AP for that attack.')), false);
+  game.areaTitle = 'Listening Vault';
+  game.areaTitleTimer = 1;
+  game.render();
+  assert.equal(frame().ui.areaTitle, null, 'combat should suppress a stale area title');
 }
 
 {

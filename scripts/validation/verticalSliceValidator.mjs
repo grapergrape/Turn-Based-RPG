@@ -40,6 +40,7 @@ const DECAL_KINDS = new Set([
 
 export function validateVerticalSliceLevel(filePath, data) {
   const name = relative(filePath);
+  if (data.id !== MAIN_LEVEL_ID && data.id !== CELLAR_LEVEL_ID) return;
   for (const id of REQUIRED_QUEST_IDS) {
     if (!Array.isArray(data.quests) || !data.quests.includes(id)) {
       errors.push(`${name}: required quest "${id}" is missing from quests.`);

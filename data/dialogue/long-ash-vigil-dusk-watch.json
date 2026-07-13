@@ -1,0 +1,79 @@
+{
+  "id": "long-ash-vigil-dusk-watch",
+  "title": "Hessa's Chair",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "heard-bell-truth-joined",
+        "flagsAbsent": [
+          "heard-bell-dusk-witnessed"
+        ]
+      },
+      "else": "unavailable",
+      "lines": [
+        "The arms are worn where Hessa held the chair through long watches. From here, every candle cup and the cut bell rope share one line."
+      ],
+      "choices": [
+        {
+          "label": "Wait in Hessa's chair until dusk",
+          "effects": {
+            "setFlag": "heard-bell-dusk-witnessed",
+            "xp": 10,
+            "clock": {
+              "advanceToMinuteOfDay": 1080
+            },
+            "showBriefing": {
+              "title": "AFTER LAST BELL",
+              "pages": [
+                [
+                  "The Vigil Chapel has no clapper. Its bell moves once."
+                ],
+                [
+                  "A crack passes through the graveyard. Eleven faces turn a fraction toward the north."
+                ]
+              ],
+              "conditionalPages": [
+                {
+                  "conditions": {
+                    "flagsAbsent": [
+                      "heard-bell-sava-killed"
+                    ]
+                  },
+                  "page": [
+                    "Stone answers beneath the mortuary floor."
+                  ]
+                },
+                {
+                  "conditions": {
+                    "flag": "heard-bell-sava-killed"
+                  },
+                  "page": [
+                    "Nothing answers below. The empty niche holds the silence."
+                  ]
+                }
+              ],
+              "lastPrompt": "ENTER: CONTINUE",
+              "skipPrompt": "ESC: CLOSE"
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Do not wait",
+          "close": true
+        }
+      ]
+    },
+    "unavailable": {
+      "lines": [
+        "Hessa's chair faces the candle rack. Its arms have been polished by one pair of hands."
+      ],
+      "choices": [
+        {
+          "label": "Step away",
+          "close": true
+        }
+      ]
+    }
+  }
+}

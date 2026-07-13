@@ -172,6 +172,13 @@ function leafClump(ctx, x, y, w, h, tone, rim = null) {
   px(ctx, Math.round(x - width * 0.35), top + Math.floor(height * 0.55), PALETTE.outline, 3, 2);
   px(ctx, Math.round(x + width * 0.22), top + Math.floor(height * 0.25), shade, 3, 1);
   if (rim) px(ctx, Math.round(x - width * 0.18), top + 1, rim, 3, 1);
+
+  // Ash-eaten gaps bitten out of the mass: dead foliage thins to holes rather
+  // than staying a solid puff, and the deep shadow behind shows through.
+  const gap = Math.max(2, Math.floor(width * 0.14));
+  px(ctx, Math.round(x + width * 0.24), top + Math.floor(height * 0.42), PALETTE.hostBlack, gap, 2);
+  px(ctx, Math.round(x - width * 0.44), top + Math.floor(height * 0.6), PALETTE.hostBlack, gap - 1, 2);
+  px(ctx, Math.round(x + width * 0.05), top + Math.floor(height * 0.7), PALETTE.hostBlack, gap - 1, 1);
 }
 
 function jitter(rng, amount) {
@@ -556,7 +563,10 @@ export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
       linePx(ctx, baseX, baseY, baseX + Math.floor(lean * 0.4), bendY, PALETTE.outline, 2);
       linePx(ctx, baseX, baseY, baseX + Math.floor(lean * 0.4), bendY, shade, 1);
       linePx(ctx, baseX + Math.floor(lean * 0.4), bendY, baseX + Math.floor(lean * 0.4) + 4, bendY + 4, shade, 1);
-      px(ctx, baseX + Math.floor(lean * 0.4) + 3, bendY + 4, mid, 2, 2); // hanging head
+      const hgx = baseX + Math.floor(lean * 0.4) + 3;
+      px(ctx, hgx, bendY + 3, PALETTE.outline, 2, 4); // the head hangs, drooping to a point
+      px(ctx, hgx, bendY + 4, mid, 1, 3);
+      px(ctx, hgx + 1, bendY + 6, shade, 1, 1);
       continue;
     }
 
@@ -564,10 +574,18 @@ export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
     linePx(ctx, baseX, baseY, tipX, tipY, shade, 1);
     if (i % 2 === 0) linePx(ctx, baseX, baseY - 4, tipX, tipY + 2, mid, 1);
 
-    const headW = full ? 3 : 2;
-    px(ctx, tipX - 1, tipY - 3, PALETTE.outline, headW + 1, 5);
-    px(ctx, tipX, tipY - 2, mid, headW, 3);
-    if (i % 5 === 0) px(ctx, tipX + 1, tipY - 4, PALETTE.hostGold, 1, 2); // Host-touched grain
+    // A heavy dead grain head: a narrow bristled spindle that noses over with
+    // the wind and tapers to a point, not a square block. Fine awns splay off
+    // the crown so a field of them reads as wheat rather than matchsticks.
+    const nod = Math.sign(lean) || 1;
+    const hx = tipX + nod; // the weight of the head carries it past the stalk tip
+    px(ctx, hx - 1, tipY - 1, PALETTE.outline, 3, 6); // spindle silhouette
+    px(ctx, hx, tipY, mid, 1, 4); // grain core, fuller toward the base
+    px(ctx, hx - nod, tipY + 1, mid, 1, 3);
+    px(ctx, hx, tipY - 2, shade, 1, 1); // shaded, tapering crown
+    px(ctx, hx + nod, tipY - 1, i % 5 === 0 ? PALETTE.hostGold : mid, 1, 1); // awn
+    px(ctx, hx - nod, tipY, shade, 1, 1); // awn on the lee side
+    if (i % 5 === 0) px(ctx, hx, tipY - 4, PALETTE.hostGold, 1, 2); // Host-touched grain
   }
 
   for (const band of [

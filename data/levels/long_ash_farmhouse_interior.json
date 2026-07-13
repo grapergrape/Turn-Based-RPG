@@ -47,7 +47,7 @@
     "player": {
       "actor": "mara-vey",
       "x": 7,
-      "y": 8
+      "y": 9
     },
     "enemies": [],
     "npcs": []
@@ -56,9 +56,10 @@
     {
       "kind": "farm-door",
       "x": 7,
-      "y": 9,
+      "y": 10,
       "blocking": true,
       "variant": "farmhouse",
+      "wallPlane": "sw",
       "id": "farmhouse-exit-door",
       "name": "Farmhouse Door",
       "interact": {
@@ -68,9 +69,40 @@
       }
     },
     {
+      "kind": "farm-bed",
+      "x": 2,
+      "y": 2,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5401
+    },
+    {
+      "kind": "farm-bed",
+      "x": 5,
+      "y": 2,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5402
+    },
+    {
+      "kind": "farm-bed",
+      "x": 8,
+      "y": 2,
+      "blocking": true,
+      "orient": "se",
+      "seed": 5403
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 3,
+      "y": 4,
+      "blocking": true,
+      "seed": 5404
+    },
+    {
       "kind": "pantry-shelf",
       "x": 2,
-      "y": 3,
+      "y": 5,
       "blocking": true,
       "id": "farmhouse-pantry-shelf",
       "name": "Farmhouse Pantry",
@@ -84,54 +116,76 @@
       }
     },
     {
+      "kind": "pantry-shelf",
+      "x": 2,
+      "y": 7,
+      "blocking": true,
+      "seed": 5405
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 4,
+      "y": 7,
+      "blocking": true,
+      "seed": 5406
+    },
+    {
       "kind": "farm-kitchen-hearth",
       "x": 11,
-      "y": 3,
+      "y": 2,
       "blocking": true
     },
     {
-      "kind": "candle-cluster",
-      "x": 7,
-      "y": 3
-    },
-    {
-      "kind": "dining-bench",
-      "x": 4,
-      "y": 5,
+      "kind": "farm-prep-table",
+      "x": 11,
+      "y": 4,
       "blocking": true,
       "orient": "sw"
     },
     {
-      "kind": "dining-table",
-      "x": 5,
-      "y": 5,
-      "blocking": true,
-      "orient": "sw"
-    },
-    {
-      "kind": "dining-bench",
-      "x": 6,
+      "kind": "kitchen-counter",
+      "x": 11,
       "y": 6,
       "blocking": true,
       "orient": "sw"
     },
     {
-      "kind": "farm-prep-table",
-      "x": 10,
+      "kind": "dining-bench",
+      "x": 7,
+      "y": 4,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-table",
+      "x": 7,
       "y": 5,
       "blocking": true,
-      "orient": "sw"
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 7,
+      "y": 6,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 9,
+      "y": 4,
+      "seed": 5407
     },
     {
       "kind": "wash-tub",
       "x": 3,
-      "y": 7,
+      "y": 8,
       "blocking": true
     },
     {
       "kind": "low-stool",
-      "x": 8,
-      "y": 6,
+      "x": 4,
+      "y": 8,
       "blocking": true
     },
     {
@@ -141,12 +195,12 @@
     },
     {
       "kind": "floor-crack",
-      "x": 4,
+      "x": 6,
       "y": 8
     },
     {
       "kind": "wax-stain",
-      "x": 7,
+      "x": 9,
       "y": 4,
       "seed": 5411
     },

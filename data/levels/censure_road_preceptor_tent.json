@@ -1,7 +1,7 @@
 {
   "id": "censure-road-preceptor-tent",
   "name": "Preceptor Tent",
-  "intro": "Route slates, field maps, and wet ink fill the command tent.",
+  "intro": "The command tent has no room for anything but paper: route slates, field maps, ink still wet on top.",
   "width": 12,
   "height": 10,
   "tileSize": 64,

@@ -93,6 +93,15 @@ The early-game travel region between Hallowfen's wall, quarantine chapels, small
 
 The current playable slice, **Ash Chapel Breach**, fits here as a roadside quarantine chapel encounter. It is not the whole Hallowfen sequence, but it should support the same mood: old faith, failed quarantine, cartel scavenging, captured bells, and active Host tissue.
 
+The first major stop after Censure Road Camp is **Ash Road South**, dominated by
+South Measure. The settlement began as a Bloom-era refugee receiving field and
+has remained legally temporary for more than a century. The Lumen Compact
+inherited its medical rolls and admits a few residents at a time while deferring
+the community's status. The Morrow Chain keeps its water parts and freight
+moving, then turns that need into debt rule. Brother Tarn appears there after
+tracking an impossible Host-touched Penitent to Ash Chapel. The full location
+plan lives in `docs/story/locations/ash-road-south.md`.
+
 ### Veyr's Gate
 
 The best early-game hub. Veyr's Gate is a vertical trade city built around the anchor ruins of a destroyed space elevator. Every faction has spies there. Water rights, gate access, forged papers, relic weapons, suppressants, forbidden books, and black clinics drive its politics.

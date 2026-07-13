@@ -12,6 +12,7 @@ import { Inventory } from './Inventory.js';
 import { cloneGameClock, createGameClock } from './GameClock.js';
 import { mapLoadingProgress, normalizeLoadingState } from './LoadingProgress.js';
 import { loadLevel, randomPatrolDelay } from './LevelLoader.js';
+import { applyDevPrimaryOverrides } from './DevStart.js';
 import {
   PRIMARY_ASSIGNMENT_FLAG,
   createCustomizationState,
@@ -50,6 +51,7 @@ import {
 } from '../world/SearchSystem.js';
 import {
   isDoorObject,
+  objectGroupId,
   openLinkedObjects,
   unlockLinkedObjects
 } from '../world/DoorSystem.js';
@@ -57,6 +59,7 @@ import {
   GROUND_ITEM_KIND,
   canActorPickupGroundItem
 } from '../world/GroundItems.js';
+import { syncObjectFlagState } from '../world/ObjectFlagState.js';
 import {
   isActionTarget,
   isTargetInReach,
@@ -143,9 +146,12 @@ export class Game {
       teleportPlayer: (point) => this._teleportPlayer(point),
       openTradeScreen: (targetId) => this._openTradeScreen(targetId),
       closeUiScreen: () => this._closeUiScreen(),
+      openDoorGroup: (groupId) => this._openDoorGroup(groupId),
+      syncFlagConditionalObjects: () => this._syncFlagConditionalObjects(),
       startCombat: (encounterId, options) => this._startCombat(encounterId, options),
       transitionLevel: (effect) => this._transitionLevel(effect),
       meetsConditions: (conditions) => this._meetsConditions(conditions),
+      logCarryFailure: (carry) => this._logCarryFailure(carry),
       syncInventoryOrder: () => this._syncInventoryOrder(),
       clampInventorySelection: () => this._clampInventorySelection()
     });
@@ -251,6 +257,7 @@ export class Game {
       this.player.progression = JSON.parse(JSON.stringify(previousPlayer.progression));
       if (typeof this.player.refreshProgressionStats === 'function') this.player.refreshProgressionStats();
     }
+    if (bootOptions.primaries) applyDevPrimaryOverrides(this.player, bootOptions.primaries);
     this.flags = previousFlags ?? new Set();
     this.enemies = level.enemies;
     if (bootOptions.noCombat) this.enemies = [];
@@ -365,6 +372,7 @@ export class Game {
     this.actionTimer = 0;
 
     this._restoreLevelState();
+    this._syncFlagConditionalObjects({ refreshScene: false });
     if (bootOptions.player) this._teleportPlayer(bootOptions.player);
     this._refreshHiddenTiles();
     this._revealMapAroundPlayer();
@@ -848,7 +856,11 @@ export class Game {
   _allInteractables() {
     return [
       ...(this.groundItems ?? []).filter((item) => !item.consumed),
-      ...(this.level?.interactables ?? [])
+      ...(this.level?.interactables ?? []).filter((object) =>
+        !object.hiddenByFlag &&
+        !object.disabledByFlag &&
+        (!object.hiddenUntilOpened || object.opened || object.consumed)
+      )
     ];
   }
 
@@ -1015,6 +1027,33 @@ export class Game {
     }
     if (object.interact?.questUpdate) this._applyQuestUpdate(object.interact.questUpdate);
     if (object.interact?.dialogue) this._openDialogueById(object.interact.dialogue);
+  }
+
+  _openDoorGroup(groupId) {
+    if (typeof groupId !== 'string' || groupId.trim() === '') return false;
+    const object = (this.level?.interactables ?? []).find((candidate) =>
+      objectGroupId(candidate) === groupId
+    );
+    if (!object) return false;
+    openLinkedObjects(object, this.level?.interactables ?? [], {
+      grid: this.grid,
+      now: this.anim?.tick ?? null
+    });
+    this._refreshHiddenTiles({ rebuildStatic: true });
+    this._revealMapAroundPlayer();
+    return true;
+  }
+
+  _syncFlagConditionalObjects({ refreshScene = true } = {}) {
+    let changed = false;
+    for (const object of this.level?.props ?? []) {
+      if (syncObjectFlagState(object, this.flags, { grid: this.grid })) changed = true;
+    }
+    if (!changed || !refreshScene) return changed;
+    this.pendingExploreTarget = null;
+    this._refreshHiddenTiles({ rebuildStatic: true });
+    this._revealMapAroundPlayer();
+    return true;
   }
 
   _pickupGroundItem(item) {

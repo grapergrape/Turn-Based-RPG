@@ -1,0 +1,52 @@
+{
+  "id": "host-sava-rell",
+  "name": "Sava Rell",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "host-sava-rell",
+  "description": "A graveyard man thawed after a century inside the mortuary wall. Pale skin still holds his face. One hand has fused in prayer against his chest, and a broken arc of bone leans behind his head while the right ribs work themselves open.",
+  "aggro": [
+    "Do not strike it again.",
+    "Hessa, hold my head. It keeps turning."
+  ],
+  "stats": {
+    "hp": 20,
+    "maxHp": 20,
+    "actionPoints": 6,
+    "moveCost": 1
+  },
+  "progression": {
+    "level": 1,
+    "build": "host-threat",
+    "complexity": "boss",
+    "xpReward": 45,
+    "primaries": {
+      "body": 4,
+      "agility": 3,
+      "eye": 3,
+      "intelligence": 3,
+      "religion": 4,
+      "voice": 3,
+      "nerve": 4
+    }
+  },
+  "attacks": [
+    {
+      "id": "grave-hand-rake",
+      "name": "Grave-Hand Rake",
+      "apCost": 3,
+      "damage": 2,
+      "range": 1,
+      "accuracyField": "unarmed",
+      "damageField": "unarmed"
+    }
+  ],
+  "loot": [],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "boss",
+    "calcified",
+    "human"
+  ]
+}

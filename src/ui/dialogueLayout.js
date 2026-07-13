@@ -21,6 +21,10 @@ export const DIALOGUE_RESPONSE_BOX = {
   h: 64
 };
 
+const DIALOGUE_BOX_BOTTOM = DIALOGUE_BOX.y + DIALOGUE_BOX.h;
+const DIALOGUE_BODY_MIN_HEIGHT = 46;
+const DIALOGUE_RESPONSE_MIN_HEIGHT = 26;
+
 export function buildDialogueLayout(dialogue = {}) {
   const bodyMaxChars = Math.max(1, Math.floor((DIALOGUE_BODY.w - 16) / 6));
   const allLines = [];
@@ -29,24 +33,67 @@ export function buildDialogueLayout(dialogue = {}) {
     allLines.push(...wrapUiText(para, bodyMaxChars));
   }
 
-  const visibleLines = Math.max(1, Math.floor((DIALOGUE_BODY.h - 14) / DIALOGUE_LINE_HEIGHT));
-  const maxScroll = Math.max(0, allLines.length - visibleLines);
-  const scroll = clamp(Number(dialogue.scroll) || 0, 0, maxScroll);
-  const optionMaxChars = Math.max(1, Math.floor((DIALOGUE_RESPONSE_BOX.w - 16) / 6));
+  const optionMaxChars = Math.max(1, Math.floor((DIALOGUE_RESPONSE_BOX.w - 34) / 6));
   const options = (dialogue.options?.length ? dialogue.options : ['ENTER CLOSE'])
     .slice(0, DIALOGUE_MAX_CHOICES)
     .map((option) => clipUiText(option, optionMaxChars));
+  const optionDetails = options.map((text, index) => ({
+    text,
+    tone: dialogueChoiceTone(dialogue.choices?.[index])
+  }));
+
+  const bodyHeight = clamp(
+    allLines.length * DIALOGUE_LINE_HEIGHT + 14,
+    DIALOGUE_BODY_MIN_HEIGHT,
+    DIALOGUE_BODY.h
+  );
+  const responseHeight = clamp(
+    options.length * DIALOGUE_OPTION_LINE_HEIGHT + 10,
+    DIALOGUE_RESPONSE_MIN_HEIGHT,
+    DIALOGUE_RESPONSE_BOX.h
+  );
+  const boxHeight = 46 + bodyHeight + responseHeight;
+  const box = {
+    ...DIALOGUE_BOX,
+    y: DIALOGUE_BOX_BOTTOM - boxHeight,
+    h: boxHeight
+  };
+  const body = {
+    x: box.x + 14,
+    y: box.y + 26,
+    w: box.w - 28,
+    h: bodyHeight
+  };
+  const responseBox = {
+    x: box.x + 14,
+    y: body.y + body.h + 6,
+    w: box.w - 28,
+    h: responseHeight
+  };
+  const visibleLines = Math.max(1, Math.floor((body.h - 14) / DIALOGUE_LINE_HEIGHT));
+  const maxScroll = Math.max(0, allLines.length - visibleLines);
+  const scroll = clamp(Number(dialogue.scroll) || 0, 0, maxScroll);
 
   return {
-    box: DIALOGUE_BOX,
-    body: DIALOGUE_BODY,
-    responseBox: DIALOGUE_RESPONSE_BOX,
+    box,
+    body,
+    responseBox,
     lines: allLines.slice(scroll, scroll + visibleLines),
     scroll,
     maxScroll,
     options,
+    optionDetails,
     optionMaxChars
   };
+}
+
+function dialogueChoiceTone(choice) {
+  if (['danger', 'commit', 'quiet', 'normal'].includes(choice?.tone)) return choice.tone;
+  const effects = choice?.effects;
+  if (effects?.startCombat) return 'danger';
+  if (effects?.questUpdate && choice?.close) return 'commit';
+  if (choice?.close && !effects && !choice?.next) return 'quiet';
+  return 'normal';
 }
 
 export function normalizeUiText(str) {

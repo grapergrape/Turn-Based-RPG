@@ -22,11 +22,17 @@ try {
   const SCALE = Number(params.get('scale') ?? '3');
   const section = params.get('section') ?? 'furniture';
   const SEEDS = Number(params.get('seeds') ?? '3');
+  const footprintMatch = params.get('footprint')?.match(/^(\d+)x(\d+)$/);
+  const FOOTPRINT = footprintMatch
+    ? { width: Number(footprintMatch[1]), height: Number(footprintMatch[2]) }
+    : null;
+  const FOOTPRINT_ACTOR = params.get('actor');
+  const footprintAtlas = FOOTPRINT_ACTOR ? buildSpriteAtlas() : null;
 
   const GROUND_MODELS = ['ball', 'boots', 'coat', 'hood', 'vest', 'ribguard', 'ring', 'necklace', 'key', 'paper', 'vial', 'dressing', 'food', 'rounds', 'sidearm', 'chit', 'shard', 'token'];
 
-  const CELL_W = 150;
-  const CELL_H = 185;
+  const CELL_W = Number(params.get('cellW') ?? (FOOTPRINT ? Math.max(150, (FOOTPRINT.width + FOOTPRINT.height) * 32 + 70) : 150));
+  const CELL_H = Number(params.get('cellH') ?? (FOOTPRINT ? Math.max(185, (FOOTPRINT.width + FOOTPRINT.height) * 16 + 165) : 185));
   const COLS = Number(params.get('cols') ?? '8');
 
   function floorPatch(ctx, cx, cy) {
@@ -35,6 +41,18 @@ try {
         const sx = cx + (gx - gy) * 32;
         const sy = cy + (gx + gy) * 16;
         P.drawStyledFloorCell(ctx, sx, sy, gx + 4, gy + 4, 'stone');
+      }
+    }
+  }
+
+  function footprintFloor(ctx, cx, cy, width, height) {
+    const centerX = (width - 1) / 2;
+    const centerY = (height - 1) / 2;
+    for (let gy = -1; gy <= height; gy += 1) {
+      for (let gx = -1; gx <= width; gx += 1) {
+        const sx = cx + Math.round(((gx - centerX) - (gy - centerY)) * 32);
+        const sy = cy + Math.round(((gx - centerX) + (gy - centerY)) * 16);
+        P.drawStyledFloorCell(ctx, sx, sy, gx + 11, gy + 11, 'stone');
       }
     }
   }
@@ -58,9 +76,14 @@ try {
   } else if (section === 'actors') {
     const atlas = buildSpriteAtlas();
     const facing = params.get('facing') ?? 'se';
-    entries = SPRITE_ATLAS_IDS.map((id) => ({ label: id, draw: (ctx, cx, cy) => {
+    const actorState = params.get('state') ?? 'idle';
+    const actorFrame = Number(params.get('frame') ?? '0');
+    const actorIds = params.get('kinds')
+      ? params.get('kinds').split(',')
+      : SPRITE_ATLAS_IDS;
+    entries = actorIds.map((id) => ({ label: id, draw: (ctx, cx, cy) => {
       floorPatch(ctx, cx, cy);
-      const resolved = getFrame(atlas, id, 'idle', facing, 0);
+      const resolved = getFrame(atlas, id, actorState, facing, actorFrame);
       if (!resolved?.frame) return;
       const { sprite, frame, mirror } = resolved;
       P.drawShadowBlob(ctx, cx, cy, Math.round(sprite.width * 0.6), Math.round(sprite.width * 0.25));
@@ -81,15 +104,61 @@ try {
     entries = kinds.map((kind) => ({ label: kind, draw: (ctx, cx, cy, seed) => {
       const entry = SPRITE_CATALOG[kind];
       if (!entry) throw new Error('unknown kind ' + kind);
-      floorPatch(ctx, cx, cy);
       const extra = params.get('prop') ? JSON.parse(params.get('prop')) : {};
+      const anim = { pulse: 0.5, flicker: 0.5, tick: 0, idleFrame: 0, bob: 0 };
+      if (FOOTPRINT && entry.block) {
+        footprintFloor(ctx, cx, cy, FOOTPRINT.width, FOOTPRINT.height);
+        const centerX = (FOOTPRINT.width - 1) / 2;
+        const centerY = (FOOTPRINT.height - 1) / 2;
+        const cells = [];
+        for (let y = 0; y < FOOTPRINT.height; y += 1) {
+          for (let x = 0; x < FOOTPRINT.width; x += 1) cells.push({ x, y });
+        }
+        cells.sort((a, b) => (a.x + a.y) - (b.x + b.y) || a.y - b.y || a.x - b.x);
+        for (const cell of cells) {
+          const sx = cx + Math.round(((cell.x - centerX) - (cell.y - centerY)) * 32);
+          const sy = cy + Math.round(((cell.x - centerX) + (cell.y - centerY)) * 16);
+          const prop = {
+            kind,
+            x: cell.x,
+            y: cell.y,
+            connected: {
+              xMinus: cell.x > 0,
+              xPlus: cell.x < FOOTPRINT.width - 1,
+              yMinus: cell.y > 0,
+              yPlus: cell.y < FOOTPRINT.height - 1
+            },
+            ...extra
+          };
+          entry.draw(ctx, sx, sy, seed * 101 + cell.x * 17 + cell.y * 31, { prop, anim, pulse: 0.5, flicker: 0.5, player: null });
+        }
+        if (footprintAtlas && FOOTPRINT_ACTOR) {
+          const actorX = cx + Math.round(-FOOTPRINT.height * 16);
+          const actorY = cy + Math.round((FOOTPRINT.height + 2) * 8);
+          const resolved = getFrame(footprintAtlas, FOOTPRINT_ACTOR, 'idle', 'ne', 0);
+          if (resolved?.frame) {
+            const { sprite, frame, mirror } = resolved;
+            P.drawShadowBlob(ctx, actorX, actorY, Math.round(sprite.width * 0.6), Math.round(sprite.width * 0.25));
+            if (mirror) {
+              ctx.save();
+              ctx.translate(Math.round(actorX), Math.round(actorY - sprite.anchorY));
+              ctx.scale(-1, 1);
+              ctx.drawImage(frame, -sprite.anchorX, 0);
+              ctx.restore();
+            } else {
+              ctx.drawImage(frame, Math.round(actorX - sprite.anchorX), Math.round(actorY - sprite.anchorY));
+            }
+          }
+        }
+        return;
+      }
+      floorPatch(ctx, cx, cy);
       const prop = {
         kind, x: 4, y: 4, orient: seed % 2 ? 'se' : 'sw',
         connected: {}, opened: seed === 2, consumed: false,
         model: 'key', count: 1, lit: true, state: seed === 2 ? 'opened' : undefined,
         ...extra
       };
-      const anim = { pulse: 0.5, flicker: 0.5, tick: 0, idleFrame: 0, bob: 0 };
       entry.draw(ctx, cx, cy, seed * 7 + 3, { prop, anim, pulse: 0.5, flicker: 0.5, player: null });
     } }));
   }

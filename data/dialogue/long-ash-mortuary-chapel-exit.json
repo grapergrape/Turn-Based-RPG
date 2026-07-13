@@ -1,0 +1,34 @@
+{
+  "id": "long-ash-mortuary-chapel-exit",
+  "title": "Mortuary Chapel Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Ash light shows through the outer door. The washing room darkens behind you."
+      ],
+      "choices": [
+        {
+          "label": "Return to the graveyard",
+          "effects": {
+            "log": "You leave the Mortuary Chapel.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": {
+                "x": 142,
+                "y": 47
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay among the washing tables."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

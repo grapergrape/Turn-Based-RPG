@@ -62,7 +62,7 @@ export class UIRenderer {
     if (ui.screen === 'journal') drawJournal(ctx, ui, tools);
     drawHud(ctx, ui, tools);
     if (ui.screen === 'dialogue') drawDialogue(ctx, ui, tools);
-    if (ui.areaTitle && !ui.screen) drawAreaTitle(ctx, ui.areaTitle);
+    if (ui.areaTitle && !ui.screen && ui.mode !== 'COMBAT') drawAreaTitle(ctx, ui.areaTitle);
     if (ui.hoverText && !ui.screen) drawHoverText(ctx, ui.hoverText);
     if (ui.contextActionMenu && !ui.screen) drawContextActionMenu(ctx, ui.contextActionMenu, tools);
     drawCursor(ctx, ui.cursor);

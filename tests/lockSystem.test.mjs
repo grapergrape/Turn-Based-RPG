@@ -49,6 +49,23 @@ function inventory(items = []) {
 
 {
   const method = {
+    id: 'bare-pins',
+    field: 'security',
+    dc: 40,
+    requiresSecurityTool: false
+  };
+  const status = lockMethodStatus(method, {
+    inventory: inventory(),
+    fieldRating: () => 40
+  });
+  assert.equal(status.available, true);
+  assert.equal(status.requiredItem, null);
+  assert.equal(status.success, true);
+  assert.equal(lockMethodUsesSecurityTool(method, status), false);
+}
+
+{
+  const method = {
     id: 'pry',
     primary: 'body',
     dc: 7,

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 
 import { devConsoleEnabled, installDevConsole } from '../src/core/DevConsole.js';
+import { applyDevPrimaryOverrides, resolveDevStart } from '../src/core/DevStart.js';
 import { Entity } from '../src/entities/Entity.js';
 
 function makeGame() {
@@ -37,6 +38,18 @@ function makeGame() {
   assert.equal(devConsoleEnabled(new URL('http://localhost:4173/?playtest=1')), true);
   assert.equal(devConsoleEnabled(new URL('http://localhost:4173/')), false);
   assert.equal(devConsoleEnabled(new URL('https://example.com/?playtest=1')), false);
+}
+
+{
+  const start = resolveDevStart(new URL('http://localhost:4173/?level=long-ash-road-approach&x=140&y=56&body=4&skipIntro=1'));
+  assert.equal(start.levelPath, './data/levels/long_ash_road_approach.json');
+  assert.deepEqual(start.bootOptions.player, { x: 140, y: 56 });
+  assert.deepEqual(start.bootOptions.primaries, { body: 4 });
+
+  const player = makeGame().player;
+  assert.equal(applyDevPrimaryOverrides(player, start.bootOptions.primaries), true);
+  assert.equal(player.progression.basePrimaries.body, 4);
+  assert.equal(player.progression.primaries.body, 4);
 }
 
 {

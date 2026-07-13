@@ -1,0 +1,39 @@
+{
+  "id": "those-who-heard-the-bell",
+  "title": "Those Who Heard the Bell",
+  "initialStage": "investigate-chapels",
+  "objectives": [
+    {
+      "text": "Search the graveyard chapels.",
+      "stage": "investigate-chapels"
+    },
+    {
+      "text": "Find Sava Rell and decide what remains.",
+      "stage": "judge-vigil"
+    },
+    {
+      "text": "The twelve have been judged.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "investigate-chapels",
+      "task": "Search the graveyard chapels",
+      "xp": 0,
+      "description": "The smaller chapel keeps twelve candle places for eleven calcified dead. The mortuary has its own count."
+    },
+    {
+      "id": "judge-vigil",
+      "task": "Find Sava Rell and decide what remains",
+      "xp": 50,
+      "description": "Hessa Marr kept twelve names. The road office buried Sava beneath the mortuary after he turned toward Hallowfen's bells."
+    },
+    {
+      "id": "complete",
+      "task": "The twelve have been judged",
+      "xp": 50,
+      "description": "You chose what the road will remember about the twelve."
+    }
+  ]
+}

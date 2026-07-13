@@ -366,7 +366,11 @@ class GameRuntimeState {
       player: this.player,
       exploredCells: this.exploredMapTiles,
       hiddenTiles: this.hiddenTiles,
-      interactables: this.level?.interactables ?? [],
+      interactables: (this.level?.interactables ?? []).filter((object) =>
+        !object.hiddenByFlag &&
+        !object.disabledByFlag &&
+        (!object.hiddenUntilOpened || object.opened || object.consumed)
+      ),
       actors: [...(this.npcs ?? []), ...(this.enemies ?? [])],
       combatTriggers: this.level?.combatTriggers ?? [],
       questDefs: this.questDefs,

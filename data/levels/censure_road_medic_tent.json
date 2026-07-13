@@ -1,7 +1,7 @@
 {
   "id": "censure-road-medic-tent",
   "name": "Medic Tent",
-  "intro": "Washed canvas, bitter medicine, and old blood make the air close.",
+  "intro": "Washed canvas cannot cover what is underneath: bitter medicine, and older blood.",
   "width": 12,
   "height": 10,
   "tileSize": 64,

@@ -274,3 +274,155 @@ Bench initials; hearth pot with standing spoon; window parchment pane.
 Session ended at user request after 41 passes. All tests + content check
 green. Work left UNCOMMITTED in the working tree by design - commit is the
 next action for whoever picks this up.
+
+## Forty-fourth pass: bell-stair alignment (2026-07-11, continued session)
+
+New goal dimension: review map layouts and prop orientations. Started with the
+named case, "the staircase isn't aligned with the wall."
+
+Root cause: the `stone-stairwell` was a tall free-standing masonry portal
+drawn at a floor tile's centre, duplicating the adjacent `wall-stair-door` and
+floating. Rewrote it as a low grounded worn *threshold landing* (orientation-
+aware via `oriented()`, +A axis points at the door), and skipped its sun-shadow
+(flush stone). Removed the breach landing entirely: (30,3) is a one-tile wall
+pocket where any low prop is fully occluded by the flanking walls that draw in
+front of it (proven with a debug locator spike). The `wall-stair-door` there
+reads as the stair alone. Bell-room landing (5,9) kept (orient `nw`, sits on
+open floor in front of a back wall, not occluded).
+
+Verify loop: node draw-call smoke across all 4 orients; isolation render on the
+real chapel floor + mood; debug-locator to prove in-scene tile position;
+scene crops of both placements. `npm test` (45 suites) + `npm run check`
+(199 JSON) green. New dev harness `.ai/map-review/preview-stairwell.html`.
+
+Layout lesson recorded in audit doc: in this depth-sorted iso, low props belong
+on open floor; a floor prop boxed in by walls of greater x+y is invisible.
+Still UNCOMMITTED by design.
+
+## Forty-fifth pass: stone floor de-scribbled (2026-07-11)
+
+Dominant surface. Two mark systems (chip run + diagonal crack + horizontal chip
+mark) all fired on the same ~45% of tiles, clumping into scribble. Cut the
+crack to ~25%, decorrelated and mostly hairline; dropped the always-on chip
+mark. Added rare broken-flagstone recesses (~1 in 13: dirt/rubble pit, lit
+break-lip) for real ruined-chapel character. Verified at 4x and at game scale
+in the breach nave with mood. stone floor 6 -> 7.5. Tests + check green.
+New harness preview-floor.html. Still UNCOMMITTED.
+
+## Forty-sixth pass: remaining over-marked floors (2026-07-11)
+
+packed-earth (barn/sheds/camp): BASE cell stamped footprints+furrows+7 scratch
+lines+chips+bone flecks on EVERY tile - rewrote to decorrelated per-trace gates
+(seed%3/4/5/6), quiet ground between; story overlay trimmed to 25% tent-stake
+holes, dropped bright diagonal. ash-gravel: base already gravelled, dropped the
+12 redundant overlay chips for a sparse drag/scuff at 25%. cave-stone: base
+already fractures, replaced 3 redundant overlay cracks with occasional damp
+seep / bone fleck at 25%. Verified in-scene: storage shed + infected cave.
+All 6->7.5 / 6.5->7.5. Tests + check green. Still UNCOMMITTED.
+
+Extended pass 46: graveyard-earth (tally scratches were on EVERY tile - gated to
+~15%, seams to 80% so the plot grid varies) and road-shoulder (60%/6-chips ->
+35%/3-chips, hairline crack). Reviewed forest-floor, mud-track, ash-road,
+farm-plank, wheat-field, furrow-field - all read fine as-is. Six floor styles
+de-scribbled total (stone, packed-earth, ash-gravel, cave-stone, graveyard-earth,
+road-shoulder). Tests + check green.
+
+## Forty-seventh pass: stone floor -> fitted masonry (2026-07-11)
+
+Pushed the dominant surface 7.5 -> 8.5. Added a faint fitted-flag bevel (upper-
+left lit stoneDust@0.13, lower-right shadow outline@0.22) replacing the old
+random single-edge joint + random-side edge-wear, so every flag reads as laid
+bevelled stone with depth. Added a 3rd darker base tone and a zone-scale
+soot/damp bloom (whole 2x2 zones darken) for big soft shapes. Verified at 4x and
+in the breach nave at game scale with mood. Tests + check green. UNCOMMITTED.
+
+## Forty-eighth pass: stone walls -> fitted masonry (2026-07-11)
+
+Walls = largest interior pixel area. drawIsoWallBlock drew each face as one flat
+plane. Added drawStoneBlockTones: weathers ~35% of the course/seam-grid blocks a
+shade lighter/darker under the course lines, so faces read as many fitted aged
+stones. Close tones, minority of blocks -> weathering not checkerboard. Applies
+to every stone interior at zero data cost. stone wall 7.5 -> 8.5. Verified in
+breach nave. Tests + check green. UNCOMMITTED.
+
+## Forty-ninth pass: crash bug in calcified-crossroad-brother (2026-07-11)
+
+Catalog creature sweep surfaced "ERR side is not defined". drawThrownRoadOfferings
+referenced side/shoulderY (locals of the caller drawCalcifiedCrossroadBrother) -
+a polished-shoulder detail pasted into the wrong function. Kind is placed in
+long_ash_road_approach and the live renderer doesn't try/catch prop draws, so it
+crashed that level's bake. Moved the 2 px back into the brother fn after the
+torso; dropped from the offerings helper. Added tests/catalogRender.test.mjs
+(wired into npm test): renders all 131 kinds x 6 seeds/orients vs a mock ctx,
+asserts none throw. All 131 clean. Full suite (46 tests) + check green. UNCOMMITTED.
+
+## Fiftieth pass: wheat-clump, the most-placed asset (2026-07-11)
+
+Placement census: wheat-clump = 878 instances (top by far; ash-tree 374,
+scrub-bush 261). Reshaped its grain heads from flat 3-4px blocks into narrow
+bristled spindles that nose over with the wind, taper to a point, and splay awns;
+snapped-stalk heads droop to a point. Gold Host-grain still accents 1 in 5.
+wheat-clump ~7 -> ~8. Verified across 6 seeds. Tests + check green. UNCOMMITTED.
+
+## Fifty-first pass: dead canopy thinned (2026-07-11)
+
+ash-tree (374 placements, 2nd-most-placed) foliage read as solid cotton puffs.
+Punched 3 ash-eaten deep-shadow gaps into the shared leafClump primitive so
+dead crowns thin to holes. Consistent across ash-tree/scrub-bush/ash-sapling,
+no regression. ash-tree ~7.5 -> ~8. Tests + check green. UNCOMMITTED.
+
+## Fifty-second pass: skeleton pose variation (2026-07-11)
+
+skeleton (191 placements) only varied by flip -> copy-paste read. Added seed
+variation: spine length 8-10, ribs 3-5, disarticulation spread, flung limb
+angles, optional scavenger-dragged bone (40%), crawl-reach now 60% not always.
+skeleton ~7 -> ~8. bone-niche (137) reviewed, already good, left as-is.
+Tests + check green. UNCOMMITTED.
+
+## Fifty-third pass: cobweb made visible (2026-07-11)
+
+cobweb (52) had good structure but dark stoneDust strands on a dark floor read
+as a faint scratch. Recoloured spokes to bone-pale hostBone (dusty silk catches
+light), catch-rings to stoneDust, alpha 0.9->0.8. Now reads as a web with a
+wrapped husk. cobweb ~7 -> ~8. bone-pile(48) + calcified-penitent(44) reviewed,
+already clean, left as-is. Tests(46) + check green. UNCOMMITTED.
+
+## Fifty-fourth pass: cracked-column drums (2026-07-11)
+
+cracked-column: flat dark shaft, near-identical copies. Gave each of 4 drum
+sections a seed-keyed shade off the base (wall-style masonry weathering) on the
+central face, keeping lit-left/shade-right modelling. Reads as stacked drums,
+copies differ. ~7 -> ~8. quarantine-sign + ritual sigils reviewed, read fine.
+Tests(46) + check green. UNCOMMITTED.
+
+## Fifty-fifth pass: irregular flagstone slabs (2026-07-11)
+
+stone floor 8.5 -> 9. Grouped tiles into multi-tile slabs (2x2, staggered brick
+courses) via a pure-function slabId so neighbours agree on shared edges. Bevel
+joints draw ONLY at slab boundaries; a slab shares one base tone. The rigid
+one-tile grid is gone - reads as a grand laid stone-slab floor. Verified at 4x
+and in the breach nave at game scale. Tests(46) + check green. UNCOMMITTED.
+
+## Fifty-sixth pass: natural-floor atmospheric depth (2026-07-11)
+
+Added the stone floor's zone-scale bloom (broad low-alpha shadow, ~1 zone in 6)
+to cave-stone and packed-earth so whole patches darken under soft wet/trodden
+shadow - atmospheric depth to match stone, no per-tile clutter. cave-stone +
+packed-earth 7.5 -> 8. Floor family now coherent (stone 9, cave/packed 8).
+Verified in infected cave. Tests(46) + check green. UNCOMMITTED.
+
+## Fifty-seventh pass: bell chamber hero pass (2026-07-11)
+
+Bespoke per-scene detail on the payoff scene (sparse, unlike the dense nave).
+Hand-placed under the cracked bell: rubble (shaken mount), blood-stain (it came
+down on someone), floor-crack (impact), blood-sigil (mourner's mark). The bell
+now reads as having FALLEN and killed; composition leads player->rope->bell.
+bell chamber ~8 -> ~9. Tests(46) + check(199) green. UNCOMMITTED.
+
+## Fifty-eighth pass: stone floor -> 9.5 exemplar (2026-07-11)
+
+Added traffic-worn polish (soft 2-layer sheen toward light, keyed to slab, ~1 in
+5 slabs) - the lived-in read. Stone floor now carries the full exemplar stack
+(irregular slabs, boundary bevels, per-slab tone, zone stains, broken flags,
+worn polish, calm damage): 9 -> 9.5. Second exemplar alongside the Opened Saint.
+Verified in breach nave. Tests(46) + check(199) green. UNCOMMITTED.

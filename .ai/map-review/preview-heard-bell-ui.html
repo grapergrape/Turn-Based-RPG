@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- Dev-only harness: isolated verification for the Those Who Heard the Bell
+     dialogue and combat HUD through the real UIRenderer. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>
+  html,body{margin:0;padding:0;background:#000;}
+  main{display:flex;width:2560px;height:960px;}
+  canvas{display:block;width:1280px;height:960px;image-rendering:pixelated;}
+</style>
+</head>
+<body>
+<main>
+  <canvas id="dialogue" width="1280" height="960"></canvas>
+  <canvas id="combat" width="1280" height="960"></canvas>
+</main>
+<script type="module">
+import { UIRenderer } from '/src/render/UIRenderer.js';
+
+try {
+  const renderer = new UIRenderer();
+  const baseUi = {
+    levelName: 'Long Ash Listening Vault',
+    actorName: 'Mara Vey',
+    role: 'Cult-Breaker, Ashen Censure',
+    hp: 14,
+    maxHp: 14,
+    ap: 6,
+    maxAp: 6,
+    statuses: [],
+    inventoryItems: [],
+    carryWeight: 7.8,
+    maxCarryWeight: 10,
+    controls: [],
+    log: ['The bell below us rang first.'],
+    cursor: null
+  };
+
+  const dialogueCanvas = document.getElementById('dialogue');
+  const dialogueCtx = dialogueCanvas.getContext('2d');
+  dialogueCtx.imageSmoothingEnabled = false;
+  dialogueCtx.scale(2, 2);
+  renderer.draw(dialogueCtx, {
+    ...baseUi,
+    screen: 'dialogue',
+    mode: 'EXPLORE',
+    dialogue: {
+      title: 'HEARD BELL JUDGMENT',
+      lines: [
+        "Sava still lives behind the listening seal. Whatever holds him is weakening, but his breath still follows Hessa's count."
+      ],
+      options: [
+        '1. Keep the vigil and restore the names',
+        '2. Perform censure and destroy Sava',
+        '3. Take both records as evidence',
+        '4. Make no judgment yet'
+      ],
+      choices: [
+        { close: true, effects: { questUpdate: { quest: 'those-who-heard-the-bell', stage: 'complete' } } },
+        { close: true, effects: { startCombat: 'sava-listening-niche' } },
+        { close: true, effects: { questUpdate: { quest: 'those-who-heard-the-bell', stage: 'complete' } } },
+        { close: true }
+      ]
+    }
+  });
+
+  const combatCanvas = document.getElementById('combat');
+  const combatCtx = combatCanvas.getContext('2d');
+  combatCtx.imageSmoothingEnabled = false;
+  combatCtx.scale(2, 2);
+  renderer.draw(combatCtx, {
+    ...baseUi,
+    screen: null,
+    mode: 'COMBAT',
+    hp: 11,
+    ap: 5,
+    statuses: [{ label: 'Bleeding', stacks: 1 }],
+    actionName: 'Censure Knife',
+    actionChance: '70%',
+    actionDamage: 'D3',
+    actionReason: '',
+    target: 'Sava Rell 20/20',
+    controls: ['Click/WASD Move', 'Space Attack', 'E End Turn'],
+    log: [
+      'The niche seal falls inward.',
+      'Sava Rell unfolds from a century of stone.'
+    ],
+    areaTitle: { text: 'Long Ash Listening Vault', ttl: 2, duration: 4 }
+  });
+
+  window.heardBellUiReady = true;
+  document.title = 'CAPTURE-READY';
+} catch (error) {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+}
+</script>
+</body>
+</html>

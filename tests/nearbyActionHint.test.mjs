@@ -144,6 +144,21 @@ function makeGame({ interactables = [], npcs = [], groundItems = [] } = {}) {
 }
 
 {
+  const wallDoor = {
+    id: 'wall-door',
+    kind: 'paper-scraps',
+    name: 'Wall Door',
+    x: 2,
+    y: 1,
+    interactionMarker: { x: 1, y: 0 },
+    interact: { type: 'secret-entrance' }
+  };
+  const game = makeGame({ interactables: [wallDoor] });
+  assert.equal(game._buildUi().nearbyActionText, 'E USE: Wall Door');
+  assert.equal(game._buildOverlay().interactionTile, '1,0');
+}
+
+{
   const npc = {
     id: 'selka',
     name: 'Selka',

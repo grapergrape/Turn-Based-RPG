@@ -1,0 +1,34 @@
+{
+  "id": "long-ash-vigil-chapel-exit",
+  "title": "Vigil Chapel Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Grey light lies across the graveyard beyond the door."
+      ],
+      "choices": [
+        {
+          "label": "Return to the graveyard",
+          "effects": {
+            "log": "You step out among the calcified dead.",
+            "loadLevel": {
+              "path": "./data/levels/long_ash_road_approach.json",
+              "player": {
+                "x": 131,
+                "y": 47
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay in the Vigil Chapel."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

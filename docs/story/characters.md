@@ -76,6 +76,12 @@ He should not be written as a clean skeptic. Kael has abandoned test subjects, s
 
 Brother Tarn is a Penitent Engine whose body is mostly machine. He speaks through a damaged vox-grille and etches every failure into his armor. He believes steel remembers duty better than flesh, but he is haunted by the possibility that duty without tenderness becomes another kind of surrender.
 
+Tarn first appears at South Measure on Ash Road South. He is the Engine whose
+tread stopped at the Ash Chapel threshold after a lost brother answered through
+an impossible Host-touched chassis with a retired Hallowfen checkpoint code.
+His first recruitment pressure is documented in
+`docs/story/locations/ash-road-south.md`.
+
 Tarn should feel frightening and sad. He can save a convoy by walking into fire, then recommend executing an infected child because doctrine says hesitation kills cities.
 
 **Personal conflict:** Duty versus tenderness.
