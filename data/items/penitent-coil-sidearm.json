@@ -1,0 +1,66 @@
+{
+  "id": "penitent-coil-sidearm",
+  "name": "Penitent Coil Sidearm",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "coil sidearm",
+  "rarity": "uncommon",
+  "weight": 1.5,
+  "groundModel": "accelerator-sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Penitent Engine workshop",
+    "origin": "Penitent Bastion",
+    "factions": [
+      "penitent-bastion"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "sidearm",
+      "coil sidearm"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 6,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 9,
+        "range": 5,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": false
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-armature",
+      "capacity": 6,
+      "defaultLoaded": 6,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 68
+  },
+  "description": "A compact coil arm built around a Penitent Engine inspection driver. Copper windings show through cooling slots in the black shell."
+}

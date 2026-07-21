@@ -1,0 +1,56 @@
+{
+  "id": "tithewood-great-axe",
+  "name": "Tithewood Great Axe",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "axe",
+  "rarity": "common",
+  "weight": 4.4,
+  "groundModel": "axe",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Tithewood Guard",
+    "factions": [
+      "tithewood-guard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "axe",
+    "roles": [
+      "melee",
+      "axe",
+      "close"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Hew",
+        "mode": "melee",
+        "apCost": 6,
+        "damage": 9,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "committed-blow",
+        "name": "Committed Blow",
+        "mode": "melee",
+        "apCost": 7,
+        "damage": 11,
+        "range": 1,
+        "accuracyBonus": -5,
+        "conditionWear": 2
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A two-handed axe paid for by a winter timber tithe. Each replacement haft carries the year it entered service."
+}

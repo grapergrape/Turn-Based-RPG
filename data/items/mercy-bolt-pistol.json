@@ -1,0 +1,65 @@
+{
+  "id": "mercy-bolt-pistol",
+  "name": "Mercy Bolt Pistol",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "specialist pistol",
+  "rarity": "rare",
+  "weight": 1,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Hospital Orders",
+    "factions": [
+      "hospital-orders"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "specialist pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 4,
+        "range": 4,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "quick-shot",
+        "name": "Quick Shot",
+        "mode": "ranged",
+        "apCost": 2,
+        "damage": 3,
+        "range": 4,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "sidearm-cartridge",
+      "capacity": 10,
+      "defaultLoaded": 10,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "Hospital escorts load this manually cycled pistol with marked low-flash rounds. Its enclosed action is easy to scrub after quarantine work."
+}

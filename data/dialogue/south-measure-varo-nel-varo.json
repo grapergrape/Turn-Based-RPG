@@ -1,0 +1,59 @@
+{
+  "id": "south-measure-varo-nel-varo",
+  "title": "Noa Faber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Noa pins a rubbing of the north-feed valve over the faction seals.",
+        "\"Resident isolation plan sounds grand. In practice we cut the north feed, then spend half the night crawling to the old return.\""
+      ],
+      "choices": [
+        {
+          "label": "Have Noa mark the cut",
+          "next": "cut",
+          "effects": {
+            "setFlag": "resident-isolation-plan-read"
+          }
+        },
+        {
+          "label": "Ask who keeps the loop running",
+          "next": "hands"
+        },
+        {
+          "label": "Leave Noa to the ungrand work",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "cut": {
+      "lines": [
+        "Her nail stops beneath the black-gold line in the pipe skin. \"North feed closes here. The old return opens after, and Hallowfen’s answer loses the path to our cups.\"",
+        "\"Flow drops. Anyone promising otherwise may demonstrate by carrying the difference.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whose hands turn the valves",
+          "next": "hands"
+        },
+        {
+          "label": "Leave the seam marked",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "hands": {
+      "lines": [
+        "\"Ours. Outside help departs as soon as the report sounds impressive, so Horace is teaching the old valves to people who sleep here.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Noa return to the rubbing",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

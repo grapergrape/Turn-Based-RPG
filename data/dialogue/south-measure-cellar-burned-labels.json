@@ -1,0 +1,56 @@
+{
+  "id": "south-measure-cellar-burned-labels",
+  "title": "Burned Crate Labels",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The medicine labels came from different routes, but the dose numbers were copied by one hand.",
+        "The same narrow N appears on Salome’s lesson cards."
+      ],
+      "choices": [
+        {
+          "label": "Take the stock cards to Joanna",
+          "conditions": {
+            "itemsMax": {
+              "south-measure-charity-cards": 0
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "neri-copy-hand-found",
+              "neri-investigation-started",
+              "charity-stock-cards-found"
+            ],
+            "inventory": {
+              "add": [
+                {
+                  "item": "south-measure-charity-cards",
+                  "count": 1
+                }
+              ]
+            },
+            "questUpdate": [
+              {
+                "quest": "charity-cot",
+                "stage": "trace-doses",
+                "log": "The copied labels tie the mixed charity stock to Salome’s lesson hand."
+              },
+              {
+                "quest": "lesson-under-the-wrap",
+                "stage": "gather-evidence",
+                "log": "The copied medicine labels match Salome’s lesson hand."
+              }
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Leave the record where it lies",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

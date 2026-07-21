@@ -1,0 +1,50 @@
+{
+  "id": "old-pilgrim-trial-roll",
+  "title": "Candidate Roll",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "old-pilgrim-name-roll-trials"
+        ]
+      },
+      "else": "copied",
+      "lines": [
+        "Four candidate names were entered before the alarm. Later hands add duties beside them: cups, valves, ration carry, sick watch.",
+        "None made profession. All four names were folded back into the congregation’s working roll."
+      ],
+      "choices": [
+        {
+          "label": "Copy the four candidate names",
+          "effects": {
+            "setFlag": "old-pilgrim-name-roll-trials",
+            "questUpdate": {
+              "quest": "names-below-the-hill",
+              "stage": "find-chapter-roll",
+              "log": "The four candidates are accounted for. Only the chapter’s final seven names remain."
+            },
+            "xp": 5
+          },
+          "next": "copied"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "copied": {
+      "lines": [
+        "The duties show what the trials meant before they became locks: move quietly, keep the basins, share weight, choose who needs aid first."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -13,6 +13,6 @@ Use this folder for the game's game-facing narrative foundation. The full canon 
 
 Current location plans:
 
-- `locations/ash-road-south.md` - South Measure, Brother Tarn's Ash Chapel connection, the refugee settlement's water crisis, and its Compact and Morrow Chain pressures.
+- `locations/ash-road-south.md` - South Measure, Brother Cassian's Ash Chapel connection, the refugee settlement's water crisis, and its Compact and Morrow Chain pressures.
 
 Keep canonical story decisions synchronized with `.ai/memory/story.md`.

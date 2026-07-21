@@ -1,0 +1,55 @@
+{
+  "id": "old-pilgrim-closure-register",
+  "title": "Closure Duty Register",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "old-pilgrim-name-roll-closure"
+        ]
+      },
+      "else": "copied",
+      "lines": [
+        "A pressure slate lists the first watch below the church: six priests, eleven nuns, fourteen novices, and thirty pilgrims.",
+        "The alarm reads REGIONAL CONTAMINATION: OUTER CLOSURE AUTOMATIC. Local release remains disabled."
+      ],
+      "choices": [
+        {
+          "label": "Copy the duty roll and alarm line",
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-names-quest-found",
+              "old-pilgrim-name-roll-closure",
+              "old-pilgrim-automatic-closure-known"
+            ],
+            "questUpdate": {
+              "quest": "names-below-the-hill",
+              "stage": "find-quarters-roll",
+              "log": "The closure duty roll names the first watch. A sleeping roll should account for the rest of the congregation."
+            },
+            "xp": 5
+          },
+          "next": "copied"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "copied": {
+      "lines": [
+        "The automatic seal accepted a regional alarm. No priest or nun below the hill ordered the doors shut.",
+        "A blank clearance box waits beneath the sixty-one admitted names."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

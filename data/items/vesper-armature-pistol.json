@@ -1,0 +1,54 @@
+{
+  "id": "vesper-armature-pistol",
+  "name": "Vesper Armature Pistol",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "coil sidearm",
+  "rarity": "uncommon",
+  "weight": 1.5,
+  "groundModel": "accelerator-sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Vesper Yard",
+    "factions": [
+      "vesper-yard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "sidearm",
+      "coil sidearm"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 7,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 2,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-armature",
+      "capacity": 6,
+      "defaultLoaded": 6,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 73
+  },
+  "description": "Yard artificers rebuilt a magnetic rivet launcher into a blunt service pistol. A charge needle rises beside the rear sight before it can fire."
+}

@@ -1,0 +1,653 @@
+{
+  "id": "old-pilgrim-hill-church",
+  "name": "Hill Church",
+  "intro": "The Hill Church smells of wet plaster and old linen. Nothing has lived in the public rooms for years.",
+  "width": 44,
+  "height": 32,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#15130e",
+    "floorShadeAlpha": 0.18,
+    "ambient": "#172635",
+    "ambientAlpha": 0.08,
+    "vignette": 0.2
+  },
+  "quests": [
+    "road-through-the-fields",
+    "the-buried-novitiate",
+    "names-below-the-hill"
+  ],
+  "dialogue": [
+    "old-pilgrim-father-noll-below",
+    "old-pilgrim-hill-church-exit",
+    "old-pilgrim-apse-synthesis"
+  ],
+  "tiles": [
+    "############################################",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........................................#",
+    "#..........................................#",
+    "#..........#....................#..........#",
+    "#####################..#####################",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#####.#####......................####.######",
+    "#..........................................#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#######.###......................#####.#####",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "#..........#....................#..........#",
+    "############################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 22,
+      "y": 29,
+      "facing": "n"
+    },
+    "npcs": [
+      {
+        "actor": "old-pilgrim-father-noll",
+        "spawnId": "old-pilgrim-father-noll-below",
+        "x": 20,
+        "y": 7,
+        "facing": "ne",
+        "dialogue": "old-pilgrim-father-noll-below",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "old-pilgrim-return-lift-open"
+        },
+        "ambient": [
+          "“Sixty-one names. The count was the easy part.”"
+        ],
+        "mapMarker": {
+          "label": "Father Noah",
+          "kind": "quest"
+        }
+      }
+    ],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "chapel-double-door",
+      "x": 22,
+      "y": 31,
+      "id": "old-pilgrim-church-public-door",
+      "name": "Public Church Doors",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-hill-church-exit"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 22,
+        "y": 30
+      },
+      "mapMarker": {
+        "label": "Old Pilgrim Way",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 36,
+      "y": 5,
+      "id": "old-pilgrim-closure-desk",
+      "name": "Closure Desk",
+      "blocking": true,
+      "interact": {
+        "type": "note",
+        "log": "A foundation inventory is cut into the desk edge. One apse measurement was corrected twice.",
+        "search": {
+          "id": "old-pilgrim-closure-plan-search",
+          "title": "Closure Desk",
+          "lines": [
+            "The corrected apse depth exceeds the public stair and sacristy together."
+          ],
+          "useLabel": "Study the foundation inventory",
+          "methods": [
+            {
+              "id": "old-pilgrim-read-closure-doctrine",
+              "label": "Read the closure office notation",
+              "field": "doctrine",
+              "dc": 27,
+              "successLog": "The mark assigns a pressure stair to the novitiate below the apse.",
+              "failLog": "The office marks give rank and supply counts, but no clear route.",
+              "success": {
+                "setFlag": "old-pilgrim-apse-clue-ledger",
+                "log": "The foundation inventory reserves depth beneath the apse for a closure office omitted from the public plan."
+              }
+            },
+            {
+              "id": "old-pilgrim-measure-apse-foundation",
+              "label": "Rebuild the apse measurements",
+              "field": "search",
+              "dc": 27,
+              "successLog": "The missing depth forms a second foundation level beneath the altar.",
+              "failLog": "The corrected figures will not settle into one plan.",
+              "success": {
+                "setFlag": "old-pilgrim-apse-clue-ledger",
+                "log": "The foundation inventory reserves depth beneath the apse for a closure office omitted from the public plan."
+              }
+            },
+            {
+              "id": "old-pilgrim-match-noll-copy",
+              "label": "Match Father Noah’s copied line",
+              "conditions": {
+                "flag": "old-pilgrim-father-plan-hint"
+              },
+              "dc": 0,
+              "successLog": "The copied inner-key line fits the omitted foundation level.",
+              "failLog": "The copy does not align with the surviving figures.",
+              "success": {
+                "setFlag": "old-pilgrim-apse-clue-ledger",
+                "log": "The foundation inventory reserves depth beneath the apse for a closure office omitted from the public plan."
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Closure Desk",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "loose-flagstone",
+      "x": 20,
+      "y": 4,
+      "id": "old-pilgrim-apse-foundation-seam",
+      "name": "Apse Foundation Seam",
+      "interact": {
+        "type": "note",
+        "log": "The public floor meets a deeper stone face beneath the apse.",
+        "search": {
+          "id": "old-pilgrim-apse-foundation-search",
+          "title": "Apse Foundation",
+          "lines": [
+            "Plaster hides a vertical joint wider than any settling crack."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-trace-foundation-seam",
+              "label": "Trace the hidden joint",
+              "field": "search",
+              "dc": 30,
+              "successLog": "The joint outlines a door faced with altar stone.",
+              "failLog": "The cracked plaster breaks the joint into several possible lines.",
+              "success": {
+                "setFlag": "old-pilgrim-apse-clue-foundation",
+                "log": "The apse foundation contains a concealed door-width joint."
+              }
+            },
+            {
+              "id": "old-pilgrim-read-pressure-mortar",
+              "label": "Read the pressure mortar",
+              "field": "engineering",
+              "dc": 30,
+              "successLog": "Flexible mortar isolates one slab from the surrounding foundation.",
+              "failLog": "Age and damp hide the original mortar courses.",
+              "success": {
+                "setFlag": "old-pilgrim-apse-clue-foundation",
+                "log": "The apse slab was built to move independently of the church floor."
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Apse Foundation",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "bell-rope",
+      "x": 38,
+      "y": 6,
+      "id": "old-pilgrim-bell-conduit",
+      "name": "Severed Bell Conduit",
+      "blocking": true,
+      "interact": {
+        "type": "note",
+        "log": "The bell cable enters the floor instead of climbing directly to the roof.",
+        "search": {
+          "id": "old-pilgrim-bell-conduit-search",
+          "title": "Bell Conduit",
+          "lines": [
+            "Two cables share the chase: the bell line and another that descends beneath the apse."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-follow-bell-conduit",
+              "label": "Follow the second cable",
+              "field": "engineering",
+              "dc": 27,
+              "successLog": "The second cable runs toward a buried pressure release.",
+              "failLog": "The two cable paths cross behind the wall and disappear.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-apse-clue-bell",
+                  "old-pilgrim-bell-cable-known"
+                ]
+              }
+            },
+            {
+              "id": "old-pilgrim-read-bell-wear",
+              "label": "Read the cable wear",
+              "field": "search",
+              "dc": 30,
+              "successLog": "One cable rang the bell. The cleaner cable was pulled only during closure drills.",
+              "failLog": "Rust has blurred the wear on both cables.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-apse-clue-bell",
+                  "old-pilgrim-bell-cable-known"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Bell Conduit",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "wall-stair-door",
+      "x": 22,
+      "y": 0,
+      "id": "old-pilgrim-concealed-apse-door",
+      "name": "Concealed Apse Door",
+      "blocking": true,
+      "passableWhenOpen": true,
+      "wallPlane": "sw",
+      "visibleWhenFlags": [
+        "old-pilgrim-closure-plan-read"
+      ],
+      "interactionMarker": {
+        "x": 22,
+        "y": 1
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "log": "The apse stone draws inward around a pressure-rated stair.",
+        "lock": {
+          "id": "old-pilgrim-apse-release-lock",
+          "title": "Apse Closure Release",
+          "lines": [
+            "Two retaining teeth sit behind the altar plinth. Neither belongs to the public church."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-release-apse-engineering",
+              "label": "Balance the retaining teeth",
+              "field": "engineering",
+              "dc": 27,
+              "successLog": "Both teeth lift under equal load. The apse stone withdraws.",
+              "failLog": "One tooth rises while the other bites deeper.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-apse-release-found",
+                  "old-pilgrim-apse-opened-engineering"
+                ],
+                "questUpdate": {
+                  "quest": "the-buried-novitiate",
+                  "stage": "enter-buried-novitiate",
+                  "log": "The concealed apse door opens onto a sealed closure stair."
+                },
+                "loadLevel": {
+                  "path": "./data/levels/old_pilgrim_closure_stair.json",
+                  "player": {
+                    "x": 15,
+                    "y": 3,
+                    "facing": "s"
+                  }
+                }
+              }
+            },
+            {
+              "id": "old-pilgrim-release-apse-security",
+              "label": "Walk the concealed release pins",
+              "field": "security",
+              "dc": 27,
+              "requiresSecurityTool": false,
+              "successLog": "The pins turn in opposite order. The apse stone withdraws.",
+              "failLog": "The final pin stays loaded behind the stone.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-apse-release-found",
+                  "old-pilgrim-apse-opened-security"
+                ],
+                "questUpdate": {
+                  "quest": "the-buried-novitiate",
+                  "stage": "enter-buried-novitiate",
+                  "log": "The concealed apse door opens onto a sealed closure stair."
+                },
+                "loadLevel": {
+                  "path": "./data/levels/old_pilgrim_closure_stair.json",
+                  "player": {
+                    "x": 15,
+                    "y": 3,
+                    "facing": "s"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Buried Apse Door",
+        "kind": "locked"
+      }
+    },
+    {
+      "kind": "damaged-altar",
+      "x": 22,
+      "y": 5,
+      "id": "old-pilgrim-raised-apse",
+      "name": "Raised Apse",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-apse-synthesis"
+      },
+      "blocking": true,
+      "mapMarker": {
+        "label": "Raised Apse",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 19,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "chapel-font",
+      "x": 24,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "broken-pew",
+      "x": 16,
+      "y": 14,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "broken-pew",
+      "x": 26,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "broken-pew",
+      "x": 16,
+      "y": 18,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "broken-pew",
+      "x": 26,
+      "y": 18,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "broken-pew",
+      "x": 16,
+      "y": 22,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "broken-pew",
+      "x": 26,
+      "y": 22,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "broken-pew",
+      "x": 16,
+      "y": 26,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "broken-pew",
+      "x": 26,
+      "y": 26,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 5,
+      "y": 12,
+      "blocking": true,
+      "orient": "se",
+      "variant": "hospice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 8,
+      "y": 16,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "hospice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 5,
+      "y": 23,
+      "blocking": true,
+      "orient": "se",
+      "variant": "hospice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 8,
+      "y": 29,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "hospice"
+    },
+    {
+      "kind": "dining-table",
+      "x": 37,
+      "y": 15,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 39,
+      "y": 16,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 40,
+      "y": 23,
+      "blocking": true
+    },
+    {
+      "kind": "farm-prep-table",
+      "x": 35,
+      "y": 28,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "vigil-candle-rack",
+      "x": 7,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "mortuary-washing-table",
+      "x": 5,
+      "y": 17,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 9,
+      "y": 24,
+      "blocking": true
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 35,
+      "y": 18
+    },
+    {
+      "kind": "wax-stain",
+      "x": 22,
+      "y": 9
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 10,
+      "y": 15,
+      "id": "old-pilgrim-public-hospice-roll",
+      "name": "Road Hospice Board",
+      "interact": {
+        "type": "note",
+        "log": "The board sorts cots by illness and distance walked. Pilgrims unable to pay were given the west wall and morning work."
+      },
+      "blocking": true,
+      "variant": "hospice-board"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 37,
+      "y": 18,
+      "id": "old-pilgrim-public-road-register",
+      "name": "Last Public Road Register",
+      "interact": {
+        "type": "note",
+        "log": "The last public page records sixty-one people sent below during the regional alarm. No page records their return."
+      }
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 37,
+      "y": 8,
+      "id": "old-pilgrim-return-lift-landing",
+      "name": "Opened Bell Lift",
+      "interact": {
+        "type": "note",
+        "log": "The narrow lift now stands level with the bell stair. Its cable drops into the buried chapter."
+      },
+      "blocking": true,
+      "visibleWhenFlags": [
+        "old-pilgrim-return-lift-open"
+      ]
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 4,
+      "y": 27,
+      "id": "old-pilgrim-church-hospice-chest",
+      "name": "Hospice Linen Chest",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "Mice took the linen. A sealed dressing and three old ducats remain under the false bottom.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 3
+          }
+        ]
+      }
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 19,
+      "y": 5,
+      "id": "old-pilgrim-public-name-memorial",
+      "blocking": true,
+      "variant": "memorial",
+      "visibleWhenFlags": [
+        "old-pilgrim-names-memorial"
+      ]
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 36,
+      "y": 15,
+      "id": "old-pilgrim-road-book-copy",
+      "blocking": true,
+      "variant": "road-book",
+      "visibleWhenFlags": [
+        "old-pilgrim-names-road-copy"
+      ]
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 37,
+      "y": 7,
+      "id": "old-pilgrim-sealed-name-casket",
+      "blocking": true,
+      "variant": "sealed",
+      "visibleWhenFlags": [
+        "old-pilgrim-names-sealed"
+      ]
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "old-pilgrim-church-loose-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 8,
+      "y": 8
+    }
+  ]
+}

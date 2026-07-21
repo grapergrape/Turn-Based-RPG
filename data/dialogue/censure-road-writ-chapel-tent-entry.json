@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-writ-chapel-tent-entry",
+  "title": "Writ Chapel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A strip of candlelight lies across the canvas floor beyond the flap."
+      ],
+      "choices": [
+        {
+          "label": "Enter the writ chapel",
+          "effects": {
+            "log": "You enter the writ chapel.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_writ_chapel_tent.json",
+              "player": { "x": 6, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside the writ chapel."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

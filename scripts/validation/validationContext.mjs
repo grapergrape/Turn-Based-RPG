@@ -43,12 +43,14 @@ export const root = process.cwd();
 export const dataRoot = join(root, 'data');
 export const errors = [];
 
-export const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'sidearm', 'melee', 'trinket', 'ring']);
+export const ITEM_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'weapon', 'sidearm', 'melee', 'trinket', 'ring']);
 export { ITEM_RARITY_IDS };
 export const ITEM_GROUND_MODELS = new Set([
   'ball', 'boots', 'coat', 'hood', 'vest', 'ring', 'necklace', 'key',
   'token', 'chit', 'paper', 'vial', 'dressing', 'rounds', 'shard', 'food',
-  'ribguard', 'sidearm'
+  'ribguard', 'sidearm', 'accelerator-sidearm', 'smg', 'carbine',
+  'rifle', 'shotgun', 'support-gun', 'precision-rifle', 'accelerator-rifle',
+  'rail-rifle', 'knife', 'sword', 'axe', 'blunt', 'pike', 'tool-weapon'
 ]);
 export const GROUND_ITEM_PICKUP_POLICIES = new Set(['player', 'any']);
 export const DOOR_LEAVES = new Set(['north', 'south']);
@@ -60,7 +62,7 @@ export const FLOOR_STYLE_ID_SET = new Set(FLOOR_STYLE_IDS);
 export const PERCEPTION_FACING_IDS = new Set(PERCEPTION_FACINGS);
 export const PATROL_MODE_IDS = new Set(PATROL_MODES);
 export const SUSPICION_SEVERITY_IDS = new Set(Object.values(SUSPICION_SEVERITY));
-export const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'sidearm', 'melee', 'trinket', 'ring1', 'ring2']);
+export const ACTOR_EQUIPMENT_SLOTS = new Set(['clothes', 'armor', 'boots', 'helmet', 'weapon1', 'weapon2', 'sidearm', 'melee', 'trinket', 'ring1', 'ring2']);
 export const ACTOR_BODY_FRAMES = new Set(['feminine', 'masculine', 'androgynous']);
 export const ACTOR_ANATOMY = new Set(['vulva', 'penis', 'smooth', 'intersex']);
 export const ACTOR_SPRITE_IDS = new Set(SPRITE_ATLAS_IDS);
@@ -110,12 +112,19 @@ export async function checkRenderConfig() {
         errors.push(`renderConfig: ${key} must be ${JSON.stringify(value)} (got ${JSON.stringify(RENDER_CONFIG[key])}).`);
       }
     };
-    expect('INTERNAL_WIDTH', 640);
-    expect('INTERNAL_HEIGHT', 480);
-    expect('VIEWPORT_HEIGHT', 384);
+    expect('NATIVE_SCALE', 2);
+    expect('LOGICAL_WIDTH', 640);
+    expect('LOGICAL_HEIGHT', 480);
+    expect('LOGICAL_VIEWPORT_HEIGHT', 384);
+    expect('INTERNAL_WIDTH', 1280);
+    expect('INTERNAL_HEIGHT', 960);
+    expect('NATIVE_VIEWPORT_HEIGHT', 768);
     expect('TILE_WIDTH', 64);
     expect('TILE_HEIGHT', 32);
     expect('WALL_HEIGHT', 64);
+    expect('NATIVE_TILE_WIDTH', 128);
+    expect('NATIVE_TILE_HEIGHT', 64);
+    expect('NATIVE_WALL_HEIGHT', 128);
     expect('DEBUG_GRID_DEFAULT', false);
   } catch (error) {
     errors.push(`renderConfig could not be loaded: ${error.message}`);

@@ -1,0 +1,68 @@
+{
+  "id": "south-measure-annex-drain-hatch-annex",
+  "title": "Drain Floor Hatch",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A service ladder drops beside the old generator pit into the relief drain."
+      ],
+      "choices": [
+        {
+          "label": "Descend into the relief drain",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "south-measure-annex-access",
+                "drain-access-cleared",
+                "annex-drain-open"
+              ]
+            }
+          },
+          "effects": {
+            "log": "You climb down through the annex floor into the relief drain.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 4,
+                "y": 13,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Unseat the floor hatch",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 30
+            }
+          },
+          "effects": {
+            "setFlag": "annex-drain-open",
+            "log": "The floor hatch lifts clear of its warped frame.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 4,
+                "y": 13,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Leave the hatch",
+          "effects": {
+            "log": "You remain on the annex floor."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

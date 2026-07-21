@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-rian-sile",
+  "name": "Rufus Porta",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Cup-law recorder",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "row-council"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-grey"
+  }
+}

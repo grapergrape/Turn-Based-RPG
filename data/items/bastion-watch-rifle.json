@@ -1,0 +1,53 @@
+{
+  "id": "bastion-watch-rifle",
+  "name": "Bastion Watch Rifle",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "service rifle",
+  "rarity": "common",
+  "weight": 4,
+  "groundModel": "rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Penitent Bastion",
+    "factions": [
+      "penitent-bastion"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "service rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 6,
+        "range": 6,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "full-rifle-cartridge",
+      "capacity": 14,
+      "defaultLoaded": 14,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A heavy watch rifle stocked in black oak. Bastion sentries notch the butt for completed quarantine shifts, never for kills."
+}

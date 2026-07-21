@@ -1,0 +1,33 @@
+{
+  "id": "ash-road-south-censure-road-exit",
+  "title": "South Chain",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The south chain hangs clear of the wagon ruts.",
+        "Censure lamps show through the ash beyond the last cook fires."
+      ],
+      "choices": [
+        {
+          "label": "Return to Censure Road Camp",
+          "effects": {
+            "log": "You take the south road back to the Censure camp.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": {
+                "x": 66,
+                "y": 16,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in South Measure",
+          "close": true
+        }
+      ]
+    }
+  }
+}

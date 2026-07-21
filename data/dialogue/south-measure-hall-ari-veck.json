@@ -1,0 +1,55 @@
+{
+  "id": "south-measure-hall-ari-veck",
+  "title": "Asa Aquila",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Asa turns one child’s slate toward you. A blue line bends around the letters and ends at a square with no name."
+      ],
+      "choices": [
+        {
+          "label": "Trace the blue line home",
+          "next": "route"
+        },
+        {
+          "label": "Point to the unfinished letters",
+          "next": "letters"
+        },
+        {
+          "label": "Return the slate unread",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "route": {
+      "lines": [
+        "\"Good. The line passes a safe tap and a canvas stair. The door at the end opens without asking the child to prove who sleeps behind it.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why the letters come later",
+          "next": "letters"
+        },
+        {
+          "label": "Give the slate back to Asa",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "letters": {
+      "lines": [
+        "\"Letters can wait until a child knows where the lesson is taking them.\"",
+        "Asa stacks the slate face down before the council enters."
+      ],
+      "choices": [
+        {
+          "label": "Leave the lesson with its route",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

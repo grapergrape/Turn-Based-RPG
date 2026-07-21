@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-mira-soll",
+  "name": "Miriam Hortus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Herb-box keeper",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-nurse",
+    "gear": [
+      "medicine-bag"
+    ],
+    "accent": "pale-hood"
+  }
+}

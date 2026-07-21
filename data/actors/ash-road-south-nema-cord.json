@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-nema-cord",
+  "name": "Naamah Sartor",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Last Canvas frame lead",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-shawl",
+    "gear": [
+      "rope-coil"
+    ],
+    "accent": "bare-grey"
+  }
+}

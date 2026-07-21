@@ -2,6 +2,8 @@
 // game loop turns into log lines, animation states, and visual effects. It
 // never draws anything itself.
 
+import { isRangedAttack } from './AttackMode.js';
+
 export function manhattan(a, b) {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
@@ -30,7 +32,7 @@ export class CombatSystem {
     const chanceInfo = chanceSummary(options);
     const tags = Array.isArray(options.chanceTags) ? options.chanceTags : [];
     const damageTags = Array.isArray(options.damageTags) ? options.damageTags : [];
-    const ranged = attack.range > 1;
+    const ranged = isRangedAttack(attack);
 
     if (!hit) {
       return {

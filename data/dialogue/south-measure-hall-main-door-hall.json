@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-hall-main-door-hall",
+  "title": "Measure Hall Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The front door opens from the slate school into Rope Rows."
+      ],
+      "choices": [
+        {
+          "label": "Step into Rope Rows",
+          "effects": {
+            "log": "You leave Measure Hall through the school door.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 94,
+                "y": 52,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in the Hall",
+          "effects": {
+            "log": "You return to the school slates."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

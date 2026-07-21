@@ -1,0 +1,53 @@
+{
+  "id": "censure-induction-rifle",
+  "name": "Censure Induction Rifle",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "induction rifle",
+  "rarity": "rare",
+  "weight": 3.8,
+  "groundModel": "accelerator-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant prototype",
+    "origin": "Ashen Censure",
+    "factions": [
+      "ashen-censure"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "induction rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 8,
+        "range": 8,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 7,
+      "defaultLoaded": 7,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 88
+  },
+  "description": "A rare Censure rifle for targets behind chapel plate and engine casing. The induction cage is wrapped in black cord to show tampering."
+}

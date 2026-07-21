@@ -1,0 +1,9 @@
+{
+  "id": "drone-service-parts",
+  "name": "Drone Service Parts",
+  "type": "crafting",
+  "rarity": "rare",
+  "weight": 0,
+  "groundModel": "tool-weapon",
+  "description": "Matched relays, clean bearings, and sealed actuator teeth for a Censure field attendant."
+}

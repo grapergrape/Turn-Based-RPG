@@ -1,0 +1,65 @@
+{
+  "id": "penitent-engine-railgun",
+  "name": "Penitent Engine Railgun",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "heavy railgun",
+  "rarity": "epic",
+  "weight": 7.4,
+  "groundModel": "rail-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Penitent Engine workshop",
+    "origin": "Penitent Bastion",
+    "factions": [
+      "penitent-bastion"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "heavy railgun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 12,
+        "range": 8,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 8,
+        "damage": 15,
+        "range": 8,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 3,
+      "defaultLoaded": 3,
+      "reloadAp": 5
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 68
+  },
+  "description": "Engine crews mount this railgun on a folding shoulder yoke between deployments. Reloading it is a drill of ceramic sleeves, clean contacts, and steady hands."
+}

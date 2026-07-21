@@ -13,7 +13,7 @@ furniture, plants, props, decals, lights, animation, and the interface.
 Read **`game_art_skill/SKILL.md`**. The old contents of this file map to:
 
 - Engine reality, palette, ramps, projection: Sections 1, 2, 3.
-- The human standard (Mara Vey): Section 11.
+- The human standard (player actor): Section 11.
 - The Host monster standard (Vale Imprint): Section 12.
 - Goat and ram skull heads: Section 12b.
 - Satanic and ritual imagery: Section 13.

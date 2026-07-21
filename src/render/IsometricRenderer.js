@@ -1,19 +1,29 @@
 // Isometric scene compositor with a classic isometric CRPG scrolling camera.
 //
-// The entire level is baked ONCE into a large offscreen "static scene" canvas
-// (floor + flat ground decals + map-edge darkening) at the level's true
-// 64x32-tile scale. Each frame the camera centres on the player, clamps to the
-// map, and blits the visible sub-region; volumetric props + actors are then
-// drawn over it in a single depth-sorted pass, followed by tactical overlays,
-// effects, a dim screen vignette, and the interface bar.
+// Floor cells and flat decals are baked into a bounded native-resolution cache
+// that follows the scrolling camera. Volumetric props and actors are then drawn
+// over it in a single depth-sorted pass, followed by tactical overlays, effects,
+// a dim screen vignette, and the interface bar.
 
 import { PALETTE } from './palette.js';
-import { RENDER_CONFIG, VIEWPORT, TILE_WIDTH, TILE_HEIGHT } from './renderConfig.js';
-import { computeSceneBounds, gridToScreen, screenToGrid, sortKey } from './isoMath.js';
+import { NATIVE_PIXEL, NATIVE_SCALE, VIEWPORT, TILE_WIDTH, TILE_HEIGHT, toNativePixels } from './renderConfig.js';
+import { getSoftwareCanvasContext2D } from './canvasContext.js';
+import { gridToScreen, screenToGrid, sortKey } from './isoMath.js';
 import * as P from './PixelPrimitives.js';
 import { getSprite, FLAT_KINDS } from './spriteCatalog.js';
 import { UIRenderer } from './UIRenderer.js';
 import { getFrame } from './SpriteAtlas.js';
+import { StaticSceneCache } from './StaticSceneCache.js';
+import { PropSpriteCache } from './PropSpriteCache.js';
+import { ShadowMaskCache } from './ShadowMaskCache.js';
+import { actorFrameSource, actorShadowProfile } from './shadowProfiles.js';
+import {
+  clipUiText,
+  detailRect as uiDetailRect,
+  rect as uiRect,
+  text as uiText,
+  textWidth as uiTextWidth
+} from './ui/UiPrimitives.js';
 
 // Which `kind`s are flat ground decals vs volumetric props is owned by the
 // sprite catalog (spriteCatalog.js), the single source of truth for all kinds.
@@ -22,7 +32,6 @@ const SPEECH_PAD_X = 7;
 const SPEECH_PAD_Y = 5;
 const SPEECH_LINE_HEIGHT = 11;
 const SPEECH_VIEWPORT_PAD = 4;
-const SUN_SHADOW_SKIP_KINDS = new Set(['wheat-clump', 'ash-sapling', 'scrub-bush', 'stone-stairwell']);
 const TIME_OF_DAY_WASHES = Object.freeze({
   dawn: Object.freeze([
     Object.freeze({ color: PALETTE.clothBlueDark, alpha: 0.1 }),
@@ -56,18 +65,44 @@ const TIME_OF_DAY_VIGNETTE = Object.freeze({
   night: 0.5,
   'deep-night': 0.72
 });
+const IDLE_FRAME_COUNT = 4;
+
+export function actorIdleFrameIndex(actor, globalFrame = 0) {
+  const identity = String(actor?.spawnId ?? actor?.id ?? 'actor');
+  let phase = 0;
+  for (let index = 0; index < identity.length; index += 1) {
+    phase = (Math.imul(phase, 31) + identity.charCodeAt(index)) >>> 0;
+  }
+  const frame = Number.isFinite(globalFrame) ? Math.floor(globalFrame) : 0;
+  return ((frame + phase) % IDLE_FRAME_COUNT + IDLE_FRAME_COUNT) % IDLE_FRAME_COUNT;
+}
 
 export class IsometricRenderer {
   constructor(canvas, atlas) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
-    this.ctx.imageSmoothingEnabled = false;
+    this.ctx = getSoftwareCanvasContext2D(canvas);
     this.atlas = atlas;
     this.ui = new UIRenderer(atlas);
 
-    this.scene = document.createElement('canvas');
-    this.sceneCtx = this.scene.getContext('2d');
-    this.sceneCtx.imageSmoothingEnabled = false;
+    this.staticScene = new StaticSceneCache();
+    this.propSprites = new PropSpriteCache();
+    this.shadowMasks = new ShadowMaskCache();
+    this.castShadowLayer = document.createElement('canvas');
+    this.castShadowLayer.width = toNativePixels(VIEWPORT.width);
+    this.castShadowLayer.height = toNativePixels(VIEWPORT.height);
+    this.castShadowCtx = getSoftwareCanvasContext2D(this.castShadowLayer);
+    this.castShadowLayer.addEventListener?.('contextlost', (event) => {
+      event.preventDefault?.();
+      this.shadowMasks.clear();
+    });
+    this.castShadowLayer.addEventListener?.('contextrestored', () => {
+      this.castShadowCtx = getSoftwareCanvasContext2D(this.castShadowLayer);
+      this.shadowMasks.clear();
+    });
+    // Kept as aliases for diagnostic tools and older tests that inspect the
+    // offscreen surface directly. Its size is the bounded cache, not the map.
+    this.scene = this.staticScene.canvas;
+    this.sceneCtx = this.staticScene.ctx;
 
     this.sceneOrigin = { x: 0, y: 0 };
     this.worldOrigin = { x: 0, y: 0 };
@@ -77,10 +112,26 @@ export class IsometricRenderer {
     this.flatProps = [];
     this.volumeProps = [];
     this.hiddenTiles = new Set();
+    this.interactionHighlightHitboxes = [];
+    this.contextLost = false;
+
+    this.canvas.addEventListener?.('contextlost', (event) => {
+      event.preventDefault?.();
+      this.contextLost = true;
+    });
+    this.canvas.addEventListener?.('contextrestored', () => {
+      this.ctx = getSoftwareCanvasContext2D(this.canvas);
+      this.contextLost = false;
+      this.recoverVisualCaches();
+    });
   }
 
-  // Bake the static background for a level. `level` = { grid, props, mood }.
+  // Configure the static background for a level. The first camera window is
+  // baked lazily during renderFrame so loading never allocates a full-map 2x
+  // surface. `level` = { grid, props, mood, hiddenTiles }.
   rebuildStaticScene(level) {
+    this.propSprites.clear();
+    this.shadowMasks.clear();
     this.grid = level.grid;
     this.props = level.props ?? [];
     this.mood = level.mood ?? null;
@@ -90,50 +141,19 @@ export class IsometricRenderer {
     this.flatProps = this.props.filter((p) => FLAT_KINDS.has(p.kind));
     this.volumeProps = this.props.filter((p) => !FLAT_KINDS.has(p.kind));
 
-    const bounds = computeSceneBounds(this.grid.width, this.grid.height);
+    const bounds = this.staticScene.setLevel(level);
     this.sceneBounds = bounds;
     this.sceneOrigin = bounds.origin;
-    this.scene.width = bounds.width;
-    this.scene.height = bounds.height;
+  }
 
-    const ctx = this.sceneCtx;
-    ctx.imageSmoothingEnabled = false;
-    ctx.fillStyle = PALETTE.void;
-    ctx.fillRect(0, 0, this.scene.width, this.scene.height);
-
-    // Floor cells (skip under walls; wall blocks cover them).
-    for (let y = 0; y < this.grid.height; y += 1) {
-      for (let x = 0; x < this.grid.width; x += 1) {
-        const def = this.grid.getTileDef(x, y);
-        if (!def || def.kind === 'wall') continue;
-        if (this.#isHiddenCell(x, y)) continue;
-        const s = gridToScreen(x, y, 0, this.sceneOrigin);
-        P.drawStyledFloorCell(ctx, s.x, s.y, x, y, def.floor ?? 'stone');
-        const wallPressure = this.#wallPressure(x, y);
-        if (wallPressure > 0) {
-          P.drawFloorGrime(ctx, s.x, s.y, P.hash2D(x + 33, y + 41), Math.min(1.35, 0.55 + wallPressure * 0.22));
-        }
-      }
-    }
-
-    // Flat decals baked on top of the floor.
-    for (const prop of this.flatProps) {
-      if (this.#isPropConcealed(prop)) continue;
-      if (this.#isHiddenCell(prop.x, prop.y)) continue;
-      const s = gridToScreen(prop.x, prop.y, 0, this.sceneOrigin);
-      this.#drawFlatDecal(ctx, prop, s);
-    }
-
-    // Per-level mood: multiply a cold/warm shade over the whole baked floor so
-    // a place like the cellar reads as a different, colder space than the nave.
-    if (this.mood?.floorShade) {
-      ctx.save();
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.globalAlpha = this.mood.floorShadeAlpha ?? 0.5;
-      ctx.fillStyle = this.mood.floorShade;
-      ctx.fillRect(0, 0, this.scene.width, this.scene.height);
-      ctx.restore();
-    }
+  // Browser resize, tab restoration, and canvas context restoration can drop
+  // detached canvas backings while leaving the JavaScript cache records alive.
+  // Rebuild both world layers on the next frame instead of requiring a reload.
+  recoverVisualCaches() {
+    this.staticScene.invalidate();
+    this.propSprites.clear();
+    this.shadowMasks.clear();
+    this.castShadowCtx = getSoftwareCanvasContext2D(this.castShadowLayer);
   }
 
   // Centre the camera on the focus tile, clamped to the scene; if the scene is
@@ -149,9 +169,11 @@ export class IsometricRenderer {
       return Math.round(Math.max(0, Math.min(target, max)));
     };
 
-    this.camera.x = axis(fx - VIEWPORT.width / 2, this.scene.width, VIEWPORT.width);
+    const sceneWidth = this.sceneBounds?.width ?? this.scene.width;
+    const sceneHeight = this.sceneBounds?.height ?? this.scene.height;
+    this.camera.x = axis(fx - VIEWPORT.width / 2, sceneWidth, VIEWPORT.width);
     // Bias slightly so the (tall) player sprite sits just below centre.
-    this.camera.y = axis(fy - VIEWPORT.height * 0.58, this.scene.height, VIEWPORT.height);
+    this.camera.y = axis(fy - VIEWPORT.height * 0.58, sceneHeight, VIEWPORT.height);
 
     this.worldOrigin = {
       x: this.sceneOrigin.x - this.camera.x,
@@ -162,35 +184,62 @@ export class IsometricRenderer {
   // Full-screen opening writ shown before the player is dropped into the level.
   renderBriefing(data) {
     const ctx = this.ctx;
+    if (!ctx || this.contextLost || ctx.isContextLost?.()) return;
+    resetTransform(ctx);
     ctx.fillStyle = PALETTE.void;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.save();
+    setLogicalTransform(ctx);
     this.ui.drawBriefing(ctx, data);
+    ctx.restore();
   }
 
   renderLoading(data) {
     const ctx = this.ctx;
+    if (!ctx || this.contextLost || ctx.isContextLost?.()) return;
+    resetTransform(ctx);
     ctx.fillStyle = PALETTE.void;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.save();
+    setLogicalTransform(ctx);
     this.ui.drawLoading(ctx, data);
+    ctx.restore();
+  }
+
+  renderMenu(data) {
+    const ctx = this.ctx;
+    if (!ctx || this.contextLost || ctx.isContextLost?.()) return;
+    resetTransform(ctx);
+    ctx.fillStyle = PALETTE.void;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.save();
+    setLogicalTransform(ctx);
+    this.ui.draw(ctx, data);
+    ctx.restore();
   }
 
   renderFrame(state) {
     const ctx = this.ctx;
+    if (!ctx || this.contextLost || ctx.isContextLost?.()) return;
     this.timeOfDay = state.time ?? null;
     if (state.hiddenTiles) this.hiddenTiles = state.hiddenTiles;
     this.#updateCamera(state.focus ?? { x: 0, y: 0 });
 
+    resetTransform(ctx);
     ctx.fillStyle = PALETTE.void;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+    ctx.save();
+    setLogicalTransform(ctx);
     ctx.save();
     ctx.beginPath();
     ctx.rect(VIEWPORT.x, VIEWPORT.y, VIEWPORT.width, VIEWPORT.height);
     ctx.clip();
 
-    ctx.drawImage(this.scene, -this.camera.x, -this.camera.y);
+    this.staticScene.draw(ctx, this.camera, VIEWPORT);
+    if (this.staticScene.consumeRecovery()) this.propSprites.clear();
 
-    this.#drawSunShadows(ctx, state);
+    this.#drawCastShadowLayer(ctx, state);
     if (state.overlay?.debugGrid) this.#drawDebugGrid(ctx);
     this.#drawVisionCones(ctx, state.overlay?.enemyVisionCones ?? []);
     this.#drawDepthSorted(ctx, state);
@@ -202,10 +251,26 @@ export class IsometricRenderer {
     this.#drawAmbientTint(ctx);
     this.#drawTimeOfDayTint(ctx);
     this.#drawVignette(ctx);
+    this.#drawHoveredWorldTarget(ctx, state);
+    this.#drawInteractionHighlights(ctx, state.overlay?.interactionHighlights ?? []);
 
     ctx.restore();
 
-    this.ui.draw(ctx, state.ui ?? {});
+    this.ui.draw(ctx, this.#resolveWorldAnchoredUi(state.ui ?? {}));
+    ctx.restore();
+  }
+
+  #resolveWorldAnchoredUi(ui) {
+    const tray = ui.combatAbilityTray;
+    const actor = tray?.actor;
+    if (!tray || !actor) return ui;
+    return {
+      ...ui,
+      combatAbilityTray: {
+        ...tray,
+        anchor: this.toScreen(actor.x, actor.y, actor.pxOffset)
+      }
+    };
   }
 
   #drawDepthSorted(ctx, state) {
@@ -216,16 +281,33 @@ export class IsometricRenderer {
     for (const prop of this.volumeProps) {
       if (this.#isPropConcealed(prop)) continue;
       if (this.#isHiddenCell(prop.x, prop.y)) continue;
+      const screen = gridToScreen(prop.x, prop.y, 0, this.worldOrigin);
+      if (!this.#onScreen(screen, 120)) continue;
       const zLayer = getSprite(prop.kind)?.layer ?? 2;
       queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
     }
     for (const prop of state.groundItems ?? []) {
       if (this.#isHiddenCell(prop.x, prop.y)) continue;
+      const screen = gridToScreen(prop.x, prop.y, 0, this.worldOrigin);
+      if (!this.#onScreen(screen, 120)) continue;
+      const zLayer = getSprite(prop.kind)?.layer ?? 2;
+      queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
+    }
+    for (const prop of state.dynamicProps ?? []) {
+      if (this.#isHiddenCell(prop.x, prop.y)) continue;
+      const screen = gridToScreen(prop.x, prop.y, 0, this.worldOrigin);
+      if (!this.#onScreen(screen, 120)) continue;
       const zLayer = getSprite(prop.kind)?.layer ?? 2;
       queue.push({ key: sortKey(prop.x, prop.y, zLayer), draw: () => this.#drawProp(ctx, prop, anim, player) });
     }
     for (const actor of state.actors ?? []) {
       if (actor.type !== 'player' && this.#isHiddenCell(actor.x, actor.y)) continue;
+      const base = gridToScreen(actor.x, actor.y, 0, this.worldOrigin);
+      const screen = {
+        x: base.x + (actor.pxOffset?.x ?? 0),
+        y: base.y + (actor.pxOffset?.y ?? 0)
+      };
+      if (!this.#onScreen(screen, 160)) continue;
       const zLayer = actor.isDead ? 1 : 3;
       queue.push({ key: sortKey(actor.x, actor.y, zLayer), draw: () => this.#drawActor(ctx, actor, anim) });
     }
@@ -234,7 +316,7 @@ export class IsometricRenderer {
     for (const item of queue) item.draw();
   }
 
-  #drawSunShadows(ctx, state) {
+  #drawCastShadowLayer(ctx, state) {
     const sun = this.mood?.sun;
     if (!sun?.enabled) return;
 
@@ -243,50 +325,81 @@ export class IsometricRenderer {
     const alpha = clamp(finiteNumber(sun.shadowAlpha, 0.16), 0, 0.45);
     if (alpha <= 0) return;
 
-    for (const prop of this.volumeProps) {
+    const layer = this.castShadowCtx;
+    if (!layer || layer.isContextLost?.()) return;
+    resetTransform(layer);
+    layer.globalAlpha = 1;
+    layer.globalCompositeOperation = 'source-over';
+    layer.clearRect?.(0, 0, this.castShadowLayer.width, this.castShadowLayer.height);
+    setLogicalTransform(layer);
+
+    const anim = state.anim ?? {};
+    const player = (state.actors ?? []).find((actor) => actor.type === 'player') ?? null;
+    const projection = { x: offsetX, y: offsetY };
+
+    for (const prop of this.#allVolumeProps(state)) {
       if (this.#isPropConcealed(prop)) continue;
       if (this.#isHiddenCell(prop.x, prop.y)) continue;
       const entry = getSprite(prop.kind);
-      const size = this.#sunShadowSizeForProp(prop, entry);
-      if (!size) continue;
+      const profile = entry?.shadow?.cast;
+      if (!entry || profile?.mode === 'none') continue;
       const s = gridToScreen(prop.x, prop.y, 0, this.worldOrigin);
       if (!this.#onScreen(s, 160)) continue;
-      P.drawDaylightCastShadow(ctx, s.x, s.y, {
-        offsetX,
-        offsetY,
-        width: size.width,
-        height: size.height,
-        alpha: alpha * size.alphaScale
-      });
+      const seed = prop.seed ?? P.hash2D(prop.x + 1, prop.y + 1);
+      const drawState = {
+        prop,
+        anim,
+        pulse: anim.pulse ?? 0,
+        flicker: anim.flicker ?? 0,
+        player
+      };
+      const prepared = this.propSprites.prepare(entry, prop, seed, drawState);
+      if (!prepared?.surface) continue;
+      const coverage = this.#occludingPropAlpha(prop, player);
+      const mask = this.shadowMasks.prepareCast(prepared, profile, projection, coverage);
+      const anchor = preparedAnchor(s, prepared);
+      this.shadowMasks.draw(layer, mask, anchor.x, anchor.y);
     }
 
     for (const actor of state.actors ?? []) {
       if (actor.type !== 'player' && this.#isHiddenCell(actor.x, actor.y)) continue;
-      const base = gridToScreen(actor.x, actor.y, 0, this.worldOrigin);
-      const fx = base.x + (actor.pxOffset?.x ?? 0);
-      const fy = base.y + (actor.pxOffset?.y ?? 0);
-      if (!this.#onScreen({ x: fx, y: fy }, 120)) continue;
-      P.drawDaylightCastShadow(ctx, fx, fy, {
-        offsetX,
-        offsetY,
-        width: actor.isDead ? 30 : 34,
-        height: actor.isDead ? 9 : 11,
-        alpha: alpha * (actor.isDead ? 0.4 : 0.65)
-      });
+      const visual = this.#resolveActorVisual(actor, anim);
+      if (!visual || !this.#onScreen({ x: visual.fx, y: visual.fy }, 140)) continue;
+      const profile = actorShadowProfile(actor, visual.sprite, visual.stateName).cast;
+      const mask = this.shadowMasks.prepareCast(visual.source, profile, projection, 1);
+      this.#drawActorMask(layer, mask, visual);
     }
+
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    ctx.drawImage(
+      this.castShadowLayer,
+      0,
+      0,
+      this.castShadowLayer.width,
+      this.castShadowLayer.height,
+      VIEWPORT.x,
+      VIEWPORT.y,
+      VIEWPORT.width,
+      VIEWPORT.height
+    );
+    ctx.restore();
   }
 
-  #sunShadowSizeForProp(prop, entry) {
-    if (!entry || entry.flat || SUN_SHADOW_SKIP_KINDS.has(prop.kind)) return null;
-    if (prop.kind === 'ash-tree') return { width: 88, height: 25, alphaScale: 1 };
-    if (prop.kind === 'fallen-ash-log') return { width: 46, height: 13, alphaScale: 0.65 };
-    if (prop.kind === 'ash-tree-stump') return { width: 34, height: 10, alphaScale: 0.55 };
-    if (entry.block) return { width: Math.round(TILE_WIDTH * 0.88), height: Math.round(TILE_HEIGHT * 0.52), alphaScale: 0.8 };
-    if (entry.category === 'plant' || entry.category === 'light') return null;
-    if (prop.blocking) return { width: 44, height: 14, alphaScale: 0.7 };
-    if (entry.category === 'structure') return { width: 40, height: 13, alphaScale: 0.6 };
-    if (entry.category === 'gore' || entry.category === 'creature') return { width: 36, height: 12, alphaScale: 0.55 };
-    return null;
+  #allVolumeProps(state) {
+    return [
+      ...this.volumeProps,
+      ...(state.groundItems ?? []),
+      ...(state.dynamicProps ?? [])
+    ];
+  }
+
+  #allRenderableProps(state) {
+    return [
+      ...this.props,
+      ...(state.groundItems ?? []),
+      ...(state.dynamicProps ?? [])
+    ];
   }
 
   #drawProp(ctx, prop, anim, player = null) {
@@ -306,7 +419,22 @@ export class IsometricRenderer {
     // Flat decals are handled in their own floor pass; skip them here.
     const entry = getSprite(prop.kind);
     if (entry && !entry.flat) {
-      entry.draw(ctx, s.x, s.y, seed, { prop, anim, pulse, flicker, player });
+      const drawState = { prop, anim, pulse, flicker, player };
+      const prepared = this.propSprites.prepare(entry, prop, seed, drawState);
+      if (prepared) {
+        const contact = this.shadowMasks.prepareContact(prepared, entry.shadow?.contact);
+        if (contact) {
+          ctx.save();
+          ctx.globalAlpha *= clamp(finiteNumber(entry.shadow?.contact?.alphaScale, 0.3), 0, 1);
+          const anchor = preparedAnchor(s, prepared);
+          this.shadowMasks.draw(ctx, contact, anchor.x, anchor.y);
+          ctx.restore();
+        }
+        this.propSprites.composite(ctx, prepared, s.x, s.y);
+      } else {
+        entry.draw(ctx, s.x, s.y, seed, drawState);
+      }
+      entry.drawLiveOverlay?.(ctx, s.x, s.y, seed, drawState);
     }
 
     if (alpha < 1) ctx.restore();
@@ -327,68 +455,82 @@ export class IsometricRenderer {
     }
     if (Math.max(dx, dy) > 1) return 1;
     if (prop.x + prop.y < player.x + player.y) return 1; // behind the player
-    return prop.kind === 'wall' ? 0.4 : 0.5;
-  }
-
-  #drawFlatDecal(ctx, prop, s) {
-    const seed = prop.seed ?? P.hash2D(prop.x + 5, prop.y + 5);
-    // Dispatch through the sprite catalog. `dust` is also the fallback for any
-    // flat kind without its own entry.
-    const entry = getSprite(prop.kind);
-    if (entry && entry.flat) {
-      entry.draw(ctx, s.x, s.y, seed, { prop });
-    } else {
-      P.drawNoisePixels(ctx, s.x - 22, s.y - 9, 44, 18, [PALETTE.stoneDust], 0.05, seed);
-    }
-  }
-
-  #wallPressure(x, y) {
-    let count = 0;
-    const dirs = [
-      { x: 0, y: -1 },
-      { x: 1, y: 0 },
-      { x: 0, y: 1 },
-      { x: -1, y: 0 }
-    ];
-    for (const dir of dirs) {
-      const nx = x + dir.x;
-      const ny = y + dir.y;
-      if (!this.grid.isInside(nx, ny) || this.grid.getTileDef(nx, ny)?.kind === 'wall') {
-        count += 1;
-      }
-    }
-    return count;
+    return entry?.block ? 0.4 : 0.5;
   }
 
   #drawActor(ctx, actor, anim) {
-    const base = gridToScreen(actor.x, actor.y, 0, this.worldOrigin);
-    const fx = base.x + (actor.pxOffset?.x ?? 0);
-    const fy = base.y + (actor.pxOffset?.y ?? 0);
-    if (!this.#onScreen({ x: fx, y: fy }, 160)) return;
+    const visual = this.#resolveActorVisual(actor, anim);
+    if (!visual || !this.#onScreen({ x: visual.fx, y: visual.fy }, 160)) return;
+    const { sprite, frame, mirror, fx, fy, stateName, source } = visual;
 
-    const stateName = actor.render?.state ?? 'idle';
-    let frameIndex = actor.render?.frameIndex ?? 0;
-    if (stateName === 'idle' || stateName === 'sneakIdle') {
-      frameIndex = anim.idleFrame ?? anim.bob ?? frameIndex; // breathing
+    const profile = actorShadowProfile(actor, sprite, stateName).contact;
+    const contact = this.shadowMasks.prepareContact(source, profile);
+    if (contact) {
+      ctx.save();
+      ctx.globalAlpha *= clamp(finiteNumber(profile.alphaScale, 0.3), 0, 1);
+      this.#drawActorMask(ctx, contact, visual);
+      ctx.restore();
     }
-
-    const resolved = getFrame(this.atlas, actor.spriteId, actor.isDead ? 'dead' : stateName, actor.facing ?? 'se', frameIndex);
-    if (!resolved || !resolved.frame) return;
-    const { sprite, frame, mirror } = resolved;
-
-    const shadowW = Math.round(sprite.width * (actor.isDead ? 0.9 : 0.6));
-    P.drawShadowBlob(ctx, fx, fy, shadowW, Math.round(shadowW * 0.42));
 
     if (mirror) {
       // Mirror horizontally about the foot anchor column.
       ctx.save();
       ctx.translate(Math.round(fx), Math.round(fy - sprite.anchorY));
       ctx.scale(-1, 1);
-      ctx.drawImage(frame, -sprite.anchorX, 0);
+      ctx.drawImage(frame, -sprite.anchorX, 0, sprite.width, sprite.height);
       ctx.restore();
     } else {
-      ctx.drawImage(frame, Math.round(fx - sprite.anchorX), Math.round(fy - sprite.anchorY));
+      ctx.drawImage(
+        frame,
+        Math.round(fx - sprite.anchorX),
+        Math.round(fy - sprite.anchorY),
+        sprite.width,
+        sprite.height
+      );
     }
+  }
+
+  #resolveActorVisual(actor, anim) {
+    const base = gridToScreen(actor.x, actor.y, 0, this.worldOrigin);
+    const fx = base.x + (actor.pxOffset?.x ?? 0);
+    const fy = base.y + (actor.pxOffset?.y ?? 0);
+    const stateName = actor.render?.state ?? 'idle';
+    let frameIndex = actor.render?.frameIndex ?? 0;
+    if (stateName === 'idle' || stateName === 'sneakIdle') {
+      frameIndex = actorIdleFrameIndex(actor, anim.idleFrame ?? anim.bob ?? frameIndex);
+    }
+    const resolved = getFrame(
+      this.atlas,
+      actor.spriteId,
+      actor.isDead ? 'dead' : stateName,
+      actor.facing ?? 'se',
+      frameIndex
+    );
+    if (!resolved?.frame) return null;
+    const { sprite, frame, mirror } = resolved;
+    return {
+      actor,
+      sprite,
+      frame,
+      mirror,
+      fx,
+      fy,
+      stateName,
+      source: actorFrameSource(sprite, frame)
+    };
+  }
+
+  #drawActorMask(ctx, mask, visual) {
+    if (!mask) return;
+    if (!visual.mirror) {
+      this.shadowMasks.draw(ctx, mask, visual.fx, visual.fy);
+      return;
+    }
+    ctx.save();
+    ctx.translate(Math.round(visual.fx), 0);
+    ctx.scale(-1, 1);
+    this.shadowMasks.draw(ctx, mask, 0, visual.fy);
+    ctx.restore();
   }
 
   #drawActorSpeech(ctx, actors) {
@@ -445,6 +587,8 @@ export class IsometricRenderer {
       ctx.fillStyle = PALETTE.uiWarn;
       ctx.fillRect(left + 4, top + 3, 3, 3);
       ctx.fillRect(left + width - 7, top + 3, 3, 3);
+      uiDetailRect(ctx, left + 0.5, top + 0.5, width - 1, 0.5, PALETTE.uiText);
+      uiDetailRect(ctx, left + 0.5, top + 0.5, 0.5, height - 1, PALETTE.uiBorderLight);
       ctx.fillStyle = PALETTE.uiText;
       for (let i = 0; i < lines.length; i += 1) {
         ctx.fillText(lines[i], left + SPEECH_PAD_X, top + SPEECH_PAD_Y + i * SPEECH_LINE_HEIGHT);
@@ -548,6 +692,14 @@ export class IsometricRenderer {
 
   #drawOverlays(ctx, overlay) {
     if (overlay.mode === 'COMBAT') {
+      if (overlay.abilityTargets) {
+        for (const key of overlay.abilityTargets.invalid ?? []) {
+          if (!this.#isHiddenKey(key)) this.#tileRing(ctx, key, PALETTE.uiBad, 0.2);
+        }
+        for (const key of overlay.abilityTargets.valid ?? []) {
+          if (!this.#isHiddenKey(key)) this.#tileRing(ctx, key, PALETTE.uiGood, 0.52);
+        }
+      }
       if (overlay.attackRange) {
         for (const key of overlay.attackRange) {
           if (!this.#isHiddenKey(key)) this.#tileRing(ctx, key, PALETTE.rustMid, 0.28);
@@ -623,21 +775,21 @@ export class IsometricRenderer {
   #moveCost(ctx, key, cost, affordable) {
     const s = this.#keyToScreen(key);
     const color = affordable ? PALETTE.uiGood : PALETTE.uiBad;
+    const label = String(cost);
+    const badgeWidth = Math.max(18, uiTextWidth(label) + 6);
     this.#tileRing(ctx, key, color, 0.7);
-    ctx.font = '11px "Courier New", monospace';
     ctx.fillStyle = PALETTE.outline;
-    ctx.fillRect(s.x + 2, s.y - 31, 18, 14);
+    ctx.fillRect(s.x + 2, s.y - 31, badgeWidth, 14);
     ctx.fillStyle = PALETTE.uiDark;
-    ctx.fillRect(s.x + 3, s.y - 30, 16, 12);
+    ctx.fillRect(s.x + 3, s.y - 30, badgeWidth - 2, 12);
     ctx.fillStyle = color;
-    ctx.fillRect(s.x + 3, s.y - 30, 16, 1);
+    ctx.fillRect(s.x + 3, s.y - 30, badgeWidth - 2, 1);
     ctx.fillRect(s.x + 3, s.y - 30, 1, 12);
     ctx.fillStyle = PALETTE.uiBorderDark;
-    ctx.fillRect(s.x + 3, s.y - 19, 16, 1);
-    ctx.fillStyle = PALETTE.outline;
-    ctx.fillText(`${cost}`, s.x + 7, s.y - 17);
-    ctx.fillStyle = color;
-    ctx.fillText(`${cost}`, s.x + 6, s.y - 18);
+    ctx.fillRect(s.x + 3, s.y - 19, badgeWidth - 2, 1);
+    uiDetailRect(ctx, s.x + 3.5, s.y - 29.5, badgeWidth - 3, 0.5, PALETTE.uiText);
+    uiDetailRect(ctx, s.x + 3.5, s.y - 29.5, 0.5, 11, color);
+    uiText(ctx, label, s.x + 6, s.y - 28, color);
   }
 
   #footMarker(ctx, key, alpha) {
@@ -656,21 +808,186 @@ export class IsometricRenderer {
     ctx.restore();
   }
 
-  #interactionMarker(ctx, key) {
+  #interactionMarker(ctx, key, color = PALETTE.uiGood, alpha = 0.64) {
     const s = this.#keyToScreen(key);
     ctx.save();
-    ctx.globalAlpha = 0.64;
+    ctx.globalAlpha = alpha;
     ctx.fillStyle = PALETTE.outline;
     ctx.fillRect(s.x - 16, s.y - 1, 6, 3);
     ctx.fillRect(s.x + 10, s.y - 1, 6, 3);
     ctx.fillRect(s.x - 2, s.y - 9, 5, 3);
     ctx.fillRect(s.x - 2, s.y + 6, 5, 3);
-    ctx.fillStyle = PALETTE.uiGood;
+    ctx.fillStyle = color;
     ctx.fillRect(s.x - 15, s.y, 4, 1);
     ctx.fillRect(s.x + 11, s.y, 4, 1);
     ctx.fillRect(s.x - 1, s.y - 8, 3, 1);
     ctx.fillRect(s.x - 1, s.y + 7, 3, 1);
     ctx.restore();
+  }
+
+  #drawHoveredWorldTarget(ctx, state) {
+    const target = state.hoveredWorldTarget;
+    if (!target?.identity || !target.type) return;
+    const color = this.#interactionHighlightColor(target.action);
+
+    if (target.type === 'actor') {
+      const actor = (state.actors ?? []).find((candidate) => worldIdentity(candidate, 'actor') === target.identity);
+      if (!actor || (actor.type !== 'player' && this.#isHiddenCell(actor.x, actor.y))) return;
+      const visual = this.#resolveActorVisual(actor, state.anim ?? {});
+      if (!visual) return;
+      const outline = this.shadowMasks.prepareOutline(visual.source, color, 128);
+      this.#drawActorMask(ctx, outline, visual);
+      this.#drawUseCellPixels(ctx, target, { x: actor.x, y: actor.y }, color);
+      return;
+    }
+
+    if (target.type !== 'object') return;
+    const prop = this.#allRenderableProps(state).find((candidate) =>
+      worldIdentity(candidate, 'object') === target.identity ||
+      (
+        candidate.x === target.anchor?.x &&
+        candidate.y === target.anchor?.y &&
+        candidate.kind === target.kind
+      )
+    );
+    if (!prop || this.#isPropConcealed(prop) || this.#isHiddenCell(prop.x, prop.y)) return;
+    const entry = getSprite(prop.kind);
+    if (!entry) return;
+    const seed = prop.seed ?? P.hash2D(prop.x + 1, prop.y + 1);
+    const anim = state.anim ?? {};
+    const drawState = {
+      prop,
+      anim,
+      pulse: anim.pulse ?? 0,
+      flicker: anim.flicker ?? 0,
+      player: (state.actors ?? []).find((actor) => actor.type === 'player') ?? null
+    };
+    const prepared = this.propSprites.prepare(entry, prop, seed, drawState);
+    if (!prepared?.surface) return;
+    const outline = this.shadowMasks.prepareOutline(
+      prepared,
+      color,
+      entry.shadow?.contact?.opacityThreshold ?? 128
+    );
+    const screen = gridToScreen(prop.x, prop.y, 0, this.worldOrigin);
+    const anchor = preparedAnchor(screen, prepared);
+    this.shadowMasks.draw(ctx, outline, anchor.x, anchor.y);
+    this.#drawUseCellPixels(ctx, target, { x: prop.x, y: prop.y }, color);
+  }
+
+  #drawUseCellPixels(ctx, target, anchor, color) {
+    const cell = target.interactionCell;
+    if (!cell || (cell.x === anchor.x && cell.y === anchor.y)) return;
+    if (this.#isHiddenCell(cell.x, cell.y)) return;
+    const s = gridToScreen(cell.x, cell.y, 0, this.worldOrigin);
+    ctx.fillStyle = color;
+    ctx.fillRect(s.x - NATIVE_PIXEL / 2, s.y - 5, NATIVE_PIXEL, NATIVE_PIXEL);
+    ctx.fillRect(s.x + 5, s.y - NATIVE_PIXEL / 2, NATIVE_PIXEL, NATIVE_PIXEL);
+    ctx.fillRect(s.x - NATIVE_PIXEL / 2, s.y + 5, NATIVE_PIXEL, NATIVE_PIXEL);
+    ctx.fillRect(s.x - 5, s.y - NATIVE_PIXEL / 2, NATIVE_PIXEL, NATIVE_PIXEL);
+  }
+
+  #drawInteractionHighlights(ctx, highlights) {
+    this.interactionHighlightHitboxes = [];
+    if (!Array.isArray(highlights) || highlights.length === 0) return;
+
+    const entries = highlights
+      .filter((entry) => entry?.key && !this.#isHiddenKey(entry.key))
+      .map((entry) => {
+        const anchor = this.#keyToScreen(entry.key);
+        const label = clipUiText(entry.label ?? 'Interact', 26);
+        const width = uiTextWidth(label) + 17;
+        return {
+          ...entry,
+          anchor,
+          label,
+          width,
+          height: 13,
+          color: this.#interactionHighlightColor(entry.action)
+        };
+      })
+      .filter((entry) => this.#onScreen(entry.anchor, 36))
+      .sort((a, b) => (a.anchor.y - b.anchor.y) || (a.anchor.x - b.anchor.x));
+
+    for (const entry of entries) {
+      this.#interactionMarker(ctx, entry.key, entry.color, 0.78);
+    }
+
+    const placed = [];
+    for (const entry of entries) {
+      const baseX = clamp(
+        Math.round(entry.anchor.x - entry.width / 2),
+        VIEWPORT.x + 3,
+        VIEWPORT.x + VIEWPORT.width - entry.width - 3
+      );
+      const baseY = clamp(
+        Math.round(entry.anchor.y - 34),
+        VIEWPORT.y + 3,
+        VIEWPORT.y + VIEWPORT.height - entry.height - 3
+      );
+      const offsets = [0, -14, -28, 14, -42, 28];
+      let box = null;
+      for (const offset of offsets) {
+        const candidate = {
+          x: baseX,
+          y: clamp(
+            baseY + offset,
+            VIEWPORT.y + 3,
+            VIEWPORT.y + VIEWPORT.height - entry.height - 3
+          ),
+          w: entry.width,
+          h: entry.height
+        };
+        if (!placed.some((other) => this.#boxesOverlap(candidate, other))) {
+          box = candidate;
+          break;
+        }
+      }
+      box ??= { x: baseX, y: baseY, w: entry.width, h: entry.height };
+      placed.push(box);
+      this.#drawInteractionLabel(ctx, box, entry.label, entry.color);
+      const [targetX, targetY] = String(entry.targetKey ?? entry.key).split(',').map(Number);
+      if (Number.isFinite(targetX) && Number.isFinite(targetY)) {
+        this.interactionHighlightHitboxes.push({
+          x: box.x - 1,
+          y: box.y - 1,
+          w: box.w + 2,
+          h: box.h + 2,
+          target: { x: targetX, y: targetY }
+        });
+      }
+    }
+  }
+
+  #drawInteractionLabel(ctx, box, label, color) {
+    uiRect(ctx, box.x - 1, box.y - 1, box.w + 2, box.h + 2, PALETTE.outline);
+    uiRect(ctx, box.x, box.y, box.w, box.h, PALETTE.uiDark);
+    uiRect(ctx, box.x, box.y, box.w, 1, color);
+    uiRect(ctx, box.x, box.y, 1, box.h, color);
+    uiRect(ctx, box.x, box.y + box.h - 1, box.w, 1, PALETTE.uiBorderDark);
+    uiRect(ctx, box.x + box.w - 1, box.y, 1, box.h, PALETTE.uiBorderDark);
+    uiRect(ctx, box.x + 4, box.y + 5, 3, 3, color);
+    uiDetailRect(ctx, box.x + 0.5, box.y + 0.5, box.w - 1, 0.5, PALETTE.uiText);
+    uiDetailRect(ctx, box.x + 0.5, box.y + 0.5, 0.5, box.h - 1, color);
+    uiText(ctx, label, box.x + 11, box.y + 3, PALETTE.uiText);
+  }
+
+  #interactionHighlightColor(action) {
+    if (action === 'attack') return PALETTE.uiBad;
+    if (action === 'loot') return PALETTE.uiGood;
+    if (action === 'use') return PALETTE.uiWarn;
+    if (action === 'talk') return PALETTE.uiBorderLight;
+    return PALETTE.uiText;
+  }
+
+  #boxesOverlap(a, b) {
+    const gap = 2;
+    return !(
+      a.x + a.w + gap <= b.x ||
+      b.x + b.w + gap <= a.x ||
+      a.y + a.h + gap <= b.y ||
+      b.y + b.h + gap <= a.y
+    );
   }
 
   #hazardMarker(ctx, hazard) {
@@ -754,6 +1071,19 @@ export class IsometricRenderer {
     }
   }
 
+  interactionHighlightAt(internalX, internalY) {
+    for (let i = this.interactionHighlightHitboxes.length - 1; i >= 0; i -= 1) {
+      const hitbox = this.interactionHighlightHitboxes[i];
+      if (
+        internalX >= hitbox.x && internalX < hitbox.x + hitbox.w &&
+        internalY >= hitbox.y && internalY < hitbox.y + hitbox.h
+      ) {
+        return { ...hitbox.target };
+      }
+    }
+    return null;
+  }
+
   // ----- Effects ----------------------------------------------------------
 
   #drawEffects(ctx, effects) {
@@ -788,6 +1118,7 @@ export class IsometricRenderer {
         ctx.fillRect(tx - 1, ty - 1, tw + 2, 11);
         ctx.fillStyle = PALETTE.flash;
         ctx.fillRect(tx - 1, ty - 1, tw + 2, 1);
+        uiDetailRect(ctx, tx - 0.5, ty - 0.5, tw + 1, 0.5, PALETTE.uiText);
         ctx.fillStyle = PALETTE.flash;
         ctx.fillText(label, tx + 2, ty + 1);
       }
@@ -808,6 +1139,7 @@ export class IsometricRenderer {
   }
 
   #drawTimeOfDayTint(ctx) {
+    if (!this.#usesOutdoorLighting()) return;
     const washes = TIME_OF_DAY_WASHES[this.timeOfDay?.phase] ?? [];
     if (washes.length === 0) return;
     ctx.save();
@@ -824,7 +1156,10 @@ export class IsometricRenderer {
     // baked old CRPG lighting: no smooth gradient, just a few hard bands.
     const w = VIEWPORT.width;
     const h = VIEWPORT.height;
-    const strength = (this.mood?.vignette ?? 1) + (TIME_OF_DAY_VIGNETTE[this.timeOfDay?.phase] ?? 0);
+    const timeOfDayStrength = this.#usesOutdoorLighting()
+      ? TIME_OF_DAY_VIGNETTE[this.timeOfDay?.phase] ?? 0
+      : 0;
+    const strength = (this.mood?.vignette ?? 1) + timeOfDayStrength;
     for (let i = 0; i < 6; i += 1) {
       const inset = i * 8;
       ctx.save();
@@ -838,10 +1173,38 @@ export class IsometricRenderer {
     }
   }
 
+  #usesOutdoorLighting() {
+    return this.mood?.sun?.enabled === true;
+  }
+
   // Map an internal-canvas pixel to a grid cell (for mouse hover).
   toGrid(internalX, internalY) {
     return screenToGrid(internalX, internalY, this.worldOrigin);
   }
+
+  // Map a grid cell to its current logical screen anchor. World-attached UI
+  // uses this same projection for drawing and hit testing.
+  toScreen(x, y, pxOffset = null) {
+    const base = gridToScreen(x, y, 0, this.worldOrigin);
+    return {
+      x: base.x + (pxOffset?.x ?? 0),
+      y: base.y + (pxOffset?.y ?? 0)
+    };
+  }
+}
+
+function worldIdentity(target, type) {
+  if (type === 'actor') {
+    return String(target?.spawnId ?? target?.id ?? `${target?.spriteId ?? 'actor'}:${target?.x},${target?.y}`);
+  }
+  return String(target?.id ?? target?.spawnId ?? `${target?.kind ?? 'object'}:${target?.x},${target?.y}`);
+}
+
+function preparedAnchor(screen, prepared) {
+  return {
+    x: screen.x + finiteNumber(prepared?.anchorOffsetX, 0),
+    y: screen.y + finiteNumber(prepared?.anchorOffsetY, 0)
+  };
 }
 
 function clamp(value, min, max) {
@@ -851,4 +1214,20 @@ function clamp(value, min, max) {
 function finiteNumber(value, fallback) {
   const number = Number(value);
   return Number.isFinite(number) ? number : fallback;
+}
+
+function resetTransform(ctx) {
+  if (typeof ctx.setTransform === 'function') {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+  } else if (typeof ctx.resetTransform === 'function') {
+    ctx.resetTransform();
+  }
+}
+
+function setLogicalTransform(ctx) {
+  if (typeof ctx.setTransform === 'function') {
+    ctx.setTransform(NATIVE_SCALE, 0, 0, NATIVE_SCALE, 0, 0);
+  } else if (typeof ctx.scale === 'function') {
+    ctx.scale(NATIVE_SCALE, NATIVE_SCALE);
+  }
 }

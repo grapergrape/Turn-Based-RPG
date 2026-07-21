@@ -1,0 +1,68 @@
+{
+  "id": "south-measure-annex-drain-hatch-drain",
+  "title": "Annex Floor Hatch",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A ladder rises through the annex floor beside the old generator pit."
+      ],
+      "choices": [
+        {
+          "label": "Enter the maintenance annex",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "south-measure-annex-access",
+                "drain-access-cleared",
+                "annex-drain-open"
+              ]
+            }
+          },
+          "effects": {
+            "log": "You climb through the floor hatch into the maintenance annex.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_maintenance_annex.json",
+              "player": {
+                "x": 4,
+                "y": 19,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Release the hatch from below",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 30
+            }
+          },
+          "effects": {
+            "setFlag": "annex-drain-open",
+            "log": "The hatch rises into the annex floor.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_maintenance_annex.json",
+              "player": {
+                "x": 4,
+                "y": 19,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay below",
+          "effects": {
+            "log": "You leave the annex ladder behind."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

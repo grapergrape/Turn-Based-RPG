@@ -1,0 +1,19 @@
+{
+  "id": "old-pilgrim-hara-doss",
+  "title": "Hannah of Bethel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Hannah has tied two bedrolls under the shelter and kept a third across her knees.",
+        "“They sealed South Measure. Baruch asks when we go home. I told him roads do not answer that.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

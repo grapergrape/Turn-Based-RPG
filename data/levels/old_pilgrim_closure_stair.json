@@ -1,0 +1,578 @@
+{
+  "id": "old-pilgrim-closure-stair",
+  "name": "Closure Stair",
+  "intro": "The pressure stair drops below the church in long, dry flights. The people caught here died facing both doors.",
+  "width": 32,
+  "height": 48,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#0a0807",
+    "floorShadeAlpha": 0.28,
+    "ambient": "#172635",
+    "ambientAlpha": 0.17,
+    "vignette": 0.32
+  },
+  "quests": [
+    "road-through-the-fields",
+    "the-buried-novitiate",
+    "names-below-the-hill"
+  ],
+  "dialogue": [
+    "old-pilgrim-closure-to-church",
+    "old-pilgrim-closure-register",
+    "old-pilgrim-manual-release"
+  ],
+  "tiles": [
+    "################################",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#..............................#",
+    "#..............................#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#####.####............#####.####",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#..............................#",
+    "#..............................#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "####.#####............####.#####",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#..............................#",
+    "#..............................#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "######.###............######.###",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#..............................#",
+    "#..............................#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "#........#............#........#",
+    "################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 15,
+      "y": 3,
+      "facing": "s"
+    },
+    "npcs": [],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "wall-stair-door",
+      "x": 15,
+      "y": 0,
+      "id": "old-pilgrim-closure-upper-stair",
+      "name": "Apse Stair",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-closure-to-church"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 15,
+        "y": 1
+      },
+      "mapMarker": {
+        "label": "Hill Church",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "closure-control-panel",
+      "x": 18,
+      "y": 5,
+      "id": "old-pilgrim-closure-duty-register",
+      "name": "Closure Duty Register",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-closure-register"
+      },
+      "blocking": true,
+      "variant": "register",
+      "mapMarker": {
+        "label": "Duty Register",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "closure-control-panel",
+      "x": 12,
+      "y": 6,
+      "id": "old-pilgrim-outer-manual-release",
+      "name": "Manual Release Wheel",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-manual-release"
+      },
+      "blocking": true,
+      "variant": "wheel",
+      "mapMarker": {
+        "label": "Manual Release",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "wall-stair-door",
+      "x": 15,
+      "y": 47,
+      "id": "old-pilgrim-inner-pressure-door",
+      "name": "Inner Pressure Door",
+      "blocking": true,
+      "passableWhenOpen": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 15,
+        "y": 46
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "log": "The inner pressure door withdraws into a deep stone pocket.",
+        "lock": {
+          "id": "old-pilgrim-inner-pressure-lock",
+          "title": "Inner Pressure Door",
+          "lines": [
+            "A short keyway sits between two manual release ports. Scratches crowd the ports, not the keyway."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-use-service-key",
+              "label": "Use the Novitiate Service Key",
+              "requiresItem": "old-pilgrim-service-key",
+              "successLog": "The short key turns. Both pressure bolts withdraw in sequence.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-inner-pressure-open",
+                  "old-pilgrim-inner-opened-key"
+                ],
+                "questUpdate": {
+                  "quest": "the-buried-novitiate",
+                  "stage": "read-water-tally",
+                  "log": "The inner pressure door opens onto the novitiate quarters."
+                },
+                "loadLevel": {
+                  "path": "./data/levels/old_pilgrim_novitiate_quarters.json",
+                  "player": {
+                    "x": 24,
+                    "y": 31,
+                    "facing": "n"
+                  }
+                }
+              }
+            },
+            {
+              "id": "old-pilgrim-release-inner-engineering",
+              "label": "Equalize the manual releases",
+              "field": "engineering",
+              "dc": 32,
+              "successLog": "Both release ports take weight together. The pressure bolts withdraw.",
+              "failLog": "One bolt withdraws and drives the other deeper.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-inner-pressure-open",
+                  "old-pilgrim-inner-opened-engineering"
+                ],
+                "questUpdate": {
+                  "quest": "the-buried-novitiate",
+                  "stage": "read-water-tally",
+                  "log": "The inner pressure door opens onto the novitiate quarters."
+                },
+                "loadLevel": {
+                  "path": "./data/levels/old_pilgrim_novitiate_quarters.json",
+                  "player": {
+                    "x": 24,
+                    "y": 31,
+                    "facing": "n"
+                  }
+                }
+              }
+            },
+            {
+              "id": "old-pilgrim-release-inner-security",
+              "label": "Walk the pressure keyway",
+              "field": "security",
+              "dc": 32,
+              "requiresSecurityTool": false,
+              "successLog": "The keyway gives up both bolt orders. The pressure door opens.",
+              "failLog": "The second bolt resets before the first clears.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-inner-pressure-open",
+                  "old-pilgrim-inner-opened-security"
+                ],
+                "questUpdate": {
+                  "quest": "the-buried-novitiate",
+                  "stage": "read-water-tally",
+                  "log": "The inner pressure door opens onto the novitiate quarters."
+                },
+                "loadLevel": {
+                  "path": "./data/levels/old_pilgrim_novitiate_quarters.json",
+                  "player": {
+                    "x": 24,
+                    "y": 31,
+                    "facing": "n"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Inner Pressure Door",
+        "kind": "locked"
+      }
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 5,
+      "blocking": true,
+      "orient": "se",
+      "variant": "upper"
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 10,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "upper"
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 15,
+      "blocking": true,
+      "orient": "se",
+      "variant": "middle"
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 20,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "middle"
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 25,
+      "blocking": true,
+      "orient": "se",
+      "variant": "middle"
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 30,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "lower"
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 35,
+      "blocking": true,
+      "orient": "se",
+      "variant": "lower"
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 15,
+      "y": 40,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "lower"
+    },
+    {
+      "kind": "mortuary-washing-table",
+      "x": 4,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "mortuary-washing-table",
+      "x": 27,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 5,
+      "y": 18,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 26,
+      "y": 18,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "settling-tank",
+      "x": 5,
+      "y": 29,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "water-pump",
+      "x": 27,
+      "y": 29,
+      "blocking": true
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 5,
+      "y": 40,
+      "blocking": true
+    },
+    {
+      "kind": "wall-broken",
+      "x": 0,
+      "y": 40,
+      "blocking": true
+    },
+    {
+      "kind": "tool-rack",
+      "x": 27,
+      "y": 40,
+      "blocking": true
+    },
+    {
+      "kind": "machine-oil",
+      "x": 12,
+      "y": 7
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 7,
+      "y": 41
+    },
+    {
+      "kind": "floor-crack",
+      "x": 6,
+      "y": 42
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 25,
+      "y": 21
+    },
+    {
+      "kind": "skeleton",
+      "x": 11,
+      "y": 7,
+      "id": "old-pilgrim-closure-outer-wheel-nun",
+      "name": "Nun at the Outer Wheel",
+      "interact": {
+        "type": "note",
+        "log": "A rotted veil lies under the skull. Both hands rest toward the manual wheel, which never moved after closure."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 9,
+      "id": "old-pilgrim-closure-upper-landing-priest",
+      "name": "Priest on the Upper Landing",
+      "interact": {
+        "type": "note",
+        "log": "A priest died with the public stair in sight. His finger bones point toward the sealed apse above."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 4,
+      "y": 9,
+      "id": "old-pilgrim-closure-wash-room-pilgrim",
+      "name": "Pilgrim in the Wash Room",
+      "interact": {
+        "type": "note",
+        "log": "The pilgrim curled beneath a dry basin with an empty cup inside the coat."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 7,
+      "y": 18,
+      "id": "old-pilgrim-closure-locker-novice",
+      "name": "Novice at the Lockers",
+      "interact": {
+        "type": "note",
+        "log": "A novice reached the service lockers. The key ring was dragged from one hand after death."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 25,
+      "y": 20,
+      "id": "old-pilgrim-closure-bell-cable-sister",
+      "name": "Sister Below the Bell Cable",
+      "interact": {
+        "type": "note",
+        "log": "Bell cord is wound around the wrist bones. The cable was pulled until the upper fibers parted."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 7,
+      "y": 30,
+      "id": "old-pilgrim-closure-tank-pilgrim",
+      "name": "Pilgrim at the Emergency Tank",
+      "interact": {
+        "type": "note",
+        "log": "The tank tap rests between the ribs. Lime marks show that it was dry before this pilgrim reached it."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 41,
+      "id": "old-pilgrim-closure-breach-priest",
+      "name": "Priest at the Failed Breach",
+      "interact": {
+        "type": "note",
+        "log": "A masonry hammer lies beside the arm. The wall lost one handspan before the tools stopped."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 44,
+      "id": "old-pilgrim-closure-inner-door-sister",
+      "name": "Sister at the Inner Door",
+      "interact": {
+        "type": "note",
+        "log": "The sister died facing the quarters, not the surface. A service prayer is scratched beside the inner keyway."
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 5,
+      "y": 17,
+      "id": "old-pilgrim-closure-service-locker",
+      "name": "Closure Service Locker",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The locker seal failed along one hinge. A gear plate and old field coin remain inside.",
+        "loot": [
+          {
+            "item": "penitent-gear-scrap",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "kind": "closure-control-panel",
+      "x": 8,
+      "y": 29,
+      "id": "old-pilgrim-empty-emergency-tank",
+      "name": "Emergency Tank Gauge",
+      "blocking": true,
+      "variant": "gauge",
+      "wallPlane": "se",
+      "interact": {
+        "type": "note",
+        "log": "The gauge was marked empty on the second day. A later hand added: MAIN CISTERN BELOW.",
+        "search": {
+          "id": "old-pilgrim-emergency-gauge-search",
+          "title": "Emergency Tank Gauge",
+          "lines": [
+            "The indicator stopped at empty, but dated scratch marks continue beneath it."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-read-emergency-gauge",
+              "label": "Read the dated scratches",
+              "field": "search",
+              "dc": 25,
+              "successLog": "The stair reserve ran dry during the second night. Later cups came up from the main cistern below.",
+              "failLog": "Several hands cut over the dates until the order is unclear.",
+              "success": {
+                "setFlag": "old-pilgrim-empty-tank-known",
+                "xp": 4
+              }
+            },
+            {
+              "id": "old-pilgrim-test-emergency-feed",
+              "label": "Trace the emergency feed",
+              "field": "engineering",
+              "dc": 27,
+              "successLog": "The feed valve is sound. The small tank was simply exhausted before the main line failed.",
+              "failLog": "Scale hides where the emergency feed joined the lower line.",
+              "success": {
+                "setFlag": "old-pilgrim-empty-tank-known",
+                "xp": 4
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Emergency Tank",
+        "kind": "search"
+      }
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "old-pilgrim-loose-service-key",
+      "item": "old-pilgrim-service-key",
+      "count": 1,
+      "x": 7,
+      "y": 17
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "id": "roadward-wheelgun",
+  "name": "Roadward Wheelgun",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "revolver",
+  "rarity": "common",
+  "weight": 0.7,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Road Wardens",
+    "factions": [
+      "road-wardens"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "revolver"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 6,
+        "range": 4,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "deliberate-shot",
+        "name": "Deliberate Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 6,
+        "range": 5,
+        "accuracyBonus": 10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "heavy-sidearm-cartridge",
+      "capacity": 6,
+      "defaultLoaded": 6,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A long-cylinder wheelgun with a lanyard ring big enough for winter rope. It fires after mud, rain, and weeks beneath a cart seat."
+}

@@ -14,12 +14,19 @@ export const AMBIENT_SPEECH_COOLDOWN = 7.5;
 export const AMBIENT_ACTOR_DELAY = 18;
 export const AMBIENT_PROP_DELAY = 12;
 export const AREA_TITLE_DURATION = 2.35;
+export const JOURNAL_NOTICE_DURATION = 3.4;
+export const JOURNAL_NOTICE_POLL_INTERVAL = 0.12;
 export const MAX_LOG = 8;
 export const WALK_FRAMES = 8;
+export const INTERACT_FRAMES = 6;
 export const ATTACK_FRAMES = 6;
 export const HIT_FRAMES = 4;
 export const DEATH_FRAMES = 10;
 export const PLAYER_CUSTOM_PREVIEW_SPRITE_ID = 'player-custom-preview';
+
+export function isExplorationMode(mode) {
+  return mode === 'explore' || mode === 'victory';
+}
 
 export const DIRS = {
   up: { x: 0, y: -1 },

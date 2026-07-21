@@ -1,0 +1,35 @@
+{
+  "id": "stage-iv-runner",
+  "name": "Stage IV Runner",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "stage-iv-runner-ash",
+  "description": "A human body driven past pain, with ribs that pull apart around a small black-gold wound whenever it runs. One horn has split the scalp while the other side remains recognizably human.",
+  "stats": {
+    "hp": 4,
+    "maxHp": 4,
+    "actionPoints": 7,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "rushing-rake",
+      "name": "Rushing Rake",
+      "apCost": 4,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "aggro": [
+    "Heel bones strike the road in a fast, uneven count.",
+    "It runs with its prayer-bound hand against its chest."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "stage-iv",
+    "runner",
+    "feral",
+    "human"
+  ]
+}

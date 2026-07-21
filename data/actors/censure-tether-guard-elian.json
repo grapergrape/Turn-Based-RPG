@@ -1,13 +1,16 @@
 {
   "id": "censure-tether-guard-elian",
-  "name": "Tether Guard Elian",
+  "name": "Tether Guard Justus",
   "type": "npc",
   "faction": "holy-remnant",
   "role": "Gate and tether guard",
   "appearance": {
     "body": "lean",
     "outfit": "settlement-work-coat",
-    "gear": ["shoulder-plate", "rope-coil"],
+    "gear": [
+      "shoulder-plate",
+      "rope-coil"
+    ],
     "accent": "dark-hood"
   },
   "stats": {
@@ -15,5 +18,9 @@
     "maxHp": 9,
     "actionPoints": 0
   },
-  "tags": ["holy-remnant", "ash-censure", "guard"]
+  "tags": [
+    "holy-remnant",
+    "ash-censure",
+    "guard"
+  ]
 }

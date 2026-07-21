@@ -1,38 +1,38 @@
 {
   "id": "carry-lucky-necklace",
-  "title": "Carry Mirel's Lucky Necklace",
+  "title": "Carry Priscilla's Lucky Necklace",
   "initialStage": "available",
   "stages": [
     {
       "id": "available",
-      "task": "Speak with Mirel in the catacombs.",
-      "description": "Mirel Ardent keeps checking an empty cord at her wrist."
+      "task": "Speak with Priscilla in the catacombs.",
+      "description": "Priscilla Afer keeps checking an empty cord at her wrist."
     },
     {
       "id": "charm-received",
-      "task": "Find Jarik near Hallowfen and give him the necklace.",
+      "task": "Find Jeremiah near Hallowfen and give him the necklace.",
       "xp": 10,
-      "description": "Mirel gave you Jarik's lucky necklace. Her husband left for Hallowfen chasing wall pay and forgot the charm he trusted most."
+      "description": "Priscilla gave you Jeremiah's lucky necklace. Her husband left for Hallowfen chasing wall pay and forgot the charm he trusted most."
     },
     {
       "id": "complete",
-      "task": "The necklace reached Jarik.",
+      "task": "The necklace reached Jeremiah.",
       "xp": 60,
-      "description": "Jarik has his lucky necklace again."
+      "description": "Jeremiah has his lucky necklace again."
     }
   ],
   "objectives": [
     {
-      "text": "Take Mirel's necklace.",
+      "text": "Take Priscilla's necklace.",
       "stage": "charm-received"
     },
     {
-      "text": "Find Jarik near Hallowfen.",
+      "text": "Find Jeremiah near Hallowfen.",
       "reveal": "charm-received",
       "lead": true
     },
     {
-      "text": "Give Jarik the necklace.",
+      "text": "Give Jeremiah the necklace.",
       "reveal": "charm-received",
       "stage": "complete"
     }

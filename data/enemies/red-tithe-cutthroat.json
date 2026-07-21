@@ -19,5 +19,11 @@
   "attacks": [
     { "id": "blade", "name": "Cleaver", "apCost": 3, "damage": 2, "range": 1 }
   ],
+  "weapons": [
+    { "item": "gatewarden-falchion" }
+  ],
+  "loot": [
+    { "item": "gatewarden-falchion", "count": 1 }
+  ],
   "tags": ["ash-cartel", "red-tithe", "raider", "human"]
 }

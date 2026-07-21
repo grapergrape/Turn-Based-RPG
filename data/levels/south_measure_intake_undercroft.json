@@ -1,0 +1,1923 @@
+{
+  "id": "south-measure-intake-undercroft",
+  "name": "South Measure Intake Undercroft",
+  "intro": "Old lime covers the intake walls. Handprints show through where the pipes shake.",
+  "width": 58,
+  "height": 42,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#0a0807",
+    "floorShadeAlpha": 0.27,
+    "ambient": "#172635",
+    "ambientAlpha": 0.16,
+    "vignette": 0.3
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-civil-stair-undercroft",
+    "south-measure-drain-undercroft-valve-undercroft",
+    "south-measure-undercroft-ressa-venn",
+    "south-measure-undercroft-nel-varo",
+    "south-measure-undercroft-brother-tarn",
+    "south-measure-undercroft-yara-quell",
+    "south-measure-undercroft-original-roll",
+    "south-measure-undercroft-ona-veyl"
+  ],
+  "tiles": [
+    "##########################################################",
+    "#..................#......................#..............#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#.........yy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................##########.#############......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#.............................yyyyy...#",
+    "#..................#.......................xxxxxx+xxxxxxx#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "##########.#########......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyy.....#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#.........................................#......yyyyy...#",
+    "#.........................................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................########..#########..###......yyyyy...#",
+    "#..................#.............................yyyyy...#",
+    "#..................#.............................yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#........yyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#......yyyyy...#",
+    "#..................#......................#..............#",
+    "##########################################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "south-measure-intake-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "south-measure-slab",
+      "walkable": true
+    },
+    "x": {
+      "kind": "floor",
+      "floor": "relief-channel-x",
+      "walkable": true
+    },
+    "y": {
+      "kind": "floor",
+      "floor": "relief-channel-y",
+      "walkable": true
+    },
+    "+": {
+      "kind": "floor",
+      "floor": "relief-channel-junction",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 29,
+      "y": 39,
+      "facing": "ne"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-ressa-venn",
+        "spawnId": "undercroft-ressa-venn-0",
+        "characterSlot": "undercroft-ressa-venn",
+        "x": 25,
+        "y": 35,
+        "facing": "se",
+        "ambient": [
+          "The old roll puts a denial beside each transport.",
+          "Do not lift a page until Noa braces the binding.",
+          "My family waited outside this gate. Their names stayed below."
+        ],
+        "dialogue": "south-measure-undercroft-ressa-venn",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "resident-isolation-requested"
+        }
+      },
+      {
+        "actor": "ash-road-south-nel-varo",
+        "spawnId": "undercroft-nel-varo-1",
+        "characterSlot": "undercroft-nel-varo",
+        "x": 30,
+        "y": 20,
+        "facing": "se",
+        "ambient": [
+          "The manifold is sound. The north feed is carrying the answer.",
+          "Keep your weight off the return pipe.",
+          "The relief return can carry a smaller local loop."
+        ],
+        "dialogue": "south-measure-undercroft-nel-varo",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "resident-isolation-requested"
+        }
+      },
+      {
+        "actor": "brother-tarn",
+        "spawnId": "undercroft-brother-tarn-2",
+        "characterSlot": "undercroft-brother-tarn",
+        "x": 49,
+        "y": 16,
+        "facing": "se",
+        "ambient": [
+          "The answer comes north after every pressure knock.",
+          "Quiet. The pipe is borrowing the clerk again.",
+          "I can cut the signal or hold the wicket. I cannot do both alone."
+        ],
+        "dialogue": "south-measure-undercroft-brother-tarn",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "tarn-water-help-requested"
+        }
+      },
+      {
+        "actor": "ash-road-south-yara-quell",
+        "spawnId": "undercroft-yara-quell-3",
+        "characterSlot": "undercroft-yara-quell",
+        "x": 12,
+        "y": 26,
+        "facing": "se",
+        "ambient": [
+          "Do not touch the throat seam without a cloth barrier.",
+          "This tissue stopped changing before our manuals were written.",
+          "Sedation can keep the person intact. Custody is a separate question."
+        ],
+        "dialogue": "south-measure-undercroft-yara-quell",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "heard-yara-quell-terms"
+        }
+      }
+    ],
+    "enemies": [
+      {
+        "id": "south-measure-intake-clerk",
+        "spawnId": "intake-clerk-released",
+        "characterSlot": "intake-clerk-released",
+        "x": 30,
+        "y": 13,
+        "facing": "sw",
+        "encounter": "intake-clerk-release",
+        "aggroRadius": 4,
+        "conditions": {
+          "flag": "intake-clerk-forced-open",
+          "flagsAbsent": [
+            "intake-clerk-contained",
+            "intake-clerk-tarn-sealed",
+            "intake-clerk-compact",
+            "intake-clerk-killed",
+            "intake-clerk-burned",
+            "intake-clerk-resealed"
+          ]
+        },
+        "ambient": [
+          "The stamp clicks against stone. \"Mercy allocation remains empty.\""
+        ],
+        "aggro": [
+          "Household denied. Remain outside."
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 29,
+      "y": 41,
+      "id": "undercroft-civil-stair",
+      "name": "Civil Stair",
+      "blocking": true,
+      "variant": "civil",
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 29,
+        "y": 40
+      },
+      "mapMarker": {
+        "label": "Civil Stair",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-civil-stair-undercroft"
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 57,
+      "y": 15,
+      "id": "undercroft-drain-valve",
+      "name": "Maintenance Channel",
+      "blocking": true,
+      "variant": "service",
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 56,
+        "y": 15
+      },
+      "mapMarker": {
+        "label": "Maintenance Channel",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-drain-undercroft-valve-undercroft"
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 27,
+      "y": 35,
+      "id": "undercroft-records-landing-rails",
+      "blocking": true,
+      "variant": "civic",
+      "orient": "se",
+      "name": "Intake Rails",
+      "interact": {
+        "type": "note",
+        "log": "Iron rails divide the landing into household lines. Their brass direction plates still send one line toward examination and another back outside."
+      },
+      "interactionMarker": {
+        "x": 28,
+        "y": 35
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 22,
+      "y": 41,
+      "id": "undercroft-brass-number-hooks",
+      "blocking": true,
+      "variant": "schedule",
+      "wallPlane": "sw",
+      "name": "Brass Number Hooks",
+      "interact": {
+        "type": "note",
+        "log": "Each empty hook carries an intake number. Several match addresses still used in Rope Rows."
+      },
+      "mapMarker": {
+        "label": "Number Hooks",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 22,
+        "y": 40
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 25,
+      "y": 41,
+      "id": "undercroft-lime-handprints",
+      "blocking": true,
+      "variant": "handprints",
+      "wallPlane": "sw",
+      "name": "Handprints Under Lime",
+      "interact": {
+        "type": "note",
+        "log": "Old palms show beneath the lime at shoulder height. The last coat was laid over them without filling the finger marks."
+      },
+      "interactionMarker": {
+        "x": 25,
+        "y": 40
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 33,
+      "y": 41,
+      "id": "undercroft-examination-order",
+      "blocking": true,
+      "variant": "schedules",
+      "wallPlane": "sw",
+      "name": "Last Examination Order",
+      "interact": {
+        "type": "note",
+        "log": "The final relief order sends sample cases out first. Civilian transport does not appear in the departure column."
+      },
+      "mapMarker": {
+        "label": "Relief Order",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 33,
+        "y": 40
+      }
+    },
+    {
+      "kind": "service-hatch",
+      "x": 8,
+      "y": 25,
+      "id": "undercroft-restraint-drain",
+      "blocking": true,
+      "variant": "grate",
+      "orient": "se",
+      "name": "Examination Drain",
+      "interact": {
+        "type": "note",
+        "log": "Leather polish marks the floor beside the drain. The buckles were worked often enough to wear clean arcs into the stone."
+      },
+      "interactionMarker": {
+        "x": 9,
+        "y": 25
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 13,
+      "y": 27,
+      "id": "undercroft-privacy-screens",
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "name": "Broken Privacy Screens",
+      "interact": {
+        "type": "note",
+        "log": "Split screens still divide the examination floor. Old blood-card clips remain fixed to their inner faces."
+      },
+      "interactionMarker": {
+        "x": 14,
+        "y": 27
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 5,
+      "y": 31,
+      "id": "undercroft-filter-cabinet",
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw",
+      "name": "Intake Supply Cabinet",
+      "interact": {
+        "type": "note",
+        "log": "Blank blood cards and folded filter cloth remain inside. Compact indexing marks cross the older relief labels."
+      },
+      "interactionMarker": {
+        "x": 6,
+        "y": 31
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 9,
+      "y": 18,
+      "id": "undercroft-records-vault-door",
+      "blocking": true,
+      "variant": "civil",
+      "wallPlane": "sw",
+      "name": "Archive Door",
+      "interact": {
+        "type": "note",
+        "log": "A heavy plate door seals the records vault. Lime dust packs the sill, but the hinges still carry weight."
+      },
+      "mapMarker": {
+        "label": "Records Vault",
+        "kind": "locked"
+      },
+      "interactionMarker": {
+        "x": 10,
+        "y": 18
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 36,
+      "y": 41,
+      "id": "undercroft-compact-copy-marks",
+      "blocking": true,
+      "variant": "blood-card",
+      "wallPlane": "sw",
+      "name": "Compact Copy Marks",
+      "interact": {
+        "type": "note",
+        "log": "Compact page marks cut through selected entries. The original bindings never left the lime vault."
+      },
+      "interactionMarker": {
+        "x": 36,
+        "y": 40
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 6,
+      "y": 8,
+      "id": "undercroft-original-household-roll",
+      "blocking": true,
+      "variant": "lime-records-chest",
+      "orient": "se",
+      "name": "Original Household Roll",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "south-measure-undercroft-original-roll"
+      },
+      "mapMarker": {
+        "label": "Household Roll",
+        "kind": "quest"
+      },
+      "interactionMarker": {
+        "x": 7,
+        "y": 8
+      }
+    },
+    {
+      "kind": "intake-pump-assembly",
+      "x": 32,
+      "y": 20,
+      "id": "undercroft-isolation-manifold",
+      "blocking": true,
+      "variant": "coupled",
+      "orient": "se",
+      "name": "Isolation Manifold",
+      "interact": {
+        "type": "note",
+        "log": "The manifold can separate the north feed from the relief return. Its sound collar trembles only when the buried pulse reaches it."
+      },
+      "mapMarker": {
+        "label": "Isolation Manifold",
+        "kind": "quest"
+      },
+      "interactionMarker": {
+        "x": 33,
+        "y": 20
+      }
+    },
+    {
+      "kind": "relief-machine",
+      "x": 39,
+      "y": 18,
+      "id": "undercroft-settling-feed-controls",
+      "blocking": true,
+      "variant": "pump-jig",
+      "orient": "sw",
+      "name": "Settling Feed Controls",
+      "interact": {
+        "type": "note",
+        "log": "The old controls still divide clean feed from waste return. One lever trembles in time with the condenser above."
+      },
+      "interactionMarker": {
+        "x": 40,
+        "y": 18
+      }
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 27,
+      "y": 22,
+      "id": "undercroft-pump-work-platform",
+      "blocking": true,
+      "orient": "se",
+      "name": "Pump Work Platform",
+      "interact": {
+        "type": "note",
+        "log": "A grated platform leaves safe reach around the isolation manifold. Chalk marks show the valve order Noa Faber uses above."
+      },
+      "interactionMarker": {
+        "x": 28,
+        "y": 22
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 47,
+      "y": 9,
+      "id": "undercroft-pipe-vein",
+      "blocking": true,
+      "variant": "straight",
+      "orient": "sw",
+      "name": "Vein Under the Pipe Skin",
+      "interact": {
+        "type": "note",
+        "log": "A thin black-gold vein lies beneath the pipe skin. It follows the metal north without breaking through."
+      },
+      "mapMarker": {
+        "label": "Buried Vein",
+        "kind": "search"
+      },
+      "interactionMarker": {
+        "x": 48,
+        "y": 9
+      }
+    },
+    {
+      "kind": "intake-clerk-wicket",
+      "x": 30,
+      "y": 11,
+      "id": "undercroft-intake-clerk",
+      "blocking": true,
+      "state": "dormant",
+      "wallPlane": "sw",
+      "hiddenWhenFlags": [
+        "intake-clerk-forced-open",
+        "intake-clerk-burned"
+      ],
+      "disabledWhenFlags": [
+        "intake-clerk-contained",
+        "intake-clerk-tarn-sealed",
+        "intake-clerk-compact",
+        "intake-clerk-killed",
+        "intake-clerk-burned",
+        "intake-clerk-resealed"
+      ],
+      "name": "Intake Clerk",
+      "ambient": [
+        "Household unresolved. Remain outside.",
+        "Transport deferred until mercy becomes available.",
+        "One name remains beneath the denial stamp."
+      ],
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "south-measure-undercroft-ona-veyl"
+      },
+      "mapMarker": {
+        "label": "Sealed Wicket",
+        "kind": "danger"
+      },
+      "interactionMarker": {
+        "x": 29,
+        "y": 11
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 19,
+      "y": 13,
+      "id": "undercroft-return-passage",
+      "blocking": true,
+      "variant": "civil",
+      "wallPlane": "se",
+      "locked": true,
+      "name": "Narrow Return Passage",
+      "interact": {
+        "type": "note",
+        "log": "A barred passage joins the vault side to the pump side. The frame cannot move while the wicket braces remain under strain."
+      },
+      "mapMarker": {
+        "label": "Return Passage",
+        "kind": "locked"
+      },
+      "interactionMarker": {
+        "x": 20,
+        "y": 13
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 19,
+      "y": 12,
+      "blocking": true,
+      "variant": "civil",
+      "wallPlane": "se",
+      "locked": true
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 4,
+      "y": 4,
+      "id": "undercroft-rejected-issue-crate",
+      "name": "Rejected Issue Crate",
+      "blocking": true,
+      "orient": "se",
+      "interact": {
+        "type": "container",
+        "log": "The intake clerk marked the crate REJECTED. Its broken seal exposes sound supplies set aside for salvage.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 2
+          },
+          {
+            "item": "drone-service-parts",
+            "count": 2
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 5,
+        "y": 4
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 12,
+      "y": 6,
+      "blocking": true,
+      "variant": "lime-records-chest",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 15,
+      "y": 14,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 24,
+      "y": 5,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 37,
+      "y": 5,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 13,
+      "y": 23,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 13,
+      "y": 31,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 35,
+      "y": 35,
+      "blocking": true,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 57,
+      "y": 6,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 57,
+      "y": 25,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 57,
+      "y": 34,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 7,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 22,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 35,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 3,
+      "y": 3,
+      "blocking": true,
+      "variant": "lime-records-chest",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 8,
+      "y": 3,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 13,
+      "y": 3,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 17,
+      "y": 4,
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 3,
+      "y": 8,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 10,
+      "y": 9,
+      "blocking": true,
+      "variant": "lime-records-chest",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 16,
+      "y": 9,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 3,
+      "y": 13,
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 8,
+      "y": 14,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 17,
+      "y": 15,
+      "blocking": true,
+      "variant": "lime-records-chest",
+      "orient": "sw"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 6,
+      "y": 3,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 11,
+      "y": 7,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 16,
+      "y": 12,
+      "blocking": true,
+      "variant": "parts",
+      "orient": "se"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 5,
+      "y": 6
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 12,
+      "y": 11
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 5,
+      "y": 15
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 14,
+      "y": 16
+    },
+    {
+      "kind": "intake-screening-frame",
+      "x": 22,
+      "y": 8,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "intake-screening-frame",
+      "x": 26,
+      "y": 8,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "intake-screening-frame",
+      "x": 34,
+      "y": 8,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "intake-screening-frame",
+      "x": 38,
+      "y": 8,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 22,
+      "y": 10,
+      "blocking": false,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 25,
+      "y": 10,
+      "blocking": false,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 28,
+      "y": 10,
+      "blocking": false,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 32,
+      "y": 10,
+      "blocking": false,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 35,
+      "y": 10,
+      "blocking": false,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 38,
+      "y": 10,
+      "blocking": false,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 41,
+      "y": 10,
+      "blocking": false,
+      "variant": "ledger",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 23,
+      "y": 13,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 27,
+      "y": 13,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 34,
+      "y": 13,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 38,
+      "y": 13,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 25,
+      "y": 5,
+      "blocking": true,
+      "variant": "records",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 34,
+      "y": 5,
+      "blocking": true,
+      "variant": "records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 30,
+      "y": 2,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-brass-hook-memorial",
+      "x": 24,
+      "y": 38,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 20,
+      "y": 41,
+      "blocking": true,
+      "variant": "schedule",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 27,
+      "y": 41,
+      "blocking": true,
+      "variant": "handprints",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 31,
+      "y": 41,
+      "blocking": true,
+      "variant": "schedules",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 38,
+      "y": 41,
+      "blocking": true,
+      "variant": "blood-card",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 22,
+      "y": 15,
+      "blocking": true,
+      "variant": "generator",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 25,
+      "y": 15,
+      "blocking": true,
+      "variant": "press",
+      "orient": "sw"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 28,
+      "y": 15,
+      "blocking": true,
+      "variant": "lathe",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 35,
+      "y": 16,
+      "blocking": true,
+      "variant": "pump-jig",
+      "orient": "sw"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 38,
+      "y": 16,
+      "blocking": true,
+      "variant": "generator",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 22,
+      "y": 25,
+      "blocking": true,
+      "variant": "cooling-jacket",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 25,
+      "y": 25,
+      "blocking": true,
+      "variant": "generator",
+      "orient": "sw"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 28,
+      "y": 25,
+      "blocking": true,
+      "variant": "press",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 35,
+      "y": 25,
+      "blocking": true,
+      "variant": "press",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 38,
+      "y": 25,
+      "blocking": true,
+      "variant": "lathe",
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 27,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 27,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 28,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 28,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 29,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 29,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 30,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 30,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 31,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 31,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 32,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 32,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 33,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 33,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 34,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 34,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 35,
+      "y": 21,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 35,
+      "y": 23,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "service-hatch",
+      "x": 29,
+      "y": 22,
+      "blocking": true,
+      "variant": "grate",
+      "orient": "se"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 30,
+      "y": 22,
+      "blocking": true,
+      "variant": "grate",
+      "orient": "nw"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 31,
+      "y": 22,
+      "blocking": true,
+      "variant": "grate",
+      "orient": "se"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 32,
+      "y": 22,
+      "blocking": true,
+      "variant": "grate",
+      "orient": "nw"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 33,
+      "y": 22,
+      "blocking": true,
+      "variant": "grate",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 35,
+      "y": 22,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 25,
+      "y": 19,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 38,
+      "y": 20,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 20,
+      "y": 16,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 20,
+      "y": 23,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 20,
+      "y": 34,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 4,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 12,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 18,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 28,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 42,
+      "y": 39,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 57,
+      "y": 12,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 57,
+      "y": 19,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 57,
+      "y": 29,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 57,
+      "y": 38,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 3,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 6,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 12,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 15,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 18,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 21,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 24,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 27,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 30,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 33,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 36,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 47,
+      "y": 39,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "machine-oil",
+      "x": 25,
+      "y": 18
+    },
+    {
+      "kind": "machine-oil",
+      "x": 30,
+      "y": 19
+    },
+    {
+      "kind": "machine-oil",
+      "x": 37,
+      "y": 20
+    },
+    {
+      "kind": "machine-oil",
+      "x": 24,
+      "y": 27
+    },
+    {
+      "kind": "machine-oil",
+      "x": 33,
+      "y": 27
+    },
+    {
+      "kind": "machine-oil",
+      "x": 39,
+      "y": 23
+    },
+    {
+      "kind": "machine-oil",
+      "x": 50,
+      "y": 7
+    },
+    {
+      "kind": "machine-oil",
+      "x": 52,
+      "y": 23
+    },
+    {
+      "kind": "machine-oil",
+      "x": 49,
+      "y": 34
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 45,
+      "y": 20,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "intake-pump-assembly",
+      "x": 52,
+      "y": 31,
+      "blocking": true,
+      "variant": "coupled",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 50,
+      "y": 6,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 52,
+      "y": 8,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 50,
+      "y": 21,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 53,
+      "y": 23,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 49,
+      "y": 32,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 51,
+      "y": 34,
+      "blocking": false
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 49,
+      "y": 8
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 51,
+      "y": 9
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 52,
+      "y": 20
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 50,
+      "y": 23
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 53,
+      "y": 32
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 50,
+      "y": 35
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 5,
+      "y": 22,
+      "blocking": true,
+      "variant": "used",
+      "orient": "se"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 11,
+      "y": 22,
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "sw"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 5,
+      "y": 28,
+      "blocking": true,
+      "variant": "used",
+      "orient": "se"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 16,
+      "y": 31,
+      "blocking": true,
+      "variant": "clean",
+      "orient": "sw"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 10,
+      "y": 35,
+      "blocking": true,
+      "variant": "used",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 3,
+      "y": 20,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 9,
+      "y": 20,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 22,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 3,
+      "y": 34,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 14,
+      "y": 36,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "medicine-cart",
+      "x": 3,
+      "y": 25,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "wash-wall",
+      "x": 16,
+      "y": 26,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 6,
+      "y": 37,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 23,
+      "y": 34,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 37,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 32,
+      "y": 37,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 38,
+      "y": 34,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 4,
+      "y": 24
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 15,
+      "y": 25
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 7,
+      "y": 33
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 17,
+      "y": 38
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 25,
+      "y": 32
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 36,
+      "y": 32
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 44,
+      "y": 40
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "undercroft-loose-ducat",
+      "item": "ducat",
+      "count": 1,
+      "x": 5,
+      "y": 4
+    }
+  ],
+  "combatTriggers": [
+    {
+      "id": "intake-clerk-release-trigger",
+      "encounter": "intake-clerk-release",
+      "x": 30,
+      "y": 13,
+      "radius": 4,
+      "forceCombat": true,
+      "intro": [
+        "The wicket bolts leave the wall with pieces of desk and bone still joined to them.",
+        "Junia crawls on fused forearms. Every rib mouth issues the same final denial."
+      ]
+    }
+  ],
+  "victoryLog": "Junia’s stamp falls from her fused hands. The denial sequence ends without approving a single household.",
+  "onVictory": {
+    "setFlag": [
+      "intake-clerk-killed",
+      "intake-clerk-resolved",
+      "intake-roll-damaged",
+      "south-measure-water-decision-open",
+      "south-measure-north-pulse-traced"
+    ],
+    "questUpdate": {
+      "quest": "names-for-the-gate",
+      "stage": "choose-water-plan",
+      "log": "Junia is dead. South Measure can choose how to move water."
+    }
+  }
+}

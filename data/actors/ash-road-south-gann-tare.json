@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-gann-tare",
+  "name": "Gad Pastor",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Freight animal handler",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-water-carrier",
+    "gear": [
+      "water-jars"
+    ],
+    "accent": "blue-cloth"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "id": "gate-nine-machine-carbine",
+  "name": "Gate Nine Machine Carbine",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "submachine gun",
+  "rarity": "common",
+  "weight": 2.95,
+  "groundModel": "smg",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "First Winter",
+    "origin": "Gate Nine Wardens",
+    "factions": [
+      "gate-nine-wardens"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "submachine gun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 7,
+        "range": 7,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "controlled-burst",
+        "name": "Controlled Burst",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 7,
+        "accuracyBonus": -10,
+        "ammoCost": 3,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-cartridge",
+      "capacity": 24,
+      "defaultLoaded": 24,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "Built from gatehouse spares during the first ration riots. Its square magazine well still carries tally cuts from the night watch."
+}

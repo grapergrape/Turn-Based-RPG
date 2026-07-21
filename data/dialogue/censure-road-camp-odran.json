@@ -1,6 +1,6 @@
 {
   "id": "censure-road-camp-odran",
-  "title": "Father Odran",
+  "title": "Father Augustine",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,7 +8,7 @@
       },
       "else": "start-open",
       "lines": [
-        "Father Odran sits beside the confession screen with a locked cup, a stamp pad, and the exhausted look of a man who has forgiven too many receipts.",
+        "Father Augustine sits beside the confession screen with a locked cup, a stamp pad, and the exhausted look of a man who has forgiven too many receipts.",
         "\"You are absolved for road purposes. Do not spend the condition all in one place.\""
       ],
       "choices": [
@@ -25,14 +25,14 @@
           "next": "command"
         },
         {
-          "label": "Leave Father Odran",
+          "label": "Leave Father Augustine",
           "close": true
         }
       ]
     },
     "start-open": {
       "lines": [
-        "Father Odran sits beside the confession screen with a coin scale on his knee and a tiny knife for cutting paper chits.",
+        "Father Augustine sits beside the confession screen with a coin scale on his knee and a tiny knife for cutting paper chits.",
         "\"Cult-breaker. Chapel dust on your boots, Ash Road grief in your coat, and no confession on my slate. Sit before the sins organize.\""
       ],
       "choices": [
@@ -45,8 +45,8 @@
           "next": "late-visit-confront-widow"
         },
         {
-          "label": "Enter confession",
-          "next": "confession-begin"
+          "label": "Seek road absolution",
+          "next": "absolution-routes"
         },
         {
           "label": "Ask how sins are priced",
@@ -60,7 +60,7 @@
           "next": "command"
         },
         {
-          "label": "Leave Father Odran",
+          "label": "Leave Father Augustine",
           "close": true
         }
       ]
@@ -72,8 +72,8 @@
       ],
       "choices": [
         {
-          "label": "Enter confession",
-          "next": "confession-begin"
+          "label": "Seek road absolution",
+          "next": "absolution-routes"
         },
         {
           "label": "Leave the screen",
@@ -83,8 +83,8 @@
     },
     "command": {
       "lines": [
-        "\"Voss commands hands, routes, and the little chalk arrows that keep novices from marching into latrines.\"",
-        "\"I am the priest assigned to the road office. Father-Censor Halvek reads my reports when a courier survives long enough to carry ink. Do not look relieved. Halvek reads margins like wounds.\""
+        "\"Aquila commands hands, routes, and the little chalk arrows that keep novices from marching into latrines.\"",
+        "\"I am the priest assigned to the road office. Father-Censor Decian reads my reports when a courier survives long enough to carry ink. Do not look relieved. Decian reads margins like wounds.\""
       ],
       "choices": [
         {
@@ -92,35 +92,130 @@
           "next": "supplies"
         },
         {
-          "label": "Leave Father Odran",
+          "label": "Leave Father Augustine",
           "close": true
         }
       ]
     },
     "supplies": {
       "lines": [
-        "\"Runa holds issue stock: bandages, meal, shot, clean hooks, black thread. A bell mark opens the right crate, a seal opens the good crate, and a believable emergency opens her temper.\"",
-        "\"Maev sells what the Office forgot to send. This is called private enterprise because theft sounded rude on the quartermaster forms.\""
+        "\"Ruth holds issue stock: bandages, meal, shot, clean hooks, black thread. A bell mark opens the right crate, a seal opens the good crate, and a believable emergency opens her temper.\"",
+        "\"Judith sells what the Office forgot to send. This is called private enterprise because theft sounded rude on the quartermaster forms.\""
       ],
       "choices": [
         {
-          "label": "Enter confession",
-          "next": "confession-begin"
+          "label": "Seek road absolution",
+          "next": "absolution-routes"
         },
         {
           "label": "Ask who commands this camp",
           "next": "command"
         },
         {
-          "label": "Leave Father Odran",
+          "label": "Leave Father Augustine",
+          "close": true
+        }
+      ]
+    },
+    "absolution-routes": {
+      "lines": [
+        "Augustine squares the stamp beside the locked cup.",
+        "\"The long record takes coin or prayer. The short road needs something Decian would accept. Bring me a rule or an account. A good lie may pass, but Decian reads ink.\""
+      ],
+      "choices": [
+        {
+          "label": "Give the full road confession",
+          "next": "confession-begin"
+        },
+        {
+          "label": "Invoke service under writ",
+          "conditions": {
+            "flagsAbsent": ["censure-road-confession-absolved"],
+            "fieldRatings": {
+              "doctrine": 45
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-confession-absolved",
+              "odran-confession-doctrine-route"
+            ],
+            "inventory": {
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-by-doctrine"
+            },
+            "log": "Augustine accepts service under writ and stamps the absolution chit."
+          },
+          "next": "absolved-doctrine"
+        },
+        {
+          "label": "Trade him a clean field account",
+          "conditions": {
+            "flagsAbsent": ["censure-road-confession-absolved"],
+            "fieldRatings": {
+              "speech": 45
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-confession-absolved",
+              "odran-confession-speech-route"
+            ],
+            "inventory": {
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-by-account"
+            },
+            "log": "Augustine keeps the field account and stamps the absolution chit."
+          },
+          "next": "absolved-account"
+        },
+        {
+          "label": "Bury the fee in a dead-letter line",
+          "conditions": {
+            "flagsAbsent": ["censure-road-confession-absolved"],
+            "fieldRatings": {
+              "guile": 55
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-confession-absolved",
+              "odran-confession-guile-route",
+              "odran-confession-false-record-risk"
+            ],
+            "inventory": {
+              "add": [
+                { "item": "censure-absolution-chit", "count": 1 }
+              ]
+            },
+            "questUpdate": {
+              "quest": "censure-road-confession",
+              "stage": "absolved-by-false-record"
+            },
+            "log": "You hide Augustine's fee in a dead-letter line. The absolution chit carries a clean stamp."
+          },
+          "next": "absolved-false-record"
+        },
+        {
+          "label": "Leave the stamp alone",
           "close": true
         }
       ]
     },
     "confession-begin": {
       "lines": [
-        "Odran pulls the canvas screen between you. His silhouette sharpens around the coin scale.",
-        "\"Kneel if you want ceremony. Sit if your knees have field sense. I will read the road back. You answer enough for Heaven and for my ledger. The ledger is less forgiving.\""
+        "Augustine pulls the canvas screen between you. His silhouette sharpens around the coin scale.",
+        "\"Kneel if you want ceremony, or sit if your knees have field sense. I will read the road back while you answer for Heaven and my ledger; the ledger is less forgiving.\""
       ],
       "choices": [
         {
@@ -199,7 +294,7 @@
       "else": "road-record-start",
       "lines": [
         "\"You rang the chapel bell and told the Remnant the house could be entered.\"",
-        "\"Pride costs extra only when it sings. The bell sang, not you. Small discount.\""
+        "\"Pride costs extra only when it sings, and the bell did the singing. I can offer a small discount.\""
       ],
       "choices": [
         {
@@ -225,7 +320,7 @@
       },
       "else": "road-edrin-mocked",
       "lines": [
-        "\"You insulted Garron Holt while he was fixed into public usefulness.\"",
+        "\"You insulted Gideon Carbo while he was fixed into public usefulness.\"",
         "\"A road sign with feelings is an administrative trap. You stepped in it.\""
       ],
       "choices": [
@@ -241,7 +336,7 @@
       },
       "else": "road-holt-house-known",
       "lines": [
-        "\"You mocked Edrin Holt in the wheat.\"",
+        "\"You mocked Eleazar Carbo in the wheat.\"",
         "\"He called himself royalty? That is evidence for mercy, not permission.\""
       ],
       "choices": [
@@ -259,12 +354,12 @@
       },
       "else": "road-family-lie",
       "lines": [
-        "\"The Holt house kept two calcified great-granduncles as tools until custom learned to call itself care.\"",
+        "\"The Carbo house kept two calcified great-granduncles as tools until custom learned to call itself care.\"",
         "\"Then the Choir found the habit and called it an altar.\""
       ],
       "choices": [
         {
-          "label": "Confess the Holt house",
+          "label": "Confess the Carbo house",
           "next": "road-family-lie"
         }
       ]
@@ -275,7 +370,7 @@
       },
       "else": "road-family-truth",
       "lines": [
-        "\"You told Edrin the Holt family was safe.\"",
+        "\"You told Eleazar the Carbo family was safe.\"",
         "\"Kind lies wear clean gloves. They still leave fingerprints.\""
       ],
       "choices": [
@@ -291,7 +386,7 @@
       },
       "else": "road-wolves-evidence",
       "lines": [
-        "\"You told Edrin the family was dead.\"",
+        "\"You told Eleazar the family was dead.\"",
         "\"Truth is not free because it is correct. It spends the listener.\""
       ],
       "choices": [
@@ -365,7 +460,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 5, "failLog": "Father Odran waits for the fifth ducat that is not there." }
+                { "item": "ducat", "count": 5, "failLog": "Father Augustine waits for the fifth ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -375,7 +470,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-with-ducats"
             },
-            "log": "Father Odran stamps an absolution chit and slides it under the screen."
+            "log": "Father Augustine stamps an absolution chit and slides it under the screen."
           },
           "next": "absolved-paid"
         },
@@ -403,7 +498,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 4, "failLog": "Father Odran waits for the fourth ducat that is not there." }
+                { "item": "ducat", "count": 4, "failLog": "Father Augustine waits for the fourth ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -413,7 +508,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-with-prayer"
             },
-            "log": "Father Odran stamps an absolution chit after the last prayer."
+            "log": "Father Augustine stamps an absolution chit after the last prayer."
           },
           "next": "absolved-prayer"
         },
@@ -432,7 +527,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 3, "failLog": "Father Odran waits for the third ducat that is not there." }
+                { "item": "ducat", "count": 3, "failLog": "Father Augustine waits for the third ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -442,7 +537,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-with-prayer"
             },
-            "log": "Father Odran stamps an absolution chit after the last prayer."
+            "log": "Father Augustine stamps an absolution chit after the last prayer."
           },
           "next": "absolved-prayer"
         },
@@ -478,7 +573,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 2, "failLog": "Father Odran waits for the second ducat that is not there." }
+                { "item": "ducat", "count": 2, "failLog": "Father Augustine waits for the second ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -488,7 +583,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-with-prayer"
             },
-            "log": "Father Odran stamps an absolution chit after the last prayer."
+            "log": "Father Augustine stamps an absolution chit after the last prayer."
           },
           "next": "absolved-prayer"
         },
@@ -507,7 +602,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 1, "failLog": "Father Odran waits for the ducat that is not there." }
+                { "item": "ducat", "count": 1, "failLog": "Father Augustine waits for the ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -517,7 +612,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-with-prayer"
             },
-            "log": "Father Odran stamps an absolution chit after the last prayer."
+            "log": "Father Augustine stamps an absolution chit after the last prayer."
           },
           "next": "absolved-prayer"
         },
@@ -539,7 +634,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-with-prayer"
             },
-            "log": "Father Odran stamps an absolution chit after the fifth prayer."
+            "log": "Father Augustine stamps an absolution chit after the fifth prayer."
           },
           "next": "absolved-prayer"
         },
@@ -561,7 +656,7 @@
       },
       "else": "lie-caught-short",
       "lines": [
-        "Before the lie finishes, Odran taps the screen with the stamp handle.",
+        "Before the lie finishes, Augustine taps the screen with the stamp handle.",
         "\"Your purse has a theological scent. Six ducats.\""
       ],
       "choices": [
@@ -572,7 +667,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 6, "failLog": "Father Odran waits for the sixth ducat that is not there." }
+                { "item": "ducat", "count": 6, "failLog": "Father Augustine waits for the sixth ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -582,7 +677,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-after-lying"
             },
-            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+            "log": "Father Augustine charges the lie tax and stamps the absolution chit."
           },
           "next": "absolved-lie"
         }
@@ -590,7 +685,7 @@
     },
     "lie-caught-short": {
       "lines": [
-        "Before the lie finishes, Odran taps the screen with the stamp handle.",
+        "Before the lie finishes, Augustine taps the screen with the stamp handle.",
         "\"Your purse clinks. Badly, but it clinks. Add one prayer to the debt for lying to a priest with ears.\""
       ],
       "choices": [
@@ -609,7 +704,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 5, "failLog": "Father Odran waits for the fifth ducat that is not there." }
+                { "item": "ducat", "count": 5, "failLog": "Father Augustine waits for the fifth ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -619,7 +714,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-after-lying"
             },
-            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+            "log": "Father Augustine charges the lie tax and stamps the absolution chit."
           },
           "next": "absolved-lie"
         },
@@ -638,7 +733,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 4, "failLog": "Father Odran waits for the fourth ducat that is not there." }
+                { "item": "ducat", "count": 4, "failLog": "Father Augustine waits for the fourth ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -648,7 +743,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-after-lying"
             },
-            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+            "log": "Father Augustine charges the lie tax and stamps the absolution chit."
           },
           "next": "absolved-lie"
         },
@@ -667,7 +762,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 3, "failLog": "Father Odran waits for the third ducat that is not there." }
+                { "item": "ducat", "count": 3, "failLog": "Father Augustine waits for the third ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -677,7 +772,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-after-lying"
             },
-            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+            "log": "Father Augustine charges the lie tax and stamps the absolution chit."
           },
           "next": "absolved-lie"
         },
@@ -696,7 +791,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 2, "failLog": "Father Odran waits for the second ducat that is not there." }
+                { "item": "ducat", "count": 2, "failLog": "Father Augustine waits for the second ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -706,7 +801,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-after-lying"
             },
-            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+            "log": "Father Augustine charges the lie tax and stamps the absolution chit."
           },
           "next": "absolved-lie"
         },
@@ -725,7 +820,7 @@
             "inventory": {
               "requireAll": true,
               "remove": [
-                { "item": "ducat", "count": 1, "failLog": "Father Odran waits for the ducat that is not there." }
+                { "item": "ducat", "count": 1, "failLog": "Father Augustine waits for the ducat that is not there." }
               ],
               "add": [
                 { "item": "censure-absolution-chit", "count": 1 }
@@ -735,7 +830,7 @@
               "quest": "censure-road-confession",
               "stage": "absolved-after-lying"
             },
-            "log": "Father Odran charges the lie tax and stamps the absolution chit."
+            "log": "Father Augustine charges the lie tax and stamps the absolution chit."
           },
           "next": "absolved-lie"
         }
@@ -747,7 +842,7 @@
       },
       "else": "late-visit-confront",
       "lines": [
-        "Odran's hand stops over the stamp pad when you name Bruna.",
+        "Augustine's hand stops over the stamp pad when you name Naomi.",
         "\"So she spoke. I told myself she would not, which was pride wearing a clean collar.\""
       ],
       "choices": [
@@ -760,10 +855,10 @@
           "next": "late-visit-blackmail"
         },
         {
-          "label": "Report him to Voss",
+          "label": "Report him to Aquila",
           "effects": {
             "setFlag": ["odran-late-visit-resolved", "odran-reported-to-voss"],
-            "log": "You mark Father Odran for a report to Preceptor Voss."
+            "log": "You mark Father Augustine for a report to Preceptor Aquila."
           },
           "close": true
         },
@@ -771,7 +866,7 @@
           "label": "Let it pass",
           "effects": {
             "setFlag": ["odran-late-visit-resolved", "odran-spared-after-late-visit"],
-            "log": "You leave Father Odran with his shame and no receipt."
+            "log": "You leave Father Augustine with his shame and no receipt."
           },
           "close": true
         }
@@ -779,8 +874,8 @@
     },
     "late-visit-confront": {
       "lines": [
-        "Odran listens without blinking while you tell him what you saw after last bell.",
-        "\"A woman entered my tent. That is what your eyes can swear to. Be careful what your mouth tries to collect from it.\"",
+        "Augustine listens without blinking while you tell him what you saw after last bell.",
+        "\"Your eyes can swear only that a woman entered my tent. Be careful what your mouth tries to collect from it.\"",
         "His voice is dry, but his thumb rubs ink into the stamp handle."
       ],
       "choices": [
@@ -793,10 +888,10 @@
           "next": "late-visit-blackmail"
         },
         {
-          "label": "Report him to Voss",
+          "label": "Report him to Aquila",
           "effects": {
             "setFlag": ["odran-late-visit-resolved", "odran-reported-to-voss"],
-            "log": "You mark Father Odran for a report to Preceptor Voss."
+            "log": "You mark Father Augustine for a report to Preceptor Aquila."
           },
           "close": true
         },
@@ -804,15 +899,15 @@
           "label": "Let it pass",
           "effects": {
             "setFlag": ["odran-late-visit-resolved", "odran-spared-after-late-visit"],
-            "log": "You leave Father Odran with his shame and no receipt."
+            "log": "You leave Father Augustine with his shame and no receipt."
           },
           "close": true
         },
         {
-          "label": "Ask Bruna first",
+          "label": "Ask Naomi first",
           "effects": {
             "setFlag": "odran-ask-widow-first",
-            "log": "Bruna may tell you what she wants named and what she wants buried."
+            "log": "Naomi may tell you what she wants named and what she wants buried."
           },
           "close": true
         }
@@ -825,7 +920,7 @@
       "else": "late-visit-refund-5",
       "lines": [
         "You name the six ducats and the lie tax with them.",
-        "Odran opens the locked cup with two fingers, as if the latch might accuse him."
+        "Augustine opens the locked cup with two fingers, as if the latch might accuse him."
       ],
       "choices": [
         {
@@ -837,7 +932,7 @@
                 { "item": "ducat", "count": 6 }
               ]
             },
-            "log": "Father Odran returns six ducats from the locked cup."
+            "log": "Father Augustine returns six ducats from the locked cup."
           },
           "close": true
         }
@@ -850,7 +945,7 @@
       "else": "late-visit-refund-4",
       "lines": [
         "You name the five ducats he charged for absolution.",
-        "Odran opens the locked cup and looks past you toward the tent rope."
+        "Augustine opens the locked cup and looks past you toward the tent rope."
       ],
       "choices": [
         {
@@ -862,7 +957,7 @@
                 { "item": "ducat", "count": 5 }
               ]
             },
-            "log": "Father Odran returns five ducats from the locked cup."
+            "log": "Father Augustine returns five ducats from the locked cup."
           },
           "close": true
         }
@@ -875,7 +970,7 @@
       "else": "late-visit-refund-3",
       "lines": [
         "You name the four ducats and the prayer he counted against the rest.",
-        "Odran opens the locked cup without lifting his eyes."
+        "Augustine opens the locked cup without lifting his eyes."
       ],
       "choices": [
         {
@@ -887,7 +982,7 @@
                 { "item": "ducat", "count": 4 }
               ]
             },
-            "log": "Father Odran returns four ducats from the locked cup."
+            "log": "Father Augustine returns four ducats from the locked cup."
           },
           "close": true
         }
@@ -900,7 +995,7 @@
       "else": "late-visit-refund-2",
       "lines": [
         "You name the three ducats and let the silence do the heavier work.",
-        "Odran opens the locked cup. The coins click once."
+        "Augustine opens the locked cup. The coins click once."
       ],
       "choices": [
         {
@@ -912,7 +1007,7 @@
                 { "item": "ducat", "count": 3 }
               ]
             },
-            "log": "Father Odran returns three ducats from the locked cup."
+            "log": "Father Augustine returns three ducats from the locked cup."
           },
           "close": true
         }
@@ -924,7 +1019,7 @@
       },
       "else": "late-visit-refund-1",
       "lines": [
-        "You name the two ducats. Odran's mouth tightens at the smallness of the number.",
+        "You name the two ducats. Augustine's mouth tightens at the smallness of the number.",
         "\"Small sums can still bruise.\""
       ],
       "choices": [
@@ -937,7 +1032,7 @@
                 { "item": "ducat", "count": 2 }
               ]
             },
-            "log": "Father Odran returns two ducats from the locked cup."
+            "log": "Father Augustine returns two ducats from the locked cup."
           },
           "close": true
         }
@@ -950,7 +1045,7 @@
       "else": "late-visit-refund-none",
       "lines": [
         "You name the single ducat he took.",
-        "Odran sets it on the table with the careful anger of a man paying for more than coin."
+        "Augustine sets it on the table with the careful anger of a man paying for more than coin."
       ],
       "choices": [
         {
@@ -962,7 +1057,7 @@
                 { "item": "ducat", "count": 1 }
               ]
             },
-            "log": "Father Odran returns one ducat from the locked cup."
+            "log": "Father Augustine returns one ducat from the locked cup."
           },
           "close": true
         }
@@ -970,7 +1065,7 @@
     },
     "late-visit-refund-none": {
       "lines": [
-        "Odran spreads his hands over the table.",
+        "Augustine spreads his hands over the table.",
         "\"You paid me in prayers. I can return those, but neither of us will enjoy the sound.\""
       ],
       "choices": [
@@ -986,7 +1081,7 @@
     },
     "late-visit-blackmail": {
       "lines": [
-        "\"That is not correction,\" Odran says.",
+        "\"That is not correction,\" Augustine says.",
         "\"That is a hand in another sinner's pocket. I know the gesture because I have blessed it before.\""
       ],
       "choices": [
@@ -999,7 +1094,7 @@
                 { "item": "ducat", "count": 8 }
               ]
             },
-            "log": "Father Odran pays eight ducats for your silence."
+            "log": "Father Augustine pays eight ducats for your silence."
           },
           "close": true
         },
@@ -1011,7 +1106,7 @@
     },
     "absolved-paid": {
       "lines": [
-        "The ducats vanish into the locked cup. Odran stamps a black paper chit, blows on the ink, and slides it under the screen.",
+        "The ducats vanish into the locked cup. Augustine stamps a black paper chit, blows on the ink, and slides it under the screen.",
         "\"Absolved for road purposes. For private guilt, come back after Hallowfen with a larger purse and a shorter face.\""
       ],
       "choices": [
@@ -1023,7 +1118,7 @@
     },
     "absolved-prayer": {
       "lines": [
-        "Odran counts each prayer on his fingers, then stops at the number that hurts your pride.",
+        "Augustine counts each prayer on his fingers, then stops at the number that hurts your pride.",
         "\"Good. Heaven likes repetition. It gives the rest of us time to find the ink pad.\""
       ],
       "choices": [
@@ -1035,12 +1130,48 @@
     },
     "absolved-lie": {
       "lines": [
-        "Odran stamps the chit with unnecessary force.",
+        "Augustine stamps the chit with unnecessary force.",
         "\"Absolved, with surcharge. Your purse and soul are now both easier to hear.\""
       ],
       "choices": [
         {
           "label": "Leave the screen",
+          "close": true
+        }
+      ]
+    },
+    "absolved-doctrine": {
+      "lines": [
+        "Augustine pulls the field canon from under the scale and finds the thumbed clause.",
+        "\"Service performed under a sealed Censure writ may settle a field confession. The rule is plain. My fee was not.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the absolution chit",
+          "close": true
+        }
+      ]
+    },
+    "absolved-account": {
+      "lines": [
+        "You give Augustine the chapel names and the road sequence through the unanswered bells. He writes faster when the account reaches Hallowfen.",
+        "\"Decian needs this more than my cup needs coin. I dislike a fair trade, but I recognize one.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the absolution chit",
+          "close": true
+        }
+      ]
+    },
+    "absolved-false-record": {
+      "lines": [
+        "You turn Augustine's slate and fit the fee beneath a dead-letter entry from last winter. The totals close if nobody checks the ink.",
+        "\"Decian checks ink, so take the chit now and we can both fear his margin later.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the absolution chit",
           "close": true
         }
       ]

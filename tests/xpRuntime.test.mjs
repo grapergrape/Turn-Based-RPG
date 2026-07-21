@@ -69,7 +69,7 @@ function buildGameForQuestXp() {
   game.questReached = new Map([['test-quest', new Set(['active'])]]);
   game.player = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 14, maxHp: 14, actionPoints: 6 },
     progression: { level: 1, xp: 0, build: 'field-agent' }
@@ -99,7 +99,7 @@ function buildGameForCombatXp() {
 
   const player = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 14, maxHp: 14, actionPoints: 6 },
     attacks: [{ id: 'melee', name: 'Knife', apCost: 1, damage: 3, range: 1 }],

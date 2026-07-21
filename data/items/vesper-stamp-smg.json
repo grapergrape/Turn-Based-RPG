@@ -1,0 +1,64 @@
+{
+  "id": "vesper-stamp-smg",
+  "name": "Vesper Stamp Gun",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "submachine gun",
+  "rarity": "common",
+  "weight": 3.3,
+  "groundModel": "smg",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Vesper Yard",
+    "factions": [
+      "vesper-yard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "submachine gun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 8,
+        "range": 8,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "controlled-burst",
+        "name": "Controlled Burst",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 11,
+        "range": 8,
+        "accuracyBonus": -10,
+        "ammoCost": 3,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-cartridge",
+      "capacity": 24,
+      "defaultLoaded": 24,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A compact yard gun with a brass vesper seal pressed into the stock. The bolt chatters, but the simple parts survive bad oil."
+}

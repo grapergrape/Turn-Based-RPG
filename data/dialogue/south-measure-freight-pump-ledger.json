@@ -1,0 +1,50 @@
+{
+  "id": "south-measure-freight-pump-ledger",
+  "title": "The Morrow Pump Ledger",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Medicine deliveries share the freight ledger with household sureties and the names of drivers who died carrying them. Several burial debts repeat one copied hand mark.",
+        "The false entries do not erase the real road losses beside them."
+      ],
+      "choices": [
+        {
+          "label": "Take the ledger to Darius for judgment",
+          "conditions": {
+            "itemsMax": {
+              "south-measure-pump-ledger": 0
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "morrow-pump-ledger-found",
+              "morrow-false-surety-found"
+            ],
+            "inventory": {
+              "add": [
+                {
+                  "item": "south-measure-pump-ledger",
+                  "count": 1
+                }
+              ]
+            },
+            "questUpdate": [
+              {
+                "quest": "debt-that-drinks",
+                "stage": "audit-ledger",
+                "log": "The Morrow pump ledger contains false household sureties beside genuine medicine routes."
+              }
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Leave the record where it lies",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

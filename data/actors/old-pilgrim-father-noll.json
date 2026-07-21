@@ -1,0 +1,26 @@
+{
+  "id": "old-pilgrim-father-noll",
+  "name": "Father Noah",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Road priest",
+  "appearance": {
+    "body": "old-bent",
+    "outfit": "settlement-chapel-hand",
+    "gear": [
+      "prayer-cord"
+    ],
+    "accent": "bare-grey"
+  },
+  "stats": {
+    "hp": 7,
+    "maxHp": 7,
+    "actionPoints": 0
+  },
+  "tags": [
+    "old-pilgrim-way",
+    "holy-remnant",
+    "priest",
+    "talkable"
+  ]
+}

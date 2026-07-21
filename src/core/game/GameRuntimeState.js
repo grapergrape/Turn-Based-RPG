@@ -1,4 +1,8 @@
-import { buildJournalState } from '../JournalState.js';
+import {
+  buildJournalState,
+  buildJournalUpdateSnapshot,
+  journalUpdatedSections
+} from '../JournalState.js';
 import { buildJournalMapState, revealExploredMapCells } from '../JournalMapState.js';
 import { advanceGameClock, buildClockReadout } from '../GameClock.js';
 import { questStageExperience, questStageExperienceKey } from '../Progression.js';
@@ -20,6 +24,8 @@ import {
   EFFECT_LIFE,
   HIT_ANIM,
   HIT_FRAMES,
+  JOURNAL_NOTICE_DURATION,
+  JOURNAL_NOTICE_POLL_INTERVAL,
   MAX_LOG
 } from './runtimeConstants.js';
 import { installGameMethods } from './installGameMethods.js';
@@ -28,12 +34,36 @@ class GameRuntimeState {
   // ---- Animation & effects ----------------------------------------------
 
   _advanceAmbientSpeech(dt) {
+    const actors = [this.player, ...(this.enemies ?? []), ...(this.npcs ?? [])]
+      .filter((actor) => actor && !actor.dormant);
+    const queuesResetThisTick = new Set();
     let speechActive = false;
-    for (const actor of [this.player, ...this.enemies, ...(this.npcs ?? [])]) {
+    for (const actor of actors) {
+      const queue = actor.actorSpeechQueue;
+      if (queue && (actor.isDead || actor.removed)) {
+        if (actor.speech?.kind === 'actor-speech') actor.speech = null;
+        delete actor.actorSpeechQueue;
+        continue;
+      }
       if (actor.speech) {
+        const queuedSpeech = Boolean(queue && actor.speech.kind === 'actor-speech');
+        const canAdvanceQueuedSpeech = queuedSpeech && this._actorSpeechCanAdvance(actor);
+        if (queuedSpeech && !canAdvanceQueuedSpeech) continue;
         actor.speech.ttl -= dt;
-        if (actor.speech.ttl <= 0) actor.speech = null;
-        else speechActive = true;
+        if (actor.speech.ttl <= 0) {
+          actor.speech = null;
+          if (queuedSpeech) {
+            speechActive = true;
+            if (queue.index >= queue.lines.length) {
+              delete actor.actorSpeechQueue;
+            } else {
+              queue.delay = queue.interval;
+              queuesResetThisTick.add(actor);
+            }
+          }
+        } else {
+          speechActive = true;
+        }
       }
     }
     for (const prop of this.speakingProps ?? []) {
@@ -47,10 +77,46 @@ class GameRuntimeState {
     if (this.mode !== 'explore' || this.uiScreen) return;
 
     this.ambientSpeechCooldown = Math.max(0, (this.ambientSpeechCooldown ?? 0) - dt);
+    const queuedCandidates = [];
+    let observedQueue = false;
+    for (const actor of actors) {
+      const queue = actor.actorSpeechQueue;
+      if (!queue || actor.isDead || actor.removed || actor.speech) continue;
+      if (!Array.isArray(queue.lines) || queue.index >= queue.lines.length) {
+        delete actor.actorSpeechQueue;
+        continue;
+      }
+      if (!this._actorSpeechCanAdvance(actor)) continue;
+      observedQueue = true;
+      if (queuesResetThisTick.has(actor)) continue;
+      queue.delay = Math.max(0, (queue.delay ?? 0) - dt);
+      if (queue.delay > 0) continue;
+      queuedCandidates.push({ actor, distance: manhattan(this.player.position, actor.position) });
+    }
+
+    if (!speechActive && queuedCandidates.length > 0) {
+      queuedCandidates.sort((a, b) =>
+        a.distance - b.distance || a.actor.y - b.actor.y || a.actor.x - b.actor.x
+      );
+      const actor = queuedCandidates[0].actor;
+      const queue = actor.actorSpeechQueue;
+      actor.speech = {
+        text: queue.lines[queue.index],
+        ttl: queue.ttl ?? AMBIENT_SPEECH_LIFE,
+        kind: 'actor-speech'
+      };
+      queue.index += 1;
+      return;
+    }
+    if (observedQueue) return;
+
     const candidates = [];
 
-    for (const actor of [...this.enemies, ...(this.npcs ?? [])]) {
-      if (actor.isDead || actor.speech || !Array.isArray(actor.ambient) || actor.ambient.length === 0) continue;
+    for (const actor of [...(this.enemies ?? []), ...(this.npcs ?? [])]) {
+      if (
+        actor.dormant || actor.isDead || actor.speech || actor.actorSpeechQueue ||
+        !Array.isArray(actor.ambient) || actor.ambient.length === 0
+      ) continue;
       if (this._isCellHidden(actor.position.x, actor.position.y)) continue;
       const distance = manhattan(this.player.position, actor.position);
       if (distance > 10) continue;
@@ -61,7 +127,7 @@ class GameRuntimeState {
     }
 
     for (const prop of this.speakingProps ?? []) {
-      if (prop.killed || prop.speech) continue;
+      if (prop.hiddenByFlag || prop.disabledByFlag || prop.consumed || prop.killed || prop.speech) continue;
       if (this._isCellHidden(prop.x, prop.y)) continue;
       const distance = manhattan(this.player.position, prop);
       if (distance > 11) continue;
@@ -88,6 +154,12 @@ class GameRuntimeState {
       prop.ambientTimer = AMBIENT_PROP_DELAY + ((index + prop.x + prop.y) % 4) * 2.4;
     }
     this.ambientSpeechCooldown = AMBIENT_SPEECH_COOLDOWN;
+  }
+
+  _actorSpeechCanAdvance(actor) {
+    if (this.mode !== 'explore' || this.uiScreen || !actor || actor.isDead || actor.removed) return false;
+    if (this._isCellHidden(actor.position.x, actor.position.y)) return false;
+    return manhattan(this.player.position, actor.position) <= 10;
   }
 
   _advanceAnim(dt) {
@@ -161,13 +233,16 @@ class GameRuntimeState {
   }
 
   _isOccupied(x, y, exclude) {
-    return this.actors.some(
+    if (this.tableauSystem?.isReserved?.(x, y, exclude)) return true;
+    const actorOccupied = this.actors.some(
       (actor) => actor !== exclude &&
         !actor.isDead &&
         !this._isCellHidden(actor.position.x, actor.position.y) &&
         actor.position.x === x &&
         actor.position.y === y
     );
+    if (actorOccupied) return true;
+    return (this.combatDeployables ?? []).some((device) => device.blocking && device.x === x && device.y === y);
   }
 
   _occupiedSet(exclude) {
@@ -177,11 +252,16 @@ class GameRuntimeState {
       if (this._isCellHidden(actor.position.x, actor.position.y)) continue;
       set.add(`${actor.position.x},${actor.position.y}`);
     }
+    this.tableauSystem?.addReservedCells?.(set, exclude);
+    for (const device of this.combatDeployables ?? []) {
+      if (device.blocking) set.add(`${device.x},${device.y}`);
+    }
     return set;
   }
 
   _livingEnemyAtCell(cell) {
     return this.enemies.find((enemy) =>
+      !enemy.dormant &&
       !enemy.isDead &&
       !this._isCellHidden(enemy.position.x, enemy.position.y) &&
       enemy.position.x === cell.x &&
@@ -194,17 +274,38 @@ class GameRuntimeState {
       return this._livingEnemiesForEncounter(this.activeEncounter);
     }
     return this.enemies.filter((enemy) =>
-      !enemy.isDead && !this._isCellHidden(enemy.position.x, enemy.position.y)
+      !enemy.dormant &&
+      !enemy.isDead &&
+      !this._isCellHidden(enemy.position.x, enemy.position.y)
     );
   }
 
-  _livingEnemiesForEncounter(encounterId) {
+  _livingEnemiesForEncounter(encounterId, { includeDormant = false } = {}) {
     const resolved = this._resolveEncounterId(encounterId);
     return this.enemies.filter((enemy) =>
       !enemy.isDead &&
+      (includeDormant || !enemy.dormant) &&
       !this._isCellHidden(enemy.position.x, enemy.position.y) &&
       this._resolveEncounterId(enemy.encounter) === resolved
     );
+  }
+
+  _activateDormantEnemiesForEncounter(encounterId) {
+    const resolved = this._resolveEncounterId(encounterId);
+    const activated = [];
+    for (const enemy of this.enemies) {
+      if (
+        enemy.isDead ||
+        !enemy.dormant ||
+        this._resolveEncounterId(enemy.encounter) !== resolved
+      ) continue;
+      enemy.dormant = false;
+      enemy.render.state = 'idle';
+      enemy.render.frameIndex = 0;
+      enemy.render.timer = 0;
+      activated.push(enemy);
+    }
+    return activated;
   }
 
   _activeEncounterEnemies() {
@@ -253,7 +354,11 @@ class GameRuntimeState {
 
   _loadStartingInventory(loadout) {
     for (const entry of loadout?.items ?? []) {
-      this.inventory.add(entry.item, entry.count ?? 1, { ignoreCapacity: true, condition: entry.condition });
+      this.inventory.add(entry.item, entry.count ?? 1, {
+        ignoreCapacity: true,
+        condition: entry.condition,
+        loaded: entry.loaded
+      });
     }
     this.inventory.loadEquipment(loadout?.equipment ?? {});
   }
@@ -309,6 +414,7 @@ class GameRuntimeState {
     const reached = this.questReached.get(update.quest) ?? new Set();
     for (const reachedStage of this._stagesUpTo(quest, update.stage)) reached.add(reachedStage);
     this.questReached.set(update.quest, reached);
+    this._checkJournalUpdates();
     if (update.log) this._log(update.log);
     this._awardQuestStageExperience(quest, update.stage);
     if (update.stage === 'complete') {
@@ -343,6 +449,7 @@ class GameRuntimeState {
       section: this.journalSection ?? 0,
       turn: this.journalTurn,
       factionIndex: this.journalFactionIndex ?? 0,
+      evidenceIndex: this.journalEvidenceIndex ?? 0,
       questDefs: this.questDefs,
       questStages: this.questStages,
       questReached: this.questReached,
@@ -355,8 +462,53 @@ class GameRuntimeState {
       primaryIndex: this.journalPrimaryIndex ?? 0,
       techniqueIndex: this.journalTechniqueIndex ?? 0,
       time: this._buildClockReadout(),
-      map: this._buildJournalMap()
+      map: this._buildJournalMap(),
+      drone: this._buildDroneJournalUi?.() ?? null
     });
+  }
+
+  _journalUpdateSnapshot() {
+    return buildJournalUpdateSnapshot({
+      questDefs: this.questDefs,
+      questStages: this.questStages,
+      questReached: this.questReached,
+      journalNotes: this.journalNotes,
+      codexDefs: this.codexDefs,
+      flags: this.flags
+    });
+  }
+
+  _resetJournalNoticeTracking({ preserveNotice = false } = {}) {
+    if (!preserveNotice) this.journalNotice = null;
+    this.journalNoticePollTimer = JOURNAL_NOTICE_POLL_INTERVAL;
+    this.journalNoticeSnapshot = this._journalUpdateSnapshot();
+  }
+
+  _checkJournalUpdates() {
+    const current = this._journalUpdateSnapshot();
+    const sections = journalUpdatedSections(this.journalNoticeSnapshot, current);
+    this.journalNoticeSnapshot = current;
+    if (sections.length === 0) return;
+
+    this.journalNotice = {
+      title: 'JOURNAL UPDATED',
+      detail: sections.join(' / '),
+      sections,
+      ttl: JOURNAL_NOTICE_DURATION,
+      duration: JOURNAL_NOTICE_DURATION
+    };
+  }
+
+  _advanceJournalNotice(dt) {
+    if (this.journalNotice) {
+      this.journalNotice.ttl = Math.max(0, this.journalNotice.ttl - dt);
+      if (this.journalNotice.ttl <= 0) this.journalNotice = null;
+    }
+
+    this.journalNoticePollTimer = Math.max(0, (this.journalNoticePollTimer ?? 0) - dt);
+    if (this.journalNoticePollTimer > 0) return;
+    this.journalNoticePollTimer = JOURNAL_NOTICE_POLL_INTERVAL;
+    this._checkJournalUpdates();
   }
 
   _buildJournalMap() {
@@ -371,7 +523,7 @@ class GameRuntimeState {
         !object.disabledByFlag &&
         (!object.hiddenUntilOpened || object.opened || object.consumed)
       ),
-      actors: [...(this.npcs ?? []), ...(this.enemies ?? [])],
+      actors: [...(this.npcs ?? []), ...(this.enemies ?? [])].filter((actor) => !actor.dormant),
       combatTriggers: this.level?.combatTriggers ?? [],
       questDefs: this.questDefs,
       isQuestUpdateActive: (update) => this._isQuestUpdateActiveForMap(update),
@@ -379,7 +531,8 @@ class GameRuntimeState {
       resolveEncounterId: (encounterId) => this._resolveEncounterId(encounterId),
       encounterHasLiving: (encounterId) =>
         !this.clearedEncounters?.has?.(this._resolveEncounterId(encounterId)) &&
-        this._livingEnemiesForEncounter(encounterId).length > 0
+        this._livingEnemiesForEncounter(encounterId).length > 0,
+      mapMarkerConditionsMet: (conditions) => this._meetsConditions?.(conditions) ?? true
     });
   }
 
@@ -437,6 +590,17 @@ class GameRuntimeState {
           actor.trade.stock.map((entry) => ({ ...entry }))
         ])
     );
+    const actorStates = new Map(
+      [...(this.level.enemies ?? []), ...(this.level.npcs ?? [])]
+        .map((actor) => [actor.spawnId ?? actor.id, snapshotLevelActor(actor)])
+        .filter(([key]) => key)
+    );
+    const seenCombatTriggers = new Set(
+      (this.level.combatTriggers ?? [])
+        .filter((trigger) => trigger.dialogueSeen)
+        .map((trigger) => trigger.id ?? trigger.encounter)
+        .filter(Boolean)
+    );
     this.levelStateByPath.set(this.levelPath, {
       consumedObjects,
       killedObjects,
@@ -448,6 +612,9 @@ class GameRuntimeState {
       deadEnemies,
       lootedEnemies,
       clearedEncounters: new Set(this.clearedEncounters ?? []),
+      appliedLevelEvents: new Set(this.appliedLevelEvents ?? []),
+      seenCombatTriggers,
+      actorStates,
       tradeStockByActor,
       groundItems,
       exploredMapTiles: new Set(this.exploredMapTiles ?? [])
@@ -501,9 +668,17 @@ class GameRuntimeState {
       enemy.render.state = 'dead';
       enemy.render.frameIndex = DEATH_FRAMES - 1;
     }
+    for (const actor of [...(this.level.enemies ?? []), ...(this.level.npcs ?? [])]) {
+      const key = actor.spawnId ?? actor.id;
+      const actorState = state.actorStates?.get(key);
+      if (!actorState) continue;
+      restoreLevelActor(actor, actorState);
+    }
+    this.enemies = (this.enemies ?? []).filter((actor) => !actor.removed);
+    this.npcs = (this.npcs ?? []).filter((actor) => !actor.removed);
     if (Array.isArray(state.groundItems)) {
       this.groundItems = state.groundItems
-        .map((item) => hydrateGroundItem(item))
+        .map((item) => hydrateGroundItem(item, this.inventory?.itemDefs?.[item.itemId]))
         .filter(Boolean);
     }
     for (const actor of [...(this.npcs ?? []), ...(this.enemies ?? [])]) {
@@ -514,6 +689,11 @@ class GameRuntimeState {
       }
     }
     this.clearedEncounters = new Set(state.clearedEncounters ?? []);
+    this.appliedLevelEvents = new Set(state.appliedLevelEvents ?? []);
+    for (const trigger of this.level.combatTriggers ?? []) {
+      const key = trigger.id ?? trigger.encounter;
+      if (key && state.seenCombatTriggers?.has(key)) trigger.dialogueSeen = true;
+    }
     this.exploredMapTiles = new Set(state.exploredMapTiles ?? []);
   }
 
@@ -597,4 +777,84 @@ export function installGameRuntimeState(GameClass) {
 
 function mapSetKey(set) {
   return [...(set ?? [])].sort().join('|');
+}
+
+function snapshotLevelActor(actor) {
+  const stablePosition = actor.tableauReservation?.home ?? actor.position;
+  return {
+    position: { x: stablePosition.x, y: stablePosition.y },
+    facing: actor.tableauReservation?.homeFacing ?? actor.facing,
+    hp: actor.hp,
+    isDead: Boolean(actor.isDead),
+    dormant: Boolean(actor.dormant),
+    removed: Boolean(actor.removed),
+    dialogueSeen: Boolean(actor.dialogueSeen),
+    lootClaimed: Boolean(actor.lootClaimed),
+    patrolTimer: Number.isFinite(actor.patrolTimer) ? actor.patrolTimer : null,
+    suspicionState: actor.suspicionState ?? null,
+    suspicionAction: actor.suspicionAction ?? null,
+    suspicionReason: actor.suspicionReason ?? null,
+    investigationTarget: actor.investigationTarget ? { ...actor.investigationTarget } : null,
+    aggroIndex: Number.isFinite(actor.aggroIndex) ? actor.aggroIndex : 0,
+    patrol: actor.patrol ? {
+      index: actor.patrol.index ?? 0,
+      direction: actor.patrol.direction ?? 1,
+      complete: Boolean(actor.patrol.complete),
+      completedEffects: Boolean(actor.patrol.completedEffects),
+      activityCompletedIndex: Number.isInteger(actor.patrol.activityCompletedIndex)
+        ? actor.patrol.activityCompletedIndex
+        : null
+    } : null,
+    weaponStates: (actor.weaponStates ?? []).map((state) => ({
+      index: state.index,
+      loaded: state.loaded,
+      reserve: state.reserve
+    }))
+  };
+}
+
+function restoreLevelActor(actor, state) {
+  if (Number.isInteger(state.position?.x) && Number.isInteger(state.position?.y)) {
+    actor.moveTo(state.position.x, state.position.y);
+  }
+  if (typeof state.facing === 'string') actor.facing = state.facing;
+  if (Number.isFinite(state.hp)) actor.hp = Math.max(0, Math.min(actor.maxHp, Math.round(state.hp)));
+  actor.isDead = Boolean(state.isDead || actor.hp <= 0);
+  actor.dormant = Boolean(state.dormant);
+  actor.removed = Boolean(state.removed);
+  actor.dialogueSeen = Boolean(state.dialogueSeen);
+  actor.lootClaimed = Boolean(state.lootClaimed);
+  if (Number.isFinite(state.patrolTimer)) actor.patrolTimer = state.patrolTimer;
+  if (typeof state.suspicionState === 'string') actor.suspicionState = state.suspicionState;
+  actor.suspicionAction = typeof state.suspicionAction === 'string' ? state.suspicionAction : null;
+  actor.suspicionReason = typeof state.suspicionReason === 'string' ? state.suspicionReason : null;
+  actor.investigationTarget = Number.isInteger(state.investigationTarget?.x) && Number.isInteger(state.investigationTarget?.y)
+    ? { ...state.investigationTarget }
+    : null;
+  actor.aggroIndex = Number.isFinite(state.aggroIndex) ? Math.max(0, Math.floor(state.aggroIndex)) : 0;
+  if (actor.patrol && state.patrol) {
+    actor.patrol.index = state.patrol.index ?? actor.patrol.index;
+    actor.patrol.direction = state.patrol.direction ?? actor.patrol.direction;
+    actor.patrol.complete = Boolean(state.patrol.complete);
+    actor.patrol.completedEffects = Boolean(state.patrol.completedEffects);
+    actor.patrol.activityCompletedIndex = Number.isInteger(state.patrol.activityCompletedIndex)
+      ? state.patrol.activityCompletedIndex
+      : null;
+  }
+  for (const savedWeapon of state.weaponStates ?? []) {
+    const weapon = actor.weaponStates?.find((entry) => entry.index === savedWeapon.index);
+    if (!weapon) continue;
+    if (Number.isFinite(savedWeapon.loaded)) weapon.loaded = Math.max(0, Math.round(savedWeapon.loaded));
+    if (Number.isFinite(savedWeapon.reserve)) weapon.reserve = Math.max(0, Math.round(savedWeapon.reserve));
+    for (const attack of weapon.attacks ?? []) {
+      attack.loaded = weapon.loaded;
+      attack.reserveAmmo = weapon.reserve;
+      attack.empty = weapon.magazine ? weapon.loaded < (attack.ammoCost ?? 0) : false;
+    }
+  }
+  if (actor.isDead) {
+    actor.hp = 0;
+    actor.render.state = 'dead';
+    actor.render.frameIndex = DEATH_FRAMES - 1;
+  }
 }

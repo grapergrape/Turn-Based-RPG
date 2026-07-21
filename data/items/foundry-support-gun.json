@@ -1,0 +1,64 @@
+{
+  "id": "foundry-support-gun",
+  "name": "Foundry Support Gun",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "support gun",
+  "rarity": "rare",
+  "weight": 6.2,
+  "groundModel": "support-gun",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Foundry Compact",
+    "factions": [
+      "foundry-compact"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "support gun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 7,
+        "range": 7,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "controlled-burst",
+        "name": "Controlled Burst",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 7,
+        "accuracyBonus": -10,
+        "ammoCost": 3,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "linked-heavy-cartridge",
+      "capacity": 30,
+      "defaultLoaded": 30,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A belt-fed support gun built around a furnace fan bearing. It needs a strong shoulder and a patient hand on the feed cover."
+}

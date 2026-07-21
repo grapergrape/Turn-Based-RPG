@@ -13,10 +13,10 @@ function grid({ blocked = [] } = {}) {
   };
 }
 
-const player = { name: 'Mara Vey', x: 2, y: 2, position: { x: 2, y: 2 } };
+const player = { name: 'Test Agent', x: 2, y: 2, position: { x: 2, y: 2 } };
 
 {
-  const npc = { name: 'Selka', x: 4, y: 2, position: { x: 4, y: 2 }, dialogue: 'selka', dialogueRepeat: true };
+  const npc = { name: 'Susanna', x: 4, y: 2, position: { x: 4, y: 2 }, dialogue: 'selka', dialogueRepeat: true };
   const object = { kind: 'paper-scraps', x: 3, y: 2, interact: { type: 'note' } };
   const target = resolveInteractionTargetAtCell({
     cell: { x: 3, y: 2 },
@@ -30,7 +30,7 @@ const player = { name: 'Mara Vey', x: 2, y: 2, position: { x: 2, y: 2 } };
 }
 
 {
-  const npc = { name: 'Selka', x: 3, y: 2, position: { x: 3, y: 2 }, dialogue: 'selka', dialogueRepeat: true };
+  const npc = { name: 'Susanna', x: 3, y: 2, position: { x: 3, y: 2 }, dialogue: 'selka', dialogueRepeat: true };
   const object = { kind: 'paper-scraps', x: 3, y: 2, interact: { type: 'note' } };
   const target = resolveInteractionTargetAtCell({
     cell: { x: 3, y: 2 },

@@ -1,0 +1,32 @@
+{
+  "id": "old-pilgrim-quarters-to-closure",
+  "title": "Inner Pressure Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The inner pressure door stands open onto the long closure stair."
+      ],
+      "choices": [
+        {
+          "label": "Return to the Closure Stair",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_closure_stair.json",
+              "player": {
+                "x": 15,
+                "y": 45,
+                "facing": "n"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

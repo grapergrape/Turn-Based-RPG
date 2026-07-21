@@ -11,9 +11,11 @@
 <script type="module">
 import * as P from '/src/render/PixelPrimitives.js';
 import { PALETTE } from '/src/render/palette.js';
+import { NATIVE_SCALE } from '/src/render/renderConfig.js';
 
 const params = new URLSearchParams(location.search);
-const SCALE = Number(params.get('scale') ?? '3');
+const DISPLAY_SCALE = Number(params.get('scale') ?? '2');
+const SCALE = NATIVE_SCALE * DISPLAY_SCALE;
 const canvas = document.getElementById('c');
 canvas.width = 560 * SCALE;
 canvas.height = 700 * SCALE;

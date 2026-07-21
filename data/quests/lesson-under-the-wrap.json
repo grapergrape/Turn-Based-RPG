@@ -1,0 +1,42 @@
+{
+  "id": "lesson-under-the-wrap",
+  "title": "Lesson Under the Wrap",
+  "initialStage": "notice-lessons",
+  "unlockedBy": {
+    "flag": "neri-investigation-started"
+  },
+  "objectives": [
+    {
+      "text": "Investigate the strange lesson slips.",
+      "stage": "notice-lessons"
+    },
+    {
+      "text": "Gather evidence around Salome Naso.",
+      "stage": "gather-evidence"
+    },
+    {
+      "text": "Confront Salome or leave her work undiscovered.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "notice-lessons",
+      "task": "Investigate the lesson slips",
+      "xp": 0,
+      "description": "Someone is teaching rejected adults to treat a second voice as comfort."
+    },
+    {
+      "id": "gather-evidence",
+      "task": "Gather evidence around Salome Naso",
+      "xp": 0,
+      "description": "Copied labels, missing suppressants, named recruits, and a Host sign can expose the person beneath the ordinary trader’s manner."
+    },
+    {
+      "id": "complete",
+      "task": "Salome Naso’s influence is settled",
+      "xp": 30,
+      "description": "Salome’s covert work now follows the outcome chosen, or missed, before the assembly."
+    }
+  ]
+}

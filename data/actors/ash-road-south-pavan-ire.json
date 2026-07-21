@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-pavan-ire",
+  "name": "Paulinus Cato",
+  "type": "npc",
+  "faction": "lumen-compact",
+  "role": "Compact records clerk",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "compact-precinct",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-grey"
+  }
+}

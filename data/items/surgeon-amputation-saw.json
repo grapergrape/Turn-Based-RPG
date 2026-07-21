@@ -1,0 +1,56 @@
+{
+  "id": "surgeon-amputation-saw",
+  "name": "Surgeon Amputation Saw",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "field tool",
+  "rarity": "common",
+  "weight": 3.2,
+  "groundModel": "tool-weapon",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Hospital Orders",
+    "factions": [
+      "hospital-orders"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "field tool",
+    "roles": [
+      "melee",
+      "field tool",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Tool Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "committed-blow",
+        "name": "Committed Blow",
+        "mode": "melee",
+        "apCost": 5,
+        "damage": 8,
+        "range": 1,
+        "accuracyBonus": -5,
+        "conditionWear": 2
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A rigid surgical saw made for fast work when medicine has already failed. The steel case bears careful boil marks and one deep dent."
+}

@@ -1,0 +1,161 @@
+{
+  "id": "south-measure-rows-ari-veck",
+  "title": "Asa Aquila",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Asa closes the private water list before speaking."
+      ],
+      "choices": [
+        {
+          "label": "Ask why these households stay hidden",
+          "next": "hidden"
+        },
+        {
+          "label": "Show Asa the names found under lime",
+          "conditions": {
+            "items": {
+              "south-measure-original-roll": 1
+            },
+            "flagsAbsent": [
+              "hidden-roll-private",
+              "hidden-roll-public",
+              "hidden-roll-compact",
+              "hidden-roll-morrow"
+            ]
+          },
+          "next": "names"
+        },
+        {
+          "label": "Admit that you forced the hidden door",
+          "conditions": {
+            "flag": "hidden-rows-entry-forced"
+          },
+          "next": "forced"
+        },
+        {
+          "label": "Leave the private list closed",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "hidden": {
+      "lines": [
+        "\"The Compact would study some of them, while the Chain still owns paper on others. The rest need no reason beyond wanting a door that stays theirs.\"",
+        "\"You can learn who lives here by asking each person. You cannot take this list as permission.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the list",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "forced": {
+      "lines": [
+        "Asa looks once toward the concealed door and once toward the nearest child.",
+        "\"Then do not ask me to call trespass trust. Finish the water work and leave the route out of your report.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the list",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "names": {
+      "lines": [
+        "Asa reads only the first name on each exposed household line, then covers the addresses with one hand.",
+        "\"The roll can defend our cups. The same page can deliver us to a clinic archive or a debt collector.\""
+      ],
+      "choices": [
+        {
+          "label": "Keep the hidden names private",
+          "effects": {
+            "setFlag": "hidden-roll-private",
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "complete",
+              "log": "The original roll may prove the household count, but Hidden Rows names remain private."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Enter the names on the public water roll",
+          "effects": {
+            "setFlag": "hidden-roll-public",
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "complete",
+              "log": "Hidden Rows households enter the public water roll with their addresses exposed."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Give the hidden-name copy to Compact clinicians",
+          "conditions": {
+            "flag": "heard-yara-quell-terms"
+          },
+          "effects": {
+            "setFlag": "hidden-roll-compact",
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "complete",
+              "log": "A Compact copy receives the Hidden Rows names and exposure histories."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Give the hidden-name copy to Morrow auditors",
+          "conditions": {
+            "flag": "heard-daro-mett-terms"
+          },
+          "effects": {
+            "setFlag": "hidden-roll-morrow",
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "complete",
+              "log": "A Morrow audit copy receives the Hidden Rows names and debt history."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Fold the roll closed for now",
+          "next": "start"
+        }
+      ]
+    },
+    "done": {
+      "lines": [
+        "Asa copies the decision without copying another name.",
+        "\"That is the consent you have. Carry no larger one.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

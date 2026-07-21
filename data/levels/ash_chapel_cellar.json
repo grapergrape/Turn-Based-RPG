@@ -65,6 +65,15 @@
     },
     "enemies": []
   },
+  "groundItems": [
+    {
+      "id": "cellar-workbench-rounds",
+      "item": "relic-rounds",
+      "count": 2,
+      "x": 21,
+      "y": 11
+    }
+  ],
   "objects": [
     {
       "id": "loose-brick-2-6",

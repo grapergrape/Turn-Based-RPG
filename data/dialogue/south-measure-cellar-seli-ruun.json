@@ -1,0 +1,67 @@
+{
+  "id": "south-measure-cellar-seli-ruun",
+  "title": "Salome Justus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Salome folds the lesson slips face down and checks the nearest patient’s water before speaking.",
+        "\"Ask for the order of events. I will not improve the story for you.\""
+      ],
+      "choices": [
+        {
+          "label": "Have Salome give the sequence",
+          "next": "sequence",
+          "effects": {
+            "setFlag": [
+              "neri-recruit-list-found",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "Salome saw blank paper become lesson slips after Salome met adults who feared clinic rejection."
+            }
+          }
+        },
+        {
+          "label": "Ask whether Salome approached children",
+          "next": "children"
+        },
+        {
+          "label": "Let Salome return to the cots",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "sequence": {
+      "lines": [
+        "\"Salome arrives with blank paper. She sits beside adults who expect the clinic to send them away, and words appear on the slips after those visits.\"",
+        "Salome taps one folded corner. \"I saw that much. I did not see who wrote every line.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the children",
+          "next": "children"
+        },
+        {
+          "label": "Keep the account to what Salome saw",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "children": {
+      "lines": [
+        "\"She never took one aside while I was here. That fact protects the truth, not the lessons she gave the adults.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Salome check the next dose",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

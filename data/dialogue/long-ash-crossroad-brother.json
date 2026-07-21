@@ -1,6 +1,6 @@
 {
   "id": "long-ash-crossroad-brother",
-  "title": "Garron Holt",
+  "title": "Gideon Carbo",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,12 +8,12 @@
       },
       "else": "lie-check",
       "lines": [
-        "\"You told Edrin the truth. Brave work. Cruel work. Often the same boot, different mud.\"",
+        "\"You told Eleazar the truth, which takes either bravery or cruelty. Often the same boot, different mud.\"",
         "\"He always did believe a hard answer could be polished into sense. I hope he keeps one corner of himself unpolished.\""
       ],
       "choices": [
         {
-          "label": "Leave Garron to the road",
+          "label": "Leave Gideon to the road",
           "close": true
         }
       ]
@@ -24,12 +24,12 @@
       },
       "else": "field-check",
       "lines": [
-        "\"Edrin is smiling. I can hear it from here when the wind turns stupid.\"",
+        "\"Eleazar is smiling. I can hear it from here when the wind turns stupid.\"",
         "\"If you lied, I will not ask you to confess. This road already collects enough little crimes.\""
       ],
       "choices": [
         {
-          "label": "Leave Garron to the road",
+          "label": "Leave Gideon to the road",
           "close": true
         }
       ]
@@ -40,7 +40,7 @@
       },
       "else": "paid-check",
       "lines": [
-        "\"You found Edrin. Good. If he called himself a field prince, forgive him. Wheat gives a man ideas.\"",
+        "\"So you found Eleazar. If he called himself a field prince, forgive him; wheat gives a man ideas.\"",
         "\"The Choir promised him rapture, crowns, a world full of kneeling. They promised me the same. I asked who would scratch my nose after the coronation. No answer yet.\""
       ],
       "choices": [
@@ -53,7 +53,7 @@
           "next": "coins"
         },
         {
-          "label": "Leave Garron to the road",
+          "label": "Leave Gideon to the road",
           "close": true
         }
       ]
@@ -64,7 +64,7 @@
       },
       "else": "met-check",
       "lines": [
-        "\"The wheat, friend. If Edrin starts talking crowns, listen for the fear under it.\""
+        "\"The wheat, friend. If Eleazar starts talking crowns, listen for the fear under it.\""
       ],
       "choices": [
         {
@@ -76,7 +76,7 @@
           "next": "coins"
         },
         {
-          "label": "Leave Garron to the road",
+          "label": "Leave Gideon to the road",
           "close": true
         }
       ]
@@ -104,7 +104,7 @@
           "next": "coins"
         },
         {
-          "label": "Leave Garron to the road",
+          "label": "Leave Gideon to the road",
           "close": true
         }
       ]
@@ -137,7 +137,7 @@
               "long-ash-crossroad-brother-met",
               "long-ash-crossroad-brother-abused"
             ],
-            "log": "Garron takes the insult like weather."
+            "log": "Gideon takes the insult like weather."
           },
           "next": "abused"
         },
@@ -153,13 +153,13 @@
     },
     "kind": {
       "lines": [
-        "\"A reformer. I knew one would come. Took only a century and change.\"",
-        "\"Name is Garron Holt. One hand points to Hallowfen, the other to the farm. The road kept the rest.\""
+        "\"A reformer, after only a century and change. I knew one would come.\"",
+        "\"Name is Gideon Carbo. One hand points to Hallowfen, the other to the farm. The road kept the rest.\""
       ],
       "choices": [
         {
           "label": "Ask why he points to the farm",
-          "next": "task"
+          "next": "history"
         },
         {
           "label": "Ask if he trusts the Choir",
@@ -173,8 +173,8 @@
     },
     "history": {
       "lines": [
-        "\"The Stilling caught me pointing during an argument. Edrin said I looked useful for once. Then the first Holt sons after us made the joke into road work.\"",
-        "\"Caravans learned I could still talk. That made me a signpost with commentary, which is the most hated form of signpost.\""
+        "\"The Stilling caught me with both arms out during an argument. They set in opposite directions, and I have not bent a finger since.\"",
+        "\"Eleazar called it useful. The first Carbo sons after us hauled me to this fork because the pose fit both roads. They planted me with one hand toward Hallowfen and the other toward the farm; then the caravans learned their signpost could talk.\""
       ],
       "choices": [
         {
@@ -193,7 +193,7 @@
     },
     "abused": {
       "lines": [
-        "\"There it is. Good lungs. Weak vocabulary.\"",
+        "\"There it is: good lungs wasted on weak vocabulary.\"",
         "\"A trader once wrote half a sermon on my hip and charged passersby to read it. I remember the knife more than the words.\""
       ],
       "choices": [
@@ -205,7 +205,7 @@
           "label": "Double down",
           "effects": {
             "setFlag": "long-ash-crossroad-brother-abused",
-            "log": "Garron laughs once. It sounds like a hinge full of grit."
+            "log": "Gideon laughs once. It sounds like a hinge full of grit."
           },
           "next": "abused-more"
         },
@@ -225,7 +225,7 @@
       ],
       "choices": [
         {
-          "label": "Check on Edrin",
+          "label": "Check on Eleazar",
           "effects": {
             "setFlag": [
               "long-ash-crossroad-brother-met",
@@ -248,8 +248,8 @@
     },
     "abuse": {
       "lines": [
-        "\"Children threw mud first. Adults improved it with theology.\"",
-        "\"Some folk toss ducats for luck. Some spit. Some ask which road is safest, then carve their initials into my stomach when I answer honestly.\""
+        "\"Children threw mud first; adults improved it with theology.\"",
+        "\"Pilgrims pay in ducats or spit, then ask which road is safest. Some carve their initials into my stomach when honesty displeases them.\""
       ],
       "choices": [
         {
@@ -264,8 +264,8 @@
     },
     "choir": {
       "lines": [
-        "\"The Choir saw the stone in my ribs and called it holy. Royal, too. I asked whether royalty still gets rained on. They said rapture is coming.\"",
-        "\"Then they asked the way to the Holt house. I pointed. They went in red cloth and never came back.\"",
+        "\"The Choir saw the stone in my ribs and promoted me to holy royalty. When I asked whether kings still get rained on, they promised rapture instead.\"",
+        "\"When they asked the way to the Carbo house, they followed the arm already fixed toward the farm. Nobody in red cloth came back.\"",
         "\"Rapture has been coming for one hundred years. The rain reaches me more often.\""
       ],
       "choices": [
@@ -295,7 +295,7 @@
         "setFlag": "long-ash-crossroad-choir-doubt-known"
       },
       "lines": [
-        "\"No. I do not believe them. I have been promised release by road priests and gutter saints. Most reached for the coins after.\"",
+        "\"I do not believe them. Road priests and gutter saints have promised me release before, usually while reaching for the coins.\"",
         "\"The Choir is better dressed. That is not a doctrine.\""
       ],
       "choices": [
@@ -337,17 +337,18 @@
         "setFlag": "long-ash-crossroad-edrin-named"
       },
       "lines": [
-        "\"The Choir came through here calling me holy because the Host left me standing and talking. They asked for the Holt house, the one our brother's line built around us. I pointed.\"",
-        "\"They went toward the yard and never came back. Edrin is in the wheat east of the farm, drinking every compliment they spilled on the way.\"",
+        "\"The Choir came through here calling me holy because the Host left me standing and talking. They asked for the Carbo house, the one our brother's line built around us.\"",
+        "\"My joints have not moved since the Stilling. They followed the hand fixed toward the farm, went on to the yard, and never came back.\"",
+        "\"Eleazar is in the wheat east of the farm, drinking every compliment they spilled on the way.\"",
         "\"Check on him before their hymns get too deep in him.\""
       ],
       "choices": [
         {
-          "label": "Call it Stage III",
+          "label": "Call it Stage IV",
           "next": "edrin-stage"
         },
         {
-          "label": "Check on Edrin",
+          "label": "Check on Eleazar",
           "conditions": {
             "flagsAbsent": "long-ash-crossroad-brother-paid"
           },
@@ -362,7 +363,7 @@
               ]
             },
             "questUpdate": { "quest": "calcified-brothers", "stage": "find-field-brother" },
-            "log": "Garron tells you to take the luck money at his feet."
+            "log": "Gideon tells you to take the luck money at his feet."
           },
           "next": "paid"
         },
@@ -381,14 +382,14 @@
     },
     "edrin-stage": {
       "lines": [
-        "You give the Censure read aloud: speech intact, no Host drive in the voice. Stage III.",
-        "\"Is that the merciful number?\" Garron asks.",
-        "You say it is the number that means Edrin is still Edrin.",
+        "You give the Censure read aloud: speech intact, no Host drive in the voice. Stage IV.",
+        "\"Is that the merciful number?\" Gideon asks.",
+        "You say it is the number that means Eleazar is still Eleazar.",
         "\"Then hurry before the Choir teaches him a holier one.\""
       ],
       "choices": [
         {
-          "label": "Check on Edrin",
+          "label": "Check on Eleazar",
           "conditions": {
             "flagsAbsent": "long-ash-crossroad-brother-paid"
           },
@@ -403,7 +404,7 @@
               ]
             },
             "questUpdate": { "quest": "calcified-brothers", "stage": "find-field-brother" },
-            "log": "Garron tells you to take the luck money at his feet."
+            "log": "Gideon tells you to take the luck money at his feet."
           },
           "next": "paid"
         },
@@ -422,18 +423,18 @@
     },
     "paid": {
       "lines": [
-        "\"Take the ducats. People threw them at me for luck. Luck and I are not on speaking terms.\"",
-        "\"Tell Edrin his brother still points. He will think that is noble. Do not correct him too fast.\""
+        "\"Take the ducats that pilgrims threw for luck; luck and I are not on speaking terms.\"",
+        "\"Tell Eleazar his brother still points. He will think that is noble. Do not correct him too fast.\""
       ]
     },
     "paid-repeat": {
       "lines": [
-        "\"The wheat, friend. If Edrin starts talking crowns, listen for the fear under it.\""
+        "\"The wheat, friend. If Eleazar starts talking crowns, listen for the fear under it.\""
       ]
     },
     "coins": {
       "lines": [
-        "\"Luck money. Pilgrims toss it, then ask me which way the blessed city lies. I point. They thank me by missing my feet half the time.\"",
+        "\"Luck money. Pilgrims toss it, then ask which hand marks the blessed city. I name the hand, and they thank me by missing my feet half the time.\"",
         "\"If a coin hits my face, I try not to flinch.\""
       ],
       "choices": [

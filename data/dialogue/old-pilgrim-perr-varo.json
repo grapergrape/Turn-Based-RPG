@@ -1,0 +1,19 @@
+{
+  "id": "old-pilgrim-perr-varo",
+  "title": "Tobit Faber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Tobit packs broken stone into the west rut with the back of a shovel.",
+        "“Resident water bought us a road crew. No office owns the shovel yet.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

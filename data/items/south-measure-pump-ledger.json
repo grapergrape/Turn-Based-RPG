@@ -1,0 +1,9 @@
+{
+  "id": "south-measure-pump-ledger",
+  "name": "Morrow Pump Ledger",
+  "type": "quest",
+  "rarity": "uncommon",
+  "weight": 0.9,
+  "groundModel": "paper",
+  "description": "The freight-house surety ledger. Several burial debts use copied hand marks, while the medicine deliveries remain genuine."
+}

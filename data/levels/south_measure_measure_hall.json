@@ -1,0 +1,1351 @@
+{
+  "id": "south-measure-measure-hall",
+  "name": "South Measure Hall",
+  "intro": "Chalk dust hangs above the school slates. Bread heat reaches the council table from the west wall.",
+  "width": 34,
+  "height": 22,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#1f140d",
+    "floorShadeAlpha": 0.15,
+    "ambient": "#2a160e",
+    "ambientAlpha": 0.1,
+    "vignette": 0.18
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-hall-main-door-hall",
+    "south-measure-hall-ressa-venn",
+    "south-measure-hall-maud-serren",
+    "south-measure-hall-cassa-rehn",
+    "south-measure-hall-ari-veck",
+    "south-measure-hall-rian-sile",
+    "south-measure-hall-bela-orra",
+    "south-measure-hall-rova-holt"
+  ],
+  "tiles": [
+    "##################################",
+    "#.........................#......#",
+    "#.........................#......#",
+    "#.........................#......#",
+    "#.........................#......#",
+    "#.........................#......#",
+    "#####..#########..#########..#####",
+    "#.........................#......#",
+    "#.........................#......#",
+    "#................................#",
+    "#................................#",
+    "#.........................#......#",
+    "#.........................#......#",
+    "#................................#",
+    "#................................#",
+    "#................................#",
+    "#................................#",
+    "#................................#",
+    "#................................#",
+    "#................................#",
+    "#................................#",
+    "##################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "south-measure-domestic-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "farm-plank",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 17,
+      "y": 19,
+      "facing": "ne"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-ressa-venn",
+        "spawnId": "hall-ressa-venn-0",
+        "characterSlot": "hall-ressa-venn",
+        "x": 20,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "One cup per named resident, then the arrival reserve.",
+          "Precedent is a memory we agree to obey.",
+          "Do not promise full pressure until Noa hears a full cycle."
+        ],
+        "dialogue": "south-measure-hall-ressa-venn",
+        "talkRadius": 1,
+        "mapMarker": {
+          "label": "Susanna Fontana",
+          "kind": "dialogue",
+          "reveal": "always"
+        }
+      },
+      {
+        "actor": "ash-road-south-maud-serren",
+        "spawnId": "hall-maud-serren-1",
+        "characterSlot": "hall-maud-serren",
+        "x": 23,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Speak toward the table, not over it.",
+          "The oldest rule is not always the oldest justice.",
+          "We record objections because silence is cheap to misquote."
+        ],
+        "dialogue": "south-measure-hall-maud-serren",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-cassa-rehn",
+        "spawnId": "hall-cassa-rehn-2",
+        "characterSlot": "hall-cassa-rehn",
+        "x": 14,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Household ties belong beside the water claim.",
+          "A burial copy can prove someone lived here.",
+          "The roll is a tool until somebody makes it a cage."
+        ],
+        "dialogue": "south-measure-hall-cassa-rehn",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-ari-veck",
+        "spawnId": "hall-ari-veck-3",
+        "characterSlot": "hall-ari-veck",
+        "x": 15,
+        "y": 15,
+        "facing": "se",
+        "ambient": [
+          "School ends when the kitchen needs the table.",
+          "Children notice which rules adults whisper.",
+          "I teach the route home before I teach the road north."
+        ],
+        "dialogue": "south-measure-hall-ari-veck",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-nema-cord",
+        "spawnId": "hall-nema-cord-4",
+        "characterSlot": "hall-nema-cord",
+        "x": 28,
+        "y": 8,
+        "facing": "se",
+        "ambient": [
+          "Current names stay on the front shelf.",
+          "Old claims need two witnesses.",
+          "Hidden Rows sends copies through Leah."
+        ]
+      },
+      {
+        "actor": "ash-road-south-kiri-dast",
+        "spawnId": "hall-kiri-dast-5",
+        "characterSlot": "hall-kiri-dast",
+        "x": 21,
+        "y": 3,
+        "facing": "se",
+        "ambient": [
+          "Burial pages are dry enough to turn.",
+          "The loft leaks over the western stack.",
+          "A missing grave copy can erase a water claim."
+        ]
+      },
+      {
+        "actor": "ash-road-south-leto-marr",
+        "spawnId": "hall-leto-marr-6",
+        "characterSlot": "hall-leto-marr",
+        "x": 11,
+        "y": 17,
+        "facing": "se",
+        "ambient": [
+          "My house has a stone roof in the drawing.",
+          "Asa says doors need hinges. Chalk cannot hold them.",
+          "I put every bed above the flood line."
+        ]
+      },
+      {
+        "actor": "ash-road-south-bess-orra",
+        "spawnId": "hall-bess-orra-7",
+        "characterSlot": "hall-bess-orra",
+        "x": 3,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Cups with cracks go beside the stove.",
+          "Victor sends spice when the arrival pot has any.",
+          "Children eat before the council finds its last word."
+        ]
+      },
+      {
+        "actor": "ash-road-south-rian-sile",
+        "spawnId": "hall-rian-sile-8",
+        "characterSlot": "hall-rian-sile",
+        "x": 26,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Cup law begins with the household count.",
+          "An exception becomes precedent when we survive it twice.",
+          "Full pressure can make a liar of a careful promise."
+        ],
+        "dialogue": "south-measure-hall-rian-sile",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-bela-orra",
+        "spawnId": "hall-bela-orra-9",
+        "characterSlot": "hall-bela-orra",
+        "x": 2,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "Bank the coals before the meeting runs long.",
+          "This oven fed my mother before it fed the hall.",
+          "Grain remembers rain better than councils do."
+        ],
+        "dialogue": "south-measure-hall-bela-orra",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-rova-holt",
+        "spawnId": "hall-rova-holt-10",
+        "characterSlot": "hall-rova-holt",
+        "x": 21,
+        "y": 16,
+        "facing": "se",
+        "ambient": [
+          "Arrival fires need a chair before they need advice.",
+          "Half these rules were written before our tents existed.",
+          "My father counts eleven mouths whenever someone says nine cups."
+        ],
+        "dialogue": "south-measure-hall-rova-holt",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-sima-venn",
+        "spawnId": "hall-sima-venn-11",
+        "characterSlot": "hall-sima-venn",
+        "x": 15,
+        "y": 17,
+        "facing": "se",
+        "ambient": [
+          "Why does the road map leave our houses blank?",
+          "I wrote SOUTH MEASURE without copying.",
+          "Susanna says a map can be wrong in official ink."
+        ]
+      },
+      {
+        "actor": "ash-road-south-aro-kelm",
+        "spawnId": "hall-aro-kelm-12",
+        "characterSlot": "hall-aro-kelm",
+        "x": 19,
+        "y": 17,
+        "facing": "se",
+        "ambient": [
+          "This wheel turns the pump in my picture.",
+          "The pipe needs another bend here.",
+          "I used blue chalk for water we do not have yet."
+        ]
+      },
+      {
+        "actor": "ash-road-south-peli-rehn",
+        "spawnId": "hall-peli-rehn-13",
+        "characterSlot": "hall-peli-rehn",
+        "x": 6,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "Thirty crusts, four heel pieces.",
+          "Wet fuel goes under the table, not in the oven.",
+          "Late bowls are for pump watch and clinic runners."
+        ]
+      }
+    ],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 17,
+      "y": 21,
+      "id": "hall-main-door",
+      "name": "Measure Hall Door",
+      "blocking": true,
+      "variant": "domestic",
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 17,
+        "y": 20
+      },
+      "mapMarker": {
+        "label": "Measure Hall Door",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-hall-main-door-hall"
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 17,
+      "y": 17,
+      "id": "measure-hall-slate-school",
+      "blocking": true,
+      "variant": "school",
+      "orient": "se",
+      "name": "Slate School",
+      "interact": {
+        "type": "note",
+        "log": "Washed intake cards serve as lesson slates. Household names fill the writing line before sums begin."
+      },
+      "interactionMarker": {
+        "x": 18,
+        "y": 17
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 17,
+      "y": 9,
+      "id": "measure-hall-council-table",
+      "blocking": true,
+      "variant": "council",
+      "orient": "se",
+      "name": "Row Council Table",
+      "interact": {
+        "type": "note",
+        "log": "Water appeals and oven turns share the table with household disputes. Each place carries a row mark rather than a faction seal."
+      },
+      "interactionMarker": {
+        "x": 18,
+        "y": 9
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 4,
+      "y": 10,
+      "id": "measure-hall-kitchen",
+      "blocking": true,
+      "variant": "cup-repair",
+      "orient": "sw",
+      "name": "Communal Kitchen",
+      "interact": {
+        "type": "note",
+        "log": "The west oven heats a broad work counter. Bread tallies are pinned where every cook can correct them."
+      },
+      "interactionMarker": {
+        "x": 5,
+        "y": 10
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 29,
+      "y": 9,
+      "id": "measure-hall-current-water-roll",
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "sw",
+      "name": "Current Water Roll",
+      "interact": {
+        "type": "note",
+        "log": "Established households fill the cabinet. Off-roll families appear only as cup totals without names."
+      },
+      "mapMarker": {
+        "label": "Current Water Roll",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 30,
+        "y": 9
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 22,
+      "y": 4,
+      "id": "measure-hall-burial-copies",
+      "blocking": true,
+      "variant": "burial-copies",
+      "orient": "sw",
+      "name": "Burial Copies",
+      "interact": {
+        "type": "note",
+        "log": "The copies keep chosen names and kin. Admission status has been left out."
+      },
+      "mapMarker": {
+        "label": "Burial Copies",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 23,
+        "y": 4
+      }
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 10,
+      "y": 4,
+      "id": "measure-hall-canvas-loft",
+      "blocking": true,
+      "variant": "cellar-flight",
+      "orient": "se",
+      "name": "Last Canvas Loft",
+      "interact": {
+        "type": "note",
+        "log": "Sound canvas lies folded by roof size and row. Patched pieces wait beside an interior ladder."
+      },
+      "interactionMarker": {
+        "x": 11,
+        "y": 4
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 14,
+      "y": 4,
+      "id": "hall-storm-issue-crate",
+      "name": "Storm Issue Crate",
+      "blocking": true,
+      "orient": "se",
+      "interact": {
+        "type": "container",
+        "log": "The hall clerk broke the seal and chalked PUBLIC ISSUE across the lid.",
+        "loot": [
+          {
+            "item": "tinned-beans",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 2
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 15,
+        "y": 4
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 16,
+      "y": 0,
+      "id": "measure-hall-painted-strip",
+      "blocking": true,
+      "variant": "slate",
+      "wallPlane": "sw",
+      "name": "Painted Canvas Strip",
+      "interact": {
+        "type": "note",
+        "log": "Old exposure paint stains one strip of canvas. The dry pigment no longer answers heat or breath."
+      },
+      "interactionMarker": {
+        "x": 16,
+        "y": 1
+      }
+    },
+    {
+      "kind": "south-measure-custody-rest",
+      "x": 20,
+      "y": 11,
+      "id": "measure-hall-empty-custody-rest",
+      "blocking": false,
+      "orient": "sw",
+      "name": "Empty Record Rest",
+      "interact": {
+        "type": "note",
+        "log": "Two wooden supports leave room for a bound roll. The Hall keeps no original intake archive here."
+      },
+      "interactionMarker": {
+        "x": 21,
+        "y": 11
+      }
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 30,
+      "y": 3,
+      "id": "measure-hall-storm-room",
+      "blocking": true,
+      "variant": "used",
+      "orient": "se",
+      "name": "Storm Room",
+      "interact": {
+        "type": "note",
+        "log": "The side room holds thin pallets beneath a leaking seam. New arrivals sleep here only when the weather makes the road worse."
+      },
+      "interactionMarker": {
+        "x": 31,
+        "y": 3
+      }
+    },
+    {
+      "kind": "shared-oven",
+      "x": 2,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 10,
+      "y": 15,
+      "blocking": true,
+      "variant": "school",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 14,
+      "y": 15,
+      "blocking": true,
+      "variant": "school",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 18,
+      "y": 15,
+      "blocking": true,
+      "variant": "school",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 22,
+      "y": 15,
+      "blocking": true,
+      "variant": "school",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 10,
+      "y": 18,
+      "blocking": true,
+      "variant": "school",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 14,
+      "y": 18,
+      "blocking": true,
+      "variant": "school",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 20,
+      "y": 18,
+      "blocking": true,
+      "variant": "school",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 24,
+      "y": 18,
+      "blocking": true,
+      "variant": "school",
+      "orient": "se"
+    },
+    {
+      "kind": "low-stool",
+      "x": 9,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 12,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 15,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 19,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 22,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 25,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 9,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 12,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 15,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 20,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 23,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 26,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-lesson",
+      "x": 11,
+      "y": 14
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 17,
+      "y": 14
+    },
+    {
+      "kind": "south-measure-water-lesson",
+      "x": 21,
+      "y": 14
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 12,
+      "y": 17
+    },
+    {
+      "kind": "south-measure-water-lesson",
+      "x": 18,
+      "y": 18
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 25,
+      "y": 17
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 13,
+      "y": 9,
+      "blocking": true,
+      "variant": "council",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 15,
+      "y": 9,
+      "blocking": true,
+      "variant": "council",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 19,
+      "y": 9,
+      "blocking": true,
+      "variant": "council",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 21,
+      "y": 9,
+      "blocking": true,
+      "variant": "council",
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 13,
+      "y": 11,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 15,
+      "y": 11,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 17,
+      "y": 11,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 18,
+      "y": 7,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 14,
+      "y": 10
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 19,
+      "y": 10
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 4,
+      "y": 8,
+      "blocking": true,
+      "variant": "cup-repair",
+      "orient": "se"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 7,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "wash-wall",
+      "x": 6,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 2,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "dining-table",
+      "x": 4,
+      "y": 14,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 6,
+      "y": 15,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 29,
+      "y": 7,
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 31,
+      "y": 7,
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 31,
+      "y": 10,
+      "blocking": true,
+      "variant": "records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 32,
+      "y": 9,
+      "blocking": false,
+      "variant": "census",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 29,
+      "y": 11,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 32,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 30,
+      "y": 8
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 7,
+      "y": 2,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 2,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 9,
+      "y": 2,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 10,
+      "y": 2,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 11,
+      "y": 2,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 12,
+      "y": 2,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "laundry-line",
+      "x": 7,
+      "y": 4,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 13,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 8,
+      "y": 3,
+      "blocking": false
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 11,
+      "y": 3,
+      "blocking": false
+    },
+    {
+      "kind": "utility-railing",
+      "x": 12,
+      "y": 4,
+      "blocking": false,
+      "variant": "civic",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 20,
+      "y": 4,
+      "blocking": true,
+      "variant": "burial-copies",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 24,
+      "y": 4,
+      "blocking": true,
+      "variant": "burial-copies",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 22,
+      "y": 0,
+      "blocking": false,
+      "variant": "memorial",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 22,
+      "y": 5,
+      "blocking": true,
+      "variant": "records",
+      "orient": "se"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 20,
+      "y": 5,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 24,
+      "y": 5,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 13,
+      "y": 0,
+      "blocking": true,
+      "variant": "slate",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 14,
+      "y": 0,
+      "blocking": true,
+      "variant": "slate",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 15,
+      "y": 0,
+      "blocking": true,
+      "variant": "slate",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 17,
+      "y": 0,
+      "blocking": true,
+      "variant": "slate",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 18,
+      "y": 0,
+      "blocking": true,
+      "variant": "slate",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 19,
+      "y": 0,
+      "blocking": true,
+      "variant": "slate",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "charity-cot",
+      "x": 31,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 2,
+      "y": 8,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 7,
+      "y": 10,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 11,
+      "y": 5,
+      "blocking": false
+    },
+    {
+      "kind": "mortuary-drain",
+      "x": 20,
+      "y": 12,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 20,
+      "y": 6,
+      "blocking": false,
+      "variant": "crawl-marks",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 18,
+      "y": 10,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 24,
+      "y": 12,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se"
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 4
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 5
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 6
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 8
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 14
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 17
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 19
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 20
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 20
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 4,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 22,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 23,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 25,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 26,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 8
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 12
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "hall-loose-tinned-beans",
+      "item": "tinned-beans",
+      "count": 1,
+      "x": 15,
+      "y": 4
+    }
+  ]
+}

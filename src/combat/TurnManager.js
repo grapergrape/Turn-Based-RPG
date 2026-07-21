@@ -1,6 +1,6 @@
 // Fixed-initiative turn order for the encounter.
 //
-// Initiative is the order the actors are handed in (Mara, then the Cutthroat,
+// Initiative is the order the actors are handed in (the player, then the Cutthroat,
 // then the Penitent). Dead actors are skipped. Each actor's AP refreshes when
 // its turn begins.
 
@@ -25,7 +25,8 @@ export class TurnManager {
   }
 
   isPlayerTurn() {
-    return this.current()?.type === 'player';
+    const actor = this.current();
+    return actor?.type === 'player' || actor?.control === 'player';
   }
 
   // Advance to the next living actor, refreshing its AP. Returns it, or null

@@ -1,0 +1,65 @@
+{
+  "id": "widow-bell-rifle",
+  "name": "Widow Bell Rifle",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "marksman rifle",
+  "rarity": "common",
+  "weight": 4.7,
+  "groundModel": "precision-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Independent gunsmiths",
+    "factions": [
+      "independent-gunsmiths"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "marksman rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 9,
+        "accuracyBonus": 10,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "braced-shot",
+        "name": "Braced Shot",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 12,
+        "range": 10,
+        "accuracyBonus": 15,
+        "ammoCost": 1,
+        "conditionWear": 2,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "full-rifle-cartridge",
+      "capacity": 5,
+      "defaultLoaded": 5,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "Its muzzle report has a hollow second note caused by a sleeved barrel jacket. Widows named the sound before the maker named the gun."
+}

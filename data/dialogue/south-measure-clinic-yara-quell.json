@@ -1,0 +1,156 @@
+{
+  "id": "south-measure-clinic-yara-quell",
+  "title": "Aurelia Priscian",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Aurelia has placed a flow-monitor slate beside the patient list. The placement forms remain on another corner of the desk."
+      ],
+      "choices": [
+        {
+          "label": "Ask why monitoring comes with census access",
+          "next": "terms"
+        },
+        {
+          "label": "Negotiate monitored full flow",
+          "conditions": {
+            "flags": [
+              "south-measure-water-decision-open",
+              "intake-clerk-resolved"
+            ],
+            "flagsAbsent": [
+              "south-measure-plan-monitored-flow",
+              "south-measure-plan-morrow-import",
+              "south-measure-plan-isolated-loop",
+              "south-measure-plan-feed-closed"
+            ]
+          },
+          "next": "acquire"
+        },
+        {
+          "label": "Leave Aurelia with the ward count",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "terms": {
+      "lines": [
+        "\"Full flow needs two staff at the monitor and access below the court. My office will ask what those staff learned from every household.\"",
+        "\"That record can catch illness early. It can also turn a patient into an applicant who never applied.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the desk",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "acquire": {
+      "lines": [
+        "Aurelia keeps the full census agreement on top. A consent exception and a blank Censure order wait beneath it.",
+        "\"My team can work under the first two. If you order the third, I will record who compelled them.\""
+      ],
+      "choices": [
+        {
+          "label": "Accept the full Compact census agreement",
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-monitored-flow",
+              "compact-monitoring-agreement"
+            ],
+            "log": "Aurelia assigns a monitoring team under full census terms."
+          },
+          "next": "chosen",
+          "tone": "commit"
+        },
+        {
+          "label": "Limit follow-up to consenting clinic patients",
+          "conditions": {
+            "fieldRatings": {
+              "doctrine": 40
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-monitored-flow",
+              "compact-monitoring-supervised"
+            ],
+            "log": "Aurelia accepts supervised monitoring limited to consenting patients."
+          },
+          "next": "chosen",
+          "tone": "commit"
+        },
+        {
+          "label": "Make individual consent the price of useful data",
+          "conditions": {
+            "fieldRatings": {
+              "speech": 40
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-monitored-flow",
+              "compact-monitoring-supervised"
+            ],
+            "log": "Aurelia accepts individual consent as the limit on monitoring records."
+          },
+          "next": "chosen",
+          "tone": "commit"
+        },
+        {
+          "label": "Order emergency monitoring under Censure authority",
+          "conditions": {
+            "fieldRatings": {
+              "command": 40
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-monitored-flow",
+              "compact-monitoring-compelled"
+            ],
+            "log": "Aurelia assigns a monitoring team under protest and records the Censure order."
+          },
+          "next": "compelled",
+          "tone": "danger"
+        },
+        {
+          "label": "Leave the agreement unsigned",
+          "next": "start"
+        }
+      ]
+    },
+    "chosen": {
+      "lines": [
+        "Aurelia assigns two clinicians to the water court without closing a ward bed.",
+        "\"The clinic does not become payment for the pump. The monitoring agreement stands on its own.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the decision to Susanna",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "compelled": {
+      "lines": [
+        "Aurelia writes the Censure order number above the monitor rota.",
+        "\"My staff will keep the taps safe. Do not call the order consent in your report.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the order to Measure Hall",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

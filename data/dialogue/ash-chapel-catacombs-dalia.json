@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-dalia",
-  "title": "Dalia Mor",
+  "title": "Damaris Molitor",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,7 +8,7 @@
       },
       "else": "hideout",
       "lines": [
-        "Dalia looks over the nave and counts under her breath.",
+        "Damaris looks over the nave and counts under her breath.",
         "\"You said eight dead above. I believe you, but my hands keep arguing.\""
       ],
       "choices": [
@@ -32,8 +32,8 @@
     },
     "hideout": {
       "lines": [
-        "Dalia has wrapped her sleeves tight around both wrists.",
-        "\"When the cult came, I heard eight voices. Maybe more. The children were crying, and the stone made echoes.\"",
+        "Damaris has wrapped her sleeves tight around both wrists.",
+        "\"When the cult came, I counted eight voices, though the crying children and stone echoes may have hidden more.\"",
         "\"If you go back up, count for me. I need a number that stays still.\""
       ],
       "choices": [
@@ -61,7 +61,7 @@
       },
       "lines": [
         "\"Two laughed. One prayed. One sounded younger than the rest and kept asking where the women were.\"",
-        "\"One corrected another when he said cult. He said, 'Choir. We are the Choir of the Open Wound.' I counted the words because they frightened me.\"",
+        "\"One rebuked another for saying cult: 'We are the Choir of the Open Wound.' I counted every word because they frightened me.\"",
         "\"Polite cruelty wears a clean shirt. I remember the collar.\""
       ],
       "choices": [
@@ -70,7 +70,7 @@
           "next": "heard"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -81,8 +81,8 @@
     },
     "heard": {
       "lines": [
-        "\"Fear opens the ears. I do not recommend it as a talent.\"",
-        "\"If you can choose a talent, choose singing. People give singers more bread.\""
+        "\"Fear opens the ears, though I do not recommend it as a talent.\"",
+        "\"If you can choose one, choose singing; people give singers more bread.\""
       ],
       "choices": [
         {
@@ -101,7 +101,7 @@
       ],
       "choices": [
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -113,7 +113,7 @@
     "counting": {
       "lines": [
         "\"Children, jars, steps, breaths. Anything that proves the next moment came.\"",
-        "\"If I count bread, Selka calls it useful. If I count ghosts, everyone looks at my hands.\""
+        "\"If I count bread, Susanna calls it useful. If I count ghosts, everyone looks at my hands.\""
       ],
       "choices": [
         {
@@ -137,7 +137,7 @@
       ],
       "choices": [
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -157,7 +157,7 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         }
       ]
@@ -192,7 +192,7 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         }
       ]

@@ -67,7 +67,7 @@ function makeGame() {
   });
   const player = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 14, maxHp: 14, actionPoints: 6 },
     attacks: [{ id: 'melee', name: 'Knife', apCost: 1, damage: 3, range: 1 }],
@@ -165,6 +165,39 @@ function makeGame() {
 
 {
   const game = makeGame();
+  game.mode = 'victory';
+  game.level.interactables = [{
+    id: 'victory-note',
+    kind: 'paper-scraps',
+    name: 'Victory Note',
+    x: 2,
+    y: 1,
+    interact: { type: 'note' }
+  }];
+  game.pathQueue = [{ x: 2, y: 1 }];
+  game.input = {
+    consume: () => [],
+    consumeClick: () => null,
+    isHeld: (key) => key === 'shift' || key === 'tab'
+  };
+
+  assert.deepEqual(game._buildOverlay().interactionHighlights, [{
+    key: '2,1',
+    targetKey: '2,1',
+    label: 'Victory Note',
+    action: 'inspect'
+  }]);
+  game.renderer.interactionHighlightAt = () => ({ x: 2, y: 1 });
+  assert.deepEqual(game._interactionHighlightCellFromPoint({ x: 10, y: 10 }), { x: 2, y: 1 });
+
+  game.update(0);
+  assert.equal(game.moving?.usedSprint, true);
+  game.update(0.2);
+  assert.ok(game.moving?.t > 0.5, 'victory exploration keeps the sprint step duration');
+}
+
+{
+  const game = makeGame();
   const actionBatches = [[], ['toggle-sneak']];
   game.pathQueue = [{ x: 2, y: 1 }];
   game.input = {
@@ -181,4 +214,29 @@ function makeGame() {
   assert.equal(game.sneakMode, true);
   assert.equal(game.moving?.sneakMode, true);
   assert.equal(game.player.render.state, 'sneak');
+}
+
+{
+  const game = makeGame();
+  const clicks = [
+    null,
+    { x: 10, y: 10, button: 0, shiftKey: false, ctrlKey: false }
+  ];
+  game.pathQueue = [{ x: 2, y: 1 }, { x: 3, y: 1 }];
+  game.renderer.toGrid = () => ({ x: 1, y: 1 });
+  game.input = {
+    consume: () => [],
+    consumeClick: () => clicks.shift() ?? null,
+    isHeld: () => false
+  };
+
+  game.update(0);
+  assert.deepEqual(game.player.position, { x: 2, y: 1 });
+  assert.deepEqual(game.pathQueue, [{ x: 3, y: 1 }]);
+
+  game.update(0);
+  assert.deepEqual(game.pathQueue, [{ x: 1, y: 1 }], 'a click during movement replaces the remaining route');
+
+  game.update(1);
+  assert.deepEqual(game.player.position, { x: 1, y: 1 }, 'the replacement route starts after the active step');
 }

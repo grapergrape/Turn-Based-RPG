@@ -1,0 +1,83 @@
+{
+  "id": "south-measure-undercroft-brother-tarn",
+  "title": "Brother Cassian at the East Pipe",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Cassian holds a listening cup against the pipe. The cords at his throat twitch after each pressure knock.",
+        "\"The Clerk answers north. Something beyond the fields answers back.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask him to cut the signal",
+          "next": "cut"
+        },
+        {
+          "label": "Ask him to seal the Clerk in the wicket",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-contained",
+              "intake-clerk-tarn-sealed",
+              "intake-clerk-compact",
+              "intake-clerk-killed",
+              "intake-clerk-burned",
+              "intake-clerk-resealed"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "intake-clerk-tarn-sealed",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-preserved",
+              "tarn-clerk-seal-spent"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "Cassian cuts Junia’s answering signal from the water while preserving the wicket and original roll."
+            }
+          },
+          "next": "seal",
+          "tone": "commit"
+        },
+        {
+          "label": "Let Cassian listen",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "cut": {
+      "lines": [
+        "\"I can break this branch from the water line. We lose the cleanest record of the answer with it.\"",
+        "\"Keep the pump steady while I choose where the silence begins.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the pipe",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "seal": {
+      "lines": [
+        "Cassian knots a black cord around the wicket brace. Every rib mouth stops on the same unfinished number.",
+        "\"The signal is cut from the water. It may still remember the road.\""
+      ],
+      "choices": [
+        {
+          "label": "Step away from the sealed wicket",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

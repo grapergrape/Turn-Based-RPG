@@ -1,0 +1,39 @@
+{
+  "id": "household-of-one",
+  "title": "Household of One",
+  "initialStage": "hear-family",
+  "objectives": [
+    {
+      "text": "Ask the Faber household about Noa’s school place.",
+      "stage": "hear-family"
+    },
+    {
+      "text": "Learn what the placement office will accept.",
+      "stage": "review-record"
+    },
+    {
+      "text": "Decide how Noa leaves South Measure.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "hear-family",
+      "task": "Ask the Faber household about Noa",
+      "xp": 0,
+      "description": "Noa Faber has earned a northern machine-school place. The form counts her as a household of one."
+    },
+    {
+      "id": "review-record",
+      "task": "Review Noa’s family record",
+      "xp": 0,
+      "description": "Noa can take the place alone or delay one season. A family review offers a lawful route for Isaac and Tobit; a forged household page offers another."
+    },
+    {
+      "id": "complete",
+      "task": "Noa’s departure is settled",
+      "xp": 20,
+      "description": "Noa’s school route now reflects the family decision made at South Measure."
+    }
+  ]
+}

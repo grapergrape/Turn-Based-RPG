@@ -1,0 +1,24 @@
+{
+  "id": "ash-road-south-ulm-dorr",
+  "name": "Uriah Bassus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Settling-tank scraper",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "water-court",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-work-coat",
+    "gear": [],
+    "accent": "bare-brown"
+  }
+}

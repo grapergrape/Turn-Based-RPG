@@ -1,0 +1,4 @@
+interface:
+  display_name: "Name the World"
+  short_description: "Build grounded names for this RPG cast"
+  default_prompt: "Use $name-the-world to create or revise player-facing names for this RPG."

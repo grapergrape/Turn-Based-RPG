@@ -65,11 +65,14 @@ export class StealthRuntime {
         observerRating,
         perception: notice.perception
       });
-      const nextState = nextSuspicionState({
+      let nextState = nextSuspicionState({
         severity,
         success: check.success,
         currentState: enemy.suspicionState
       });
+      if (this.callbacks.deferDetection?.({ enemy, nextState, action, severity, notice, check })) {
+        nextState = SUSPICION_STATES.INVESTIGATING;
+      }
       if (!check.success) this.callbacks.faceToward?.(enemy, this.game.player.position);
       if (this.applySuspicionState(enemy, nextState, { action, severity, notice, check })) {
         return true;
@@ -79,7 +82,7 @@ export class StealthRuntime {
   }
 
   canEnemyNoticeSuspicion(enemy) {
-    if (!enemy || enemy.isDead) return false;
+    if (!enemy || enemy.dormant || enemy.isDead) return false;
     const encounterId = this.callbacks.resolveEncounterId?.(enemy.encounter);
     if (this.game.mode === 'combat' && this.game.activeEncounter && encounterId === this.callbacks.resolveEncounterId?.(this.game.activeEncounter)) {
       return false;

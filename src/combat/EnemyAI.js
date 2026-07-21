@@ -23,10 +23,12 @@ function occupiedExcept(self, actors) {
 // Returns an ordered list of actions:
 //   { type: 'move', to: {x, y} }
 //   { type: 'attack' }
-export function planTurn(enemy, player, grid, actors) {
+export function planTurn(enemy, opponents, grid, actors) {
   const actions = [];
   const attack = enemy.attacks[0];
-  if (!attack || player.isDead) return actions;
+  const targets = Array.isArray(opponents) ? opponents : [opponents];
+  const player = chooseEnemyTarget(enemy, targets, grid, actors, attack);
+  if (!attack || !player || player.isDead) return actions;
 
   const occupied = occupiedExcept(enemy, actors);
   let ap = enemy.ap;
@@ -55,11 +57,37 @@ export function planTurn(enemy, player, grid, actors) {
 
   // Attack while in range and AP remains.
   while (chebyshev(sim, player.position) <= attack.range && ap >= attack.apCost) {
-    actions.push({ type: 'attack' });
+    actions.push({ type: 'attack', target: player });
     ap -= attack.apCost;
   }
 
   return actions;
+}
+
+export function chooseEnemyTarget(enemy, opponents, grid, actors, attack = enemy?.attacks?.[0]) {
+  const living = (opponents ?? []).filter((actor) => actor && !actor.isDead && actor.team !== 'enemy');
+  if (!enemy || !attack || living.length === 0) return null;
+  const occupied = occupiedExcept(enemy, actors);
+  const candidates = living.map((actor) => {
+    const distance = chebyshev(enemy.position, actor.position);
+    const path = distance <= attack.range
+      ? []
+      : findPathToAdjacent(grid, enemy.position, actor.position, occupied);
+    const reachable = distance <= attack.range || Boolean(path);
+    const reachDistance = distance <= attack.range ? distance : path?.length ?? Number.POSITIVE_INFINITY;
+    const hpRatio = actor.maxHp > 0 ? actor.hp / actor.maxHp : 1;
+    const taunting = actor.statuses?.some((status) => status.id === 'taunting') && distance <= 3;
+    return { actor, reachable, reachDistance, hpRatio, taunting };
+  }).filter((entry) => entry.reachable);
+  if (candidates.length === 0) return null;
+  const hasTaunt = candidates.some((entry) => entry.taunting);
+  return candidates
+    .filter((entry) => !hasTaunt || entry.taunting)
+    .sort((left, right) =>
+      left.reachDistance - right.reachDistance ||
+      left.hpRatio - right.hpRatio ||
+      Number(right.actor.type === 'player') - Number(left.actor.type === 'player')
+    )[0]?.actor ?? null;
 }
 
 // Optional Host-flavoured barks for the Penitent.

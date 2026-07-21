@@ -52,6 +52,8 @@ export function installDevConsole(game, { enabled = false, target = globalThis }
     createBuild: (buildId, options = {}) => applyBuild(game, buildId, options),
     setBuild: (buildId, options = {}) => applyBuild(game, buildId, options),
     learn: (techniques = []) => learnTechniques(game, techniques),
+    weapons: () => loadWeaponCatalog(),
+    give: (itemId, count = 1, options = {}) => giveItem(game, itemId, count, options),
     teleport: (x, y) => teleportPlayer(game, x, y),
     encounter: (encounterId = null) => startEncounter(game, encounterId),
     resetCombat: () => resetCombat(game),
@@ -60,6 +62,37 @@ export function installDevConsole(game, { enabled = false, target = globalThis }
 
   target.hostDebug = api;
   return api;
+}
+
+async function loadWeaponCatalog() {
+  const response = await fetch('./data/catalogs/weapons.json');
+  if (!response.ok) return { ok: false, reason: `Catalog request failed: ${response.status}` };
+  return { ok: true, ...await response.json() };
+}
+
+async function giveItem(game, itemId, count = 1, options = {}) {
+  if (!game.inventory || typeof itemId !== 'string' || !itemId.trim()) {
+    return { ok: false, reason: 'Item id required.' };
+  }
+  if (!game.inventory.itemDefs[itemId]) {
+    const response = await fetch(`./data/items/${encodeURIComponent(itemId)}.json`);
+    if (!response.ok) return { ok: false, reason: `Unknown item: ${itemId}` };
+    game.inventory.itemDefs[itemId] = await response.json();
+  }
+  const amount = Math.max(1, Math.floor(Number(count) || 1));
+  const result = game.inventory.add(itemId, amount, {
+    ...options,
+    ignoreCapacity: options.ignoreCapacity !== false
+  });
+  if (!result.ok) return result;
+  game._syncInventoryOrder?.();
+  game._refreshPlayerAttacks?.();
+  return {
+    ok: true,
+    itemId,
+    count: amount,
+    name: game.inventory.displayName(itemId)
+  };
 }
 
 export function devConsoleEnabled(location) {

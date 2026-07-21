@@ -1,0 +1,269 @@
+{
+  "id": "south-measure-cellar-iven-roa",
+  "title": "Joanna Medicus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Joanna holds a scorched label to the lamp without touching its blackened edge."
+      ],
+      "choices": [
+        {
+          "label": "Ask what changed in the charity stock",
+          "next": "stock",
+          "effects": {
+            "setFlag": "charity-stock-separated",
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "trace-doses",
+              "log": "The charity stock mixes useful medicine with copied labels and missing suppressant doses."
+            }
+          }
+        },
+        {
+          "label": "Decide the fate of the mixed stock",
+          "conditions": {
+            "items": {
+              "south-measure-charity-cards": 1
+            },
+            "flagsAbsent": [
+              "charity-stock-sorted",
+              "charity-council",
+              "charity-compact",
+              "charity-burned"
+            ]
+          },
+          "next": "decide"
+        },
+        {
+          "label": "Let Joanna return to the cot",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "stock": {
+      "lines": [
+        "\"Real medicine arrived beside vials with copied labels. Then one suppressant dose vanished every few nights.\"",
+        "\"Do not call the whole shelf poison because one person used it to hide. Sick people paid for that certainty before you arrived.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the stock cards",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "decide": {
+      "lines": [
+        "Joanna spreads the stock cards beside the intact medicine.",
+        "\"Choose custody if you must. Choose fire only after you name the patients it leaves untreated.\""
+      ],
+      "choices": [
+        {
+          "label": "Separate medicine from copied stock",
+          "next": "sort"
+        },
+        {
+          "label": "Place the stock under resident council custody",
+          "effects": {
+            "setFlag": "charity-council",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-charity-cards",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "complete",
+              "log": "The resident council takes custody of the mixed charity stock."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Transfer the stock to Compact clinicians",
+          "conditions": {
+            "flag": "heard-yara-quell-terms"
+          },
+          "effects": {
+            "setFlag": "charity-compact",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-charity-cards",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "complete",
+              "log": "Compact clinicians take the charity stock for testing and controlled issue."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Burn every suspect vial and card",
+          "effects": {
+            "setFlag": "charity-burned",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-charity-cards",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "complete",
+              "log": "The mixed charity stock burns, including medicine that may have remained useful."
+            }
+          },
+          "next": "burned",
+          "tone": "danger"
+        },
+        {
+          "label": "Keep the stock undecided",
+          "next": "start"
+        }
+      ]
+    },
+    "sort": {
+      "lines": [
+        "Copied dose numbers repeat in batches. Genuine issues vary in their sediment and carry wax matched to the closure mark."
+      ],
+      "choices": [
+        {
+          "label": "Sort by medicine practice",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 35
+            }
+          },
+          "effects": {
+            "setFlag": "charity-stock-sorted",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-charity-cards",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "complete",
+              "log": "Useful medicine is separated from copied stock and returned to Joanna’s cot."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Sort by Host-use signs",
+          "conditions": {
+            "fieldRatings": {
+              "hostSigns": 35
+            }
+          },
+          "effects": {
+            "setFlag": "charity-stock-sorted",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-charity-cards",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "complete",
+              "log": "The stock used to hide a Host change is isolated without burning the useful medicine."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Compare the seals with a Compact suppressant vial",
+          "conditions": {
+            "items": {
+              "compact-suppressant": 1
+            }
+          },
+          "effects": {
+            "setFlag": "charity-stock-sorted",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-charity-cards",
+                  "count": 1
+                },
+                {
+                  "item": "compact-suppressant",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "complete",
+              "log": "A sealed suppressant sample identifies the copied batches. Joanna keeps the useful medicine."
+            }
+          },
+          "next": "done",
+          "tone": "commit"
+        },
+        {
+          "label": "Do not guess at the stock",
+          "next": "decide"
+        }
+      ]
+    },
+    "done": {
+      "lines": [
+        "Joanna writes the outcome on a clean card and places it above the cot board.",
+        "\"Now the next dose has a name attached to the decision.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "burned": {
+      "lines": [
+        "The copied labels curl first. Sealed fever vials crack one by one in the heat.",
+        "Joanna does not look away."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

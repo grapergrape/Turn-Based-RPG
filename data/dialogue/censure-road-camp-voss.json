@@ -1,16 +1,122 @@
 {
   "id": "censure-road-camp-voss",
-  "title": "Preceptor Voss",
+  "title": "Preceptor Aquila",
   "nodes": {
     "start": {
+      "conditions": {
+        "items": {
+          "choir-tally-strip": 1
+        },
+        "flagsAbsent": ["ash-chapel-evidence-delivered"]
+      },
+      "else": "ash-chapel-evidence-hymnal-check",
       "lines": [
-        "Preceptor Voss has slates pinned under one boot and mud on both cuffs.",
-        "\"If Caldus calls this a camp again, make him count latrine nails. A camp has rest. This has paperwork with damp corners.\""
+        "Aquila sees the soot-black paper at the mouth of your pack. Her pencil stops over the route slate.",
+        "\"That came out of Ash Chapel. Put it here before Augustine turns custody into confession.\""
       ],
       "choices": [
         {
-          "label": "Fill the Hallowfen route report",
-          "next": "report-briefing"
+          "label": "Turn over all Ash Chapel evidence",
+          "conditions": {
+            "items": {
+              "choir-hymnal-fragment": 1
+            }
+          },
+          "effects": {
+            "setFlag": "ash-chapel-evidence-delivered",
+            "inventory": {
+              "remove": [
+                { "item": "choir-tally-strip", "count": 1 },
+                { "item": "choir-hymnal-fragment", "count": 3 }
+              ]
+            },
+            "xp": 25,
+            "log": "Aquila seals the Ash Chapel evidence for Remnant custody."
+          },
+          "next": "ash-chapel-evidence-received"
+        },
+        {
+          "label": "Turn over the tally strip",
+          "conditions": {
+            "itemsMax": {
+              "choir-hymnal-fragment": 0
+            }
+          },
+          "effects": {
+            "setFlag": "ash-chapel-evidence-delivered",
+            "inventory": {
+              "remove": [
+                { "item": "choir-tally-strip", "count": 1 }
+              ]
+            },
+            "xp": 25,
+            "log": "Aquila seals the Ash Chapel evidence for Remnant custody."
+          },
+          "next": "ash-chapel-evidence-received"
+        },
+        {
+          "label": "Keep the evidence for now",
+          "next": "main"
+        }
+      ]
+    },
+    "ash-chapel-evidence-hymnal-check": {
+      "conditions": {
+        "items": {
+          "choir-hymnal-fragment": 1
+        },
+        "flagsAbsent": ["ash-chapel-evidence-delivered"]
+      },
+      "else": "main",
+      "lines": [
+        "Aquila sees the soot-black paper at the mouth of your pack. Her pencil stops over the route slate.",
+        "\"That came out of Ash Chapel. Put it here before Augustine turns custody into confession.\""
+      ],
+      "choices": [
+        {
+          "label": "Turn over the hymnal fragments",
+          "effects": {
+            "setFlag": "ash-chapel-evidence-delivered",
+            "inventory": {
+              "remove": [
+                { "item": "choir-hymnal-fragment", "count": 3 }
+              ]
+            },
+            "xp": 25,
+            "log": "Aquila seals the Ash Chapel evidence for Remnant custody."
+          },
+          "next": "ash-chapel-evidence-received"
+        },
+        {
+          "label": "Keep the evidence for now",
+          "next": "main"
+        }
+      ]
+    },
+    "ash-chapel-evidence-received": {
+      "lines": [
+        "Aquila folds the soot-marked evidence into waxed cloth. Her field seal bites through both layers.",
+        "\"I will see this reaches the Remnant. Augustine does not touch the packet, and the field credit goes under your name.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the packet with Aquila",
+          "next": "main"
+        }
+      ]
+    },
+    "main": {
+      "lines": [
+        "Preceptor Aquila has slates pinned under one boot and mud on both cuffs.",
+        "\"If Cyprian calls this a camp again, make him count latrine nails. A camp has rest. This has paperwork with damp corners.\""
+      ],
+      "choices": [
+        {
+          "label": "Request Hallowfen route clearance",
+          "conditions": {
+            "flagsAbsent": ["censure-road-voss-route-cleared"]
+          },
+          "next": "route-clearance"
         },
         {
           "label": "Ask about cult-breaker training",
@@ -28,7 +134,7 @@
           "next": "report-filed"
         },
         {
-          "label": "Leave Voss to the slates",
+          "label": "Leave Aquila to the slates",
           "close": true
         }
       ]
@@ -40,19 +146,19 @@
       ],
       "choices": [
         {
-          "label": "Leave Voss to the drill yard",
+          "label": "Leave Aquila to the drill yard",
           "close": true
         }
       ]
     },
     "supplies": {
       "lines": [
-        "\"Runa issues what the writ allows. Maev sells what the writ forgot. Everyone calls that corruption until they need dry beans.\"",
+        "\"Ruth issues what the writ allows. Judith sells what the writ forgot. Everyone calls that corruption until they need dry beans.\"",
         "\"The road survives on doctrine, wax seals, and people pretending the third column in the ledger does not exist.\""
       ],
       "choices": [
         {
-          "label": "Give Voss the graveyard censure report",
+          "label": "Give Aquila the graveyard censure report",
           "conditions": {
             "flags": [
               "heard-bell-resolved-censure",
@@ -65,23 +171,62 @@
           "next": "heard-bell-censure-report"
         },
         {
-          "label": "Leave Voss to the ledgers",
+          "label": "Lay out the corrected peal order",
+          "conditions": {
+            "flag": "censure-road-preceptor-route-order-found",
+            "flagsAbsent": ["censure-road-voss-preceptor-order-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-voss-preceptor-order-reported",
+            "log": "Aquila files the altered peal order as an unauthorized correction."
+          },
+          "next": "preceptor-order"
+        },
+        {
+          "label": "Give Aquila the missing-witness reading",
+          "conditions": {
+            "flag": "censure-road-preceptor-route-correction-read",
+            "flagsAbsent": ["censure-road-voss-preceptor-correction-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-voss-preceptor-correction-reported",
+            "log": "Aquila records the missing witness as proof that the peal correction lacked authority."
+          },
+          "next": "preceptor-correction"
+        },
+        {
+          "label": "Report what was hidden in Augustine's chest",
+          "conditions": {
+            "flags": [
+              "odran-late-visit-suspected",
+              "censure-road-odran-chest-linen-found"
+            ],
+            "flagsAbsent": ["censure-road-voss-odran-chest-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-voss-odran-chest-reported",
+            "log": "Aquila opens a watch entry for Father Augustine's tent."
+          },
+          "next": "odran-chest"
+        },
+        {
+          "label": "Leave Aquila to the ledgers",
           "close": true
         }
       ]
     },
     "heard-bell-censure-report": {
       "lines": [
-        "Voss reads the twelve names without moving her pencil. She turns the page over before she marks the graveyard coordinates.",
+        "Aquila reads the twelve names without moving her pencil. She turns the page over before she marks the graveyard coordinates.",
         "\"Eleven standing subjects and one destroyed below ground. Old office knowledge, never recalled. I can file the purgation request, but I will not call this a clean inheritance.\"",
-        "\"Maev will issue the road bundle. The writ covers one burn. It does not make the fire wise.\""
+        "\"Judith will issue the road bundle. The writ covers one burn. It does not make the fire wise.\""
       ],
       "choices": [
         {
-          "label": "Leave the report with Voss",
+          "label": "Leave the report with Aquila",
           "effects": {
             "setFlag": "heard-bell-censure-report-acknowledged",
-            "log": "Voss seals the graveyard report and sends the issue order to Maev."
+            "log": "Aquila seals the graveyard report and sends the issue order to Judith."
           },
           "close": true
         },
@@ -91,21 +236,217 @@
         }
       ]
     },
-    "report-filed": {
+    "preceptor-order": {
       "lines": [
-        "\"Your report survived the red pencil. That does not make you holy, but it does make you rare.\"",
-        "\"Maev has your issue bundle. If she argues, tell her I can count her beans louder than she can sell them.\""
+        "Aquila fits the loose correction against the punctures in her original order.",
+        "\"The holes and thread match my bundle. This page was tied in before the file closed, then moved behind my seal. Leave it here.\""
       ],
       "choices": [
         {
-          "label": "Leave Voss to the filed slates",
+          "label": "Leave the altered order with Aquila",
+          "close": true
+        }
+      ]
+    },
+    "preceptor-correction": {
+      "lines": [
+        "Aquila reads the altered return-peal clause twice, then circles the empty witness line.",
+        "\"Alarm duty without a named breach witness is not a correction. It is an order written after the fact. I will find who taught my file to lie.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the doctrinal reading with Aquila",
+          "close": true
+        }
+      ]
+    },
+    "odran-chest": {
+      "lines": [
+        "Aquila listens with her pencil held off the slate.",
+        "\"A woman's linen in Augustine's travel chest is cause for a watch, not a charge. Use the confession screen after last bell. Bring me the name you see at his rope.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the watch entry open",
+          "close": true
+        }
+      ]
+    },
+    "report-filed": {
+      "lines": [
+        "\"Your report survived the red pencil. That does not make you holy, but it does make you rare.\"",
+        "\"Judith has your issue bundle. If she argues, tell her I can count her beans louder than she can sell them.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Aquila to the filed slates",
+          "close": true
+        }
+      ]
+    },
+    "route-clearance": {
+      "lines": [
+        "Aquila lifts the east-road slate and wipes a thumb across its three unanswered bell marks.",
+        "\"Give me something I can defend when the wall office asks why I opened the chain.\""
+      ],
+      "choices": [
+        {
+          "label": "Submit Form C-17",
+          "next": "report-briefing"
+        },
+        {
+          "label": "Invoke the failed-bell mandate",
+          "conditions": {
+            "flagsAbsent": ["censure-road-voss-route-cleared"],
+            "fieldRatings": {
+              "doctrine": 45
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-voss-route-cleared",
+              "censure-road-voss-route-doctrine"
+            ],
+            "log": "Aquila accepts the failed-bell mandate and seals the east-road slate."
+          },
+          "next": "route-cleared"
+        },
+        {
+          "label": "Lay out three matched road findings",
+          "conditions": {
+            "flagsAbsent": ["censure-road-voss-route-cleared"],
+            "flagsAtLeast": {
+              "count": 3,
+              "of": [
+                "long-ash-cart-sabotage-proved",
+                "long-ash-kill-site-wounds-read",
+                "long-ash-kill-site-no-opening-found",
+                "long-ash-old-bell-peal-rule-read",
+                "long-ash-route-post-peal-rule-found"
+              ]
+            },
+            "fieldRatings": {
+              "search": 45
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-voss-route-cleared",
+              "censure-road-voss-route-evidence"
+            ],
+            "log": "Aquila matches three road findings and seals the east-road slate."
+          },
+          "next": "route-cleared"
+        },
+        {
+          "label": "Submit three profession reports",
+          "conditions": {
+            "flagsAbsent": ["censure-road-voss-route-cleared"],
+            "flagsAtLeast": {
+              "count": 3,
+              "of": [
+                "censure-road-report-sera-bell",
+                "censure-road-report-hanne-medical",
+                "censure-road-report-joric-route",
+                "censure-road-report-malco-containment",
+                "censure-road-report-pell-writ",
+                "censure-road-report-runa-stock"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-voss-route-cleared",
+              "censure-road-voss-route-reports"
+            ],
+            "log": "Aquila joins three camp reports and seals the east-road slate."
+          },
+          "next": "route-cleared"
+        },
+        {
+          "label": "Use another field route",
+          "next": "route-field-options"
+        }
+      ]
+    },
+    "route-field-options": {
+      "lines": [
+        "Aquila sets the slate flat between you.",
+        "\"Give me a ruling I can act on, or give me the field account without the form.\""
+      ],
+      "choices": [
+        {
+          "label": "Require an operational ruling",
+          "conditions": {
+            "flagsAbsent": ["censure-road-voss-route-cleared"],
+            "fieldRatings": {
+              "command": 55
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-voss-route-cleared",
+              "censure-road-voss-route-command"
+            ],
+            "log": "Aquila issues the operational ruling and seals the east-road slate."
+          },
+          "next": "route-cleared"
+        },
+        {
+          "label": "Give the plain field account",
+          "next": "route-field-account"
+        },
+        {
+          "label": "Return to the clearance routes",
+          "next": "route-clearance"
+        },
+        {
+          "label": "Leave the slate",
+          "close": true
+        }
+      ]
+    },
+    "route-field-account": {
+      "lines": [
+        "You keep it to four sentences. Ash Chapel held an active cell. You broke it and rang Censure clean. Hallowfen has missed three calls. You need the east road to learn why.",
+        "Aquila reads the account once. \"Short enough to be useful; put your name below mine.\""
+      ],
+      "choices": [
+        {
+          "label": "Sign the field account",
+          "conditions": {
+            "flagsAbsent": ["censure-road-voss-route-cleared"]
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-voss-route-cleared",
+              "censure-road-voss-route-field-account"
+            ],
+            "log": "Aquila files the short field account and seals the east-road slate."
+          },
+          "next": "route-cleared"
+        },
+        {
+          "label": "Return to the clearance routes",
+          "next": "route-clearance"
+        }
+      ]
+    },
+    "route-cleared": {
+      "lines": [
+        "Aquila presses her field seal into red wax and pins the marked slate beneath a stone.",
+        "\"The east chain is yours. Bring back facts that survive rain.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the east-road mark",
           "close": true
         }
       ]
     },
     "report-briefing": {
       "lines": [
-        "Voss pulls a damp packet from beneath her boot and clips it to a field board.",
+        "Aquila pulls a damp packet from beneath her boot and clips it to a field board.",
         "\"Hallowfen route report, Form C-17. Thirty questions. One answer each. Circle answer one down the rest if you want the paper to know you surrendered.\""
       ],
       "choices": [
@@ -323,7 +664,7 @@
       ],
       "choices": [
         {
-          "label": "Tomas Vek",
+          "label": "Tobias Porta",
           "next": "report-q08"
         },
         {
@@ -367,7 +708,7 @@
           "next": "report-error"
         },
         {
-          "label": "Maev's prices, spiritually hostile",
+          "label": "Judith's prices, spiritually hostile",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -459,7 +800,7 @@
           "next": "report-q12"
         },
         {
-          "label": "Runa's soup ladle",
+          "label": "Ruth's soup ladle",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -499,7 +840,7 @@
           "next": "report-error"
         },
         {
-          "label": "Give to Maev for resale, cheap",
+          "label": "Give to Judith for resale, cheap",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -517,7 +858,7 @@
     },
     "report-q13": {
       "lines": [
-        "FORM C-17, QUESTION 13 OF 30. If the report mentions bells, how many copies does Sera require?"
+        "FORM C-17, QUESTION 13 OF 30. If the report mentions bells, how many copies does Sabina require?"
       ],
       "choices": [
         {
@@ -525,7 +866,7 @@
           "next": "report-q14"
         },
         {
-          "label": "None. Sera remembers everything and hates paper",
+          "label": "None. Sabina remembers everything and hates paper",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -653,18 +994,18 @@
       ],
       "choices": [
         {
-          "label": "Malco's shelf, sealed alone",
+          "label": "Melchior's shelf, sealed alone",
           "next": "report-q18"
         },
         {
-          "label": "Sister Hanne's wash basin",
+          "label": "Sister Joanna's wash basin",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
           "next": "report-error"
         },
         {
-          "label": "Maev's comfort goods basket",
+          "label": "Judith's comfort goods basket",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -730,7 +1071,7 @@
           "next": "report-error"
         },
         {
-          "label": "Like Caldus after rain drill",
+          "label": "Like Cyprian after rain drill",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -763,7 +1104,7 @@
           "next": "report-error"
         },
         {
-          "label": "Father Odran's ink, morally damp",
+          "label": "Father Augustine's ink, morally damp",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -781,7 +1122,7 @@
     },
     "report-q21": {
       "lines": [
-        "FORM C-17, QUESTION 21 OF 30. Which phrase best records Maev's unsanctioned usefulness?"
+        "FORM C-17, QUESTION 21 OF 30. Which phrase best records Judith's unsanctioned usefulness?"
       ],
       "choices": [
         {
@@ -928,7 +1269,7 @@
           "next": "report-error"
         },
         {
-          "label": "Maev's shelf, priced by syllable",
+          "label": "Judith's shelf, priced by syllable",
           "effects": {
             "setFlag": "censure-road-voss-report-flawed"
           },
@@ -950,7 +1291,7 @@
       ],
       "choices": [
         {
-          "label": "Medical stock, pending Hanne",
+          "label": "Medical stock, pending Joanna",
           "next": "report-q27"
         },
         {
@@ -1084,8 +1425,11 @@
         {
           "label": "Certified under road seal",
           "effects": {
-            "setFlag": "censure-road-voss-report-perfect",
-            "log": "Preceptor Voss files your Hallowfen route report without using the red pencil."
+            "setFlag": [
+              "censure-road-voss-route-cleared",
+              "censure-road-voss-report-perfect"
+            ],
+            "log": "Preceptor Aquila files your Hallowfen route report without using the red pencil."
           },
           "next": "report-complete"
         },
@@ -1115,7 +1459,7 @@
     },
     "report-error": {
       "lines": [
-        "Voss draws one red line through the answer.",
+        "Aquila draws one red line through the answer.",
         "\"Returned for correction. The paper has survived worse than your handwriting. Start again if you still want Hallowfen to pretend we are organized.\""
       ],
       "choices": [
@@ -1132,7 +1476,7 @@
     "report-circled": {
       "lines": [
         "You circle answer one down the remaining sheets. The field board becomes a neat column of surrender.",
-        "Voss looks at the packet, then at you. \"Efficient. Also useless. I can send this to Halvek if I want him to think a pen died on purpose.\""
+        "Aquila looks at the packet, then at you. \"Efficient enough to be useless. I can send this to Decian if I want him to think a pen died on purpose.\""
       ],
       "choices": [
         {
@@ -1147,12 +1491,12 @@
     },
     "report-complete": {
       "lines": [
-        "Voss flips through all thirty answers. Her pencil hovers, hunting for blood, then stops.",
-        "\"Clean enough. Maev has a small issue bundle for you. I wrote impressed on the slate, then crossed it out before it became evidence.\""
+        "Aquila flips through all thirty answers. Her pencil hovers, hunting for blood, then stops.",
+        "\"Clean enough that Judith has a small issue bundle for you. I wrote impressed on the slate, then crossed it out before it became evidence.\""
       ],
       "choices": [
         {
-          "label": "Leave Voss with the filed report",
+          "label": "Leave Aquila with the filed report",
           "close": true
         }
       ]

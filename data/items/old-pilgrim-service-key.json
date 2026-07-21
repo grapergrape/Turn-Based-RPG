@@ -1,0 +1,9 @@
+{
+  "id": "old-pilgrim-service-key",
+  "name": "Novitiate Service Key",
+  "type": "key",
+  "rarity": "common",
+  "weight": 0.1,
+  "groundModel": "key",
+  "description": "A short iron key stamped INNER CLOSURE. White grit still packs the teeth."
+}

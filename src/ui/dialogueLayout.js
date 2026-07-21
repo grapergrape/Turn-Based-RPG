@@ -87,6 +87,21 @@ export function buildDialogueLayout(dialogue = {}) {
   };
 }
 
+export function dialogueOptionIndexAt(dialogue, point) {
+  if (!point) return null;
+  const layout = buildDialogueLayout(dialogue);
+  const optionCount = layout.options.length;
+  const rows = {
+    x: layout.responseBox.x + 4,
+    y: layout.responseBox.y + 4,
+    w: layout.responseBox.w - 8,
+    h: optionCount * DIALOGUE_OPTION_LINE_HEIGHT
+  };
+  if (!pointInBox(point, rows)) return null;
+  const index = Math.floor((point.y - rows.y) / DIALOGUE_OPTION_LINE_HEIGHT);
+  return index >= 0 && index < optionCount ? index : null;
+}
+
 function dialogueChoiceTone(choice) {
   if (['danger', 'commit', 'quiet', 'normal'].includes(choice?.tone)) return choice.tone;
   const effects = choice?.effects;
@@ -140,4 +155,14 @@ export function clipUiText(str, max) {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function pointInBox(point, box) {
+  return Boolean(
+    point && box &&
+    point.x >= box.x &&
+    point.x < box.x + box.w &&
+    point.y >= box.y &&
+    point.y < box.y + box.h
+  );
 }

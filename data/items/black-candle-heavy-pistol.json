@@ -1,0 +1,54 @@
+{
+  "id": "black-candle-heavy-pistol",
+  "name": "Black Candle Pistol",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "heavy pistol",
+  "rarity": "common",
+  "weight": 1.8,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Black Candle Office",
+    "factions": [
+      "black-candle-office"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "heavy pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 7,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "heavy-sidearm-cartridge",
+      "capacity": 10,
+      "defaultLoaded": 10,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A heavy automatic with a tall slide and twin recoil springs. Black wax in the grip screw marks an inspected weapon."
+}

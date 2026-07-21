@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-selka",
-  "title": "Selka Ardent",
+  "title": "Susanna Afer",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,7 +8,7 @@
       },
       "else": "cult-dead",
       "lines": [
-        "Selka stands in the chapel with her hands closed around a broken broom handle.",
+        "Susanna stands in the chapel with her hands closed around a broken broom handle.",
         "\"We are back because hiding teaches children the wrong lesson. We will clean what can be cleaned. The rest we remember.\""
       ],
       "choices": [
@@ -21,11 +21,19 @@
           "next": "children"
         },
         {
-          "label": "Ask what happens next",
-          "next": "next"
+          "label": "Ask what still needs doing",
+          "effects": {
+            "setFlag": "tomas-bell-repair-known",
+            "questUpdate": {
+              "quest": "investigate-ash-chapel-cult",
+              "stage": "bell-hand-known",
+              "log": "Quest updated: Tobias can repair the chapel bell if you bring him to the frame."
+            }
+          },
+          "next": "bell-repair-guide"
         },
         {
-          "label": "Tell her Corin has his ball",
+          "label": "Tell her Micah has his ball",
           "conditions": {
             "questStages": {
               "retrieve-blue-ball": "complete"
@@ -45,24 +53,32 @@
       },
       "else": "hideout",
       "lines": [
-        "Selka studies your coat, then the dark stair behind you.",
+        "Susanna studies your coat, then the dark stair behind you.",
         "\"If the eight above are dead, say it plain. I will not bring the children up for hope.\""
       ],
       "choices": [
         {
           "label": "Tell her the cultists are dead",
           "effects": {
-            "setFlag": "survivors-returning-chapel",
-            "log": "Selka gathers the survivors. They will climb after you and reclaim the chapel."
+            "setFlag": [
+              "survivors-returning-chapel",
+              "tomas-bell-repair-known"
+            ],
+            "log": "Susanna gathers the survivors. They will climb after you and reclaim the chapel.",
+            "questUpdate": {
+              "quest": "investigate-ash-chapel-cult",
+              "stage": "bell-hand-known",
+              "log": "Quest updated: Tobias can repair the chapel bell if you bring him to the frame."
+            }
           },
-          "close": true
+          "next": "bell-repair-guide"
         },
         {
           "label": "Ask what happens if the chapel is cleared",
           "next": "if-safe"
         },
         {
-          "label": "Tell her Corin has his ball",
+          "label": "Tell her Micah has his ball",
           "conditions": {
             "questStages": {
               "retrieve-blue-ball": "complete"
@@ -78,7 +94,7 @@
     },
     "hideout": {
       "lines": [
-        "Selka keeps herself between you and the children. Her voice stays low so the stone does not carry it.",
+        "Susanna keeps herself between you and the children. Her voice stays low so the stone does not carry it.",
         "\"We were the Ash Chapel settlement before the knives came. Remnant found this quarantine house abandoned and gave us a writ: live here, keep beds ready, feed the soldiers on the Hallowfen wall when they passed.\"",
         "\"Then the soldiers stopped passing. Before the cult came, not one patrol crossed the chapel road. No bell, no runner, no explanation. We came down here because quiet like that has teeth.\""
       ],
@@ -96,7 +112,7 @@
           "next": "children"
         },
         {
-          "label": "Tell her Corin has his ball",
+          "label": "Tell her Micah has his ball",
           "conditions": {
             "questStages": {
               "retrieve-blue-ball": "complete"
@@ -125,7 +141,7 @@
           "next": "silent-road"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -145,7 +161,7 @@
           "next": "next"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -169,7 +185,7 @@
           "next": "cannot-know"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -205,7 +221,7 @@
           "next": "children"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -217,7 +233,7 @@
     "children": {
       "lines": [
         "\"They need a floor that holds and food measured before anyone starts shouting over it.\"",
-        "\"If we lie, it had better buy them one more calm morning. Corin needs his ball. Eda needs chores heavy enough to catch her foot before trouble does.\""
+        "\"If we lie, it had better buy them one more calm morning. Micah needs his ball. Ruth needs chores heavy enough to catch her foot before trouble does.\""
       ],
       "choices": [
         {
@@ -229,7 +245,7 @@
           "next": "next"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -260,7 +276,7 @@
       ],
       "choices": [
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -280,12 +296,36 @@
           "next": "next"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
           "label": "Leave",
           "close": true
+        }
+      ]
+    },
+    "bell-repair-guide": {
+      "conditions": {
+        "flagsAbsent": [
+          "tomas-heading-to-bell",
+          "tomas-at-bell",
+          "ash-chapel-bell-repaired"
+        ]
+      },
+      "else": "next",
+      "lines": [
+        "\"The bell comes before anyone calls this place safe. Tobias kept the gate pulleys working when the wardens still paid us, and he knows the old frame.\"",
+        "\"Find him with the others, then take him up the wall stair before you touch the rope. I will not trade eight dead cultists for Tobias's fingers.\""
+      ],
+      "choices": [
+        {
+          "label": "Go find Tobias",
+          "close": true
+        },
+        {
+          "label": "Ask about the children",
+          "next": "children"
         }
       ]
     },
@@ -298,10 +338,18 @@
         {
           "label": "Tell her the cultists are dead",
           "effects": {
-            "setFlag": "survivors-returning-chapel",
-            "log": "Selka gathers the survivors. They will climb after you and reclaim the chapel."
+            "setFlag": [
+              "survivors-returning-chapel",
+              "tomas-bell-repair-known"
+            ],
+            "log": "Susanna gathers the survivors. They will climb after you and reclaim the chapel.",
+            "questUpdate": {
+              "quest": "investigate-ash-chapel-cult",
+              "stage": "bell-hand-known",
+              "log": "Quest updated: Tobias can repair the chapel bell if you bring him to the frame."
+            }
           },
-          "close": true
+          "next": "bell-repair-guide"
         },
         {
           "label": "Not yet",
@@ -311,7 +359,7 @@
     },
     "next": {
       "lines": [
-        "\"Water first. Then doors. Then names for the dead, if we can bear the counting.\"",
+        "\"We secure the water and bar every door before the children come up. The dead can have their names when the living are ready to hear them all.\"",
         "\"After that I decide whether to thank the Remnant for sending you or curse them for needing to.\""
       ],
       "choices": [
@@ -320,7 +368,7 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         }
       ]

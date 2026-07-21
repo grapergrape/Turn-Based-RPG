@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-istra",
-  "title": "Istra Havel",
+  "title": "Judith Porta",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,7 +8,7 @@
       },
       "else": "hideout",
       "lines": [
-        "Istra touches the scratched bedpost with two fingers, then wipes them on her skirt.",
+        "Judith touches the scratched bedpost with two fingers, then wipes them on her skirt.",
         "\"They carved into bedposts in the children's row. Not theft. Instruction.\""
       ],
       "choices": [
@@ -32,7 +32,7 @@
     },
     "hideout": {
       "lines": [
-        "Istra keeps glancing at the lower hall.",
+        "Judith keeps glancing at the lower hall.",
         "\"I mended fences and patched roof tin. The chapel never acted kind, but it knew our hands.\"",
         "\"Down here the dead have better walls than the living.\""
       ],
@@ -66,7 +66,7 @@
           "next": "repairs"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -122,7 +122,7 @@
           "next": "leave"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -133,7 +133,7 @@
     },
     "leave": {
       "lines": [
-        "\"Every day. Then Runa swears at a sack of grain, and Nessa insults the cistern, and the children make a court case out of a ball.\"",
+        "\"Every day. Then Ruth swears at a sack of grain, and Naomi insults the cistern, and the children make a court case out of a ball.\"",
         "\"A poor place. Still ours enough to answer when we complain about it by name.\""
       ],
       "choices": [
@@ -158,7 +158,7 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         }
       ]

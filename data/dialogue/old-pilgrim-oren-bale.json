@@ -1,0 +1,131 @@
+{
+  "id": "old-pilgrim-oren-bale",
+  "title": "Tobias Faber",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "old-pilgrim-oren-treated"
+        ]
+      },
+      "else": "treated",
+      "lines": [
+        "Tobias keeps his bandaged arm pinned against his coat. Mud has dried inside both ears.",
+        "“There were people under the grain. I thought they were lying low from the wind.”"
+      ],
+      "choices": [
+        {
+          "label": "Read the cuts through his coat",
+          "conditions": {
+            "fieldRatings": {
+              "hostSigns": 32
+            }
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-field-opening-read",
+            "xp": 5
+          },
+          "next": "signs"
+        },
+        {
+          "label": "Dress the torn shoulder",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 27
+            },
+            "items": {
+              "field-dressing": 1
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-oren-treated",
+              "old-pilgrim-cart-release-known"
+            ],
+            "inventory": {
+              "remove": [
+                {
+                  "item": "field-dressing",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "xp": 5,
+            "log": "Tobias’s shoulder is cleaned and bound. He can move the hand without reopening the cut."
+          },
+          "next": "cart-pin"
+        },
+        {
+          "label": "Ask where the team fell",
+          "next": "route"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "signs": {
+      "lines": [
+        "The cuts rake outward from a fused hand. No tooth closed on him, and no black-gold thread remains in the wound.",
+        "Tobias watches your face. “That means I keep the arm?”"
+      ],
+      "choices": [
+        {
+          "label": "For now",
+          "next": "route"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "route": {
+      "lines": [
+        "“East of the procession stones. Follow the cart rut until it stops being a rut.”",
+        "His good hand closes. “Leah and Abner were beside the mule.”"
+      ],
+      "choices": [
+        {
+          "label": "Search the east field",
+          "close": true,
+          "tone": "commit"
+        }
+      ]
+    },
+    "cart-pin": {
+      "lines": [
+        "Tobias tests the binding, then draws a cart frame in the mud with one finger.",
+        "“Mine has a red load pin under the left rail. Pull it downhill and the bed drops, forcing whatever is beside it to climb through spokes.”"
+      ],
+      "choices": [
+        {
+          "label": "Use the cart if it still holds",
+          "close": true,
+          "tone": "commit"
+        }
+      ]
+    },
+    "treated": {
+      "lines": [
+        "Tobias flexes the dressed hand once and stops before the shoulder pulls.",
+        "“Red pin under the left rail. Pull downhill. I built the cart to drop its load before it rolled a team into a ditch.”"
+      ],
+      "choices": [
+        {
+          "label": "Ask where the team fell",
+          "next": "route"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

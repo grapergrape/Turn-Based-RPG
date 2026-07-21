@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-hall-bela-orra",
+  "title": "Martha Pistor",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Martha banks the coals beneath a cracked iron plate. \"If you want the oven’s age, ask the burn marks. They interrupt less than I do.\"",
+        "One black crescent reaches behind the council wall."
+      ],
+      "choices": [
+        {
+          "label": "Ask about the oldest burn mark",
+          "next": "old-mark"
+        },
+        {
+          "label": "Let Martha mind the coals",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "old-mark": {
+      "lines": [
+        "\"My mother made that when the admission booth still opened at dawn. The council ate from two doors laid over grain bins, and she complained that everyone reached for crust before voting.\"",
+        "Martha smiles at the plate, not at you. \"That is close enough to a founding record for this room.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the old mark in the wall",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "id": "heavy-sidearm-cartridge-ammo",
+  "name": "Heavy Sidearm Cartridges",
+  "type": "ammo",
+  "rarity": "uncommon",
+  "weight": 0.045,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "heavy-sidearm-cartridge"
+  },
+  "description": "Broad pistol rounds meant for old wheelguns and gate pistols. The recoil is part of their reputation and most of their stopping power."
+}

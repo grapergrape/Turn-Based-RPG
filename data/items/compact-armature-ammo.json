@@ -1,0 +1,12 @@
+{
+  "id": "compact-armature-ammo",
+  "name": "Compact Ferrous Armatures",
+  "type": "ammo",
+  "rarity": "uncommon",
+  "weight": 0.038,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "compact-armature"
+  },
+  "description": "Dense iron darts sleeved in ceramic. Accelerator sidearms strip the sleeve away as the armature leaves the rails."
+}

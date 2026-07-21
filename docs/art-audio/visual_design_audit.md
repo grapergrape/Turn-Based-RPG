@@ -1048,17 +1048,17 @@ harness pages under `.ai/map-review/` regenerate all of them on demand.
 - **chapel human scale 8.5 to 9**: raised the vigil wall from 34px to 48px and
   the mortuary wall from 40px to 52px. Their pointed door recesses now begin
   close to the eave, providing roughly 46px and 50px of centreline clearance
-  for Mara's approximately 50px visible body. The two-cell footprints, aligned
+  for the player actor's approximately 50px visible body. The two-cell footprints, aligned
   cemetery-wall openings, buttresses, lancets, and compact chapel silhouettes
   remain unchanged.
-- **Evidence**: detached connected-footprint comparisons with the real Mara
+- **Evidence**: detached connected-footprint comparisons with the real player
   atlas frame, `2026-07-12-graveyard-vigil-chapel-mara-scale.png` and
   `2026-07-12-graveyard-mortuary-chapel-mara-scale.png`; fresh real-level crop
   `2026-07-12-graveyard-mortuary-chapel-human-scale-scene.png`.
 
-## Sixty-fourth pass: Sava Rell carries his shape through motion (2026-07-12)
+## Sixty-fourth pass: Sapphira Rufa carries his shape through motion (2026-07-12)
 
-- **Sava Rell boss sprite 8 to 9**: the long calcified human face, broken
+- **Sapphira Rufa boss sprite 8 to 9**: the long calcified human face, broken
   aureole, one-sided rib opening, fused prayer hand, dragging shroud, and
   overlong rake arm now persist across all eight facings. Rear views no longer
   fall back to a generic robed Host.
@@ -1068,7 +1068,7 @@ harness pages under `.ai/map-review/` regenerate all of them on demand.
   icon.
 - **Death and corpse 7 to 9**: the ten-frame collapse keeps both feet planted
   before one knee buckles. A calcified neck and torn collar keep the first fall
-  key continuous. The final full-width body retains Sava's ribs, prayer hand,
+  key continuous. The final full-width body retains Sapphira's ribs, prayer hand,
   rake arm, shroud mass, and broken aureole with no living glow.
 - **Evidence**: all eight
   `2026-07-12-sava-pass-07-idle-*.png` and
@@ -1110,7 +1110,7 @@ were resolved and independently re-reviewed before the 9 score was recorded.
   exchanges compact around their content and stay anchored above the HUD, while
   long five-choice conversations keep the full scrolling geometry.
 - **Combat information 8 to 9**: HP, AP, attack name, chance or failure reason,
-  and full target line all remain inside the status frame, including when Mara
+  and full target line all remain inside the status frame, including when the player
   has a status effect. Stale area-title banners are suppressed during combat so
   they do not compete with a boss reveal.
 - **Evidence**: detached
@@ -1128,7 +1128,7 @@ family scores at the top of this audit.
 
 | Slice | Score | Basis |
 |---|---:|---|
-| Sava Rell boss sprite | 9 | All facings and authored states, detached and live |
+| Sapphira Rufa boss sprite | 9 | All facings and authored states, detached and live |
 | Those Who Heard the Bell chapel rooms and secret props | 9 | Three rooms, closed and opened states, detached and live |
 | Those Who Heard the Bell dialogue and combat UI | 9 | High-load decisions, status-plus-attack HUD, detached and live |
 
@@ -1144,7 +1144,7 @@ family scores at the top of this audit.
   without filling the new flanking space with decorative clutter. The shortcut
   opening sits far enough inside the east side to remain visible at gameplay
   scale.
-- **State integrity**: Sava's niche, locks, encounter, flags, dialogue, loot,
+- **State integrity**: Sapphira's niche, locks, encounter, flags, dialogue, loot,
   judgment outcomes, and victory effect are unchanged. Both Mortuary routes
   and the graveyard shortcut now arrive on valid cells in the larger room.
 - **Evidence**: detached full-room and player-scale captures
@@ -1152,3 +1152,1013 @@ family scores at the top of this audit.
   `2026-07-13-listening-vault-expanded-final-human-scale-detached.png`; live
   captures `2026-07-13-listening-vault-expanded-final-closed-live.png` and
   `2026-07-13-listening-vault-expanded-final-open-combat-live.png`.
+
+## Historical Ash Road South surface shell review (2026-07-14, superseded)
+
+Evidence re-audited on 2026-07-19 shows that records 01 through 90 were not 90
+separate design iterations. They contain 67 detached static views and 23
+synthetic geometry stress frames, no real-runtime surface capture, no source or
+state manifest, and only a small number of implementation states. The images
+remain useful history for roof-registration work. They are not current visual
+acceptance evidence and do not count toward the later 200-check identity audit.
+In particular, the former approval of tents, campfires, bedrolls, generic grave
+earth, forest borders, and scattered camp dressing is revoked.
+
+This audit covers only the 130 by 80 Ash Road South surface. It deliberately
+excludes the planned helper maps, residents, faction scenes, combat states, and
+quests. The spatial reference is
+`docs/maps/act-1/ash-road-south/main/planning-map.png`.
+Every numbered capture uses the real level loader, sprite atlas, catalog, floor
+renderer, depth sort, and mood pass through `.ai/map-review/capture-scene.html`.
+
+The valid evidence set is `.ai/visual-audit/ash-road-south/pass-01.png` through
+`pass-50.png`. Detached final evidence is in
+`catalog-buildings-final.png` and `catalog-landmarks-final.png` in the same
+folder. The player actor appears in passes 42, 44, and 45 for human-scale checks.
+
+| Pass | Focus | Finding or response |
+|---:|---|---|
+| 1 | Whole-map baseline | The district order matched the planning image, but Rope Rows, the clinic, and the arrival canvas were over-massed. |
+| 2 | South approach | Permanent canvas tile blocks made the arrival fringe read as warehouses. |
+| 3 | Water Court | The court route was clear, but the condenser lacked landmark weight. |
+| 4 | Morrow yard | Wagons, grain cages, freight roofs, and the medicine cart established the west work district. |
+| 5 | Rope Rows and charity edge | Housing read as a few large slabs instead of a repaired settlement. |
+| 6 | Clinic and grave strip | The clinic dominated the east side and the original graves were too quiet at district scale. |
+| 7 | Relief annex | The L-shaped industrial shell and damaged apron held their intended north-west silhouette. |
+| 8 | Old measure gates | Screening lanes, admission booth, and transport platform remained distinct and traversable. |
+| 9 | Water Court close view | Settling tanks and taps separated correctly, but the central machine still read as ordinary equipment. |
+| 10 | First refined whole map | Smaller clinic footprints, 17 house clusters, and free-standing arrival tents restored the reference hierarchy. |
+| 11 | Refined Rope Rows | Short courts and cross-lanes broke up the housing mass without losing density. |
+| 12 | Refined arrival fringe | Tents, fires, bedrolls, and picket clutter read as newer shelter on mud. |
+| 13 | Refined clinic | Pale Compact buildings became a subordinate precinct instead of the map's largest landmark. |
+| 14 | Water Court comparison | The revised district was open enough for an assembly, but the condenser remained undersized. |
+| 15 | Condenser revision | A wider base, taller governor housing, and tighter tanks and taps gave the court a usable centre. |
+| 16 | Whole-map composition | North-south spine, west work loop, and east resident loop were readable in one frame. |
+| 17 | North verge | The locked road throat was clear, but the original chain silhouette was too narrow for the road. |
+| 18 | Grave and clinic relationship | The cemetery occupied the correct ground without crowding Compact circulation. |
+| 19 | Annex apron | Loading space, hoists, rubble, and forest boundary preserved an abandoned repair-yard read. |
+| 20 | Screening yard | Frames provided lane rhythm and cover while the admission booth remained the local anchor. |
+| 21 | Morrow freight yard | Freight objects formed work clusters with continuous drive lanes. |
+| 22 | South chain approach | The chain object did not yet visually span the campaign road. |
+| 23 | Charity edge | One continuous worn-canvas field read as a large mat rather than a treatment edge. |
+| 24 | Collapsed drain | The culvert silhouette, rubble fan, and edge placement were immediately legible. |
+| 25 | Full central spine | Widened north and south chains now crossed their road throats without obscuring the route. |
+| 26 | West loop | The arrival fringe, Morrow yard, annex, and gates formed one continuous exploration circuit. |
+| 27 | East loop | Charity pads, Rope Rows, clinic, graves, and gates returned cleanly to the Water Court. |
+| 28 | South composition | Arrival shelter stayed west of the road while the condenser remained visible on the inward route. |
+| 29 | Gate-to-court sightline | Road shoulders, court machinery, and side-loop entries separated cleanly. |
+| 30 | Water Court at one-to-one scale | Condenser panels, tanks, tap rails, sump, and ration board held hard-pixel detail. |
+| 31 | Northern Rope Rows | House spacing, laundry, pumps, and clinic contrast remained readable through depth sorting. |
+| 32 | Southern Rope Rows | Measure Hall retained its civic red roof without swallowing the smaller homes. |
+| 33 | Grave-strip district view | The cemetery still read too empty because each mound occupied too little visual area. |
+| 34 | Final west loop composition | Work buildings and open freight lanes held a clear silhouette at map scale. |
+| 35 | Old gates close view | Booth, frames, benches, and return shelf occupied distinct depth layers. |
+| 36 | Medicine-cart yard | Freight wagons and grain cages read as equipment rather than generic crate clutter. |
+| 37 | Annex and freight relation | Both industrial footprints remained separate and the loop between them stayed open. |
+| 38 | Arrival fringe close view | Tent scale, campfire spacing, and mud dressing supported a temporary edge without replacing the town. |
+| 39 | Charity and drain relation | Two treatment pads, six cots, four tents, and the culvert formed separate readable clusters. |
+| 40 | Second whole-map review | All ten planned surface districts were identifiable by material and silhouette. |
+| 41 | Enlarged grave plots | Longer mounds, brighter ridges, and covered markers made the burial rows visible at district scale. |
+| 42 | South chain at player scale | Wide posts, sagging chain, board, player actor, and road throat shared a coherent scale. |
+| 43 | North chain at player scale | The locked boundary read clearly against forest and road without implying an open exit. |
+| 44 | Water Court with player | The condenser dominated a person without becoming building-sized; court props retained useful gaps. |
+| 45 | Rope Rows with player | Homes read as small repaired buildings around human-width lanes, not chibi huts or giant halls. |
+| 46 | Final west coverage | Relief and freight silhouettes, work-loop continuity, and arrival contrast passed without further change. |
+| 47 | Final east coverage | Graves, clinic, homes, Hall, charity pads, and drain kept the reference's north-to-south order. |
+| 48 | Final south coverage | The outer camps, return chain, Water Court, and both loop entries remained legible together. |
+| 49 | Final north and centre coverage | Annex, gates, clinic, grave strip, court, and Rope Rows maintained distinct values and roof colors. |
+| 50 | Final whole-map acceptance | The rendered map preserved the planning image's district placement, central road, paired loops, and landmark hierarchy. |
+
+### Final scoped scores
+
+| Category | Score | Basis |
+|---|---:|---|
+| Planning-image fidelity | 8.5 | All ten surface districts, central spine, paired loops, and edge landmarks preserve the reference placement |
+| District silhouette | 8.5 | Relief rust, Compact canvas, rowhouse timber, civic red, grave earth, and arrival mud separate at whole-map scale |
+| Landmark readability | 8.5 | Condenser, screening frames, freight yard, chains, graves, clinic, Hall, and culvert survive district crops |
+| Human scale | 8 | Player comparisons at the chains, Water Court, and Rope Rows retain grounded adult proportions |
+| Pixel craft and palette | 8.5 | Hard pixels, project palette ramps, upper-left highlights, contact shadows, and no smooth effects |
+| Traversal readability | 9 | Central spine and both loops are visually continuous and backed by route assertions |
+| Overall surface shell | 8.5 | Strong authored settlement shell with intentional space reserved for later residents and story states |
+
+No scoped category is below 8. The main limitation is intentional: this is a
+surface shell, so population, faction occupation, dialogue staging, combat
+cover states, and helper-map doors will be judged when those slices are built.
+
+## Historical Ash Road South connected-surface review: records 51 to 70 (2026-07-15)
+
+This continuation isolates roof, wall, floor-transition, and depth-sort
+registration on the existing Ash Road South surface. Passes 51 to 63 use the
+detached catalog harness at enlarged hard-pixel scale. Passes 64 to 70 use the
+real level loader, catalog, floor renderer, actor atlas, depth sort, and mood
+pass. The evidence is `.ai/visual-audit/ash-road-south/pass-51.png` through
+`pass-70.png`.
+
+| Pass | Focus | Finding or response |
+|---:|---|---|
+| 51 | Six building styles, 4 by 3 footprints | Wall faces shared the 64 by 32 grid, but every 72 by 40 roof cell overlapped its neighbors and read as a stack of separate slabs. |
+| 52 | Eight-cell x-axis runs | Roof course endpoints missed the next cell by four pixels in both screen axes. Bright eave ribs exposed the mismatch. |
+| 53 | Eight-cell y-axis runs | The same overlap produced repeated cross-ribs and a dark internal channel on narrow rowhouse and freight footprints. |
+| 54 | Eight by two annex and Hall | Repeated internal rims made continuous industrial roofs read as tiled platforms. |
+| 55 | Two by eight clinic and booth | Wall courses stayed aligned, confirming that the fault was isolated to roof geometry, shade, and edge ownership. |
+| 56 | First corrected 4 by 3 comparison | Exact 64 by 32 roof diamonds removed overlap. A five-pixel fascia restored the eave while remaining registered to the wall cap. Roof-local patches replaced screen-horizontal rectangles. |
+| 57 | Corrected x-axis runs | Surface courses joined, but an internal rear edge still appeared on each cell because the x-minus and y-minus edge conditions were crossed. |
+| 58 | Corrected y-axis runs | The reciprocal repeated edge confirmed the axis-mapping fault. |
+| 59 | Corrected eight by two footprints | Large roofs had continuous fill and texture, while their remaining bright ribs isolated edge ownership as the final defect. |
+| 60 | Corrected two by eight footprints | Fascia, wall tops, patches, and flecks stayed on their planes; no floating roof noise remained. |
+| 61 | Final x-axis runs | Swapping rear-edge ownership removed every internal rim. Three roof courses continue from end to end without a pixel offset. |
+| 62 | Final y-axis runs | The second grid axis also forms one continuous roof with only true exterior perimeter lines. |
+| 63 | Final six-style catalog | Rowhouse, annex, clinic, freight, Hall, and booth materials all preserve the same corrected geometry without losing their palette identity. |
+| 64 | Relief annex live L-shape | Courses and fascia follow both concave corners without cracks, overlaps, floating pixels, or depth-sort leaks. |
+| 65 | Morrow yard live crop | Both freight footprints align with their walls and remain distinct from wagons, cages, roads, and the annex behind them. |
+| 66 | Compact clinic live crop | Pale roof courses remain continuous across the damaged L footprint and the detached treatment building. Floor boundaries meet wall bases cleanly. |
+| 67 | Northern Rope Rows live crop | Seventeen small-house clusters keep separate silhouettes while every individual roof reads as one repaired plane. |
+| 68 | Southern Rope Rows and Hall | The red civic roof and surrounding dark rowhouses retain clean wall joins at district scale. |
+| 69 | Old gates and central spine | Admission-booth roof registration survives the open screening-yard depth stack; road and gravel transitions remain unobstructed. |
+| 70 | Whole-map acceptance | Corrected roofs preserve the established district hierarchy, paired loops, central road, and landmark silhouettes. No map-scale regression was found. |
+
+### Alignment result
+
+| Category | Score | Basis |
+|---|---:|---|
+| Roof-to-wall registration | 9.5 | Roof and wall caps now share exact tile endpoints, with a separate fascia supplying thickness |
+| Connected edge ownership | 9.5 | All four grid directions are asserted in code and confirmed on straight, rectangular, and concave footprints |
+| Surface texture alignment | 9 | Courses join across cells; patches and flecks use roof-local coordinates and remain inside the plane |
+| Live depth sorting | 9 | Annex corners, freight blocks, clinic, rowhouses, Hall, and booth show no internal edge leakage |
+| Whole-map preservation | 9 | District massing, traversal lanes, palette separation, and landmark hierarchy remain intact |
+
+The fixed geometry is covered by `tests/southMeasureBuildingArt.test.mjs`, which
+asserts shared roof endpoints, correct x-minus and y-minus edge ownership, and
+the absence of perimeter edges on an interior cell.
+
+## Historical Ash Road South alignment review: records 71 to 90 (2026-07-15)
+
+This continuation checks the corrected building system at larger scale and
+then follows it through every authored building district. Passes 71 to 80 use
+the detached catalog with long rectangular stress footprints. Passes 81 to 90
+use the real level loader, tile renderer, sprite catalog, actor atlas, depth
+sort, and mood pass. The evidence is
+`.ai/visual-audit/ash-road-south/pass-71.png` through `pass-90.png`.
+
+| Pass | Focus | Finding or response |
+|---:|---|---|
+| 71 | Rowhouse, 8 by 3 | Roof boards, fascia, front-wall trim, and side-wall braces remain on their planes. No horizontal roof offset appears. |
+| 72 | Relief annex, 8 by 3 | Industrial wall courses meet at cell boundaries and the roof remains one continuous surface. |
+| 73 | Compact clinic, 8 by 3 | Pale roof boards and wall bands retain exact registration at the strongest value contrast in the set. |
+| 74 | Morrow freight house, 8 by 3 | Roof courses align with the freight wall cap while braces and shutters stay inside each face. |
+| 75 | Measure Hall, 8 by 3 | The red roof exposes no internal edge, shifted course, or fascia step across the long run. |
+| 76 | Admission booth, 8 by 3 | The shallow booth wall and dark roof preserve the same five-pixel fascia without a side shift. |
+| 77 | Rowhouse, 12 by 1 x-axis | All three roof courses continue through eleven joins at the same pixel endpoints. |
+| 78 | Rowhouse, 1 by 12 y-axis | Parallel roof boards remain distinct while the shared footprint edge draws no internal perimeter. |
+| 79 | Clinic, 12 by 1 x-axis | Bright roof edges confirm continuous course alignment across the full stress run. |
+| 80 | Clinic, 1 by 12 y-axis | Wall panels, roof boards, and the outer rim stay registered over the reciprocal grid axis. |
+| 81 | Relief annex live footprint | The complete L-shaped annex keeps clean roof and wall joins at district scale. |
+| 82 | Relief annex concave corners | Enlarged inspection finds no crack, overlap, floating patch, or repeated inner rim at either cutout. |
+| 83 | Morrow freight yard | Both authored freight footprints remain aligned among wagons, cages, hoists, and crossing roads. |
+| 84 | Compact precinct | The damaged clinic L-shape and detached treatment building retain clean edges against gravel and canvas. |
+| 85 | Northern Rope Rows | The small-house set keeps separate silhouettes without leaking roof edges through nearby props. |
+| 86 | Southern Rope Rows and Hall | The Hall and surrounding rowhouses preserve roof alignment through the densest live depth stack. |
+| 87 | Burial tool shed | The first review exposed overlapping farm-roof cells on the only remaining farm-style building. The shed now uses a South Measure burial style with exact 64 by 32 roof cells; the recapture is clean. |
+| 88 | South chain and road edge | Road, shoulder, fence, gate posts, and chain meet the south map boundary without a texture gap or horizontal jump. |
+| 89 | North chain and road edge | The reciprocal boundary preserves the same road and shoulder registration against the forest edge. |
+| 90 | Final whole map | The burial-shed correction does not change district massing, paired loops, landmark hierarchy, or the accepted surface silhouette. |
+
+### Result after pass 90
+
+The six original South Measure styles and the new burial-shed style now share
+one exact-grid building geometry. The audit found one remaining overlapping
+roof system on this map and removed it without changing the farm buildings on
+Long Ash Road. `tests/southMeasureBuildingArt.test.mjs` now checks every South
+Measure wall height for a five-pixel fascia, zero horizontal roof-to-wall
+offset, shared endpoints on both grid axes, and continuous roof courses along
+their run direction. `tests/ashRoadSouthLevel.test.mjs` prevents the burial shed
+from reverting to the older farm-roof kind.
+
+The entrance follow-up used real canvas clicks. Clicking the south chain walks
+the player to its use marker and opens the Censure Road return dialogue. Clicking the
+north chain walks the player to the reciprocal marker and opens its sealed-road
+inspection. The collapsed drain now opens the Relief Drain through its visible
+culvert mouth and lands the player on a clear inward-facing tile. The surface level
+test covers every cell in the boundary-gate click footprints. All nine helper
+maps and their remaining surface entrances are now implemented and reviewed
+below.
+
+## South Measure helper maps: 100-pass runtime audit (2026-07-15)
+
+This audit covers the nine Ash Road South helper maps, their shared interior
+art, all reciprocal travel endpoints, the prior-map Censure approach, and live
+arrival continuity. The complete numbered ledger is
+`docs/maps/act-1/ash-road-south/submaps/runtime-review.md`. Evidence is stored
+in `.ai/visual-audit/ash-road-south-submaps/`, including one hundred numbered
+passes, five contact sheets, nine full-map captures, fifteen gate-frontage
+captures, and preserved before-state findings.
+
+Passes 1 to 12 isolate shared walls, doors, hatches, pipes, railings, furniture,
+machinery, beds, partitions, and the Intake Clerk wicket. Passes 13 to 96 cover
+the nine complete helper maps. Passes 97 to 100 use the live game to check the
+Censure Road progression gate, Ash Road South arrival, civil-stair arrival, and
+culvert arrival.
+
+Two visual faults were found and corrected during the passes:
+
+- The Relief Drain used a one-axis texture where two channel branches crossed.
+  A dedicated `relief-channel-junction` floor now draws both fitted axes and a
+  central sump.
+- The clinic entrance initially stood as a loose screening frame in the queue
+  yard. The surface now has a Compact intake wing, with the clinic door set
+  directly into its south-west frontage.
+
+A final semantic connector audit caught four facing-only errors that the static
+gate captures could not reveal. Returns through the collapsed culvert, repair
+trench, annex service hatch, and annex floor hatch now face away from the gate
+cell and into the destination route. This geometry rule is enforced in both the
+generator and the helper-map contract test.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Runtime planning-image fidelity | 8.5 | All nine plans retain their locked room hierarchy, plot anchors, and material identity |
+| Wall, door, and floor registration | 9.5 | Both wall planes and all engineered floor axes remain aligned in detached and full-map captures |
+| Shared game identity | 9 | Masonry, canvas, freight timber, civic timber, domestic timber, and cellar spaces share palette, scale, light, and shadow rules |
+| Gate orientation and frontage | 9.5 | Fifteen gate contexts and thirty travel endpoints preserve approach, arrival, and facing continuity |
+| Traversal readability | 10 | Every inbound arrival reaches every interaction by cardinal movement, with connector clearance enforced in tests |
+| Plot alignment | 9 | Records, pump, Clerk, clinic, Hall, freight, hidden household, and charity spaces occupy their authored locations |
+| Overall helper-map package | 9 | The full set is coherent, traversable, reciprocal, and ready for later actor and quest-state population |
+
+No scoped category is below 8. The geometry review was completed before the
+population pass. The nine helper maps now also carry their authored NPCs,
+encounters, readable records, one loose pickup each, and one reachable
+loot-bearing container each. The geometry and travel contracts remain covered
+independently so later content work cannot hide a broken route or connector.
+
+## All-map RPG detail pass (2026-07-16)
+
+This continuation applies the RPG-detail requirements to the complete current
+level set after the numbered district and helper-map reviews above. It covers
+all 33 files under `data/levels/`, including outdoor districts, tents, chapels,
+caves, utility spaces, farm interiors, civic interiors, and cellars.
+
+The first inspection used one full-map capture per level in
+`.ai/visual-audit/2026-07-16-all-level-baseline/`. New portable clutter was
+then checked on a detached canvas and in a live scene in
+`.ai/visual-audit/2026-07-16-field-clutter/`. Fourteen final runtime crops in
+`.ai/visual-audit/2026-07-16-rpg-detail-pass/` cover outdoor roads, forest,
+camp lanes, tents, chapels, farm interiors, and South Measure interiors at
+normal gameplay scale.
+
+The final authored set contains:
+
+- 49 loose ground-item stacks across 33 levels, with at least one reachable
+  stack on every level.
+- 62 loot-bearing containers, with at least one reachable container on every
+  level.
+- 85 dead-grass tufts across the three outdoor levels.
+- 168 rubble decals, 31 rubble piles, and 22 floor cracks.
+- 40 rusted barrels, 19 rusted crates, 25 sealed storage crates, 20 field
+  satchels, 6 field backpacks, 6 small pouches, and 5 rusted reliquaries.
+
+The field backpack, small pouch, and dead grass are reusable catalog kinds.
+The backpack and pouch have distinct closed and opened states. Their rendering
+uses hard pixel geometry, palette colors, upper-left material lighting, and
+contact shadows. No creature lighting or smooth canvas effects were introduced.
+
+The review found and corrected four placement and narrative-clarity problems:
+
+- One camp grass tuft sat on worn canvas instead of roadside ground. It now
+  joins the lower-road grass cluster.
+- A field dressing and loose ducats sat beside separate hidden Long Ash Road
+  caches. Both pickups moved so ordinary exploration does not disclose secret
+  cache locations.
+- Several Censure tent additions read like unrestricted theft from active
+  quarters. Names, logs, and quantities now identify condemned, retired,
+  unclaimed, spent, or written-off stores. The quartermaster's issued crate
+  remains permission-gated.
+- Three container logs contradicted their automatic pickup behavior or referred
+  to internal encounter labels. The logs now describe what the player can
+  actually see and what the interaction actually does.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Portable container silhouette | 7.5 | Backpack, satchel, pouch, crate, barrel, and reliquary remain distinct at normal zoom |
+| Opened-state readability | 7 | Backpack, pouch, crate, and reliquary show a visible state change without smooth effects |
+| Ground-item readability | 6.5 | Small pickups remain legible against road, grass, timber, masonry, and cave floors |
+| Outdoor texture integration | 7 | Grass, rubble, cracks, and roadside clutter break broad surfaces without closing routes |
+| RPG environmental density | 7.5 | Every level now rewards inspection while interiors preserve their authored room hierarchy |
+| Interaction clarity | 7.5 | Stable IDs, collision checks, reachability checks, and restrained loot descriptions support predictable use |
+
+`tests/allMapsRpgDetail.test.mjs` locks the complete 33-level contract. It
+checks stable and globally unique pickup IDs, known item references, positive
+counts, walkable placement, collision avoidance, reachability, container
+availability, outdoor clutter minimums, and the player-facing dash rule.
+`tests/catalogRender.test.mjs` renders every registered kind in every required
+state, including the new field clutter and opened reliquary.
+
+## Stage IV cart ambush (2026-07-17)
+
+This review covers the overturned field cart, the prone lure, the conscious
+Stage IV actor, and both Stage IV Runner clothing variants. Detached-canvas
+evidence is stored in
+`.ai/visual-audit/2026-07-17-stage-iv-cart-ambush/isolated-props-final.png` and
+the `isolated-actors-*-final.png` captures. Runtime evidence is stored in
+`scene-pre-ambush-final.png` and `scene-combat-final.png` in the same folder.
+
+The first pass exposed a dim cart wheel, an oversized fused hand on the lure,
+and runner heads that read as generic skulls. The final pass added a brighter
+wood rim and cart bed, reduced the fused hand, and gave each runner a clearly
+asymmetric ram horn. The actors were checked facing north, east, southeast,
+and northwest, then in attack and death states.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Overturned cart silhouette | 6.5 | The raised wheel, tipped bed, rails, and broken ground wheel distinguish the wreck at gameplay scale |
+| Prone lure readability | 6 | The coat, head, extended arm, and contact shadow read as an adult under the cart, though the deliberately subdued palette keeps it from becoming a map beacon |
+| Stage IV lure actor | 7 | The figure remains recognizably elderly and human while the jaw seam, broken crescent, rib wound, fused hand, and uneven horn carry the Vale Imprint |
+| Stage IV Runner family | 7 | Human-sized bodies, separate road and ash clothing, prayer-bound arms, rib openings, raking hands, and asymmetric ram horns remain distinct from generic undead |
+| Facings and combat states | 7 | Four checked facings preserve mass and motifs, the attack extends the rake clearly, and death retains the body's original volume |
+| Runtime encounter composition | 7 | The quiet cart and prone figure occupy the approach before the trigger; after it springs, the five actors form a readable road encirclement without overlapping the hidden prop |
+
+No scoped category is below 6. The subdued prop is intentional bait, while the
+combat silhouettes carry the stronger readability burden.
+
+## Stage IV Runner anatomy redesign (2026-07-18)
+
+This review supersedes the Runner-family score above. The oversized opened
+mask, shoulder rack, low dragging arm, and small chest wound were replaced with
+a starved human silhouette: a small ruined head on an exposed neck, narrow
+shoulders, thin raised arms, a torso-length butterflied ribcage, torn coat
+panels, and one opened ankle. The road and ash variants share the anatomy but
+retain separate clothing and opposing asymmetry. The fallen state now keeps the
+long body, small head, raking hands, and open ribs instead of reverting to the
+generic Host corpse.
+
+Detached evidence is stored under
+`.ai/visual-audit/2026-07-18-stage-iv-runner-redesign/`. The eight
+`idle-*-final.png` sheets cover every facing for both variants. The state and
+attack sheets cover movement, combat, interaction, hit, stealth, and death.
+Runtime evidence is `scene-ambush-final.png`, captured from the authored Long
+Ash Road cart encounter with its dormant combatants revealed.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Runner silhouette | 8 | Small head, long neck, narrow body, raised angular arms, and exposed ribs read before clothing detail at gameplay scale |
+| Vale Imprint body horror | 8 | The person remains visible beneath a full opened chest, tendon-thin limbs, one horn bud, one scapular thorn, a small wound, and restrained black-gold seams |
+| Facing and state continuity | 7.5 | All eight facings retain the same anatomy; walk, attack, stealth, hit, and interaction poses stay within the frame without regaining the old large mask |
+| Fallen form | 7.5 | The corpse preserves human length and the opened rib fan, with a dead dark wound and no state-swap shrinkage |
+| Runtime encounter composition | 8 | Four gaunt figures remain legible around the cart without becoming larger or brighter than the human lure and roadside terrain |
+
+No scoped category is below 7.5. Side views necessarily compress one half of
+the rib fan, but separate high and low reaching arms keep the Runner readable in
+profile.
+
+## Old Pilgrim Way and Processional Pike (2026-07-17)
+
+This review covers the complete six-level Old Pilgrim Way package and the new
+ground model for the Processional Pike. Evidence is stored in
+`.ai/visual-audit/2026-07-17-old-pilgrim-way/`.
+
+The level captures use the runtime level loader, floor renderer, sprite atlas,
+catalog, depth sort, and mood pass. They cover the road surface, Hill Church,
+Closure Stair, Novitiate Quarters, Trial Galleries, and Sealed Chapter. The pike
+was checked both on a detached ground-item plate and beside the player in the live
+Sealed Chapter scene.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Surface route and field hierarchy | 8 | The long road remains dominant, two dead-field masses read as encounter ground, and the hill branch separates cleanly from the north route |
+| Hill Church readability | 8 | Nave, raised apse, side rooms, and public entrance retain distinct footprints without exposing the concealed descent |
+| Underground progression | 8 | The pressure stair, residential quarters, four trial wings, and final chapter each have a separate spatial identity |
+| Ordinary-dead staging | 7.5 | Skeleton groups are visible in the closure, residential, and chapter spaces without reading as enemies or fresh gore |
+| Processional Pike ground model | 7 | The long shaft, iron head, upper-left highlight, and contact plate remain readable at normal loot scale |
+| Palette and pixel craft | 8 | All additions use project palette colors, hard pixel geometry, upper-left lighting, and contact shadows with no smooth effects |
+| Overall package | 8 | The optional dungeon reads as one continuous institutional descent and the pike fits the established inventory-world scale |
+
+No scoped category is below 7. The pike is deliberately compact enough to fit
+the one-cell ground-item footprint, while its diagonal shaft preserves the
+polearm silhouette. The runtime capture confirms that it remains legible beside
+an adult actor and does not resemble a firearm or oversized fantasy spear.
+
+Evidence files:
+
+- `surface.png`
+- `hill-church.png`
+- `closure-stair.png`
+- `novitiate-quarters.png`
+- `trial-galleries.png`
+- `sealed-chapter.png`
+- `pike-preview.png`
+- `pike-runtime.png`
+
+## Old Pilgrim Way twenty-pass refinement (2026-07-17)
+
+This follow-up review covers the RPG-density pass across the road, church,
+closure stair, novitiate quarters, trial galleries, and sealed chapter. Fresh
+evidence is stored in
+`.ai/visual-audit/2026-07-17-old-pilgrim-way-20-pass/`.
+
+The detached sheet checks seven new catalog kinds: procession shrine, opened
+pilgrim remains, institutional cot, memorial tablet, closure control, trial
+frame, and Processional Pike rack. Runtime captures cover the surface before and
+after combat, both field and camp crops, church discovery and return states,
+the complete buried route, three trial states, and the opened Oath Armory.
+
+The audit found one physical overlap between the manual release wheel and the
+nun who died operating it. The body now rests on the adjacent cell with both
+hands directed toward the wheel. This keeps the causal tableau legible and
+leaves the interactive mechanism unobscured.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Long-road hierarchy | 8 | Procession shrines, field edges, camp clusters, hospice traces, and the hill branch add rhythm without filling the deliberate empty stretches |
+| Camp and aftermath reactivity | 8.5 | Four South Measure outcomes alter camp equipment, while combat victory replaces bait staging with transformed remains, ordinary dead, a moved cart, and salvage |
+| Ecclesiate institutional identity | 8.5 | Hospice, closure, dormitory, trial, and chapter props share material language while retaining distinct functions |
+| Ordinary-dead storytelling | 8.5 | Body placement, clothing cues, failed work positions, and dry-water evidence explain the entrapment without underground enemies or Host growth |
+| Trial silhouette and state readability | 8 | Five mechanisms differ at map scale, and their idle, kept, and broken states remain distinguishable in runtime crops |
+| Reward presentation | 8 | The separate Oath Armory, custom rack, sealed aid chest, and empty claimed state give the pike a credible discovery context |
+| Palette and pixel craft | 8.5 | New art uses palette colors, hard pixel geometry, upper-left highlights, material ramps, and contact shadows |
+| Overall twenty-pass package | 8.5 | Every pass leaves a visible, mechanical, investigative, combat, or return-state result across the six-map route |
+
+No scoped category is below 8. The surface remains intentionally broad. Local
+density is concentrated at the road camp, field incident, church branch, and
+buried rooms so the route preserves its old pilgrimage scale.
+
+Evidence files:
+
+- `00-art-sheet.png`
+- `01-surface-closed.png`
+- `02-surface-aftermath.png`
+- `03-church-discovery.png`
+- `04-church-return.png`
+- `05-closure-stair.png`
+- `06-novitiate-quarters.png`
+- `07-trials-idle.png`
+- `08-trials-intact.png`
+- `09-trials-forced.png`
+- `10-sealed-chapter.png`
+- `11-road-camp.png`
+- `12-field-aftermath.png`
+- `13-trials-west-intact.png`
+- `14-trials-east-forced.png`
+- `15-oath-armory.png`
+
+## Native 2x migration baseline (2026-07-17)
+
+This is a migration baseline, not a completion claim. Fresh evidence is stored
+in `.ai/visual-audit/2026-07-17-native-2x-baseline/`. The first live native
+foundation render is stored in
+`.ai/visual-audit/2026-07-17-native-2x-foundation/chapel-runtime-1280x960.png`.
+
+The baseline renders the current 640x480 artwork at an exact 2x presentation.
+It confirms that the established composition, silhouettes, UI layout, palette,
+and hard edges survive enlargement. It also exposes the central shortfall: the
+image still consists almost entirely of 2x2 physical pixel blocks and therefore
+does not yet use the new density for added information.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Existing composition at 2x | 8 | Chapel framing, prop density, depth sorting, and HUD hierarchy survive unchanged |
+| Existing silhouette readability | 8 | Humans, walls, furniture, Host pieces, and item families remain distinct at the larger presentation |
+| Hard-pixel integrity | 10 | The baseline is crisp and contains no smoothing from the native transform |
+| Native-detail utilization | 1 | Almost every authored source pixel remains a uniform 2x2 block; this is the redraw work still outstanding |
+| Naive full-map memory viability | 1 | The largest projected map would require about 437 MiB for one native RGBA floor canvas |
+| Bounded-cache foundation | 8 | The live chapel holds one 2048x1408 cache, reaches exploration, and shows no visible crop or seam in the captured view |
+| 100 percent browser readability | 8 | The 1280x960 canvas is comfortable without Chrome zoom, with the existing tactical composition intact |
+
+The native-detail score remains deliberately low until each family has fresh
+detached and in-scene evidence. The foundation must not be mistaken for the
+proper redraw.
+
+## Native 2x redraw completion (2026-07-17)
+
+The proper redraw is complete. The final audit covers the complete static
+catalog, floor and item families, every configured actor frame, the interface,
+all 39 runtime levels, all 39 complete map compositions, real interaction
+flows, cache stability, and warm-frame performance. Evidence is stored in the
+dated `.ai/visual-audit/2026-07-17-native-2x-*` folders and indexed in
+`docs/art-audio/native_2x_redraw.md`.
+
+The performance pass found that direct replay of the denser native primitives
+could exceed 200,000 canvas calls per frame. Unchanged volumetric props now use
+tightly cropped native rasters while fire, candles, opening doors, Host pulses,
+and moving ground items remain live. Seeded material noise was also detached
+from screen coordinates, eliminating camera-driven texture shimmer. The final
+catalog cache audit compares 1,044 non-flat kind and seed combinations with
+their direct transparent renders and finds exact pixel parity.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Native-detail utilization | 9 | All 200 catalog kinds, 18 floors, 19 ground-item models, actor families, and UI states contain deliberate one-native-pixel decisions rather than uniform 2x2 enlargement |
+| Static-world craft | 9 | Walls, fixtures, structures, furniture, plants, props, decals, gore, ritual marks, lights, and set pieces retain anchors and silhouettes across six-seed detached review and all authored scenes |
+| Actor redraw | 8.5 | 39,600 generated frames cover every configured state, facing, and death sequence with stable anatomy, equipment, Host motifs, palette, and foot anchors |
+| Interface redraw | 8.5 | 51 UI states retain bitmap text, hard panel construction, logical hit regions, modal bounds, and readable native edge detail at 100 percent zoom |
+| Runtime composition | 9 | All 39 levels pass real-renderer crops and fully opened whole-map review without clipping, orphaned props, depth failures, or smoothing |
+| Interaction integrity | 9 | Fourteen browser checks cover keyboard screens, highlights, dialogue, trade, loot, combat, overlays, two pointer scales, transition, and inventory persistence |
+| Performance and memory | 9 | Bounded floor and prop caches, lazy actor frames, 3.33 to 5.24 ms warm renders, and a sustained 60 Hz headless software-canvas cadence keep the fourfold backing-pixel increase practical |
+| 100 percent browser readability | 9 | The canvas presents at 1280x960 CSS and backing dimensions at browser scale 1, removing the need for 200 percent Chrome zoom on a fitting display |
+
+No scoped category is below 8.5. The densest scene retains a one-time cold
+raster-build cost of roughly 140 ms in the headless software-canvas profile,
+then remains inside the warm-frame budget. Transparent cached sprites are
+pixel-identical to direct renders. Full-scene precomposition changes alpha-edge
+rounding on at most 3.32 percent of pixels; all reviewed differences stay on
+polygon edges and contact shadows, with no missing or shifted art. Final release
+testing should still sample target hardware, but the native redraw itself has
+no open visual or functional defect from this audit.
+
+## Weapon system visual pass (2026-07-18)
+
+This review covers the 16 shared ground and inventory silhouettes used by the
+100-weapon catalog, the two ready slots, ammunition readouts, and the selected
+weapon detail panel. Fresh evidence is stored in
+`.ai/visual-audit/2026-07-18-weapons/`.
+
+The detached sheet renders every weapon model on project floor tiles at native
+hard-pixel scale. The runtime captures use the real game loader and renderer.
+One opens the player's actual field pack with a partially loaded accelerator sidearm
+and matching reserve armatures. The other places six representative weapons on
+the camp road beside the player, existing props, surface texture, and the normal HUD.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Ballistic silhouette families | 8 | Sidearm, compact automatic, carbine, rifle, shotgun, support, and precision profiles differ through overall length, stock, barrel, and feed geometry |
+| Accelerator silhouette families | 8 | Copper coil blocks and pale armature channels separate accelerator sidearms, rifles, and rail rifles from cartridge weapons without glow effects |
+| Melee silhouette families | 8 | Knife, sword, axe, blunt, pike, and converted tool profiles remain recognizable inside the one-cell loot footprint |
+| Palette and pixel craft | 9 | Every model uses project palette ramps, hard native pixels, upper-left highlights, and a grounded contact plate with no blur or smooth gradient |
+| Runtime ground readability | 8 | Six mixed weapons remain distinct from the player, camp furniture, road grain, and one another at ordinary gameplay zoom |
+| Inventory presentation | 8.5 | Icons, ready-slot labels, condition, loaded and reserve ammunition, reload control, weight, and description fit the existing field-pack hierarchy |
+| Overall weapon presentation | 8 | A bounded set of silhouettes supports the full catalog while material accents, proportions, names, stats, and descriptions carry individual identity |
+
+No scoped category is below 8. The support gun, rail rifle, and pike retain the
+widest silhouettes, while compact weapons remain visibly smaller. Accelerator
+identity comes from physical coils and armature channels rather than colored
+energy beams, preserving both setting canon and the restrained palette.
+
+Evidence files:
+
+- `isolated-ground-models.png`
+- `live-inventory.png`
+- `live-ground-weapons.png`
+
+## Deborah Carbo account scene link (2026-07-18)
+
+This pass reuses registered hard-pixel assets to connect Deborah's robbed roadside
+scene with the Stage IV cart ambush. Fresh evidence is stored in
+`.ai/visual-audit/2026-07-18-edda-account/`. The detached sheet covers the
+wheel, sacks, overturned cart, purse, and prone lure. Scene captures use the
+real level loader, floor treatment, depth sort, actor atlas, and flag-based
+visibility. Live game captures verify the disputed count and threat response at
+the native 1280 by 960 interface size.
+
+| Category | Score | Basis |
+|---|---:|---|
+| Roadside theft read | 8 | The missing cart reads through Deborah's position beside the spilled sacks and detached wheel |
+| Cross-scene continuity | 8.5 | Charcoal and the hub clue carry the cart identity west. Red cloth carries the robber identity through the kill site and ambush |
+| Trap and purse readability | 8 | The prone lure remains the first read before combat, while the warm leather purse becomes distinct beneath the cart after the lure flag clears |
+| Palette and pixel craft | 9 | Every reused prop retains palette-only ramps, hard native pixels, upper-left highlights, and contact shadows |
+| Dialogue screen fit | 9 | The twenty-five-ducat dispute, all three choices, journal update notice, and longest threat response fit the bitmap UI without clipping or browser text |
+| Overall account presentation | 8.5 | The physical scene, quest state, and dialogue outcome now tell one causal story at ordinary gameplay scale |
+
+No scoped category is below 8.
+
+Evidence files:
+
+- `isolated-props.png`
+- `edda-roadside-scene.png`
+- `ambush-trap-scene.png`
+- `ambush-sprung-scene.png`
+- `live-spared-account.png`
+- `live-disputed-count.png`
+- `live-threat-response.png`
+
+## South Measure helper maps: current-source 200-pass identity acceptance (2026-07-19)
+
+This review supersedes the earlier South Measure helper-map 100-pass section
+only as current visual-identity acceptance. The earlier geometry, frontage,
+connector, and correction history remains valid.
+
+The canonical set at `.ai/visual-audit/ash-road-south-200-passes/` contains
+exactly 200 captures for each of nine maps, or 1,800 total: 1,260
+`detached-crop`, 360 `native-runtime-focus`, and 180 `broad-composition`
+records. Its certifying `report.json` records `complete-and-validated`, 1,800
+unique views, 1,800 unique exact PNG hashes, 1,800 unique paths, and 90 contact
+sheets. Source hashes bind the evidence to the audited level files.
+
+Manual review passes all 180 criteria, 20 per map, across every one of the 1,800
+records. The maps now separate at a glance through their rendered composition:
+the Intake is defended civic processing and pumps; the Drain is a depressed
+polluted channel and raised walk; the Annex is a machine floor ending in a
+burned bay; Freight is dispatch, weighbridge, cages, and bonded storage; the
+Clinic is an orderly canvas ward with cold service and isolation; the Hall is
+an open civic school, council, kitchen, and records room; Varo House is a
+crowded repair household; Hidden Rows is three concealed homes around shared
+water and heat; and the Charity Cellar is a dense medical reserve with an
+evidence bench and screened patient.
+
+| Category | Result | Basis |
+|---|---|---|
+| Current-source coverage | PASS | Nine maps at exactly 200 records each |
+| Evidence independence | PASS | 1,800 unique view definitions, PNG hashes, and screenshot paths |
+| Multi-scale review | PASS | Detached detail, native runtime focus, and broad composition all represented |
+| Map identity | PASS | Every map retains a distinct function, silhouette, material hierarchy, and authored concept read without labels |
+| Manual acceptance | PASS | 180 of 180 criteria pass, with ten records supporting every criterion |
+| Automated verification | PASS | Manual-ledger validator, `npm run check`, and full `npm test` pass |
+
+The canonical validator reports:
+`manual review validated: 9 maps, 180 PASS criteria, 1,800 screenshot records`.
+
+## Ash Road South surface: current-source 200-pass identity acceptance (2026-07-19)
+
+This acceptance covers only the 130 by 80 Ash Road South surface. The nine
+helper maps are outside its scope and were not changed. It supersedes the
+historical surface-shell acceptance above, whose reused Censure camp kit and
+synthetic evidence no longer represent the current map.
+
+The canonical evidence is
+`.ai/visual-audit/ash-road-south-200/evidence-v7/`. It contains exactly 200
+configured checks, 200 unique exact PNG hashes, and ten manually inspected
+contact sheets. Source and served-source hashes bind every record to the final
+generator, generated level, rendering primitives, catalog, palette, runtime,
+and audit script. The evidence families are 20 matched Censure comparisons, 50
+isolated-art checks, 60 district compositions, 40 real-runtime traversal
+checks, 20 time-of-day checks, and ten outcome-state checks.
+
+Earlier captures remain as correction history. The mixed-source v3 capture was
+rejected automatically. The v4 and v5 reviews exposed weak floor, building,
+prop, and district identity. The v6 review still rejected receiving crops that
+lost their water-service connection and grave crops that lost their shed and
+memorial anchor. V7 was captured only after those exact player-scale
+compositions were corrected. Three independent range reviews then inspected
+all individual V7 PNGs and returned 70 of 70, 70 of 70, and 60 of 60 passing
+records. The final manifest contains one concrete visible finding for every
+pass.
+
+| Category | Result | Basis |
+|---|---|---|
+| Censure separation | PASS | Matched views show permanent civic massing, measured boundaries, water infrastructure, freight systems, and burial work instead of tents, loose campfires, bedrolls, and camp clutter |
+| Location-owned art | PASS | Four South Measure floor families and the surface building, boundary, water, intake, freight, relief, household, and burial kits render through distinct draw functions and silhouettes |
+| Reuse budget | PASS | No placed visual kind overlaps a non-South-Measure map; only `ash-road` and `road-shoulder` continue across the campaign boundary, covering 537 of 10,400 cells, or 5.16 percent |
+| District composition | PASS | Arrival, receiving, Charity Cot, Water Court, old gates, Morrow yard, relief annex, Compact precinct, Rope Rows, grave strip, and north verge remain readable from tight through whole-map framing |
+| Runtime traversal | PASS | Forty routed captures keep civic or work-system anchors visible while the player crosses the surface, including the receiving and screening sequences |
+| Lighting and outcomes | PASS | Twenty dawn-to-night captures and ten state variants retain hard-pixel readability, correct environmental lighting, and distinct physical changes |
+| Manual acceptance | PASS | 200 of 200 pass-specific findings pass against the exact captured image hashes |
+| Automated verification | PASS | Identity guards, route checks, full `npm test`, `npm run check`, and the strict evidence verifier pass |
+
+The canonical verifier reports:
+`verified 200 passes, 200 unique PNGs, 10 contact sheets, 200 reviewed, 200 passed, final approval yes`.
+
+## Ash Road South prop-anatomy correction (2026-07-20)
+
+A direct gameplay review rejected several props that the 200-pass acceptance
+had passed too generously. The freight wagon was a closed rectangular bed with
+two detached square wheel marks. Nearby shelters, fences, water hardware, and
+civic fixtures repeated the same stacked-prism construction. Their names were
+different, but their silhouettes did not convincingly describe their jobs.
+
+This correction judges the rebuilt pieces at ordinary scene scale and on
+detached floor patches. Scores use the audit's honest scale, where 4 is average.
+
+| Family | Before | Current | Visible basis |
+|---|---:|---:|---|
+| Freight wagon | 2 | 7.5 | Twin shafts, a connected chassis and axle, round spoked wheels, a raised bed, side rails, a brake lever, and an irregular sack-and-tarp load replace the box with floating wheels |
+| Receiving edge | 3 | 7 | The shelter is an open lean-to with a bench and torn curtain; hearths have individual stone rings, crossed fuel, tripods, and kettles; boundary runs use crooked posts and sagging cable |
+| Water and yard hardware | 3 | 7 | Public taps terminate over an open trough, animal water uses its own low trough variant, the pipe gantry is continuous pipework, and the cast hand pump terminates over a catch bucket |
+| Civic and household fixtures | 3.5 | 6.5 | The returns point is an open trestle register with a hanging balance, the census board has a physical hood and hanging tallies, and household vessels have shouldered profiles rather than box bodies |
+| Portable service gear | 2.5 | 7 | The drainage pack is now a soft shouldered canvas load with straps, buckles, a side pocket, and a coiled hose instead of a rigid chair-shaped case |
+| Scene coherence | 4 | 7 | At gameplay scale, silhouette and connected anatomy now identify each object before its interaction label does |
+
+Fresh evidence:
+
+- `.ai/visual-audit/ash-road-south-yard-props-isolated-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-wagon-yard-scene-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-arrival-props-isolated-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-arrival-scene-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-return-register-isolated-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-census-board-isolated-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-household-vessels-isolated-2026-07-20.png`
+
+## Ash Road South remaining prop-anatomy correction (2026-07-20)
+
+A follow-up inventory reviewed all 529 placed surface objects and found eight
+remaining weak families. The high-count burial, screening, and drainage pieces
+still produced the wrong repeated read. Several one-off civic pieces also
+depended on a named interaction to explain a box, table, chair, or floor
+scatter. This pass rebuilds those families and includes the two lower-priority
+pieces in the same correction.
+
+| Family | Before | Current | Visible basis |
+|---|---:|---:|---|
+| Burial plots | 2.5 | 7 | Flat broken earth, loose clods, crosswise tool marks, and four separate marker traditions replace raised sled-like beds |
+| Screening rails | 3 | 7.5 | Each authored object is now one two-post rope barrier; parallel authored runs form lanes instead of every cell drawing a cage |
+| Drain reeds | 3 | 6.5 | Thin leaning stalks, long seed heads, broken stems, wet root mats, and shared water lines replace square-headed broom clumps |
+| Condenser and settling vats | 2 | 8 | A bowed cylindrical condenser with fins, a gauge, a ladder, and asymmetric downpipe replaces the reliquary box; open raster-oval vats now expose water, rake arms, inlet pipes, overflow, and wall ladders |
+| Medicine trolley | 2.5 | 7.5 | Two shallow trays sit on an open frame with connected axles, large spoked wheels, a push bar, dressings, basin, bottle, and hanging satchel |
+| Charity canopies | 3 | 7 | Four slender posts support one torn patched roof with daylight, a separate cot, an offset wash bowl, a hanging water bag, and one partial curtain |
+| Water lesson | 2 | 7 | A depth-sorted sloped board on open trestles holds an intake grate, settling bowl, clean jar, linked pipe, stage plates, and a worn teaching trace |
+| Brass-hook memorial | 3 | 7.5 | One crooked rising hook, hanging burial tags, a bowed chain, tied prayer strip, recessed ledger, and votive cup replace the tool-stall rail |
+| Whole-map repetition | 3 | 7 | Grave fields read as burial ground, screening rows read as civil queue lanes, and reed runs read as wet boundaries at normal traversal scale |
+
+Fresh detached evidence:
+
+- `.ai/visual-audit/ash-road-south-props-repeated-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-props-service-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-props-civic-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-scene-graves-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-scene-screening-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-scene-queue-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-scene-waterworks-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-scene-medicine-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-scene-charity-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-full-map-models-final-2026-07-20.png`
+
+Fresh real-runtime evidence:
+
+- `.ai/visual-audit/ash-road-south-runtime-graves-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-runtime-screening-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-runtime-waterworks-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-runtime-medicine-final-2026-07-20.png`
+- `.ai/visual-audit/ash-road-south-runtime-charity-final-2026-07-20.png`
+
+## Ash Road South ten-pass material and identity rebuild (2026-07-21)
+
+This review supersedes the surface's earlier broad visual acceptance where it
+conflicts with direct native-scale inspection. The new baseline showed that
+the map's overall composition was sound, but too many buildings, berm cells,
+rails, machines, and props still read as single-color squares joined together.
+Several neighboring materials also shared nearly identical value ramps, so
+their shading described logical tiles more strongly than physical construction.
+
+Fresh evidence is stored in
+`.ai/visual-audit/2026-07-21-ash-road-south-10-pass/`. Each numbered capture was
+taken after its named correction, and the final map was captured again after
+the last repetition cleanup.
+
+| Pass | Correction | Visible result |
+|---:|---|---|
+| 1 | Material ramps | Lime aggregate, cold iron, and fired clay gain separate dark, middle, and light ramps, establishing one construction language without flattening every surface into one hue |
+| 2 | Building anatomy and texture | Seven building families gain roof seams, patched membranes, masonry courses, braces, vents, stains, rivets, and edge wear that follow their own planes |
+| 3 | Arrival and boundary | The south chain gate becomes a landmark of unequal pylons, pulley gear, counterweight, gauge plates, chain, and repaired boundary work |
+| 4 | District floors | Civic lime slab, freight clay and iron yard, household service brick, burial earth, and blue iron drainage separate the map's uses at a glance |
+| 5 | Waterworks machinery | Condenser, settling vats, screening frames, pumps, and pipe supports share riveted iron, lime bases, clay collars, gauges, bracing, and visible water handling |
+| 6 | District silhouettes | Annex exhausts, the freight lifting scale, booth lane signal, clinic ventilator, hall standard, and burial shed profile make rooflines identify their districts |
+| 7 | Repeated street kit | Queue rails, fences, water vessels, notices, pumps, and reeds gain seeded repair states, sag, missing parts, braces, tied cloth, mineral staining, and density changes |
+| 8 | Human wear | Foot traffic, washers, chain drag, boot marks, doorstep tallies, and sparse work traces connect surface texture to actual local activity |
+| 9 | Graves and outskirts | Household burial offerings, grave construction, quieter vegetation, buried pipe mouths, and connected intake berm faces replace repeated box fields |
+| 10 | Whole-map cleanup | Remaining cell outlines, frequent square berm patches, over-regular repairs, and competing high-frequency marks are reduced in the final overview |
+
+The completed map now has a consistent South Measure identity: pale lime civic
+works, blue-black iron drainage, fired-clay household and freight surfaces,
+patched permanent buildings, and visible water-accounting hardware. The same
+material vocabulary changes by district function, while upper-left highlights,
+lower-right shade, contact shadows, and hard native pixels stay consistent.
+
+The separately requested tumbleweed feature sits outside the ten numbered
+passes. Ten nonblocking anchors occupy open verge and approach lanes. Each weed
+uses a seeded 15 to 25 second cycle with a 3.4 to 4.6 second gust, eight discrete
+rolling transforms, short hops, alternating travel, a moving contact shadow,
+and a persistent resting pose. Broken outer arcs, an irregular twig lattice,
+forked growth, and an off-center knot keep it from reading as a wheel.
+
+Key evidence:
+
+- `baseline-arrival.png`, `baseline-waterworks.png`, `baseline-rows.png`
+- `pass-01-material-ramps.png` through `pass-09-graves-outskirts.png`
+- `pass-10-final-map-retry.png`
+- `final-buildings-detached.png`
+- `final-street-kit-detached.png`
+- `tumbleweed-detached.png`
+- `tumbleweed-in-scene-close.png`
+
+Automated coverage verifies distinct local models and floor families, animated
+gust and rest signatures, ten nonblocking staggered tumbleweed anchors,
+palette-safe native detail, generated-level integrity, and full project content.
+Both `npm run check` and the complete `npm test` suite pass on the audited source.
+
+## Ash Road South settlement-life passes (2026-07-21)
+
+This audit covers the five additions layered over the initial civilian-routine
+pass. Fresh evidence lives in
+`.ai/visual-audit/2026-07-21-ash-road-south-liveliness-passes-02-06/`.
+The detached sheets use the current actor atlas and catalog draw functions. The
+six scene captures come from the running game at native backing resolution,
+with each tableau in its perform phase.
+
+The first runtime capture was rejected. Water Court, the freight yard, Charity
+Cot, and the Compact sent participants to targets spread across too much of the
+district. They behaved correctly but read as unrelated solo jobs. The final
+capture retargets those actors to nearby boards, hoists, scales, wash points,
+linen racks, and loading furniture. The same review also rejected generic road
+dust, paper, oil, wax, and sack art in the density pass. Three new flat South
+Measure families now describe tally scraps, work grit, and local service
+stains without borrowing another map's kit.
+
+Scores use the audit's honest scale, where 4 is average.
+
+| Category | Score | Visible basis |
+|---|---:|---|
+| Four work motions | 6.5 | Pumping and marking keep both hands occupied, lifting carries weight across the torso, and kneeling changes the whole silhouette; the small human scale makes the shortest hand travel deliberately subtle |
+| Eight prop responses | 6 | Paper shifts, water falls, tools strike, chain travels, scale needles swing, loads settle, cloth lifts, and the burner flame changes; several responses are intentionally small enough to remain attached detail rather than effect icons |
+| Tableau coherence | 7 | All six final captures keep three workers and their physical targets inside one readable work cluster, with short local barks tied to the task |
+| Selective density | 7 | Thirty-six grouped objects reinforce registration, water issue, loading, weighing, clinical screening, and linen service while the long connecting streets remain quieter |
+| Runtime reliability | 8 | The browser report records six perform phases, eighteen correct slots, live actor and prop frames, four unlocked ambient beds, twelve cues, six completed cycles, and zero leaked reservations or activities |
+| Overall settlement life | 7 | Repeated solo idles are replaced by a mix of routes, physical jobs, local group work, material evidence, and restrained sound without turning every screen into constant motion |
+
+Key evidence:
+
+- `detached-work-motions.png`
+- `detached-prop-responses.png`
+- `runtime-tableau-01-arrival-registration-handoff.png`
+- `runtime-tableau-02-water-court-queue.png`
+- `runtime-tableau-03-morrow-freight-loading.png`
+- `runtime-tableau-04-charity-bandage-handoff.png`
+- `runtime-tableau-05-compact-clinic-screening.png`
+- `runtime-tableau-06-old-gate-weighing.png`
+- `runtime-report.json`
+
+## Ash Road South complete placed-prop review (2026-07-21)
+
+This pass inventories every authored Ash Road South object that is neither an
+actor nor a building shell. The level contains 575 such placements across 47
+catalog kinds, plus eight loose pickups using six ground-item models. The berm
+kind also renders through the level legend, producing 1,154 loaded berm cells
+in addition to its six explicit object records.
+
+The fresh baseline rejected thirteen families. The common failure was not a
+lack of detail. Thick black pipe bands, bright blue bodies, oversized wheel
+symbols, tall rectangular frames, and repeated box anatomy made unrelated
+objects resemble toys, arcade gates, chairs, or small machines. The correction
+uses thinner iron, small functional color accents, recognisable loads, and
+silhouettes built from the object's physical job. Scores use the honest scale
+where 4 is average and 10 is an exemplar.
+
+| Model | Placed | Score | Decision and visible read |
+|---|---:|---:|---|
+| `measure-boundary-fence` | 113 | 6.5 | Keep. Crooked posts, repaired rails, and open gaps read as an old civic boundary. |
+| `south-measure-queue-rail` | 93 | 6.5 | Keep. Two posts and sagging rope form lanes without enclosing every tile. |
+| `south-measure-drain-reeds` | 73 | 6.5 | Keep. Thin wet-root clusters and broken stalks read as drainage growth. |
+| `measure-grave-plot` | 30 | 7 | Keep. Flat disturbed earth and four marker traditions remain readable burial work. |
+| `south-measure-water-vessels` | 29 | 4 to 6.5 | Redrawn. Freight cans become bowed iron and clay casks on a timber skid; clinic blocks become lidded ceramic jars and an enamel basin; household vessels remain mismatched hand-carried crockery. |
+| `intake-screening-frame` | 17 | 4 to 6.5 | Redrawn. A removable slatted trash rack between two anchored uprights replaces the four-rail airport-checkpoint silhouette. Functional attachments remain secondary. |
+| `south-measure-repair-rack` | 14 | 6.5 | Keep. Sawbuck ends, ridge beam, named tools, and hose coil read as an open repair rack. |
+| `south-measure-notice-board` | 13 | 6 | Keep. Posts, hood, paper layers, hanging census tags, and sealed braces remain physical boards rather than UI panels. |
+| `charity-cot` | 10 | 2.5 to 7 | Redrawn. A long low mattress, four legs, pillow, folded blanket, and short iron head rail replace the upright chair-like privacy panel. |
+| `mesh-cage-panel` | 10 | 6 | Keep. Woven diagonal mesh, structural posts, and bonded plate read at native scale. |
+| `south-measure-hand-pump` | 10 | 4.5 to 6 | Corrected. The cast body keeps its pump handle, pivot, falling spout, and catch bucket while pipe bands, valve hardware, and blue material area are reduced. |
+| `south-measure-tumbleweed` | 10 | 7 | Keep. Broken arcs, twig lattice, off-centre knot, moving shadow, and discrete roll poses avoid a wheel read. |
+| `south-measure-pipe-gantry` | 9 | 3.5 to 6 | Corrected. Thinner iron mains, smaller collars, a restrained return line, and a lever valve replace the thick target-wheel and crossed playground frame. |
+| `grain-cage` | 8 | 4 to 6 | Redrawn. Three tied sacks now rise above a low slatted freight bin; shortened posts and rails no longer resemble a prison bed. |
+| `laundry-line` | 8 | 4.5 to 6.5 | Redrawn. The ordinary line now carries a shirt, uneven towel, and separate trouser legs instead of three signal-like rectangles. |
+| `south-measure-return-stall` | 8 | 6.5 | Keep. Trestle counter, hanging balance, bonded cage, key rack, and return load preserve variant-specific jobs. |
+| `south-measure-sleeping-pallet` | 8 | 6 | Keep. Low bedding, pillow, folded cover, and personal token read as floor-level sleeping places. |
+| `wash-wall` | 8 | 6 | Keep. Tiled upright backing, header cistern, taps, and drain trough give the fixture one clear sanitation function. |
+| `south-measure-door` | 7 | 6 | Keep. Wall-plane alignment, braces, hinges, material variants, and open states are legible. |
+| `cloth-partition` | 6 | 6 | Keep. Clinic, domestic, and isolation cloth hang at distinct heights with gaps and soft hems. |
+| `fixed-hoist` | 6 | 7 | Keep. Broad bridge, splayed legs, chain, pulley, and suspended bearing block read as lifting equipment. |
+| `service-pipe-run` | 6 | 3.5 to 6 | Corrected. Floor runs sit lower with thinner rust pipe, smaller collars, quieter saddles, and a compact valve lever instead of a wheeled toy-cart profile. |
+| `shared-oven` | 6 | 3.5 to 7 | Redrawn. A broad masonry dome, arched fire mouth, soot, short flue, embers, and leaning bread peel replace the square glowing kiosk. |
+| `south-measure-berm-block` | 6 explicit | 6 | Keep in scene. Connected lime and iron faces form civic retaining work; an isolated connected cell is intentionally almost featureless. |
+| `south-measure-tally-scraps` | 6 | 6 | Keep. Layered paper slips, marks, and dropped binding read as handled records. |
+| `south-measure-work-grit` | 6 | 5.5 | Keep quiet. Filings, fasteners, and a dragged tool line support work nodes without becoming loot icons. |
+| `freight-wagon` | 5 | 7.5 | Keep. Shafts, chassis, axles, spoked wheels, bed rails, brake, sacks, and tarp make the strongest ordinary vehicle on the map. |
+| `service-hatch` | 5 | 6 | Keep. Recessed frame, open lid, ladder or hatch insert, and dark shaft read from both orientations. |
+| `south-measure-grave-family-rail` | 5 | 6 | Keep. Unequal posts, sagging cord, punched tags, and family variation support the grave plots. |
+| `relief-machine` | 4 | 4 to 6 | Corrected. Wheel outlines and cranks are smaller, cooling valves lose bright blue gear treatment, and the pump jig uses a lever crank; motor, drum, shaft, and plinth now dominate. |
+| `south-measure-receiving-shelter` | 4 | 6.5 | Keep. Open lean-to, bench, torn curtain, notice, and daylight underneath read as temporary civic shelter. |
+| `south-measure-service-stain` | 4 | 5.5 | Keep quiet. Lye, oil, and mineral variants remain low-contrast material evidence. |
+| `south-measure-storage` | 4 | 6 | Keep. Chest, open record shelf, and locked cabinet variants retain distinct masses and contents. |
+| `freight-scale` | 3 | 6 | Keep. Low claim pad, standing dial, and worn deck remain clear weigh-station hardware. |
+| `public-tap-stand` | 3 | 4 to 6.5 | Corrected. Thin iron mast and manifold, three faucets, small gauge plate, stone trough, bucket, and water surface replace the blue arcade-machine silhouette. |
+| `south-measure-arrival-hearth` | 3 | 6.5 | Keep. Splayed tripod, hung pot, fire bed, and grounded shadow read as a shared cooking point. |
+| `south-measure-charity-canopy` | 2 | 7 | Keep. Four posts, patched roof, separate cot, wash bowl, water bag, and partial curtain form an open treatment bay. |
+| `south-measure-service-pack` | 2 | 4 to 6.5 | Corrected. A tied blanket roll reinforces the backpack silhouette while the former eye-like blue hose coil is reduced to a small strapped fitting. |
+| `south-measure-settling-vat` | 2 | 7 | Keep. Open oval rim, visible water, rake arm, overflow elbow, gauge, and ladder describe the process. |
+| `south-measure-water-lesson` | 2 | 6 | Keep. Sloped board, intake grate, settling bowl, clean jar, linked channel, and pointer read as a physical demonstration. |
+| `collapsed-culvert` | 1 | 6 | Keep. Masonry mouth, dark channel, broken edge, and rubble make a grounded obstruction. |
+| `north-chain-gate` | 1 | 7 | Keep. Unequal pylons, counterweight, pulley, sagging chain, and road throat make a strong landmark. |
+| `south-chain-gate` | 1 | 7 | Keep. The paired campaign gate retains the same mechanical anatomy and distinct repair state. |
+| `south-measure-brass-hook-memorial` | 1 | 7 | Keep. Crooked hook, tags, bowed chain, prayer strip, ledger, and votive cup make the unusual silhouette intentional. |
+| `south-measure-medicine-cart` | 1 | 4 to 6 | Corrected. A wider two-shelf pushcart, iron wheels, extended handle, bandages, enamel basin, bottle, and dark satchel replace the compact drone-like cluster. |
+| `south-measure-sample-burner` | 1 | 6.5 | Keep. Shielded fire chamber, offset retort, high exhaust, sample chute, and small quench bowl read as clinical disposal equipment. |
+| `water-condenser` | 1 | 7.5 | Keep. Bowed tank, fins, ladder, gauge, concrete bed, and asymmetric downpipe remain the water court landmark. |
+
+Ground models were also reviewed on their actual dark pickup backplate. `food`,
+`chit`, `dressing`, `rounds`, and `token` score 6; `shard` scores 5.5 because its
+small pale silhouette is necessarily the least specific. All six remain clear
+loot rather than environmental furniture, use palette-only hard pixels, and
+retain a grounded shadow.
+
+Fresh before-and-after evidence is stored in
+`.ai/visual-audit/2026-07-21-ash-road-south-prop-audit/`. It includes the full
+126-entry real-variant sheet, six focused detached sheets, all district scene
+crops, live runtime views of every corrected family, and the six-model ground
+item sheet.
+
+## Whole-game world art and shape-aware shadow closure (2026-07-21)
+
+This is the current-source acceptance record for world art. It supersedes all
+earlier family scores and scoped acceptance scores when they describe an asset
+that still exists in the current catalog. The older sections remain above as a
+rejection and revision history. This closure does not claim external review.
+One implementation reviewer inspected the unlabeled sheets before revealing
+the stable kind IDs.
+
+### Current inventory and evidence order
+
+The closure covers 39 levels, 233 catalog kinds, 204 volumetric catalog kinds,
+74 actor atlas identities, 22 floor families, and 33 ground-item models. Of the
+catalog kinds, 225 are placed by current level objects or tile legends. The
+remaining eight still pass detached rendering and shadow-contract tests so
+future placement cannot bypass the gate.
+
+Review order was:
+
+1. Unlabeled native 1x sheets.
+2. The same unlabeled sheets displayed at 2x.
+3. White silhouette-only sheets.
+4. Grayscale value sheets.
+5. Stable kind identity reveal.
+6. A real runtime frame and a complete-map composition for every level.
+
+The machine-readable record is
+`.ai/visual-audit/2026-07-21-shadow-overhaul/asset-review.json`. It contains one
+record per catalog kind, actor identity, floor family, and ground-item model.
+Each placed catalog record includes placement count, the reviewer read,
+material result, use-side result, ordinary-human confusion result, contact and
+cast-shadow result, score, and evidence paths. It also contains SHA-256 hashes
+for all 303 captured PNGs.
+
+### Gated map waves
+
+| Wave | Levels | Native runtime | Complete composition | Minimum ordinary asset | Minimum actor, landmark, or encounter creature |
+|---|---:|---|---|---:|---:|
+| Ash Road South and helpers | 10 | Pass | Pass | 7 | 8 |
+| Long Ash Road and interiors | 10 | Pass | Pass | 7 | 8 |
+| Censure Road Camp and tents | 9 | Pass | Pass | 7 | 8 |
+| Ash Chapel | 4 | Pass | Pass | 7 | 8 |
+| Old Pilgrim Way | 6 | Pass | Pass | 7 | 8 |
+
+The lowest accepted score is deliberately the gate, not a rounded family
+average. Ordinary placed catalog art and floors bottom out at 7. All 74 actors,
+all encounter creatures, and the named landmark set bottom out at 8. Humans
+retain small heads, continuous torsos, jointed limbs, and boots. Vegetation,
+machines, furniture, barriers, and Host forms retain different primary
+silhouettes. Materials remain distinguishable by both value and construction.
+
+The complete-map sheets confirm the intended composition hierarchy. Roads,
+channels, wall runs, work clusters, and interiors continue across cell seams.
+Outdoor wear is grouped into lanes, drainage, work spills, ritual sites, and
+habitation traces. Indoor scenes use local authored light without inheriting
+the outdoor projection.
+
+Primary evidence:
+
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/catalog-unlabeled/`
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/silhouette-sheets/`
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/value-sheets/`
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/actors/`
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/runtime-levels/`
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/full-maps/`
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/contact-runtime-levels-*.png`
+- `.ai/visual-audit/2026-07-21-shadow-overhaul/contact-full-maps-*.png`
+
+### Shadow and targeting acceptance
+
+Every catalog entry now resolves both a contact and cast profile. Flat decals
+use reviewed `none` profiles. Grounded volumetric art derives contact from its
+actual prepared raster ground band or full silhouette. Connected blocks,
+airborne models, prone bodies, wall fixtures, and unusual structures use
+explicit custom or reviewed `none` profiles. Contact expansion is at most one
+native pixel and is never blurred.
+
+Outdoor cast masks project opaque pixels from the current prop raster or actor
+frame with integer math. The viewport layer unions overlaps before applying
+the level's existing sun alpha, so overlaps do not become darker diamonds.
+Indoor maps do not use the outdoor projection. Occluding props apply the same
+fade to model, contact, and cast coverage. No production or audit-harness call
+to a generic oval, rectangle, or diamond shadow helper remains.
+
+The runtime interaction capture verifies the action-colored one-native-pixel
+rim around the physical target, four restrained pixels at a separate use cell,
+mouse hit testing, keyboard fallback targeting, Tab labels, 1x and 2x CSS
+pointer mapping, combat targeting, UI screens, overlays, and a real level
+transition. Evidence and the 16-step report are in
+`.ai/visual-audit/2026-07-21-shadow-overhaul/runtime-interaction/`.
+
+### Performance acceptance
+
+The authoritative performance profile uses isolated headless Chrome
+software-canvas runs at a native 1280 by 960 backing size and includes the two
+densest outdoor levels plus representative camp, interior, bell, and catacomb
+scenes.
+
+| Level | Cold render ms | Warm average ms | RAF render average ms | Shadow cache MiB | Prop cache MiB |
+|---|---:|---:|---:|---:|---:|
+| Ash Road South | 38.8 | 5.09 | 2.86 | 1.73 | 2.45 |
+| Long Ash Road Approach | 121.7 | 5.46 | 3.31 | 3.03 | 4.79 |
+| Censure Road Camp | 137.0 | 5.54 | 3.06 | 5.38 | 10.55 |
+| Old Pilgrim Novitiate Quarters | 82.9 | 3.49 | 1.80 | 2.97 | 7.54 |
+| Ash Chapel Bell Room | 85.5 | 4.23 | 1.82 | 3.92 | 9.89 |
+| Ash Chapel Hidden Catacombs | 168.6 | 5.07 | 2.87 | 8.24 | 19.14 |
+
+The worst warm average is 5.54 ms against a 6 ms gate. The worst cold render
+is 168.6 ms against a 200 ms gate. The largest observed shadow cache is
+8.24 MiB against its 24 MiB cap, and the largest observed prop cache is
+19.14 MiB against its 64 MiB cap. The authoritative raw report is
+`.ai/visual-audit/2026-07-21-shadow-overhaul/performance-final/report.json`.

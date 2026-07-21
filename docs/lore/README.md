@@ -25,7 +25,7 @@ If a lower-level file contradicts the story bible, update the lower-level file u
 - **Hallowfen:** The walled Earthside crash scar the Holy Remnant calls holy ground. Its checkpoint bell towers, not the town itself, are the first Act I silence.
 - **The Bloom Years:** The first decade after the Descent, when The Host expanded like a second biosphere.
 - **The Stilling:** The halt of planetary-scale Host expansion.
-- **The Lock:** Dr. Elian Sorell's artificial containment pattern, which trapped The Host inside the Vale Imprint.
+- **The Lock:** Dr. Diodorus Seneca's artificial containment pattern, which trapped The Host inside the Vale Imprint.
 - **The First Icon:** Father Vale's original transformed body, if it still exists.
 
 ## Writing Guardrails
@@ -43,4 +43,4 @@ If a lower-level file contradicts the story bible, update the lower-level file u
 
 ## Retcon Rule
 
-Changes to The Host, Father Vale, the Vale Imprint, Dr. Sorell, the Stilling, Europa, or the cause of the apocalypse are core canon changes. Make them deliberately in the story bible first, then update the game-facing docs.
+Changes to The Host, Father Vale, the Vale Imprint, Dr. Seneca, the Stilling, Europa, or the cause of the apocalypse are core canon changes. Make them deliberately in the story bible first, then update the game-facing docs.

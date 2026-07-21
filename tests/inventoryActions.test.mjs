@@ -52,7 +52,7 @@ const game = new Game({
 });
 const player = new Entity({
   id: 'mara-vey',
-  name: 'Mara Vey',
+  name: 'Test Agent',
   type: 'player',
   stats: { hp: 14, maxHp: 14, actionPoints: 6 },
   attacks: [{ id: 'melee', name: 'Knife', apCost: 1, damage: 3, range: 1 }],

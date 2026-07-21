@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-varo-door-surface",
+  "title": "Faber House Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The family door opens from the narrow lane into the pump workshop."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Faber house",
+          "effects": {
+            "log": "You enter the Faber house beside the pump bench.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_varo_house.json",
+              "player": {
+                "x": 2,
+                "y": 10,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in Rope Rows",
+          "effects": {
+            "log": "You step back from the family door."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "names-under-lime",
+  "title": "Names Under Lime",
+  "initialStage": "find-roll",
+  "objectives": [
+    {
+      "text": "Recover the original household roll.",
+      "stage": "find-roll"
+    },
+    {
+      "text": "Ask Hidden Rows what its names would expose.",
+      "stage": "seek-consent"
+    },
+    {
+      "text": "Decide access to the private names.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "find-roll",
+      "task": "Recover the original household roll",
+      "xp": 0,
+      "description": "The undercroft roll joins water rights to denials, burial records, and old debt."
+    },
+    {
+      "id": "seek-consent",
+      "task": "Seek consent in Hidden Rows",
+      "xp": 0,
+      "description": "The roll proves residence, but a public copy would expose people who chose a hidden door."
+    },
+    {
+      "id": "complete",
+      "task": "Access to the hidden names is settled",
+      "xp": 25,
+      "description": "The private household names now follow the access decision made at South Measure."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "id": "south-measure-rows-nara-quen",
+  "title": "Naomi of Bethany",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Naomi keeps both hands on the sewing cloth.",
+        "\"You can ask. Do not reach while you do it.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask permission to look at her nails",
+          "next": "look",
+          "effects": {
+            "setFlag": "hidden-rows-nara-consented"
+          }
+        },
+        {
+          "label": "Ask about the seam she is mending",
+          "next": "cloth"
+        },
+        {
+          "label": "Leave her hands unexamined",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "look": {
+      "lines": [
+        "\"From there.\"",
+        "Dark ridges sit beneath clean nail beds, ending before the first joints.",
+        "\"They changed when I was twelve. Teaching other people when to stop took longer.\""
+      ],
+      "choices": [
+        {
+          "label": "Thank Naomi and step back",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "cloth": {
+      "lines": [
+        "Naomi turns the hem so the hidden stitch faces you. \"A door curtain. Strong enough to move every day, plain enough that inspectors forget it.\""
+      ],
+      "choices": [
+        {
+          "label": "Let her close the seam",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

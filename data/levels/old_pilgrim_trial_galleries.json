@@ -1,0 +1,834 @@
+{
+  "id": "old-pilgrim-trial-galleries",
+  "name": "Trial Galleries",
+  "intro": "Four practical galleries surround the candidate hall. Their brass linkages still lead to the sealed chapter door.",
+  "width": 64,
+  "height": 48,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#0a0807",
+    "floorShadeAlpha": 0.25,
+    "ambient": "#172635",
+    "ambientAlpha": 0.14,
+    "vignette": 0.3
+  },
+  "quests": [
+    "road-through-the-fields",
+    "the-buried-novitiate",
+    "names-below-the-hill"
+  ],
+  "dialogue": [
+    "old-pilgrim-trials-to-quarters",
+    "old-pilgrim-final-profession",
+    "old-pilgrim-trial-quiet",
+    "old-pilgrim-trial-service",
+    "old-pilgrim-trial-burden",
+    "old-pilgrim-trial-mercy",
+    "old-pilgrim-trial-roll"
+  ],
+  "tiles": [
+    "################################################################",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "###############..##############..##############..###############",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "##########..########........................########..##########",
+    "#..............................................................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "#...................#......................#...................#",
+    "###############..##############..##############..###############",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "#..............................................................#",
+    "################################################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 32,
+      "y": 45,
+      "facing": "n"
+    },
+    "npcs": [],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "wall-stair-door",
+      "x": 32,
+      "y": 47,
+      "id": "old-pilgrim-trials-south-stair",
+      "name": "Candidate Stair",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-trials-to-quarters"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 32,
+        "y": 46
+      },
+      "mapMarker": {
+        "label": "Novitiate Quarters",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "chapel-double-door",
+      "x": 32,
+      "y": 0,
+      "id": "old-pilgrim-final-profession-door",
+      "name": "Final Profession Door",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-final-profession"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 32,
+        "y": 1
+      },
+      "mapMarker": {
+        "label": "Final Profession",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 10,
+      "y": 17,
+      "id": "old-pilgrim-quiet-threshold",
+      "name": "Quiet Threshold",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-trial-quiet"
+      },
+      "blocking": true,
+      "variant": "quiet",
+      "state": "idle",
+      "hiddenWhenFlags": [
+        "old-pilgrim-trial-quiet"
+      ],
+      "mapMarker": {
+        "label": "Quiet Threshold",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 53,
+      "y": 17,
+      "id": "old-pilgrim-service-trial",
+      "name": "Trial of Service",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-trial-service"
+      },
+      "blocking": true,
+      "variant": "service",
+      "state": "idle",
+      "hiddenWhenFlags": [
+        "old-pilgrim-trial-service"
+      ],
+      "mapMarker": {
+        "label": "Trial of Service",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 10,
+      "y": 30,
+      "id": "old-pilgrim-burden-trial",
+      "name": "Burden Gallery",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-trial-burden"
+      },
+      "blocking": true,
+      "variant": "burden",
+      "state": "idle",
+      "hiddenWhenFlags": [
+        "old-pilgrim-trial-burden"
+      ],
+      "mapMarker": {
+        "label": "Burden Gallery",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 53,
+      "y": 30,
+      "id": "old-pilgrim-mercy-trial",
+      "name": "Trial of Mercy",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-trial-mercy"
+      },
+      "blocking": true,
+      "variant": "mercy",
+      "state": "idle",
+      "hiddenWhenFlags": [
+        "old-pilgrim-trial-mercy"
+      ],
+      "mapMarker": {
+        "label": "Trial of Mercy",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 10,
+      "y": 17,
+      "id": "old-pilgrim-quiet-trial-kept-state",
+      "blocking": true,
+      "variant": "quiet",
+      "state": "kept",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-quiet-kept"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 10,
+      "y": 17,
+      "id": "old-pilgrim-quiet-trial-broken-state",
+      "blocking": true,
+      "variant": "quiet",
+      "state": "broken",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-quiet-broken"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 53,
+      "y": 17,
+      "id": "old-pilgrim-service-trial-kept-state",
+      "blocking": true,
+      "variant": "service",
+      "state": "kept",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-service-kept"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 53,
+      "y": 17,
+      "id": "old-pilgrim-service-trial-broken-state",
+      "blocking": true,
+      "variant": "service",
+      "state": "broken",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-service-broken"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 10,
+      "y": 30,
+      "id": "old-pilgrim-burden-trial-kept-state",
+      "blocking": true,
+      "variant": "burden",
+      "state": "kept",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-burden-kept"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 10,
+      "y": 30,
+      "id": "old-pilgrim-burden-trial-broken-state",
+      "blocking": true,
+      "variant": "burden",
+      "state": "broken",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-burden-broken"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 53,
+      "y": 30,
+      "id": "old-pilgrim-mercy-trial-kept-state",
+      "blocking": true,
+      "variant": "mercy",
+      "state": "kept",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-mercy-kept"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 53,
+      "y": 30,
+      "id": "old-pilgrim-mercy-trial-broken-state",
+      "blocking": true,
+      "variant": "mercy",
+      "state": "broken",
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-mercy-broken"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 32,
+      "y": 5,
+      "id": "old-pilgrim-profession-console-idle",
+      "blocking": true,
+      "variant": "profession",
+      "state": "idle",
+      "hiddenWhenFlags": [
+        "old-pilgrim-profession-intact",
+        "old-pilgrim-profession-forced"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 32,
+      "y": 5,
+      "id": "old-pilgrim-profession-console-intact",
+      "blocking": true,
+      "variant": "profession",
+      "state": "kept",
+      "visibleWhenFlags": [
+        "old-pilgrim-profession-intact"
+      ]
+    },
+    {
+      "kind": "pilgrim-trial-frame",
+      "x": 32,
+      "y": 5,
+      "id": "old-pilgrim-profession-console-forced",
+      "blocking": true,
+      "variant": "profession",
+      "state": "broken",
+      "visibleWhenFlags": [
+        "old-pilgrim-profession-forced"
+      ]
+    },
+    {
+      "kind": "vigil-candle-rack",
+      "x": 7,
+      "y": 15,
+      "blocking": true
+    },
+    {
+      "kind": "vigil-candle-rack",
+      "x": 13,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "listening-wire",
+      "x": 6,
+      "y": 17
+    },
+    {
+      "kind": "listening-wire",
+      "x": 8,
+      "y": 17
+    },
+    {
+      "kind": "listening-wire",
+      "x": 12,
+      "y": 17
+    },
+    {
+      "kind": "listening-wire",
+      "x": 14,
+      "y": 17
+    },
+    {
+      "kind": "mortuary-washing-table",
+      "x": 48,
+      "y": 15,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "mortuary-washing-table",
+      "x": 57,
+      "y": 15,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "mortuary-washing-table",
+      "x": 48,
+      "y": 20,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "mortuary-washing-table",
+      "x": 57,
+      "y": 20,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "tool-rack",
+      "x": 7,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "tool-rack",
+      "x": 14,
+      "y": 30,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 8,
+      "y": 27,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 14,
+      "y": 34,
+      "blocking": true
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 48,
+      "y": 28,
+      "blocking": true
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 58,
+      "y": 32,
+      "blocking": true
+    },
+    {
+      "kind": "chapel-font",
+      "x": 31,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "chapel-font",
+      "x": 33,
+      "y": 34,
+      "blocking": true
+    },
+    {
+      "kind": "machine-oil",
+      "x": 52,
+      "y": 19
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 11,
+      "y": 32
+    },
+    {
+      "kind": "wax-stain",
+      "x": 50,
+      "y": 29
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 25,
+      "y": 18
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 38,
+      "y": 18
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 25,
+      "y": 29
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 38,
+      "y": 29
+    },
+    {
+      "kind": "dining-bench",
+      "x": 24,
+      "y": 13,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 39,
+      "y": 13,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 24,
+      "y": 34,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 39,
+      "y": 34,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 20,
+      "y": 42,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 43,
+      "y": 42,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "cracked-column",
+      "x": 23,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 40,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 23,
+      "y": 31,
+      "blocking": true
+    },
+    {
+      "kind": "cracked-column",
+      "x": 40,
+      "y": 31,
+      "blocking": true
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 31,
+      "y": 20
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 32,
+      "y": 23
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 31,
+      "y": 26
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 32,
+      "y": 32
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 27,
+      "y": 39
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 36,
+      "y": 39
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 17,
+      "y": 13,
+      "id": "old-pilgrim-quiet-rubric",
+      "name": "Quiet Rubric",
+      "interact": {
+        "type": "note",
+        "log": "The candidate lost marks for each cup disturbed, even if the sentry arm never struck."
+      },
+      "blocking": true,
+      "variant": "record"
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 59,
+      "y": 13,
+      "id": "old-pilgrim-service-rubric",
+      "name": "Service Rubric",
+      "interact": {
+        "type": "note",
+        "log": "The plate grades water delivered to others. Washing one’s own hands earned no mark."
+      },
+      "blocking": true,
+      "variant": "record"
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 17,
+      "y": 34,
+      "id": "old-pilgrim-burden-rubric",
+      "name": "Burden Rubric",
+      "interact": {
+        "type": "note",
+        "log": "The frame could be raised by strength. Full marks required leaving both counterweights usable for the next candidate."
+      },
+      "blocking": true,
+      "variant": "record"
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 59,
+      "y": 34,
+      "id": "old-pilgrim-mercy-rubric",
+      "name": "Mercy Rubric",
+      "interact": {
+        "type": "note",
+        "log": "The cases changed each season. Candidates had to name the person most likely to die without immediate aid."
+      },
+      "blocking": true,
+      "variant": "record"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 47,
+      "y": 27,
+      "blocking": true,
+      "orient": "se",
+      "variant": "novice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 58,
+      "y": 27,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "priest"
+    },
+    {
+      "kind": "skeleton",
+      "x": 29,
+      "y": 25,
+      "id": "old-pilgrim-trials-candidate-skeleton",
+      "name": "Candidate at the Central Font",
+      "interact": {
+        "type": "note",
+        "log": "The novice carried a cup from the quarters and died before choosing a trial wing."
+      }
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 27,
+      "y": 41,
+      "id": "old-pilgrim-candidate-roll",
+      "name": "Candidate Roll",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-trial-roll"
+      },
+      "blocking": true,
+      "variant": "record",
+      "mapMarker": {
+        "label": "Candidate Roll",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 34,
+      "y": 5,
+      "id": "old-pilgrim-trials-priest-skeleton",
+      "name": "Priest at Final Profession",
+      "interact": {
+        "type": "note",
+        "log": "The priest reached the profession studs. None were raised while the buried congregation still lived."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 46,
+      "y": 24,
+      "id": "old-pilgrim-trials-sister-skeleton",
+      "name": "Sister Beside the Service Gallery",
+      "interact": {
+        "type": "note",
+        "log": "A valve diagram rests under the hand bones. The final correction marks the center basin dry."
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 24,
+      "y": 41,
+      "id": "old-pilgrim-trials-candidate-chest",
+      "name": "Candidate Effects Chest",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The chest holds two saint tokens and a purse returned by no candidate.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 2
+          },
+          {
+            "item": "ducat",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "kind": "field-satchel",
+      "x": 4,
+      "y": 18,
+      "id": "old-pilgrim-quiet-trial-cache",
+      "name": "Quiet Trial Cache",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The intact trial releases a small candidate issue packet.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 2
+          }
+        ]
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-quiet-kept"
+      ]
+    },
+    {
+      "kind": "field-satchel",
+      "x": 59,
+      "y": 18,
+      "id": "old-pilgrim-service-trial-cache",
+      "name": "Service Trial Cache",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The intact trial releases a small candidate issue packet.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-service-kept"
+      ]
+    },
+    {
+      "kind": "field-satchel",
+      "x": 4,
+      "y": 31,
+      "id": "old-pilgrim-burden-trial-cache",
+      "name": "Burden Trial Cache",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The intact trial releases a small candidate issue packet.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          }
+        ]
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-burden-kept"
+      ]
+    },
+    {
+      "kind": "field-satchel",
+      "x": 59,
+      "y": 31,
+      "id": "old-pilgrim-mercy-trial-cache",
+      "name": "Mercy Trial Cache",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The intact trial releases a small candidate issue packet.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-mercy-kept"
+      ]
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "old-pilgrim-trials-loose-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 31,
+      "y": 40
+    }
+  ]
+}

@@ -1,8 +1,34 @@
 {
   "id": "ash-chapel-catacombs-mirel",
-  "title": "Mirel Ardent",
+  "title": "Priscilla Afer",
   "nodes": {
     "start": {
+      "conditions": {
+        "questStages": {
+          "carry-lucky-necklace": "complete"
+        }
+      },
+      "else": "pending",
+      "lines": [
+        "Priscilla studies your face, then lets out the breath she was holding.",
+        "\"He has it. I can tell because you look like someone who watched Jeremiah win an argument with chance.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the necklace meant to her",
+          "next": "necklace"
+        },
+        {
+          "label": "Ask how the settlement managed",
+          "next": "quartermaster"
+        },
+        {
+          "label": "Leave her with the good news",
+          "close": true
+        }
+      ]
+    },
+    "pending": {
       "conditions": {
         "questStages": {
           "carry-lucky-necklace": "charm-received"
@@ -10,12 +36,12 @@
       },
       "else": "offer",
       "lines": [
-        "Mirel touches the empty place at her wrist where the necklace cord used to sit.",
-        "\"If you find Jarik, tell him I was angry when I gave it away. Then tell him I was more afraid than angry.\""
+        "Priscilla touches the empty place at her wrist where the necklace cord used to sit.",
+        "\"If you find Jeremiah, tell him I was angry when I gave it away. Then tell him I was more afraid than angry.\""
       ],
       "choices": [
         {
-          "label": "Ask about Jarik",
+          "label": "Ask about Jeremiah",
           "next": "jarik"
         },
         {
@@ -34,9 +60,9 @@
     },
     "offer": {
       "lines": [
-        "Mirel holds out a tin saint on a black cord. The metal has been thumbed smooth around the face.",
-        "\"My husband Jarik left for Hallowfen to find wall pay. He said fortune likes a man who walks toward it. Fool forgot the only luck he ever trusted.\"",
-        "\"If your road reaches that town, give him this. Say Mirel kept it warm and called him a fool every morning.\""
+        "Priscilla holds out a tin saint on a black cord. The metal has been thumbed smooth around the face.",
+        "\"My husband Jeremiah left for Hallowfen to find wall pay. He said fortune likes a man who walks toward it. Fool forgot the only luck he ever trusted.\"",
+        "\"If your road reaches that town, give him this. Say Priscilla kept it warm and called him a fool every morning.\""
       ],
       "choices": [
         {
@@ -53,13 +79,13 @@
             "questUpdate": {
               "quest": "carry-lucky-necklace",
               "stage": "charm-received",
-              "log": "Quest updated: carry Mirel's lucky necklace to Jarik near Hallowfen."
+              "log": "Quest updated: carry Priscilla's lucky necklace to Jeremiah near Hallowfen."
             }
           },
           "close": true
         },
         {
-          "label": "Ask about Jarik",
+          "label": "Ask about Jeremiah",
           "next": "jarik"
         },
         {
@@ -74,7 +100,7 @@
     },
     "jarik": {
       "lines": [
-        "\"Jarik can mend a pump with wire, prayer, and insults aimed at the pump's ancestors.\"",
+        "\"Jeremiah can mend a pump with wire, prayer, and insults aimed at the pump's ancestors.\"",
         "\"He went to Hallowfen because wall pay spends better than chapel gratitude. I told him gratitude has fewer teeth. He said teeth do not buy boots.\""
       ],
       "choices": [
@@ -87,7 +113,7 @@
           "next": "stubborn"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -106,7 +132,7 @@
           "next": "necklace"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -126,7 +152,7 @@
           "next": "necklace"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -150,7 +176,7 @@
           "next": "tin"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -169,7 +195,7 @@
           "next": "quartermaster"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -185,7 +211,7 @@
       ],
       "choices": [
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -205,7 +231,7 @@
           "next": "blankets"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -224,7 +250,7 @@
           "close": true
         },
         {
-          "label": "Ask about Jarik",
+          "label": "Ask about Jeremiah",
           "next": "jarik"
         }
       ]

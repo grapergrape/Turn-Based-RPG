@@ -14,20 +14,36 @@ import {
 } from '../CharacterCreation.js';
 import { PRIMARY_ATTRIBUTES, normalizeProgression, spendPrimaryPoint } from '../Progression.js';
 import { learnTechnique, techniqueList } from '../TechniqueSystem.js';
-import { JOURNAL_SECTIONS, JOURNAL_TURN_DURATION, journalConditionMet } from '../JournalState.js';
+import {
+  JOURNAL_TURN_DURATION,
+  buildJournalFindings,
+  journalConditionMet,
+  visibleJournalSections
+} from '../JournalState.js';
 import {
   journalArrowAt,
+  journalEvidenceWindow,
   journalMapCellAt,
   journalTabAt,
   journalTechniqueRowAt
 } from '../../ui/journalLayout.js';
-import { tradeActionAt, tradePlayerIndexAt, tradeTraderIndexAt } from '../../ui/tradeLayout.js';
+import {
+  tradeActionAt,
+  tradeListOffset,
+  tradePlayerIndexAt,
+  tradeTraderIndexAt
+} from '../../ui/tradeLayout.js';
 import { installGameMethods } from './installGameMethods.js';
 
 class GameUiScreens {
   // ---- UI screens --------------------------------------------------------
 
   _handleUiScreen(actions, click, textInput = []) {
+    if (this.uiScreen === 'drone-shrine') {
+      if (click) return;
+      this._handleDroneShrineScreen(actions, textInput);
+      return;
+    }
     if (this.uiScreen === 'character-customization') {
       this._handleCharacterCustomizationScreen(actions, textInput);
       return;
@@ -41,8 +57,7 @@ class GameUiScreens {
       return;
     }
     if (this.uiScreen === 'dialogue') {
-      if (click) return;
-      this._handleDialogueScreen(actions);
+      this._handleDialogueScreen(actions, click);
       return;
     }
     if (this.uiScreen === 'loot') {
@@ -82,7 +97,7 @@ class GameUiScreens {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') this.debugGrid = !this.debugGrid;
@@ -125,7 +140,7 @@ class GameUiScreens {
         continue;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') this.debugGrid = !this.debugGrid;
@@ -153,7 +168,7 @@ class GameUiScreens {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') this.debugGrid = !this.debugGrid;
@@ -207,8 +222,15 @@ class GameUiScreens {
     this._clampInventorySelection();
   }
 
+  _journalSections() {
+    return visibleJournalSections({
+      attendantAvailable: Boolean(this.companionRun?.recruited)
+    });
+  }
+
   _toggleJournal(options = {}) {
-    const targetSection = journalSectionIndex(options.section);
+    const sections = this._journalSections();
+    const targetSection = journalSectionIndex(options.section, sections);
     if (this.uiScreen === 'journal') {
       if (targetSection !== null && this.journalSection !== targetSection) {
         this.journalSection = targetSection;
@@ -221,8 +243,12 @@ class GameUiScreens {
     this.uiScreen = 'journal';
     this.journalSection = targetSection ?? 0;
     this.journalFactionIndex = 0;
+    this.journalEvidenceIndex = 0;
     this.journalPrimaryIndex = 0;
     this.journalTechniqueIndex = 0;
+    this.journalDroneBranchIndex = 0;
+    this.journalDroneNodeIndex = 0;
+    this.journalDroneConfirm = null;
     this.journalTurn = null;
     this.dialogue = null;
     this.dialogueActor = null;
@@ -231,9 +257,15 @@ class GameUiScreens {
   }
 
   _handleJournalScreen(actions, click = null) {
+    const journalActions = actions.map((action) => {
+      if (action === 'scroll-up') return 'up';
+      if (action === 'scroll-down') return 'down';
+      return action;
+    });
+    if (this._handleDroneJournalInput?.(journalActions, click)) return;
     if (click) {
       if (click.button !== 0 || this.journalTurn) return;
-      const tab = journalTabAt(click, JOURNAL_SECTIONS.length);
+      const tab = journalTabAt(click, this._journalSections().length);
       const arrow = journalArrowAt(click);
       if (tab !== null) this._turnJournalToSection(tab);
       else if (arrow === 'prev') this._cycleJournalSection(-1);
@@ -246,13 +278,13 @@ class GameUiScreens {
       else if (this._currentJournalSectionId() === 'MAP') this._handleJournalMapClick(click);
       return;
     }
-    for (const action of actions) {
+    for (const action of journalActions) {
       if (action === 'cancel' || action === 'journal') {
         this._closeUiScreen();
         return;
       }
       if (action === 'map') {
-        const mapSection = journalSectionIndex('MAP');
+        const mapSection = journalSectionIndex('MAP', this._journalSections());
         if (mapSection !== null && this.journalSection !== mapSection) {
           this.journalSection = mapSection;
           this.journalTurn = null;
@@ -267,14 +299,14 @@ class GameUiScreens {
       else if (action === 'down') this._moveJournalSelection(1);
       else if (action === 'confirm') this._confirmJournalSelection();
       else if (action === 'inventory') { this._toggleInventory(); return; }
-      else if (action === 'restart') { this.boot(); return; }
+      else if (action === 'restart') { this._requestRunRestart?.(); return; }
       else if (action === 'debug') this.debugGrid = !this.debugGrid;
     }
   }
 
   _cycleJournalSection(delta) {
     if (this.journalTurn) return;
-    const count = JOURNAL_SECTIONS.length;
+    const count = this._journalSections().length;
     const from = this.journalSection ?? 0;
     const to = ((from + delta) % count + count) % count;
     if (to === from) return;
@@ -289,7 +321,7 @@ class GameUiScreens {
 
   _turnJournalToSection(target) {
     if (this.journalTurn) return false;
-    const count = JOURNAL_SECTIONS.length;
+    const count = this._journalSections().length;
     const from = this.journalSection ?? 0;
     const to = Math.max(0, Math.min(count - 1, Math.floor(Number(target) || 0)));
     if (to === from) return false;
@@ -325,9 +357,21 @@ class GameUiScreens {
 
   _moveJournalSelection(delta) {
     const section = this._currentJournalSectionId();
-    if (section === 'FACTIONS') this._moveJournalFaction(delta);
+    if (section === 'NOTES') this._moveJournalEvidence(delta);
+    else if (section === 'FACTIONS') this._moveJournalFaction(delta);
     else if (section === 'CHARACTER') this._moveJournalPrimary(delta);
     else if (section === 'TECHNIQUES') this._moveJournalTechnique(delta);
+  }
+
+  _moveJournalEvidence(delta) {
+    const findings = buildJournalFindings({
+      questDefs: this.questDefs,
+      questReached: this.questReached,
+      journalNotes: this.journalNotes,
+      flags: this.flags
+    });
+    const next = journalEvidenceWindow(findings, (this.journalEvidenceIndex ?? 0) + delta);
+    this.journalEvidenceIndex = next.start;
   }
 
   _moveJournalPrimary(delta) {
@@ -348,7 +392,8 @@ class GameUiScreens {
   }
 
   _currentJournalSectionId() {
-    return JOURNAL_SECTIONS[this.journalSection ?? 0] ?? JOURNAL_SECTIONS[0];
+    const sections = this._journalSections();
+    return sections[this.journalSection ?? 0] ?? sections[0];
   }
 
   _handleJournalMapClick(click) {
@@ -402,7 +447,7 @@ class GameUiScreens {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') {
@@ -475,12 +520,14 @@ class GameUiScreens {
         return;
       }
       if (action === 'buy') {
-        this.tradeFocus = 'trader';
-        this._buySelectedTradeItem();
+        if (this.tradeFocus === 'player') this._sellSelectedTradeItem();
+        else this._buySelectedTradeItem();
         return;
       }
 
-      const stockIndex = tradeTraderIndexAt(click, this._tradeStockEntries().length);
+      const stockCount = this._tradeStockEntries().length;
+      const stockOffset = tradeListOffset(this.tradeStockIndex, stockCount);
+      const stockIndex = tradeTraderIndexAt(click, stockCount, stockOffset);
       if (stockIndex !== null) {
         this.tradeFocus = 'trader';
         this.tradeStockIndex = stockIndex;
@@ -488,7 +535,9 @@ class GameUiScreens {
         return;
       }
 
-      const playerIndex = tradePlayerIndexAt(click, this._tradePlayerEntries().length);
+      const playerCount = this._tradePlayerEntries().length;
+      const playerOffset = tradeListOffset(this.tradePlayerIndex, playerCount);
+      const playerIndex = tradePlayerIndexAt(click, playerCount, playerOffset);
       if (playerIndex !== null) {
         this.tradeFocus = 'player';
         this.tradePlayerIndex = playerIndex;
@@ -513,7 +562,7 @@ class GameUiScreens {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') {
@@ -530,12 +579,8 @@ class GameUiScreens {
         continue;
       }
       if (action === 'interact' || this._isConfirmAction(action)) {
-        if (this.tradeFocus === 'player') {
-          this.tradeFocus = 'trader';
-          this._clampTradeSelection();
-          continue;
-        }
-        this._buySelectedTradeItem();
+        if (this.tradeFocus === 'player') this._sellSelectedTradeItem();
+        else this._buySelectedTradeItem();
       }
     }
   }
@@ -564,14 +609,18 @@ class GameUiScreens {
     return this.tradeSession.buySelectedItem();
   }
 
+  _sellSelectedTradeItem() {
+    return this.tradeSession.sellSelectedItem();
+  }
+
   _buildTradeUi() {
     return this.tradeSession.buildUi();
   }
 }
 
-function journalSectionIndex(section) {
+function journalSectionIndex(section, sections) {
   if (typeof section !== 'string' || section.trim() === '') return null;
-  const index = JOURNAL_SECTIONS.indexOf(section.toUpperCase());
+  const index = sections.indexOf(section.toUpperCase());
   return index >= 0 ? index : null;
 }
 

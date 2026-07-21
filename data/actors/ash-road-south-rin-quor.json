@@ -1,0 +1,24 @@
+{
+  "id": "ash-road-south-rin-quor",
+  "name": "Irene Celsus",
+  "type": "npc",
+  "faction": "lumen-compact",
+  "role": "Compact clinic orderly",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "compact-precinct",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-work-coat",
+    "gear": [],
+    "accent": "bare-brown"
+  }
+}

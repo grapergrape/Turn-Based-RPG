@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-corin",
-  "title": "Corin",
+  "title": "Micah",
   "nodes": {
     "start": {
       "conditions": {
@@ -10,12 +10,12 @@
       },
       "else": "ball-found",
       "lines": [
-        "Corin holds the blue ball against his chest with both arms.",
-        "\"Eda does not kick it inside again. Outside only, once outside comes back.\""
+        "Micah holds the blue ball against his chest with both arms.",
+        "\"Ruth does not kick it inside again. Outside only, once outside comes back.\""
       ],
       "choices": [
         {
-          "label": "Ask about Eda",
+          "label": "Ask about Ruth",
           "next": "eda"
         },
         {
@@ -40,7 +40,7 @@
       },
       "else": "accepted",
       "lines": [
-        "Corin sees the blue in your pack before you speak.",
+        "Micah sees the blue in your pack before you speak.",
         "\"You found it. It still belongs to me, right?\""
       ],
       "choices": [
@@ -68,9 +68,9 @@
             "questUpdate": {
               "quest": "retrieve-blue-ball",
               "stage": "complete",
-              "log": "Quest complete: Corin has his blue ball again."
+              "log": "Quest complete: Micah has his blue ball again."
             },
-            "log": "Corin gives you a Censure Entry Roll from his sleeve. Hanne adds a clean field dressing before you go."
+            "log": "Micah gives you a Censure Entry Roll from his sleeve. Joanna adds a clean field dressing before you go."
           },
           "close": true
         },
@@ -88,8 +88,8 @@
       },
       "else": "offer",
       "lines": [
-        "Corin points down the central hall, then pulls his hand back fast.",
-        "\"The ball went past the old shelves; Selka said nobody little goes there, and nobody big should either.\""
+        "Micah points down the central hall, then pulls his hand back fast.",
+        "\"The ball went past the old shelves; Susanna said nobody little goes there, and nobody big should either.\""
       ],
       "choices": [
         {
@@ -97,7 +97,7 @@
           "next": "lower-hall"
         },
         {
-          "label": "Ask about Eda",
+          "label": "Ask about Ruth",
           "next": "eda"
         },
         {
@@ -108,8 +108,8 @@
     },
     "offer": {
       "lines": [
-        "Corin is small enough to vanish behind Selka, but he steps out when he sees you looking at the lower hall.",
-        "\"Eda kicked my blue ball. She said she could make it hit the wall and come back. It did not come back.\"",
+        "Micah is small enough to vanish behind Susanna, but he steps out when he sees you looking at the lower hall.",
+        "\"Ruth kicked my blue ball. She said she could make it hit the wall and come back. It did not come back.\"",
         "\"Down there. We are not allowed deeper, but you are allowed, maybe.\""
       ],
       "choices": [
@@ -119,7 +119,7 @@
             "questUpdate": {
               "quest": "retrieve-blue-ball",
               "stage": "accepted",
-              "log": "Quest updated: find Corin's blue ball deeper in the catacombs."
+              "log": "Quest updated: find Micah's blue ball deeper in the catacombs."
             }
           },
           "close": true
@@ -141,7 +141,7 @@
     "why-ball": {
       "lines": [
         "\"Blue is a proper color.\"",
-        "\"Most things here are grey, brown, or the color Hanne makes when she sees a dirty bandage. Blue is better.\""
+        "\"Most things here are grey, brown, or the color Joanna makes when she sees a dirty bandage. Blue is better.\""
       ],
       "choices": [
         {
@@ -150,7 +150,7 @@
             "questUpdate": {
               "quest": "retrieve-blue-ball",
               "stage": "accepted",
-              "log": "Quest updated: find Corin's blue ball deeper in the catacombs."
+              "log": "Quest updated: find Micah's blue ball deeper in the catacombs."
             }
           },
           "close": true
@@ -163,7 +163,7 @@
     },
     "eda": {
       "lines": [
-        "\"Eda says the wall moved. I said walls do not move unless the Host is in them. She said not that kind of moved.\"",
+        "\"Ruth says the wall moved. I said walls do not move unless the Host is in them. She said not that kind of moved.\"",
         "\"She is sorry. I can tell because she keeps standing where I can see her being sorry.\""
       ],
       "choices": [
@@ -183,7 +183,7 @@
     },
     "forgive": {
       "lines": [
-        "\"After one day. Maybe two if she looks smug.\"",
+        "\"One day, or two if she looks smug.\"",
         "\"Forgiving too fast teaches bad kicking.\""
       ],
       "choices": [
@@ -216,7 +216,7 @@
     "lower-hall": {
       "lines": [
         "\"After the ball stopped, something tapped three times.\"",
-        "\"I tapped back once. Selka heard and used my whole name, so I stopped being brave.\""
+        "\"I tapped back once. Susanna heard and used my whole name, so I stopped being brave.\""
       ],
       "choices": [
         {
@@ -231,7 +231,7 @@
     },
     "brave": {
       "lines": [
-        "\"It did not feel like a choice. It felt like Selka.\""
+        "\"It did not feel like a choice. It felt like Susanna.\""
       ],
       "choices": [
         {
@@ -239,7 +239,7 @@
           "close": true
         },
         {
-          "label": "Ask about Eda",
+          "label": "Ask about Ruth",
           "next": "eda"
         }
       ]

@@ -1,10 +1,10 @@
 {
   "id": "censure-road-camp-maev",
-  "title": "Sutler Maev",
+  "title": "Sutler Judith",
   "nodes": {
     "start": {
       "lines": [
-        "Sutler Maev keeps her cart angled so every guard must walk around it.",
+        "Sutler Judith keeps her cart angled so every guard must walk around it.",
         "\"Officially I sell comfort goods. Unofficially, comfort now includes ammunition and beans that do not argue back.\""
       ],
       "choices": [
@@ -23,7 +23,7 @@
           "next": "heard-bell-censure-reward"
         },
         {
-          "label": "Collect Voss's issue bundle",
+          "label": "Collect Aquila's issue bundle",
           "conditions": {
             "flag": "censure-road-voss-report-perfect",
             "flagsAbsent": [
@@ -33,7 +33,7 @@
           "next": "voss-report-reward"
         },
         {
-          "label": "Trade with Maev",
+          "label": "Trade with Judith",
           "effects": {
             "trade": "censure-sutler-maev"
           }
@@ -69,7 +69,7 @@
           "next": "heard-bell-censure-reward"
         },
         {
-          "label": "Collect Voss's issue bundle",
+          "label": "Collect Aquila's issue bundle",
           "conditions": {
             "flag": "censure-road-voss-report-perfect",
             "flagsAbsent": [
@@ -79,10 +79,23 @@
           "next": "voss-report-reward"
         },
         {
-          "label": "Trade with Maev",
+          "label": "Trade with Judith",
           "effects": {
             "trade": "censure-sutler-maev"
           }
+        },
+        {
+          "label": "Ask about her back-room figures",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "censure-road-sutler-dropped-tally-found",
+                "censure-road-sutler-false-price-mark-found"
+              ]
+            }
+          },
+          "next": "back-room"
         },
         {
           "label": "Leave the cart",
@@ -90,9 +103,69 @@
         }
       ]
     },
+    "back-room": {
+      "lines": [
+        "Judith shifts until her shoulder blocks the cart door.",
+        "\"Back-room figures cost more because they know where I sleep. Choose the mark you came to argue over.\""
+      ],
+      "choices": [
+        {
+          "label": "Show her the hidden porter tally",
+          "conditions": {
+            "flag": "censure-road-sutler-dropped-tally-found",
+            "flagsAbsent": ["censure-road-maev-dropped-tally-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-maev-dropped-tally-reported",
+            "log": "Judith keeps the porter tally and marks the double sale for correction."
+          },
+          "next": "dropped-tally"
+        },
+        {
+          "label": "Rub out the added price stroke",
+          "conditions": {
+            "flag": "censure-road-sutler-false-price-mark-found",
+            "flagsAbsent": ["censure-road-maev-price-mark-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-maev-price-mark-reported",
+            "log": "Judith restores the camp price on the crate that never moved."
+          },
+          "next": "price-mark"
+        },
+        {
+          "label": "Leave the back-room figures",
+          "close": true
+        }
+      ]
+    },
+    "dropped-tally": {
+      "lines": [
+        "Judith reads the porter strip against the grain, where the missing road name left a fresh cut.",
+        "\"One crate sold twice is theft with a receipt. Leave me the strip; I know how close this porter trims to a number.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her the porter strip",
+          "close": true
+        }
+      ]
+    },
+    "price-mark": {
+      "lines": [
+        "Judith wets her thumb and wipes away the added chalk stroke. The lower price returns.",
+        "\"Camp price buys what is on the peg. Road price buys what may not reach the next peg. This crate never moved, so the extra stroke comes off.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the corrected price",
+          "close": true
+        }
+      ]
+    },
     "voss-report-reward": {
       "lines": [
-        "\"Voss sent a slate with your name on it. She wrote impressed, then scratched until the word looked less dangerous.\"",
+        "\"Aquila sent a slate with your name on it. She wrote impressed, then scratched until the word looked less dangerous.\"",
         "\"Orders say I hand over a ribguard, one dressing, and two rounds from my own shelf. I will mourn with dignity after you leave.\""
       ],
       "choices": [
@@ -116,7 +189,7 @@
                 }
               ]
             },
-            "log": "Maev gives you Voss's issue bundle."
+            "log": "Judith gives you Aquila's issue bundle."
           },
           "close": true
         },
@@ -128,7 +201,7 @@
     },
     "heard-bell-censure-reward": {
       "lines": [
-        "Maev checks Voss's black seal, then sets a paper writ beneath three cartridges so the wind cannot take it.",
+        "Judith checks Aquila's black seal, then sets a paper writ beneath three cartridges so the wind cannot take it.",
         "\"Ten ducats, one dressing, and a burn writ. The rounds are not a sermon. Put them where the writ fails.\""
       ],
       "choices": [
@@ -156,12 +229,12 @@
                 }
               ]
             },
-            "log": "Maev issues the graveyard censure bundle."
+            "log": "Judith issues the graveyard censure bundle."
           },
           "close": true
         },
         {
-          "label": "Leave the bundle with Maev",
+          "label": "Leave the bundle with Judith",
           "close": true
         }
       ]

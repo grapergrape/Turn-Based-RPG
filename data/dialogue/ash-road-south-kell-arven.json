@@ -1,0 +1,57 @@
+{
+  "id": "ash-road-south-kell-arven",
+  "title": "Kephas Priscus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Kephas keeps pass copies under a flat stone and the originals inside his coat.",
+        "\"North road paper has more than one way to fail. Better to know which failure you bought.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the north markers require",
+          "next": "rules",
+          "effects": {
+            "setFlag": "heard-north-paper-rules"
+          }
+        },
+        {
+          "label": "Leave the pass copies under stone",
+          "close": true
+        }
+      ]
+    },
+    "rules": {
+      "lines": [
+        "\"Paper proves a named bearer under a current seal. The answering code must come from a living wall.\"",
+        "\"Hallowfen has not answered, so the chain stays shut even for good paper.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whether a Censure writ is enough",
+          "next": "writ"
+        },
+        {
+          "label": "Check another kind of failure",
+          "next": "start"
+        },
+        {
+          "label": "Leave the pass copies under stone",
+          "close": true
+        }
+      ]
+    },
+    "writ": {
+      "lines": [
+        "\"Enough to reach the chain, but not enough to make a silent checkpoint answer.\"",
+        "\"A writ proves someone sent you; it cannot prove anyone waits ahead.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the pass copies under stone",
+          "close": true
+        }
+      ]
+    }
+  }
+}

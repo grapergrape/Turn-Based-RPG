@@ -1,0 +1,106 @@
+{
+  "id": "old-pilgrim-trial-mercy",
+  "title": "Trial of Mercy",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The examination slate places a thirsty pilgrim beside a bleeding novice. Below them sits a priest with a crushed hand.",
+        "The old answer wheels must be set in the order of aid."
+      ],
+      "choices": [
+        {
+          "label": "Order the cases by survivable harm",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 32
+            },
+            "flagsAbsent": [
+              "old-pilgrim-trial-mercy"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-mercy",
+              "old-pilgrim-trial-mercy-kept"
+            ],
+            "xp": 8,
+            "log": "Bleeding, thirst, then the closed hand. The Mercy stud rises."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Apply the hospice mercy rule",
+          "conditions": {
+            "fieldRatings": {
+              "doctrine": 32
+            },
+            "flagsAbsent": [
+              "old-pilgrim-trial-mercy"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-mercy",
+              "old-pilgrim-trial-mercy-kept"
+            ],
+            "xp": 8,
+            "log": "The hospice rule gives the same order. The Mercy stud rises."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Use the final sick-watch order",
+          "conditions": {
+            "flag": "old-pilgrim-quarters-sick-list-known",
+            "flagsAbsent": [
+              "old-pilgrim-trial-mercy"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-mercy",
+              "old-pilgrim-trial-mercy-kept"
+            ],
+            "xp": 5,
+            "log": "The sleeping roll preserves the same order: bleeding, thirst, then the closed hand. The Mercy stud rises."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Turn every answer wheel",
+          "conditions": {
+            "flagsAbsent": [
+              "old-pilgrim-trial-mercy"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-mercy",
+              "old-pilgrim-trial-mercy-broken"
+            ],
+            "log": "The third wheel jams on a false answer. The gallery accepts the motion and seals its medicine drawer."
+          },
+          "next": "passed",
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "passed": {
+      "lines": [
+        "The three answer wheels face inward. The Mercy stud remains raised."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

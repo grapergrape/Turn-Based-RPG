@@ -1,0 +1,460 @@
+{
+  "id": "fresh",
+  "version": 1,
+  "defaults": {
+    "progression": {
+      "level": 20,
+      "xp": 19000,
+      "build": "field-agent",
+      "primaryPoints": 0,
+      "activeTechniquePoints": 0,
+      "passiveTechniquePoints": 0,
+      "techniques": "all",
+      "primaries": {
+        "body": 10,
+        "agility": 10,
+        "eye": 10,
+        "intelligence": 10,
+        "religion": 10,
+        "voice": 10,
+        "nerve": 10
+      }
+    },
+    "inventory": {
+      "maxCarryWeight": 200,
+      "items": [
+        { "item": "ducat", "count": 10000 }
+      ]
+    }
+  },
+  "checkpoints": {
+    "new-run": {
+      "clock": {
+        "fieldDay": 1,
+        "minuteOfDay": 510
+      }
+    },
+    "post-ash-chapel": {
+      "extends": "new-run",
+      "flags": [
+        "ash-chapel-choir-named",
+        "ash-chapel-cult-broken",
+        "ash-chapel-bell-repaired",
+        "ash-chapel-bell-rung",
+        "cellar-victim-ended",
+        "inspected-engine-rut",
+        "nave-cross-martyr-ended",
+        "read-warden-journal",
+        "survivors-returning-chapel",
+        "tomas-fixed-bell"
+      ],
+      "questStages": {
+        "investigate-ash-chapel-cult": "hallowfen-checkpoints",
+        "retrieve-blue-ball": "complete",
+        "carry-lucky-necklace": "charm-received"
+      },
+      "inventory": {
+        "items": [
+          { "item": "choir-hymnal-fragment", "count": 3 },
+          { "item": "choir-tally-strip", "count": 1 },
+          { "item": "mirels-lucky-necklace", "count": 1 }
+        ]
+      },
+      "requiredLevelPaths": [
+        "./data/levels/ash_chapel_breach.json",
+        "./data/levels/ash_chapel_cellar.json",
+        "./data/levels/ash_chapel_catacombs.json",
+        "./data/levels/ash_chapel_bell_room.json"
+      ]
+    },
+    "post-long-ash": {
+      "extends": "post-ash-chapel",
+      "flags": [
+        "agent-of-censure-identified",
+        "censure-attendant-registered",
+        "heard-bell-censure-report-filed",
+        "heard-bell-names-restored",
+        "heard-bell-resolved",
+        "heard-bell-resolved-censure",
+        "heard-bell-sava-quieted",
+        "heard-bell-sava-resealed",
+        "heard-bell-truth-joined",
+        "long-ash-cart-sabotage-proved",
+        "long-ash-carter-road-account-heard",
+        "long-ash-carter-wheel-crush-read",
+        "long-ash-crossroad-brother-kind",
+        "long-ash-crossroad-brother-met",
+        "long-ash-crossroad-edrin-named",
+        "long-ash-edda-purse-returned",
+        "long-ash-field-brother-met",
+        "long-ash-field-family-truth",
+        "long-ash-kill-site-no-opening-found",
+        "long-ash-kill-site-wounds-read",
+        "long-ash-old-bell-peal-rule-read",
+        "long-ash-route-post-peal-rule-found",
+        "long-ash-stage-iv-cart-recognized",
+        "long-ash-wolves-avenged-family"
+      ],
+      "questStages": {
+        "calcified-brothers": "complete",
+        "edda-farrs-account": "complete",
+        "those-who-heard-the-bell": "complete"
+      },
+      "companionRun": {
+        "definitionId": "utility-drone-mark-i",
+        "recruited": true,
+        "name": "Pip",
+        "hp": null,
+        "disabled": false,
+        "upgrades": [],
+        "upgradeOrder": [],
+        "vanishingSpentEncounters": [],
+        "upgradePoints": 42,
+        "rewardedLevel": 20,
+        "ritual": {
+          "opened": true,
+          "failedModels": [],
+          "completed": true
+        }
+      },
+      "inventory": {
+        "items": [
+          { "item": "drone-service-parts", "count": 2 }
+        ]
+      },
+      "requiredLevelPaths": [
+        "./data/levels/long_ash_road_approach.json",
+        "./data/levels/long_ash_vigil_chapel.json",
+        "./data/levels/long_ash_mortuary_chapel.json",
+        "./data/levels/long_ash_listening_vault.json"
+      ]
+    },
+    "post-censure-camp": {
+      "extends": "post-long-ash",
+      "flags": [
+        "ash-chapel-evidence-delivered",
+        "censure-road-confession-absolved",
+        "censure-road-field-issue-claimed",
+        "censure-road-voss-report-perfect",
+        "censure-road-voss-report-rewarded",
+        "censure-road-voss-route-cleared"
+      ],
+      "questStages": {
+        "censure-road-confession": "absolved-by-account"
+      },
+      "inventory": {
+        "items": [
+          { "item": "choir-hymnal-fragment", "count": 0 },
+          { "item": "choir-tally-strip", "count": 0 }
+        ]
+      },
+      "requiredLevelPaths": [
+        "./data/levels/censure_road_camp.json"
+      ]
+    },
+    "post-south-measure": {
+      "extends": "post-censure-camp",
+      "flags": [
+        "charity-council",
+        "choir-influence-south-measure",
+        "departed-south-measure",
+        "hidden-roll-private",
+        "intake-clerk-contained",
+        "intake-clerk-resolved",
+        "measure-roll-resident",
+        "met-ressa-venn",
+        "morrow-ledger-untouched",
+        "nel-family-review",
+        "neri-agent-unseen",
+        "south-measure-assembly-complete",
+        "south-measure-north-lane-open",
+        "south-measure-plan-isolated-loop",
+        "south-measure-resident",
+        "south-measure-water-reduced",
+        "tarn-shared-road"
+      ],
+      "questStages": {
+        "names-for-the-gate": "complete",
+        "household-of-one": "complete",
+        "debt-that-drinks": "complete",
+        "charity-cot": "complete",
+        "names-under-lime": "complete",
+        "lesson-under-the-wrap": "complete",
+        "carry-lucky-necklace": "complete"
+      },
+      "inventory": {
+        "items": [
+          { "item": "mirels-lucky-necklace", "count": 0 },
+          { "item": "south-measure-certified-abstract", "count": 1 }
+        ]
+      },
+      "requiredLevelPaths": [
+        "./data/levels/ash_road_south.json"
+      ]
+    }
+  },
+  "levels": {
+    "ash_chapel_breach.json": {
+      "checkpoint": "new-run"
+    },
+    "ash_chapel_cellar.json": {
+      "checkpoint": "new-run",
+      "flags": ["searched-barrel-ladder"],
+      "questStages": {
+        "investigate-ash-chapel-cult": "cellar-found"
+      }
+    },
+    "ash_chapel_catacombs.json": {
+      "checkpoint": "new-run",
+      "flags": [
+        "ash-chapel-cult-broken",
+        "found-catacombs",
+        "searched-barrel-ladder"
+      ],
+      "questStages": {
+        "investigate-ash-chapel-cult": "cult-broken"
+      }
+    },
+    "ash_chapel_bell_room.json": {
+      "checkpoint": "new-run",
+      "flags": [
+        "ash-chapel-choir-named",
+        "ash-chapel-cult-broken",
+        "cellar-victim-ended",
+        "nave-cross-martyr-ended",
+        "survivors-returning-chapel"
+      ],
+      "questStages": {
+        "investigate-ash-chapel-cult": "bell-hand-known"
+      }
+    },
+    "long_ash_road_approach.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_barn_interior.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_farmhouse_interior.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_grain_shed_interior.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_infected_cave.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_storage_shed_interior.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_tool_shed_interior.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_vigil_chapel.json": {
+      "checkpoint": "post-ash-chapel",
+      "flags": [
+        "heard-bell-docket-read",
+        "looted-ilyen-marr-grave"
+      ]
+    },
+    "long_ash_mortuary_chapel.json": {
+      "checkpoint": "post-ash-chapel"
+    },
+    "long_ash_listening_vault.json": {
+      "checkpoint": "post-ash-chapel",
+      "flags": [
+        "heard-bell-register-read"
+      ],
+      "inventory": {
+        "items": [
+          { "item": "mortuary-quieting-salt", "count": 1 }
+        ]
+      },
+      "questStages": {
+        "those-who-heard-the-bell": "judge-at-chair"
+      }
+    },
+    "censure_road_camp.json": {
+      "checkpoint": "post-long-ash"
+    },
+    "censure_road_medic_tent.json": {
+      "checkpoint": "post-long-ash"
+    },
+    "censure_road_odran_tent_interior.json": {
+      "checkpoint": "post-long-ash"
+    },
+    "censure_road_preceptor_tent.json": {
+      "checkpoint": "post-long-ash"
+    },
+    "censure_road_quartermaster_tent.json": {
+      "checkpoint": "post-long-ash",
+      "flags": ["censure-road-field-issue-authorized"]
+    },
+    "censure_road_quarters_tent.json": {
+      "checkpoint": "post-long-ash",
+      "flags": ["censure-road-quarters-false-bottom-found"]
+    },
+    "censure_road_supply_tent.json": {
+      "checkpoint": "post-long-ash"
+    },
+    "censure_road_sutler_tent.json": {
+      "checkpoint": "post-long-ash"
+    },
+    "censure_road_writ_chapel_tent.json": {
+      "checkpoint": "post-long-ash"
+    },
+    "ash_road_south.json": {
+      "checkpoint": "post-censure-camp"
+    },
+    "south_measure_charity_cellar.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": [
+        "heard-yara-quell-terms"
+      ],
+      "inventory": {
+        "items": [
+          { "item": "compact-suppressant", "count": 1 }
+        ]
+      }
+    },
+    "south_measure_compact_clinic.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": [
+        "intake-clerk-resolved",
+        "south-measure-water-decision-open"
+      ]
+    },
+    "south_measure_hidden_rows.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": [
+        "heard-daro-mett-terms",
+        "heard-yara-quell-terms",
+        "hidden-rows-entry-forced"
+      ]
+    },
+    "south_measure_intake_undercroft.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": [
+        "heard-yara-quell-terms",
+        "hidden-water-branch-known",
+        "resident-isolation-requested",
+        "south-measure-civil-access",
+        "south-measure-isolation-route-known",
+        "tarn-water-help-requested"
+      ],
+      "inventory": {
+        "items": [
+          { "item": "compact-suppressant", "count": 1 }
+        ]
+      }
+    },
+    "south_measure_measure_hall.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": [
+        "charity-stock-sorted",
+        "heard-daro-mett-terms",
+        "heard-yara-quell-terms",
+        "intake-clerk-contained",
+        "intake-clerk-resolved",
+        "south-measure-water-decision-open",
+        "tarn-shared-road-proposed"
+      ],
+      "inventory": {
+        "items": [
+          { "item": "south-measure-original-roll", "count": 1 }
+        ]
+      },
+      "questStages": {
+        "names-for-the-gate": "north-gate-assembly"
+      }
+    },
+    "south_measure_morrow_freight_house.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": [
+        "intake-clerk-resolved",
+        "south-measure-cooling-jacket-known",
+        "south-measure-water-decision-open"
+      ]
+    },
+    "south_measure_relief_drain.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": [
+        "drain-access-cleared",
+        "hidden-water-branch-known",
+        "south-measure-annex-access",
+        "south-measure-civil-access"
+      ]
+    },
+    "south_measure_relief_maintenance_annex.json": {
+      "checkpoint": "post-censure-camp",
+      "flags": ["drain-access-cleared"]
+    },
+    "south_measure_varo_house.json": {
+      "checkpoint": "post-censure-camp"
+    },
+    "old_pilgrim_way.json": {
+      "checkpoint": "post-south-measure"
+    },
+    "old_pilgrim_hill_church.json": {
+      "checkpoint": "post-south-measure",
+      "flags": [
+        "old-pilgrim-field-count-reported",
+        "old-pilgrim-fields-cleared"
+      ],
+      "questStages": {
+        "road-through-the-fields": "complete"
+      }
+    },
+    "old_pilgrim_closure_stair.json": {
+      "checkpoint": "post-south-measure",
+      "flags": [
+        "old-pilgrim-apse-release-found",
+        "old-pilgrim-fields-cleared"
+      ],
+      "inventory": {
+        "items": [
+          { "item": "old-pilgrim-service-key", "count": 1 }
+        ]
+      },
+      "questStages": {
+        "road-through-the-fields": "complete",
+        "the-buried-novitiate": "find-closure-plan"
+      }
+    },
+    "old_pilgrim_novitiate_quarters.json": {
+      "checkpoint": "post-south-measure",
+      "flags": [
+        "old-pilgrim-closure-plan-read",
+        "old-pilgrim-empty-tank-known"
+      ],
+      "questStages": {
+        "the-buried-novitiate": "enter-buried-novitiate"
+      }
+    },
+    "old_pilgrim_trial_galleries.json": {
+      "checkpoint": "post-south-measure",
+      "flags": [
+        "old-pilgrim-bell-cable-known",
+        "old-pilgrim-breach-brace-known",
+        "old-pilgrim-quarters-sick-list-known",
+        "old-pilgrim-water-tally-read"
+      ],
+      "questStages": {
+        "the-buried-novitiate": "read-water-tally"
+      }
+    },
+    "old_pilgrim_sealed_chapter.json": {
+      "checkpoint": "post-south-measure",
+      "flags": [
+        "old-pilgrim-profession-intact",
+        "old-pilgrim-trial-burden",
+        "old-pilgrim-trial-mercy",
+        "old-pilgrim-trial-quiet",
+        "old-pilgrim-trial-service",
+        "old-pilgrim-water-tally-read"
+      ],
+      "questStages": {
+        "the-buried-novitiate": "complete-trials"
+      }
+    }
+  }
+}

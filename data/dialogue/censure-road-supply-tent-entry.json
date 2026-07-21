@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-supply-tent-entry",
+  "title": "Supply Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Stacked crates leave one narrow aisle inside the supply tent."
+      ],
+      "choices": [
+        {
+          "label": "Enter the supply tent",
+          "effects": {
+            "log": "You enter the supply tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_supply_tent.json",
+              "player": { "x": 9, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside the supply tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

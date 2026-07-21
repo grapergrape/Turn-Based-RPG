@@ -53,7 +53,7 @@
                 ],
                 [
                   "You broke one cell, not the hand that sent it here.",
-                  "The Hallowfen checkpoints stopped answering before this cult reached the house. No bell from the wall. No runner on the road. No mistake large enough to be innocent.",
+                  "The Hallowfen checkpoints stopped answering before this cult reached the house. The wall sent neither bell nor runner, and no innocent mistake could have silenced both.",
                   "Follow the Hallowfen road. Find who silenced the towers."
                 ]
               ],
@@ -72,8 +72,8 @@
                     "flag": "survivors-returning-chapel"
                   },
                   "page": [
-                    "Below, Selka starts counting people by name instead of by hiding place. The broom in her hands sounds too small for the work, and still she keeps at it.",
-                    "Tomas stays beside the frame until the last vibration leaves the iron. He gives you one short nod toward the Hallowfen road."
+                    "Below, Susanna starts counting people by name instead of by hiding place. The broom in her hands sounds too small for the work, and still she keeps at it.",
+                    "Tobias stays beside the frame until the last vibration leaves the iron. He gives you one short nod toward the Hallowfen road."
                   ]
                 },
                 {
@@ -83,8 +83,8 @@
                     }
                   },
                   "page": [
-                    "Corin keeps both arms around the blue ball, as if color itself might need guarding.",
-                    "Eda watches from the chalk marks and tries to look bored instead of relieved."
+                    "Micah keeps both arms around the blue ball, as if color itself might need guarding.",
+                    "Ruth watches from the chalk marks and tries to look bored instead of relieved."
                   ]
                 },
                 {
@@ -94,8 +94,8 @@
                     }
                   },
                   "page": [
-                    "Mirel's tin saint rides in your pack, warm from her hand.",
-                    "Jarik went toward Hallowfen for wall pay. If he is alive, the road has him."
+                    "Priscilla's tin saint rides in your pack, warm from her hand.",
+                    "Jeremiah went toward Hallowfen for wall pay. If he is alive, the road has him."
                   ]
                 },
                 {
@@ -165,7 +165,7 @@
       "else": "not-repaired-unknown",
       "lines": [
         "The rope pulls against a dead weight.",
-        "The bell frame is still sabotaged. Tomas Vek can set the missing pin once you bring him to the frame."
+        "The bell frame is still sabotaged. Tobias Porta can set the missing pin once you bring him to the frame."
       ],
       "choices": [
         {

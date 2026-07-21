@@ -1,0 +1,54 @@
+{
+  "id": "mourning-dove-pistol",
+  "name": "Mourning Dove Pistol",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "autoloading pistol",
+  "rarity": "uncommon",
+  "weight": 0.85,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Mourning Houses",
+    "factions": [
+      "mourning-houses"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "autoloading pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 6,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "sidearm-cartridge",
+      "capacity": 7,
+      "defaultLoaded": 7,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A polished pistol with a dove cut into the rear plate. Mourning houses lend them to escorts and expect every casing returned."
+}

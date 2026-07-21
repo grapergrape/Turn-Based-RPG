@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-clinic-main-door-clinic",
+  "title": "Clinic Entrance",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The south entrance opens onto the Compact waiting apron."
+      ],
+      "choices": [
+        {
+          "label": "Step onto the clinic apron",
+          "effects": {
+            "log": "You leave the clinic through public triage.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 98,
+                "y": 34,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay in the clinic",
+          "effects": {
+            "log": "You turn back toward the ward."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

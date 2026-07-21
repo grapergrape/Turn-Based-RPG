@@ -1,0 +1,85 @@
+{
+  "id": "old-pilgrim-trial-service",
+  "title": "Trial of Service",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Three hand valves feed a row of pilgrim basins. The supply pipe is dry, but the old control teeth still move.",
+        "A service plate asks which duty continues after the water is gone."
+      ],
+      "choices": [
+        {
+          "label": "Rebuild the valve sequence",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 32
+            },
+            "flagsAbsent": [
+              "old-pilgrim-trial-service"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-service",
+              "old-pilgrim-trial-service-kept"
+            ],
+            "xp": 8,
+            "log": "The valves complete a dry wash cycle. The Service stud rises."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Use the last water tally",
+          "conditions": {
+            "flag": "old-pilgrim-water-tally-read",
+            "flagsAbsent": [
+              "old-pilgrim-trial-service"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-service",
+              "old-pilgrim-trial-service-kept"
+            ],
+            "log": "SERVICE VALVE DRY names the empty center basin. The Service stud rises."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Force all three valve teeth",
+          "conditions": {
+            "flagsAbsent": [
+              "old-pilgrim-trial-service"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-service",
+              "old-pilgrim-trial-service-broken"
+            ],
+            "log": "The center tooth breaks, but the gallery records a completed cycle. A supply drawer locks."
+          },
+          "next": "passed",
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "passed": {
+      "lines": [
+        "No water reaches the basins. The Service stud remains raised."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

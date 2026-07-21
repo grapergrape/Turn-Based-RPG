@@ -1,0 +1,23 @@
+{
+  "id": "ash-road-south-rova-holt",
+  "name": "Ruth Carbo",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Arrival-fire representative",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "row-council"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-shawl",
+    "gear": [],
+    "accent": "bare-brown"
+  }
+}

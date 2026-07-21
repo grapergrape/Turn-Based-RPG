@@ -10,6 +10,24 @@
       ],
       "choices": [
         {
+          "label": "Take Aquila's slate to South Measure",
+          "conditions": {
+            "flag": "censure-road-voss-route-cleared"
+          },
+          "effects": {
+            "log": "Aquila's mark breaks the wax. You take the wall road to South Measure.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 65,
+                "y": 77,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true
+        },
+        {
           "label": "Leave the chain",
           "close": true
         }

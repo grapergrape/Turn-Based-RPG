@@ -15,6 +15,7 @@ export class PatrolSystem {
     const index = patrol.index ?? 0;
     const point = patrol.path[index];
     if (!point || actor.position.x !== point.x || actor.position.y !== point.y) return;
+    if (point.activity && patrol.activityCompletedIndex !== index) return;
     if (patrol.mode !== 'once' || index < patrol.path.length - 1) return;
     patrol.complete = true;
     actor.patrolTimer = 0;
@@ -26,9 +27,17 @@ export class PatrolSystem {
   }
 
   advanceExplore(dt) {
-    if (this.game.mode !== 'explore' || this.game.uiScreen || this.game.moving || this.game.pathQueue.length > 0) return;
+    if (this.game.mode !== 'explore' || this.game.uiScreen) return;
     for (const actor of [...this.game.enemies, ...this.game.npcs]) {
-      if (actor.isDead || this.callbacks.isCellHidden?.(actor.position.x, actor.position.y)) continue;
+      if (actor.tableauReservation) continue;
+      if (actor.dormant || actor.isDead || this.callbacks.isCellHidden?.(actor.position.x, actor.position.y)) continue;
+      if (this.callbacks.isActorMoving?.(actor)) continue;
+      const investigating = actor.type === 'enemy' && actor.suspicionState === SUSPICION_STATES.INVESTIGATING;
+      if (investigating) {
+        this.cancelActivity(actor);
+      }
+      if (this.advanceActivity(actor, dt)) continue;
+      if (!investigating && this.startWaypointActivity(actor)) continue;
       const moveTarget = this.moveTarget(actor, dt);
       if (!moveTarget) continue;
 
@@ -43,6 +52,72 @@ export class PatrolSystem {
         return;
       }
       actor.patrolTimer = moveTarget.delay ?? this.waitAfterMove(actor, { reachedTarget: true });
+    }
+  }
+
+  startWaypointActivity(actor) {
+    const patrol = actor?.patrol;
+    if (!patrol || patrol.complete || actor.patrolActivity || !Array.isArray(patrol.path)) return false;
+    const waypointIndex = patrol.index ?? 0;
+    const point = patrol.path[waypointIndex];
+    if (!point?.activity || patrol.activityCompletedIndex === waypointIndex) return false;
+    if (actor.position.x !== point.x || actor.position.y !== point.y) return false;
+
+    const duration = Number.isFinite(point.activity.duration) && point.activity.duration > 0
+      ? point.activity.duration
+      : 2.4;
+    actor.patrolActivity = {
+      waypointIndex,
+      activity: point.activity,
+      elapsed: 0,
+      duration
+    };
+    actor.patrolTimer = 0;
+    const started = this.callbacks.startPatrolActivity?.(actor, point.activity);
+    if (started === false) {
+      actor.patrolActivity = null;
+      patrol.activityCompletedIndex = waypointIndex;
+      this.handleArrival(actor);
+      return true;
+    }
+    this.callbacks.updatePatrolActivity?.(actor, point.activity, 0);
+    return true;
+  }
+
+  advanceActivity(actor, dt) {
+    const state = actor?.patrolActivity;
+    if (!state) return false;
+    const patrol = actor.patrol;
+    const point = patrol?.path?.[state.waypointIndex];
+    if (!patrol || patrol.complete || patrol.index !== state.waypointIndex ||
+      actor.position.x !== point?.x || actor.position.y !== point?.y) {
+      this.cancelActivity(actor);
+      return false;
+    }
+
+    state.elapsed = Math.min(state.duration, state.elapsed + Math.max(0, dt));
+    const progress = state.duration > 0 ? state.elapsed / state.duration : 1;
+    this.callbacks.updatePatrolActivity?.(actor, state.activity, progress);
+    if (progress < 1) return true;
+
+    actor.patrolActivity = null;
+    patrol.activityCompletedIndex = state.waypointIndex;
+    this.callbacks.finishPatrolActivity?.(actor, state.activity, { cancelled: false });
+    this.handleArrival(actor);
+    return true;
+  }
+
+  cancelActivity(actor) {
+    const state = actor?.patrolActivity;
+    if (!state) return false;
+    actor.patrolActivity = null;
+    this.callbacks.finishPatrolActivity?.(actor, state.activity, { cancelled: true });
+    return true;
+  }
+
+  cancelAllActivities() {
+    for (const actor of [...(this.game.enemies ?? []), ...(this.game.npcs ?? [])]) {
+      this.cancelActivity(actor);
     }
   }
 
@@ -88,6 +163,7 @@ export class PatrolSystem {
   advanceIndex(actor) {
     const patrol = actor.patrol;
     if (!patrol || !Array.isArray(patrol.path) || patrol.path.length < 2) return;
+    patrol.activityCompletedIndex = null;
     if (patrol.mode === 'once') {
       const next = (patrol.index ?? 0) + 1;
       if (next >= patrol.path.length) {

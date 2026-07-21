@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-quarters-tent-entry",
+  "title": "Cult-Breaker Quarters",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Bedrolls and field kits line the canvas bays beyond the flap."
+      ],
+      "choices": [
+        {
+          "label": "Enter the quarters",
+          "effects": {
+            "log": "You enter the Cult-Breaker quarters.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_quarters_tent.json",
+              "player": { "x": 6, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside the Cult-Breaker quarters."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

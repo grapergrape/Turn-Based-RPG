@@ -1,13 +1,15 @@
 {
   "id": "catacombs-survivor-runa",
-  "name": "Runa Pell",
+  "name": "Ruth Pistor",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Cook",
   "appearance": {
     "body": "sturdy",
     "outfit": "settlement-cook",
-    "gear": ["long-apron"],
+    "gear": [
+      "long-apron"
+    ],
     "accent": "bare-light"
   },
   "stats": {

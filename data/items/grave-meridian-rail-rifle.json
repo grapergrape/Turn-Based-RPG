@@ -1,0 +1,65 @@
+{
+  "id": "grave-meridian-rail-rifle",
+  "name": "Grave Meridian Rail Rifle",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "rail rifle",
+  "rarity": "rare",
+  "weight": 5.1,
+  "groundModel": "rail-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Meridian Survey",
+    "factions": [
+      "meridian-survey"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "rail rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 10,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 13,
+        "range": 10,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 4,
+      "defaultLoaded": 4,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 88
+  },
+  "description": "A converted geologic launcher with a long optical rail and a brutal stock. Survey crews once used it to drive markers into frozen ground."
+}

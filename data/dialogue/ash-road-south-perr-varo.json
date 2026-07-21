@@ -1,0 +1,70 @@
+{
+  "id": "ash-road-south-perr-varo",
+  "title": "Tobit Faber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Tobit has fitted two mismatched jar handles together with cord.",
+        "\"They hold if you lift both at once. Noa calls that something other than repair, though she still uses them.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what he wants Noa to do",
+          "next": "nel",
+          "effects": {
+            "setFlag": "heard-varo-family-wishes",
+            "questUpdate": {
+              "quest": "household-of-one",
+              "stage": "review-record",
+              "log": "Tobit wants Noa to take the school place and refuses to become the reason she stays."
+            }
+          }
+        },
+        {
+          "label": "Ask whether he can keep the condenser running",
+          "next": "pump"
+        },
+        {
+          "label": "Leave Tobit with the handles",
+          "close": true
+        }
+      ]
+    },
+    "nel": {
+      "lines": [
+        "\"Take the school and send drawings. Come home before Isaac pretends his cough is weather.\"",
+        "\"If she stays for me, every broken pump will know it.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whether he can keep the condenser running",
+          "next": "pump"
+        },
+        {
+          "label": "Let him keep working the handles",
+          "next": "start"
+        },
+        {
+          "label": "Leave Tobit with the handles",
+          "close": true
+        }
+      ]
+    },
+    "pump": {
+      "lines": [
+        "\"Not yet. I know the wash valves and tank scrapers, though Noa says I listen for answers before I know the questions.\"",
+        "\"That means she is teaching me, even when she complains.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to what Noa should do",
+          "next": "nel"
+        },
+        {
+          "label": "Leave Tobit with the handles",
+          "close": true
+        }
+      ]
+    }
+  }
+}

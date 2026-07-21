@@ -1,0 +1,613 @@
+{
+  "id": "old-pilgrim-sealed-chapter",
+  "name": "Sealed Chapter",
+  "intro": "The chapter seal opens on tables and empty cups beside the last congregation. The Oath Armory doors remain untouched.",
+  "width": 46,
+  "height": 36,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#0a0807",
+    "floorShadeAlpha": 0.33,
+    "ambient": "#172635",
+    "ambientAlpha": 0.2,
+    "vignette": 0.38
+  },
+  "quests": [
+    "road-through-the-fields",
+    "the-buried-novitiate",
+    "names-below-the-hill"
+  ],
+  "dialogue": [
+    "old-pilgrim-chapter-to-trials",
+    "old-pilgrim-return-lift",
+    "old-pilgrim-final-water-record"
+  ],
+  "tiles": [
+    "##############################################",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#................................#...........#",
+    "#................................#...........#",
+    "#...........#................................#",
+    "#...........#................................#",
+    "######################..##########.###########",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#.................................#####..#####",
+    "#............................................#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "#...........#....................#...........#",
+    "##########..##########..##############..######",
+    "#................................#...........#",
+    "#................................#...........#",
+    "#................................#...........#",
+    "#............................................#",
+    "#............................................#",
+    "#................................#...........#",
+    "#................................#...........#",
+    "#................................#...........#",
+    "#................................#...........#",
+    "##############################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 23,
+      "y": 33,
+      "facing": "n"
+    },
+    "npcs": [],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "chapel-double-door",
+      "x": 23,
+      "y": 35,
+      "id": "old-pilgrim-chapter-south-door",
+      "name": "Profession Door",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-chapter-to-trials"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 23,
+        "y": 34
+      },
+      "mapMarker": {
+        "label": "Trial Galleries",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 45,
+      "y": 18,
+      "id": "old-pilgrim-chapter-return-lift",
+      "name": "Chapter Return Lift",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-return-lift"
+      },
+      "blocking": true,
+      "orient": "sw",
+      "interactionMarker": {
+        "x": 44,
+        "y": 18
+      },
+      "mapMarker": {
+        "label": "Return Lift",
+        "kind": "exit"
+      }
+    },
+    {
+      "kind": "closure-control-panel",
+      "x": 11,
+      "y": 7,
+      "id": "old-pilgrim-chapter-closure-record",
+      "name": "Chapter Closure Record",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-final-water-record"
+      },
+      "blocking": true,
+      "variant": "chapter-record",
+      "wallPlane": "se",
+      "mapMarker": {
+        "label": "Closure Record",
+        "kind": "note"
+      }
+    },
+    {
+      "kind": "wall-stash",
+      "x": 33,
+      "y": 7,
+      "id": "old-pilgrim-oath-armory-release",
+      "name": "Oath Armory Release",
+      "blocking": true,
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 32,
+        "y": 7
+      },
+      "interact": {
+        "type": "door",
+        "log": "The four profession studs draw both armory leaves into the wall.",
+        "lock": {
+          "id": "old-pilgrim-oath-armory-lock",
+          "title": "Oath Armory",
+          "lines": [
+            "Four profession studs surround a dry, unworn release bar."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-open-oath-armory",
+              "label": "Set the four profession studs",
+              "conditions": {
+                "flagsAtLeast": {
+                  "count": 4,
+                  "of": [
+                    "old-pilgrim-trial-quiet",
+                    "old-pilgrim-trial-service",
+                    "old-pilgrim-trial-burden",
+                    "old-pilgrim-trial-mercy"
+                  ]
+                }
+              },
+              "successLog": "The studs take their trial states. Both armory leaves withdraw.",
+              "success": {
+                "setFlag": "old-pilgrim-oath-armory-open",
+                "openDoorGroup": "old-pilgrim-oath-armory"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Oath Armory",
+        "kind": "locked"
+      }
+    },
+    {
+      "kind": "chapel-double-door",
+      "x": 33,
+      "y": 8,
+      "id": "old-pilgrim-oath-armory-door-north",
+      "name": "Oath Armory Doors",
+      "blocking": true,
+      "passableWhenOpen": true,
+      "doorGroup": "old-pilgrim-oath-armory",
+      "doorLeaf": "north",
+      "wallPlane": "se",
+      "wallSide": "far"
+    },
+    {
+      "kind": "chapel-double-door",
+      "x": 33,
+      "y": 9,
+      "id": "old-pilgrim-oath-armory-door-south",
+      "name": "Oath Armory Doors",
+      "blocking": true,
+      "passableWhenOpen": true,
+      "doorGroup": "old-pilgrim-oath-armory",
+      "doorLeaf": "south",
+      "wallPlane": "se",
+      "wallSide": "far"
+    },
+    {
+      "kind": "damaged-altar",
+      "x": 22,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 19,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "vigil-candle-rack",
+      "x": 25,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "dining-table",
+      "x": 20,
+      "y": 20,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 23,
+      "y": 21,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 5,
+      "y": 15,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 8,
+      "y": 20,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "water-pump",
+      "x": 6,
+      "y": 29,
+      "id": "old-pilgrim-chapter-intake-control",
+      "name": "Chapter Intake Control",
+      "blocking": true,
+      "interact": {
+        "type": "note",
+        "log": "The intake wheel is bent against its open stop. The line beyond it remains dry.",
+        "search": {
+          "id": "old-pilgrim-chapter-intake-search",
+          "title": "Chapter Intake",
+          "lines": [
+            "A second closure tooth sits behind the water wheel. It moved when the outer air seal engaged."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-rebuild-intake-failure",
+              "label": "Rebuild the closure sequence",
+              "field": "engineering",
+              "dc": 32,
+              "successLog": "The regional alarm isolated the hill intake with the outer air. The finite chapter cistern was never replenished.",
+              "failLog": "The bent wheel hides which stop moved first.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-chapter-intake-known",
+                  "old-pilgrim-water-failure-understood"
+                ],
+                "xp": 8,
+                "log": "The pressure system kept contaminated outside water from entering. It also gave the sealed congregation only five days of stored water."
+              }
+            },
+            {
+              "id": "old-pilgrim-match-intake-tallies",
+              "label": "Match the wheel to the water tallies",
+              "field": "search",
+              "dc": 32,
+              "conditions": {
+                "flag": "old-pilgrim-water-tally-read"
+              },
+              "successLog": "The wheel stopped at closure. The dated rings show only the stored cistern falling afterward.",
+              "failLog": "The tally dates and wheel marks will not align from this angle.",
+              "success": {
+                "setFlag": [
+                  "old-pilgrim-chapter-intake-known",
+                  "old-pilgrim-water-failure-understood"
+                ],
+                "xp": 8
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Intake Control",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "settling-tank",
+      "x": 12,
+      "y": 30,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "tool-rack",
+      "x": 39,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "wall-safe",
+      "x": 45,
+      "y": 6,
+      "blocking": true,
+      "wallPlane": "se"
+    },
+    {
+      "kind": "chapel-banner",
+      "x": 40,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 7,
+      "y": 17
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 21,
+      "y": 19
+    },
+    {
+      "kind": "wax-stain",
+      "x": 22,
+      "y": 8
+    },
+    {
+      "kind": "machine-oil",
+      "x": 7,
+      "y": 30
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 30,
+      "y": 12,
+      "id": "old-pilgrim-intact-profession-mark",
+      "blocking": true,
+      "variant": "profession-kept",
+      "visibleWhenFlags": [
+        "old-pilgrim-profession-intact"
+      ]
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 30,
+      "y": 12,
+      "id": "old-pilgrim-forced-profession-mark",
+      "blocking": true,
+      "variant": "profession-forced",
+      "visibleWhenFlags": [
+        "old-pilgrim-profession-forced"
+      ]
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 10,
+      "y": 18,
+      "id": "old-pilgrim-chapter-unsent-clearance",
+      "name": "Unsent Clearance Request",
+      "interact": {
+        "type": "note",
+        "log": "Six copies ask the outside office to test the air and restore the local release. The bell conduit carried no reply."
+      }
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 24,
+      "y": 18,
+      "id": "old-pilgrim-chapter-last-office",
+      "name": "Last Chapter Office",
+      "interact": {
+        "type": "note",
+        "log": "The last office abandons the usual responses. Seven hands signed beneath one instruction: KEEP THE OUTER DOOR SHUT."
+      },
+      "blocking": true,
+      "variant": "last-office"
+    },
+    {
+      "kind": "skeleton",
+      "x": 18,
+      "y": 18,
+      "id": "old-pilgrim-chapter-priest-one",
+      "name": "Priest in the Chapter Circle",
+      "interact": {
+        "type": "note",
+        "log": "The priest died seated against the chapter table. Seven names are cut into the tabletop beside him."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 20,
+      "y": 8,
+      "id": "old-pilgrim-chapter-priest-two",
+      "name": "Priest Beside the Lower Altar",
+      "interact": {
+        "type": "note",
+        "log": "The office stole lies across both forearms. Its last repair used thread pulled from a blanket."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 9,
+      "y": 8,
+      "id": "old-pilgrim-chapter-sister-one",
+      "name": "Nun at the Closure Record",
+      "interact": {
+        "type": "note",
+        "log": "The nun’s hand rests below the final refused release. The writing tool split under her fingers."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 8,
+      "y": 29,
+      "id": "old-pilgrim-chapter-sister-two",
+      "name": "Nun at the Cistern Control",
+      "interact": {
+        "type": "note",
+        "log": "The control wheel was turned until its stop bent. The feed beyond it was already dry."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 24,
+      "y": 22,
+      "id": "old-pilgrim-chapter-novice-one",
+      "name": "Novice Beneath the Chapter Bench",
+      "interact": {
+        "type": "note",
+        "log": "A novice curled beneath the bench with two empty cups and a child’s shoe."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 18,
+      "id": "old-pilgrim-chapter-novice-two",
+      "name": "Novice in the Record Room",
+      "interact": {
+        "type": "note",
+        "log": "The novice sorted the remaining names by day of death. The last seven have no dates."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 26,
+      "y": 8,
+      "id": "old-pilgrim-chapter-pilgrim-one",
+      "name": "Pilgrim at the Lower Chapel",
+      "interact": {
+        "type": "note",
+        "log": "The pilgrim died facing the altar. No black-gold stain marks the bones or cloth."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 41,
+      "y": 19,
+      "id": "old-pilgrim-chapter-pilgrim-two",
+      "name": "Pilgrim Beside the Return Lift",
+      "interact": {
+        "type": "note",
+        "log": "The lift release was struck with a stone until the stone broke. The cage never descended."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 28,
+      "y": 29,
+      "id": "old-pilgrim-chapter-pilgrim-three",
+      "name": "Pilgrim at the Reliquary Store",
+      "interact": {
+        "type": "note",
+        "log": "Empty reliquary boxes were opened for wood shavings. None held food or water."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 22,
+      "y": 18,
+      "id": "old-pilgrim-chapter-last-sister",
+      "name": "Last Sister at the Table",
+      "interact": {
+        "type": "note",
+        "log": "Seven cups stand around the sister’s bones. Each cup is turned mouth-down."
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 28,
+      "y": 30,
+      "id": "old-pilgrim-chapter-reliquary-store",
+      "name": "Reliquary Store",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "Most boxes were broken for fuel or shavings. One sealed compartment still holds a token purse.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 4
+          }
+        ]
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 42,
+      "y": 7,
+      "id": "old-pilgrim-armory-aid-chest",
+      "name": "Road Guard Aid Chest",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The armory kept road-guard dressings and cartridges dry while the congregation died outside its sealed leaves.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 2
+          },
+          {
+            "item": "relic-rounds",
+            "count": 2
+          }
+        ]
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-oath-armory-open"
+      ]
+    },
+    {
+      "kind": "processional-pike-rack",
+      "x": 40,
+      "y": 10,
+      "id": "old-pilgrim-processional-pike-rack",
+      "name": "Processional Pike Rack",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The pike’s road roll first names boars and wheel thieves; a later hand added opened travelers. The bearer walked ahead of the procession to hold danger beyond arm’s reach.",
+        "loot": [
+          {
+            "item": "processional-pike",
+            "count": 1
+          }
+        ],
+        "questUpdate": {
+          "quest": "the-buried-novitiate",
+          "stage": "return-to-light",
+          "log": "The Processional Pike is free of its rack. Its weight releases the chapter return lift."
+        }
+      },
+      "mapMarker": {
+        "label": "Processional Pike",
+        "kind": "quest"
+      }
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "old-pilgrim-chapter-loose-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 15,
+      "y": 28
+    }
+  ]
+}

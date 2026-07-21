@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -34,7 +34,6 @@ import {
 // Furniture and settlement structure primitives.
 
 export function drawBrokenPew(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 8, 68, 21);
   const rng = rngFrom(hash2D(seed + 13, seed * 9 + 1));
 
   // Long chapel bench seat: thin planks, not a solid block.
@@ -108,12 +107,21 @@ export function drawBrokenPew(ctx, cx, cy, seed) {
     px(ctx, cx + 13, cy + 4, PALETTE.rustLight, 1, 1); // the cord's worn token
   }
   drawRubbleCluster(ctx, cx + 28, cy + 12, seed + 33, 2);
+  nativeLinePx(ctx, cx - 25.5, cy - 30.5, cx + 16.5, cy - 41.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 24.5, cy - 19.5, cx + 6.5, cy - 27.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 25.5, cy - 4.5, cx + 25.5, cy - 14.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx + 19.5, cy - 5.5, cx + 33.5, cy - 1.5, PALETTE.woodLight);
+  if ((seed & 1) === 0) {
+    nativeLinePx(ctx, cx - 10.5, cy - 9.5, cx - 5.5, cy - 9.5, PALETTE.stoneDark);
+    nativeLinePx(ctx, cx - 10.5, cy - 7.5, cx - 6.5, cy - 7.5, PALETTE.stoneDark);
+  } else {
+    nativePx(ctx, cx + 13.5, cy + 3.5, PALETTE.hostGold);
+  }
 }
 
 export function drawCanvasTent(ctx, cx, cy, seed) {
   const lean = (seed & 1) ? 2 : -2;
   const rng = rngFrom(hash2D(seed + 211, seed * 3 + 17));
-  drawShadowBlob(ctx, cx, cy + 8, 72, 26);
   poly(ctx, PALETTE.outline, [
     [cx - 34, cy - 2],
     [cx - 4 + lean, cy - 31],
@@ -190,6 +198,13 @@ export function drawCanvasTent(ctx, cx, cy, seed) {
   drawRubbleCluster(ctx, cx - 36, cy + 18, seed + 217, 2);
   drawRubbleCluster(ctx, cx + 38, cy + 17, seed + 219, 2);
   drawNoisePixels(ctx, cx - 30, cy - 28, 60, 42, [PALETTE.stoneDark, PALETTE.rustDark], 0.032, seed);
+  nativeLinePx(ctx, cx - 27.5, cy - 2.5, cx - 7.5 + lean, cy - 24.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx + 1.5 + lean, cy - 25.5, cx + 26.5, cy - 2.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx - 22.5, cy + 0.5, cx + 23.5, cy + 0.5, PALETTE.clothDark);
+  nativeLinePx(ctx, cx - 15.5, cy - 12.5, cx + 10.5, cy + 1.5, PALETTE.clothTan);
+  nativeLinePx(ctx, cx - 39.5, cy + 14.5, cx - 27.5, cy + 6.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 25.5, cy + 6.5, cx + 38.5, cy + 13.5, PALETTE.rustMid);
+  for (let t = 0; t < 4; t += 1) nativePx(ctx, cx + 9.5 + lean + t * 2, cy - 7.5, PALETTE.hostBone);
 }
 
 export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
@@ -200,7 +215,6 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
     const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
     const upper = diamond(cx, cy - 39, TILE_WIDTH - 24, TILE_HEIGHT - 12);
     const ridge = diamond(cx, cy - 51, TILE_WIDTH - 42, TILE_HEIGHT - 18);
-    drawShadowBlob(ctx, cx, cy + 5, 68, 22);
 
     const drawInteriorPanel = (points, lit, sideSeed) => {
       const face = faceTools(ctx, points[0], points[1], points[2], points[3]);
@@ -251,6 +265,11 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
         face.rect(0.7, 0.22, 0.82, 0.3, lit ? PALETTE.clothTan : PALETTE.stoneDark);
         face.line(0.7, 0.29, 0.82, 0.29, PALETTE.rustDark, 1);
       }
+      // Short warp and weft threads stay within the broad canvas panels. The
+      // half-logical width makes the cloth read as woven at native 2x.
+      face.nativeLine(0.12, 0.23, 0.34, 0.245, lit ? PALETTE.hostBone : PALETTE.clothTan);
+      face.nativeLine(0.58, 0.48, 0.82, 0.465, lit ? PALETTE.stoneDust : PALETTE.stoneDark);
+      face.nativeLine(0.31, 0.61, 0.315, 0.74, lit ? PALETTE.clothDark : PALETTE.outline);
     };
 
     if (!connected.yPlus) {
@@ -293,6 +312,8 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
       px(ctx, p[0] - 2, p[1] - h, PALETTE.outline, 5, h + 3);
       px(ctx, p[0] - 1, p[1] - h + 1, PALETTE.woodDark, 3, h);
       px(ctx, p[0], p[1] - h + 2, PALETTE.woodMid, 1, h - 3);
+      nativeLinePx(ctx, p[0] + 0.5, p[1] - h + 3.5, p[0] + 0.5, p[1] - 6.5, PALETTE.woodLight);
+      nativePx(ctx, p[0] - 0.5, p[1] - Math.floor(h * 0.55) + 0.5, PALETTE.stoneDark);
     };
     if (!connected.yPlus && !connected.xMinus) drawPole(base.left, 33);
     if (!connected.yPlus && !connected.xPlus) drawPole(base.bottom, 36);
@@ -333,7 +354,6 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
   const wallTop = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
   const roof = diamond(cx, cy - roofLift, TILE_WIDTH + roofW, TILE_HEIGHT + roofH);
 
-  drawShadowBlob(ctx, cx, cy + 5, 68, 22);
 
   // Weathered Censure field canvas: ash-grey with dark repairs, never bright.
   // Ramp: clothTan (worn hi) / stoneDust (mid) / stoneLight (lo) / clothDark (dk).
@@ -400,6 +420,9 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
       0.06,
       seed + faceSeed
     );
+    face.nativeLine(0.12, 0.24, 0.4, 0.255, lit ? PALETTE.clothTan : PALETTE.stoneDust);
+    face.nativeLine(0.56, 0.52, 0.86, 0.5, lit ? PALETTE.stoneLight : PALETTE.clothDark);
+    face.nativeLine(0.34, 0.63, 0.345, 0.76, lit ? PALETTE.clothDark : PALETTE.outline);
   };
 
   if (!connected.yPlus) {
@@ -512,6 +535,12 @@ export function drawCanvasTentBlock(ctx, cx, cy, seed, opts = {}) {
       interiorCell ? 0.02 : 0.03,
       seed
     );
+    const roofThreadA = mixPoint(roof.left, roof.top, 0.38);
+    const roofThreadB = mixPoint(roof.bottom, roof.right, 0.38);
+    nativeLinePx(ctx, roofThreadA[0] + 0.5, roofThreadA[1] - 0.5, roofThreadB[0] + 0.5, roofThreadB[1] - 0.5, PALETTE.clothTan);
+    const roofThreadC = mixPoint(roof.top, roof.right, 0.64);
+    const roofThreadD = mixPoint(roof.left, roof.bottom, 0.64);
+    nativeLinePx(ctx, roofThreadC[0] - 0.5, roofThreadC[1] + 0.5, roofThreadD[0] - 0.5, roofThreadD[1] + 0.5, PALETTE.clothDark);
   }
 
   if (!connected.yPlus && !connected.xMinus) {
@@ -642,10 +671,15 @@ export function drawCanvasTentFlap(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx + 1, cy - 24, PALETTE.hostRed, 5, 1);
   linePx(ctx, cx, cy - 21, cx + 6, cy - 27, PALETTE.rustMid, 1);
 
+  // Half-pixel canvas fibres follow the projected flap and remain visible in
+  // locked, revealed, and parted states without softening the cloth edges.
+  face.nativeLine(0.12, 0.24, 0.38, 0.24, PALETTE.stoneLight);
+  face.nativeLine(0.6, 0.48, 0.86, 0.48, PALETTE.clothDark);
+  face.nativeLine(0.22, 0.76, 0.45, 0.76, PALETTE.clothTan);
+
 }
 
 export function drawCampBedroll(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 5, 50, 16);
   const flip = (seed & 1) ? -1 : 1;
   const rng = rngFrom(hash2D(seed + 181, seed * 7 + 19));
   poly(ctx, PALETTE.outline, [
@@ -703,10 +737,17 @@ export function drawCampBedroll(ctx, cx, cy, seed) {
     px(ctx, x, y, rng() < 0.5 ? PALETTE.stoneDark : PALETTE.clothTan, 1 + (i & 1), 1);
   }
   drawRubbleCluster(ctx, cx + 25 * flip, cy + 9, seed + 189, 2);
+  nativeLinePx(ctx, cx - 17.5 * flip, cy - 8.5, cx + 15.5 * flip, cy - 8.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx - 15.5 * flip, cy + 0.5, cx + 14.5 * flip, cy + 0.5, PALETTE.clothTan);
+  nativeLinePx(ctx, cx - 20.5 * flip, cy - 3.5, cx - 17.5 * flip, cy + 2.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 17.5 * flip, cy - 6.5, cx + 23.5 * flip, cy - 5.5, PALETTE.stoneDust);
+  for (const t of [-14, 3, 17]) {
+    nativePx(ctx, cx + (t + 3) * flip - 0.5, cy - 2.5, PALETTE.stoneLight);
+  }
+  nativePx(ctx, cx + 21.5 * flip, cy - 4.5, PALETTE.hostGold);
 }
 
 export function drawSettlementTable(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 8, 66, 22);
   const rng = rngFrom(hash2D(seed + 67, seed * 5 + 3));
   const top = [
     [cx - 34, cy - 12],
@@ -789,13 +830,17 @@ export function drawSettlementTable(ctx, cx, cy, seed) {
   px(ctx, cx - 8, cy - 21, PALETTE.outline, 3, 3);
   px(ctx, cx - 7, cy - 21, PALETTE.hostBlack, 1, 2); // the dry ink pot
   px(ctx, cx - 6, cy - 23, PALETTE.stoneLight, 1, 2); // the nib
-
+  nativeLinePx(ctx, cx - 28.5, cy - 13.5, cx + 24.5, cy - 24.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 22.5, cy - 8.5, cx + 27.5, cy - 19.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx - 18.5, cy + 4.5, cx + 15.5, cy - 6.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx + 4.5, cy - 19.5, cx + 8.5, cy - 19.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx + 4.5, cy - 17.5, cx + 8.5, cy - 17.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx - 6.5, cy - 23.5, cx - 3.5, cy - 25.5, PALETTE.stoneLight);
 }
 
 export function drawLowStool(ctx, cx, cy, seed) {
   const lean = (seed & 1) ? 2 : -2;
   const rng = rngFrom(hash2D(seed + 229, seed * 13 + 31));
-  drawShadowBlob(ctx, cx, cy + 5, 34, 13);
   const top = [
     [cx - 18 + lean, cy - 9],
     [cx - 3 + lean, cy - 17],
@@ -850,10 +895,14 @@ export function drawLowStool(ctx, cx, cy, seed) {
     px(ctx, x, y, i % 2 ? PALETTE.woodLight : PALETTE.stoneDark, 2, 1);
   }
   drawRubbleCluster(ctx, cx - 16 + lean, cy + 9, seed + 235, 2);
+  nativeLinePx(ctx, cx - 12.5 + lean, cy - 9.5, cx + 8.5 + lean, cy - 16.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 7.5 + lean, cy - 4.5, cx + 13.5 + lean, cy - 11.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx - 11.5 + lean, cy + 3.5, cx + 10.5 + lean, cy - 3.5, PALETTE.woodLight);
+  nativePx(ctx, cx + 12.5 + lean, cy - 11.5, PALETTE.stoneLight);
+  if ((seed & 3) === 1) nativeLinePx(ctx, cx + 2.5 + lean, cy - 15.5, cx + 4.5 + lean, cy - 15.5, PALETTE.stoneLight);
 }
 
 export function drawKitchenHearth(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 8, 64, 22);
   const rng = rngFrom(hash2D(seed + 83, seed * 7 + 9));
   drawIsoPrism(ctx, cx, cy + 2, 60, 28, 15, {
     top: PALETTE.stoneMid,
@@ -942,11 +991,15 @@ export function drawKitchenHearth(ctx, cx, cy, seed) {
   px(ctx, cx - 4, cy - 13, PALETTE.stoneDark, 5, 3); // the pot
   px(ctx, cx - 3, cy - 13, PALETTE.stoneMid, 2, 1); // its lit rim
   px(ctx, cx + 1, cy - 17, PALETTE.woodLight, 1, 4); // the spoon, standing
-
+  nativeLinePx(ctx, cx - 22.5, cy - 17.5, cx - 5.5, cy - 26.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 4.5, cy - 23.5, cx + 20.5, cy - 16.5, PALETTE.stoneMid);
+  nativeLinePx(ctx, cx - 12.5, cy - 11.5, cx + 5.5, cy - 13.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx - 3.5, cy - 13.5, cx + 1.5, cy - 13.5, PALETTE.stoneLight);
+  nativePx(ctx, cx - 3.5, cy - 4.5, PALETTE.hostGlow);
+  nativePx(ctx, cx - 6.5, cy - 5.5, PALETTE.hostGold);
 }
 
 export function drawPantryShelf(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 7, 43, 17);
   const lean = (seed & 1) ? 2 : -2;
   const rng = rngFrom(hash2D(seed + 97, seed * 11 + 5));
   linePx(ctx, cx - 21 + lean, cy - 55, cx - 24 + lean, cy + 1, PALETTE.outline, 4);
@@ -1005,11 +1058,17 @@ export function drawPantryShelf(ctx, cx, cy, seed) {
   px(ctx, cx - 1, cy - 5, PALETTE.stoneMid, 4, 2); // the tipped jar
   px(ctx, cx + 3, cy - 4, PALETTE.void, 2, 1); // its empty mouth
   for (let d = 0; d < 4; d += 1) px(ctx, cx - 10 + d * 4, cy - 2, PALETTE.hostBlack, 1, 1);
-
+  nativeLinePx(ctx, cx - 19.5 + lean, cy - 52.5, cx - 22.5 + lean, cy - 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx + 18.5 + lean, cy - 50.5, cx + 16.5 + lean, cy + 0.5, PALETTE.woodMid);
+  for (const y of [-46.5, -32.5, -17.5]) {
+    nativeLinePx(ctx, cx - 17.5 + lean, cy + y, cx + 14.5 + lean, cy + y, PALETTE.woodLight);
+  }
+  nativeLinePx(ctx, cx - 11.5 + lean, cy - 47.5, cx - 7.5 + lean, cy - 47.5, PALETTE.stoneLight);
+  nativePx(ctx, cx + 3.5 + lean, cy - 43.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx - 0.5, cy - 5.5, cx + 3.5, cy - 4.5, PALETTE.stoneLight);
 }
 
 export function drawWashTub(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 6, 43, 15);
   const shift = (seed & 1) ? 1 : -1;
   const rng = rngFrom(hash2D(seed + 193, seed * 17 + 5));
   const rim = [
@@ -1079,7 +1138,14 @@ export function drawWashTub(ctx, cx, cy, seed) {
   px(ctx, cx + 18 + shift, cy - 16, PALETTE.outline, 4, 6);
   px(ctx, cx + 19 + shift, cy - 15, PALETTE.stoneLight, 2, 4); // the shard
   px(ctx, cx + 19 + shift, cy - 15, PALETTE.hostBone, 1, 1); // its catch of light
-
+  nativeLinePx(ctx, cx - 10.5 + shift, cy - 18.5, cx + 8.5 + shift, cy - 11.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 16.5 + shift, cy - 6.5, cx + 14.5 + shift, cy - 6.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 14.5 + shift, cy + 1.5, cx + 11.5 + shift, cy + 1.5, PALETTE.woodLight);
+  for (const dx of [-16.5, -7.5, 3.5, 13.5]) {
+    nativeLinePx(ctx, cx + dx + shift, cy - 5.5, cx + dx + 2.5 + shift, cy + 2.5, PALETTE.woodMid);
+  }
+  nativeLinePx(ctx, cx + 18.5 + shift, cy - 14.5, cx + 19.5 + shift, cy - 11.5, PALETTE.hostBone);
+  nativePx(ctx, cx + 3.5 + shift, cy - 12.5, PALETTE.hostRed);
 }
 
 export function drawDiningTable(ctx, cx, cy, seed, opts = {}) {
@@ -1090,7 +1156,6 @@ export function drawDiningTable(ctx, cx, cy, seed, opts = {}) {
   const legH = 13;
   const slabT = 5;
   const ext = footprintExtent(lenA, lenB);
-  drawShadowBlob(ctx, cx, cy + 5, ext.w * 0.82, ext.h * 0.82);
 
   const ha = lenA / 2;
   const hb = lenB / 2;
@@ -1173,7 +1238,14 @@ export function drawDiningTable(ctx, cx, cy, seed, opts = {}) {
   const dropped = frame.point(0.62, 0.4, 0);
   px(ctx, dropped[0] - 2, dropped[1] + 2, PALETTE.outline, 5, 3);
   px(ctx, dropped[0] - 1, dropped[1] + 2, PALETTE.stoneMid, 3, 2); // on its rim
-
+  const grainA = frame.point(-ha + 0.08, -0.28, setTop);
+  const grainB = frame.point(ha - 0.08, -0.28, setTop);
+  nativeLinePx(ctx, grainA[0], grainA[1], grainB[0], grainB[1], PALETTE.woodLight);
+  const grainC = frame.point(-ha + 0.08, 0.26, setTop);
+  const grainD = frame.point(ha - 0.08, 0.26, setTop);
+  nativeLinePx(ctx, grainC[0], grainC[1], grainD[0], grainD[1], PALETTE.woodDark);
+  nativeLinePx(ctx, cup[0] - 1.5, cup[1] - 4.5, cup[0] + 1.5, cup[1] - 4.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, bread[0] - 1.5, bread[1] - 3.5, bread[0] + 1.5, bread[1] - 2.5, PALETTE.clothTan);
 }
 
 export function drawDiningBench(ctx, cx, cy, seed, opts = {}) {
@@ -1184,7 +1256,6 @@ export function drawDiningBench(ctx, cx, cy, seed, opts = {}) {
   const legH = 8;
   const slabT = 3;
   const ext = footprintExtent(lenA, lenB);
-  drawShadowBlob(ctx, cx, cy + 3, ext.w * 0.78, ext.h * 0.92);
 
   const ha = lenA / 2;
   const hb = lenB / 2;
@@ -1235,7 +1306,13 @@ export function drawDiningBench(ctx, cx, cy, seed, opts = {}) {
   px(ctx, carve[0], carve[1], PALETTE.woodLight, 2, 2);
   px(ctx, carve[0] + 3, carve[1] + 1, PALETTE.woodLight, 1, 1); // the plus
   px(ctx, carve[0] + 5, carve[1], PALETTE.woodLight, 2, 2);
-
+  const fineA = frame.point(-ha + 0.08, -0.08, legH + slabT);
+  const fineB = frame.point(ha - 0.08, -0.08, legH + slabT);
+  nativeLinePx(ctx, fineA[0], fineA[1], fineB[0], fineB[1], PALETTE.woodLight);
+  const edgeA = frame.point(-ha + 0.12, 0.1, legH + 1.5);
+  const edgeB = frame.point(ha - 0.12, 0.1, legH + 1.5);
+  nativeLinePx(ctx, edgeA[0], edgeA[1], edgeB[0], edgeB[1], PALETTE.woodMid);
+  nativePx(ctx, carve[0] + 3.5, carve[1] + 0.5, PALETTE.stoneDust);
 }
 
 export function drawKitchenCounter(ctx, cx, cy, seed, opts = {}) {
@@ -1246,7 +1323,6 @@ export function drawKitchenCounter(ctx, cx, cy, seed, opts = {}) {
   const baseH = 16;
   const topT = 4;
   const ext = footprintExtent(lenA, lenB);
-  drawShadowBlob(ctx, cx, cy + 6, ext.w * 0.86, ext.h * 0.86);
 
   // Stone base.
   const base = orientedBox(ctx, frame, lenA, lenB, baseH, {
@@ -1327,7 +1403,12 @@ export function drawKitchenCounter(ctx, cx, cy, seed, opts = {}) {
   const hand = frame.point(-0.3, 0.14, workTop ?? 16);
   px(ctx, hand[0] - 2, hand[1] - 1, PALETTE.stoneDust, 5, 3); // the palm
   for (let f = 0; f < 4; f += 1) px(ctx, hand[0] - 2 + f * 2, hand[1] - 3, PALETTE.stoneDust, 1, 2);
-
+  nativeLinePx(ctx, top.cap.left[0] + 1.5, top.cap.left[1] - 0.5, top.cap.top[0] - 1.5, top.cap.top[1] + 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, top.cap.top[0] + 1.5, top.cap.top[1] + 1.5, top.cap.right[0] - 1.5, top.cap.right[1] - 0.5, PALETTE.woodMid);
+  nativeLinePx(ctx, board[0] - 5.5, board[1] - 1.5, board[0] + 5.5, board[1] - 1.5, PALETTE.woodLight);
+  nativeLinePx(ctx, k0[0], k0[1] - 0.5, k1[0], k1[1] - 0.5, PALETTE.hostBone);
+  nativeLinePx(ctx, jar[0] - 1.5, jar[1] - 6.5, jar[0] - 1.5, jar[1] - 2.5, PALETTE.rustLight);
+  nativePx(ctx, hand[0] - 0.5, hand[1] - 1.5, PALETTE.hostBone);
 }
 
 export function drawFarmPrepTable(ctx, cx, cy, seed, opts = {}) {
@@ -1340,7 +1421,6 @@ export function drawFarmPrepTable(ctx, cx, cy, seed, opts = {}) {
   const ext = footprintExtent(lenA, lenB);
   const ha = lenA / 2;
   const hb = lenB / 2;
-  drawShadowBlob(ctx, cx, cy + 5, ext.w * 0.82, ext.h * 0.86);
 
   const legs = [
     frame.point(-ha + 0.07, -hb + 0.08),
@@ -1411,12 +1491,18 @@ export function drawFarmPrepTable(ctx, cx, cy, seed, opts = {}) {
   px(ctx, chop[0] - 1, chop[1], PALETTE.void, 1, 2); // the cut
   px(ctx, chop[0], chop[1] - 5, PALETTE.stoneLight, 1, 5); // the blade, standing
   px(ctx, chop[0] - 1, chop[1] - 7, PALETTE.woodDark, 3, 2); // its grip
-
+  nativeLinePx(ctx, box.cap.left[0] + 1.5, box.cap.left[1] - 0.5, box.cap.top[0] - 1.5, box.cap.top[1] + 0.5, PALETTE.woodLight);
+  const prepGrainA = frame.point(-ha + 0.08, 0.22, topH);
+  const prepGrainB = frame.point(ha - 0.08, 0.22, topH);
+  nativeLinePx(ctx, prepGrainA[0], prepGrainA[1], prepGrainB[0], prepGrainB[1], PALETTE.woodDark);
+  nativeLinePx(ctx, board[0] - 6.5, board[1] - 1.5, board[0] + 5.5, board[1] - 1.5, PALETTE.woodLight);
+  nativeLinePx(ctx, knifeA[0], knifeA[1] - 0.5, knifeB[0], knifeB[1] - 0.5, PALETTE.hostBone);
+  nativeLinePx(ctx, sack[0] - 3.5, sack[1] - 6.5, sack[0] + 2.5, sack[1] - 6.5, PALETTE.stoneDust);
+  nativePx(ctx, chop[0] - 0.5, chop[1] - 4.5, PALETTE.hostBone);
 }
 
 export function drawFarmKitchenHearth(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 127, seed * 11 + 41));
-  drawShadowBlob(ctx, cx, cy + 8, 60, 22);
 
   drawIsoPrism(ctx, cx, cy + 2, 58, 26, 11, {
     top: PALETTE.clothTan,
@@ -1499,11 +1585,16 @@ export function drawFarmKitchenHearth(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 25, cy + 11, seed + 131, 2);
   drawNoisePixels(ctx, cx - 24, cy - 22, 48, 26, [PALETTE.rustDark, PALETTE.woodDark, PALETTE.stoneDark], 0.045, seed);
+  nativeLinePx(ctx, cx - 21.5, cy - 17.5, cx - 4.5, cy - 25.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx + 4.5, cy - 24.5, cx + 20.5, cy - 16.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 9.5, cy - 11.5, cx + 4.5, cy - 12.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx + 13.5, cy - 20.5, cx + 18.5, cy - 20.5, PALETTE.rustLight);
+  nativePx(ctx, cx - 4.5, cy - 6.5, PALETTE.hostGold);
+  nativePx(ctx, cx - 1.5, cy - 5.5, PALETTE.hostGlow);
 }
 
-export function drawSealedStorageCrate(ctx, cx, cy, seed) {
+export function drawSealedStorageCrate(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 47, seed * 5 + 11));
-  drawShadowBlob(ctx, cx, cy + 8, 66, 18);
 
   const top = [
     [cx - 34, cy - 14],
@@ -1601,10 +1692,58 @@ export function drawSealedStorageCrate(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 31, cy + 14, seed + 53, 2);
   drawNoisePixels(ctx, cx - 31, cy - 23, 62, 34, [PALETTE.woodDark, PALETTE.rustDark, PALETTE.stoneDark], 0.026, seed);
+
+  if (opts.opened) {
+    poly(ctx, PALETTE.outline, [
+      [cx - 32, cy - 15],
+      [cx - 8, cy - 27],
+      [cx + 32, cy - 13],
+      [cx + 8, cy + 2]
+    ]);
+    poly(ctx, PALETTE.void, [
+      [cx - 27, cy - 14],
+      [cx - 7, cy - 24],
+      [cx + 26, cy - 12],
+      [cx + 7, cy - 2]
+    ]);
+    // The requisition lid is forced back against its rear hinges. Its split
+    // paper seal and dangling cord distinguish this from an ordinary crate.
+    poly(ctx, PALETTE.outline, [
+      [cx - 30, cy - 18],
+      [cx - 25, cy - 45],
+      [cx + 22, cy - 33],
+      [cx + 30, cy - 14]
+    ]);
+    poly(ctx, PALETTE.woodDark, [
+      [cx - 27, cy - 19],
+      [cx - 23, cy - 42],
+      [cx + 20, cy - 31],
+      [cx + 27, cy - 15]
+    ]);
+    poly(ctx, PALETTE.clothTan, [
+      [cx - 18, cy - 24],
+      [cx - 15, cy - 37],
+      [cx + 11, cy - 31],
+      [cx + 14, cy - 20]
+    ]);
+    px(ctx, cx - 3, cy - 29, PALETTE.void, 3, 6);
+    px(ctx, cx - 2, cy - 30, PALETTE.hostRed, 2, 2);
+    linePx(ctx, cx - 1, cy - 17, cx + 7, cy - 8, PALETTE.clothTan, 1);
+    px(ctx, cx - 21, cy - 7, PALETTE.woodMid, 28, 2);
+  }
+  nativeLinePx(ctx, cx - 27.5, cy - 13.5, cx + 6.5, cy + 1.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 25.5, cy - 7.5, cx + 5.5, cy + 5.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx + 11.5, cy + 3.5, cx + 30.5, cy - 8.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 21.5, cy - 8.5, cx - 1.5, cy - 19.5, PALETTE.rustMid);
+  nativePx(ctx, cx + 1.5, cy + 4.5, PALETTE.hostGold);
+  if (opts.opened) {
+    nativeLinePx(ctx, cx - 21.5, cy - 39.5, cx + 18.5, cy - 29.5, PALETTE.woodLight);
+    nativeLinePx(ctx, cx - 15.5, cy - 35.5, cx + 10.5, cy - 29.5, PALETTE.stoneDust);
+    nativeLinePx(ctx, cx - 0.5, cy - 16.5, cx + 6.5, cy - 8.5, PALETTE.clothTan);
+  }
 }
 
 export function drawRustedBarrel(ctx, cx, cy, seed, opts = {}) {
-  drawShadowBlob(ctx, cx, cy + 6, 34, 15);
   const rng = rngFrom(hash2D(seed + 173, seed * 17 + 3));
 
   // Rasterized cylinder: stepped oval caps and row-width changes avoid a box.
@@ -1672,9 +1811,109 @@ export function drawRustedBarrel(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx + 4, cy - 29, PALETTE.stoneMid, 3, 3);
   px(ctx, cx + 4, cy - 30, PALETTE.stoneLight, 2, 1);
 
+  if (opts.opened) {
+    // The inner rim is empty, one stave is split, and the lid lies against the
+    // contact shadow. This reads as looted while preserving the barrel body.
+    px(ctx, cx - 13, cy - 29, PALETTE.outline, 27, 5);
+    px(ctx, cx - 10, cy - 28, PALETTE.void, 21, 3);
+    px(ctx, cx - 7, cy - 27, PALETTE.rustDark, 13, 1);
+    poly(ctx, PALETTE.outline, [
+      [cx + 9, cy + 1],
+      [cx + 23, cy - 5],
+      [cx + 34, cy],
+      [cx + 20, cy + 8]
+    ]);
+    poly(ctx, PALETTE.rustDark, [
+      [cx + 13, cy + 1],
+      [cx + 23, cy - 3],
+      [cx + 30, cy],
+      [cx + 20, cy + 5]
+    ]);
+    linePx(ctx, cx + 15, cy, cx + 29, cy + 1, PALETTE.rustLight, 1);
+    px(ctx, cx - 17, cy - 15, PALETTE.void, 5, 9);
+    px(ctx, cx - 15, cy - 15, PALETTE.rustLight, 2, 7);
+  }
+  nativeLinePx(ctx, cx - 14.5, cy - 27.5, cx + 14.5, cy - 27.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 14.5, cy - 18.5, cx + 14.5, cy - 18.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 13.5, cy - 7.5, cx + 13.5, cy - 7.5, PALETTE.rustMid);
+  nativeLinePx(ctx, cx - 10.5, cy - 22.5, cx - 10.5, cy - 2.5, PALETTE.rustLight);
+  nativePx(ctx, cx + 3.5, cy - 29.5, PALETTE.hostGold);
+  if (opts.ladder) {
+    nativeLinePx(ctx, cx - 5.5, cy - 56.5, cx - 5.5, cy - 25.5, PALETTE.woodLight);
+    nativeLinePx(ctx, cx + 4.5, cy - 56.5, cx + 4.5, cy - 25.5, PALETTE.woodMid);
+  }
+  if (opts.opened) {
+    nativeLinePx(ctx, cx - 9.5, cy - 27.5, cx + 9.5, cy - 27.5, PALETTE.rustLight);
+    nativeLinePx(ctx, cx + 13.5, cy + 0.5, cx + 28.5, cy + 0.5, PALETTE.rustLight);
+    nativeLinePx(ctx, cx - 14.5, cy - 14.5, cx - 14.5, cy - 8.5, PALETTE.rustLight);
+  }
+}
+
+function drawCellarStairFlight(ctx, cx, cy, seed, opts = {}) {
+  const frame = isoFrame(cx, cy, opts.orient);
+
+  // Five broad treads rise toward the wall opening. The stepped silhouette is
+  // deliberately much longer than the ordinary one-tile threshold landing so
+  // a cellar arrival reads as a real flight in native and broad views.
+  const steps = [];
+  for (let i = 0; i < 5; i += 1) {
+    const la = -0.68 + i * 0.34;
+    const rise = 4 + i * 6;
+    const center = frame.point(la, 0, 0);
+    const stepFrame = isoFrame(center[0], center[1], opts.orient);
+    const step = orientedBox(ctx, stepFrame, 0.38, 0.78, rise, {
+      top: i % 2 ? PALETTE.stoneMid : PALETTE.stoneDust,
+      lit: PALETTE.stoneMid,
+      shade: PALETTE.stoneDark,
+      outline: PALETTE.outline
+    });
+    linePx(ctx, step.cap.left[0], step.cap.left[1], step.cap.top[0], step.cap.top[1], PALETTE.stoneLight, 2);
+    linePx(ctx, step.cap.left[0], step.cap.left[1] + 1, step.cap.bottom[0], step.cap.bottom[1] + 1, PALETTE.outline, 1);
+    steps.push({ la, rise, step });
+  }
+
+  // Dark masonry mouth behind the top tread, with a bright threshold edge.
+  const mouth = frame.point(0.86, 0, 33);
+  drawIsoDiamond(ctx, mouth[0], mouth[1], 39, 18, PALETTE.outline);
+  drawIsoDiamond(ctx, mouth[0], mouth[1] + 1, 31, 13, PALETTE.void);
+  const lipA = frame.point(0.7, -0.34, 31);
+  const lipB = frame.point(0.7, 0.34, 31);
+  linePx(ctx, lipA[0], lipA[1], lipB[0], lipB[1], PALETTE.stoneLight, 2);
+
+  // Iron handrails climb with the tread line and terminate in large floor
+  // shoes. Their repeated rise is a second unambiguous stair cue.
+  for (const lb of [-0.43, 0.43]) {
+    let previous = null;
+    for (let i = 0; i < 5; i += 1) {
+      const la = -0.68 + i * 0.34;
+      const rise = 4 + i * 6;
+      const foot = frame.point(la, lb, rise);
+      const top = frame.point(la, lb, rise + 22);
+      linePx(ctx, foot[0], foot[1], top[0], top[1], PALETTE.outline, 3);
+      linePx(ctx, foot[0] - 1, foot[1] - 1, top[0] - 1, top[1] - 1, PALETTE.rustLight, 1);
+      px(ctx, foot[0] - 3, foot[1] - 1, PALETTE.outline, 7, 3);
+      if (previous) linePx(ctx, previous[0], previous[1], top[0], top[1], PALETTE.outline, 4);
+      previous = top;
+    }
+  }
+
+  // Central boot polish and pale edge chips survive the ambient cellar wash.
+  for (let i = 0; i < 5; i += 1) {
+    const la = -0.68 + i * 0.34;
+    const rise = 5 + i * 6;
+    const wear = frame.point(la, 0, rise);
+    px(ctx, wear[0] - 5, wear[1] - 1, i < 2 ? PALETTE.stoneDark : PALETTE.stoneLight, 11, 2);
+    nativePx(ctx, wear[0] - 4.5, wear[1] - 1.5, PALETTE.stoneLight);
+  }
+  const grit = frame.point(-0.78, 0.38, 1);
+  drawRubbleCluster(ctx, grit[0], grit[1], seed + 211, 2);
 }
 
 export function drawStoneStairwell(ctx, cx, cy, seed, opts = {}) {
+  if (opts.variant === 'cellar-flight') {
+    drawCellarStairFlight(ctx, cx, cy, seed, opts);
+    return;
+  }
   // A worn threshold landing: the flat stone you stand on before taking the
   // narrow stair cut through the chapel wall. The stair itself descends INSIDE
   // the wall (the adjacent wall-stair-door fixture), so this is the approach,
@@ -1686,7 +1925,6 @@ export function drawStoneStairwell(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient);
   const at = (la, lb, h = 0) => frame.point(la, lb, h);
 
-  drawShadowBlob(ctx, cx, cy + 3, 62, 24);
 
   const H = 6; // the laid landing block rises above the floor plane so it reads
   // The set flagstone: a full-tile block with real thickness, cut from paler
@@ -1785,4 +2023,14 @@ export function drawStoneStairwell(ctx, cx, cy, seed, opts = {}) {
     px(ctx, chip[0], chip[1] - 2, PALETTE.outline, 4, 3);
     px(ctx, chip[0] + 1, chip[1] - 2, PALETTE.stoneDust, 2, 1);
   }
+
+  // Fine flagstone grain stays inside the landing cap and follows its local
+  // axes, so both authored orientations gain real native-scale stone detail.
+  const grainA = at(-0.31, 0.11, H + 0.5);
+  const grainB = at(-0.07, 0.11, H + 0.5);
+  nativeLinePx(ctx, grainA[0], grainA[1], grainB[0], grainB[1], PALETTE.stoneLight);
+  const wearA = at(0.02, -0.05, H + 0.5);
+  const wearB = at(0.24, -0.02, H + 0.5);
+  nativeLinePx(ctx, wearA[0], wearA[1], wearB[0], wearB[1], PALETTE.stoneMid);
+  nativePx(ctx, ring[0] + 0.5, ring[1] - 1.5, PALETTE.rustLight);
 }

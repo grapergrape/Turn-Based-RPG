@@ -1,0 +1,12 @@
+{
+  "id": "long-armature-ammo",
+  "name": "Long Ferrous Armatures",
+  "type": "ammo",
+  "rarity": "uncommon",
+  "weight": 0.11,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "long-armature"
+  },
+  "description": "Machined iron armatures for coil rifles and railguns. Each one must be straight, balanced, and free of rust."
+}

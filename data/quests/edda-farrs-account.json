@@ -1,0 +1,52 @@
+{
+  "id": "edda-farrs-account",
+  "title": "Deborah Carbo's Account",
+  "initialStage": "speak-to-edda",
+  "objectives": [
+    {
+      "text": "Ask Deborah Carbo what happened to her cart.",
+      "stage": "find-purse"
+    },
+    {
+      "text": "Recover Deborah's flat purse from the stolen cart.",
+      "stage": "return-purse"
+    },
+    {
+      "text": "Return the twenty ducats to Deborah.",
+      "stage": "disputed-count"
+    },
+    {
+      "text": "Settle Deborah's revised count.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "speak-to-edda",
+      "task": "Speak with Deborah Carbo",
+      "description": "Deborah Carbo sits beside spilled charcoal outside the calcified graveyard. Her cart is gone and one boot will not lace."
+    },
+    {
+      "id": "find-purse",
+      "task": "Find the stolen cart",
+      "description": "Cultists took Deborah's cart north with a flat purse tied beneath the bed. She says the purse held twenty ducats."
+    },
+    {
+      "id": "return-purse",
+      "task": "Return twenty ducats",
+      "xp": 15,
+      "description": "The flat purse beneath Deborah's stolen cart held twenty ducats, exactly the count she gave."
+    },
+    {
+      "id": "disputed-count",
+      "task": "Settle Deborah's revised count",
+      "description": "Deborah pocketed the recovered twenty ducats. The promised payment stayed hidden while she claimed another five were missing."
+    },
+    {
+      "id": "complete",
+      "task": "Deborah's account is closed",
+      "xp": 20,
+      "description": "Deborah closed the account at the number she preferred. The promised payment never appeared."
+    }
+  ]
+}

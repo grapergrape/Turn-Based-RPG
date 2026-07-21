@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-daro-mett",
+  "name": "Darius Secundus",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Freight factor and debt holder",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "heavy",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-light"
+  }
+}

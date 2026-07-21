@@ -7,12 +7,21 @@ export function meetsDialogueConditions(conditions, state = {}) {
   const fieldRating = state.fieldRating ?? (() => Number.NEGATIVE_INFINITY);
   const traceValue = state.traceValue ?? (() => 0);
   const itemCount = state.itemCount ?? (() => 0);
+  const playerWounded = state.playerWounded ?? (() => false);
 
   for (const flag of [].concat(conditions.flag ?? [], conditions.flags ?? [])) {
     if (!flags.has(flag)) return false;
   }
   for (const flag of [].concat(conditions.notFlag ?? [], conditions.flagsAbsent ?? [])) {
     if (flags.has(flag)) return false;
+  }
+  if (conditions.flagsAtLeast !== undefined) {
+    const required = conditions.flagsAtLeast;
+    const count = Number(required?.count);
+    const candidates = Array.isArray(required?.of) ? required.of : [];
+    if (!Number.isInteger(count) || count < 1 || candidates.filter((flag) => flags.has(flag)).length < count) {
+      return false;
+    }
   }
   for (const [questId, stage] of Object.entries(conditions.questStages ?? {})) {
     if (questStages.get(questId) !== stage) return false;
@@ -35,6 +44,8 @@ export function meetsDialogueConditions(conditions, state = {}) {
   for (const [itemId, maximum] of Object.entries(conditions.itemsMax ?? {})) {
     if (typeof maximum !== 'number' || itemCount(itemId) > maximum) return false;
   }
+  if (conditions.playerWounded !== undefined &&
+      Boolean(playerWounded()) !== conditions.playerWounded) return false;
   if (conditions.traceMin !== undefined && traceValue() < conditions.traceMin) return false;
   if (conditions.traceMax !== undefined && traceValue() > conditions.traceMax) return false;
   return true;

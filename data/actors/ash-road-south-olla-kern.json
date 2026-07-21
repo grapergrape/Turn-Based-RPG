@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-olla-kern",
+  "name": "Orpah Victor",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Axle fitter",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "sturdy",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "tool-roll"
+    ],
+    "accent": "bare-grey"
+  }
+}

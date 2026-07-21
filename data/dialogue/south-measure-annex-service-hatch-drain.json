@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-annex-service-hatch-drain",
+  "title": "Annex Service Hatch",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A low iron hatch opens toward the relief annex apron."
+      ],
+      "choices": [
+        {
+          "label": "Climb to the annex apron",
+          "effects": {
+            "log": "You leave the drain through the annex service hatch.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 20,
+                "y": 25,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Keep to the channel",
+          "effects": {
+            "log": "You leave the service hatch closed."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

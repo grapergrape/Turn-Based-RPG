@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -32,6 +32,48 @@ import {
 } from './basePixels.js';
 
 // Ground item pickup models.
+
+const WEAPON_GROUND_MODELS = new Set([
+  'sidearm', 'accelerator-sidearm', 'smg', 'carbine', 'rifle', 'shotgun',
+  'support-gun', 'precision-rifle', 'accelerator-rifle', 'rail-rifle',
+  'knife', 'sword', 'axe', 'blunt', 'pike', 'tool-weapon'
+]);
+
+export const GROUND_ITEM_MODEL_IDS = Object.freeze([
+  'ball',
+  'boots',
+  'coat',
+  'hood',
+  'vest',
+  'ribguard',
+  'ring',
+  'necklace',
+  'key',
+  'paper',
+  'vial',
+  'dressing',
+  'food',
+  'rounds',
+  'sidearm',
+  'accelerator-sidearm',
+  'smg',
+  'carbine',
+  'rifle',
+  'shotgun',
+  'support-gun',
+  'precision-rifle',
+  'accelerator-rifle',
+  'rail-rifle',
+  'knife',
+  'sword',
+  'axe',
+  'blunt',
+  'pike',
+  'tool-weapon',
+  'chit',
+  'shard',
+  'token'
+]);
 
 export function drawGroundItem(ctx, cx, cy, seed, opts = {}) {
   const drop = Math.max(0, Math.min(1, Number(opts.drop ?? 1)));
@@ -48,7 +90,6 @@ export function drawGroundItem(ctx, cx, cy, seed, opts = {}) {
   ctx.globalAlpha *= fade;
   ctx.save();
   ctx.globalAlpha *= Math.max(0.18, drop) * Math.max(0.2, 1 - pickup);
-  drawShadowBlob(ctx, cx + jitterX, cy + 4 + jitterY, 28, 10);
   ctx.restore();
 
   drawLootBackplate(ctx, ix, iy, seed, backPlateColor(opts.model));
@@ -59,7 +100,7 @@ export function drawGroundItem(ctx, cx, cy, seed, opts = {}) {
 
 function backPlateColor(model) {
   if (model === 'paper' || model === 'dressing' || model === 'shard') return PALETTE.stoneDark;
-  if (model === 'boots' || model === 'coat' || model === 'hood' || model === 'vest' || model === 'sidearm') return PALETTE.woodDark;
+  if (model === 'boots' || model === 'coat' || model === 'hood' || model === 'vest' || WEAPON_GROUND_MODELS.has(model)) return PALETTE.woodDark;
   return PALETTE.clothDark;
 }
 
@@ -171,6 +212,29 @@ function drawGroundItemModel(ctx, model = 'token', cx, cy, seed, back = false) {
     case 'sidearm':
       drawGroundSidearm(ctx, cx, cy, back);
       break;
+    case 'accelerator-sidearm':
+      drawGroundAcceleratorSidearm(ctx, cx, cy, back);
+      break;
+    case 'smg':
+    case 'carbine':
+    case 'rifle':
+    case 'shotgun':
+    case 'support-gun':
+    case 'precision-rifle':
+    case 'accelerator-rifle':
+    case 'rail-rifle':
+      drawGroundLongGun(ctx, model, cx, cy, back);
+      break;
+    case 'knife':
+    case 'sword':
+    case 'axe':
+    case 'blunt':
+    case 'tool-weapon':
+      drawGroundMeleeWeapon(ctx, model, cx, cy, back);
+      break;
+    case 'pike':
+      drawGroundPike(ctx, cx, cy, back);
+      break;
     case 'chit':
       drawGroundChit(ctx, cx, cy, back);
       break;
@@ -182,10 +246,118 @@ function drawGroundItemModel(ctx, model = 'token', cx, cy, seed, back = false) {
       drawGroundToken(ctx, cx, cy, back);
       break;
   }
+  drawNativeGroundItemDetail(ctx, model, cx, cy, back);
+}
+
+function drawNativeGroundItemDetail(ctx, model, cx, cy, back) {
+  const metalLight = back ? PALETTE.rustLight : PALETTE.hostBone;
+  const clothLight = back ? PALETTE.stoneMid : PALETTE.stoneDust;
+  switch (model) {
+    case 'ball':
+      nativeLinePx(ctx, cx - 5.5, cy - 9.5, cx + 3.5, cy - 12.5, PALETTE.clothBlue);
+      nativePx(ctx, cx + 2.5, cy - 13.5, PALETTE.hostBone);
+      break;
+    case 'boots':
+      nativeLinePx(ctx, cx - 10.5, cy - 7.5, cx - 10.5, cy - 1.5, PALETTE.woodLight);
+      nativeLinePx(ctx, cx + 4.5, cy - 6.5, cx + 4.5, cy - 0.5, PALETTE.rustLight);
+      break;
+    case 'coat':
+      nativeLinePx(ctx, cx - 9.5, cy - 8.5, cx - 2.5, cy - 11.5, clothLight);
+      nativeLinePx(ctx, cx + 2.5, cy - 8.5, cx + 8.5, cy - 6.5, PALETTE.clothTan);
+      break;
+    case 'hood':
+      nativeLinePx(ctx, cx - 5.5, cy - 14.5, cx + 0.5, cy - 16.5, PALETTE.stoneMid);
+      nativeLinePx(ctx, cx - 8.5, cy - 1.5, cx + 3.5, cy + 1.5, PALETTE.clothTan);
+      break;
+    case 'vest':
+      nativeLinePx(ctx, cx - 8.5, cy - 8.5, cx - 3.5, cy - 10.5, PALETTE.rustLight);
+      nativeLinePx(ctx, cx + 2.5, cy - 7.5, cx + 7.5, cy - 5.5, metalLight);
+      break;
+    case 'ribguard':
+      nativeLinePx(ctx, cx - 5.5, cy - 7.5, cx - 5.5, cy + 1.5, metalLight);
+      nativeLinePx(ctx, cx + 2.5, cy - 7.5, cx + 2.5, cy + 1.5, PALETTE.stoneDust);
+      break;
+    case 'ring':
+      nativeLinePx(ctx, cx - 7.5, cy - 9.5, cx - 2.5, cy - 11.5, metalLight);
+      nativePx(ctx, cx + 5.5, cy - 10.5, PALETTE.flash);
+      break;
+    case 'necklace':
+      nativeLinePx(ctx, cx - 12.5, cy - 9.5, cx - 5.5, cy - 2.5, metalLight);
+      nativeLinePx(ctx, cx + 5.5, cy - 2.5, cx + 12.5, cy - 9.5, metalLight);
+      break;
+    case 'key':
+      nativeLinePx(ctx, cx - 2.5, cy - 5.5, cx + 11.5, cy - 5.5, metalLight);
+      nativePx(ctx, cx + 17.5, cy - 10.5, PALETTE.hostBone);
+      break;
+    case 'paper':
+      nativeLinePx(ctx, cx - 7.5, cy - 6.5, cx - 1.5, cy - 6.5, PALETTE.stoneMid);
+      nativeLinePx(ctx, cx + 0.5, cy - 2.5, cx + 5.5, cy - 2.5, PALETTE.rustDark);
+      break;
+    case 'vial':
+      nativeLinePx(ctx, cx - 3.5, cy - 10.5, cx - 3.5, cy - 5.5, PALETTE.stoneLight);
+      nativeLinePx(ctx, cx - 2.5, cy - 4.5, cx + 2.5, cy - 4.5, PALETTE.clothBlue);
+      break;
+    case 'dressing':
+      nativeLinePx(ctx, cx - 8.5, cy - 6.5, cx + 7.5, cy - 6.5, clothLight);
+      nativeLinePx(ctx, cx - 8.5, cy - 2.5, cx + 7.5, cy - 2.5, PALETTE.clothTan);
+      break;
+    case 'food':
+      nativeLinePx(ctx, cx - 4.5, cy - 11.5, cx + 3.5, cy - 11.5, PALETTE.hostBone);
+      nativeLinePx(ctx, cx - 4.5, cy - 4.5, cx + 3.5, cy - 4.5, PALETTE.rustDark);
+      break;
+    case 'rounds':
+      nativeLinePx(ctx, cx - 10.5, cy - 8.5, cx - 10.5, cy - 3.5, metalLight);
+      nativeLinePx(ctx, cx + 9.5, cy - 8.5, cx + 9.5, cy - 3.5, PALETTE.hostGold);
+      break;
+    case 'sidearm':
+      nativeLinePx(ctx, cx - 11.5, cy - 7.5, cx + 5.5, cy - 7.5, metalLight);
+      nativeLinePx(ctx, cx - 4.5, cy - 1.5, cx - 3.5, cy + 4.5, PALETTE.rustLight);
+      break;
+    case 'accelerator-sidearm':
+      nativeLinePx(ctx, cx - 12.5, cy - 7.5, cx + 8.5, cy - 7.5, metalLight);
+      nativeLinePx(ctx, cx - 5.5, cy - 5.5, cx + 4.5, cy - 5.5, PALETTE.hostGold);
+      break;
+    case 'smg':
+    case 'carbine':
+    case 'rifle':
+    case 'shotgun':
+    case 'support-gun':
+    case 'precision-rifle':
+    case 'accelerator-rifle':
+    case 'rail-rifle':
+      nativeLinePx(ctx, cx - 17.5, cy + 0.5, cx + 17.5, cy - 10.5, metalLight);
+      nativeLinePx(ctx, cx - 9.5, cy - 1.5, cx + 7.5, cy - 6.5, model.includes('accelerator') || model === 'rail-rifle' ? PALETTE.hostGold : PALETTE.rustLight);
+      break;
+    case 'knife':
+    case 'sword':
+    case 'axe':
+    case 'blunt':
+    case 'tool-weapon':
+      nativeLinePx(ctx, cx - 15.5, cy + 1.5, cx + 12.5, cy - 11.5, model === 'knife' || model === 'sword' ? metalLight : PALETTE.woodLight);
+      nativePx(ctx, cx + 10.5, cy - 11.5, metalLight);
+      break;
+    case 'pike':
+      nativeLinePx(ctx, cx - 15.5, cy + 1.5, cx + 8.5, cy - 10.5, PALETTE.woodLight);
+      nativeLinePx(ctx, cx + 12.5, cy - 13.5, cx + 18.5, cy - 15.5, metalLight);
+      break;
+    case 'chit':
+      nativeLinePx(ctx, cx - 7.5, cy - 5.5, cx + 2.5, cy - 5.5, PALETTE.rustDark);
+      nativePx(ctx, cx - 8.5, cy - 8.5, metalLight);
+      break;
+    case 'shard':
+      nativeLinePx(ctx, cx - 5.5, cy - 1.5, cx + 5.5, cy - 8.5, PALETTE.stoneLight);
+      nativePx(ctx, cx + 6.5, cy - 6.5, PALETTE.flash);
+      break;
+    case 'token':
+    default:
+      nativeLinePx(ctx, cx - 6.5, cy - 5.5, cx + 5.5, cy - 5.5, PALETTE.hostBone);
+      nativeLinePx(ctx, cx - 0.5, cy - 9.5, cx - 0.5, cy + 0.5, metalLight);
+      break;
+  }
 }
 
 function drawModelContact(ctx, model, cx, cy) {
-  const wide = new Set(['key', 'rounds', 'sidearm', 'coat', 'boots', 'necklace', 'dressing', 'food']);
+  const wide = new Set(['key', 'rounds', ...WEAPON_GROUND_MODELS, 'coat', 'boots', 'necklace', 'dressing', 'food']);
   const w = wide.has(model) ? 31 : model === 'shard' ? 24 : 22;
   px(ctx, cx - Math.floor(w / 2), cy + 3, PALETTE.void, w, 2);
   px(ctx, cx - Math.floor(w / 2) + 3, cy + 2, PALETTE.outline, Math.max(8, w - 7), 1);
@@ -350,6 +522,122 @@ function drawGroundSidearm(ctx, cx, cy, back) {
   px(ctx, cx + 2, cy - 8, PALETTE.stoneDust, 6, 1);
   px(ctx, cx - 4, cy + 5, PALETTE.void, 5, 2);
   px(ctx, cx - 13, cy - 4, PALETTE.rustLight, 4, 1);
+}
+
+function drawGroundAcceleratorSidearm(ctx, cx, cy, back) {
+  const metal = back ? PALETTE.stoneMid : PALETTE.stoneLight;
+  const coil = back ? PALETTE.rustDark : PALETTE.hostGold;
+  px(ctx, cx - 17, cy - 10, PALETTE.outline, 30, 9);
+  px(ctx, cx - 15, cy - 9, metal, 25, 6);
+  px(ctx, cx + 8, cy - 7, PALETTE.outline, 9, 4);
+  px(ctx, cx + 9, cy - 6, metal, 7, 2);
+  for (let x = cx - 10; x <= cx + 4; x += 4) px(ctx, x, cy - 9, coil, 2, 5);
+  px(ctx, cx - 7, cy - 4, PALETTE.outline, 9, 12);
+  px(ctx, cx - 5, cy - 3, PALETTE.woodDark, 6, 10);
+  px(ctx, cx - 10, cy - 1, PALETTE.outline, 8, 3);
+  px(ctx, cx - 9, cy, PALETTE.void, 5, 1);
+  px(ctx, cx - 13, cy - 10, PALETTE.hostBone, 7, 1);
+}
+
+function drawGroundLongGun(ctx, model, cx, cy, back) {
+  const metal = back ? PALETTE.stoneMid : PALETTE.stoneLight;
+  const metalDark = back ? PALETTE.stoneDark : PALETTE.stoneMid;
+  const wood = back ? PALETTE.woodDark : PALETTE.woodLight;
+  const compact = model === 'smg' || model === 'carbine';
+  const heavy = model === 'support-gun';
+  const accelerator = model === 'accelerator-rifle' || model === 'rail-rifle';
+  const rearX = cx - (compact ? 15 : 20);
+  const frontX = cx + (compact ? 17 : 21);
+  linePx(ctx, rearX, cy + 2, frontX, cy - 11, PALETTE.outline, heavy ? 7 : 6);
+  linePx(ctx, rearX + 1, cy + 1, frontX - 1, cy - 11, accelerator ? metalDark : metal, heavy ? 5 : 4);
+  linePx(ctx, cx - 8, cy - 1, frontX + 3, cy - 12, PALETTE.outline, 3);
+  linePx(ctx, cx - 7, cy - 2, frontX + 3, cy - 13, model === 'shotgun' ? PALETTE.rustLight : metal, 1);
+  poly(ctx, PALETTE.outline, [
+    [rearX - 3, cy + 1], [rearX + 8, cy - 3], [rearX + 5, cy + 5], [rearX - 5, cy + 6]
+  ]);
+  poly(ctx, wood, [
+    [rearX - 2, cy + 1], [rearX + 6, cy - 2], [rearX + 4, cy + 3], [rearX - 3, cy + 4]
+  ]);
+  if (model === 'shotgun') {
+    linePx(ctx, cx - 1, cy - 5, frontX + 2, cy - 13, PALETTE.rustDark, 2);
+    linePx(ctx, cx, cy - 6, frontX + 2, cy - 14, metal, 1);
+  } else if (model === 'precision-rifle') {
+    px(ctx, cx - 3, cy - 11, PALETTE.outline, 16, 5);
+    px(ctx, cx - 1, cy - 10, metal, 12, 2);
+    px(ctx, cx + 10, cy - 11, PALETTE.hostBone, 2, 1);
+  } else if (heavy) {
+    px(ctx, cx - 1, cy - 2, PALETTE.outline, 11, 10);
+    px(ctx, cx + 1, cy - 1, PALETTE.rustDark, 7, 7);
+    px(ctx, cx + 2, cy, PALETTE.rustLight, 5, 1);
+    linePx(ctx, cx + 8, cy - 2, cx + 12, cy + 5, PALETTE.outline, 2);
+  } else {
+    poly(ctx, PALETTE.outline, [[cx - 1, cy - 2], [cx + 6, cy - 4], [cx + 4, cy + 5], [cx, cy + 4]]);
+    poly(ctx, accelerator ? PALETTE.rustDark : PALETTE.stoneDark, [[cx, cy - 1], [cx + 4, cy - 3], [cx + 3, cy + 3], [cx + 1, cy + 3]]);
+  }
+  if (accelerator) {
+    for (let i = 0; i < 4; i += 1) {
+      const x = cx - 8 + i * 5;
+      px(ctx, x, cy - 7 - Math.floor(i / 2), PALETTE.hostGold, 2, 4);
+    }
+    if (model === 'rail-rifle') linePx(ctx, cx - 8, cy - 9, frontX, cy - 15, PALETTE.hostBone, 1);
+  }
+  px(ctx, rearX + 2, cy, PALETTE.hostBone, 5, 1);
+}
+
+function drawGroundMeleeWeapon(ctx, model, cx, cy, back) {
+  const metal = back ? PALETTE.stoneMid : PALETTE.stoneLight;
+  const wood = back ? PALETTE.woodDark : PALETTE.woodLight;
+  const short = model === 'knife';
+  const startX = cx - (short ? 11 : 18);
+  const startY = cy + (short ? 1 : 4);
+  const endX = cx + (short ? 12 : 17);
+  const endY = cy - (short ? 10 : 14);
+  if (model === 'knife' || model === 'sword') {
+    linePx(ctx, startX, startY, endX, endY, PALETTE.outline, short ? 5 : 6);
+    linePx(ctx, startX + 1, startY - 1, endX - 1, endY + 1, metal, short ? 3 : 4);
+    linePx(ctx, startX + 2, startY - 2, endX - 2, endY, PALETTE.hostBone, 1);
+    linePx(ctx, startX - 3, startY - 2, startX + 4, startY + 3, PALETTE.rustDark, 3);
+    px(ctx, startX - 5, startY + 1, PALETTE.outline, 7, 5);
+    return;
+  }
+  linePx(ctx, startX, startY, endX - 2, endY + 2, PALETTE.outline, 5);
+  linePx(ctx, startX, startY - 1, endX - 2, endY + 1, wood, 3);
+  if (model === 'axe') {
+    poly(ctx, PALETTE.outline, [[endX - 5, endY - 2], [endX + 5, endY - 5], [endX + 2, endY + 4], [endX - 5, endY + 5]]);
+    poly(ctx, metal, [[endX - 3, endY - 1], [endX + 3, endY - 3], [endX + 1, endY + 2], [endX - 3, endY + 3]]);
+  } else if (model === 'blunt') {
+    px(ctx, endX - 5, endY - 4, PALETTE.outline, 12, 9);
+    px(ctx, endX - 3, endY - 3, metal, 8, 6);
+    px(ctx, endX - 2, endY - 3, PALETTE.hostBone, 5, 1);
+  } else {
+    poly(ctx, PALETTE.outline, [[endX - 7, endY - 4], [endX + 6, endY - 3], [endX + 4, endY + 2], [endX - 5, endY + 3]]);
+    linePx(ctx, endX - 5, endY - 2, endX + 4, endY - 1, metal, 2);
+    px(ctx, startX - 3, startY, PALETTE.outline, 8, 5);
+  }
+}
+
+function drawGroundPike(ctx, cx, cy, back) {
+  const shaft = back ? PALETTE.woodDark : PALETTE.woodLight;
+  const metal = back ? PALETTE.stoneMid : PALETTE.stoneLight;
+  linePx(ctx, cx - 18, cy + 4, cx + 14, cy - 12, PALETTE.outline, 5);
+  linePx(ctx, cx - 18, cy + 3, cx + 14, cy - 13, shaft, 3);
+  linePx(ctx, cx - 14, cy, cx + 11, cy - 13, PALETTE.clothTan, 1);
+  poly(ctx, PALETTE.outline, [
+    [cx + 10, cy - 15],
+    [cx + 22, cy - 18],
+    [cx + 16, cy - 8],
+    [cx + 11, cy - 10]
+  ]);
+  poly(ctx, metal, [
+    [cx + 12, cy - 14],
+    [cx + 19, cy - 16],
+    [cx + 15, cy - 10],
+    [cx + 12, cy - 11]
+  ]);
+  linePx(ctx, cx + 13, cy - 14, cx + 18, cy - 16, PALETTE.hostBone, 1);
+  px(ctx, cx - 21, cy + 3, PALETTE.outline, 6, 6);
+  px(ctx, cx - 20, cy + 3, PALETTE.rustDark, 4, 4);
+  px(ctx, cx - 17, cy - 1, PALETTE.hostGold, 3, 3);
 }
 
 function drawGroundRibguard(ctx, cx, cy, back) {

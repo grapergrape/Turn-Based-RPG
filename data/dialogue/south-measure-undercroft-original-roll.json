@@ -1,0 +1,96 @@
+{
+  "id": "south-measure-undercroft-original-roll",
+  "title": "The Original Household Roll",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Lime has stiffened the outer pages without erasing them. Water shares and denial orders occupy the same household lines.",
+        "Several Hidden Rows addresses survive beneath later whitewash."
+      ],
+      "choices": [
+        {
+          "label": "Carry the original roll to the council",
+          "conditions": {
+            "flag": "intake-clerk-resolved",
+            "flagsAbsent": [
+              "intake-clerk-compact"
+            ],
+            "itemsMax": {
+              "south-measure-original-roll": 0
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "measure-original-roll-recovered",
+              "hidden-names-found-under-lime"
+            ],
+            "inventory": {
+              "add": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ]
+            },
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "seek-consent",
+              "log": "The original household roll can prove water rights and expose the private addresses beneath the lime."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Challenge the Compact claim and carry the roll",
+          "conditions": {
+            "flags": [
+              "intake-clerk-resolved",
+              "intake-clerk-compact"
+            ],
+            "itemsMax": {
+              "south-measure-original-roll": 0
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "measure-original-roll-recovered",
+              "hidden-names-found-under-lime",
+              "compact-roll-claim-challenged"
+            ],
+            "inventory": {
+              "add": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ]
+            },
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "seek-consent",
+              "log": "The original household roll can prove water rights and expose the private addresses beneath the lime."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Settle the Intake Clerk before moving the roll",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-resolved"
+            ]
+          },
+          "close": true,
+          "tone": "quiet"
+        },
+        {
+          "label": "Leave the record where it lies",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "south-measure-freight-luta-kelm",
+  "title": "Lucia Vitalis",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Lucia moves your hand away from a black route pin. \"Missing cart. Brass means the crew came back carrying less life than it took out.\"",
+        "The burial marker sits in the same groove as the freight tally."
+      ],
+      "choices": [
+        {
+          "label": "Ask what the surety charges after a loss",
+          "next": "surety"
+        },
+        {
+          "label": "Leave the pins where Lucia set them",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "surety": {
+      "lines": [
+        "\"The same amount, whichever color I use. A route price can be accurate all the way down to the cruelty.\""
+      ],
+      "choices": [
+        {
+          "label": "Step back from the route board",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

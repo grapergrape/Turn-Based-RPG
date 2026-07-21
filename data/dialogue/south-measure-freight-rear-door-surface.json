@@ -1,0 +1,89 @@
+{
+  "id": "south-measure-freight-rear-door-surface",
+  "title": "Rear Service Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The rear service door opens from the repair stands into the freight house."
+      ],
+      "choices": [
+        {
+          "label": "Enter the freight house",
+          "conditions": {
+            "flag": "morrow-freight-rear-access"
+          },
+          "effects": {
+            "log": "You enter the freight house from the wagon repair stands.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_morrow_freight_house.json",
+              "player": {
+                "x": 29,
+                "y": 19,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Slip the bonded rear lock",
+          "conditions": {
+            "fieldRatings": {
+              "security": 35
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "morrow-freight-rear-access",
+              "morrow-rear-forced"
+            ],
+            "log": "The bonded rear lock opens without its seal.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_morrow_freight_house.json",
+              "player": {
+                "x": 29,
+                "y": 19,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Use the Censure entry roll",
+          "conditions": {
+            "items": {
+              "censure-entry-roll": 1
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "morrow-freight-rear-access",
+              "morrow-rear-forced"
+            ],
+            "log": "The Censure hooks draw the rear bolt.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_morrow_freight_house.json",
+              "player": {
+                "x": 29,
+                "y": 19,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay by the repair stands",
+          "effects": {
+            "log": "You step back from the rear service door."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

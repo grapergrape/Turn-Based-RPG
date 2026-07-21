@@ -1,0 +1,62 @@
+{
+  "id": "old-pilgrim-brother-tarn",
+  "title": "Brother Cassian",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Cassian rests one plated hand on a procession stone. A faint knock passes through his wrist and stops.",
+        "“The road keeps a second count beneath the cart wheels.”"
+      ],
+      "choices": [
+        {
+          "label": "Ask about the church hill",
+          "conditions": {
+            "flag": "tarn-independent-scout"
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-tarn-heard-church-seal"
+          },
+          "next": "church"
+        },
+        {
+          "label": "Ask about the shared road",
+          "conditions": {
+            "flag": "tarn-shared-road"
+          },
+          "next": "camp"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "church": {
+      "lines": [
+        "“The knock climbs to the church, then returns through buried iron. It does not carry a living answer.”",
+        "He removes his hand. “The old seal is still taking attendance.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "camp": {
+      "lines": [
+        "“South Measure asked me to share the road. I can hear its water count from here.”",
+        "He looks north. “Something else learned the rhythm.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

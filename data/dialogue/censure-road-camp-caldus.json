@@ -1,11 +1,106 @@
 {
   "id": "censure-road-camp-caldus",
-  "title": "Brother Caldus",
+  "title": "Brother Cyprian",
   "nodes": {
     "start": {
       "lines": [
-        "Brother Caldus points at the yard marks with a cracked baton.",
+        "Brother Cyprian points at the yard marks with a cracked baton.",
         "\"Footwork first. If God wanted you to die tangled in your own coat, He would have issued a cheaper coat.\""
+      ],
+      "choices": [
+        {
+          "label": "Run the baton line",
+          "conditions": {
+            "flagsAbsent": ["censure-road-drill-close-complete"],
+            "fieldRatings": {
+              "melee": 40
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-drill-close-complete",
+            "log": "Cyprian marks the close drill complete after the baton line."
+          },
+          "next": "baton-line"
+        },
+        {
+          "label": "Run the empty-hand line",
+          "conditions": {
+            "flagsAbsent": ["censure-road-drill-close-complete"],
+            "fieldRatings": {
+              "unarmed": 40
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-drill-close-complete",
+            "log": "Cyprian marks the close drill complete after the empty-hand line."
+          },
+          "next": "empty-hand-line"
+        },
+        {
+          "label": "Ask what remains",
+          "conditions": {
+            "flag": "censure-road-drill-close-complete"
+          },
+          "next": "range-next"
+        },
+        {
+          "label": "Give Cyprian the name from the coat cuff",
+          "conditions": {
+            "flag": "censure-road-quarters-coat-cache-found",
+            "flagsAbsent": ["censure-road-caldus-coat-cache-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-caldus-coat-cache-reported",
+            "log": "Cyprian closes Paulinus Corda's old kit line."
+          },
+          "next": "coat-cache"
+        },
+        {
+          "label": "Leave the drill yard",
+          "close": true
+        }
+      ]
+    },
+    "coat-cache": {
+      "lines": [
+        "Cyprian rubs the spoon-pressed letters clean with his thumb.",
+        "\"Paulinus Corda. I kept charging that coat against his kit because no one could prove he left it. Keep the ducat. I will close the line.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Cyprian with the kit record",
+          "close": true
+        }
+      ]
+    },
+    "baton-line": {
+      "lines": [
+        "Cyprian sets the baton against your forearm and drives you through the chalk turns.",
+        "\"Good. You kept the point between us and found your coat at the end. I have watched recruits lose both.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the yard",
+          "next": "start"
+        }
+      ]
+    },
+    "empty-hand-line": {
+      "lines": [
+        "Cyprian catches your wrist once. The second time you turn his grip into the fence post.",
+        "\"That will do. A knife hand still owns a shoulder. Move the shoulder and let the knife complain.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the yard",
+          "next": "start"
+        }
+      ]
+    },
+    "range-next": {
+      "lines": [
+        "Cyprian taps one chalk loop on the issue satchel, then points toward the center devil target.",
+        "\"Close work is signed. Read the useful shots at the range and the second knot is yours. Do not shoot the target. I am nearly out of devils.\""
       ],
       "choices": [
         {

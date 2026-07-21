@@ -12,7 +12,7 @@ wall, a floor, a building or room interior, a piece of furniture, a plant, a
 prop, a corpse, a ritual mark, a light, or any part of the interface.
 
 It exists so there is one quality bar and one visual language. A model, prop, or
-panel added by a weaker agent must sit beside Mara Vey, the Opened Saint, and the
+panel added by a weaker agent must sit beside the player actor, the Opened Saint, and the
 existing CRPG interface without looking flatter, blockier, cleaner, brighter, or
 more modern. This skill absorbs the old `character_creature_art_skill`; that file
 now redirects here.
@@ -116,10 +116,13 @@ Be consistent across the whole figure or prop.
 Bright accents (`flash`, `ember`, `hostGlow`) are tiny and rare: a candle tip, a
 muzzle flash, a single living wound. Never fill an area with them.
 
-Contact shadow is mandatory: call `drawShadowBlob(ctx, cx, cy + n, w, h)` under
-any figure or free-standing prop that stands or lies on the ground. The actor
-renderer adds one automatically (`drawShadowBlob` sized from sprite width). A
-free prop with no shadow floats and fails review.
+Contact shadow is mandatory for any figure or free-standing prop that stands or
+lies on the ground. Do not paint a generic oval, rectangle, or diamond inside a
+primitive. Give the catalog entry an explicit `shadow` contract and let the
+renderer derive a hard mask from the prepared sprite raster. Actor contact masks
+come from the active atlas frame. Separated boots, legs, wheels, roots, and
+supports must stay separated after the permitted one-native-pixel expansion. A
+grounded object with no shape-following contact mask floats and fails review.
 
 ---
 
@@ -135,6 +138,13 @@ free prop with no shadow floats and fails review.
 - `computeSceneBounds(w, h)` sizes the baked scene canvas and the origin. The
   whole map floor is baked once; the camera blits a sub-region and volumetric
   props plus actors are drawn over it in one depth-sorted pass.
+
+Outdoor cast shadows also come from the current prepared silhouette. The mood
+sun's `shadowOffsetX` and `shadowOffsetY` are the projection vector at the
+catalog profile's `referenceHeight`. All visible casts are composited as one
+constant-alpha viewport union before contact shadows and models. Never transform
+or filter a sprite canvas to fake a cast, and never add a category-sized daylight
+diamond.
 
 Every static draw function has the signature:
 
@@ -376,8 +386,9 @@ you place or review props in level data:
 Furniture and props follow the catalog workflow (Section 5). Patterns to copy:
 
 - Build the body from stone/wood/rust ramps with hard bands and a little dither;
-  add a `drawShadowBlob` under it; seed small variation (a tilted plank, a dent)
-  off `hash2D` so repeated copies are not identical.
+  configure its catalog `shadow` profile so the renderer samples the real ground
+  band; seed small variation (a tilted plank, a dent) off `hash2D` so repeated
+  copies are not identical.
 - A container or cache that opens reads its state from `c.prop.opened` /
   `c.prop.consumed` and draws an open lid / empty interior (see `drawWallSafe`,
   `drawWallStash`, `drawRustedBarrel` with the `ladder` option for secret exits).
@@ -431,13 +442,13 @@ flicker timing.
 
 ---
 
-## 11. The human standard (reference: Mara Vey)
+## 11. The human standard (reference: player actor)
 
 Humans must read as tiny real people, never blocks, never chibi. Silhouette
 first: if the black-only outline does not read as the role, no detail will save
 it.
 
-Native proportions (the values Mara uses; stay close):
+Native proportions (the values the player actor uses; stay close):
 
 ```text
 Total height        50-64 px        Shoulder width   13-18 px
@@ -467,9 +478,9 @@ Construction rules:
   interact), planted feet in the walk cycle (no sliding), a subtle idle, and a
   flat readable corpse via `drawDeath`.
 
-Mara is equipment-driven: her `style` is composed from worn gear in
-`deriveMaraStyle` / `composeMaraStyle`. If you change her body, the fully-dressed
-look must still match her established sprite (Section 15 covers the equipment
+The player actor is equipment-driven: its `style` is composed from worn gear in
+`derivePlayerStyle` / `composePlayerStyle`. If you change the body, the fully-dressed
+look must still match the established sprite (Section 15 covers the equipment
 system). NPC survivors reuse `SURVIVOR_*` styles plus per-character `campKit`
 decorations.
 
@@ -612,7 +623,7 @@ then drawn from the atlas by `spriteId`. Movement is quantized to the frames and
 positions snap to whole pixels.
 
 **The shape of an actor.** An actor is a `style` object plus body proportions and
-a `decorate(args)` hook. Copy `MARA_BODY`, `CUT_STYLE`, or `SURVIVOR_MAN_STYLE`:
+a `decorate(args)` hook. Copy `PLAYER_BODY`, `CUT_STYLE`, or `SURVIVOR_MAN_STYLE`:
 
 ```text
 shoulders, waist, torsoLength, legLength, headHeight   proportions (px)
@@ -647,7 +658,7 @@ a hood the crown is dark cloth). Pick the flag that matches the archetype.
 the death set into an atlas entry `{ width, height, anchorX, anchorY, frames,
 death }`. Register it in `buildSpriteAtlas()` under a key, and the actor's
 `spriteId` in `data/actors|enemies/*.json` MUST match that key. Current sizes:
-Mara and adult survivors 42x62, children 36x50, choir/cutthroat 44x64, the
+The player actor and adult survivors are 42x62, children are 36x50, choir/cutthroat actors are 44x64, the
 Penitent 64x92, Host rats 54x42. `getFrame(atlas, spriteId, state, facing, i)`
 resolves a frame (state `dead` reads the death set).
 
@@ -657,14 +668,14 @@ with their own body builders (`drawSixLeggedRat`, `drawThroatMawRat`,
 a contact shadow, and the Host palette. Copy this pattern for any new
 multi-limbed or non-humanoid creature instead of forcing it through `drawActorBase`.
 
-**Equipment-driven look (Mara).** `deriveMaraStyle(equipment, itemDefs)` composes
+**Equipment-driven player look.** `derivePlayerStyle(equipment, itemDefs)` composes
 the style from worn items: each item's own `visual` block wins, then
-`MARA_ITEM_VISUALS`, then a generic per-slot look. Empty slots fall back to a
+`PLAYER_ITEM_VISUALS`, then a generic per-slot look. Empty slots fall back to a
 stripped look (dark shirt, no vest, bare feet, bare head) so removing gear is
 always visible. To make a new item change the sprite, give the item JSON a
 `visual` block (e.g. `{ "coat": "stoneDust", "coatHi": "hostBone", "coatTail": 7 }`
 using palette color names). The inventory paper doll reads the SAME atlas entry,
-so the dressed figure in the pack matches the one in the world. `bakeMara` is
+so the dressed figure in the pack matches the one in the world. `bakePlayerCharacter` is
 re-run whenever gear changes.
 
 **Animation timing (from `Game.js`, all derived from `anim.tick` in seconds):**
@@ -804,7 +815,7 @@ look flatter, blockier, cleaner, or brighter than these references. Study the
 closest one before adding anything.
 
 ```text
-Human (the bar for people)      MARA_BODY + drawMaraDetails (SpriteAtlas.js)
+Human (the bar for people)      PLAYER_BODY + drawPlayerDetails (playerAppearance.js)
 Survivor NPCs + per-role kit    SURVIVOR_* styles + drawSurvivorVariantDetails
 Living humanoid enemy            CUT_STYLE / CHOIR_STYLE + their decorate hooks
 Fully opened Host actor          PEN_STYLE + drawHostDetails (goat head, butterflied chest)
@@ -824,7 +835,7 @@ Interface                        UIRenderer #window / #inset / #drawStatus / #dr
 
 ## 19. Workflow and verification
 
-**Add an animated actor:** add a `style` (Section 15) copying `MARA_BODY` /
+**Add an animated actor:** add a `style` (Section 15) copying `PLAYER_BODY` /
 `CUT_STYLE`, or a rat-style body builder; add its `decorate`; register in
 `buildSpriteAtlas()`; set the `spriteId` in `data/` to match the atlas key.
 
@@ -875,14 +886,16 @@ title to `CAPTURE-READY`, treat the render as failed, not as "probably fine".
 ## 20. Do and Don't
 
 DO: hard pixels; palette ramps; dither and hard bands; light from upper-left; a
-contact shadow on everything that touches the ground; silhouette first; register
+shape-following contact shadow on everything that touches the ground; hard
+silhouette casts outdoors; silhouette first; register
 every new `kind` once in the sprite catalog; seed variation via
 `hash2D`/`rngFrom`; asymmetry and broken pairs on monsters; goat or ram skulls
 for fully opened Host heads; one small pulsing wound; terrain owns the light;
 build UI from `#rect`/`#text` and the `ui*` palette; verify at 2x to 3x before
 shipping.
 
-DON'T: smooth gradients, alpha shading, blur, or bloom; colors outside
+DON'T: smooth gradients, alpha shading, blur, or bloom; generic oval,
+rectangular, or diamond shadows; primitive-owned shadows; colors outside
 `palette.js` (or `ui*`/`PARCHMENT` for UI); block, cube, chibi, or golem shapes;
 symmetric clean monsters; neat icon skulls with two tidy stubs; pure-black
 silhouette blobs with no internal structure; light fixtures baked into a creature;

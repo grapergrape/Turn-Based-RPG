@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-quarters-tent-exit",
+  "title": "Cult-Breaker Quarters",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The camp lane lies beyond the quarters flap."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave the Cult-Breaker quarters.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 16, "y": 41 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the Cult-Breaker quarters."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

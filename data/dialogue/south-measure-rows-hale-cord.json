@@ -1,0 +1,57 @@
+{
+  "id": "south-measure-rows-hale-cord",
+  "title": "Judah Sartor",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Judah holds a clinic bandage with somebody else’s name written across it."
+      ],
+      "choices": [
+        {
+          "label": "Ask what the borrowed name protected",
+          "next": "borrowed",
+          "effects": {
+            "setFlag": "hidden-rows-compact-treatment-known"
+          }
+        },
+        {
+          "label": "Say the treatment still helped",
+          "next": "helped"
+        },
+        {
+          "label": "Leave the written name alone",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "borrowed": {
+      "lines": [
+        "\"The Compact had medicine and an archive with longer legs than mine. A neighbor lent me the name of someone already leaving town; the rest belongs to that neighbor.\""
+      ],
+      "choices": [
+        {
+          "label": "Acknowledge Aurelia’s care",
+          "next": "helped"
+        },
+        {
+          "label": "Do not ask for the lender",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "helped": {
+      "lines": [
+        "\"It did. Tell Aurelia if you need to, but do not make gratitude into a key for this room.\""
+      ],
+      "choices": [
+        {
+          "label": "Accept the boundary",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

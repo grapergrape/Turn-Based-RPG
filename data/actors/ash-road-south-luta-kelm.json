@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-luta-kelm",
+  "name": "Lucia Vitalis",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Chain mechanic",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-mender",
+    "gear": [
+      "tool-roll"
+    ],
+    "accent": "bare-light"
+  }
+}

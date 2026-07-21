@@ -51,6 +51,7 @@ export class TradeSession {
         const itemDef = this.state.inventory.itemDefs[itemId] ?? {};
         const rarity = this.state.inventory.itemRarity(itemId);
         const build = this.state.inventory.itemBuild(itemId);
+        const weaponDetails = this.state.inventory.itemWeaponDetails(itemId);
         return {
           rawIndex,
           id: itemId,
@@ -72,6 +73,12 @@ export class TradeSession {
           description: itemDef.description ?? '',
           weight: this.state.inventory.itemWeight(itemId),
           totalWeight: this.state.inventory.weightOf(itemId, Math.max(1, count)),
+          magazineCapacity: weaponDetails?.magazineCapacity ?? null,
+          ammoFamily: weaponDetails?.ammoFamily ?? null,
+          ammoItemId: weaponDetails?.ammoItemId ?? null,
+          ammoName: weaponDetails?.ammoName ?? '',
+          reloadAp: weaponDetails?.reloadAp ?? null,
+          attackModes: weaponDetails?.attackModes ?? [],
           canEquip: Boolean(itemDef.equipment?.slot),
           equipmentSlot: itemDef.equipment?.slot ?? null,
           canUse: this.state.inventory.canUse(itemId)
@@ -81,11 +88,32 @@ export class TradeSession {
   }
 
   playerEntries() {
-    return this.callbacks.inventoryEntries?.() ?? [];
+    return (this.callbacks.inventoryEntries?.() ?? []).map((entry) => {
+      const offer = this.sellOffer(entry.itemId);
+      const status = this.sellStatus(entry, offer);
+      return {
+        ...entry,
+        sellPrice: offer?.price ?? null,
+        sellKeep: offer?.keep ?? 0,
+        sellable: status.ok,
+        sellHint: status.hint
+      };
+    });
   }
 
   currency() {
     return this.state.trade?.trader?.trade?.currency ?? 'ducat';
+  }
+
+  sellOffer(itemId) {
+    if (!itemId) return null;
+    const raw = (this.state.trade?.trader?.trade?.buys ?? []).find((entry) => entry?.item === itemId);
+    if (!raw) return null;
+    return {
+      itemId,
+      price: Math.max(0, Math.floor(Number(raw.price) || 0)),
+      keep: Math.max(0, Math.floor(Number(raw.keep) || 0))
+    };
   }
 
   clampSelection() {
@@ -124,6 +152,28 @@ export class TradeSession {
     return { ok: true, hint: 'E BUY: TAKE 1' };
   }
 
+  sellStatus(entry, offer = this.sellOffer(entry?.itemId)) {
+    if (!entry) return { ok: false, hint: 'NO PACK ITEM' };
+    if (!offer || offer.price <= 0) return { ok: false, hint: 'NOT ACCEPTED HERE' };
+    if (entry.itemId === this.currency()) return { ok: false, hint: 'KEEP YOUR DUCATS' };
+
+    const selectedEquipped = Boolean(entry.entryKey) && Number(entry.equippedCount) > 0;
+    if (selectedEquipped) return { ok: false, hint: 'ITEM EQUIPPED' };
+
+    const count = Math.max(0, Math.floor(Number(
+      this.state.inventory.count?.(entry.itemId) ?? entry.count
+    ) || 0));
+    const equipped = Math.max(0, Math.floor(Number(
+      this.state.inventory.equippedCount?.(entry.itemId) ?? entry.equippedCount
+    ) || 0));
+    const reserved = Math.max(equipped, offer.keep);
+    if (count <= reserved) {
+      if (equipped >= count && equipped > 0) return { ok: false, hint: 'ITEM EQUIPPED' };
+      return { ok: false, hint: `KEEP ${offer.keep} IN PACK` };
+    }
+    return { ok: true, hint: 'E SELL: GIVE 1', offer };
+  }
+
   buySelectedItem() {
     const entry = this.stockEntries()[this.state.tradeStockIndex ?? 0];
     const status = this.buyStatus(entry);
@@ -150,15 +200,52 @@ export class TradeSession {
     if (raw) raw.count = Math.max(0, Math.floor(Number(raw.count ?? 1) || 0) - 1);
     this.callbacks.syncInventoryOrder?.();
     this.clampSelection();
-    this.callbacks.log?.(`Bought: ${entry.name} for ${entry.price} ducats.`);
+    const currencyLabel = entry.price === 1 ? 'ducat' : 'ducats';
+    this.callbacks.log?.(`Bought: ${entry.name} for ${entry.price} ${currencyLabel}.`);
+    return true;
+  }
+
+  sellSelectedItem() {
+    const entry = this.playerEntries()[this.state.tradePlayerIndex ?? 0];
+    const status = this.sellStatus(entry);
+    if (!status.ok) {
+      this.callbacks.log?.(status.hint);
+      return false;
+    }
+
+    const itemKey = entry.entryKey ?? entry.itemId;
+    if (!this.state.inventory.remove(itemKey, 1)) {
+      this.callbacks.log?.('ITEM NOT IN PACK');
+      return false;
+    }
+
+    const currency = this.currency();
+    const payment = this.state.inventory.add(currency, status.offer.price, { ignoreCapacity: true });
+    if (!payment.ok) {
+      this.state.inventory.add(entry.itemId, 1, {
+        condition: entry.condition,
+        loaded: entry.loaded,
+        entryKey: entry.entryKey,
+        ignoreCapacity: true
+      });
+      this.callbacks.log?.('TRADE COULD NOT BE COMPLETED');
+      return false;
+    }
+
+    this.callbacks.syncInventoryOrder?.();
+    this.clampSelection();
+    const currencyLabel = status.offer.price === 1 ? 'ducat' : 'ducats';
+    this.callbacks.log?.(`Sold: ${entry.name} for ${status.offer.price} ${currencyLabel}.`);
     return true;
   }
 
   buildUi() {
     const stockEntries = this.stockEntries();
     const playerEntries = this.playerEntries();
-    const selected = stockEntries[this.state.tradeStockIndex ?? 0] ?? null;
-    const status = this.buyStatus(selected);
+    const selectedStock = stockEntries[this.state.tradeStockIndex ?? 0] ?? null;
+    const selectedPlayer = playerEntries[this.state.tradePlayerIndex ?? 0] ?? null;
+    const buyStatus = this.buyStatus(selectedStock);
+    const sellStatus = this.sellStatus(selectedPlayer);
     return {
       title: this.state.trade?.trader?.trade?.title ?? 'Trade',
       traderName: this.state.trade?.trader?.name ?? 'Trader',
@@ -168,8 +255,10 @@ export class TradeSession {
       playerIndex: this.state.tradePlayerIndex ?? 0,
       focus: this.state.tradeFocus ?? 'trader',
       ducats: this.state.inventory.count(this.currency()),
-      canBuy: status.ok,
-      buyHint: status.hint
+      canBuy: buyStatus.ok,
+      buyHint: buyStatus.hint,
+      canSell: sellStatus.ok,
+      sellHint: sellStatus.hint
     };
   }
 }

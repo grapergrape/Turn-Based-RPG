@@ -36,7 +36,7 @@ This setting can use familiar CRPG structures, but it must not rely on them alon
 
 1. The first human mind the organism truly learned was Father Marius Vale.
 2. Vale's fear of Hell became the Earthborn Host's inherited grammar.
-3. Sorell saved humanity by turning that grammar into the Stilling lock.
+3. Seneca saved humanity by turning that grammar into the Stilling lock.
 4. The Choir mistakes the failing lock for revelation and tries to manufacture Satan through total immersion in harvested Host matter.
 5. The Devil manifestation is not proof that Hell was real. It is the Host making human doctrine into flesh.
 6. The endgame is not killing the source monster. It is deciding whether Vale's eternal torture remains the price of survival.
@@ -413,13 +413,13 @@ The Free Cities mostly care less about why it happened and more about whether it
 
 But there are records that suggest the Stilling was not natural.
 
-In the final year of the Bloom, several old Ecclesiate facilities activated at once. Orbital mirrors shifted. Sealed archives opened. A signal passed between crash sites, deep bunkers, and the ruins of New Vatican Helix. At the center of this signal was a name erased from most histories: **Dr. Elian Sorell**, xenobiologist aboard _Eschaton’s Mercy_, listed as dead during atmospheric entry.
+In the final year of the Bloom, several old Ecclesiate facilities activated at once. Orbital mirrors shifted. Sealed archives opened. A signal passed between crash sites, deep bunkers, and the ruins of New Vatican Helix. At the center of this signal was a name erased from most histories: **Dr. Diodorus Seneca**, xenobiologist aboard _Eschaton’s Mercy_, listed as dead during atmospheric entry.
 
-Some believe Sorell survived.
+Some believe Seneca survived.
 
-Some believe Sorell became part of the Host.
+Some believe Seneca became part of the Host.
 
-Some believe Sorell trapped the Host in the shape Vale had given it and prevented it from learning anything larger.
+Some believe Seneca trapped the Host in the shape Vale had given it and prevented it from learning anything larger.
 
 If true, the Stilling was not salvation.
 
@@ -463,7 +463,7 @@ The **Holy Remnant** is the largest surviving religious power on Earth. It claim
 
 Its capital is **Sanctum Aurelian**, a fortress-city built around an old planetary defense complex. The city rises from a plateau of black stone and white walls, surrounded by minefields, searchlights, pilgrim camps, and ash farms. Bells mark every hour. Decontamination rites are performed at every gate. Public confession is required for citizenship. The poor receive bread, medicine, and doctrine. Heretics receive trial. The infected receive fire, unless someone powerful has other plans for them.
 
-The Holy Remnant is ruled by **Pontifex Severian III**, a pope-like leader who teaches that the Descent was not caused by alien life. According to official doctrine, the Europa mission opened a wound in creation and allowed the Infernal Host to enter the world. To call the Host merely biological is heresy. To say that Father Vale shaped the organism is worse than heresy; it suggests that Hell’s image came from inside the Church.
+The Holy Remnant is ruled by **Pontifex Celestine IV**, a pope-like leader who teaches that the Descent was not caused by alien life. According to official doctrine, the Europa mission opened a wound in creation and allowed the Infernal Host to enter the world. To call the Host merely biological is heresy. To say that Father Vale shaped the organism is worse than heresy; it suggests that Hell’s image came from inside the Church.
 
 That possibility terrifies the Remnant.
 
@@ -477,7 +477,7 @@ The Remnant is divided into internal orders:
 
 ### The Severians
 
-Loyalists to Pontifex Severian III. They believe unity matters more than doubt. Their slogan is simple: **One flock survives. Scattered sheep are eaten.**
+Loyalists to Pontifex Celestine IV. They believe unity matters more than doubt. Their slogan is simple: **One flock survives. Scattered sheep are eaten.**
 
 ### The Mercy Orders
 
@@ -494,6 +494,16 @@ A field office of the Holy Remnant tasked with the quiet, unglamorous work of fi
 It is thankless, grinding work. Cult-breakers are not celebrated; many of the faithful find them distasteful, a living reminder that the enemy is not only out in the Blooms but inside the Church's own flocks. They burn what they find, bury whoever the Censure sent with them last time, and ride to the next writ. The cults never stop coming.
 
 In recent years the Censure's writs have multiplied. Cells of the Choir of the Open Wound and a dozen smaller blasphemies are appearing faster than the office can burn them, in regions that have been dormant for generations. Without understanding it, the Censure's field agents are among the first people on Earth to feel the planetary lock failing — they simply experience it as *more cults than there should be*, and no one above them will say why. A cult-breaker who survives long enough and pays attention may be the one who first connects the rising tide of blasphemy to the weakening of the Stilling.
+
+The Censure also inherits scraps of older civil and military infrastructure. It
+did not build the pre-Bloom field-attendant cradles found along some service
+roads. Remnant technicians added Censure credentials to the few cradles that
+still answered, then treated the resulting registration as a small office rite.
+An old cradle can identify a cult-breaker as an agent of Censure and issue a
+mute utility frame without knowing what the Censure means beyond its access
+seal. Such machines are tools, not secret historians. Their damaged catalogues
+may name absent high-order models, but a local shrine should hold only the one
+service frame it can physically issue.
 
 ### The Quiet Cardinals
 
@@ -555,11 +565,11 @@ The Free Cities are where ordinary life is most visible. Markets open before daw
 
 Important Free Cities include:
 
-### Veyr’s Gate
+### Spindle Gate
 
-A massive trade city built around the anchor ruins of an ancient space elevator. Veyr’s Gate is loud, crowded, corrupt, and alive. Every faction has spies there. Anything can be bought if one has coin, favors, or secrets: forged travel permits, relic weapons, suppressants, illegal cybernetics, Compact vaccines, Remnant indulgence papers, Choir hymnbooks, and pieces of _Eschaton’s Mercy_ kept in lead reliquaries.
+A massive trade city built around the anchor ruins of an ancient space elevator. Spindle Gate is loud, crowded, corrupt, and alive. Every faction has spies there. Anything can be bought if one has coin, favors, or secrets: forged travel permits, relic weapons, suppressants, illegal cybernetics, Compact vaccines, Remnant indulgence papers, Choir hymnbooks, and pieces of _Eschaton’s Mercy_ kept in lead reliquaries.
 
-Veyr’s Gate is ruled by a council of guilds, but real power belongs to whoever controls water rights and gate access.
+Spindle Gate is ruled by a council of guilds, but real power belongs to whoever controls water rights and gate access.
 
 ### Low Harrow
 
@@ -601,9 +611,9 @@ The Choir reveres Father Marius Vale as **the First Opened Saint**. They believe
 
 Their rituals are designed to recreate the first infection: confession, terror, prayer, blood contact, and exposure to living Host tissue. They believe the correct emotional and spiritual state produces more beautiful transformations. To them, a False Saint is not a horror. It is proof that the soul has finally stopped pretending.
 
-Ysolde's inner rites go further. The Choir harvests living Host matter into barrels and vats, keeping it fed by hand so it does not burn out alone. They believe a complete immersion can call the Devil into the world: lower a worthy body fully into the Host, let fear and confession do their work, and if the body survives it becomes Satan made flesh. The rite is wrong in its explanation, but not harmless. A body with enough symbolic weight can give the Host a stronger pattern to wear.
+Thecla's inner rites go further. The Choir harvests living Host matter into barrels and vats, keeping it fed by hand so it does not burn out alone. They believe a complete immersion can call the Devil into the world: lower a worthy body fully into the Host, let fear and confession do their work, and if the body survives it becomes Satan made flesh. The rite is wrong in its explanation, but not harmless. A body with enough symbolic weight can give the Host a stronger pattern to wear.
 
-Their greatest intended vessel is Pontifex Severian III. If the Remnant's pope is immersed, the Choir believes the Church's own fear of Hell will answer back in one body.
+Their greatest intended vessel is Pontifex Celestine IV. If the Remnant's pope is immersed, the Choir believes the Church's own fear of Hell will answer back in one body.
 
 The Choir is dangerous because not all of its members are mad. Many are articulate, gentle, and persuasive. They shelter outcasts, rejected Bloomborn, plague victims, criminals, refugees, and people condemned by every other faction. Their communities can appear compassionate until one understands the price.
 
@@ -630,6 +640,16 @@ They cut their own flesh away as much to deny the Host as to discipline the self
 But the tragedy of the Penitent Engines is that their war against corruption has already mutilated them. Many are more machine than person. They speak through damaged speakers, pray while reloading railguns, and sometimes forget the faces they sacrificed to protect.
 
 Their mobile fortress, **the Black Reliquary**, walks across the wasteland on immense mechanical legs. When it appears on the horizon, some settlements cheer. Others hide their sick.
+
+### Arms after the Bloom
+
+Powder weapons remain the ordinary arms of the surviving world. Brass can be recovered, cases can be pressed, lead can be cast, and black powder can be made badly almost anywhere. Every city has its own cartridges, arsenal stamps, repair customs, and arguments over what qualifies as safe ammunition.
+
+Magnetic accelerator arms are the rare exception. Pre-collapse industry used coils, induction cages, and rails to throw solid iron armatures for surveying, fastening, inspection, civil defense, and war. The Penitent Engine orders preserved the deepest knowledge because their mobile workshops and body mounts already depended on high-current systems. Remnant artificers, Compact laboratories, foundry compacts, and independent relic keepers can maintain or imitate lesser patterns, but none can reproduce the finest rails, ceramics, and charge systems at scale.
+
+An accelerator weapon is not a beam. It launches a physical armature. It has recoil, heat, noise, and a finite magazine. Its contacts foul, its ceramic beds crack, and a warped dart can ruin a weapon that took a town's yearly iron tithe to repair. This scarcity is why railguns remain associated with Penitent Engines even when a Censure office or Free City guard owns one.
+
+Portable laser and plasma weapons are not part of the current canon. If directed-energy weapons are introduced later, they require a separate origin, visual language, and political economy.
 
 ---
 
@@ -819,11 +839,11 @@ Some test subjects beg to die.
 
 Some claim they met Father Vale inside the network.
 
-## Veyr’s Gate
+## Spindle Gate
 
 The great neutral trade city. Built around the anchor of a destroyed space elevator, it is a vertical maze of markets, slums, militia towers, guild halls, shrines, black clinics, and salvage elevators descending into forbidden depths.
 
-Veyr’s Gate is the best early-game hub. Every faction has a presence there. Every alley can lead to a quest.
+Spindle Gate is the best early-game hub. Every faction has a presence there. Every alley can lead to a quest.
 
 ## Woundfall
 
@@ -891,7 +911,7 @@ Hallowfen should still feel human before it becomes horrific, but its humanity i
 
 The Act I question is not who receives the truth yet. It is whether Hallowfen survives. The player can help the people inside break the siege and drive off the Choir attackers, misdirect the attackers long enough for an evacuation, or leave the town to its fate. If Hallowfen is abandoned, later reports reveal that the Choir crucified the whole town upside down and used the bodies to decorate its new capital.
 
-The deeper campaign still turns on a relic from _Eschaton's Mercy_, but Hallowfen does not explain the Stilling during Act I. Once the fate of the city is settled, the story can return to the crash site's heart. The route passes through the Wreckward Perimeter, the Shrine Rows and Bell Yard, and the Buried Archive Chapel beneath Hallowfen. There, inside a reliquary cradle fused with ship metal and old containment hardware, the player recovers the blackened data core. When that core is decoded, it plays a damaged recording of Dr. Elian Sorell, the xenobiologist listed as dead during the Descent.
+The deeper campaign still turns on a relic from _Eschaton's Mercy_, but Hallowfen does not explain the Stilling during Act I. Once the fate of the city is settled, the story can return to the crash site's heart. The route passes through the Wreckward Perimeter, the Shrine Rows and Bell Yard, and the Buried Archive Chapel beneath Hallowfen. There, inside a reliquary cradle fused with ship metal and old containment hardware, the player recovers the blackened data core. When that core is decoded, it plays a damaged recording of Dr. Diodorus Seneca, the xenobiologist listed as dead during the Descent.
 
 The message says:
 
@@ -905,7 +925,7 @@ The message says:
 >
 > Find the Three Witnesses.
 
-The core does not give clean coordinates. It gives damaged names, partial images, old mission phrases, and puzzle clues. The player must solve where the Three Witnesses lie by investigation across the broken world. Sorell's plea is the motive: save humanity by learning how the lock was made before it fails.
+The core does not give clean coordinates. It gives damaged names, partial images, old mission phrases, and puzzle clues. The player must solve where the Three Witnesses lie by investigation across the broken world. Seneca's plea is the motive: save humanity by learning how the lock was made before it fails.
 
 ---
 
@@ -921,9 +941,9 @@ Steering attackers away or evacuating selected groups saves some lives but leave
 
 Leaving Hallowfen to the Choir preserves the party's resources and secrecy. Later, the player learns the whole town was raised on upside-down crosses around the cult's new temple-capital.
 
-Only after Hallowfen does the data core become the central political object. Giving it to the Holy Remnant grants protection but risks censorship and execution of witnesses. Giving it to the Lumen Compact reveals more data but exposes the player to dangerous experiments and political manipulation. Selling it in Veyr's Gate brings money and underworld contacts but spreads the secret to multiple factions. Keeping it makes the player a target.
+Only after Hallowfen does the data core become the central political object. Giving it to the Holy Remnant grants protection but risks censorship and execution of witnesses. Giving it to the Lumen Compact reveals more data but exposes the player to dangerous experiments and political manipulation. Selling it in Spindle Gate brings money and underworld contacts but spreads the secret to multiple factions. Keeping it makes the player a target.
 
-Act I introduces the world's unstable balance. The route begins on a long ash road into a Censure road camp, then moves through trade roads, Hallowfen wall checkpoints, ruined suburbs, small towns, and the outskirts of Veyr's Gate. The player encounters Remnant inquisitors, Compact field teams, Ash Cartel smugglers, Bloomborn refugees, Choir missionaries, and Hallowfen citizens who are criminals only because every lawful gate was closed to them.
+Act I introduces the world's unstable balance. The route begins on a long ash road into a Censure road camp, then moves through trade roads, Hallowfen wall checkpoints, ruined suburbs, small towns, and the outskirts of Spindle Gate. The player encounters Remnant inquisitors, Compact field teams, Ash Cartel smugglers, Bloomborn refugees, Choir missionaries, and Hallowfen citizens who are criminals only because every lawful gate was closed to them.
 
 Signs of renewed Host activity appear everywhere.
 
@@ -935,7 +955,7 @@ A caravan guard transforms after touching a relic that had been safe for decades
 
 A Penitent Engine patrol abandons its route and marches toward Woundfall, claiming the bells under the earth have started again.
 
-The act ends when the data core is partially decoded. It does not contain coordinates. It contains Sorell's damaged plea and the first puzzle clues toward the Three Witnesses.
+The act ends when the data core is partially decoded. It does not contain coordinates. It contains Seneca's damaged plea and the first puzzle clues toward the Three Witnesses.
 
 Each Witness is held, hidden, or worshipped by a different faction.
 
@@ -945,13 +965,13 @@ Each Witness is held, hidden, or worshipped by a different faction.
 
 Act II is the largest act. Hallowfen opened one wound; now the player sees the broken world around it. The Three Witnesses are the spine, but the act should be full of towns, side quests, companion conflicts, local politics, and faction pressure.
 
-Sorell's damaged recording does not tell the player where to go. It gives puzzle clues: a confessor's key, a surgeon's gospel, a bell under water. The player follows doctored Remnant records, Compact medical tags, drowned bell codes, old maps, black-market testimony, and companion knowledge until each Witness location becomes clear.
+Seneca's damaged recording does not tell the player where to go. It gives puzzle clues: a confessor's key, a surgeon's gospel, a bell under water. The player follows doctored Remnant records, Compact medical tags, drowned bell codes, old maps, black-market testimony, and companion knowledge until each Witness location becomes clear.
 
 The Witnesses answer three questions the player needs before any faction can act.
 
 - The Confessor's Key reveals who first contact was, and why Father Vale mattered.
 - The Surgeon's Gospel reveals that early Host forms were not only shaped like Hell.
-- The Bell in the Water reveals that Sorell created the Stilling lock and cannot repair it.
+- The Bell in the Water reveals that Seneca created the Stilling lock and cannot repair it.
 
 ### The First Witness: The Confessor's Key
 
@@ -973,9 +993,9 @@ The Compact wants to bury this because it proves their theory but also implies a
 
 The third Witness lies in Low Harrow, beneath the flooded lower city, inside a section of _Eschaton's Mercy_ that fell into the old harbor. The local ruling families have concealed it for generations because the dormant Host intelligence beneath the water protects the city in exchange for offerings.
 
-This Witness contains Sorell's confession. The Host did not stop because it weakened. It stopped because Sorell used a network of old Ecclesiate systems, machine choirs, orbital relays, confession networks, and infected tissue to trap the organism inside the Vale Imprint.
+This Witness contains Seneca's confession. The Host did not stop because it weakened. It stopped because Seneca used a network of old Ecclesiate systems, machine choirs, orbital relays, confession networks, and infected tissue to trap the organism inside the Vale Imprint.
 
-Sorell did not escape the Stilling. During the lock's creation, Sorell calcified into it. They are alive, fused to the walls, and unable to move. Sorell can warn, defend, and confess, but cannot repair the lock alone.
+Seneca did not escape the Stilling. During the lock's creation, Seneca calcified into it. They are alive, fused to the walls, and unable to move. Seneca can warn, defend, and confess, but cannot repair the lock alone.
 
 The Stilling was not a cure.
 
@@ -984,13 +1004,13 @@ It was a cage made from Hell.
 ---
 ## Act III: The Choir Revealed
 
-Once the player assembles the Witnesses, the truth is dangerous enough to move armies. Before any faction can fully act on it, Pontifex Severian III is abducted.
+Once the player assembles the Witnesses, the truth is dangerous enough to move armies. Before any faction can fully act on it, Pontifex Celestine IV is abducted.
 
 The abduction scene bears a moon sigil that most Remnant investigators cannot place. By now the player can connect it to the Choir through the Witness trail and earlier cult evidence.
 
 Act III narrows the story around the Choir. It shows the cult as a way of life, not only a battlefield: hospices for the rejected, families who joined because no city would admit their sick, teachers who call infection confession, and vats of living Host matter fed by hand so the flesh does not burn out alone.
 
-Ysolde's inner rite is total immersion. A living person is lowered whole into harvested Host matter. If the person is worthy and survives, the Choir believes Satan will manifest. Their chosen vessel is Pontifex Severian III, because the pope carries the Remnant's fear of Hell in one body.
+Thecla's inner rite is total immersion. A living person is lowered whole into harvested Host matter. If the person is worthy and survives, the Choir believes Satan will manifest. Their chosen vessel is Pontifex Celestine IV, because the pope carries the Remnant's fear of Hell in one body.
 
 The player can join a Remnant rescue crusade, help the Compact eliminate the cult and seize samples, enter the Choir's rite from inside, or intervene through independent alliances.
 
@@ -1000,52 +1020,52 @@ Whichever faction wins the battle understands the same hard fact. The manifestat
 
 ---
 
-## Act IV: Woundfall, Vale, and Sorell
+## Act IV: Woundfall, Vale, and Seneca
 
 The final act combines the old Woundfall pilgrimage and the final confrontation with Father Vale. After the Devil manifestation, the story should move with force toward the source of the lock.
 
 The player reaches Woundfall through the consequences of the Act III faction path. A Remnant route becomes a crusade, a Compact route becomes an armed expedition, a Free City route becomes a desperate coalition, and a Choir route becomes a pilgrimage into the wound.
 
-Inside the Nave, the player finds Sorell calcified into the lock network, fused to the walls and unable to move. Sorell is alive enough to speak, bargain, suffer, and defend the system through automations, machine-choir routines, and Host structures.
+Inside the Nave, the player finds Seneca calcified into the lock network, fused to the walls and unable to move. Seneca is alive enough to speak, bargain, suffer, and defend the system through automations, machine-choir routines, and Host structures.
 
-Father Vale is there with Sorell. The chamber is also a torture room. Sorell trapped the Host inside Vale's fear and made that fear into the Stilling lock. That act saved humanity. It also made Vale's private Hell eternal. Vale is lucid enough to know what Sorell did, and he has been torturing Sorell for it.
+Father Vale is there with Seneca. The chamber is also a torture room. Seneca trapped the Host inside Vale's fear and made that fear into the Stilling lock. That act saved humanity. It also made Vale's private Hell eternal. Vale is lucid enough to know what Seneca did, and he has been torturing Seneca for it.
 
-Vale wants the Stilling broken because the lock is also his prison. Sorell wants it preserved because without it the Host may Bloom again. Both are right about something. Neither is clean.
+Vale wants the Stilling broken because the lock is also his prison. Seneca wants it preserved because without it the Host may Bloom again. Both are right about something. Neither is clean.
 
 The final choice turns on who the player sides with and what factional preparation they brought to Woundfall.
 
-- Side with Vale and fight Sorell's automations to free the First Icon.
-- Side with Sorell or the lock and fight Vale's monstrous form to restore containment.
+- Side with Vale and fight Seneca's automations to free the First Icon.
+- Side with Seneca or the lock and fight Vale's monstrous form to restore containment.
 - Restore the lock through Remnant fire doctrine, Compact cure research, Free City coalition sacrifice, Penitent discipline, or another prepared solution.
 - Kill both and risk partial collapse, brutal lock renewal, or the cult's victory after its leaders are gone.
 - Attempt a new imprint and seek a path toward the Europa ending.
 
-The endings remain factional, but the emotional center is this chamber: Sorell did something unforgivable that saved the world, and Vale wants freedom from a Hell that everyone else may need to survive.
+The endings remain factional, but the emotional center is this chamber: Seneca did something unforgivable that saved the world, and Vale wants freedom from a Hell that everyone else may need to survive.
 
 ---
 # Companion Concepts
 
-## Sister Ilyra Voss
+## Sister Perpetua
 
 A Remnant exorcist from the Mercy Orders. She believes in God, doubts the Pontifex, and has secretly spared infected children. She uses prayer-litanies, fire, and field medicine. Her personal quest forces her to choose between obedience and mercy.
 
-## Dr. Kael Ren
+## Dr. Theophilus Celsus
 
 A Lumen Compact xenobiologist. Brilliant, exhausted, and morally compromised. He believes the Vale Imprint theory is correct and fears the Compact will weaponize the truth. His personal quest involves test subjects he abandoned in a sealed lab.
 
-## Mara of the Morrow Chain
+## Junia of the Morrow Chain
 
 A smuggler-guide who knows the roads, cartels, bribes, and lies that keep the Free Cities alive. She claims to care only about payment, but she keeps taking jobs that protect refugees.
 
-## Brother Tarn
+## Brother Cassian
 
 A Penitent Engine whose body is mostly machine. He speaks through a damaged vox-grille and records every failure on his armor. His personal quest asks whether duty without tenderness is just another form of surrender.
 
-## Lio
+## Mica
 
-A young Bloomborn tracker with black-gold veins and an instinctive sense for dormant Host tissue. Lio wants citizenship in a city that fears them. Their infection may progress depending on player choices.
+A young Bloomborn tracker with black-gold veins and an instinctive sense for dormant Host tissue. Mica wants citizenship in a city that fears them. Their infection may progress depending on player choices.
 
-## Anselm Quay
+## Matthias Nauta
 
 A former Choir singer who escaped before full conversion. He knows cult rites, Host hymns, and the location of hidden nests. No one trusts him, including himself.
 
@@ -1099,7 +1119,7 @@ This is a binding rule for all **player-facing** text — in-game dialogue, note
 
 The general population, and the overwhelming majority of the Holy Remnant itself, **does not know the Host is alien.** They believe what the state teaches: that the Descent opened a wound in creation, that **Hell itself is invading the world**, and that the Remnant wages **God's war** against the damned. The hyper-religious authoritarian state enforces this narrative on purpose, because "we are holding back Hell, so obey us" is the most powerful instrument it has for controlling a terrified population. Doubt is heresy; heresy burns.
 
-The real truth — that the Host is an **alien organism** from beneath Europa's ice, shaped into Hell's image by **Father Vale's** mind (the Vale Imprint), and that the Stilling is a **failing containment lock** rather than a divine mercy — is known only to a select few: the Quiet Cardinals, senior Lumen Compact leadership, the Choir's inner circle, and figures like Sorell. To say aloud that Vale shaped the Host, or that it is biology rather than damnation, is heresy punishable by fire.
+The real truth — that the Host is an **alien organism** from beneath Europa's ice, shaped into Hell's image by **Father Vale's** mind (the Vale Imprint), and that the Stilling is a **failing containment lock** rather than a divine mercy — is known only to a select few: the Quiet Cardinals, senior Lumen Compact leadership, the Choir's inner circle, and figures like Seneca. To say aloud that Vale shaped the Host, or that it is biology rather than damnation, is heresy punishable by fire.
 
 Therefore, player-facing text must **never casually reveal** alien origin, Europa, first contact, the starship, or the Vale Imprint by name. Describe the horror the way a believer or a weary Censure agent would: Hell, damnation, false saints, the rot, the Host. The deeper truth is reached only by **mystery and investigation** — a child drawing a cold ringed moon no one taught them, a Compact note that treats demons like lab samples, a cult that calls damnation "confession," a lock that is quietly failing. Let players *feel* the official story cracking long before anyone hands them the answer. The "fell from the sky / a cold moon" imagery is permitted precisely because, to an in-world mind, it is inexplicable and frightening, not proof of anything.
 
@@ -1167,7 +1187,7 @@ The organism is not responding to the subject’s religion.
 
 It is imposing Vale’s.
 
-## Sermon of Pontifex Severian III
+## Sermon of Pontifex Celestine IV
 
 They will tell you the Devil is a microbe.
 

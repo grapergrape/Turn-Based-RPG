@@ -1,0 +1,35 @@
+{
+  "id": "old-pilgrim-bell-throat",
+  "name": "Bell-Throat Pilgrim",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "stage-iv-lure",
+  "description": "A road singer’s chest has opened into a narrow bone bell. The jaw hangs beneath it, still working through the shape of a hymn.",
+  "stats": {
+    "hp": 5,
+    "maxHp": 5,
+    "actionPoints": 6,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "hollow-canticle",
+      "name": "Hollow Canticle",
+      "apCost": 4,
+      "damage": 1,
+      "range": 3
+    }
+  ],
+  "aggro": [
+    "A cracked note comes from inside the opened ribs.",
+    "The thing raises both prayer-fused hands as if calling a response."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "stage-iv",
+    "pilgrim",
+    "ranged",
+    "human"
+  ]
+}

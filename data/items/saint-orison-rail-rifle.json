@@ -1,0 +1,53 @@
+{
+  "id": "saint-orison-rail-rifle",
+  "name": "Saint Orison Rail Rifle",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "rail rifle",
+  "rarity": "rare",
+  "weight": 5.1,
+  "groundModel": "rail-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant prototype",
+    "origin": "Orison Chapter",
+    "factions": [
+      "orison-chapter"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "rail rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 10,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 4,
+      "defaultLoaded": 4,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 83
+  },
+  "description": "Chapter artificers enclosed the rails in white ceramic and stamped a saint name above each contact. The ritual also serves as an inspection list."
+}

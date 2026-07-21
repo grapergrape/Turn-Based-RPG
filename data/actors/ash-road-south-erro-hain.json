@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-erro-hain",
+  "name": "Ezra Niger",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Grain carrier",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "crate-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

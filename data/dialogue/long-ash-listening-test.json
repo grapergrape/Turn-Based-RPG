@@ -28,7 +28,7 @@
       },
       "else": "unavailable",
       "lines": [
-        "The copper pins lead from the bell frame to Sava's niche. Each has been filed to a different length."
+        "The copper pins lead from the bell frame to Sapphira's niche. Each has been filed to a different length."
       ],
       "choices": [
         {
@@ -239,7 +239,7 @@
     },
     "quiet-menu": {
       "lines": [
-        "The docket marks four ways to stop a response. Three are written by wardens. Hessa's cadence is pressed into the register margins."
+        "The docket marks four ways to stop a response. Three are written by wardens. Keziah's cadence is pressed into the register margins."
       ],
       "choices": [
         {
@@ -251,7 +251,7 @@
           },
           "effects": {
             "setFlag": "heard-bell-sava-quieted",
-            "log": "The pins take the strain one at a time. Sava's breathing slows until the wire lies still."
+            "log": "The pins take the strain one at a time. Sapphira's breathing slows until the wire lies still."
           },
           "close": true
         },
@@ -291,7 +291,7 @@
           "close": true
         },
         {
-          "label": "Use Hessa's intact cadence",
+          "label": "Use Keziah's intact cadence",
           "conditions": {
             "flag": "heard-bell-register-read",
             "flagsAbsent": [
@@ -300,7 +300,7 @@
           },
           "effects": {
             "setFlag": "heard-bell-sava-quieted",
-            "log": "You keep Hessa's count and leave the last beat empty. Sava follows it into silence."
+            "log": "You keep Keziah's count and leave the last beat empty. Sapphira follows it into silence."
           },
           "close": true
         },

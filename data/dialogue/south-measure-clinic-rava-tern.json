@@ -1,0 +1,35 @@
+{
+  "id": "south-measure-clinic-rava-tern",
+  "title": "Rachel Bassus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Rachel waits for a shallow cough to pass. \"Timothy shortened the night attacks. Put that in any account you carry.\"",
+        "They fold the cloth inward before setting it down."
+      ],
+      "choices": [
+        {
+          "label": "Ask what should stay out of the account",
+          "next": "boundary"
+        },
+        {
+          "label": "Let Rachel recover their breath",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "boundary": {
+      "lines": [
+        "\"The placement clerk wants every fire where I slept. I came for scale in my lungs, not to hand over the road that put it there.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the road unnamed",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

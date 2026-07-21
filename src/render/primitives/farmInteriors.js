@@ -6,12 +6,13 @@ import { PALETTE } from '../palette.js';
 import {
   drawIsoDiamond,
   drawPropLeg,
-  drawShadowBlob,
   faceTools,
   footprintExtent,
   hash2D,
   isoFrame,
   linePx,
+  nativeLinePx,
+  nativePx,
   orientedBox,
   poly,
   px,
@@ -29,7 +30,6 @@ export function drawFarmBed(ctx, cx, cy, seed, opts = {}) {
   const mattressH = 6;
   const topH = frameH + mattressH;
   const ext = footprintExtent(lenA, lenB);
-  drawShadowBlob(ctx, cx, cy + 5, ext.w * 0.82, ext.h * 0.86);
 
   const corners = [
     frame.point(-ha + 0.06, -hb + 0.06),
@@ -117,6 +117,15 @@ export function drawFarmBed(ctx, cx, cy, seed, opts = {}) {
   px(ctx, side[0] - 4, side[1], PALETTE.rustDark, 5, 2);
   px(ctx, side[0] + 3 + jitter, side[1] + 2, PALETTE.outline, 7, 3);
   px(ctx, side[0] + 4 + jitter, side[1] + 1, PALETTE.woodDark, 5, 2);
+
+  nativeLinePx(ctx, mattress.cap.left[0] + 1.5, mattress.cap.left[1] - 0.5, mattress.cap.top[0] - 1.5, mattress.cap.top[1] + 0.5, PALETTE.hostBone);
+  const mattressSeamA = frame.point(-ha + 0.08, hb - 0.09, topH);
+  const mattressSeamB = frame.point(ha - 0.08, hb - 0.09, topH);
+  nativeLinePx(ctx, mattressSeamA[0], mattressSeamA[1], mattressSeamB[0], mattressSeamB[1], PALETTE.stoneDust);
+  nativeLinePx(ctx, quiltBandA[0] - 0.5, quiltBandA[1], quiltBandB[0] - 0.5, quiltBandB[1], PALETTE.rustMid);
+  nativeLinePx(ctx, creaseA[0] - 0.5, creaseA[1], creaseB[0] - 0.5, creaseB[1], PALETTE.stoneDust);
+  for (const post of headPosts) nativeLinePx(ctx, post[0] - 0.5, post[1] - 28.5, post[0] - 0.5, post[1] - 5.5, PALETTE.woodLight);
+  nativePx(ctx, side[0] - 2.5, side[1] + 0.5, PALETTE.rustMid);
 }
 
 function drawSack(ctx, x, baseY, width, height, seed) {
@@ -144,7 +153,6 @@ function drawSack(ctx, x, baseY, width, height, seed) {
 
 export function drawGrainSackStack(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 29, seed * 11 + 3));
-  drawShadowBlob(ctx, cx, cy + 5, 58, 20);
   const sacks = [
     { dx: -15, dy: -3, w: 17, h: 17 },
     { dx: 9, dy: -5, w: 18, h: 19 },
@@ -164,6 +172,14 @@ export function drawGrainSackStack(ctx, cx, cy, seed) {
   for (let i = 0; i < 12; i += 1) {
     px(ctx, spillX - 9 + Math.floor(rng() * 19), cy + 6 + Math.floor(rng() * 7), i % 3 === 0 ? PALETTE.clothTan : PALETTE.stoneDust, 1, 1);
   }
+  for (const [index, sack] of sacks.slice(0, count).entries()) {
+    const sx = cx + sack.dx;
+    const top = cy + sack.dy - sack.h;
+    nativeLinePx(ctx, sx - 3.5, top + 2.5, sx + 3.5, top + 2.5, PALETTE.hostBone);
+    nativeLinePx(ctx, sx - 4.5, top + 5.5, sx + ((seed + index * 13) & 1 ? 1.5 : -1.5), cy + sack.dy - 4.5, PALETTE.stoneDust);
+  }
+  nativeLinePx(ctx, spillX - 7.5, cy + 7.5, spillX + 7.5, cy + 7.5, PALETTE.clothTan);
+  nativePx(ctx, spillX - 2.5, cy + 9.5, PALETTE.stoneDust);
 }
 
 export function drawGrainBin(ctx, cx, cy, seed, opts = {}) {
@@ -175,7 +191,6 @@ export function drawGrainBin(ctx, cx, cy, seed, opts = {}) {
   const hb = lenB / 2;
   const binH = 25;
   const ext = footprintExtent(lenA, lenB);
-  drawShadowBlob(ctx, cx, cy + 6, ext.w * 0.86, ext.h * 0.88);
 
   const box = orientedBox(ctx, frame, lenA, lenB, binH, {
     top: PALETTE.woodMid,
@@ -228,6 +243,14 @@ export function drawGrainBin(ctx, cx, cy, seed, opts = {}) {
   for (let i = 0; i < 7; i += 1) {
     px(ctx, spill[0] - 4 + Math.floor(rng() * 9), spill[1] + Math.floor(rng() * 5), i % 2 ? PALETTE.stoneDust : PALETTE.clothTan, 1, 1);
   }
+  litFace.nativeLine(0.06, 0.18, 0.94, 0.18, PALETTE.woodLight);
+  litFace.nativeLine(0.08, 0.62, 0.92, 0.62, PALETTE.woodMid);
+  shadeFace.nativeLine(0.08, 0.62, 0.92, 0.62, PALETTE.rustDark);
+  const grainLineA = frame.point(-ha + 0.18, -0.12, binH + 2.5);
+  const grainLineB = frame.point(ha - 0.18, -0.12, binH + 2.5);
+  nativeLinePx(ctx, grainLineA[0], grainLineA[1], grainLineB[0], grainLineB[1], PALETTE.stoneDust);
+  nativeLinePx(ctx, handleA[0], handleA[1] - 1.5, handleB[0], handleB[1] - 1.5, PALETTE.woodLight);
+  nativePx(ctx, scoop[0] - 2.5, scoop[1] - 1.5, PALETTE.woodLight);
 }
 
 export function drawFarmWorkbench(ctx, cx, cy, seed, opts = {}) {
@@ -241,7 +264,6 @@ export function drawFarmWorkbench(ctx, cx, cy, seed, opts = {}) {
   const slabH = 5;
   const topH = legH + slabH;
   const ext = footprintExtent(lenA, lenB);
-  drawShadowBlob(ctx, cx, cy + 6, ext.w * 0.84, ext.h * 0.9);
 
   // Peg rail first so the bench body naturally occludes its lower posts.
   const backA = frame.point(-ha + 0.08, -hb + 0.04);
@@ -326,6 +348,13 @@ export function drawFarmWorkbench(ctx, cx, cy, seed, opts = {}) {
   px(ctx, glove[0] - 4, glove[1] - 3, PALETTE.outline, 9, 5);
   px(ctx, glove[0] - 3, glove[1] - 3, PALETTE.clothTan, 6, 3);
   px(ctx, glove[0] + 3, glove[1] - 5, PALETTE.clothTan, 2, 3);
+  for (const post of [backA, backB]) nativeLinePx(ctx, post[0] - 0.5, post[1] - 41.5, post[0] - 0.5, post[1] - 6.5, PALETTE.woodLight);
+  nativeLinePx(ctx, top.cap.left[0] + 1.5, top.cap.left[1] - 0.5, top.cap.top[0] - 1.5, top.cap.top[1] + 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, jawA[0], jawA[1] - 0.5, jawB[0], jawB[1] - 0.5, PALETTE.hostBone);
+  nativeLinePx(ctx, screw[0] - 3.5, screw[1] - 1.5, screw[0] + 3.5, screw[1] - 1.5, PALETTE.rustLight);
+  nativeLinePx(ctx, hammerA[0], hammerA[1] - 0.5, hammerB[0], hammerB[1] - 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, sawA[0], sawA[1] - 1.5, sawB[0], sawB[1] - 1.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, glove[0] - 2.5, glove[1] - 2.5, glove[0] + 2.5, glove[1] - 2.5, PALETTE.stoneDust);
 }
 
 export function drawStableDivider(ctx, cx, cy, seed, opts = {}) {
@@ -333,7 +362,6 @@ export function drawStableDivider(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 67, seed * 19 + 13));
   const a = frame.point(-0.5, 0);
   const b = frame.point(0.5, 0);
-  drawShadowBlob(ctx, cx, cy + 3, 50, 12);
 
   // A solid kickboard keeps hooves out of the aisle. Rails above it keep the
   // divider readable and let adjacent pieces form a continuous stall run.
@@ -370,4 +398,9 @@ export function drawStableDivider(ctx, cx, cy, seed, opts = {}) {
     const p = frame.point(-0.45 + rng() * 0.9, 0.06 + rng() * 0.18);
     px(ctx, p[0], p[1] + 1, i % 3 === 0 ? PALETTE.clothTan : PALETTE.stoneDust, 2 + (i & 1), 1);
   }
+  nativeLinePx(ctx, kick.cap.left[0] + 1.5, kick.cap.left[1] - 0.5, kick.cap.top[0] - 1.5, kick.cap.top[1] + 0.5, PALETTE.woodLight);
+  for (const post of [a, b]) nativeLinePx(ctx, post[0] - 0.5, post[1] - 36.5, post[0] - 0.5, post[1] - 5.5, PALETTE.woodLight);
+  for (const lift of [23.5, 33.5]) nativeLinePx(ctx, a[0] + 0.5, a[1] - lift, b[0] - 0.5, b[1] - lift, PALETTE.woodLight);
+  nativeLinePx(ctx, hitch[0] + side * 2.5, hitch[1] - 26.5, hitch[0] + side * 7.5, hitch[1] - 19.5, PALETTE.rustMid);
+  nativePx(ctx, hitch[0] + side * 1.5, hitch[1] - 28.5, PALETTE.rustLight);
 }

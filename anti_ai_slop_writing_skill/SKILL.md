@@ -1,140 +1,276 @@
-# Anti-AI-Slop Writing (MANDATORY for player-facing text)
-
-Vendored, self-contained writing skill. **Any AI/code assistant** working in this
-repo — Codex, Claude, ChatGPT, Copilot, anything — **must apply this skill to all
-player-facing text** before writing or editing it. No exceptions, no opt-in.
-
-Adapted for this project from **jalaalrd/anti-ai-slop-writing**
-(https://github.com/jalaalrd/anti-ai-slop-writing). Vendored so it works offline
-and binds every agent directly; see that repo for the upstream source.
-
+---
+name: anti-ai-slop-writing
+description: Review, write, and revise player-facing RPG text so it has natural sentence movement, distinct character voices, situation-specific dialogue structures, and concrete in-world diction. Use for dialogue, choices, barks, narration, journals, logs, descriptions, quest text, UI copy, and corpus-wide narrative audits, especially when speakers sound interchangeable or generated text repeats clipped sentences, stock transitions, or one conversation template.
 ---
 
-## When this applies
+# Anti-AI-Slop Writing
 
-Apply it to anything a player can read in-game or that ships as narrative:
+Apply this skill to every player-facing line in this repository. Treat clean
+punctuation as the minimum. The real standard is a cast whose members think,
+speak, evade, and argue differently.
 
-- `data/dialogue/*.json` — node lines and choice labels
-- `data/levels/*.json` — `intro`, `briefing`, `combatIntro`, trigger `intro`, object `log`
-- `data/items/*.json`, `data/enemies/*.json`, `data/actors/*.json` — `description`, `background`
-- Any UI string, bark, readout, or log line written in code
+## Scope
 
-Lore/design docs under `docs/` should follow it too, but player-facing text is
-non-negotiable.
+Review all text a player can read:
 
----
+- dialogue lines and choice labels in `data/dialogue/`
+- level intros, briefings, combat intros, object text, and trigger logs
+- item, enemy, actor, companion, technique, and quest copy
+- barks, readouts, journal updates, map labels, and UI strings in code
+- generators and content sources that emit any of the above
 
-## The hard rules (these are the obvious "AI wrote this" tells)
+Apply the same standard to narrative design docs. When generated files are
+involved, edit the authoritative source and regenerate. Never polish generated
+JSON while leaving the generator unchanged.
 
-1. **NO em-dashes. NO `--`. NO `—`.** This is the single biggest tell and the
-   reason this skill exists. Do not use a dash to join clauses or drop an aside.
-   Rewrite instead (see the dash-rewrite guide below). In this project the bitmap
-   font also renders `—` as a stray `-` and `--` as a broken double hyphen, so it
-   looks bad *and* reads as AI slop.
-2. **No "rule of three."** Avoid the reflexive triple ("ordered, monumental, and
-   watched", "find the cell, end it, move on" stacked over and over). One or two
-   beats. Vary it.
-3. **No hedging seesaw.** Don't qualify, counter-qualify, then re-qualify. Commit
-   to a statement.
-4. **Vary sentence length.** Do not write paragraph after paragraph of same-length
-   sentences. Short. Then a longer one that breathes. Then short again.
-5. **No corporate-pep / essay-transition tone** in fiction. No "Moreover",
-   "Furthermore", "It's worth noting", "In a world where…", "Ultimately".
-6. **No invented facts.** No fabricated numbers, fake quotes, or made-up history
-   that contradicts `docs/lore/the_host_story_bible.md`.
-7. **Plain punctuation.** No `…` ellipsis sprinkled for mood (one, rarely). No
-   exclamation-mark spam. No emoji, no markdown, no hashtags in player text.
+## Non-negotiable failures
 
-8. **No clipped ladder cadence.** Do not fall into repeated units like "Short
-   statement, comma. Another short statement, comma. That is what..." or "It is
-   X. It is Y. That is the part..." across intros, notes, object text, and
-   dialogue. This cadence makes every speaker sound like the same assistant.
-   Break the ladder with real syntax, concrete motive, interruption, evasion,
-   slang, profession-specific words, or a different sentence shape.
+Do not ship any of these:
 
-## The dash-rewrite guide (do this every time you reach for `--`)
+1. An em dash or doubled hyphen in player-facing text. Rewrite the sentence.
+2. Stock assistant language, corporate prose, or essay transitions.
+3. An ornamental rule of three used for rhythm instead of meaning.
+4. A clipped ladder of short statements used as the default dramatic voice.
+5. One dialogue skeleton reused across a cast with only nouns changed.
+6. Named speakers whose lines survive a name swap without revision.
+7. Invented facts that conflict with the story bible or established state.
 
-A dash almost always wants to be one of these:
+Three required facts may still appear together when the content demands them.
+State them plainly and avoid turning nearby prose into matching triples.
 
-- **A period.** Two sentences. `He is not a man. Not anymore.`
-- **A comma**, for a light aside. `The altar, still warm, holds the bowl.`
-- **A colon:** when the second half explains the first. `One lesson: open the body.`
-- **Parentheses ()**, for a true aside.
-- **A full restructure** so the dash is not needed at all. Usually the best fix.
+## Work in this order
 
-Example. Bad: `You walk the ash roads -- you find the cell -- you put it down.`
-Good: `You walk the ash roads. You find the cell. You put it down.`
+### 1. Find the source of truth
 
-## The clipped-ladder rewrite guide
+Locate the runtime data, generator, cast ledger, quest contract, and relevant
+canon before editing. Preserve IDs, conditions, effects, flags, items, and quest
+transitions unless the request changes them.
 
-The bad pattern is not just short sentences. Short sentences are useful. The
-problem is a repeated explanatory rhythm that sounds generated:
+### 2. Classify the text surface
 
-Bad: `I counted the dead, twice. I marked the door, twice. That is what kept the
-children calm.`
+Choose the form before choosing the words:
 
-Better for a quartermaster: `I counted blankets first. Dead second. Children
-notice what you count, so I kept my finger on the linen column and did not look
-at the door.`
+- spoken dialogue
+- player choice
+- neutral observation
+- character-filtered observation
+- field report, ledger, prayer, note, warning, or other diegetic document
+- system feedback or reusable UI affordance
 
-Better for a medic: `I counted pulses until the numbers quit helping. After
-that I wrote names on cuffs, because a name was still a treatment I could give.`
+Do not apply dialogue mannerisms to system text. Do not make a frightened note
+sound like a neutral inspection. Reusable interface labels such as `Leave` or
+`Back` may repeat because consistency helps the player. Authored prose and
+character-specific choices do not receive that exemption.
 
-Before writing a line, choose the speaker's pressure and tools:
+### 3. Write a private voice card
 
-- **Background:** What work taught them their words? Kitchen, ward, guard post,
-  chapel school, black market, field surgery, water ration line.
-- **Pressure:** What are they trying to hide, win, excuse, protect, or remember?
-- **Vocabulary:** What nouns do they reach for first? Ledgers, hinges, soup,
-  thread, veins, bells, keys, rot, saints.
-- **Syntax habit:** Long legal clauses, blunt fragments, jokes under panic,
-  prayer cadence, child logic, inventory lists, medical triage, gossip.
-- **Avoidance:** What do they refuse to name plainly?
+Before drafting a named speaker, record these decisions in the nearest cast or
+story source, or in the generator when that is the authoritative source:
 
-For notes, readouts, and object text, pick the writer or document form before
-drafting: warden ledger, Censure field report, cult instruction, child's drawing,
-stolen inventory, altar scratch, survivor warning, or player inspection. The
-form controls diction. A field report should not sound like a frightened child,
-and neither should sound like the narrator.
+- **Background:** Which work, household, class, faction, and place formed them?
+- **Present pressure:** What do they need from this exchange right now?
+- **Social tactic:** Do they instruct, bargain, flatter, accuse, test, confess,
+  gossip, evade, or make the listener do the verbal work?
+- **Working vocabulary:** Which concrete nouns and verbs come naturally?
+- **Syntax range:** What happens to their sentences when calm, busy, or afraid?
+- **Avoidance:** Which fact or feeling will they circle instead of naming?
+- **Private contradiction:** What do they claim that their behavior weakens?
 
-## Banned / suspect vocabulary (rewrite to plain words)
+Do not reduce a voice to a verbal gimmick. An accent, repeated catchphrase, or
+profession word does not make a character distinct by itself.
 
-delve, tapestry, landscape (as metaphor), testament, vibrant, pivotal, intricate,
-myriad, realm, navigate (as metaphor), foster, leverage, robust, seamless,
-nuanced, multifaceted, underscore, bustling, whisper of (cliché), dance of,
-symphony of, beacon of, treasure trove, ever-evolving, fast-paced, game-changer.
+### 4. Compare the local cast
 
-## Banned phrases / openers
+Place the voice cards for characters in the same location side by side. Separate
+each neighboring speaker on at least two meaningful axes, such as social tactic,
+syntax, degree of certainty, relationship to authority, or what they refuse to
+name. Shared local vocabulary is useful. Shared rhetorical behavior is not.
 
-"In today's …", "It's worth noting", "It's important to remember", "Not just X,
-but Y", "At the end of the day", "Needless to say", "Rest assured", "Certainly,",
-"Moreover,", "Additionally,", "Furthermore,", "In conclusion,", "Ultimately,",
-"That said,", "Whether you're … or …".
+Use two tests:
 
-## Voice for THIS project
+- **Name-swap test:** Move a line to another named speaker. If it still fits,
+  rewrite it or decide why both people genuinely share that speech.
+- **Silhouette test:** Hide names and job titles from several exchanges. A reader
+  should still infer who is speaking from priorities and verbal behavior, not
+  from a catchphrase pasted into every line.
 
-Grim, plain, concrete, period-correct gothic sci-fi horror. Short declaratives.
-Sensory, specific nouns over abstractions. Let dread come from what is described,
-not from adjectives. A weary cult-breaker, a frightened priest, and a cult that
-believes its own gospel should each sound like themselves, not like a press release.
+### 5. Choose a scene shape from the pressure
 
-Every named person needs a private voice rule before drafting. A line should feel
-hard to move to a different speaker without rewriting it. If Selka, Runa, Hanne,
-Oren, Dalia, and a warden note can trade sentences without friction, the writing
-has failed even if each sentence is clean.
+Let the situation control the conversation graph. Possible shapes include a
+refused question, an unsolicited instruction, a correction, a price negotiation,
+a story that keeps dodging its point, an interrogation, an interruption by work,
+or an answer that closes one subject and exposes another.
 
-## Self-check before you finish any player-facing text
+Do not give many NPCs this universal frame:
 
-- [ ] Zero `--`, `—`, em-dashes. (Search the file. If you find one, rewrite it.)
-- [ ] No banned word / phrase / opener slipped in.
-- [ ] Sentence lengths vary; no wall of identical clauses.
-- [ ] No reflexive rule-of-three.
-- [ ] No clipped-ladder cadence or repeated "That is what..." explanation tail.
-- [ ] Each speaker or document has a clear voice rule: background, pressure,
-      vocabulary, syntax habit, and avoidance.
-- [ ] A named character's line could not be handed to another named character
-      unchanged.
-- [ ] No fabricated facts; consistent with the story bible.
-- [ ] It sounds like a person in this world wrote it, not an assistant.
+1. Narration describes the NPC handling a work object.
+2. The player asks one topic question.
+3. The NPC gives two explanatory quotations.
+4. The player chooses `Ask about something else` or `Let them return to work`.
 
-If you cannot honor this, do not ship the text.
+Changing the work object does not change that voice. Vary node count, initiative,
+answer length, follow-up ownership, exit language, and whether the speaker ever
+answers directly. Keep graphs compact, but make their compactness situational.
+
+### 6. Draft for speech acts, not lore delivery
+
+Every line should do something to the other person: warn, conceal, bargain,
+correct, recruit, delay, shame, comfort, or force a decision. Deliver necessary
+facts through that action. Cut lines that merely explain the setting in the
+same polished register.
+
+Let people misremember small things, restart a sentence, answer the dangerous
+part indirectly, or use a concrete example instead of a thesis. Do not add such
+features mechanically. Natural speech is uneven because attention and motive
+are uneven.
+
+## Sentence movement
+
+Short sentences are allowed. A run of them must belong to a speaker and a
+moment, not to the author’s default setting.
+
+Flag a clipped ladder when several nearby units have most of these traits:
+
+- similar length
+- repeated subject-first declaratives
+- isolated fragments that only simulate gravity
+- repeated openings such as `I did`, `It is`, `They came`, or `No more`
+- an explanatory tail such as `That is what`, `That is why`, or `This is the part`
+- the same rhythm recurring in unrelated speakers, notes, and narration
+
+Bad default cadence:
+
+`Safe. Good. That is good. The road holds. We can move.`
+
+Mechanic under pressure:
+
+`Pressure held through the west joint. I do not trust the patch, but it will
+carry until morning if nobody leans on the valve.`
+
+Parent hearing the same news:
+
+`Then my boys sleep downstairs tonight. Wake me if that joint starts knocking.`
+
+The revision works because each person values different evidence and performs a
+different social action. It is not a formula for making every sentence longer.
+
+Vary how sentences are built, not by following a preset short-long-short pattern.
+Use coordination, subordination, interruption, fragments, or silence only when
+the speaker’s thought and pressure call for them.
+
+## Diction and punctuation
+
+Prefer specific physical nouns and active verbs over atmosphere labels. Let the
+world’s dread come from what happened to a body, ledger, machine, meal, grave,
+or household.
+
+Rewrite these suspect words and phrases unless their literal use is necessary:
+
+`delve`, `tapestry`, metaphorical `landscape`, `testament`, `vibrant`, `pivotal`,
+`intricate`, `myriad`, `realm`, metaphorical `navigate`, `foster`, `leverage`,
+`robust`, `seamless`, `nuanced`, `multifaceted`, `underscore`, `bustling`,
+`whisper of`, `dance of`, `symphony of`, `beacon of`, `treasure trove`,
+`ever-evolving`, `fast-paced`, `game-changer`.
+
+Do not use these stock transitions or openers:
+
+`In today's`, `It's worth noting`, `It's important to remember`, `Not just X,
+but Y`, `At the end of the day`, `Needless to say`, `Rest assured`, `Certainly`,
+`Moreover`, `Additionally`, `Furthermore`, `In conclusion`, `Ultimately`,
+`That said`, `Whether you're`.
+
+Use periods, commas, colons, question marks, and parentheses. Use an ellipsis
+only when the actual omission or trailing speech matters. Avoid exclamation-mark
+spam, emoji, markdown, and hashtags in player text.
+
+When a dash seems necessary, decide whether the thought needs a period, a comma,
+a colon, parentheses, or a complete restructure. Do not replace every dash with
+two abrupt sentences. Read the resulting paragraph aloud for rhythm.
+
+## Project voice
+
+Keep the setting grim, concrete, and intimate. The Host and the Vale Imprint
+produce religious body horror, but people still talk about meals, shifts, debts,
+children, tools, grudges, and what must be done before dark. Do not make every
+speaker solemn. Humor may be dry, cruel, nervous, practical, or absent according
+to the person and scene. Avoid modern quips and generic evil-church language.
+
+Faction membership shapes assumptions, not a shared monologue. A Censure clerk,
+field medic, frightened novice, and veteran can disagree in syntax as well as
+policy. Likewise, poverty does not give every civilian the same blunt fragments.
+
+## Corpus review
+
+Do not approve a large text pass by reading files in isolation.
+
+Run `node anti_ai_slop_writing_skill/scripts/audit-player-text.mjs` from the
+repository root before and after a corpus pass. Add `--json` for machine-readable
+output, `--verbose` to print every lead, or `--hard-only` for continuous checks.
+The audit fails on forbidden dash forms and reports cadence, phrase, label, and
+graph repetition for human review.
+
+1. Inventory every player-facing surface and its authoritative source.
+2. Group dialogue by location, faction, profession, and generator.
+3. Search exact repeated prose, repeated sentence openings, explanatory tails,
+   three-beat constructions, and clusters of short declaratives.
+4. Separate intentional UI repetition from authored-language repetition.
+5. Compare conversation topology and navigation labels across named NPCs.
+6. Read adjacent characters in sequence, then compare distant characters who
+   should sound unlike one another.
+7. Inspect choice labels as writing. They should express player intent clearly
+   without echoing one stock question in every conversation.
+8. Regenerate content and repeat the audit on shipped JSON.
+
+Treat automated findings as review leads except for hard punctuation and banned
+phrase failures. A detector cannot know whether terse speech belongs to a
+terrified guard. It can show that the same terse speech appears in a medic, a
+child, and a century-old report.
+
+## Structural narrative guardrails
+
+Use the corpus-level findings in the StoryScope study of 61,608 stories as
+review prompts, not as a mechanical recipe for making prose look human. Surface
+style edits do not repair a story whose narrative habits remain unchanged.
+
+During upstream story review, look for clusters of these tendencies:
+
+- themes, motives, or morals explained after the scene has already shown them;
+- one clean causal track in which every event exists to serve the main plot;
+- embodied sensations attached to every emotion whether or not the viewpoint
+  would notice the body then;
+- dialogue that defaults to explicit philosophy instead of local pressure;
+- conflicts and endings resolved more neatly than the established costs allow;
+- summaries that close ambiguity before characters have earned certainty.
+
+Do not add a subplot, rumor, dream, flashback, interruption, unresolved ending,
+or conflicting account merely to defeat a detector. Use one only when it grows
+from an existing person, institution, material pressure, or gap in knowledge.
+The goal is stronger narrative causality and human attention, not statistical
+camouflage.
+
+## Self-check
+
+### Line and scene
+
+- [ ] No em dash or doubled hyphen appears in player-facing text.
+- [ ] No stock assistant phrase or ornamental triple remains.
+- [ ] Sentence structure follows the speaker’s thought, not a rhythm formula.
+- [ ] The scene has a specific pressure and each line performs an action.
+- [ ] Facts, effects, and canon remain correct.
+
+### Character and document
+
+- [ ] Every named speaker has a private voice card.
+- [ ] Calm and pressured syntax differ without becoming a gimmick.
+- [ ] The name-swap and silhouette tests pass.
+- [ ] Each document sounds written for its actual purpose and reader.
+
+### Cast and corpus
+
+- [ ] Neighboring NPCs differ on more than profession nouns.
+- [ ] Conversation graphs do not reuse one authored skeleton across the cast.
+- [ ] Repeated prose and choice labels have been reviewed in context.
+- [ ] Generated output was audited after regeneration.
+- [ ] Representative scenes were read aloud or played in sequence.
+
+If any check fails, revise before shipping.

@@ -49,9 +49,9 @@ function previewMap() {
     totalCells: cells.length,
     cells,
     markers: [
-      { id: 'player', kind: 'player', label: 'Mara Vey', x: 15, y: 12, reveal: 'always' },
+      { id: 'player', kind: 'player', label: 'Junia Carbo', x: 15, y: 12, reveal: 'always' },
       { id: 'quest:bell', kind: 'quest', label: 'Upper Bell', x: 18, y: 5, reveal: 'explored' },
-      { id: 'dialogue:tomas', kind: 'dialogue', label: 'Tomas Vek', x: 10, y: 13, reveal: 'explored' },
+      { id: 'dialogue:tomas', kind: 'dialogue', label: 'Tobias Porta', x: 10, y: 13, reveal: 'explored' },
       { id: 'danger:cellar', kind: 'danger', label: 'Opened Cellar', x: 16, y: 9, reveal: 'explored' },
       { id: 'exit:road', kind: 'exit', label: 'Hallowfen Road', x: 2, y: 8, reveal: 'explored' },
       { id: 'search:office', kind: 'search', label: 'Warden Office', x: 19, y: 12, reveal: 'explored' }
@@ -68,6 +68,8 @@ try {
     ? Math.max(0, Math.min(JOURNAL_SECTIONS.length - 1, numericSection))
     : Math.max(0, JOURNAL_SECTIONS.indexOf(requested));
   const selected = Math.max(0, Number(params.get('selected') ?? 0) || 0);
+  const turnProgress = Math.max(0, Math.min(1, Number(params.get('turn') ?? 0) || 0));
+  const turnDirection = Number(params.get('direction') ?? 1) < 0 ? -1 : 1;
 
   const [actor, level, techniqueIndex] = await Promise.all([
     loadJson('/data/actors/mara-vey.json'),
@@ -116,7 +118,7 @@ try {
       objectives: [
         { text: 'Search the chapel settlement and identify the cell.', done: true },
         { text: 'Break the Choir of the Open Wound.', done: true },
-        { text: 'Bring Tomas Vek to the upper bell.', active: true },
+        { text: 'Bring Tobias Porta to the upper bell.', active: true },
         { text: 'Investigate why the Hallowfen checkpoints stopped answering.', lead: true }
       ]
     },
@@ -137,9 +139,13 @@ try {
     'A hidden service cellar runs beneath the split barrel in the nave.',
     'The warden used Quarantine House Seventeen to hold tithe dissenters after the Stilling.',
     'A Penitent Engine stood in the east doorway, then turned back without entering.',
-    'Tomas Vek knows the old bell frame and does not trust the repaired rope.',
+    'Tobias Porta knows the old bell frame and does not trust the repaired rope.',
     'The moved families were taken before the chapel guards were opened.',
-    'The north wall road has not answered three Censure bell calls.'
+    'The north wall road has not answered three Censure bell calls.',
+    'Micah lost his blue ball when Ruth kicked it down the hall. The children are not allowed past the survivor camp.',
+    'You found the blue ball in the lower catacombs. Micah is waiting near the stair.',
+    'The Remnant will hear the chapel bell, but Hallowfen checkpoints still do not answer. Follow the wall road and find who silenced them.',
+    'A child in the hidden catacombs keeps watching the dark lower hall.'
   ];
   const factions = (level.codex ?? []).map((entry, index) => ({
     name: entry.name,
@@ -172,8 +178,11 @@ try {
     journal: {
       section,
       sections: JOURNAL_SECTIONS,
-      turn: null,
+      turn: turnProgress > 0 && turnProgress < 1
+        ? { from: Math.max(0, section - 1), direction: turnDirection, progress: turnProgress }
+        : null,
       factionIndex: Math.min(selected, Math.max(0, factions.filter((entry) => entry.known).length - 1)),
+      evidenceIndex: selected,
       primaryIndex: Math.min(selected, Math.max(0, character.primaries.length - 1)),
       time: {
         dateLabel: 'FIELD DAY 4, YEAR 130 AFTER DESCENT',

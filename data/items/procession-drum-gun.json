@@ -1,0 +1,64 @@
+{
+  "id": "procession-drum-gun",
+  "name": "Procession Drum Gun",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "support gun",
+  "rarity": "rare",
+  "weight": 6.2,
+  "groundModel": "support-gun",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Processional Guard",
+    "factions": [
+      "processional-guard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "support gun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 7,
+        "range": 7,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "controlled-burst",
+        "name": "Controlled Burst",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 7,
+        "accuracyBonus": -10,
+        "ammoCost": 3,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "full-rifle-cartridge",
+      "capacity": 30,
+      "defaultLoaded": 30,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "A squad automatic rifle fed from a squat drum. Processional guards wrap the barrel handle in prayer cord to mark it as communal property."
+}

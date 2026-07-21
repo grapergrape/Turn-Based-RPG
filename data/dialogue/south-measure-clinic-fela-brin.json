@@ -1,0 +1,52 @@
+{
+  "id": "south-measure-clinic-fela-brin",
+  "title": "Felicitas Rufinus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Felicitas keeps her dressed arm clear of the cot frame.",
+        "\"You travel. When a clinic writes down a burn, how far does the writing follow?\""
+      ],
+      "choices": [
+        {
+          "label": "Say Compact stations may keep it",
+          "next": "record"
+        },
+        {
+          "label": "Ask how the oven burned her",
+          "next": "oven"
+        },
+        {
+          "label": "Admit you cannot answer",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "record": {
+      "lines": [
+        "\"Farther than the scar, then. They treated me before asking where I belonged. I would like the record to show the same restraint.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Felicitas with the question",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "oven": {
+      "lines": [
+        "\"The draft turned and the oven spat through the flue. Martha dragged me clear before the sleeve took.\"",
+        "She adjusts the dressing with two fingers. \"The clinic was quicker than the questions came later.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Felicitas rest the burn",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

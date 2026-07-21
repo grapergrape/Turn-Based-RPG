@@ -61,7 +61,8 @@ export function buildJournalMapState({
   isQuestUpdateActive = () => false,
   objectName = defaultSourceLabel,
   resolveEncounterId = (id) => id,
-  encounterHasLiving = () => true
+  encounterHasLiving = () => true,
+  mapMarkerConditionsMet = () => false
 } = {}) {
   if (!grid) return null;
 
@@ -99,7 +100,7 @@ export function buildJournalMapState({
       x: player.position.x,
       y: player.position.y,
       reveal: 'always'
-    }, player, { explored, hidden, objectName });
+    }, player, { explored, hidden, objectName, mapMarkerConditionsMet });
   }
 
   for (const object of interactables ?? []) {
@@ -107,7 +108,7 @@ export function buildJournalMapState({
       markers,
       automaticObjectMarker(object, { isQuestUpdateActive, objectName, questDefs }),
       object,
-      { explored, hidden, objectName }
+      { explored, hidden, objectName, mapMarkerConditionsMet }
     );
   }
 
@@ -123,7 +124,7 @@ export function buildJournalMapState({
         y: actor.position.y
       } : null,
       actor,
-      { explored, hidden, objectName }
+      { explored, hidden, objectName, mapMarkerConditionsMet }
     );
   }
 
@@ -141,7 +142,7 @@ export function buildJournalMapState({
         y: trigger.y
       },
       trigger,
-      { explored, hidden, objectName }
+      { explored, hidden, objectName, mapMarkerConditionsMet }
     );
   }
 
@@ -198,18 +199,25 @@ function automaticObjectMarker(object, { isQuestUpdateActive, objectName, questD
 }
 
 function baseObjectMarker(object, kind, label) {
+  const markerCell = object.interactionMarker ?? object;
   return {
     id: `${kind}:${objectStateId(object)}`,
     kind,
     label,
-    x: object.x,
-    y: object.y
+    x: markerCell.x,
+    y: markerCell.y
   };
 }
 
-function addMapMarker(markers, fallback, source, { explored, hidden, objectName }) {
+function addMapMarker(markers, fallback, source, {
+  explored,
+  hidden,
+  objectName,
+  mapMarkerConditionsMet = () => false
+}) {
   const authored = normalizeAuthoredMapMarker(source?.mapMarker);
   if (authored?.hidden) return;
+  if (authored?.conditions && !mapMarkerConditionsMet(authored.conditions)) return;
   if (!fallback && !authored) return;
 
   const x = Number(fallback?.x ?? source?.position?.x ?? source?.x);
@@ -245,7 +253,8 @@ function normalizeAuthoredMapMarker(value) {
   return {
     kind: MAP_MARKER_KINDS.includes(value.kind) ? value.kind : null,
     label: typeof value.label === 'string' && value.label.trim() !== '' ? value.label.trim() : null,
-    reveal: MAP_MARKER_REVEALS.includes(value.reveal) ? value.reveal : null
+    reveal: MAP_MARKER_REVEALS.includes(value.reveal) ? value.reveal : null,
+    conditions: value.conditions ?? null
   };
 }
 

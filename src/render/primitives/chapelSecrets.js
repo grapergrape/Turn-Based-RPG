@@ -3,10 +3,11 @@
 import { PALETTE } from '../palette.js';
 import {
   drawIsoDiamond,
-  drawShadowBlob,
   hash2D,
   isoFrame,
   linePx,
+  nativeLinePx,
+  nativePx,
   orientedBox,
   poly,
   px,
@@ -85,6 +86,9 @@ export function drawVigilCandleRack(ctx, cx, cy, seed, opts = {}) {
   px(ctx, hook[0] - 2, hook[1] - 2, PALETTE.outline, 5, 5);
   px(ctx, hook[0] - 1, hook[1] - 1, PALETTE.rustLight, 3, 2);
   px(ctx, hook[0], hook[1] + 1, PALETTE.void, 1, 2);
+  face.nativeLine(0.14, 0.19, 0.42, 0.19, PALETTE.woodLight);
+  face.nativeLine(0.56, 0.8, 0.84, 0.8, PALETTE.woodDark);
+  face.nativeLine(0.18, 0.43, 0.38, 0.43, PALETTE.stoneDust);
 }
 
 export function drawGravekeeperChair(ctx, cx, cy, seed, opts = {}) {
@@ -92,7 +96,6 @@ export function drawGravekeeperChair(ctx, cx, cy, seed, opts = {}) {
   const at = (a, b, h = 0) => frame.point(a, b, h);
   const rng = rngFrom(hash2D(seed + 313, seed * 11 + 79));
 
-  drawShadowBlob(ctx, cx, cy + 6, 45, 18);
 
   const seatHeight = 21;
   for (const [a, b, far] of [
@@ -175,6 +178,19 @@ export function drawGravekeeperChair(ctx, cx, cy, seed, opts = {}) {
     }
   }
   if (rng() > 0.45) px(ctx, wornA[0] - 7, wornA[1], PALETTE.hostBone, 2, 1);
+
+  nativeLinePx(ctx, seat.cap.left[0] + 1.5, seat.cap.left[1] - 0.5, seat.cap.top[0] - 1.5, seat.cap.top[1] + 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, wornA[0] - 4.5, wornA[1] - 2.5, wornA[0] + 3.5, wornA[1] - 0.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, splatTop[0] - 1.5, splatTop[1] + 2.5, splatBottom[0] - 1.5, splatBottom[1] - 1.5, PALETTE.woodLight);
+  nativeLinePx(ctx, leftArmA[0] + 0.5, leftArmA[1] - 1.5, leftArmB[0] - 0.5, leftArmB[1] - 1.5, PALETTE.stoneDust);
+  if (opts.variant === 'restraint') {
+    const buckle = at(0, 0, seatHeight + 9);
+    nativePx(ctx, buckle[0] - 0.5, buckle[1] - 1.5, PALETTE.stoneLight, 1, 0.5);
+    nativeLinePx(ctx, buckle[0] - 5.5, buckle[1] - 2.5, buckle[0] + 5.5, buckle[1] + 2.5, PALETTE.rustMid);
+  } else {
+    const cord = at(-0.09, -0.33, 19);
+    nativeLinePx(ctx, cord[0] - 0.5, cord[1] - 4.5, cord[0] + 0.5, cord[1] + 4.5, PALETTE.clothTan);
+  }
 }
 
 export function drawMortuaryWashingTable(ctx, cx, cy, seed, opts = {}) {
@@ -183,7 +199,6 @@ export function drawMortuaryWashingTable(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 317, seed * 13 + 83));
   const slabHeight = 27;
 
-  drawShadowBlob(ctx, cx, cy + 7, 70, 26);
 
   for (const [a, b, lit] of [
     [-0.35, -0.21, true],
@@ -235,6 +250,13 @@ export function drawMortuaryWashingTable(ctx, cx, cy, seed, opts = {}) {
     const chip = at((rng() - 0.5) * 0.72, (rng() - 0.5) * 0.42, slabHeight + 10);
     px(ctx, chip[0], chip[1], rng() < 0.55 ? PALETTE.stoneMid : PALETTE.stoneDust, 1 + (i & 1), 1);
   }
+
+  nativeLinePx(ctx, slab.cap.left[0] + 1.5, slab.cap.left[1] - 0.5, slab.cap.top[0] - 2.5, slab.cap.top[1] + 0.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, slab.cap.top[0] + 2.5, slab.cap.top[1] + 1.5, slab.cap.right[0] - 2.5, slab.cap.right[1] - 0.5, PALETTE.stoneMid);
+  nativeLinePx(ctx, channelStart[0] + 0.5, channelStart[1] - 2.5, channelEnd[0] - 0.5, channelEnd[1] - 2.5, PALETTE.rustMid);
+  nativeLinePx(ctx, measureA[0], measureA[1] - 0.5, measureB[0], measureB[1] - 0.5, PALETTE.stoneDust);
+  nativePx(ctx, drain[0] - 2.5, drain[1] - 2.5, PALETTE.rustLight);
+  nativeLinePx(ctx, foldedCloth[0] - 4.5, foldedCloth[1] - 3.5, foldedCloth[0] + 3.5, foldedCloth[1] - 1.5, PALETTE.hostBone);
 }
 
 export function drawExaminerAssayCase(ctx, cx, cy, seed, opts = {}) {
@@ -242,7 +264,6 @@ export function drawExaminerAssayCase(ctx, cx, cy, seed, opts = {}) {
   const at = (a, b, h = 0) => frame.point(a, b, h);
   const rng = rngFrom(hash2D(seed + 329, seed * 17 + 87));
 
-  drawShadowBlob(ctx, cx, cy + 5, 48, 15);
 
   orientedBox(ctx, frame, 0.76, 0.42, 8, {
     top: PALETTE.stoneDark,
@@ -292,6 +313,12 @@ export function drawExaminerAssayCase(ctx, cx, cy, seed, opts = {}) {
     const point = at(-0.3 + rng() * 0.6, -0.16 + rng() * 0.3, 15);
     px(ctx, point[0], point[1], rng() < 0.6 ? PALETTE.stoneDark : PALETTE.rustDark, 1, 1);
   }
+
+  nativeLinePx(ctx, lid.cap.left[0] + 1.5, lid.cap.left[1] - 0.5, lid.cap.top[0] - 1.5, lid.cap.top[1] + 0.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, lid.cap.top[0] + 1.5, lid.cap.top[1] + 1.5, lid.cap.right[0] - 2.5, lid.cap.right[1] - 0.5, PALETTE.stoneMid);
+  nativeLinePx(ctx, handleA[0] + 0.5, handleA[1] - 4.5, handleB[0] - 0.5, handleB[1] - 4.5, PALETTE.stoneLight);
+  nativePx(ctx, latch[0] - 1.5, latch[1] - 2.5, PALETTE.stoneDust, 1.5, 0.5);
+  nativeLinePx(ctx, ruledA[0], ruledA[1] - 0.5, ruledB[0], ruledB[1] - 0.5, PALETTE.stoneDust);
 }
 
 export function drawMortuaryDrain(ctx, cx, cy, seed) {
@@ -310,6 +337,20 @@ export function drawMortuaryDrain(ctx, cx, cy, seed) {
   for (let i = 0; i < 4; i += 1) {
     px(ctx, cx - 16 + Math.floor(rng() * 33), cy - 5 + Math.floor(rng() * 11), PALETTE.stoneDust, 1, 1);
   }
+  // Narrow bevels on the grate bars and the caught rust thread are single
+  // physical pixels, enough to show the drain's construction without shine.
+  for (let stripe = -2; stripe <= 2; stripe += 1) {
+    nativeLinePx(
+      ctx,
+      cx - 10.5 + stripe * 3,
+      cy + 1.5,
+      cx + 1.5 + stripe * 3,
+      cy - 5.5,
+      stripe < 0 ? PALETTE.stoneLight : PALETTE.stoneMid
+    );
+  }
+  nativeLinePx(ctx, cx - 14.5, cy + 2.5, cx - 22.5, cy + 6.5, PALETTE.rustMid);
+  nativePx(ctx, cx + 11.5, cy - 1.5, PALETTE.stoneDust);
 }
 
 function brokenCircleGlyph(ctx, x, y) {
@@ -396,11 +437,15 @@ export function drawMortuaryTagBoard(ctx, cx, cy, seed, opts = {}) {
     const speck = face.point(0.14 + rng() * 0.72, 0.22 + rng() * 0.54);
     px(ctx, speck[0], speck[1], rng() < 0.5 ? PALETTE.woodMid : PALETTE.rustDark, 1, 1);
   }
+  // Fine board grain and tag scoring sit beneath the three large diagnostic
+  // glyphs so their silhouettes remain the first read.
+  face.nativeLine(0.13, 0.23, 0.32, 0.23, PALETTE.woodLight);
+  face.nativeLine(0.68, 0.77, 0.86, 0.77, PALETTE.woodDark);
+  face.nativeLine(0.4, 0.37, 0.6, 0.37, PALETTE.rustLight);
 }
 
 export function drawListeningApparatus(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 347, seed * 17 + 101));
-  drawShadowBlob(ctx, cx, cy + 7, 62, 22);
 
   const leftFoot = [cx - 24, cy + 2];
   const rightFoot = [cx + 24, cy + 1];
@@ -495,6 +540,13 @@ export function drawListeningApparatus(ctx, cx, cy, seed) {
   for (let i = 0; i < 5; i += 1) {
     px(ctx, cx - 19 + Math.floor(rng() * 38), cy - 45 + Math.floor(rng() * 37), PALETTE.stoneDark, 1, 1);
   }
+
+  // Fine casting scratches and scale ticks make the apparatus machined rather
+  // than merely outlined, while preserving its cold upper-left highlight.
+  nativeLinePx(ctx, crownX - 3.5, cy - 22.5, crownX - 4.5, cy - 10.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, crownX + 3.5, cy - 20.5, crownX + 4.5, cy - 9.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx + 21.5, cy - 38.5, cx + 25.5, cy - 38.5, PALETTE.rustLight);
+  nativeLinePx(ctx, leftTop[0] + 2.5, leftTop[1] - 0.5, rightTop[0] - 3.5, rightTop[1] - 0.5, PALETTE.rustLight);
 }
 
 export function drawListeningWire(ctx, cx, cy, seed) {
@@ -524,6 +576,20 @@ export function drawListeningWire(ctx, cx, cy, seed) {
     px(ctx, point[0] - 1, point[1] - 1, PALETTE.outline, 4, 3);
     px(ctx, point[0], point[1] - 1, rng() > 0.4 ? PALETTE.rustMid : PALETTE.rustLight, 2, 1);
   }
+  // The insulated pair resolves into separate copper filaments at native 2x.
+  // Connector pins stay attached to the authored anchor points.
+  for (let i = 0; i < path.length - 1; i += 1) {
+    nativeLinePx(
+      ctx,
+      path[i][0] + 0.5,
+      path[i][1] - 1.5,
+      path[i + 1][0] + 0.5,
+      path[i + 1][1] - 1.5,
+      i === 1 ? PALETTE.rustLight : PALETTE.rustMid
+    );
+  }
+  nativePx(ctx, path[0][0] - 0.5, path[0][1] - 1.5, PALETTE.hostGold);
+  nativePx(ctx, returnPath[3][0] + 0.5, returnPath[3][1] - 0.5, PALETTE.rustLight);
 }
 
 export function drawSealedListeningNiche(ctx, cx, cy, seed, opts = {}) {
@@ -531,7 +597,6 @@ export function drawSealedListeningNiche(ctx, cx, cy, seed, opts = {}) {
   const face = fixtureFace(ctx, cx, cy, opts);
   const rng = rngFrom(hash2D(seed + 359, seed * 23 + 107));
   const sill = face.point(0.5, 1);
-  drawShadowBlob(ctx, sill[0], sill[1] + 3, 61, 20);
 
   if (!opened) {
     face.rect(0, 0, 1, 1, PALETTE.outline);
@@ -598,4 +663,9 @@ export function drawSealedListeningNiche(ctx, cx, cy, seed, opts = {}) {
     const scratch = face.point(u, 0.14 + rng() * 0.68);
     px(ctx, scratch[0], scratch[1], rng() < 0.55 ? PALETTE.stoneDust : PALETTE.rustDark, 2, 1);
   }
+
+  // Native chisel scratches stay on the seal leaves in both closed and opened
+  // states, following the projected fixture face.
+  face.nativeLine(opened ? 0.05 : 0.18, 0.18, opened ? 0.18 : 0.42, 0.18, PALETTE.stoneDust);
+  face.nativeLine(opened ? 0.81 : 0.57, 0.68, opened ? 0.95 : 0.82, 0.68, PALETTE.stoneDark);
 }

@@ -1,0 +1,71 @@
+{
+  "id": "names-below-the-hill",
+  "title": "Names Below the Hill",
+  "initialStage": "find-closure-roll",
+  "unlockedBy": {
+    "flag": "old-pilgrim-names-quest-found"
+  },
+  "objectives": [
+    {
+      "text": "Recover the closure-stair duty roll.",
+      "stage": "find-closure-roll"
+    },
+    {
+      "text": "Recover the novitiate sleeping roll.",
+      "stage": "find-quarters-roll"
+    },
+    {
+      "text": "Recover the trial candidate roll.",
+      "stage": "find-trial-roll"
+    },
+    {
+      "text": "Recover the chapter’s final seven names.",
+      "stage": "find-chapter-roll"
+    },
+    {
+      "text": "Decide what Father Noah should do with the recovered names.",
+      "stage": "decide-names"
+    },
+    {
+      "text": "The names have been given a place above ground.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "find-closure-roll",
+      "task": "Find the closure duty roll",
+      "description": "The sealed stair kept a duty record for every priest, nun, novice, and pilgrim sent below."
+    },
+    {
+      "id": "find-quarters-roll",
+      "task": "Find the sleeping roll",
+      "xp": 8,
+      "description": "The closure record names the first watch. The novitiate roll should account for the people housed beyond the inner door."
+    },
+    {
+      "id": "find-trial-roll",
+      "task": "Find the candidate roll",
+      "xp": 8,
+      "description": "The sleeping roll is incomplete. The candidate board should carry the novices assigned to the profession galleries."
+    },
+    {
+      "id": "find-chapter-roll",
+      "task": "Find the final seven names",
+      "xp": 8,
+      "description": "The trial roll restores most of the congregation. The chapter record should name the last seven survivors."
+    },
+    {
+      "id": "decide-names",
+      "task": "Return the names to Father Noah",
+      "xp": 12,
+      "description": "The rolls account for all sixty-one people sealed beneath the church. Father Noah can decide where that record belongs, if you let him."
+    },
+    {
+      "id": "complete",
+      "task": "The names have a place",
+      "xp": 35,
+      "description": "A decision has been made about the record of the sixty-one people below the hill."
+    }
+  ]
+}

@@ -1,13 +1,16 @@
 {
   "id": "censure-preceptor-voss",
-  "name": "Preceptor Voss",
+  "name": "Preceptor Aquila",
   "type": "npc",
   "faction": "holy-remnant",
   "role": "Censure drill preceptor",
   "appearance": {
     "body": "broad",
     "outfit": "settlement-work-coat",
-    "gear": ["shoulder-plate", "scarred-face"],
+    "gear": [
+      "shoulder-plate",
+      "scarred-face"
+    ],
     "accent": "dark-hood"
   },
   "stats": {
@@ -15,5 +18,9 @@
     "maxHp": 10,
     "actionPoints": 0
   },
-  "tags": ["holy-remnant", "ash-censure", "preceptor"]
+  "tags": [
+    "holy-remnant",
+    "ash-censure",
+    "preceptor"
+  ]
 }

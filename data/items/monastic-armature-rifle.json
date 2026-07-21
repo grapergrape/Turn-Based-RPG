@@ -1,0 +1,53 @@
+{
+  "id": "monastic-armature-rifle",
+  "name": "Monastic Armature Rifle",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "coil rifle",
+  "rarity": "uncommon",
+  "weight": 3.8,
+  "groundModel": "accelerator-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant prototype",
+    "origin": "Monastic Arsenal",
+    "factions": [
+      "monastic-arsenal"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "coil rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 9,
+        "range": 8,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 7,
+      "defaultLoaded": 7,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "Monastic artificers laid its windings by hand and numbered every layer. The long receiver bears more inspection marks than decoration."
+}

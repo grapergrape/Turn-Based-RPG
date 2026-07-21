@@ -1,0 +1,68 @@
+{
+  "id": "south-measure-drain-undercroft-valve-drain",
+  "title": "Undercroft Valve Chamber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The northern valve frame opens into the undercroft maintenance channel."
+      ],
+      "choices": [
+        {
+          "label": "Enter the intake undercroft",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "south-measure-civil-access",
+                "hidden-water-branch-known",
+                "drain-undercroft-open"
+              ]
+            }
+          },
+          "effects": {
+            "log": "You pass the valve frame and enter the intake undercroft.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_intake_undercroft.json",
+              "player": {
+                "x": 55,
+                "y": 15,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Free the return valve",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 35
+            }
+          },
+          "effects": {
+            "setFlag": "drain-undercroft-open",
+            "log": "The return valve turns through a century of scale.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_intake_undercroft.json",
+              "player": {
+                "x": 55,
+                "y": 15,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Remain in the drain",
+          "effects": {
+            "log": "You step back from the valve chamber."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

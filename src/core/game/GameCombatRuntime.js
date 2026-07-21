@@ -1,8 +1,15 @@
-import { buildContextActionsForTarget } from '../ContextActions.js';
+import { buildContextActionsForTarget, buildTechniqueActionsForTarget } from '../ContextActions.js';
 import { FIELD_RATINGS, awardExperience, calculateFieldRating, experienceRewardForEncounter, normalizeProgression } from '../Progression.js';
 import { activeHazards, createCombatHazard, decrementHazardRounds, hazardAffectsActor, hazardAt, hazardsAtCell, HAZARD_TYPES } from '../../combat/CombatHazards.js';
 import { chooseCombatStartBark, combatStartBarkLines } from '../../combat/CombatBarks.js';
 import { chebyshev } from '../../combat/CombatSystem.js';
+import { isMeleeAttack, isRangedAttack } from '../../combat/AttackMode.js';
+import {
+  actorWeaponReloadState,
+  consumeActorWeaponAttack,
+  reloadActorWeapon
+} from '../../combat/ActorWeaponLoadout.js';
+import { attackConditionWear } from '../../combat/WeaponRules.js';
 import { calculateAttackDamage, damageFieldFor, formatDamage } from '../../combat/DamageScaling.js';
 import { flavorLine, planTurn } from '../../combat/EnemyAI.js';
 import { attackFieldFor, calculateHitChance, defenseFieldsFor, formatChance, rollHit } from '../../combat/HitChance.js';
@@ -50,7 +57,12 @@ class GameCombatRuntime {
   // ---- Combat mode -------------------------------------------------------
 
   _handleCombat(actions, click, dt) {
-    if (this.turnManager.isPlayerTurn()) {
+    const actor = typeof this.turnManager.current === 'function'
+      ? this.turnManager.current()
+      : null;
+    if (actor?.type === 'companion' && actor.control === 'player') {
+      this._handleCompanionCombat(actions, click);
+    } else if (this.turnManager.isPlayerTurn()) {
       this._handlePlayerCombat(actions, click);
     } else {
       this._runEnemyTurn(dt);
@@ -59,6 +71,8 @@ class GameCombatRuntime {
 
   _handlePlayerCombat(actions, click) {
     if (click) {
+      if (this._handleCombatAbilityTrayClick?.(click)) return;
+      if (this._handleCombatAbilityTargetClick?.(click)) return;
       if (this._handleContextActionClick(click)) return;
       if (click.button === 2) {
         this._openContextActionMenuAt(click);
@@ -68,6 +82,10 @@ class GameCombatRuntime {
       this._handleClickMove(click, true);
     }
     for (const action of actions) {
+      if (this.combatAbilityTargeting) {
+        this._clearCombatAbilityTargeting();
+        if (action === 'cancel') return;
+      }
       if (this.contextActionMenu && action === 'cancel') {
         this.contextActionMenu = null;
         return;
@@ -90,6 +108,15 @@ class GameCombatRuntime {
         continue;
       }
       switch (action) {
+        case 'cancel':
+          this._openPauseMenu?.();
+          return;
+        case 'weapon1':
+          this._selectReadyWeapon('weapon1');
+          break;
+        case 'weapon2':
+          this._selectReadyWeapon('weapon2');
+          break;
         case 'melee':
           this._selectAttack('melee');
           break;
@@ -111,6 +138,9 @@ class GameCombatRuntime {
           this._syncInventoryOrder();
           this._clampInventorySelection();
           break;
+        case 'reload':
+          this._reloadSelectedWeapon(true);
+          break;
         case 'inventory':
           this._toggleInventory();
           return;
@@ -121,7 +151,7 @@ class GameCombatRuntime {
           this._toggleJournal({ section: 'MAP' });
           return;
         case 'restart':
-          this.boot();
+          this._requestRunRestart?.();
           return;
         case 'debug':
           this.debugGrid = !this.debugGrid;
@@ -171,7 +201,22 @@ class GameCombatRuntime {
       occupied: this._occupiedSet(this.player),
       techniqueDefs: this.techniqueDefs,
       inventory: this.inventory,
+      selectedAttack: this.player.getAttack(this.selectedAttackId),
       objectName: (object) => this._objectName(object),
+      attackPreview: ({ attack, target: actor, extraAp = 0, aimedShot = false, damageMultiplier = 1 } = {}) =>
+        this._attackPreview(this.player, actor, attack, { extraAp, aimedShot, damageMultiplier })
+    });
+  }
+
+  _techniqueActionsForTarget(target, { refreshAttacks = true, occupied = null } = {}) {
+    if (refreshAttacks) this._refreshPlayerAttacks();
+    return buildTechniqueActionsForTarget({
+      player: this.player,
+      target,
+      enemies: this.enemies,
+      grid: this.grid,
+      occupied: occupied ?? this._occupiedSet(this.player),
+      techniqueDefs: this.techniqueDefs,
       attackPreview: ({ attack, target: actor, extraAp = 0, aimedShot = false, damageMultiplier = 1 } = {}) =>
         this._attackPreview(this.player, actor, attack, { extraAp, aimedShot, damageMultiplier })
     });
@@ -180,6 +225,10 @@ class GameCombatRuntime {
   _attackActionState(attack, target, extraAp = 0) {
     if (!attack) return { enabled: false, reason: 'No attack' };
     if (attack.broken) return { enabled: false, reason: 'Needs repair' };
+    if (attack.empty) return { enabled: false, reason: 'Empty' };
+    if (attack.requiresStationary && this.player.movedThisTurn) {
+      return { enabled: false, reason: 'Must brace before moving' };
+    }
     if (!target || target.isDead) return { enabled: false, reason: 'No target' };
     if (chebyshev(this.player.position, target.position) > attack.range) {
       return { enabled: false, reason: 'Out of range' };
@@ -192,6 +241,10 @@ class GameCombatRuntime {
   _attackPreview(attacker, target, attack, options = {}) {
     if (!attacker || !attack) return { enabled: false, reason: 'No attack', chance: null, chanceText: '', tags: [] };
     if (attack.broken) return { enabled: false, reason: 'Needs repair', chance: null, chanceText: '', tags: [] };
+    if (attack.empty) return { enabled: false, reason: 'Empty', chance: null, chanceText: '', tags: [] };
+    if (attack.requiresStationary && attacker.movedThisTurn) {
+      return { enabled: false, reason: 'Must brace before moving', chance: null, chanceText: '', tags: [] };
+    }
     if (!target || target.isDead) return { enabled: false, reason: 'No target', chance: null, chanceText: '', tags: [] };
 
     const distance = chebyshev(attacker.position, target.position);
@@ -204,7 +257,7 @@ class GameCombatRuntime {
 
     const line = evaluateLineOfFire({
       grid: this.grid,
-      props: this.level?.props ?? [],
+      props: [...(this.level?.props ?? []), ...(this.combatDeployables ?? [])],
       attacker,
       defender: target,
       attack,
@@ -247,13 +300,23 @@ class GameCombatRuntime {
   }
 
   _actorProgression(actor) {
+    if (actor?.type === 'companion' && actor.ownerId === this.player?.id) {
+      return normalizeProgression(this.player?.progression);
+    }
     return normalizeProgression(actor?.progression);
   }
 
   _actorFieldRating(actor, fieldId) {
     const field = FIELD_RATINGS.find((entry) => entry.id === fieldId);
     if (!field) return Number.NEGATIVE_INFINITY;
-    return calculateFieldRating(this._actorProgression(actor), field);
+    let rating = calculateFieldRating(this._actorProgression(actor), field);
+    const companion = this._activeCompanion?.();
+    if (actor === this.player && companion && !companion.isDead) {
+      if (fieldId === 'search' && this.companionRun?.upgrades?.includes('veil-survey-glass')) rating += 5;
+      if (fieldId === 'stealth' && this.sneakMode && this.companionRun?.upgrades?.includes('veil-hooded-lamp')) rating += 5;
+      if (fieldId === 'stealth' && this.sneakMode && this.companionRun?.upgrades?.includes('veil-quiet-bearings')) rating += 10;
+    }
+    return rating;
   }
 
   _actorDefenseRating(actor, attack) {
@@ -266,18 +329,19 @@ class GameCombatRuntime {
   }
 
   _statusSourceApplies(status, attacker) {
+    if (status?.data?.sharedTeam && status.data.sharedTeam === attacker?.team) return true;
     return !status?.sourceId || status.sourceId === attacker?.id;
   }
 
   _firearmAttack(actor) {
     return actor?.getAttack?.('sidearm')
-      ?? (actor?.attacks ?? []).find((attack) => attack.range > 1)
+      ?? (actor?.attacks ?? []).find((attack) => isRangedAttack(attack))
       ?? null;
   }
 
   _meleeAttack(actor) {
     return actor?.getAttack?.('melee')
-      ?? (actor?.attacks ?? []).find((attack) => attack.range <= 1)
+      ?? (actor?.attacks ?? []).find((attack) => isMeleeAttack(attack))
       ?? null;
   }
 
@@ -323,6 +387,12 @@ class GameCombatRuntime {
     let cost = (actor?.moveCost ?? 1) +
       (hasStatus(actor, 'snared') ? 1 : 0) +
       (hasStatus(actor, 'sealed') ? 1 : 0);
+    if (actor?.type === 'companion' && this.companionRun?.upgrades?.includes('bulwark-anchor-feet')) {
+      cost -= hasStatus(actor, 'snared') ? 1 : 0;
+    }
+    if (actor?.type === 'companion' && this.companionRun?.upgrades?.includes('core-fine-servos') && !actor.movedThisTurn) {
+      cost = 0;
+    }
     if (actor?.type === 'player' && this._actorHasTechnique(actor, 'low-step') && !hasStatus(actor, 'low-step-spent')) {
       cost = Math.max(0, cost - 1);
     }
@@ -330,6 +400,7 @@ class GameCombatRuntime {
   }
 
   _markCombatMoveSpent(actor) {
+    if (actor) actor.movedThisTurn = true;
     if (actor?.type === 'player' && this._actorHasTechnique(actor, 'low-step')) {
       applyStatus(actor, { id: 'low-step-spent', duration: 1, sourceId: actor.id });
     }
@@ -363,6 +434,7 @@ class GameCombatRuntime {
     }
     if (Number.isFinite(options.hitModifier)) modifiers.push({ id: 'modifier', label: options.hitModifierLabel ?? 'MOD', value: options.hitModifier });
     if (Array.isArray(options.modifiers)) modifiers.push(...options.modifiers);
+    if (typeof this._droneTeamModifiers === 'function') modifiers.push(...this._droneTeamModifiers(attacker, target, attack));
     return modifiers;
   }
 
@@ -419,7 +491,8 @@ class GameCombatRuntime {
       return;
     }
     if (action.kind === 'reload') {
-      this._log(action.reason || 'No reload needed.');
+      if (action.enabled === false) this._log(action.reason || 'No reload needed.');
+      else this._reloadSelectedWeapon(true, action.attackId);
     }
   }
 
@@ -477,7 +550,7 @@ class GameCombatRuntime {
       cover: preview.cover,
       chanceTags: preview.tags
     });
-    this._degradeWeaponAttack(attack);
+    this._spendWeaponAttack(attack);
     this._consumePreparedAttack(this.player);
     for (const line of result.logs) this._log(line);
     this._pushEffect(result.effect);
@@ -705,7 +778,7 @@ class GameCombatRuntime {
       cover: preview.cover,
       chanceTags: preview.tags
     });
-    this._degradeWeaponAttack(attack);
+    this._spendWeaponAttack(attack);
     this._consumePreparedAttack(this.player);
     for (const line of result.logs) this._log(line);
     this._pushEffect(result.effect);
@@ -1073,7 +1146,46 @@ class GameCombatRuntime {
     const attack = this.player.getAttack(id);
     if (!attack) return;
     this.selectedAttackId = id;
+    this._refreshPlayerAppearance?.();
     this._log(`Readied ${attack.name}.`);
+  }
+
+  _selectReadyWeapon(slotId) {
+    this._refreshPlayerAttacks();
+    const attacks = (this.player.attacks ?? []).filter((attack) => attack.weaponSlot === slotId);
+    if (!attacks.length) {
+      this._log(`${slotId === 'weapon1' ? 'Weapon 1' : 'Weapon 2'} is empty.`);
+      return;
+    }
+    const current = attacks.findIndex((attack) => attack.id === this.selectedAttackId);
+    const attack = attacks[current >= 0 ? (current + 1) % attacks.length : 0];
+    this.selectedAttackId = attack.id;
+    this._refreshPlayerAppearance?.();
+    this._log(`Readied ${attack.name}.`);
+  }
+
+  _reloadSelectedWeapon(inCombat = false, attackId = null) {
+    this._refreshPlayerAttacks();
+    const attack = this.player.getAttack(attackId ?? this.selectedAttackId);
+    const state = this.inventory?.reloadStateForAttack?.(attack);
+    if (!state) {
+      this._log('The selected weapon does not reload.');
+      return false;
+    }
+    if (inCombat && this.player.ap < state.reloadAp) {
+      this._log(`Need ${state.reloadAp} AP.`);
+      return false;
+    }
+    const result = this.inventory.reloadWeapon(state.entryKey);
+    if (!result.ok) {
+      this._log(result.message);
+      return false;
+    }
+    if (inCombat) this.player.ap -= state.reloadAp;
+    this._refreshPlayerAttacks();
+    this._syncInventoryOrder?.();
+    this._log(result.message);
+    return true;
   }
 
   _cycleTarget() {
@@ -1101,6 +1213,10 @@ class GameCombatRuntime {
       this._log(`${attack.name} needs repair.`);
       return false;
     }
+    if (attack.empty) {
+      this._log(`${attack.name} is empty.`);
+      return false;
+    }
     if (!options.ignoreApCost && this.player.ap < attack.apCost) {
       this._log('Not enough AP for that attack.');
       return false;
@@ -1120,7 +1236,7 @@ class GameCombatRuntime {
       if (preview.reason) this._log(preview.reason);
       return false;
     }
-    if (attack.range > 1) this._registerSuspiciousAction(SUSPICION_SEVERITY.HIGH, 'firing');
+    if (isRangedAttack(attack)) this._registerSuspiciousAction(SUSPICION_SEVERITY.HIGH, 'firing');
     this._faceToward(this.player, target.position);
     const roll = rollHit(preview.chance);
     const result = this.combat.performAttack(this.player, target, attack, options.sneakAttack ? {
@@ -1144,7 +1260,7 @@ class GameCombatRuntime {
       cover: preview.cover,
       chanceTags: preview.tags
     });
-    this._degradeWeaponAttack(attack);
+    this._spendWeaponAttack(attack);
     this._consumePreparedAttack(this.player);
     for (const line of result.logs) this._log(line);
     this._pushEffect(result.effect);
@@ -1162,6 +1278,7 @@ class GameCombatRuntime {
       this._pushEffect({ type: 'spark', x: target.position.x, y: target.position.y, text: 'MARK' });
       this._log('Ambush mark set.');
     }
+    if (options.sneakAttack && roll.hit) this._triggerDroneAmbushLink?.(target);
     this._checkOutcome();
     return true;
   }
@@ -1182,10 +1299,13 @@ class GameCombatRuntime {
 
   _onCombatTurnStarted(actor) {
     if (!actor || this.mode !== 'combat') return;
+    this._clearCombatAbilityTargeting?.({ resetPage: true });
+    actor.movedThisTurn = false;
     if (actor.type === 'player') {
       if (removeStatus(actor, 'overwatch')) this._log('Overwatch lapses.');
       this.combatHazards = decrementHazardRounds(this.combatHazards ?? []);
     }
+    this._onDroneTurnStarted?.(actor);
     this._triggerHazardsForActor(actor);
     const logs = tickActorStatuses(actor, {
       effect: (effect) => this._pushEffect(effect),
@@ -1202,6 +1322,7 @@ class GameCombatRuntime {
 
   _onCombatTurnEnded(actor) {
     if (!actor || this.mode !== 'combat') return;
+    this._onDroneTurnEnded?.(actor);
   }
 
   _triggerCombatStepEffects(actor) {
@@ -1255,17 +1376,22 @@ class GameCombatRuntime {
       }
 
       if (hazard.status?.id && !actor.isDead) {
-        applyStatus(actor, {
-          id: hazard.status.id,
-          duration: hazard.status.duration,
-          power: hazard.status.power,
-          sourceId: hazard.ownerId,
-          data: hazard.status.data
-        });
-        if (hazard.status.id === 'snared') this._log(`${actor.name} is snared.`);
-        if (hazard.status.id === 'burning') this._log(`${actor.name} is burning.`);
-        if (hazard.status.id === 'sealed') this._log(`${actor.name} is sealed.`);
-        if (hazard.status.id === 'suppressed') this._log(`${actor.name} is suppressed.`);
+        const anchorImmune = actor.type === 'companion' &&
+          this.companionRun?.upgrades?.includes('bulwark-anchor-feet') &&
+          ['snared', 'off-balance'].includes(hazard.status.id);
+        if (!anchorImmune) {
+          applyStatus(actor, {
+            id: hazard.status.id,
+            duration: hazard.status.duration,
+            power: hazard.status.power,
+            sourceId: hazard.ownerId,
+            data: hazard.status.data
+          });
+          if (hazard.status.id === 'snared') this._log(`${actor.name} is snared.`);
+          if (hazard.status.id === 'burning') this._log(`${actor.name} is burning.`);
+          if (hazard.status.id === 'sealed') this._log(`${actor.name} is sealed.`);
+          if (hazard.status.id === 'suppressed') this._log(`${actor.name} is suppressed.`);
+        }
       }
     }
 
@@ -1312,7 +1438,7 @@ class GameCombatRuntime {
       cover: preview.cover,
       chanceTags: preview.tags
     });
-    this._degradeWeaponAttack(attack);
+    this._spendWeaponAttack(attack);
     this._consumePreparedAttack(this.player);
     for (const line of result.logs) this._log(line);
     this._pushEffect(result.effect);
@@ -1330,7 +1456,16 @@ class GameCombatRuntime {
     // Plan this enemy's turn once.
     if (this.enemyActions === null || this.enemyActor !== enemy) {
       this.enemyActor = enemy;
-      this.enemyActions = planTurn(enemy, this.player, this.grid, this.actors);
+      const planningActors = this._combatPlanningActors();
+      const reload = actorWeaponReloadState(enemy);
+      if (reload?.canReload && enemy.attacks[0]?.empty && enemy.ap >= reload.reloadAp) {
+        enemy.ap -= reload.reloadAp;
+        const planned = planTurn(enemy, this._livingPlayerTeam?.() ?? [this.player], this.grid, planningActors);
+        enemy.ap += reload.reloadAp;
+        this.enemyActions = [{ type: 'reload' }, ...planned];
+      } else {
+        this.enemyActions = planTurn(enemy, this._livingPlayerTeam?.() ?? [this.player], this.grid, planningActors);
+      }
       this.actionTimer = ENEMY_ACTION_DELAY;
       const flavor = flavorLine(enemy, this.turnManager.round);
       if (flavor) this._log(flavor);
@@ -1351,7 +1486,7 @@ class GameCombatRuntime {
       this.enemyActor = null;
       const next = this._advanceCombatTurn();
       if (this.mode !== 'combat') return;
-      if (next && next.type === 'player') this._log('Your move.');
+      if (next && (next.type === 'player' || next.control === 'player')) this._log(`${next.name}: your move.`);
       return;
     }
 
@@ -1368,9 +1503,28 @@ class GameCombatRuntime {
       const dir = { x: action.to.x - enemy.position.x, y: action.to.y - enemy.position.y };
       this._tryStep(enemy, dir, true);
       enemy.ap -= moveCost;
+    } else if (action.type === 'reload') {
+      const reloadState = actorWeaponReloadState(enemy);
+      if (!reloadState?.canReload || enemy.ap < reloadState.reloadAp) {
+        enemy.ap = 0;
+        this.enemyActions = [];
+        return;
+      }
+      const result = reloadActorWeapon(enemy);
+      if (!result.ok) {
+        enemy.ap = 0;
+        this.enemyActions = [];
+        return;
+      }
+      enemy.ap -= result.reloadAp;
+      this._log(`${enemy.name} reloads.`);
     } else if (action.type === 'attack') {
       const attack = enemy.attacks[0];
-      const preview = this._attackPreview(enemy, this.player, attack);
+      let target = action.target;
+      if (!target || target.isDead) {
+        target = this._livingPlayerTeam?.()[0] ?? this.player;
+      }
+      let preview = this._attackPreview(enemy, target, attack);
       if (!preview.enabled) {
         this._log(preview.reason === 'No shot'
           ? `${enemy.name} has no shot.`
@@ -1379,23 +1533,41 @@ class GameCombatRuntime {
         this.enemyActions = [];
         return;
       }
-      this._faceToward(enemy, this.player.position);
+      target = this._resolveDroneDefenseTarget?.(enemy, target, preview.damage) ?? target;
+      preview = this._attackPreview(enemy, target, attack);
+      if (!preview.enabled) {
+        enemy.ap = 0;
+        this.enemyActions = [];
+        return;
+      }
+      this._faceToward(enemy, target.position);
       const roll = rollHit(preview.chance);
-      const result = this.combat.performAttack(enemy, this.player, attack, {
+      const redundant = roll.hit && this._protectCompanionFromLethal?.(target, preview.damage);
+      const damage = redundant ? Math.max(0, target.hp - 1) : preview.damage;
+      const result = this.combat.performAttack(enemy, target, attack, {
         chance: preview.chance,
         roll: roll.roll,
         hit: roll.hit,
-        damage: preview.damage,
+        damage,
         damageTags: preview.damageTags,
         cover: preview.cover,
         chanceTags: preview.tags
       });
+      consumeActorWeaponAttack(enemy, attack);
       for (const line of result.logs) this._log(line);
       this._pushEffect(result.effect);
       if (!roll.hit) this._triggerRiposte(enemy);
+      this._afterEnemyAttackTarget?.(enemy, target, roll.hit);
       this._checkOutcome();
       if (this.mode !== 'combat') this.enemyActions = [];
     }
+  }
+
+  _combatPlanningActors() {
+    const blockers = (this.combatDeployables ?? [])
+      .filter((device) => device.blocking)
+      .map((device) => ({ id: device.id, position: { x: device.x, y: device.y }, isDead: false }));
+    return [...this.actors, ...blockers];
   }
 
   _triggerRiposte(enemy) {
@@ -1425,7 +1597,7 @@ class GameCombatRuntime {
       cover: preview.cover,
       chanceTags: preview.tags
     });
-    this._degradeWeaponAttack(attack);
+    this._spendWeaponAttack(attack);
     this._consumePreparedAttack(this.player);
     for (const line of result.logs) this._log(line);
     this._pushEffect(result.effect);
@@ -1451,10 +1623,12 @@ class GameCombatRuntime {
       this.enemyActions = null;
       this.enemyActor = null;
       this._clearCombatTechniquesState();
+      this._rebootDisabledCompanions?.();
 
       if (this.enemies.some((enemy) => !enemy.isDead)) {
         this.mode = 'explore';
         this._log('The immediate fight breaks. Other voices still move in the ruins.');
+        void this._requestAutosave?.('combat ended');
         return;
       }
 
@@ -1465,6 +1639,7 @@ class GameCombatRuntime {
         this._applyEffects(this.level.onVictory);
       }
       this._log('Explore on, or press R to begin again.');
+      void this._requestAutosave?.('combat ended');
     } else if (outcome === 'defeat') {
       this.mode = 'defeat';
       this.turnManager.active = false;
@@ -1486,6 +1661,7 @@ class GameCombatRuntime {
     if (result.levelDelta > 0) {
       this._log(`Level ${result.level} reached.`);
       this._log(`Primary points available: ${result.primaryPoints}.`);
+      this._awardCurrentCompanionLevelPoints?.();
     }
   }
 
@@ -1494,7 +1670,7 @@ class GameCombatRuntime {
   _handleEndState(actions) {
     for (const action of actions) {
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'journal') {
@@ -1511,13 +1687,21 @@ class GameCombatRuntime {
 
   // ---- Combat start ------------------------------------------------------
 
-  _startCombat(encounterId = null, { fromAltar = false, initialTarget = null, selectedAttackId = null } = {}) {
+  _startCombat(encounterId = null, {
+    fromAltar = false,
+    initialTarget = null,
+    selectedAttackId = null,
+    openingAttack = null
+  } = {}) {
     if (this.mode === 'combat') return;
+    void this._requestAutosave?.('combat checkpoint');
     this._refreshPlayerAttacks();
     const resolvedEncounter = this._resolveEncounterId(encounterId);
+    this._activateDormantEnemiesForEncounter(resolvedEncounter);
     const combatants = this._livingEnemiesForEncounter(resolvedEncounter);
     if (combatants.length === 0) return;
 
+    this._settleMovementForCombat?.();
     this.mode = 'combat';
     this.activeEncounter = resolvedEncounter;
     this._clearCombatTechniquesState();
@@ -1530,24 +1714,84 @@ class GameCombatRuntime {
     for (const enemy of combatants) {
       if (enemy.speech?.kind !== 'aggro') enemy.speech = null;
     }
-    this.turnManager.begin([this.player, ...combatants]);
-    const initialIndex = initialTarget ? combatants.indexOf(initialTarget) : -1;
+    this._beginDroneCombatState?.();
+    const companions = (this.companions ?? []).filter((actor) => !actor.isDead && !actor.disabled);
+    this.turnManager.begin([this.player, ...companions, ...combatants]);
+    this._onCombatTurnStarted(this.player);
+    const openingTarget = this._openingAttackTarget(openingAttack, combatants);
+    const preferredTarget = initialTarget ?? openingTarget;
+    const initialIndex = preferredTarget ? combatants.indexOf(preferredTarget) : -1;
     this.targetIndex = initialIndex >= 0 ? initialIndex : 0;
-    this.selectedAttackId = selectedAttackId ?? this.player.attacks[0]?.id ?? null;
+    const requestedAttackId = selectedAttackId ?? openingAttack?.attackId;
+    this.selectedAttackId = this.player.getAttack(requestedAttackId)?.id
+      ?? this.player.attacks[0]?.id
+      ?? null;
 
     if (fromAltar) {
       this._log('The Host tissue beneath the altar pulses once, like a heart remembering worship.');
     }
+    this._performOpeningAttack(openingAttack, combatants, openingTarget);
     this._log('Combat begins.');
     const introLines = this._encounterIntro(resolvedEncounter).length
       ? this._encounterIntro(resolvedEncounter)
       : combatants.map((enemy) => `${enemy.name} advances.`);
     for (const line of introLines) this._log(line);
+    this._checkOutcome();
+  }
+
+  _openingAttackTarget(spec, combatants) {
+    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) return null;
+    const targetId = spec.target;
+    if (typeof targetId !== 'string' || targetId.trim() === '') return null;
+    return combatants.find((enemy) =>
+      enemy.spawnId === targetId || enemy.id === targetId || enemy.name === targetId
+    ) ?? null;
+  }
+
+  _performOpeningAttack(spec, combatants, resolvedTarget = null) {
+    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) return false;
+    const target = resolvedTarget ?? this._openingAttackTarget(spec, combatants);
+    const attack = this.player.getAttack(spec.attackId);
+    const failureLog = typeof spec.failureLog === 'string' && spec.failureLog.trim()
+      ? spec.failureLog
+      : 'The opening shot does not come.';
+    if (!target || !attack || attack.broken) {
+      this._log(failureLog);
+      return false;
+    }
+    const spendAp = spec.spendAp === true;
+    const preview = this._attackPreview(this.player, target, attack, {
+      ignoreApCost: !spendAp
+    });
+    if (!preview.enabled) {
+      this._log(failureLog);
+      return false;
+    }
+
+    this._faceToward(this.player, target.position);
+    const guaranteedHit = spec.guaranteedHit === true;
+    const roll = guaranteedHit ? null : rollHit(preview.chance);
+    const result = this.combat.performAttack(this.player, target, attack, {
+      spendAp,
+      hit: guaranteedHit ? true : roll.hit,
+      chance: guaranteedHit ? undefined : preview.chance,
+      roll: guaranteedHit ? undefined : roll.roll,
+      damage: attack.damage,
+      damageTags: preview.damageTags,
+      cover: preview.cover,
+      chanceTags: guaranteedHit ? [] : preview.tags
+    });
+    this._spendWeaponAttack(attack);
+    for (const line of result.logs) this._log(line);
+    this._pushEffect(result.effect);
+    return true;
   }
 
   _clearCombatTechniquesState() {
     this.combatHazards = [];
+    this._clearCombatAbilityTargeting?.({ resetPage: true });
     for (const actor of this.actors ?? []) clearStatuses(actor);
+    this._clearDroneCombatState?.();
   }
 
   _refreshPlayerAttacks() {
@@ -1563,9 +1807,16 @@ class GameCombatRuntime {
   }
 
   _degradeWeaponAttack(attack) {
-    if (!this.inventory?.degradeWeaponAttack?.(attack, 1)) return;
+    if (!this.inventory?.degradeWeaponAttack?.(attack, attackConditionWear(attack))) return;
     this._refreshPlayerAttacks();
     this._syncInventoryOrder?.();
+  }
+
+  _spendWeaponAttack(attack) {
+    const consume = this.inventory?.consumeWeaponAttack;
+    if (typeof consume === 'function' && !consume.call(this.inventory, attack)) return false;
+    this._degradeWeaponAttack(attack);
+    return true;
   }
 
   _speakCombatStartBark(combatants, encounterId) {

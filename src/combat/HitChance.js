@@ -1,3 +1,5 @@
+import { isRangedAttack } from './AttackMode.js';
+
 export const HIT_CHANCE_MIN = 10;
 export const HIT_CHANCE_MAX = 95;
 export const HIT_CHANCE_BASE = 70;
@@ -12,14 +14,14 @@ export function attackFieldFor(attack = {}) {
   if (typeof attack.accuracyField === 'string' && attack.accuracyField.trim() !== '') {
     return attack.accuracyField;
   }
-  return attack.range > 1 ? 'firearms' : 'melee';
+  return isRangedAttack(attack) ? 'firearms' : 'melee';
 }
 
 export function defenseFieldsFor(attack = {}) {
   if (typeof attack.defenseField === 'string' && attack.defenseField.trim() !== '') {
     return [attack.defenseField];
   }
-  return attack.range > 1 ? ['stealth'] : ['melee', 'unarmed'];
+  return isRangedAttack(attack) ? ['stealth'] : ['melee', 'unarmed'];
 }
 
 export function calculateHitChance({
@@ -38,7 +40,7 @@ export function calculateHitChance({
   const skillDelta = Math.round((finiteNumber(attackerRating) - finiteNumber(defenderRating)) / 2);
   if (skillDelta !== 0) parts.push({ id: 'skill', label: 'SKILL', value: skillDelta });
 
-  if (attack.range > 1) {
+  if (isRangedAttack(attack)) {
     const rangePenalty = -4 * Math.max(0, Math.round(finiteNumber(distance, 1)) - 1);
     if (rangePenalty !== 0) parts.push({ id: 'range', label: 'RANGE', value: rangePenalty });
   }

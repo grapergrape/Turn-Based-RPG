@@ -1,0 +1,57 @@
+{
+  "id": "reliquary-halberd",
+  "name": "Reliquary Halberd",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "polearm",
+  "rarity": "common",
+  "weight": 3.1,
+  "groundModel": "pike",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Black Reliquary",
+    "factions": [
+      "black-reliquary"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "polearm",
+    "roles": [
+      "melee",
+      "polearm",
+      "reach"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "reach-strike",
+        "name": "Long Thrust",
+        "mode": "melee",
+        "apCost": 5,
+        "damage": 7,
+        "range": 2,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "hold-reach",
+        "name": "Hold Reach",
+        "mode": "melee",
+        "apCost": 6,
+        "damage": 8,
+        "range": 2,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "requiresStationary": true
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A compact halberd from a ceremonial guard rack. Its hook was sharpened only after the reliquary doors began to fail."
+}

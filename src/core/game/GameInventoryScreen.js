@@ -34,7 +34,7 @@ class GameInventoryScreen {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') {
@@ -58,7 +58,14 @@ class GameInventoryScreen {
         this._moveInventorySelection(action === 'down' ? 1 : -1);
         continue;
       }
-      if (action === 'melee' || this._isConfirmAction(action) || action === 'interact') {
+      if (action === 'weapon1' || action === 'weapon2') {
+        this.inventoryMoveIndex = null;
+        if (this.inventoryFocus === 'items') this._equipSelectedInventoryItem(action);
+        this._refreshPlayerAppearance();
+        this._clampInventorySelection();
+        continue;
+      }
+      if (this._isConfirmAction(action) || action === 'interact') {
         this.inventoryMoveIndex = null;
         if (this.inventoryFocus === 'gear') this._unequipSelectedGear();
         else this._equipSelectedInventoryItem();
@@ -66,11 +73,9 @@ class GameInventoryScreen {
         this._clampInventorySelection();
         continue;
       }
-      if (action === 'sidearm') {
+      if (action === 'reload') {
         this.inventoryMoveIndex = null;
-        if (this.inventoryFocus === 'gear') this._unequipSelectedGear();
-        else this._unequipSelectedInventoryItem();
-        this._refreshPlayerAppearance();
+        this._reloadSelectedInventoryWeapon();
         this._clampInventorySelection();
         continue;
       }
@@ -184,6 +189,12 @@ class GameInventoryScreen {
       this._openSelectedInventoryRepair();
       return;
     }
+    if (action === 'reload') {
+      this._reloadSelectedInventoryWeapon();
+      this.inventoryActionMenu = null;
+      this._clampInventorySelection();
+      return;
+    }
     if (action === 'drop') {
       this._dropSelectedInventoryItem();
       this._refreshPlayerAppearance();
@@ -241,6 +252,7 @@ class GameInventoryScreen {
         canEquip: false,
         canUse: false,
         canUnequip: true,
+        canReload: Boolean(slot.canReload),
         canRepair: this.inventory.canRepair?.(menu.itemId) ?? false,
         canSplit: false
       };
@@ -260,6 +272,7 @@ class GameInventoryScreen {
       canEquip: Boolean(item.equipmentSlot),
       canUse: Boolean(item.canUse),
       canUnequip: item.equippedCount > 0,
+      canReload: Boolean(item.canReload),
       canRepair: Boolean(item.canRepair),
       canSplit: item.count > 1
     };
@@ -310,7 +323,7 @@ class GameInventoryScreen {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') {
@@ -358,7 +371,7 @@ class GameInventoryScreen {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') {
@@ -524,7 +537,7 @@ class GameInventoryScreen {
 
   _inventoryFingerprint() {
     return (this.inventory?.entries() ?? [])
-      .map((entry) => `${entry.id}:${entry.count}:${entry.condition ?? ''}`)
+      .map((entry) => `${entry.id}:${entry.count}:${entry.condition ?? ''}:${entry.loaded ?? ''}`)
       .sort()
       .join('|');
   }
@@ -604,7 +617,7 @@ class GameInventoryScreen {
     this.inventoryIndex = Math.max(0, Math.min(items.length - 1, this.inventoryIndex + delta));
   }
 
-  _equipSelectedInventoryItem() {
+  _equipSelectedInventoryItem(preferredSlot = null) {
     const item = this._selectedInventoryItem();
     if (!item) {
       this._log('Pack is empty.');
@@ -614,9 +627,22 @@ class GameInventoryScreen {
       this._useSelectedInventoryItem();
       return;
     }
-    const result = this.inventory.equip(item.id);
+    const result = this.inventory.equip(item.id, preferredSlot);
     this._log(result.message);
     this._refreshPlayerAttacks?.();
+  }
+
+  _reloadSelectedInventoryWeapon() {
+    const item = this.inventoryFocus === 'gear'
+      ? this.inventory.equipmentEntries()[this.equipmentIndex]
+      : this._selectedInventoryItem();
+    const entryKey = item?.entryKey ?? item?.id;
+    const result = this.inventory.reloadWeapon(entryKey);
+    this._log(result.message);
+    if (result.ok) {
+      this._refreshPlayerAttacks?.();
+      this._syncInventoryOrder();
+    }
   }
 
   _useSelectedInventoryItem() {
@@ -677,6 +703,7 @@ class GameInventoryScreen {
     const name = this.inventory.displayName(itemKey);
     const amount = options.slot ? 1 : Math.max(1, Math.floor(Number(options.count) || 1));
     const condition = this.inventory.conditionState?.(itemKey)?.condition ?? null;
+    const loaded = this.inventory.magazineState?.(itemKey)?.loaded ?? null;
     const count = Math.min(amount, this.inventory.count(itemKey));
     if (options.slot) {
       const result = this.inventory.unequip(options.slot);
@@ -697,13 +724,14 @@ class GameInventoryScreen {
       itemDef,
       count,
       condition,
+      loaded,
       x: this.player.x,
       y: this.player.y,
       tick: this.anim.tick,
       source: 'player'
     });
     if (!groundItem) {
-      this.inventory.add(itemId, count, { ignoreCapacity: true, condition });
+      this.inventory.add(itemId, count, { ignoreCapacity: true, condition, loaded });
       this._log(`Could not drop ${name}.`);
       return false;
     }
@@ -728,9 +756,12 @@ class GameInventoryScreen {
   // Re-bake the player sprite from the current equipment and appearance. The
   // atlas entry is replaced in place so the world renderer and paper doll match.
   _refreshPlayerAppearance() {
-    if (!this.atlas || this.player?.spriteId !== 'mara-vey') return;
-    this.atlas[this.player.spriteId] = bakePlayerCharacter(
-      this.inventory.equipmentSnapshot(),
+    if (!this.atlas || !this.player) return;
+    const equipment = this.inventory.equipmentSnapshot();
+    const activeAttack = this.player.getAttack?.(this.selectedAttackId);
+    if (activeAttack?.weaponItemId) equipment.activeWeapon = activeAttack.weaponItemId;
+    this.atlas[this.player.spriteId ?? 'player'] = bakePlayerCharacter(
+      equipment,
       this.inventory.itemDefs,
       this.player.appearance ?? null
     );

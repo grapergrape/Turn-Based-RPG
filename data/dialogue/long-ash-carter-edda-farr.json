@@ -1,0 +1,376 @@
+{
+  "id": "long-ash-carter-edda-farr",
+  "title": "Deborah Carbo",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "questStages": {
+          "edda-farrs-account": "disputed-count"
+        }
+      },
+      "else": "ordinary-start",
+      "lines": [
+        "Deborah sorts the coins into four stacks. Twenty go into her coat while her other hand remains open.",
+        "\"There were twenty-five.\"",
+        "The promised payment stays in her other pocket."
+      ],
+      "choices": [
+        {
+          "label": "Add five ducats and close her account",
+          "conditions": {
+            "items": {
+              "ducat": 5
+            }
+          },
+          "effects": {
+            "setFlag": "long-ash-edda-paid-twenty-five",
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                {
+                  "item": "ducat",
+                  "count": 5,
+                  "failLog": "Deborah waits for five more ducats."
+                }
+              ]
+            },
+            "questUpdate": {
+              "quest": "edda-farrs-account",
+              "stage": "complete",
+              "log": "You paid Deborah the extra five ducats. She still offered no reward."
+            }
+          },
+          "next": "paid-five"
+        },
+        {
+          "label": "Refuse the revised count",
+          "effects": {
+            "setFlag": "long-ash-edda-refused-five",
+            "questUpdate": {
+              "quest": "edda-farrs-account",
+              "stage": "complete",
+              "log": "You refused Deborah's revised count. She kept the recovered twenty and paid nothing."
+            }
+          },
+          "next": "refused-five"
+        },
+        {
+          "label": "Put a hand near the sidearm and tell her twenty is enough",
+          "tone": "danger",
+          "effects": {
+            "setFlag": "long-ash-edda-threatened-over-count",
+            "questUpdate": {
+              "quest": "edda-farrs-account",
+              "stage": "complete",
+              "log": "You ended Deborah's revised account with a threat. She kept the recovered twenty and paid nothing."
+            }
+          },
+          "next": "threatened"
+        }
+      ]
+    },
+    "ordinary-start": {
+      "lines": [
+        "Deborah Carbo leans on one straight leg with her left boot unlaced. Spilled black dust has turned the swelling gray. A detached wheel rests beside her.",
+        "\"The cart was mine, though the road was not. They took the first and left me enough of the second to limp on.\""
+      ],
+      "choices": [
+        {
+          "label": "Hand her the flat purse",
+          "conditions": {
+            "questStages": {
+              "edda-farrs-account": "return-purse"
+            },
+            "items": {
+              "ducat": 20
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "long-ash-edda-purse-tasked",
+              "long-ash-edda-purse-returned"
+            ],
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                {
+                  "item": "ducat",
+                  "count": 20,
+                  "failLog": "The flat purse no longer holds twenty ducats."
+                }
+              ]
+            },
+            "questUpdate": {
+              "quest": "edda-farrs-account",
+              "stage": "disputed-count",
+              "log": "Deborah pocketed the recovered twenty ducats. She claimed five more were missing."
+            }
+          },
+          "next": "start"
+        },
+        {
+          "label": "Ask why the cultists left her alive",
+          "conditions": {
+            "flagsAbsent": [
+              "long-ash-edda-spared-account-heard"
+            ]
+          },
+          "effects": {
+            "setFlag": "long-ash-edda-spared-account-heard",
+            "log": "Deborah says the cultists spared her after learning that no Remnant priest or office claimed her."
+          },
+          "next": "spared-account"
+        },
+        {
+          "label": "Ask what the cultists took",
+          "conditions": {
+            "flagsAbsent": [
+              "long-ash-edda-purse-tasked"
+            ]
+          },
+          "next": "stolen-account"
+        },
+        {
+          "label": "Ask about the road",
+          "next": "road-topics"
+        },
+        {
+          "label": "Leave Deborah with the spilled charcoal",
+          "close": true
+        }
+      ]
+    },
+    "spared-account": {
+      "lines": [
+        "\"Spared is chapel language. They asked which Remnant priest counted me, and I gave them the shortest answer I had: none.\"",
+        "\"They checked my sleeves for a seal, then demanded a prayer. I had neither. Once they believed me, killing me was work without a buyer. The cart had a price.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what they took",
+          "conditions": {
+            "flagsAbsent": [
+              "long-ash-edda-purse-tasked"
+            ]
+          },
+          "next": "stolen-account"
+        },
+        {
+          "label": "Back",
+          "next": "ordinary-start"
+        },
+        {
+          "label": "Leave Deborah with the spilled charcoal",
+          "close": true
+        }
+      ]
+    },
+    "stolen-account": {
+      "lines": [
+        "\"They took the cart with the dry sacks aboard. Under the bed was a flat purse, twenty ducats tied to the left hub with white cord.\"",
+        "\"Bring the purse back and I will pay fair. If you have heard a priest define fair, forget it.\""
+      ],
+      "choices": [
+        {
+          "label": "Say you will look for the purse",
+          "effects": {
+            "setFlag": "long-ash-edda-purse-tasked",
+            "questUpdate": {
+              "quest": "edda-farrs-account",
+              "stage": "find-purse",
+              "log": "Deborah asked you to recover a flat purse with twenty ducats from her stolen charcoal cart."
+            }
+          },
+          "next": "task-accepted"
+        },
+        {
+          "label": "Back",
+          "next": "ordinary-start"
+        },
+        {
+          "label": "Leave her account unopened",
+          "close": true
+        }
+      ]
+    },
+    "task-accepted": {
+      "lines": [
+        "Deborah points north with two charcoal-black fingers.",
+        "\"Red at the cuffs, but I watched my cart instead of counting them. Let the road do its own arithmetic.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the road",
+          "next": "road-topics"
+        },
+        {
+          "label": "Follow the cart trail north",
+          "close": true
+        }
+      ]
+    },
+    "road-topics": {
+      "lines": [
+        "Deborah waits with her thumb against the next count."
+      ],
+      "choices": [
+        {
+          "label": "Ask her to give the road in order",
+          "conditions": {
+            "flagsAbsent": [
+              "long-ash-carter-road-account-heard"
+            ],
+            "fieldRatings": {
+              "speech": 40
+            }
+          },
+          "effects": {
+            "setFlag": "long-ash-carter-road-account-heard",
+            "log": "Deborah puts the robbery before the closure peals in her road account."
+          },
+          "next": "road-account"
+        },
+        {
+          "label": "Look at the boot she will not lace",
+          "conditions": {
+            "flagsAbsent": [
+              "long-ash-carter-wheel-crush-read"
+            ],
+            "fieldRatings": {
+              "medicine": 45
+            }
+          },
+          "effects": {
+            "setFlag": "long-ash-carter-wheel-crush-read",
+            "log": "Deborah's wheel injury fixes the robbery before the closure peals."
+          },
+          "next": "wheel-crush"
+        },
+        {
+          "label": "Ask why her knife carries office wax",
+          "conditions": {
+            "flagsAbsent": [
+              "long-ash-carter-cart-knot-revealed"
+            ],
+            "fieldRatings": {
+              "guile": 55
+            }
+          },
+          "effects": {
+            "setFlag": "long-ash-carter-cart-knot-revealed",
+            "log": "Deborah admits she cut an office cord from the stripped cart before the robbery."
+          },
+          "next": "office-wax"
+        },
+        {
+          "label": "Ask what the charcoal is for",
+          "next": "charcoal"
+        },
+        {
+          "label": "Back",
+          "next": "ordinary-start"
+        }
+      ]
+    },
+    "road-account": {
+      "lines": [
+        "Deborah counts each movement against her thumb.",
+        "\"A south cart passed before first light, and a Censure wagon stopped at the north post. Red cuffs found me below the capital spur. They put my left wheel across my foot and took the cart north, all before the bell gave its three peals. Nobody came to count me.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "road-topics"
+        },
+        {
+          "label": "Leave Deborah with the spilled charcoal",
+          "close": true
+        }
+      ]
+    },
+    "wheel-crush": {
+      "lines": [
+        "The bruising crosses the foot in a wheel-width band. It had hours to swell before the closure peals.",
+        "\"One dropped the axle while the others turned the cart. Efficient enough until the wheel met my foot.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "road-topics"
+        },
+        {
+          "label": "Leave Deborah with the spilled charcoal",
+          "close": true
+        }
+      ]
+    },
+    "office-wax": {
+      "lines": [
+        "The fresh red wax on Deborah's knife came from somewhere other than her stolen cart.",
+        "\"The stripped cart back at the long bend had a cord tucked under its axle. Office knot, office wax. I cut a piece before the red cuffs found me. Men who hide cords sometimes watch who finds them.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "road-topics"
+        },
+        {
+          "label": "Leave Deborah with the spilled charcoal",
+          "close": true
+        }
+      ]
+    },
+    "charcoal": {
+      "lines": [
+        "\"Small sacks go to cook fires, while smiths buy the hard pieces and complain as if complaint lowers weight. The thieves had sense enough to take the dry stock.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "road-topics"
+        },
+        {
+          "label": "Leave Deborah with the spilled charcoal",
+          "close": true
+        }
+      ]
+    },
+    "paid-five": {
+      "lines": [
+        "Deborah palms the five and finally closes her fist. The promised reward remains unmentioned.",
+        "\"I will pray for your generous soul. If anyone starts listening, I will send word.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Deborah to her prayers",
+          "close": true
+        }
+      ]
+    },
+    "refused-five": {
+      "lines": [
+        "Deborah ties the empty white cord around the purse and offers no reward.",
+        "\"Then the account closes at twenty and remains offended at five. Most road ledgers end worse.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Deborah to her ledger",
+          "close": true
+        }
+      ]
+    },
+    "threatened": {
+      "lines": [
+        "Deborah looks at your hand near the sidearm, not your face.",
+        "\"There it is. Censure arithmetic. When the count fails, reach for a gun and call the difference righteousness.\"",
+        "\"Keep your five. I have paid for the sermon.\""
+      ],
+      "choices": [
+        {
+          "label": "Take your hand away and leave",
+          "close": true
+        }
+      ]
+    }
+  }
+}

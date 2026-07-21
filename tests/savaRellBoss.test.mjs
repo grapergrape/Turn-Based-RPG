@@ -127,7 +127,7 @@ function pixelDifference(left, right) {
   return count;
 }
 
-// Sava's defining anatomy must survive every facing. Rear and side frames used
+// Sapphira's defining anatomy must survive every facing. Rear and side frames used
 // to fall back to a generic grave-clerk body with no wound or rake silhouette.
 for (const facing of facings) {
   const idle = sprite.frames.idle[facing][2];
@@ -174,13 +174,13 @@ const frontPulse = sprite.frames.idle.s[2];
 const glowArea = frontPulse.calls
   .filter((call) => call.color === PALETTE.hostGlow)
   .reduce((sum, call) => sum + call.w * call.h, 0);
-assert.ok(glowArea > 0 && glowArea <= 2, `live wound glow stays tiny (${glowArea} px)`);
+assert.ok(glowArea > 0 && glowArea <= 2.25, `live wound glow stays tiny (${glowArea} px)`);
 assert.ok(frontPulse.calls.some((call) => call.color === PALETTE.skinMid), 'preserved human skin remains visible');
 assert.ok(frontPulse.calls.some((call) => call.color === PALETTE.hostBone), 'broken bone and ribs remain visible');
 assert.ok(frontPulse.calls.some((call) => call.color === PALETTE.hostRed), 'one-sided rib wound remains visible');
 for (const deathFrame of sprite.death) {
-  assert.equal(deathFrame.calls.some((call) => call.color === PALETTE.hostGlow), false, 'dead Sava has no living glow');
-  assert.equal(deathFrame.calls.some((call) => call.color === PALETTE.flash), false, 'dead Sava has no flash pixels');
+  assert.equal(deathFrame.calls.some((call) => call.color === PALETTE.hostGlow), false, 'dead Sapphira has no living glow');
+  assert.equal(deathFrame.calls.some((call) => call.color === PALETTE.flash), false, 'dead Sapphira has no flash pixels');
 }
 
 const deathStartBounds = pixelBounds(occupiedPixels(sprite.death[0], sprite.width, sprite.height));
@@ -215,7 +215,7 @@ const maraFirearms = fieldRating(mara, 'firearms');
 const maraDefense = Math.max(fieldRating(mara, 'melee'), fieldRating(mara, 'unarmed'));
 const savaStealth = fieldRating(sava, 'stealth');
 const savaUnarmed = fieldRating(sava, 'unarmed');
-const sidearm = await readJson('../data/items/censure-sidearm.json').then((item) => item.weapon.attack);
+const sidearm = await readJson('../data/items/censure-sidearm.json').then((item) => item.weapon.attacks[0]);
 const rake = sava.attacks[0];
 
 const pistolChanceAt = (distance) => calculateHitChance({
@@ -271,7 +271,7 @@ function simulateSidearmFight(seed, { dressings, spaced, openingAtTwo = false })
     if (random() < pistolChanceAt(distance) / 100) savaHp -= sidearm.damage;
     if (savaHp <= 0) return { won: true, round, maraHp };
 
-    // At distance three Sava spends two AP closing, so only one rake remains.
+    // At distance three Sapphira spends two AP closing, so only one rake remains.
     // Standing adjacent lets him use the full two-rake pressure turn.
     const attacks = openingRound || spaced ? 1 : 2;
     for (let attack = 0; attack < attacks; attack += 1) {

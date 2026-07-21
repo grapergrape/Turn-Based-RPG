@@ -1,0 +1,56 @@
+{
+  "id": "parish-cleaver-sword",
+  "name": "Parish Cleaver Sword",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "sword",
+  "rarity": "uncommon",
+  "weight": 2.1,
+  "groundModel": "sword",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Parish Levies",
+    "factions": [
+      "parish-levies"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "sword",
+    "roles": [
+      "melee",
+      "sword",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Cut",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 5,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "committed-blow",
+        "name": "Committed Blow",
+        "mode": "melee",
+        "apCost": 5,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": -5,
+        "conditionWear": 2
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "A broad single-edged levy sword that favors a committed cut. Parish marks run from the spine down to the guard."
+}

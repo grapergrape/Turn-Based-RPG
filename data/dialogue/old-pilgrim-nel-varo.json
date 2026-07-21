@@ -1,0 +1,76 @@
+{
+  "id": "old-pilgrim-nel-varo",
+  "title": "Noa Faber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Noa has pinned lesson cards to the inside of the shelter where rain cannot turn the ink.",
+        "“The Farms have children on the ration lists. That is enough reason to keep walking.”"
+      ],
+      "choices": [
+        {
+          "label": "Ask who approved the northern school",
+          "conditions": {
+            "flag": "nel-family-review"
+          },
+          "next": "review"
+        },
+        {
+          "label": "Ask about the forged household line",
+          "conditions": {
+            "flag": "nel-family-forged"
+          },
+          "next": "forged"
+        },
+        {
+          "label": "Ask why she came alone",
+          "conditions": {
+            "flag": "nel-school-alone"
+          },
+          "next": "alone"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "review": {
+      "lines": [
+        "“A review is not approval. It is enough paper to reach the next table alive.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "forged": {
+      "lines": [
+        "“The family line is false, not the pupils. I can live with that order.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "alone": {
+      "lines": [
+        "“South Measure kept its argument. I took the cards and the northern names.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

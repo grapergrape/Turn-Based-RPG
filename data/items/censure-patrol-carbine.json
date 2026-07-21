@@ -1,0 +1,64 @@
+{
+  "id": "censure-patrol-carbine",
+  "name": "Censure Patrol Carbine",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "carbine",
+  "rarity": "common",
+  "weight": 4,
+  "groundModel": "carbine",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Ashen Censure",
+    "factions": [
+      "ashen-censure"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "carbine"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 7,
+        "range": 7,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "snap-shot",
+        "name": "Snap Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 6,
+        "range": 6,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "intermediate-cartridge",
+      "capacity": 16,
+      "defaultLoaded": 16,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "A black carbine issued for cult searches beyond the walls. Its chamber flag bears the Censure rule: empty before prayer, loaded before entry."
+}

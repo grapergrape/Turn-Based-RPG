@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-preceptor-tent-entry",
+  "title": "Preceptor Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Route slates cover the table beyond the command tent's flap."
+      ],
+      "choices": [
+        {
+          "label": "Enter the preceptor tent",
+          "effects": {
+            "log": "You enter the preceptor tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_preceptor_tent.json",
+              "player": { "x": 6, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside the preceptor tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

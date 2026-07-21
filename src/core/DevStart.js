@@ -25,7 +25,20 @@ const LEVEL_ALIASES = {
   camp: './data/levels/censure_road_camp.json',
   'censure-camp': './data/levels/censure_road_camp.json',
   'censure-road-camp': './data/levels/censure_road_camp.json',
-  censure_road_camp: './data/levels/censure_road_camp.json'
+  censure_road_camp: './data/levels/censure_road_camp.json',
+  south: './data/levels/ash_road_south.json',
+  'south-measure': './data/levels/ash_road_south.json',
+  'ash-road-south': './data/levels/ash_road_south.json',
+  ash_road_south: './data/levels/ash_road_south.json',
+  pilgrim: './data/levels/old_pilgrim_way.json',
+  'old-pilgrim': './data/levels/old_pilgrim_way.json',
+  'old-pilgrim-way': './data/levels/old_pilgrim_way.json',
+  old_pilgrim_way: './data/levels/old_pilgrim_way.json',
+  'old-pilgrim-church': './data/levels/old_pilgrim_hill_church.json',
+  'old-pilgrim-closure': './data/levels/old_pilgrim_closure_stair.json',
+  'old-pilgrim-quarters': './data/levels/old_pilgrim_novitiate_quarters.json',
+  'old-pilgrim-trials': './data/levels/old_pilgrim_trial_galleries.json',
+  'old-pilgrim-chapter': './data/levels/old_pilgrim_sealed_chapter.json'
 };
 
 const TRUE_VALUES = new Set(['', '1', 'true', 'yes', 'on']);
@@ -76,6 +89,14 @@ function readPrimaryOverrides(params) {
   return Object.keys(primaries).length > 0 ? primaries : null;
 }
 
+function readPlaytestProfile(params, levelValue) {
+  if (!levelValue || !params.has('playtest')) return null;
+  const value = String(params.get('playtest') ?? '').trim().toLowerCase();
+  if (FALSE_VALUES.has(value)) return null;
+  if (TRUE_VALUES.has(value)) return 'fresh';
+  return value || 'fresh';
+}
+
 function resolveLevelPath(value) {
   if (!value) return DEFAULT_LEVEL_PATH;
   const raw = String(value).trim().replaceAll('\\', '/');
@@ -94,6 +115,7 @@ export function resolveDevStart(location) {
   const url = new URL(location.href);
   const params = url.searchParams;
   const levelValue = firstParam(params, ['level', 'area', 'dev']);
+  const playtestProfile = readPlaytestProfile(params, levelValue);
   const player = readPoint(params);
   const primaries = readPrimaryOverrides(params);
   const debugGrid = readFlag(params, ['grid', 'debugGrid']);
@@ -113,6 +135,7 @@ export function resolveDevStart(location) {
   return {
     enabled,
     levelPath: resolveLevelPath(levelValue),
+    playtestProfile,
     debugGrid,
     bootOptions
   };

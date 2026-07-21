@@ -201,6 +201,54 @@ test('clicking either rendered chapel door opens its entry and loads the matchin
   }
 });
 
+test('graveyard chapel exits remain usable after choosing to stay inside', async () => {
+  installBrowserStubs();
+  const specs = [
+    {
+      path: './data/levels/long_ash_vigil_chapel.json',
+      doors: [{ x: 4, y: 8 }, { x: 5, y: 8 }],
+      dialogue: 'long-ash-vigil-chapel-exit',
+      destination: { x: 131, y: 47 }
+    },
+    {
+      path: './data/levels/long_ash_mortuary_chapel.json',
+      doors: [{ x: 6, y: 10 }, { x: 7, y: 10 }],
+      dialogue: 'long-ash-mortuary-chapel-exit',
+      destination: { x: 142, y: 47 }
+    }
+  ];
+
+  for (const spec of specs) {
+    const game = new Game({
+      canvas: mockCanvas(),
+      levelPath: spec.path,
+      atlas: {},
+      statusElement: null,
+      bootOptions: { skipIntro: true, noCombat: true }
+    });
+    await game.boot();
+
+    const firstTarget = game._interactionTargetAtCell(spec.doors[0], 'explore');
+    assert.equal(firstTarget.type, 'object');
+    game._executeExploreTarget(firstTarget);
+    assert.equal(game.dialogue?.id, spec.dialogue);
+    game._chooseDialogueOption(1);
+    assert.equal(game.uiScreen, null);
+
+    const retryTarget = game._interactionTargetAtCell(spec.doors[1], 'explore');
+    assert.equal(retryTarget.type, 'object', `${spec.dialogue} remains targetable after staying inside`);
+    game._executeExploreTarget(retryTarget);
+    assert.equal(game.dialogue?.id, spec.dialogue);
+    game._chooseDialogueOption(0);
+
+    await waitFor(
+      () => game.level?.id === 'long-ash-road-approach' && game.ready,
+      `${spec.dialogue} did not return to the graveyard`
+    );
+    assert.deepEqual(game.player.position, spec.destination);
+  }
+});
+
 test('the three interiors keep their locked footprints and open circulation paths', async () => {
   const levels = [
     await json('data/levels/long_ash_vigil_chapel.json'),
@@ -243,7 +291,7 @@ test('the three interiors keep their locked footprints and open circulation path
   combatGrid.removeBlocked(niche.x, niche.y);
   const nicheApproach = { x: 7, y: 3 };
   for (let y = 3; y <= 8; y += 1) {
-    assert.equal(combatGrid.isWalkable(7, y), true, `Sava retreat lane is open at 7,${y}`);
+    assert.equal(combatGrid.isWalkable(7, y), true, `Sapphira retreat lane is open at 7,${y}`);
   }
   assert.equal(reachableCells(combatGrid, nicheApproach, 99).size + 1, 140);
   assert.equal(findPath(combatGrid, nicheApproach, vault.spawns.player)?.length, 10);
@@ -405,7 +453,7 @@ test('a concealed stair cannot be targeted or mapped before its door group opens
   assert.equal(markerExists(), true);
 });
 
-test('Sava stays hidden behind the locked niche and every normal opening starts the authored encounter safely', async () => {
+test('Sapphira stays hidden behind the locked niche and every normal opening starts the authored encounter safely', async () => {
   const vault = await json('data/levels/long_ash_listening_vault.json');
   const sava = vault.spawns.enemies.find((enemy) => enemy.spawnId === 'sava-rell');
   assert.ok(sava);
@@ -416,7 +464,14 @@ test('Sava stays hidden behind the locked niche and every normal opening starts 
     encounter: 'sava-listening-niche'
   });
   assert.equal(sava.loot, undefined);
-  assert.equal(vault.onVictory.setFlag, 'heard-bell-sava-killed');
+  assert.deepEqual(vault.onVictory, {
+    setFlag: ['heard-bell-sava-found', 'heard-bell-sava-killed'],
+    questUpdate: {
+      quest: 'those-who-heard-the-bell',
+      stage: 'judge-at-chair',
+      log: 'Quest updated: pass judgment at the restraint chair.'
+    }
+  });
 
   const niche = objectById(vault, 'sava-sealed-listening-niche');
   assert.equal(niche.doorGroup, 'sava-listening-niche');
@@ -428,7 +483,17 @@ test('Sava stays hidden behind the locked niche and every normal opening starts 
   assert.deepEqual([niche.x, niche.y], [7, 2]);
   assert.deepEqual([objectById(vault, 'sava-niche-inspection-hatch').x, objectById(vault, 'sava-niche-inspection-hatch').y], [7, 3]);
   assert.deepEqual([objectById(vault, 'vault-listening-apparatus').x, objectById(vault, 'vault-listening-apparatus').y], [5, 6]);
-  assert.deepEqual([objectById(vault, 'vault-restraint-chair').x, objectById(vault, 'vault-restraint-chair').y], [7, 9]);
+  const chair = objectById(vault, 'vault-restraint-chair');
+  assert.deepEqual([chair.x, chair.y], [7, 9]);
+  assert.deepEqual(chair.mapMarker, {
+    label: 'Judgment Chair',
+    kind: 'quest',
+    reveal: 'always',
+    conditions: {
+      flag: 'heard-bell-sava-found',
+      flagsAbsent: ['heard-bell-resolved']
+    }
+  });
   assert.deepEqual([vault.spawns.player.x, vault.spawns.player.y], [7, 13]);
   assert.deepEqual([vault.levelTransitions[0].x, vault.levelTransitions[0].y], [7, 13]);
   assert.deepEqual(vault.levelTransitions[0].clickAreas, [{ x0: 7, y0: 14, x1: 7, y1: 14 }]);
@@ -456,6 +521,49 @@ test('Sava stays hidden behind the locked niche and every normal opening starts 
     assay.interact.lock.methods.find((method) => method.field === 'security').requiresSecurityTool,
     false
   );
+});
+
+test('Sapphira defeat points the journal and map back to the judgment chair', async () => {
+  installBrowserStubs();
+  const game = new Game({
+    canvas: mockCanvas(),
+    levelPath: './data/levels/long_ash_listening_vault.json',
+    atlas: {},
+    statusElement: null,
+    bootOptions: { skipIntro: true, noCombat: true }
+  });
+  await game.boot();
+
+  const chairMarker = () => game._buildJournalMap().markers
+    .find((marker) => marker.label === 'Judgment Chair');
+  assert.equal(chairMarker(), undefined);
+
+  game._applyEffects(game.level.onVictory);
+  assert.equal(game.flags.has('heard-bell-sava-found'), true);
+  assert.equal(game.flags.has('heard-bell-sava-killed'), true);
+  assert.equal(game.questStages.get('those-who-heard-the-bell'), 'judge-at-chair');
+
+  const quest = game._buildJournal().quests
+    .find((entry) => entry.title === 'Those Who Heard the Bell');
+  assert.equal(quest?.task, 'Pass judgment at the restraint chair');
+  assert.equal(
+    quest?.objectives.find((objective) => objective.active)?.text,
+    'Pass judgment at the restraint chair.'
+  );
+  assert.deepEqual(chairMarker(), {
+    id: 'dialogue:vault-restraint-chair',
+    kind: 'quest',
+    label: 'Judgment Chair',
+    x: 7,
+    y: 9,
+    reveal: 'always'
+  });
+
+  game.flags.add('heard-bell-resolved');
+  game._applyQuestUpdate({ quest: 'those-who-heard-the-bell', stage: 'complete' });
+  assert.equal(chairMarker(), undefined);
+  game._applyEffects(game.level.onVictory);
+  assert.equal(game.questStages.get('those-who-heard-the-bell'), 'complete');
 });
 
 test('chapel-specific static kinds are registered with the intended depth and flatness', async () => {

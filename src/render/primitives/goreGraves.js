@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -39,7 +39,6 @@ export function drawCalcifiedGraveMarker(ctx, cx, cy, seed) {
   const dust = PALETTE.stoneDust;
   const split = seed % 4 === 0;
 
-  drawShadowBlob(ctx, cx, cy + 4, 34, 13);
   drawIsoDiamond(ctx, cx, cy + 1, 32, 12, PALETTE.outline);
   drawIsoDiamond(ctx, cx, cy, 25, 9, PALETTE.stoneDark);
   drawIsoDiamond(ctx, cx - 1, cy - 1, 18, 7, PALETTE.stoneDust);
@@ -94,8 +93,14 @@ export function drawCalcifiedGraveMarker(ctx, cx, cy, seed) {
   }
   linePx(ctx, cx - 7, cy - 4, cx + 3, cy - 5, PALETTE.stoneDust, 1);
 
+  // Calcified growth retains fine vertical lamination and small fracture chips
+  // that could not exist in the former logical-pixel-only rendering.
+  nativeLinePx(ctx, cx - 5.5 + lean, cy - 40.5, cx - 4.5 + lean, cy - 30.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + 2.5 + lean, cy - 19.5, cx + 0.5 + lean, cy - 10.5, lo);
+  nativePx(ctx, cx + 6.5 + lean, cy - 5.5, bone);
+
 }
-const GRAVE_BODY_VARIANTS = [
+export const GRAVE_BODY_VARIANT_IDS = Object.freeze([
   'kneeling-fused-hands',
   'broken-halo',
   'rib-open-chest',
@@ -107,7 +112,7 @@ const GRAVE_BODY_VARIANTS = [
   'collapsed-shoulder',
   'buried-lower-body',
   'split-face'
-];
+]);
 
 function graveSeg(ctx, x0, y0, x1, y1, color, thick = 1) {
   const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
@@ -300,7 +305,7 @@ function graveRibWings(ctx, cx, cyTop) {
 // the tombstone of their own grave. Human silhouette first: the horror is that
 // the person is still readable, and still, faintly, in there.
 export function drawCalcifiedGraveBody(ctx, cx, cy, seed, opts = {}) {
-  const variant = GRAVE_BODY_VARIANTS.includes(opts.variant) ? opts.variant : GRAVE_BODY_VARIANTS[seed % GRAVE_BODY_VARIANTS.length];
+  const variant = GRAVE_BODY_VARIANT_IDS.includes(opts.variant) ? opts.variant : GRAVE_BODY_VARIANT_IDS[seed % GRAVE_BODY_VARIANT_IDS.length];
   const rng = rngFrom(hash2D(seed + 227, seed * 5 + 41));
   const side = (seed & 1) ? 1 : -1;
   const bone = PALETTE.hostBone;
@@ -315,11 +320,10 @@ export function drawCalcifiedGraveBody(ctx, cx, cy, seed, opts = {}) {
   const reaching = variant === 'reaching-arm';
   const twistArm = variant === 'half-prayer-twist';
 
-  drawShadowBlob(ctx, cx, cy + 3, waistDeep ? 42 : 34, 13);
   const moundTop = graveMound(ctx, cx, cy, seed, waistDeep);
 
   // Skeleton heights. Standing dead are buried to the shin, kneelers to the
-  // thigh, and Vel Sarec's kind to the waist.
+  // thigh, and Levi Sabinus's kind to the waist.
   let hipY;
   let shoulderY;
   if (waistDeep) {
@@ -387,7 +391,7 @@ export function drawCalcifiedGraveBody(ctx, cx, cy, seed, opts = {}) {
     px(ctx, cx + leanX - 7, hipY + 1, shade, 15, 1);
   }
 
-  // Chest: the opened place. Ribs butterflied for Toma Kest; everyone else
+  // Chest: the opened place. Ribs butterflied for Thomas Silo; everyone else
   // keeps a sunken drained wound pit, off center, no glow.
   if (variant === 'rib-open-chest') {
     graveRibWings(ctx, cx + leanX, shoulderY + 3);
@@ -531,13 +535,19 @@ export function drawCalcifiedGraveBody(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx + 11, cy - 3, PALETTE.rustDark, 1, 1); // the dead wick
   px(ctx, cx + 9, cy, PALETTE.stoneDust, 5, 1); // the wax coin
 
+  // Every authored burial pose receives the same physical-pixel material
+  // vocabulary: calcified lamination, a shaded fracture, and a lit facial rim.
+  nativeLinePx(ctx, cx + leanX - 4.5, shoulderY + 1.5, cx + leanX - 2.5, hipY - 1.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + leanX + 3.5, shoulderY + 4.5, cx + leanX + 2.5, hipY - 4.5, shade);
+  nativeLinePx(ctx, headX - 3.5, headTop + 1.5, headX + 2.5, headTop + 0.5, dust);
+  nativePx(ctx, cx + 10.5, cy - 2.5, PALETTE.hostBone);
+
 }
 
 export function drawDeadCultist(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 151, seed * 5 + 9));
   const flip = (seed & 1) ? 1 : -1;
   const slump = Math.floor(rng() * 3) - 1;
-  drawShadowBlob(ctx, cx, cy + 4, 50, 19);
   ctx.save();
   ctx.globalAlpha = 0.84;
   drawIsoDiamond(ctx, cx + flip * 2, cy + 3, 41, 18, PALETTE.rustDark);
@@ -620,13 +630,19 @@ export function drawDeadCultist(ctx, cx, cy, seed) {
   linePx(ctx, cx + 12, cy + 5, cx + 9, cy + 9, PALETTE.hostRed, 1);
   linePx(ctx, cx + 9, cy + 9, cx + 14, cy + 8, PALETTE.rustMid, 1); // the third, fainter line
 
+  // The robe has a surviving stitched edge, and the rite knife catches a
+  // single hard highlight along its sharpened side.
+  nativeLinePx(ctx, cx - flip * 6.5, cy - 8.5, cx + flip * 4.5, cy + 2.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 11.5, cy + 1.5, cx + 15.5, cy + 0.5, PALETTE.stoneDust);
+  nativePx(ctx, headX - flip * 1.5, headY + 2.5, PALETTE.skinLight);
+  nativePx(ctx, cx + flip * 9.5, cy - 0.5, PALETTE.hostGold);
+
 }
 
 function wolfBody(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 43, seed * 11 + 5));
   const flip = opts.flip ?? ((seed & 1) ? 1 : -1);
   const lift = opts.lift ?? 0;
-  drawShadowBlob(ctx, cx, cy + 4, 62, 21);
   ctx.save();
   ctx.globalAlpha = 0.82;
   drawIsoDiamond(ctx, cx + flip * 2, cy + 5, 48, 20, PALETTE.rustDark);
@@ -676,6 +692,12 @@ function wolfBody(ctx, cx, cy, seed, opts = {}) {
     linePx(ctx, rootX, rootY, tipX, tipY, i ? PALETTE.hostRed : PALETTE.hostBlack, 1);
     px(ctx, tipX, tipY, PALETTE.hostGold, 1, 1);
   }
+
+  // Coarse hide breaks into fine hair-direction marks and the slack original
+  // limbs retain one narrow tendon edge at the native backing resolution.
+  nativeLinePx(ctx, cx - flip * 16.5, cy - 12.5, cx + flip * 7.5, cy - 10.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - flip * 10.5, cy - 7.5, cx + flip * 13.5, cy - 5.5, PALETTE.hostBlack);
+  nativeLinePx(ctx, cx - flip * 18.5, cy - 2.5, cx - flip * 10.5, cy + 6.5, PALETTE.stoneDark);
 
   return {
     flip,
@@ -756,12 +778,18 @@ export function drawHostVeinSeam(ctx, cx, cy, seed) {
     const y = cy - 8 + Math.floor(rng() * 17);
     px(ctx, x, y, speck % 3 === 0 ? PALETTE.hostGold : PALETTE.hostBlack, 1, 1);
   }
+
+  // Hair-thin black-gold capillaries bridge the broad seams. The gold remains
+  // intermittent so this reads as Host tissue under a split surface, not wire.
+  nativeLinePx(ctx, rootX + 0.5, rootY - 0.5, cx + 9.5, cy - 6.5, PALETTE.hostBlack);
+  nativeLinePx(ctx, rootX + 6.5, rootY + 1.5, cx + 18.5, cy + 5.5, PALETTE.hostBlack);
+  nativeLinePx(ctx, cx - 2.5, cy - 3.5, cx + 5.5, cy - 5.5, PALETTE.hostGold);
+  nativePx(ctx, cx + 12.5, cy + 3.5, PALETTE.hostGold);
 }
 
 export function drawHostWolfRemains(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 733, seed * 17 + 29));
   const flip = (seed & 1) ? 1 : -1;
-  drawShadowBlob(ctx, cx, cy + 5, 48, 17);
   ctx.save();
   ctx.globalAlpha = 0.82;
   drawIsoDiamond(ctx, cx + flip * 2, cy + 5, 41, 16, PALETTE.rustDark);
@@ -822,6 +850,11 @@ export function drawHostWolfRemains(ctx, cx, cy, seed) {
   px(ctx, cx + 21, cy - 6, PALETTE.stoneLight, 1, 3);
   px(ctx, cx + 23, cy - 6, PALETTE.stoneLight, 1, 3);
 
+  nativeLinePx(ctx, chestX - 1.5, chestY + 0.5, chestX - flip * 11.5, chestY - 5.5, PALETTE.hostBone);
+  nativeLinePx(ctx, headX - flip * 4.5, headY - 5.5, headX - flip * 9.5, headY - 11.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 17.5, cy + 3.5, cx - 9.5, cy + 7.5, PALETTE.stoneLight);
+  nativePx(ctx, chestX + flip * 1.5, chestY + 1.5, PALETTE.hostGold);
+
 }
 
 export function drawDeadHostWolfSpider(ctx, cx, cy, seed) {
@@ -853,6 +886,10 @@ export function drawDeadHostWolfSpider(ctx, cx, cy, seed) {
   px(ctx, cx + 6, cy - 26, PALETTE.stoneLight, 2, 3); // its head
   linePx(ctx, cx - 16, cy + 8, cx - 8, cy + 10, PALETTE.woodDark, 1); // the broken half
   px(ctx, cx - 17, cy + 8, PALETTE.woodLight, 2, 1); // raw break
+
+  nativeLinePx(ctx, cx + 3.5, cy - 14.5, cx + 6.5, cy - 23.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 18.5, cy + 7.5, cx - 8.5, cy + 9.5, PALETTE.woodMid);
+  nativePx(ctx, cx - 17.5, cy + 7.5, PALETTE.woodLight);
 
 }
 
@@ -895,6 +932,12 @@ export function drawDeadHostWolfMaw(ctx, cx, cy, seed) {
   px(ctx, cx + 9, cy - 16, PALETTE.woodLight, 2, 2); // the splintered top
   px(ctx, cx + 7, cy - 3, PALETTE.stoneDark, 4, 1); // where it bites the jaw
 
+  nativeLinePx(ctx, hx - 5.5, hy - 7.5, hx + 7.5, hy - 6.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 8.5, cy - 4.5, cx + 9.5, cy - 14.5, PALETTE.woodLight);
+  for (let tooth = 0; tooth < 5; tooth += 1) {
+    nativePx(ctx, hx - 5.5 + tooth * 3, hy - 1.5 + (tooth & 1), PALETTE.hostBone);
+  }
+
 }
 
 export function drawDeadHostWolfRibsplit(ctx, cx, cy, seed) {
@@ -922,5 +965,10 @@ export function drawDeadHostWolfRibsplit(ctx, cx, cy, seed) {
     px(ctx, cx - 10 + ((s * 7) % 21), cy - 4 + ((s * 5) % 9), PALETTE.hostBone, 1, 1);
   }
   px(ctx, cx - 2, cy - 2, PALETTE.hostBone, 3, 1); // the dense line at the split
+
+  nativeLinePx(ctx, chestX - 1.5, chestY - 0.5, chestX - 15.5, chestY - 6.5, PALETTE.hostBone);
+  nativeLinePx(ctx, chestX + 1.5, chestY + 1.5, chestX + 15.5, chestY - 4.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, chestX + 0.5, chestY - 2.5, chestX + 0.5, chestY + 8.5, PALETTE.hostGold);
+  nativePx(ctx, cx - 1.5, cy - 2.5, PALETTE.stoneDust);
 
 }

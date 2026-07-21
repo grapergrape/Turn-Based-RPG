@@ -1,0 +1,282 @@
+{
+  "id": "south-measure-freight-daro-mett",
+  "title": "Darius Secundus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Darius keeps one hand on the cistern schedule beside the medicine route board."
+      ],
+      "choices": [
+        {
+          "label": "Ask what imported water would cost",
+          "next": "cost"
+        },
+        {
+          "label": "Negotiate for Morrow cistern service",
+          "conditions": {
+            "flags": [
+              "south-measure-water-decision-open",
+              "intake-clerk-resolved"
+            ],
+            "flagsAbsent": [
+              "south-measure-plan-monitored-flow",
+              "south-measure-plan-morrow-import",
+              "south-measure-plan-isolated-loop",
+              "south-measure-plan-feed-closed"
+            ]
+          },
+          "next": "acquire"
+        },
+        {
+          "label": "Settle the disputed surety ledger",
+          "conditions": {
+            "items": {
+              "south-measure-pump-ledger": 1
+            },
+            "flagsAbsent": [
+              "morrow-ledger-untouched",
+              "morrow-ledger-revised",
+              "morrow-ledger-voided",
+              "morrow-ledger-concealed"
+            ]
+          },
+          "next": "ledger"
+        },
+        {
+          "label": "Leave the cistern schedule with Darius",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "cost": {
+      "lines": [
+        "\"We close the buried feed and cover a fixed daily ration with sealed tanks and purifier salt. The road becomes part of every cup.\"",
+        "\"That is supply with a price, not charity with the price hidden.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the route board",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "acquire": {
+      "lines": [
+        "Darius lays a service contract beside a paid-season chit. The cooled-wagon exchange sits beneath them.",
+        "\"Pick the cost you can still name tomorrow. Water does not become free because the buried line is dangerous.\""
+      ],
+      "choices": [
+        {
+          "label": "Sign the Morrow water contract",
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-morrow-import",
+              "morrow-water-contract"
+            ],
+            "log": "Darius commits Morrow cistern service under a household water contract."
+          },
+          "next": "chosen",
+          "tone": "commit"
+        },
+        {
+          "label": "Exchange the restored cooling jacket for deliveries",
+          "conditions": {
+            "flag": "south-measure-cooling-jacket-known"
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-morrow-import",
+              "morrow-water-exchange"
+            ],
+            "log": "The annex keeps the medicine cold. Darius assigns the cooled wagon to sealed water deliveries."
+          },
+          "next": "chosen",
+          "tone": "commit"
+        },
+        {
+          "label": "Pay eighteen ducats for one season of deliveries",
+          "conditions": {
+            "items": {
+              "ducat": 18
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-morrow-import",
+              "morrow-water-purchased"
+            ],
+            "log": "Darius records a paid season of rationed water deliveries.",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "ducat",
+                  "count": 18,
+                  "failLog": "Darius counts the purse and finds it short."
+                }
+              ],
+              "requireAll": true
+            }
+          },
+          "next": "chosen",
+          "tone": "commit"
+        },
+        {
+          "label": "Order emergency cistern service under Censure authority",
+          "conditions": {
+            "fieldRatings": {
+              "command": 40
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-morrow-import",
+              "morrow-water-compelled"
+            ],
+            "log": "Darius assigns emergency cisterns under protest and records the Censure order."
+          },
+          "next": "chosen",
+          "tone": "danger"
+        },
+        {
+          "label": "Delay the bargain",
+          "next": "start"
+        }
+      ]
+    },
+    "ledger": {
+      "lines": [
+        "Darius reads each copied surety beside the genuine freight loss entered on the same page.",
+        "\"False debt is theft. Erasing every loss is another theft. Decide which correction you can defend to both households.\""
+      ],
+      "choices": [
+        {
+          "label": "Revise only the copied sureties",
+          "effects": {
+            "setFlag": "morrow-ledger-revised",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-pump-ledger",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "debt-that-drinks",
+              "stage": "complete",
+              "log": "The false sureties are struck while the genuine road losses remain."
+            }
+          },
+          "next": "ledger-done",
+          "tone": "commit"
+        },
+        {
+          "label": "Void every household surety",
+          "effects": {
+            "setFlag": "morrow-ledger-voided",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-pump-ledger",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "debt-that-drinks",
+              "stage": "complete",
+              "log": "Every disputed household surety is voided, including debts tied to real freight losses."
+            }
+          },
+          "next": "ledger-done",
+          "tone": "commit"
+        },
+        {
+          "label": "Conceal the pages that expose Hidden Rows",
+          "conditions": {
+            "flag": "hidden-rows-chain-witness"
+          },
+          "effects": {
+            "setFlag": "morrow-ledger-concealed",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-pump-ledger",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "debt-that-drinks",
+              "stage": "complete",
+              "log": "The dangerous surety pages disappear from the bonded ledger."
+            }
+          },
+          "next": "ledger-done",
+          "tone": "commit"
+        },
+        {
+          "label": "Return the ledger untouched",
+          "effects": {
+            "setFlag": "morrow-ledger-untouched",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-pump-ledger",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "debt-that-drinks",
+              "stage": "complete",
+              "log": "The ledger returns to its cage with false and genuine debts still joined."
+            }
+          },
+          "next": "ledger-done",
+          "tone": "commit"
+        },
+        {
+          "label": "Keep the ledger for now",
+          "next": "start"
+        }
+      ]
+    },
+    "ledger-done": {
+      "lines": [
+        "Darius closes the cage on the corrected record.",
+        "\"A page can stop lying without becoming innocent.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the freight house",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "chosen": {
+      "lines": [
+        "Darius signs the first cistern schedule against South Measure’s household roll.",
+        "\"Now make the ration worth the route we lose.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the decision to Susanna",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

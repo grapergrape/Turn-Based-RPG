@@ -75,7 +75,7 @@ Active techniques:
 - `aimed-shot`: spends 1 extra AP on a firearm attack, adds +15 hit chance,
   and multiplies base weapon damage by 1.25 before skill damage.
 - `study-target`: spends 2 AP against a visible enemy within 6 tiles. It applies
-  `studied`, which adds hit chance and damage for Mara's later attacks against
+  `studied`, which adds hit chance and damage for the player's later attacks against
   that target. Better Search or Host Signs extends and improves the mark.
 - `field-measure`: spends 1 AP to apply `prepared`. The next player attack gains
   hit chance and damage, then consumes the status.

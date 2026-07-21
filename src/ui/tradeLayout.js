@@ -1,9 +1,9 @@
-export const TRADE_BOX = Object.freeze({ x: 50, y: 38, w: 540, h: 318 });
+export const TRADE_BOX = Object.freeze({ x: 50, y: 38, w: 540, h: 342 });
 
 export const TRADE_PANELS = Object.freeze({
   trader: Object.freeze({ x: TRADE_BOX.x + 16, y: TRADE_BOX.y + 32, w: 236, h: 168 }),
   player: Object.freeze({ x: TRADE_BOX.x + 288, y: TRADE_BOX.y + 32, w: 236, h: 168 }),
-  detail: Object.freeze({ x: TRADE_BOX.x + 16, y: TRADE_BOX.y + 210, w: 508, h: 56 })
+  detail: Object.freeze({ x: TRADE_BOX.x + 16, y: TRADE_BOX.y + 210, w: 508, h: 80 })
 });
 
 export const TRADE_ROW = Object.freeze({
@@ -36,20 +36,30 @@ export function tradePlayerRowBox(index) {
   };
 }
 
-export function tradeTraderIndexAt(point, count = TRADE_ROW.visible) {
+export function tradeListOffset(selectedIndex, count, visible = TRADE_ROW.visible) {
+  const size = Math.max(0, Math.floor(Number(count) || 0));
+  const windowSize = Math.max(1, Math.floor(Number(visible) || TRADE_ROW.visible));
+  if (size <= windowSize) return 0;
+  const selected = Math.max(0, Math.min(size - 1, Math.floor(Number(selectedIndex) || 0)));
+  return Math.max(0, Math.min(selected - windowSize + 1, size - windowSize));
+}
+
+export function tradeTraderIndexAt(point, count = TRADE_ROW.visible, offset = 0) {
   if (!point) return null;
-  const max = Math.min(TRADE_ROW.visible, Math.max(0, count));
+  const start = Math.max(0, Math.floor(Number(offset) || 0));
+  const max = Math.min(TRADE_ROW.visible, Math.max(0, count - start));
   for (let index = 0; index < max; index += 1) {
-    if (pointInBox(point, tradeTraderRowBox(index))) return index;
+    if (pointInBox(point, tradeTraderRowBox(index))) return start + index;
   }
   return null;
 }
 
-export function tradePlayerIndexAt(point, count = TRADE_ROW.visible) {
+export function tradePlayerIndexAt(point, count = TRADE_ROW.visible, offset = 0) {
   if (!point) return null;
-  const max = Math.min(TRADE_ROW.visible, Math.max(0, count));
+  const start = Math.max(0, Math.floor(Number(offset) || 0));
+  const max = Math.min(TRADE_ROW.visible, Math.max(0, count - start));
   for (let index = 0; index < max; index += 1) {
-    if (pointInBox(point, tradePlayerRowBox(index))) return index;
+    if (pointInBox(point, tradePlayerRowBox(index))) return start + index;
   }
   return null;
 }

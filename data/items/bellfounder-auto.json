@@ -1,0 +1,54 @@
+{
+  "id": "bellfounder-auto",
+  "name": "Bellfounder Automatic",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "autoloading pistol",
+  "rarity": "common",
+  "weight": 1,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Bellfounder Guild",
+    "factions": [
+      "bellfounder-guild"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "autoloading pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 6,
+        "range": 4,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "sidearm-cartridge",
+      "capacity": 9,
+      "defaultLoaded": 9,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "The guild machines this pistol from bell bronze molds and salvaged steel. Its warm-colored frame hides a hard, modern action."
+}

@@ -1,0 +1,60 @@
+{
+  "id": "ash-road-south-holl-varek",
+  "title": "Horace Crispus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Horace sorts corroded machine pieces by the kind of failure that took them.",
+        "\"If Noa sent you, tell me how much flow she wants and how long she expects a hand valve to stay hand-held. I keep no bin for miracles.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the annex records say",
+          "next": "bypass",
+          "effects": {
+            "setFlag": [
+              "heard-annex-bypass-route",
+              "south-measure-annex-access"
+            ]
+          }
+        },
+        {
+          "label": "Leave Horace with the salvage bins",
+          "close": true
+        }
+      ]
+    },
+    "bypass": {
+      "lines": [
+        "\"The rear cage held bypass schedules and valve charts from the first relief works. The roof collapsed across the direct aisle.\"",
+        "\"The west service door reaches the files. I can lift the main latch for you. Bring a lamp and respect the beams.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why he stayed with the ruins",
+          "next": "stayed"
+        },
+        {
+          "label": "Leave Horace with the salvage bins",
+          "close": true
+        }
+      ]
+    },
+    "stayed": {
+      "lines": [
+        "\"Because every city calls old relief stock obsolete until a pump stops.\"",
+        "\"Also because I know which floor plates lie. That knowledge is heavier to move than copper.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Horace with the salvage bins",
+          "close": true
+        }
+      ]
+    }
+  }
+}

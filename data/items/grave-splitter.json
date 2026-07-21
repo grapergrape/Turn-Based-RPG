@@ -1,0 +1,46 @@
+{
+  "id": "grave-splitter",
+  "name": "Grave Splitter",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "axe",
+  "rarity": "uncommon",
+  "weight": 2.1,
+  "groundModel": "axe",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Sexton Crews",
+    "factions": [
+      "sexton-crews"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "axe",
+    "roles": [
+      "melee",
+      "axe",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Hew",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A heavy splitting axe kept for root-bound cemetery ground. The wedge-shaped head does not stop at wood."
+}

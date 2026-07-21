@@ -31,7 +31,7 @@ export function drawCharacterCreation(ctx, ui, tools) {
   if (start > 0) tools.scrollArrow(ctx, LIST_BOX.x + LIST_BOX.w - 13, LIST_BOX.y + 25, -1, PALETTE.uiBorderLight);
   if (end < rows.length) tools.scrollArrow(ctx, LIST_BOX.x + LIST_BOX.w - 13, LIST_BOX.y + LIST_BOX.h - 12, 1, PALETTE.uiWarn);
 
-  drawPlayerPreview(ctx, tools, PREVIEW_BOX, creation.previewSpriteId ?? ui.figureSpriteId ?? 'mara-vey');
+  drawPlayerPreview(ctx, tools, PREVIEW_BOX, creation.previewSpriteId ?? ui.figureSpriteId ?? 'player');
   const previewName = tools.clip(creation.name ?? ui.actorName ?? 'AGENT', 18);
   tools.text(ctx, previewName, PREVIEW_BOX.x + Math.floor((PREVIEW_BOX.w - tools.textWidth(previewName)) / 2), PREVIEW_BOX.y + 12, PALETTE.uiBorderLight);
 
@@ -78,6 +78,7 @@ function drawOptionRow(ctx, tools, row, x, y, w) {
     tools.rect(ctx, x - 3, y - 3, w + 6, 20, PALETTE.outline);
     tools.rect(ctx, x - 2, y - 2, w + 4, 18, PALETTE.uiDark);
     tools.rect(ctx, x - 2, y - 2, w + 4, 1, PALETTE.uiBorderLight);
+    tools.detailRect(ctx, x - 1.5, y - 1.5, w + 3, 0.5, PALETTE.uiText);
   }
   tools.text(ctx, selected ? '>' : ' ', x, y, selected ? PALETTE.uiText : PALETTE.uiDim);
   tools.text(ctx, tools.clip(row.label ?? '', 17), x + 12, y, selected ? PALETTE.uiText : PALETTE.uiDim);
@@ -100,6 +101,7 @@ function drawPrimaryRow(ctx, tools, row, x, y, w) {
     tools.rect(ctx, x - 3, y - 3, w + 6, 20, PALETTE.outline);
     tools.rect(ctx, x - 2, y - 2, w + 4, 18, PALETTE.uiDark);
     tools.rect(ctx, x - 2, y - 2, w + 4, 1, PALETTE.uiBorderLight);
+    tools.detailRect(ctx, x - 1.5, y - 1.5, w + 3, 0.5, PALETTE.uiText);
   }
   tools.text(ctx, selected ? '>' : ' ', x, y, selected ? PALETTE.uiText : PALETTE.uiDim);
   tools.text(ctx, tools.clip(row.label ?? '', 14), x + 12, y, selected ? PALETTE.uiText : PALETTE.uiDim);
@@ -113,6 +115,7 @@ function drawPlayerPreview(ctx, tools, box, spriteId) {
   tools.rect(ctx, cx - 34, baseY + 3, 68, 1, PALETTE.outline);
   tools.rect(ctx, cx - 27, baseY + 4, 54, 1, PALETTE.uiDark);
   tools.rect(ctx, cx - 17, baseY + 5, 34, 1, PALETTE.uiDark);
+  tools.detailRect(ctx, cx - 26.5, baseY + 3.5, 53, 0.5, PALETTE.uiBorderLight);
 
   const resolved = tools.atlas ? getFrame(tools.atlas, spriteId, 'idle', 's', 0) : null;
   if (!resolved?.frame) {

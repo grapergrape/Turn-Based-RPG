@@ -1,9 +1,12 @@
 // Directional, animated, lo-fi isometric actor sprite facade.
 
 import { bakeActor } from './sprites/spriteBake.js';
-import { bakeMara, MARA_DEFAULT_EQUIPMENT } from './sprites/maraAppearance.js';
+import { bakePlayerCharacter, PLAYER_DEFAULT_EQUIPMENT } from './sprites/playerAppearance.js';
 import { CUT_STYLE, CHOIR_STYLE, PEN_STYLE } from './sprites/hostCreatures.js';
 import { SAVA_RELL_STYLE } from './sprites/savaRell.js';
+import { FALSE_CATECHIST_STYLE } from './sprites/falseCatechist.js';
+import { INTAKE_CLERK_STYLE } from './sprites/intakeClerk.js';
+import { bakeBrotherTarn } from './sprites/brotherTarn.js';
 import {
   HUMAN_MODEL_DEFS,
   HUMAN_MODEL_IDS,
@@ -14,10 +17,16 @@ import {
 } from './sprites/humanModels.js';
 import { bakeHostWolf, drawHostWolfMaw, drawHostWolfRibsplit, drawHostWolfSpider } from './sprites/hostWolfCreatures.js';
 import { bakeHostRat, drawSixLeggedRat, drawTendrilWalkerRat, drawThroatMawRat } from './sprites/ratCreatures.js';
+import {
+  STAGE_IV_LURE_STYLE,
+  STAGE_IV_RUNNER_ASH_STYLE,
+  STAGE_IV_RUNNER_ROAD_STYLE
+} from './sprites/stageIvActors.js';
+import { bakeUtilityDrone } from './sprites/utilityDrone.js';
 
 export { SPRITE_POSE_FRAME_COUNTS, getFrame } from './sprites/spriteBake.js';
 export {
-  MARA_DEFAULT_APPEARANCE,
+  PLAYER_DEFAULT_APPEARANCE,
   PLAYER_AGE_IDS,
   PLAYER_BODY_TYPE_IDS,
   PLAYER_FACE_MARK_IDS,
@@ -29,12 +38,10 @@ export {
   PLAYER_POSTURE_IDS,
   PLAYER_SKIN_TONE_IDS,
   PLAYER_STATURE_IDS,
-  bakeMara,
   bakePlayerCharacter,
-  deriveMaraStyle,
   derivePlayerStyle,
   normalizePlayerAppearance
-} from './sprites/maraAppearance.js';
+} from './sprites/playerAppearance.js';
 export {
   HUMAN_ACCENT_IDS,
   HUMAN_BODY_IDS,
@@ -69,20 +76,34 @@ const BASE_SPRITE_ATLAS_IDS = Object.freeze([
   'host-penitent-bastion',
   'host-touched-penitent',
   'host-sava-rell',
+  'south-measure-false-catechist',
+  'south-measure-intake-clerk',
+  'brother-tarn',
   'host-rat-sixlegs',
   'host-rat-throat-maw',
   'host-rat-tendril-walker',
   'host-wolf-spider',
   'host-wolf-maw',
-  'host-wolf-ribsplit'
+  'host-wolf-ribsplit',
+  'stage-iv-lure',
+  'stage-iv-runner-ash',
+  'stage-iv-runner-road',
+  'utility-drone-mark-i',
+  'utility-drone-mark-i-core',
+  'utility-drone-mark-i-energy',
+  'utility-drone-mark-i-bulwark',
+  'utility-drone-mark-i-medical',
+  'utility-drone-mark-i-veil',
+  'utility-drone-mark-i-fieldworks'
 ]);
 
 export const SPRITE_ATLAS_IDS = Object.freeze([...BASE_SPRITE_ATLAS_IDS, ...HUMAN_MODEL_IDS]);
 
 export function buildSpriteAtlas() {
   const atlas = {
-    'player': bakeMara(MARA_DEFAULT_EQUIPMENT, {}),
-    'mara-vey': bakeMara(MARA_DEFAULT_EQUIPMENT, {}),
+    'player': bakePlayerCharacter(PLAYER_DEFAULT_EQUIPMENT, {}),
+    // Legacy atlas key retained for existing levels and save data.
+    'mara-vey': bakePlayerCharacter(PLAYER_DEFAULT_EQUIPMENT, {}),
     'settlement-man': bakeActor(42, 62, SURVIVOR_MAN_STYLE),
     'settlement-woman': bakeActor(42, 62, SURVIVOR_WOMAN_STYLE),
     'settlement-child': bakeActor(36, 50, SURVIVOR_CHILD_STYLE),
@@ -102,12 +123,25 @@ export function buildSpriteAtlas() {
     'host-penitent-bastion': bakeActor(64, 92, PEN_STYLE),
     'host-touched-penitent': bakeActor(64, 92, PEN_STYLE),
     'host-sava-rell': bakeActor(46, 68, SAVA_RELL_STYLE),
+    'south-measure-false-catechist': bakeActor(44, 64, FALSE_CATECHIST_STYLE),
+    'south-measure-intake-clerk': bakeActor(48, 68, INTAKE_CLERK_STYLE),
+    'brother-tarn': bakeBrotherTarn(),
     'host-rat-sixlegs': bakeHostRat('sixlegs', drawSixLeggedRat),
     'host-rat-throat-maw': bakeHostRat('maw', drawThroatMawRat),
     'host-rat-tendril-walker': bakeHostRat('tendril', drawTendrilWalkerRat),
     'host-wolf-spider': bakeHostWolf('spider', drawHostWolfSpider),
     'host-wolf-maw': bakeHostWolf('maw', drawHostWolfMaw),
-    'host-wolf-ribsplit': bakeHostWolf('ribsplit', drawHostWolfRibsplit)
+    'host-wolf-ribsplit': bakeHostWolf('ribsplit', drawHostWolfRibsplit),
+    'stage-iv-lure': bakeActor(46, 66, STAGE_IV_LURE_STYLE),
+    'stage-iv-runner-ash': bakeActor(48, 68, STAGE_IV_RUNNER_ASH_STYLE),
+    'stage-iv-runner-road': bakeActor(48, 68, STAGE_IV_RUNNER_ROAD_STYLE),
+    'utility-drone-mark-i': bakeUtilityDrone(),
+    'utility-drone-mark-i-core': bakeUtilityDrone('core'),
+    'utility-drone-mark-i-energy': bakeUtilityDrone('energy'),
+    'utility-drone-mark-i-bulwark': bakeUtilityDrone('bulwark'),
+    'utility-drone-mark-i-medical': bakeUtilityDrone('medical'),
+    'utility-drone-mark-i-veil': bakeUtilityDrone('veil'),
+    'utility-drone-mark-i-fieldworks': bakeUtilityDrone('fieldworks')
   };
 
   for (const model of HUMAN_MODEL_DEFS) {

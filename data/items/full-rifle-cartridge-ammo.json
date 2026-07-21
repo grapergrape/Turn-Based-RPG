@@ -1,0 +1,12 @@
+{
+  "id": "full-rifle-cartridge-ammo",
+  "name": "Full Rifle Cartridges",
+  "type": "ammo",
+  "rarity": "common",
+  "weight": 0.052,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "full-rifle-cartridge"
+  },
+  "description": "Long rifle cartridges packed nose to tail in cloth loops. Good powder makes them valuable. Dry powder makes them rare."
+}

@@ -1,0 +1,61 @@
+{
+  "id": "ash-road-south-seli-ruun",
+  "title": "Salome Justus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Salome folds a damp cloth until the stained edge disappears inside it.",
+        "\"Joanna is with Rhoda. If you can speak softly, I can answer.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what changed in the fevers",
+          "next": "pattern",
+          "effects": {
+            "setFlag": "heard-charity-fever-pattern"
+          }
+        },
+        {
+          "label": "Ask whether the donated medicine works",
+          "next": "medicine"
+        },
+        {
+          "label": "Leave Salome to the cloths",
+          "close": true
+        }
+      ]
+    },
+    "pattern": {
+      "lines": [
+        "\"Three patients began shivering within the same hour. Only two took the new suppressant.\"",
+        "\"The charity tap ran cloudy after the last pressure drop. I wrote both facts down.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whether the donated medicine works",
+          "next": "medicine"
+        },
+        {
+          "label": "Return to Joanna’s cot",
+          "next": "start"
+        },
+        {
+          "label": "Leave Salome to the cloths",
+          "close": true
+        }
+      ]
+    },
+    "medicine": {
+      "lines": [
+        "\"The fever salts work. The suppressant has the right seal under the scraped paint.\"",
+        "\"The prayer cards promise an open body. We burn those over the wash pot.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Salome to the cloths",
+          "close": true
+        }
+      ]
+    }
+  }
+}

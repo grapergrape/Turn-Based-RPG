@@ -1,0 +1,279 @@
+{
+  "id": "ash-road-south-nel-varo",
+  "title": "Noa Faber",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "south-measure-assembly-complete"
+        ]
+      },
+      "else": "after-assembly",
+      "lines": [
+        "Noa holds two fingers against the governor housing. The mechanism settles, then a second knock rises from the buried pipe.",
+        "\"Do not lean on it. I want the answer to come from below without help.\""
+      ],
+      "choices": [
+        {
+          "label": "Inspect the throttled flow with her",
+          "conditions": {
+            "flag": "met-ressa-venn"
+          },
+          "next": "diagnosis",
+          "effects": {
+            "setFlag": "inspected-south-measure-flow",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "hear-terms",
+              "log": "Noa confirms the condenser is sound and deliberately throttled. Hear the water terms and ask Cassian about the buried signal."
+            }
+          }
+        },
+        {
+          "label": "Ask about the condenser",
+          "next": "machine-questions"
+        },
+        {
+          "label": "Ask about the Compact offer and her family",
+          "next": "personal-questions"
+        },
+        {
+          "label": "Leave Noa with the condenser",
+          "close": true
+        }
+      ]
+    },
+    "machine-questions": {
+      "lines": [
+        "Noa keeps one hand on the service plate while she listens."
+      ],
+      "choices": [
+        {
+          "label": "Ask whether she can open full pressure",
+          "next": "overpressure"
+        },
+        {
+          "label": "Ask about a local isolation loop",
+          "next": "isolation"
+        },
+        {
+          "label": "Ask why she trusts the sound",
+          "next": "sound"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "personal-questions": {
+      "lines": [
+        "Noa folds the oily rag over twice before answering."
+      ],
+      "choices": [
+        {
+          "label": "Ask about the Compact school",
+          "next": "school"
+        },
+        {
+          "label": "Tell her what Isaac and Tobit want",
+          "conditions": {
+            "flag": "heard-varo-family-wishes"
+          },
+          "next": "family-wishes"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "diagnosis": {
+      "lines": [
+        "Noa opens a finger-wide service plate. The governor sleeve is clean, and the bearing note stays even under her hand.",
+        "\"The machine is sound. Full flow makes the north feed answer hard enough to shake the intake wicket.\"",
+        "\"I cut the pressure because I heard a household denial through the settling tank. I will not send that voice into every cup.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how a local loop would work",
+          "next": "isolation"
+        },
+        {
+          "label": "Ask why she trusts the sound",
+          "next": "sound"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Close the service plate",
+          "close": true
+        }
+      ]
+    },
+    "overpressure": {
+      "lines": [
+        "\"I can open the feed. The taps fill, and the thing below gets every pressure stroke it has been asking for.\"",
+        "\"Aurelia says her monitors can hold the risk. I want the Clerk seen before anyone makes that promise for her.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the bypass alone",
+          "close": true
+        }
+      ]
+    },
+    "isolation": {
+      "lines": [
+        "\"The old relief return reaches the court without touching the north feed. It carries less water and needs a hand on every shift.\"",
+        "\"Find the valve order and quiet the Clerk. Then South Measure can keep its own loop.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask her to prepare the isolated loop",
+          "effects": {
+            "setFlag": "resident-isolation-requested"
+          },
+          "close": true
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let her work",
+          "close": true
+        }
+      ]
+    },
+    "school": {
+      "effects": {
+        "questUpdate": {
+          "quest": "household-of-one",
+          "stage": "review-record",
+          "log": "Noa’s school form treats her as a household of one. Ask what her family wants before the assembly."
+        }
+      },
+      "lines": [
+        "\"Machine school, with real lathes under a roof that does not drip into the tool cabinet. They even measure the current.\"",
+        "\"They measured my blood before they asked whether I could mend the pump. The pump had better manners.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what happens to her family",
+          "next": "family"
+        },
+        {
+          "label": "Say she is allowed to want it",
+          "next": "want"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the offer alone",
+          "close": true
+        }
+      ]
+    },
+    "family": {
+      "lines": [
+        "\"Isaac is too old for placement work. Tobit is a dependent without an admitted sponsor.\"",
+        "\"The form makes that sound tidier than leaving them behind.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Give her room",
+          "close": true
+        }
+      ]
+    },
+    "want": {
+      "lines": [
+        "Noa wipes oil onto a rag that has no clean corner left.",
+        "\"I want the school, and I want my brother fed next winter. Find a box that can hold both.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave her with the machine",
+          "close": true
+        }
+      ]
+    },
+    "family-wishes": {
+      "lines": [
+        "\"Of course they each told you the other one matters more.\"",
+        "\"My house argues by leaving the hard word for someone else. We keep offering each other the last piece and wait for it to decide.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let the family keep its own answer",
+          "close": true
+        }
+      ]
+    },
+    "sound": {
+      "lines": [
+        "\"Institutions write what a machine should do. Bearings tell you what it did while nobody watched.\"",
+        "\"People are not machines. That has not stopped institutions from using the same manuals.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Listen to the buried answer",
+          "close": true
+        }
+      ]
+    },
+    "after-assembly": {
+      "lines": [
+        "Noa has copied the final pressure figures onto a narrow school slate. Her tool roll is tied, untied, then tied again."
+      ],
+      "choices": [
+        { "label": "Ask about leaving alone", "conditions": { "flag": "nel-school-alone" }, "next": "after-alone" },
+        { "label": "Ask about the maintenance season", "conditions": { "flag": "nel-stays-one-season" }, "next": "after-season" },
+        { "label": "Ask about the family review", "conditions": { "flag": "nel-family-review" }, "next": "after-review" },
+        { "label": "Ask about the forged family record", "conditions": { "flag": "nel-family-forged" }, "next": "after-forged" },
+        { "label": "Let Noa finish packing", "close": true }
+      ]
+    },
+    "after-alone": {
+      "lines": ["\"Tobit gets my pump notes. Isaac gets my real address, not the placement office version.\"", "\"Leaving alone is not the same as leaving them. I need to learn that sentence on the road.\""],
+      "choices": [{ "label": "Return to the condenser", "next": "after-assembly" }]
+    },
+    "after-season": {
+      "lines": ["\"One season means one season. Tobit has already tried to rename it until spring.\"", "\"I can teach the valve order without making the pump an excuse forever.\""],
+      "choices": [{ "label": "Return to the condenser", "next": "after-assembly" }]
+    },
+    "after-review": {
+      "lines": ["\"The review may refuse them. It may also force a person to sign the refusal.\"", "\"That is not enough, but it is a door with someone standing in it.\""],
+      "choices": [{ "label": "Return to the condenser", "next": "after-assembly" }]
+    },
+    "after-forged": {
+      "lines": ["\"The page says we have always fit their boxes. Isaac laughed until he started coughing.\"", "\"If the lie opens a real door, we still have to live on the other side of it.\""],
+      "choices": [{ "label": "Return to the condenser", "next": "after-assembly" }]
+    }
+  }
+}

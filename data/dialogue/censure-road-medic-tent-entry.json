@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-medic-tent-entry",
+  "title": "Medic Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Boiled cloth and bitter wash carry through the medic tent's flap."
+      ],
+      "choices": [
+        {
+          "label": "Enter the medic tent",
+          "effects": {
+            "log": "You enter the medic tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_medic_tent.json",
+              "player": { "x": 2, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside the medic tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

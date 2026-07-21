@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-supply-tent-exit",
+  "title": "Supply Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Camp dust has gathered along the inner edge of the flap."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave the supply tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 39, "y": 36 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the supply tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

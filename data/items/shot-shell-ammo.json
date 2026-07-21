@@ -1,0 +1,12 @@
+{
+  "id": "shot-shell-ammo",
+  "name": "Waxed Shot Shells",
+  "type": "ammo",
+  "rarity": "common",
+  "weight": 0.061,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "shot-shell"
+  },
+  "description": "Paper and brass shells sealed against road damp with black wax. Loads vary from coarse salt shot to cast lead."
+}

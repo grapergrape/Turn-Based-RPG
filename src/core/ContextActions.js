@@ -1,4 +1,5 @@
 import { chebyshev } from '../combat/CombatSystem.js';
+import { isMeleeAttack, isRangedAttack } from '../combat/AttackMode.js';
 import { hasStatus } from '../combat/StatusEffects.js';
 import { AIMED_SHOT_DAMAGE_MULTIPLIER, TECHNIQUE_AP_COSTS, TECHNIQUE_RANGES } from '../combat/TechniqueRules.js';
 import { findPath } from '../world/Pathfinder.js';
@@ -14,27 +15,37 @@ export function buildContextActionsForTarget({
   occupied = new Set(),
   techniqueDefs = {},
   inventory = null,
+  selectedAttack = null,
   objectName = (object) => object?.name ?? 'Object',
   attackPreview = null
 } = {}) {
   if (!player || !target) return [];
+  const techniqueActions = buildTechniqueActionsForTarget({
+    player,
+    target,
+    enemies,
+    grid,
+    occupied,
+    techniqueDefs,
+    attackPreview
+  });
   if (target.type === 'combatant' && enemies.includes(target.actor)) {
     return [
       ...basicAttackActions(player, target.actor, attackPreview),
-      ...knownActiveTechniqueActions({ player, techniqueDefs, targetType: 'enemy', target: target.actor, grid, occupied, attackPreview })
+      ...techniqueActions
     ];
   }
   if (target.type === 'self') {
     return [
-      reloadAction(),
+      reloadAction(player, inventory, selectedAttack),
       bindWoundsAction(player, inventory),
-      ...knownActiveTechniqueActions({ player, techniqueDefs, targetType: 'self', target: player, grid, occupied, attackPreview })
+      ...techniqueActions
     ];
   }
   if (target.type === 'move') {
     return [
       moveAction({ player, grid, occupied, cell: target.cell }),
-      ...knownActiveTechniqueActions({ player, techniqueDefs, targetType: 'tile', cell: target.cell, grid, occupied, attackPreview })
+      ...techniqueActions
     ];
   }
   if (target.type === 'object') {
@@ -47,6 +58,52 @@ export function buildContextActionsForTarget({
       enabled: false,
       reason: 'Not ready yet'
     }];
+  }
+  return [];
+}
+
+export function buildTechniqueActionsForTarget({
+  player,
+  target,
+  enemies = [],
+  grid,
+  occupied = new Set(),
+  techniqueDefs = {},
+  attackPreview = null
+} = {}) {
+  if (!player || !target) return [];
+  if (target.type === 'combatant' && enemies.includes(target.actor)) {
+    return knownActiveTechniqueActions({
+      player,
+      techniqueDefs,
+      targetType: 'enemy',
+      target: target.actor,
+      grid,
+      occupied,
+      attackPreview
+    });
+  }
+  if (target.type === 'self') {
+    return knownActiveTechniqueActions({
+      player,
+      techniqueDefs,
+      targetType: 'self',
+      target: player,
+      grid,
+      occupied,
+      attackPreview
+    });
+  }
+  if (target.type === 'move') {
+    return knownActiveTechniqueActions({
+      player,
+      techniqueDefs,
+      targetType: 'tile',
+      cell: target.cell,
+      grid,
+      occupied,
+      attackPreview
+    });
   }
   return [];
 }
@@ -413,6 +470,8 @@ function selfTechniqueAction(player, technique, apCost, state = { enabled: true,
 function attackState(player, attack, target, extraAp = 0) {
   if (!attack) return { enabled: false, reason: 'No attack' };
   if (attack.broken) return { enabled: false, reason: 'Needs repair' };
+  if (attack.empty) return { enabled: false, reason: 'Empty' };
+  if (attack.requiresStationary && player.movedThisTurn) return { enabled: false, reason: 'Must brace before moving' };
   if (!target || target.isDead) return { enabled: false, reason: 'No target' };
   if (chebyshev(player.position, target.position) > attack.range) return { enabled: false, reason: 'Out of range' };
   const cost = attack.apCost + extraAp;
@@ -438,13 +497,13 @@ function tileTechniqueState(player, cell, grid, occupied, apCost, range, { allow
 
 function firearmAttack(player) {
   return player.getAttack?.('sidearm')
-    ?? (player.attacks ?? []).find((attack) => attack.range > 1)
+    ?? (player.attacks ?? []).find((attack) => isRangedAttack(attack))
     ?? null;
 }
 
 function meleeAttack(player) {
   return player.getAttack?.('melee')
-    ?? (player.attacks ?? []).find((attack) => attack.range <= 1)
+    ?? (player.attacks ?? []).find((attack) => isMeleeAttack(attack))
     ?? null;
 }
 
@@ -486,8 +545,14 @@ function moveAction({ player, grid, occupied, cell }) {
   return { id: 'move', kind: 'move', label: `Move ${cost} AP`, cell, enabled: true, reason: '' };
 }
 
-function reloadAction() {
-  return { id: 'reload', kind: 'reload', label: 'Reload', enabled: false, reason: 'No reload needed' };
+function reloadAction(player, inventory, attack) {
+  const state = inventory?.reloadStateForAttack?.(attack);
+  if (!state) return { id: 'reload', kind: 'reload', label: 'Reload', enabled: false, reason: 'No ranged weapon selected' };
+  const label = `Reload ${state.reloadAp} AP`;
+  if (state.full) return { id: 'reload', kind: 'reload', label, enabled: false, reason: 'Magazine full' };
+  if (!state.reserve) return { id: 'reload', kind: 'reload', label, enabled: false, reason: 'No ammunition' };
+  if (player.ap < state.reloadAp) return { id: 'reload', kind: 'reload', label, enabled: false, reason: `Need ${state.reloadAp} AP` };
+  return { id: 'reload', kind: 'reload', label, attackId: attack.id, enabled: true, reason: '' };
 }
 
 function bindWoundsAction(player, inventory) {

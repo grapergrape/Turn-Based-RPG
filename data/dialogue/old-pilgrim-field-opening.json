@@ -1,0 +1,118 @@
+{
+  "id": "old-pilgrim-field-opening",
+  "title": "The East Furrows",
+  "mustChoose": true,
+  "nodes": {
+    "start": {
+      "lines": [
+        "The cart rut ends at an overturned frame, with five pilgrim coats lying facedown across separate furrows.",
+        "One shoulder lifts; a breath later, the other four answer."
+      ],
+      "choices": [
+        {
+          "label": "Use Tobias’s wound pattern",
+          "conditions": {
+            "flag": "old-pilgrim-field-opening-read"
+          },
+          "next": "read"
+        },
+        {
+          "label": "Watch for the first opening",
+          "conditions": {
+            "fieldRatings": {
+              "hostSigns": 35
+            }
+          },
+          "next": "read"
+        },
+        {
+          "label": "Find the body leading the count",
+          "conditions": {
+            "fieldRatings": {
+              "search": 35
+            }
+          },
+          "next": "read"
+        },
+        {
+          "label": "Crawl to Tobias’s red load pin",
+          "conditions": {
+            "flag": "old-pilgrim-cart-release-known"
+          },
+          "next": "cart"
+        },
+        {
+          "label": "Enter the furrows",
+          "next": "sprung",
+          "tone": "danger"
+        }
+      ]
+    },
+    "read": {
+      "lines": [
+        "The nearest body is not waking. It is waiting for the others to finish opening.",
+        "Its fused hand tightens around the prayer cord before the head moves."
+      ],
+      "choices": [
+        {
+          "label": "Fire before the count begins",
+          "tone": "danger",
+          "effects": {
+            "setFlag": "old-pilgrim-field-ambush-read",
+            "startCombat": {
+              "encounter": "old-pilgrim-field-opening",
+              "openingAttack": {
+                "target": "old-pilgrim-stage-iv-lead",
+                "attackId": "sidearm",
+                "guaranteedHit": true,
+                "spendAp": false,
+                "failureLog": "The sidearm is not ready. The five forms rise together."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "cart": {
+      "lines": [
+        "The red pin sits beneath the downhill rail. The dropped bed will close the central furrow and leave a narrow line beside the stone boundary.",
+        "The five coats have not moved. One fused hand has tightened around the rear wheel."
+      ],
+      "choices": [
+        {
+          "label": "Pull the pin and take the boundary line",
+          "tone": "danger",
+          "effects": {
+            "setFlag": "old-pilgrim-field-cart-flank",
+            "teleport": {
+              "x": 76,
+              "y": 43,
+              "facing": "ne"
+            },
+            "startCombat": {
+              "encounter": "old-pilgrim-field-opening"
+            },
+            "log": "The cart bed slams across the central furrow. The procession must turn toward the boundary stones."
+          }
+        }
+      ]
+    },
+    "sprung": {
+      "lines": [
+        "The first coat rolls onto its back as the ribs pull apart beneath it. Four more bodies rise on hands joined by old prayer knots.",
+        "The cart frame shifts as a horn catches under the broken harness."
+      ],
+      "choices": [
+        {
+          "label": "Hold the furrow line",
+          "tone": "danger",
+          "effects": {
+            "startCombat": {
+              "encounter": "old-pilgrim-field-opening"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

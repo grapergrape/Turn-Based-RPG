@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-peli-rehn",
+  "name": "Phoebe Laetus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Kitchen helper",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "teen"
+  ],
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-runner",
+    "gear": [
+      "message-tube"
+    ],
+    "accent": "dark-hood"
+  }
+}

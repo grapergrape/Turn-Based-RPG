@@ -8,7 +8,7 @@ furniture, plants, props, decals, gore, ritual marks, creatures, lights, and the
 interface) is **`game_art_skill/SKILL.md`**, mandatory per `AGENTS.md`. It
 absorbs the former `character_creature_art_skill` (now a redirect stub). It
 defines the engine reality, palette and ramps, the iso projection, the sprite
-catalog workflow, the human standard (small real people, reference: Mara Vey),
+catalog workflow, the human standard (small real people, reference: Junia Carbo),
 the monster standard (Vale Imprint body horror grown from a person and still
 human-sized, goat/ram skulls, butterflied-open ribcages, black-gold kept thin and
 under the skin, bone language, asymmetry), satanic imagery, gore, the animated

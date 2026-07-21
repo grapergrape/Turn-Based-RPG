@@ -1,0 +1,86 @@
+{
+  "id": "old-pilgrim-final-profession",
+  "title": "Final Profession",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Four brass studs surround the chapter release. Each one carries the wear of a different trial mechanism."
+      ],
+      "choices": [
+        {
+          "label": "Present four intact measures",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 4,
+              "of": [
+                "old-pilgrim-trial-quiet-kept",
+                "old-pilgrim-trial-service-kept",
+                "old-pilgrim-trial-burden-kept",
+                "old-pilgrim-trial-mercy-kept"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-profession-intact",
+            "questUpdate": {
+              "quest": "the-buried-novitiate",
+              "stage": "claim-oath-armory",
+              "log": "Four intact profession measures release the Sealed Chapter and preserve every candidate cache."
+            },
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_sealed_chapter.json",
+              "player": {
+                "x": 23,
+                "y": 33,
+                "facing": "n"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Present the answered measures",
+          "conditions": {
+            "flags": [
+              "old-pilgrim-trial-quiet",
+              "old-pilgrim-trial-service",
+              "old-pilgrim-trial-burden",
+              "old-pilgrim-trial-mercy"
+            ],
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "old-pilgrim-trial-quiet-broken",
+                "old-pilgrim-trial-service-broken",
+                "old-pilgrim-trial-burden-broken",
+                "old-pilgrim-trial-mercy-broken"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-profession-forced",
+            "questUpdate": {
+              "quest": "the-buried-novitiate",
+              "stage": "claim-oath-armory",
+              "log": "The damaged profession measures release the Sealed Chapter. Broken trial mechanisms remain behind."
+            },
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_sealed_chapter.json",
+              "player": {
+                "x": 23,
+                "y": 33,
+                "facing": "n"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

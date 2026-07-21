@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-tor-vask",
+  "name": "Titus Custos",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "South Chain watch",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-chain",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "shoulder-plate"
+    ],
+    "accent": "dark-hood"
+  }
+}

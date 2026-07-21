@@ -1,0 +1,64 @@
+{
+  "id": "salt-parish-battle-rifle",
+  "name": "Salt Parish Battle Rifle",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "battle rifle",
+  "rarity": "uncommon",
+  "weight": 2.6,
+  "groundModel": "rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Salt Parishes",
+    "factions": [
+      "salt-parishes"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "battle rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 7,
+        "range": 7,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "snap-shot",
+        "name": "Snap Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 6,
+        "range": 6,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "full-rifle-cartridge",
+      "capacity": 15,
+      "defaultLoaded": 15,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "Salt parish gunsmiths copied the action by measuring a single surviving rifle. The wide tolerances look crude and run clean."
+}

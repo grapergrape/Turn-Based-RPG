@@ -1,0 +1,18 @@
+{
+  "id": "brother-tarn",
+  "name": "Brother Cassian",
+  "type": "npc",
+  "faction": "penitent-engines",
+  "role": "Penitent Engine",
+  "stats": {
+    "hp": 18,
+    "maxHp": 18,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "water-court",
+    "talkable",
+    "penitent-engine"
+  ]
+}

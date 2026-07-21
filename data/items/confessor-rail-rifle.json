@@ -1,0 +1,53 @@
+{
+  "id": "confessor-rail-rifle",
+  "name": "Confessor Rail Rifle",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "rail rifle",
+  "rarity": "rare",
+  "weight": 5.1,
+  "groundModel": "rail-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant prototype",
+    "origin": "Holy Remnant",
+    "factions": [
+      "holy-remnant"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "rail rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 10,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 4,
+      "defaultLoaded": 4,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 73
+  },
+  "description": "A long rail rifle assigned in pairs to confessor retinues. The ceramic rail bed must be checked for hairline cracks after every hard march."
+}

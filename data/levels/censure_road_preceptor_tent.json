@@ -8,6 +8,9 @@
   "quests": [
     "investigate-ash-chapel-cult"
   ],
+  "dialogue": [
+    "censure-road-preceptor-tent-exit"
+  ],
   "mood": {
     "floorShade": "#15130e",
     "floorShadeAlpha": 0.12,
@@ -47,27 +50,66 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "journalNotes": [
     {
-      "id": "preceptor-tent-exit-transition",
-      "x": 6,
-      "y": 8,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 47,
-          "y": 13
-        }
-      }
+      "flag": "censure-road-preceptor-route-order-found",
+      "text": "A route correction was tied into Aquila's original order, then filed as if it had been added later."
+    },
+    {
+      "flag": "censure-road-preceptor-route-correction-read",
+      "text": "The correction turns a return peal into alarm duty without naming the witness required by doctrine."
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "preceptor-tent-loose-ducat",
+      "item": "ducat",
+      "count": 1,
+      "x": 10,
+      "y": 5
     }
   ],
   "objects": [
+    {
+      "id": "preceptor-tent-old-campaign-pack",
+      "kind": "field-backpack",
+      "x": 2,
+      "y": 6,
+      "seed": 2605,
+      "name": "Retired Campaign Pack",
+      "interact": {
+        "type": "container",
+        "log": "Cut regimental straps hang from a salvage-marked campaign pack, though its patched lining still holds.",
+        "loot": [
+          {
+            "item": "penitent-gear-scrap",
+            "count": 1
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 1
+          }
+        ]
+      }
+    },
     {
       "kind": "canvas-tent-flap",
       "x": 6,
       "y": 9,
       "id": "preceptor-tent-exit-flap",
-      "name": "Tent Flap"
+      "name": "Tent Flap",
+      "clickAreas": [
+        { "x0": 6, "y0": 9, "x1": 6, "y1": 9 }
+      ],
+      "interactionMarker": { "x": 6, "y": 8 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-preceptor-tent-exit"
+      }
     },
     {
       "kind": "settlement-table",
@@ -98,7 +140,52 @@
       "y": 5,
       "blocking": true,
       "id": "preceptor-tent-file-crate",
-      "seed": 2521
+      "seed": 2521,
+      "name": "Corrected Route Files",
+      "interact": {
+        "type": "note",
+        "log": "Route orders fill the crate in date stacks. One order has been filed under the day it was corrected, not the day it was issued.",
+        "search": {
+          "id": "preceptor-route-file-search",
+          "title": "Corrected Route Files",
+          "lines": [
+            "Aquila uses black thread for orders and red for corrections. One bundle carries both through the same holes."
+          ],
+          "useLabel": "Read the route files",
+          "methods": [
+            {
+              "id": "find-corrected-route-order",
+              "label": "Separate the corrected order",
+              "field": "search",
+              "dc": 55,
+              "successLog": "The red thread was added before the black knot closed. The correction belonged to the original order and was filed later to hide it.",
+              "failLog": "The bundles share too many holes to establish which thread came first.",
+              "success": {
+                "setFlag": "censure-road-preceptor-route-order-found"
+              }
+            },
+            {
+              "id": "explain-route-correction",
+              "label": "Read the doctrinal correction",
+              "field": "doctrine",
+              "dc": 55,
+              "conditions": {
+                "flag": "censure-road-preceptor-route-order-found"
+              },
+              "successLog": "The correction changes a return peal into an alarm duty. Doctrine permits that only after a witnessed breach, yet no witness is named.",
+              "failLog": "The cited rule bends through two exceptions. You cannot say which one Aquila used.",
+              "success": {
+                "setFlag": "censure-road-preceptor-route-correction-read"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Corrected Route Files",
+        "kind": "search",
+        "reveal": "explored"
+      }
     }
   ]
 }

@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-hadr-malk",
+  "name": "Hadar Niger",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Chain water guard",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "water-court",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "shoulder-plate"
+    ],
+    "accent": "dark-hood"
+  }
+}

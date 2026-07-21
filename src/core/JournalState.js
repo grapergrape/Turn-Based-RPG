@@ -1,13 +1,55 @@
 import { buildCharacterSheet } from './Progression.js';
 import { buildTechniqueSheet } from './TechniqueSystem.js';
 
-export const JOURNAL_SECTIONS = ['QUESTS', 'MAP', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS', 'TECHNIQUES'];
+export const JOURNAL_SECTIONS = ['QUESTS', 'MAP', 'NOTES', 'FACTIONS', 'CHARACTER', 'SCARS', 'TECHNIQUES', 'DRONE'];
 export const JOURNAL_TURN_DURATION = 0.46;
+export const JOURNAL_UPDATE_SECTIONS = ['QUESTS', 'NOTES', 'FACTIONS'];
+
+export function visibleJournalSections({ attendantAvailable = false } = {}) {
+  return JOURNAL_SECTIONS.filter((section) => section !== 'DRONE' || attendantAvailable);
+}
+
+function mergeDefinitions(collections, identityFor) {
+  const merged = [];
+  const seen = new Set();
+  for (const collection of collections) {
+    for (const definition of Array.isArray(collection) ? collection : []) {
+      const identity = identityFor(definition);
+      if (seen.has(identity)) continue;
+      seen.add(identity);
+      merged.push(definition);
+    }
+  }
+  return merged;
+}
+
+function journalNoteIdentity(note) {
+  if (typeof note?.id === 'string' && note.id.trim() !== '') return `id:${note.id}`;
+  const questStages = note?.questStage && typeof note.questStage === 'object'
+    ? Object.entries(note.questStage).sort(([left], [right]) => left.localeCompare(right))
+    : [];
+  return JSON.stringify(['note', note?.flag ?? null, questStages, note?.text ?? '']);
+}
+
+function codexIdentity(entry) {
+  if (typeof entry?.id === 'string' && entry.id.trim() !== '') return `id:${entry.id}`;
+  if (typeof entry?.name === 'string' && entry.name.trim() !== '') return `name:${entry.name}`;
+  return `entry:${JSON.stringify(entry)}`;
+}
+
+export function mergeJournalNotes(...collections) {
+  return mergeDefinitions(collections, journalNoteIdentity);
+}
+
+export function mergeCodexDefinitions(...collections) {
+  return mergeDefinitions(collections, codexIdentity);
+}
 
 export function buildJournalState({
   section = 0,
   turn = null,
   factionIndex = 0,
+  evidenceIndex = 0,
   questDefs = {},
   questStages = new Map(),
   questReached = new Map(),
@@ -20,19 +62,23 @@ export function buildJournalState({
   primaryIndex = 0,
   techniqueIndex = 0,
   time = null,
-  map = null
+  map = null,
+  drone = null
 } = {}) {
-  const character = buildCharacterSheet(player);
+  const character = buildCharacterSheet(player ?? {});
   const techniques = buildTechniqueSheet(player?.progression, techniqueDefs, techniqueContext);
+  const sections = visibleJournalSections({ attendantAvailable: Boolean(drone?.recruited) });
+  const findings = buildJournalFindings({ questDefs, questReached, journalNotes, flags });
   return {
-    section,
-    sections: JOURNAL_SECTIONS,
+    section: Math.max(0, Math.min(sections.length - 1, Math.floor(Number(section) || 0))),
+    sections,
     turn: journalTurnState(turn),
     factionIndex,
+    evidenceIndex: Math.max(0, Math.floor(Number(evidenceIndex) || 0)),
     time,
-    quests: journalQuests({ questDefs, questStages, questReached }),
+    quests: journalQuests({ questDefs, questStages, questReached, flags }),
     map,
-    findings: journalFindings({ questDefs, questReached, journalNotes, flags }),
+    findings,
     factions: journalFactions({ codexDefs, flags, questReached }),
     character,
     primaryIndex,
@@ -41,8 +87,34 @@ export function buildJournalState({
       passivePoints: character.passiveTechniquePoints ?? 0,
       selectedIndex: techniqueIndex,
       entries: techniques
-    }
+    },
+    drone
   };
+}
+
+// The player-facing journal is assembled from several independent pieces of
+// run state. Keep a compact picture of only the sections that investigation
+// can change so the game can announce discoveries without coupling every
+// interaction, dialogue effect, and quest update to the UI.
+export function buildJournalUpdateSnapshot({
+  questDefs = {},
+  questStages = new Map(),
+  questReached = new Map(),
+  journalNotes = [],
+  codexDefs = [],
+  flags = new Set()
+} = {}) {
+  const context = { questDefs, questStages, questReached, journalNotes, codexDefs, flags };
+  return {
+    QUESTS: JSON.stringify(journalQuests(context)),
+    NOTES: JSON.stringify(buildJournalFindings(context)),
+    FACTIONS: JSON.stringify(journalFactions(context).filter((entry) => entry.known))
+  };
+}
+
+export function journalUpdatedSections(previous, current) {
+  if (!previous || !current) return [];
+  return JOURNAL_UPDATE_SECTIONS.filter((section) => previous[section] !== current[section]);
 }
 
 export function journalTurnState(turn) {
@@ -68,9 +140,10 @@ export function journalConditionMet(spec, { flags = new Set(), questReached = ne
   return false;
 }
 
-function journalQuests({ questDefs, questStages, questReached }) {
+function journalQuests({ questDefs, questStages, questReached, flags }) {
   const quests = [];
   for (const quest of Object.values(questDefs)) {
+    if (quest.unlockedBy && !journalConditionMet(quest.unlockedBy, { flags, questReached })) continue;
     const stages = quest.stages ?? [];
     const reached = questReached.get(quest.id) ?? new Set();
     const currentStage = questStages.get(quest.id);
@@ -103,7 +176,12 @@ function journalQuests({ questDefs, questStages, questReached }) {
   return quests;
 }
 
-function journalFindings({ questDefs, questReached, journalNotes, flags }) {
+export function buildJournalFindings({
+  questDefs = {},
+  questReached = new Map(),
+  journalNotes = [],
+  flags = new Set()
+} = {}) {
   const findings = [];
   for (const quest of Object.values(questDefs)) {
     const reached = questReached.get(quest.id) ?? new Set();

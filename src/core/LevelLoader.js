@@ -9,11 +9,16 @@ import { createActor } from '../entities/ActorFactory.js';
 import { isPassableWhenOpen } from '../world/DoorSystem.js';
 import { createGroundItem } from '../world/GroundItems.js';
 import { PATROL_MODES } from '../world/PerceptionSystem.js';
+import { normalizeNpcActivity } from '../world/NpcActivity.js';
+import { hydrateActorWeaponLoadout } from '../combat/ActorWeaponLoadout.js';
 import { clampLoadingProgress } from './LoadingProgress.js';
 
 export const PATROL_MIN_DWELL = 2.4;
 const PATROL_MIN_VARIANCE = 0.6;
 const PATROL_STEP_DELAY = 3.0;
+const PATROL_ACTIVITY_DEFAULT_DURATION = 2.4;
+const PATROL_ACTIVITY_MIN_DURATION = 0.8;
+const PATROL_ACTIVITY_MAX_DURATION = 12;
 
 async function loadJson(path) {
   const response = await fetch(path);
@@ -21,6 +26,41 @@ async function loadJson(path) {
     throw new Error(`Failed to load ${path}: ${response.status} ${response.statusText}`);
   }
   return response.json();
+}
+
+const RUN_LEVEL_PATH_PATTERN = /^\.\/data\/levels\/[a-z0-9_-]+(?:\/[a-z0-9_-]+)*\.json$/;
+const CONTENT_ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
+
+async function loadReferencedRunContent(paths, currentLevelPath) {
+  const questIds = new Set();
+  const questDefs = {};
+  const codex = [];
+  const journalNotes = [];
+  const uniquePaths = [...new Set(paths ?? [])]
+    .filter((path) => path !== currentLevelPath && RUN_LEVEL_PATH_PATTERN.test(path));
+
+  for (const path of uniquePaths) {
+    try {
+      const level = await loadJson(path);
+      for (const questId of level.quests ?? []) {
+        if (CONTENT_ID_PATTERN.test(questId)) questIds.add(questId);
+      }
+      if (Array.isArray(level.codex)) codex.push(...level.codex);
+      if (Array.isArray(level.journalNotes)) journalNotes.push(...level.journalNotes);
+    } catch {
+      // A retired previously visited map must not strand a run that can still
+      // load its current map. Missing journal sources simply stop contributing.
+    }
+  }
+
+  for (const questId of questIds) {
+    try {
+      questDefs[questId] = await loadJson(`./data/quests/${questId}.json`);
+    } catch {
+      // Quest data can be retired independently of a compatible run snapshot.
+    }
+  }
+  return { questDefs, codex, journalNotes };
 }
 
 function reportLoadProgress(onProgress, progress, message, detail = '') {
@@ -105,6 +145,9 @@ function collectTradeItemIds(trade, itemIds) {
   for (const entry of trade.stock ?? []) {
     if (entry?.item) itemIds.add(entry.item);
   }
+  for (const entry of trade.buys ?? []) {
+    if (entry?.item) itemIds.add(entry.item);
+  }
 }
 
 function mergeActorAppearance(base, override) {
@@ -112,8 +155,19 @@ function mergeActorAppearance(base, override) {
   return { ...(base ?? {}), ...override };
 }
 
+function normalizePatrolActivity(value) {
+  return normalizeNpcActivity(value, {
+    defaultDuration: PATROL_ACTIVITY_DEFAULT_DURATION,
+    minDuration: PATROL_ACTIVITY_MIN_DURATION,
+    maxDuration: PATROL_ACTIVITY_MAX_DURATION
+  });
+}
+
 function clonePoint(point) {
-  return { x: point.x, y: point.y };
+  const activity = normalizePatrolActivity(point.activity);
+  return activity
+    ? { x: point.x, y: point.y, activity }
+    : { x: point.x, y: point.y };
 }
 
 function cloneEffect(effect) {
@@ -126,6 +180,54 @@ function cloneLevelTransitions(transitions) {
   return transitions
     .filter((transition) => transition && typeof transition === 'object' && !Array.isArray(transition))
     .map((transition) => JSON.parse(JSON.stringify(transition)));
+}
+
+function cloneTableaux(tableaux) {
+  if (!Array.isArray(tableaux)) return [];
+  return tableaux
+    .filter((tableau) => tableau && typeof tableau === 'object' && !Array.isArray(tableau))
+    .map((tableau) => ({
+      id: tableau.id,
+      center: { x: tableau.center?.x, y: tableau.center?.y },
+      activationRadius: positiveNumber(tableau.activationRadius, 16),
+      startDelay: nonNegativeNumber(tableau.startDelay, 0),
+      cooldown: normalizePatrolDelay(tableau.cooldown ?? { min: 30, max: 45 }, 30),
+      participants: (tableau.participants ?? [])
+        .map((participant) => ({
+          actor: participant.actor,
+          slot: { x: participant.slot?.x, y: participant.slot?.y },
+          delay: nonNegativeNumber(participant.delay, 0),
+          activity: normalizePatrolActivity(participant.activity)
+        }))
+        .filter((participant) => participant.actor && participant.activity),
+      barks: (tableau.barks ?? []).map((bark) => ({
+        at: nonNegativeNumber(bark.at, 0),
+        actor: bark.actor,
+        text: bark.text
+      }))
+    }));
+}
+
+function cloneSoundscape(soundscape) {
+  if (!soundscape || typeof soundscape !== 'object' || Array.isArray(soundscape)) return null;
+  return {
+    maxDistance: positiveNumber(soundscape.maxDistance, 18),
+    maxOneShots: Math.max(1, Math.min(8, Math.round(positiveNumber(soundscape.maxOneShots, 4)))),
+    activityCues: [...new Set((soundscape.activityCues ?? []).filter((cue) => typeof cue === 'string'))],
+    ambientBeds: (soundscape.ambientBeds ?? [])
+      .filter((bed) => bed && typeof bed === 'object' && !Array.isArray(bed))
+      .map((bed) => ({
+        id: bed.id,
+        profile: bed.profile,
+        bounds: {
+          x0: bed.bounds?.x0,
+          y0: bed.bounds?.y0,
+          x1: bed.bounds?.x1,
+          y1: bed.bounds?.y1
+        },
+        gain: Math.max(0, Math.min(1, Number.isFinite(bed.gain) ? bed.gain : 0.2))
+      }))
+  };
 }
 
 function positiveNumber(value, fallback) {
@@ -245,6 +347,7 @@ export async function loadLevel(levelPath, options = {}) {
           x,
           y,
           height: def.height,
+          variant: def.variant,
           connected: connectedBlockEdges(grid, x, y, kind)
         });
       }
@@ -305,6 +408,10 @@ export async function loadLevel(levelPath, options = {}) {
     enemy.aggroIndex = 0;
     enemy.ambientIndex = 0;
     enemy.ambientTimer = 3 + (index % 3) * 2.4;
+    enemy.conditions = spawn.conditions ?? null;
+    enemy.dormantUntilCombat = Boolean(spawn.dormantUntilCombat);
+    enemy.dormant = enemy.dormantUntilCombat;
+    enemy.weaponLoadout = JSON.parse(JSON.stringify(spawn.weapons ?? enemyData.weapons ?? []));
     return enemy;
   });
 
@@ -347,12 +454,14 @@ export async function loadLevel(levelPath, options = {}) {
     end: 0.58,
     message: 'Loading dialogue'
   });
-  const questDefs = await loadContentById(level.quests ?? [], 'quests', {
+  const currentQuestDefs = await loadContentById(level.quests ?? [], 'quests', {
     onProgress,
     start: 0.58,
     end: 0.64,
     message: 'Loading quests'
   });
+  const referencedRunContent = await loadReferencedRunContent(options.requiredLevelPaths, levelPath);
+  const questDefs = { ...referencedRunContent.questDefs, ...currentQuestDefs };
   reportLoadProgress(onProgress, 0.66, 'Loading technique index');
   const techniqueIndex = await loadJson('./data/techniques/index.json');
   const techniqueDefs = await loadContentById(techniqueIndex.ids ?? [], 'techniques', {
@@ -361,10 +470,20 @@ export async function loadLevel(levelPath, options = {}) {
     end: 0.76,
     message: 'Loading techniques'
   });
+  const companionIndex = await loadJson('./data/companions/index.json');
+  const companionDefs = await loadContentById(companionIndex.ids ?? [], 'companions', {
+    onProgress,
+    start: 0.76,
+    end: 0.78,
+    message: 'Loading companion records'
+  });
 
   // Item definitions referenced by loot.
   reportLoadProgress(onProgress, 0.78, 'Finding gear records');
   const itemIds = new Set();
+  for (const itemId of options.requiredItemIds ?? []) {
+    if (typeof itemId === 'string' && itemId.trim() !== '') itemIds.add(itemId);
+  }
   for (const object of interactables) {
     for (const entry of object.interact.loot ?? []) itemIds.add(entry.item);
     collectLockItemIds(object.interact.lock, itemIds);
@@ -372,11 +491,13 @@ export async function loadLevel(levelPath, options = {}) {
   }
   for (const data of enemyDataById.values()) {
     for (const entry of data.loot ?? []) itemIds.add(entry.item);
+    for (const entry of data.weapons ?? []) if (entry?.item) itemIds.add(entry.item);
     collectTradeItemIds(data.trade, itemIds);
   }
   for (const data of npcDataById.values()) collectTradeItemIds(data.trade, itemIds);
   for (const spawn of enemySpawns) {
     for (const entry of spawn.loot ?? []) itemIds.add(entry.item);
+    for (const entry of spawn.weapons ?? []) if (entry?.item) itemIds.add(entry.item);
   }
   for (const entry of level.groundItems ?? []) {
     if (entry.item) itemIds.add(entry.item);
@@ -384,6 +505,11 @@ export async function loadLevel(levelPath, options = {}) {
   for (const entry of playerLoadout?.items ?? []) itemIds.add(entry.item);
   for (const itemId of Object.values(playerLoadout?.equipment ?? {})) itemIds.add(itemId);
   collectDialogueItemIds(dialogueDefs, itemIds);
+  const ammunitionIndex = await loadJson('./data/catalogs/ammunition.json');
+  for (const itemId of Object.values(ammunitionIndex.families ?? {})) itemIds.add(itemId);
+  for (const companion of Object.values(companionDefs)) {
+    if (companion.serviceItem) itemIds.add(companion.serviceItem);
+  }
   const itemDefs = {};
   const itemList = [...itemIds];
   for (const [index, id] of itemList.entries()) {
@@ -391,6 +517,7 @@ export async function loadLevel(levelPath, options = {}) {
     itemDefs[id] = await loadJson(`./data/items/${id}.json`);
   }
   reportLoadProgress(onProgress, 0.94, 'Loading gear records', `${itemList.length} of ${itemList.length}`);
+  for (const enemy of enemies) hydrateActorWeaponLoadout(enemy, enemy.weaponLoadout, itemDefs);
 
   reportLoadProgress(onProgress, 0.97, 'Assembling level');
   const groundItems = (level.groundItems ?? [])
@@ -399,6 +526,8 @@ export async function loadLevel(levelPath, options = {}) {
       itemId: entry.item,
       itemDef: itemDefs[entry.item],
       count: entry.count ?? 1,
+      condition: entry.condition,
+      loaded: entry.loaded,
       x: entry.x,
       y: entry.y,
       source: entry.source ?? 'authored',
@@ -414,6 +543,7 @@ export async function loadLevel(levelPath, options = {}) {
     briefing: Array.isArray(level.briefing) ? level.briefing : null,
     briefingTitle: level.briefingTitle ?? 'FIELD WRIT',
     mood: level.mood ?? null,
+    soundscape: cloneSoundscape(level.soundscape),
     grid,
     props,
     interactables,
@@ -423,11 +553,12 @@ export async function loadLevel(levelPath, options = {}) {
     groundItems,
     itemDefs,
     techniqueDefs,
+    companionDefs,
     playerLoadout,
     dialogueDefs,
     questDefs,
-    codex: Array.isArray(level.codex) ? level.codex : [],
-    journalNotes: Array.isArray(level.journalNotes) ? level.journalNotes : [],
+    codex: [...referencedRunContent.codex, ...(Array.isArray(level.codex) ? level.codex : [])],
+    journalNotes: [...referencedRunContent.journalNotes, ...(Array.isArray(level.journalNotes) ? level.journalNotes : [])],
     hiddenRegions: Array.isArray(level.hiddenRegions) ? level.hiddenRegions : [],
     enemyVisionRadius: level.enemyVisionRadius ?? null,
     enemyVisionCone: level.enemyVisionCone ?? null,
@@ -435,6 +566,7 @@ export async function loadLevel(levelPath, options = {}) {
     combatStartBarks: level.combatStartBarks ?? [],
     combatIntro: level.combatIntro ?? [],
     levelTransitions: cloneLevelTransitions(level.levelTransitions),
+    tableaux: cloneTableaux(level.tableaux),
     combatTriggers: level.combatTriggers ?? (level.combatTrigger ? [level.combatTrigger] : []),
     victoryLog: level.victoryLog ?? null,
     onVictory: level.onVictory ?? null,

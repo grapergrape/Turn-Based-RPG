@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-hanne",
-  "title": "Hanne Rovik",
+  "title": "Joanna Corvus",
   "nodes": {
     "start": {
       "conditions": {
@@ -9,7 +9,7 @@
       },
       "else": "offended-or-hideout",
       "lines": [
-        "Hanne Rovik sorts bandages into clean and ruined piles.",
+        "Joanna Corvus sorts bandages into clean and ruined piles.",
         "\"They took the good cloth for restraints, not dressings; linen remembers how it was pulled, and so do wrists.\""
       ],
       "choices": [
@@ -18,7 +18,31 @@
           "next": "pale-bodies"
         },
         {
-          "label": "Trade for medicine",
+          "label": "Pay 1 ducat for treatment",
+          "conditions": {
+            "playerWounded": true
+          },
+          "effects": {
+            "log": "Joanna washes the wound and binds it tight. HP restored.",
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                {
+                  "item": "ducat",
+                  "count": 1,
+                  "failLog": "Joanna needs 1 ducat before she opens the clean cloth."
+                }
+              ]
+            },
+            "heal": {
+              "target": "player",
+              "amount": "full"
+            }
+          },
+          "next": "treatment-complete"
+        },
+        {
+          "label": "Trade medicine and salvage",
           "effects": {
             "trade": "catacombs-survivor-hanne"
           }
@@ -35,7 +59,7 @@
       },
       "else": "hideout",
       "lines": [
-        "Hanne keeps one hand on the bandage box.",
+        "Joanna keeps one hand on the bandage box.",
         "\"You said enough about the ones in the walls. Find another nurse if you came for judgment.\""
       ]
     },
@@ -45,7 +69,7 @@
       },
       "else": "offended-or-hideout",
       "lines": [
-        "Hanne looks you over for blood that might not be yours.",
+        "Joanna looks you over for blood that might not be yours.",
         "\"If something in the lower hall bites you, come back before pride does its work. I have needle, fire, and enough mercy to use both.\""
       ],
       "choices": [
@@ -54,13 +78,49 @@
           "next": "pale-bodies"
         },
         {
-          "label": "Trade for medicine",
+          "label": "Pay 1 ducat for treatment",
+          "conditions": {
+            "playerWounded": true
+          },
+          "effects": {
+            "log": "Joanna washes the wound and binds it tight. HP restored.",
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                {
+                  "item": "ducat",
+                  "count": 1,
+                  "failLog": "Joanna needs 1 ducat before she opens the clean cloth."
+                }
+              ]
+            },
+            "heal": {
+              "target": "player",
+              "amount": "full"
+            }
+          },
+          "next": "treatment-complete"
+        },
+        {
+          "label": "Trade medicine and salvage",
           "effects": {
             "trade": "catacombs-survivor-hanne"
           }
         },
         {
           "label": "Leave her to her work",
+          "close": true
+        }
+      ]
+    },
+    "treatment-complete": {
+      "lines": [
+        "Joanna knots the clean cloth and presses two fingers against the wrap.",
+        "\"One ducat. If it warms through, come back before it sticks.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her to the bandages",
           "close": true
         }
       ]
@@ -125,8 +185,8 @@
     },
     "ask-pity": {
       "lines": [
-        "\"Yes. God help me, yes.\"",
-        "\"Not when they come for a child. Not when they bite. But the still ones, the ones trapped in the wall with eyes that follow candlelight, I pity them.\"",
+        "\"God help me, I do.\"",
+        "\"When they come for a child or bite, I do what I must. The still ones trapped in the wall are different; their eyes follow candlelight, and I pity them.\"",
         "\"Do you?\""
       ],
       "choices": [
@@ -153,7 +213,7 @@
     },
     "pity": {
       "lines": [
-        "Hanne lets out a breath she had been holding.",
+        "Joanna lets out a breath she had been holding.",
         "\"Then remember that when the next one twitches. Fear turns every body into a target.\"",
         "\"If a person remains, even a torn piece, we owe them more than a curse and a torch.\""
       ],
@@ -174,7 +234,7 @@
     },
     "monsters": {
       "lines": [
-        "Hanne's hands stop over the bandages.",
+        "Joanna's hands stop over the bandages.",
         "\"Maybe. A gate guard with a bitten throat does not live long by pitying claws.\"",
         "\"But give every trapped soul one easy name and the torch-hand gets steady. I have seen decent people learn to like the smell.\""
       ],
@@ -219,8 +279,8 @@
     "mercy": {
       "lines": [
         "\"I have no clean answer, and I hate that.\"",
-        "\"Maybe a prayer before the hammer. Maybe keeping children from throwing stones at faces that may still feel them.\"",
-        "\"Maybe mercy is admitting we do not know where the person ends.\""
+        "\"Perhaps mercy begins with a prayer before the hammer and with children taught not to stone a face that may still feel it.\"",
+        "\"I cannot tell where the person ends. Pretending certainty would only make the hammer easier.\""
       ],
       "choices": [
         {
@@ -267,7 +327,7 @@
     },
     "offended": {
       "lines": [
-        "Hanne pulls the clean bandages out of your reach.",
+        "Joanna pulls the clean bandages out of your reach.",
         "\"Go, then. There are enough people here who can speak of the damned as if they were kindling.\"",
         "\"I have work, and I do not want your voice beside it.\""
       ]

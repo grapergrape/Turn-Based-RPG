@@ -8,6 +8,9 @@
   "quests": [
     "investigate-ash-chapel-cult"
   ],
+  "dialogue": [
+    "censure-road-writ-chapel-tent-exit"
+  ],
   "mood": {
     "floorShade": "#15130e",
     "floorShadeAlpha": 0.12,
@@ -47,27 +50,58 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "journalNotes": [
     {
-      "id": "writ-chapel-tent-exit-transition",
-      "x": 6,
-      "y": 8,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 23,
-          "y": 17
-        }
-      }
+      "flag": "censure-road-writ-chapel-peal-clause-found",
+      "text": "The scraped road clause requires a return peal after any party passes the mast. Current camp practice omits it."
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "writ-chapel-fallen-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 3,
+      "y": 2
     }
   ],
   "objects": [
+    {
+      "id": "writ-chapel-road-reliquary",
+      "kind": "rusted-reliquary",
+      "x": 2,
+      "y": 2,
+      "seed": 2613,
+      "name": "Condemned Road Reliquary",
+      "interact": {
+        "type": "container",
+        "log": "Red disposal cord circles the road reliquary where rust broke the seal around a saint token and dry dressing.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      }
+    },
     {
       "kind": "canvas-tent-flap",
       "x": 6,
       "y": 9,
       "id": "writ-chapel-exit-flap",
-      "name": "Tent Flap"
+      "name": "Tent Flap",
+      "clickAreas": [
+        { "x0": 6, "y0": 9, "x1": 6, "y1": 9 }
+      ],
+      "interactionMarker": { "x": 6, "y": 8 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-writ-chapel-tent-exit"
+      }
     },
     {
       "kind": "chapel-banner",
@@ -83,7 +117,38 @@
       "y": 4,
       "blocking": true,
       "id": "writ-chapel-lectern",
-      "seed": 2413
+      "seed": 2413,
+      "name": "Route Lectern",
+      "interact": {
+        "type": "note",
+        "log": "A route order lies open beneath the prayer sheet. Its bell clause ends where the wax begins.",
+        "search": {
+          "id": "writ-chapel-peal-clause-search",
+          "title": "Route Lectern",
+          "lines": [
+            "The prayer sheet repeats one line from the order, but the response phrase has been scraped from both."
+          ],
+          "useLabel": "Read the route order",
+          "methods": [
+            {
+              "id": "reconstruct-missing-peal-clause",
+              "label": "Restore the response phrase",
+              "field": "doctrine",
+              "dc": 45,
+              "successLog": "The missing phrase requires a return peal after any road party passes the mast. Camp practice now ends at the outward call.",
+              "failLog": "The scraped phrase could fit two road rites. You cannot defend either reading.",
+              "success": {
+                "setFlag": "censure-road-writ-chapel-peal-clause-found"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Route Order",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "chapel-font",

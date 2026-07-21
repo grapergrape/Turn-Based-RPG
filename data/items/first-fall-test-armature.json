@@ -1,0 +1,65 @@
+{
+  "id": "first-fall-test-armature",
+  "name": "First Fall Test Armature",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "experimental accelerator",
+  "rarity": "epic",
+  "weight": 3.8,
+  "groundModel": "accelerator-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Pre-Fall experimental",
+    "origin": "Unknown civil laboratory",
+    "factions": [
+      "unknown-civil-laboratory"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "experimental accelerator"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 9,
+        "range": 8,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 12,
+        "range": 8,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 7,
+      "defaultLoaded": 7,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 88
+  },
+  "description": "An unmarked accelerator with resin-sealed coils and handwritten calibration numbers beneath the stock. Modern artificers can maintain it, but none can copy the core."
+}

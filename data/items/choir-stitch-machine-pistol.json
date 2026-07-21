@@ -1,0 +1,65 @@
+{
+  "id": "choir-stitch-machine-pistol",
+  "name": "Choir Stitcher",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "machine pistol",
+  "rarity": "common",
+  "weight": 0.7,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Choir Wardens",
+    "factions": [
+      "choir-wardens"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "machine pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 5,
+        "range": 4,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "short-burst",
+        "name": "Short Burst",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 7,
+        "range": 4,
+        "accuracyBonus": -10,
+        "ammoCost": 3,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-cartridge",
+      "capacity": 18,
+      "defaultLoaded": 18,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "A selective-fire pistol braced by a folding wire stock. Its short bursts sound like a needle passing through stiff cloth."
+}

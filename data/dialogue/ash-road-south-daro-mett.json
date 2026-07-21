@@ -1,0 +1,204 @@
+{
+  "id": "ash-road-south-daro-mett",
+  "title": "Factor Darius Secundus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Darius Secundus checks the medicine wagon’s cooler seal before he looks up.",
+        "\"If Susanna sent you about water, begin with the distance. I can put sealed cisterns on the road. I cannot shorten the road.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what a cistern service provides",
+          "next": "supply"
+        },
+        {
+          "label": "Hear the Chain contract",
+          "next": "contract",
+          "effects": {
+            "setFlag": "heard-daro-mett-terms"
+          }
+        },
+        {
+          "label": "Ask about the freight yard",
+          "next": "yard-questions"
+        },
+        {
+          "label": "Leave the freight yard",
+          "close": true
+        }
+      ]
+    },
+    "yard-questions": {
+      "lines": [
+        "Darius keeps one hand on the cooler seal while he waits."
+      ],
+      "choices": [
+        {
+          "label": "Ask how medicine shares the road",
+          "next": "medicine"
+        },
+        {
+          "label": "Ask about the road losses",
+          "next": "losses"
+        },
+        {
+          "label": "Request an audit of the pump ledger",
+          "conditions": {
+            "flag": "heard-chain-road-losses"
+          },
+          "next": "ledger",
+          "effects": {
+            "setFlag": [
+              "morrow-ledger-audit-requested",
+              "morrow-freight-rear-access"
+            ],
+            "questUpdate": {
+              "quest": "debt-that-drinks",
+              "stage": "audit-ledger",
+              "log": "Darius permits an audit of the freight-house surety ledger."
+            }
+          }
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "supply": {
+      "lines": [
+        "Darius opens a route ledger beside the cooler housing. Wax marks split water loads from the medicine route. Purifier salt has its own column.",
+        "\"A ration is not a repair. It is water that arrives on schedule, provided the road and the contract both hold.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask the price",
+          "next": "contract"
+        },
+        {
+          "label": "Ask how medicine shares the road",
+          "next": "medicine"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let him close the ledger",
+          "close": true
+        }
+      ]
+    },
+    "contract": {
+      "lines": [
+        "\"The Chain supplies sealed cisterns and purifier salt. We guard the ration taps, while South Measure assigns service years against the pump note.\"",
+        "\"I can reduce the old rate. I cannot send wagons on gratitude.\""
+      ],
+      "choices": [
+        {
+          "label": "That is labor under threat",
+          "next": "ownership"
+        },
+        {
+          "label": "Ask what the old rate bought",
+          "next": "losses"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Refuse to sign anything yet",
+          "close": true
+        }
+      ]
+    },
+    "medicine": {
+      "lines": [
+        "\"This wagon crosses Red Tithe Ford with suppressant. Give Junia a working cooling jacket and the relief bay can hold that stock.\"",
+        "\"Then the cooled wagon carries water. Until then, every cistern load delays medicine somewhere else.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how the annex changes the route",
+          "next": "exchange"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the route unresolved",
+          "close": true
+        }
+      ]
+    },
+    "losses": {
+      "lines": [
+        "Darius taps three names cut into the wagon rail.",
+        "\"One driver and two guards. The ford kept them, so the Chain paid their households and sent the next team anyway.\"",
+        "\"That record does not make our terms kind. It makes the delivery real.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Read the names",
+          "close": true
+        }
+      ]
+    },
+    "ledger": {
+      "lines": [
+        "\"Audit it when the freight house opens. You will find padded repairs and real burials in the same columns.\"",
+        "\"If you revise the debt, revise the losses too. A clean page is usually a dishonest one.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Keep the audit request",
+          "close": true
+        }
+      ]
+    },
+    "ownership": {
+      "lines": [
+        "\"The Chain owns no one here. It owns the pump note and the wagons.\"",
+        "Darius rests one palm on the cooler case.",
+        "\"Hunger handles ownership without asking my leave. I offer terms because hunger does not.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the answer where it is",
+          "close": true
+        }
+      ]
+    },
+    "exchange": {
+      "lines": [
+        "\"The annex cooling jacket could hold the suppressant here if Junia restores it. Lucia can certify the patch.\"",
+        "\"Do that, and one argument against a regular water run disappears. The contract does not.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Go inspect the annex jacket",
+          "close": true
+        }
+      ]
+    }
+  }
+}

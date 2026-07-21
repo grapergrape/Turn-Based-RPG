@@ -26,7 +26,7 @@
   "journalNotes": [
     {
       "flag": "heard-bell-register-read",
-      "text": "Hessa Marr recorded deliberate responses from the calcified people in the graveyard."
+      "text": "Keziah Fullo recorded deliberate responses from the calcified people in the graveyard."
     },
     {
       "flag": "heard-bell-docket-read",
@@ -34,7 +34,7 @@
     },
     {
       "flag": "heard-bell-truth-joined",
-      "text": "Sava Rell reacted to Hallowfen before its bells sounded."
+      "text": "Sapphira Rufa reacted to Hallowfen before its bells sounded."
     },
     {
       "flag": "heard-bell-resolved-vigil",
@@ -46,7 +46,7 @@
     },
     {
       "flag": "heard-bell-resolved-evidence",
-      "text": "Hessa's register and the mortuary docket are in your pack."
+      "text": "Keziah's register and the mortuary docket are in your pack."
     }
   ],
   "tiles": [
@@ -80,6 +80,15 @@
     "enemies": [],
     "npcs": []
   },
+  "groundItems": [
+    {
+      "id": "vigil-chapel-fallen-ducats",
+      "item": "ducat",
+      "count": 2,
+      "x": 1,
+      "y": 6
+    }
+  ],
   "objects": [
     {
       "id": "vigil-window-west",
@@ -123,7 +132,7 @@
       "x": 0,
       "y": 2,
       "blocking": true,
-      "name": "Hessa's Concealed Panel",
+      "name": "Keziah's Concealed Panel",
       "doorGroup": "vigil-hidden-panel",
       "closedWhenFlags": [
         "heard-bell-register-rehidden"
@@ -137,14 +146,14 @@
         "log": "The soot-lined stone draws away from a narrow wall compartment.",
         "lock": {
           "id": "hessa-concealed-panel-lock",
-          "title": "Hessa's Concealed Panel",
+          "title": "Keziah's Concealed Panel",
           "lines": [
             "A fitted stone sits behind the chair line. Soot fills a narrow seam around it."
           ],
           "methods": [
             {
               "id": "use-hessas-ring",
-              "label": "Set Hessa's mourning ring in the socket",
+              "label": "Set Keziah's mourning ring in the socket",
               "requiresItem": "mourning-ring",
               "conditions": {
                 "flag": "looted-ilyen-marr-grave"
@@ -286,7 +295,7 @@
       "y": 4,
       "blocking": true,
       "orient": "ne",
-      "name": "Hessa's Chair",
+      "name": "Keziah's Chair",
       "interact": {
         "type": "note",
         "dialogue": "long-ash-vigil-dusk-watch",
@@ -356,8 +365,20 @@
       "doorGroup": "vigil-chapel-exit",
       "doorLeaf": "north",
       "wallPlane": "sw",
+      "clickAreas": [
+        {
+          "x0": 4,
+          "y0": 8,
+          "x1": 5,
+          "y1": 8
+        }
+      ],
+      "interactionMarker": {
+        "x": 4,
+        "y": 7
+      },
       "interact": {
-        "type": "door",
+        "type": "secret-exit",
         "dialogue": "long-ash-vigil-chapel-exit",
         "log": "Cold graveyard air enters through the open doors."
       }
@@ -371,12 +392,7 @@
       "name": "Vigil Chapel Doors",
       "doorGroup": "vigil-chapel-exit",
       "doorLeaf": "south",
-      "wallPlane": "sw",
-      "interact": {
-        "type": "door",
-        "dialogue": "long-ash-vigil-chapel-exit",
-        "log": "Cold graveyard air enters through the open doors."
-      }
+      "wallPlane": "sw"
     },
     {
       "kind": "paper-scraps",

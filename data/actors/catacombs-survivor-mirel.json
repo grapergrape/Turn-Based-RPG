@@ -1,13 +1,16 @@
 {
   "id": "catacombs-survivor-mirel",
-  "name": "Mirel Ardent",
+  "name": "Priscilla Afer",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Seamstress and quartermaster",
   "appearance": {
     "body": "compact",
     "outfit": "settlement-quartermaster",
-    "gear": ["ledger", "tool-roll"],
+    "gear": [
+      "ledger",
+      "tool-roll"
+    ],
     "accent": "bare-brown"
   },
   "stats": {

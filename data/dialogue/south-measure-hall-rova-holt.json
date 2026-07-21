@@ -1,0 +1,55 @@
+{
+  "id": "south-measure-hall-rova-holt",
+  "title": "Ruth Carbo",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Ruth lays an arrival-fire tally across the edge of the older water roll."
+      ],
+      "choices": [
+        {
+          "label": "Say the roll counts households, not tents",
+          "next": "houses"
+        },
+        {
+          "label": "Ask what change she wants",
+          "next": "mouths"
+        },
+        {
+          "label": "Leave the two counts touching",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "houses": {
+      "lines": [
+        "\"Then bring the rule outside and show me which piece of canvas turns a family into weather. The mouths beneath it do not drink less.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how to count the arrivals",
+          "next": "mouths"
+        },
+        {
+          "label": "Withdraw from the tally",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "mouths": {
+      "lines": [
+        "\"Count the people standing here when the tap opens, including those who arrived after a clerk went home.\"",
+        "Ruth keeps one hand on the old roll. \"Nobody in the old rows loses a cup for admitting we exist.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Ruth with both tallies",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

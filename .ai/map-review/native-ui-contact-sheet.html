@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>
+html,body{margin:0;background:#111;color:#c8b99a;font:14px monospace}
+#grid{display:grid;grid-template-columns:repeat(3,400px);gap:12px;padding:12px}
+figure{margin:0;background:#050505;border:1px solid #3a2d22}
+img{display:block;width:400px;height:300px;object-fit:contain;image-rendering:pixelated}
+figcaption{padding:5px 8px;text-align:center;text-transform:uppercase}
+</style>
+</head>
+<body>
+<main id="grid"></main>
+<script type="module">
+const groups = {
+  core: [
+    'ui-hud', 'ui-sneak', 'ui-combat', 'ui-context', 'ui-creation', 'ui-primary',
+    'ui-dialogue', 'ui-briefing-first', 'ui-briefing-final',
+    'ui-loading-0', 'ui-loading-50', 'ui-loading-100'
+  ],
+  inventory: [
+    'ui-inventory', 'ui-inventory-action', 'ui-inventory-split', 'ui-inventory-repair',
+    'ui-loot', 'ui-trade-stock', 'ui-trade-player'
+  ],
+  cursors: [
+    'ui-cursor-move', 'ui-cursor-inspect', 'ui-cursor-talk', 'ui-cursor-use',
+    'ui-cursor-loot', 'ui-cursor-attack', 'ui-cursor-blocked', 'ui-cursor-unknown'
+  ],
+  journal: [
+    'journal-quests', 'journal-map', 'journal-notes', 'journal-factions',
+    'journal-character', 'journal-scars', 'journal-techniques'
+  ],
+  turns: [
+    'journal-turn-back-02', 'journal-turn-back-05', 'journal-turn-back-08',
+    'journal-turn-forward-02', 'journal-turn-forward-05', 'journal-turn-forward-08'
+  ]
+};
+const group = new URLSearchParams(location.search).get('group') ?? 'core';
+const names = groups[group];
+if (!names) throw new Error(`Unknown contact-sheet group: ${group}`);
+const base = '/.ai/visual-audit/2026-07-17-native-2x-ui/after/';
+const grid = document.getElementById('grid');
+const images = names.map((name) => {
+  const figure = document.createElement('figure');
+  const img = document.createElement('img');
+  img.src = `${base}${name}.png`;
+  img.alt = name;
+  const caption = document.createElement('figcaption');
+  caption.textContent = name;
+  figure.append(img, caption);
+  grid.append(figure);
+  return img;
+});
+await Promise.all(images.map((img) => img.decode()));
+document.title = 'CAPTURE-READY';
+</script>
+</body>
+</html>

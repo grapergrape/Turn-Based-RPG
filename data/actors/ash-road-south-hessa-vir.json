@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-hessa-vir",
+  "name": "Keziah Valens",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Medicine cooler watcher",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-nurse",
+    "gear": [
+      "medicine-bag"
+    ],
+    "accent": "pale-hood"
+  }
+}

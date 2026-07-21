@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-odran-tent-exit",
+  "title": "Father Augustine's Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Camp light shows under the flap beside Augustine's cot."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave Father Augustine's tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 16, "y": 19 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside Augustine's tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

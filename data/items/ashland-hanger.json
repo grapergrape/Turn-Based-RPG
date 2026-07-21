@@ -1,0 +1,46 @@
+{
+  "id": "ashland-hanger",
+  "name": "Ashland Hanger",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "sword",
+  "rarity": "common",
+  "weight": 2.1,
+  "groundModel": "sword",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Ashland Militias",
+    "factions": [
+      "ashland-militias"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "sword",
+    "roles": [
+      "melee",
+      "sword",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Cut",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "A short chopping sword forged from wagon spring. Its hide grip can be replaced beside any road fire."
+}

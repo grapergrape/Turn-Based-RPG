@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-perr-varo",
+  "name": "Tobit Faber",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Noa’s younger brother",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "teen",
+    "outfit": "settlement-runner",
+    "gear": [
+      "thin-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

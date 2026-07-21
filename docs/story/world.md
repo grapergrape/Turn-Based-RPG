@@ -6,7 +6,7 @@ The canonical setting is defined by `docs/lore/the_host_story_bible.md`. This fi
 
 The game takes place roughly 130 years after **the Descent**, when the infected research-pilgrimage vessel _Eschaton's Mercy_ broke apart over Earth and seeded the world with the Europa organism now called **The Host**. Humanity survived the first apocalypse because the Bloom stopped. That halt is called **the Stilling**.
 
-The public does not know the truth. The Holy Remnant calls the Stilling divine mercy. The Lumen Compact calls it a biological limit. The Choir of the Open Wound calls it a pause before communion. The campaign reveals that the Stilling was an artificial lock created by Dr. Elian Sorell to trap The Host inside **the Vale Imprint**, the inherited psychic-biological pattern left by Father Marius Vale. Sorell saved humanity by turning Vale's fear into a prison. Vale knows this, and the prison is also his torture.
+The public does not know the truth. The Holy Remnant calls the Stilling divine mercy. The Lumen Compact calls it a biological limit. The Choir of the Open Wound calls it a pause before communion. The campaign reveals that the Stilling was an artificial lock created by Dr. Diodorus Seneca to trap The Host inside **the Vale Imprint**, the inherited psychic-biological pattern left by Father Marius Vale. Seneca saved humanity by turning Vale's fear into a prison. Vale knows this, and the prison is also his torture.
 
 The current era is the **Age of Ashen Cities**. Earth is broken but alive. Cities still farm, trade, pray, repair walls, hold courts, raise children, and make ugly compromises. The old stability is failing: dormant Host tissue pulses again, Choir Trees speak new phrases, minor exposures are becoming more severe, and low-frequency signals are moving beneath old crash sites.
 
@@ -14,8 +14,8 @@ The campaign shape is narrow, wide, narrow, abyss:
 
 - **Act I:** Ash Road and Hallowfen. Local horror, siege pressure, and the first crack in doctrine.
 - **Act II:** The Broken World. The largest act, where the player explores towns, factions, side quests, companions, and the Three Witnesses.
-- **Act III:** The Choir Revealed. The cult becomes a society and a strategic threat, ending with Pontifex Severian III's abduction and the Devil manifestation.
-- **Act IV:** Woundfall. The final descent to Sorell and Father Vale, where the player decides what survives of the lock.
+- **Act IV:** The Choir Revealed. The cult becomes a society and a strategic threat, ending with Pontifex Celestine IV's abduction and the Devil manifestation.
+- **Act IV:** Woundfall. The final descent to Seneca and Father Vale, where the player decides what survives of the lock.
 
 ## Canon Rules
 
@@ -65,7 +65,7 @@ The Solar Ecclesiate collapsed. Off-world colonies abandoned Earth. The first ap
 
 The Bloom stopped. Dormant flesh hardened, spores weakened, rivers cleared, and active growth became dangerous but geographically limited. The hosts caught in the freeze did not die; they calcified mid-transformation, still faintly aware, which is why dormant Host sites are treated as sleeping rather than spent. Infection after the Stilling still opens new victims, but it no longer catches and spreads on its own the way it did in the Bloom. The Stilling allowed humanity to survive.
 
-The hidden truth is that Dr. Elian Sorell used old Ecclesiate systems, machine choirs, orbital mirrors, confession networks, and infected tissue relays to trap The Host in a recursive version of Vale's nightmare. Humanity survived because The Host was imprisoned inside one priest's Hell.
+The hidden truth is that Dr. Diodorus Seneca used old Ecclesiate systems, machine choirs, orbital mirrors, confession networks, and infected tissue relays to trap The Host in a recursive version of Vale's nightmare. Humanity survived because The Host was imprisoned inside one priest's Hell.
 
 ### The Age of Ashen Cities
 
@@ -85,11 +85,11 @@ Hallowfen must feel human before it becomes horrific, but its human life is a la
 
 Act I asks what happens to Hallowfen. The player can help its people break the siege, steer attackers away long enough for partial evacuation, or abandon the town. If abandoned, later reports reveal that the Choir crucified the whole town upside down to decorate its new temple-capital at the heart of the holy land.
 
-The discovery beneath Hallowfen still leads into the wider campaign, but not as the first Act I reveal. After Hallowfen's fate is settled, the blackened _Eschaton's Mercy_ data core can carry Sorell's damaged warning that the Stilling was a lock, the lock is failing, and the listener must find the Three Witnesses. The recording gives puzzle clues, not clean coordinates.
+The discovery beneath Hallowfen still leads into the wider campaign, but not as the first Act I reveal. After Hallowfen's fate is settled, the blackened _Eschaton's Mercy_ data core can carry Seneca's damaged warning that the Stilling was a lock, the lock is failing, and the listener must find the Three Witnesses. The recording gives puzzle clues, not clean coordinates.
 
 ### Ash Roads
 
-The early-game travel region between Hallowfen's wall, quarantine chapels, small Free City settlements, abandoned suburbs, road shrines, salvage stops, and the outskirts of Veyr's Gate. The Ash Roads introduce practical survival, faction checkpoints, caravan politics, and the first signs that old Host sites are waking.
+The early-game travel region between Hallowfen's wall, quarantine chapels, small Free City settlements, abandoned suburbs, road shrines, salvage stops, and the outskirts of Spindle Gate. The Ash Roads introduce practical survival, faction checkpoints, caravan politics, and the first signs that old Host sites are waking.
 
 The current playable slice, **Ash Chapel Breach**, fits here as a roadside quarantine chapel encounter. It is not the whole Hallowfen sequence, but it should support the same mood: old faith, failed quarantine, cartel scavenging, captured bells, and active Host tissue.
 
@@ -98,15 +98,15 @@ South Measure. The settlement began as a Bloom-era refugee receiving field and
 has remained legally temporary for more than a century. The Lumen Compact
 inherited its medical rolls and admits a few residents at a time while deferring
 the community's status. The Morrow Chain keeps its water parts and freight
-moving, then turns that need into debt rule. Brother Tarn appears there after
+moving, then turns that need into debt rule. Brother Cassian appears there after
 tracking an impossible Host-touched Penitent to Ash Chapel. The full location
 plan lives in `docs/story/locations/ash-road-south.md`.
 
-### Veyr's Gate
+### Spindle Gate
 
-The best early-game hub. Veyr's Gate is a vertical trade city built around the anchor ruins of a destroyed space elevator. Every faction has spies there. Water rights, gate access, forged papers, relic weapons, suppressants, forbidden books, and black clinics drive its politics.
+The best early-game hub. Spindle Gate is a vertical trade city built around the anchor ruins of a destroyed space elevator. Every faction has spies there. Water rights, gate access, forged papers, relic weapons, suppressants, forbidden books, and black clinics drive its politics.
 
-Veyr's Gate should be noisy, crowded, corrupt, useful, and alive. It is the place where the player's secret can be sold, protected, leaked, or weaponized.
+Spindle Gate should be noisy, crowded, corrupt, useful, and alive. It is the place where the player's secret can be sold, protected, leaked, or weaponized.
 
 ### Sanctum Aurelian
 
@@ -130,13 +130,13 @@ The Bell in the Water archive fragment lies in a submerged section of _Eschaton'
 
 A dormant Bloom zone where transformed bodies have rooted into the soil like trees. The Orchard can heal, poison, feed, or prophesy depending on who harvests it and why. The Remnant wants to burn it. The Compact wants to study it. The Choir makes pilgrimages there. Local villages quietly rely on it.
 
-The Pale Orchard is an important Act II or Act IV site depending on route. It can prove that dormant Host tissue is waking and that Sorell's lock is failing, but it is no longer the required Act III climax.
+The Pale Orchard is an important Act II or Act IV site depending on route. It can prove that dormant Host tissue is waking and that Seneca's lock is failing, but it is no longer the required Act III climax.
 
 ### Woundfall
 
 The largest crash scar of _Eschaton's Mercy_ and the Act IV pilgrimage region. Woundfall is not just a dungeon. It is a wasteland of ship metal, dormant Host growth, upside-down chapels, broken pressure doors, black glass, ancient distress hymns, and rooms preserved as if time stopped.
 
-At the center lies **the Nave**, the remains of the ship's chapel and command spine. The Nave is the probable center of the planetary lock and the place where the player learns the truth about Sorell.
+At the center lies **the Nave**, the remains of the ship's chapel and command spine. The Nave is the probable center of the planetary lock and the place where the player learns the truth about Seneca.
 
 ### The Black Reliquary
 
@@ -172,7 +172,7 @@ A Host-worshipping movement that calls infection confession and Host creatures i
 
 The Choir wants to restart the Bloom, or in its own language, finish the hymn.
 
-By Act III, the Choir's larger rite is revealed. Ysolde's people harvest living Host matter into barrels and vats. They believe full immersion of a symbolically worthy body can summon Satan. Their highest prize is Pontifex Severian III, because immersing the Remnant's pope lets the Host answer the Church's own fear of Hell. The hidden truth is that the resulting Devil is not proof of the supernatural. It is the Host making doctrine into flesh.
+By Act III, the Choir's larger rite is revealed. Thecla's people harvest living Host matter into barrels and vats. They believe full immersion of a symbolically worthy body can summon Satan. Their highest prize is Pontifex Celestine IV, because immersing the Remnant's pope lets the Host answer the Church's own fear of Hell. The hidden truth is that the resulting Devil is not proof of the supernatural. It is the Host making doctrine into flesh.
 
 ### Penitent Engines
 
@@ -208,7 +208,6 @@ Do not write the world as "religion bad, science good" or "mutation equals purit
 
 ## Open Design Questions
 
-- Is the final game title **The Vale Imprint**, or is that a subtitle?
 - Is the player character a defined person or a customizable field-squad leader?
 - Which faction, if any, initially funds the player's squad?
 - Does the shipped endgame remain on Earth, or does it include direct Europa contact?

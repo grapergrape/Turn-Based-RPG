@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-nessa",
-  "title": "Nessa Quay",
+  "title": "Naomi Nauta",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,7 +8,7 @@
       },
       "else": "hideout",
       "lines": [
-        "Nessa has already lined clean jars near the door, each one covered with cloth.",
+        "Naomi has already lined clean jars near the door, each one covered with cloth.",
         "\"The font is ruined. The cistern may be clean if they did not know where to look. I know where to look.\""
       ],
       "choices": [
@@ -32,8 +32,8 @@
     },
     "hideout": {
       "lines": [
-        "Nessa sits beside three stoppered jars and a knife.",
-        "\"I kept the water ledger. Soldiers used to joke that I weighed every swallow. I did, too. Walls do not stand on prayers alone.\"",
+        "Naomi sits beside three stoppered jars and a knife.",
+        "\"I kept the water ledger, and soldiers joked that I weighed every swallow. They were right. Walls do not stand on prayers alone.\"",
         "\"No soldier has laughed here in weeks.\""
       ],
       "choices": [
@@ -70,7 +70,7 @@
           "next": "cistern"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -106,7 +106,7 @@
           "next": "font"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -134,11 +134,11 @@
     "sure": {
       "lines": [
         "\"I am sure of covered jars, boiled cloth, and knives kept clean.\"",
-        "\"Everything else can argue with Selka.\""
+        "\"Everything else can argue with Susanna.\""
       ],
       "choices": [
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -158,7 +158,7 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         }
       ]

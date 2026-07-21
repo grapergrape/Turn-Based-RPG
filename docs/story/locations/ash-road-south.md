@@ -7,7 +7,7 @@ location after Censure Road Camp. It covers the refugee settlement called
 **South Measure**, its history, present rulers, principal characters, critical
 path, side stories, and later consequences.
 
-The planned level remains 130 by 80 tiles. The route continues from Censure
+The implemented level is 130 by 80 tiles. The route continues from Censure
 Road Camp through Ash Road South and then into Old Pilgrim Way. Hallowfen is the
 destination pulling every argument north, but it is not the next map exit.
 
@@ -16,12 +16,16 @@ Ash Road South has four jobs:
 - Put a permanent human settlement behind the word *refugee*.
 - Introduce the Morrow Chain and the Lumen Compact through what they provide
   and what they keep.
-- Pay off the Penitent Engine traces at Ash Chapel through Brother Tarn.
+- Pay off the Penitent Engine traces at Ash Chapel through Brother Cassian.
 - Show another material sign that something near Hallowfen is waking old Host
   tissue without explaining the Stilling or the Vale Imprint.
 
 The central ordinary need is clean water. Citizenship, evidence, cartel debt,
 and Penitent doctrine all press on that need.
+
+The implemented surface census, voice ledger, ambient barks, conversations,
+patrols, and trader coverage are recorded in
+`docs/story/locations/ash-road-south-cast.md`.
 
 ## Canon boundaries
 
@@ -41,14 +45,14 @@ The following points are fixed for this location:
 - The Morrow Chain keeps South Measure supplied and defended. Its rule is also
   coercive. Removing the Chain without replacing its wagons would leave people
   hungry and expose the road to the Red Tithe.
-- Brother Tarn is a Penitent Engine. He is not an Iron Penitent and does not
+- Brother Cassian is a Penitent Engine. He is not an Iron Penitent and does not
   answer to the Holy Remnant.
-- Tarn owns the heavy tread found at Ash Chapel. Existing chapel evidence says
+- Cassian owns the heavy tread found at Ash Chapel. Existing chapel evidence says
   he stopped at the threshold and turned away. He did not search the nave.
-- Tarn goes toward Hallowfen because a Host-touched Penitent inside Ash Chapel
+- Cassian goes toward Hallowfen because a Host-touched Penitent inside Ash Chapel
   transmitted a retired Hallowfen checkpoint reply code through its vox.
 - Player-facing scenes do not name Europa, Father Vale, the Vale Imprint,
-  Sorell, or the true mechanism of the Stilling.
+  Seneca, or the true mechanism of the Stilling.
 - No outcome resolves South Measure's exclusion forever. The player decides who
   controls its immediate survival and what evidence leaves the road.
 
@@ -120,27 +124,28 @@ their household surety to whoever remains.
 
 The settlement is under pressure before the player arrives.
 
-The water condenser has begun shedding metal into its governor housing. It can
-run at half pressure for a few more days, but the lines already close before the
-last rows receive their share.
+The water condenser is mechanically sound. Noa Faber has throttled it because
+full flow drives a patterned pulse through the buried north feed. The pulse
+repeats a retired Hallowfen checkpoint reply and shakes the sealed admission
+wicket below the court. Reduced pressure leaves the last rows short of water.
 
 A Compact reintegration mission has set up clean white canvas beside the old
-intake yard. Assessor Yara Quell offers individual placement interviews and a
-replacement governor coil. Her price is a new household exposure census,
-permanent access to the buried records vault, and consent to remove any active
-Host material found below it.
+intake yard. Assessor Aurelia Priscian can assign clinicians and flow monitors to keep
+the condenser at full output. Her office ties that staff allocation to a new
+household exposure census and access to the buried records.
 
-Factor Daro Mett refuses those terms. The Morrow Chain has an old field
-governor in its freight yard, but he reserved it for the medicine wagon that
-must cross Red Tithe country. He will surrender it if South Measure signs a new
-water contract that turns household debt into fixed service years.
+Factor Darius Secundus offers a different answer. The Morrow Chain can close the old
+feed and supply a stable ration in sealed cisterns with purifier salt. The road
+and the ration then become part of a service contract. Restoring the annex
+cooling jacket can free a medicine wagon for this work without moving any pump
+hardware.
 
-Steward Ressa Venn rejects both offers. She believes a repair can be built from
-the original intake works beneath the camp. Opening those works risks the
-calcified dead sealed there since the Stilling.
+Steward Susanna Fontana wants a local route on the table before accepting either
+outside offer. The old relief return can carry a smaller isolated loop if its
+valve order is recovered and the Intake Clerk is made quiet.
 
-Brother Tarn stands beside the failing condenser because its low pipe tremor
-matches part of the signal he heard at Ash Chapel.
+Brother Cassian stands beside the throttled condenser because the buried reply
+matches the signal he heard at Ash Chapel.
 
 ## Life in a place still called temporary
 
@@ -192,9 +197,9 @@ pump is control of the settlement.
 ### Morrow freight yard
 
 Chain wagons, repair stands, grain cages, and guard bunks occupy hard ground on
-the west side. Daro Mett's office is a wagon body fixed onto stone piers. The
-hidden field governor is packed inside a medicine cart, exactly where he says
-it is needed.
+the west side. Darius Secundus's office is a wagon body fixed onto stone piers. The
+medicine cart and cistern schedules make the tradeoff visible: a cooled wagon
+assigned to water cannot carry suppressant on the same run.
 
 ### Compact counting canvas
 
@@ -211,8 +216,417 @@ So are the handprints beneath it.
 ### North road
 
 The road leaves toward Old Pilgrim Way. South Measure residents maintain its
-first markers but cannot legally travel beyond the next warden post without a
-freight seal, a religious writ, or forged entry paper.
+first markers but cannot legally pass the Quarantine Farms without a freight
+seal, a religious writ, or forged entry paper.
+
+## Level package and spatial plan
+
+### Scope and tile budget
+
+Ash Road South is implemented as one large settlement surface and nine helper
+maps. The surface is **130 by 80 tiles**, or 10,400 tiles. The helper maps
+add 8,004 tiles, bringing the whole South Measure package to **18,404 authored
+tiles**.
+
+The surface carries travel, ordinary life, public bargaining, and the final
+assembly. A separate helper map is used only when a roof, restricted room,
+subterranean route, or major state change needs it. Most stalls and work areas
+remain on the surface. South Measure should feel like one town, not a menu of
+small rooms.
+
+| Runtime level | Size | Tiles | Purpose |
+| --- | ---: | ---: | --- |
+| `ash-road-south` | 130x80 | 10,400 | Main road, South Measure exterior, faction yards, homes, market, water court, and north departure |
+| `south-measure-intake-undercroft` | 58x42 | 2,436 | Main dungeon, original records, isolation manifold, Intake Clerk, and Hallowfen-facing signal |
+| `south-measure-relief-drain` | 44x20 | 880 | Buried service route linking the collapsed drain, Morrow repair trench, maintenance annex, and undercroft |
+| `south-measure-relief-maintenance-annex` | 40x26 | 1,040 | Partly abandoned industrial repair hall with tools, bypass records, and a cooling jacket |
+| `south-measure-morrow-freight-house` | 36x22 | 792 | Cartel office, contract archive, guard bunks, bonded stores, and route room |
+| `south-measure-compact-clinic` | 36x24 | 864 | Field hospital, applicant processing, medical archive, isolation room, and flow monitor |
+| `south-measure-measure-hall` | 34x22 | 748 | Council room, slate school, communal kitchen, public records, and Last Canvas storage |
+| `south-measure-varo-house` | 22x16 | 352 | Noa's family home and small pump workshop |
+| `south-measure-hidden-rows` | 30x18 | 540 | Concealed homes, private water branch, treatment room, and grave-strip exit |
+| `south-measure-charity-cellar` | 22x16 | 352 | Joanna's reserve supplies, suspect medicine, and evidence of the Choir courier route |
+
+Natural caves are not part of this location. South Measure stands on an old
+receiving field beside engineered drainage works. Its underground exploration
+comes from culverts, pump channels, sealed offices, and lime-lined rooms. An
+unrelated mine or monster cave would weaken the location's history.
+
+The relief maintenance annex fills the abandoned-factory role without adding a
+large industry that the camp never had. It repaired pumps, carts, screening
+frames, and field generators during the Bloom evacuation. The Morrow Chain now
+uses the sound front bays. The rear remains fire-damaged and partly sealed.
+
+### Surface orientation
+
+Map north is the top edge. The Censure road enters at the south edge near
+`(65, 79)`. Old Pilgrim Way leaves at the north edge near `(65, 0)`. The old
+intake road remains the visual spine between them.
+
+```text
+                         NORTH: OLD PILGRIM WAY
+
+      RELIEF ANNEX         NORTH VERGE             GRAVE STRIP
+      MORROW YARD          OLD MEASURE GATES       COMPACT CLINIC
+      MORROW YARD          WATER COURT             ROPE ROWS
+      NEW ARRIVAL FIRES    SOUTH CHAIN ROAD         CHARITY COT
+
+                         SOUTH: CENSURE ROAD CAMP
+```
+
+The player should see the condenser and the old screening frames from the
+south chain. The Compact's pale canvas sits to the right of the road. Morrow
+wagons and grain cages mass on the left. This makes the political choice
+readable before anyone explains it.
+
+### Surface districts and coordinates
+
+Coordinates are planning bounds, not final collision rectangles. Paths,
+ditches, fence gaps, and building silhouettes can cross their edges during the
+layout pass.
+
+| District | Planning bounds | What lies there |
+| --- | --- | --- |
+| North verge | `x 49..80, y 0..12` | North chain, warden restriction board, damaged Hallowfen marker, buried-line inspection point, departure crowd, and transition to Old Pilgrim Way |
+| Grave strip | `x 82..128, y 2..18` | Named graves, covered intake numbers, burial-tool shed, memorial space for returned brass hooks, and the concealed rear exit from the hidden rows |
+| Relief annex precinct | `x 3..42, y 7..28` | Abandoned loading apron, fixed hoist, broken field generators, annex entrance, Morrow salvage claim marks, and a service hatch into the drain |
+| Compact precinct | `x 83..123, y 17..35` | Counting canvas, applicant queue, clinic entrance, staff wash point, sample burner, covered waiting space for dependents, and a small guarded generator |
+| Old measure gates | `x 48..82, y 24..43` | Rusting screening lanes, admission booth, civil stair to the undercroft, return shelf, public water board, empty transport platform, and open-air market |
+| Morrow freight yard | `x 5..46, y 29..61` | Freight-house entrance, medicine cart, wagon repair stands, grain cages, animal trough, drive-oil locker, guard drill space, and repair-trench access |
+| Rope Rows | `x 81..128, y 35..65` | Multi-generation homes, Measure Hall, Faber house, wash walls, shared ovens, herb boxes, roof-patch frame, boot repair, hidden-household entrance, and narrow resident lanes |
+| Water court | `x 47..81, y 44..64` | Condenser, settling tanks, maintenance sump, public taps, ration board, Noa's work space, Cassian's repair place, and enough open ground for the final assembly |
+| New arrival fringe | `x 14..45, y 62..79` | Newer shelters, cook fires, smaller water vessels, animal picket, refuse trench, and people who have no inherited place on the roll |
+| South chain road | `x 46..83, y 63..79` | Player arrival, chain gate, Censure notice post, wagon ruts, crowd spill space, and the first view toward the water court |
+| Charity edge | `x 84..109, y 64..79` | Joanna's charity cot, patient screens, clean-water barrel, burned crate labels, night-teacher meeting place, and cellar entrance |
+| Collapsed drain edge | `x 110..128, y 66..79` | Broken culvert mouth, ash-choked ditch, children's crawl route, drain transition, and a concealed approach behind the freight yard |
+
+### Surface route structure
+
+The surface has one strong north-to-south spine and two side loops.
+
+1. The central road runs from the south chain through the water court and old
+   measure gates to the north verge. The north chain remains the only campaign
+   exit gate.
+2. The west work loop runs through the Morrow yard, relief annex apron, old
+   transport platform, and back to the water court. It carries contracts,
+   freight evidence, valve records, and quiet work routes.
+3. The east resident loop runs through the charity edge, Rope Rows, Measure
+   Hall, Compact precinct, grave strip, and old measure gates. It carries
+   family stories, medical pressure, hidden households, and the settlement's
+   claim to permanence.
+
+Neither side loop should end in a long blind lane. Short alleys can hold homes
+or inspectables, but the main exploration paths return to the water court or
+old gates. The player can learn the town without retracing the full road after
+every conversation.
+
+The water court is the largest exterior tactical space. Tanks, queue rails,
+water carts, and awning posts provide cover without blocking the public scene.
+The freight yard is the second tactical space if a theft turns violent. The
+Compact apron supports a short standoff, but the clinic itself is not laid out
+as a combat arena.
+
+### Surface transition anchors
+
+The following runtime anchors fix where helper maps meet the settlement. A gate
+cell holds the physical door, hatch, or culvert. Its use cell is the reachable
+tile from which the player interacts. The full reciprocal contract, including
+interior gate cells, wall planes, and arrival facings, lives in
+`docs/maps/act-1/ash-road-south/submaps/README.md`.
+
+| Surface anchor | Gate cell | Use cell | Destination arrival and facing |
+| --- | --- | --- | --- |
+| South Chain | `(65, 79)` | `(65, 78)` | Censure Road Camp `(66, 16)`, facing `nw` |
+| North Chain | `(65, 1)` | `(65, 2)` | Opens after the assembly. Crossing completes the local quest and plays the Old Pilgrim Way handoff; the next level is not loaded yet |
+| Admission booth stair | `(64, 36)` | `(64, 37)` | Intake undercroft `(29, 39)`, facing `ne` |
+| Collapsed culvert | `(120, 73)` | `(119, 73)` | Relief drain `(41, 15)`, facing `nw` |
+| Morrow repair trench | `(31, 54)` | `(31, 55)` | Relief drain `(20, 2)`, facing `sw` |
+| Annex service hatch | `(20, 24)` | `(20, 25)` | Relief drain `(2, 16)`, facing `se` |
+| Relief annex main door | `(18, 26)` | `(18, 27)` | Relief maintenance annex `(19, 23)`, facing `ne` |
+| Morrow freight-house main door | `(31, 48)` | `(30, 48)` | Morrow freight house `(2, 13)`, facing `se` |
+| Morrow freight-house rear door | `(37, 49)` | `(37, 50)` | Morrow freight house `(29, 19)`, facing `ne` |
+| Compact clinic door | `(98, 33)` | `(98, 34)` | Compact clinic `(18, 21)`, facing `ne` |
+| Measure Hall door | `(94, 51)` | `(94, 52)` | Measure Hall `(17, 19)`, facing `ne` |
+| Faber house door | `(114, 48)` | `(113, 48)` | Faber house `(2, 10)`, facing `se` |
+| Wash-wall opening | `(123, 58)` | `(122, 58)` | Hidden Rows `(2, 6)`, facing `se` |
+| Hidden Rows rear hatch | `(112, 16)` | `(112, 16)` | Hidden Rows `(24, 2)`, facing `sw` |
+| Charity cot trapdoor | `(96, 72)` | `(96, 72)` | Charity cellar `(19, 13)`, facing `nw` |
+
+### Intake undercroft
+
+The 58 by 42 undercroft is the only full dungeon in South Measure. It supports
+two approaches that change discovery order without removing content.
+
+- The civil stair enters from the south and reaches the records landing first.
+  Susanna's authorized route uses this entrance.
+- The relief drain enters from the east and reaches the maintenance channel
+  first. Noa, a stealthy party, or anyone using the collapsed culvert can take
+  this route.
+- The records landing occupies the south-center. Intake rails, brass hooks,
+  lime-covered handprints, and the first transport slate establish the office.
+- The examination room occupies the south-west. It contains restraint marks,
+  the sample-priority order, old privacy screens, and the cabinet of filter
+  cloth and blood cards.
+- The records vault occupies the north-west behind a heavy archive door. It
+  holds the original household roll, later Compact copy marks, and abandoned
+  transport assignments.
+- The pump chamber occupies the center-east. It contains the isolation
+  manifold, settling-feed controls, and Noa's safe work area.
+- The maintenance channel follows the east wall from the drain entrance to the
+  pump chamber. The thin black-gold vein runs beneath the pipe skin here.
+- The sealed triage wicket occupies the north-center. The Intake Clerk remains
+  fused through the booth supports. The room provides space for containment,
+  careful killing, extraction, or a short forced-opening fight.
+- A narrow return passage joins the vault side to the pump side after the
+  central danger is resolved. The player can leave by either entrance instead
+  of walking the whole dungeon backward.
+
+There is no profitable monster cache. The manifold reveals how to cut the north
+feed and preserve a reduced local loop. Evidence comes from the office. Any
+equipment found here is old containment or maintenance stock with a clear
+former use.
+
+### Relief drain
+
+The 44 by 20 relief drain is a low, mostly dry service system rather than a
+second dungeon. It gives the settlement a believable buried utility network
+and creates nonviolent infiltration routes.
+
+- The east mouth begins at the collapsed culvert near the charity edge.
+- A raised maintenance walk follows the north wall. The lower channel holds
+  silt, broken filter baskets, and a shallow polluted flow.
+- The middle branch rises into the Morrow repair trench. It allows access to
+  the medicine-cart side of the yard, but workers use the trench throughout the
+  day.
+- The west branch reaches the relief annex service hatch and its old generator
+  pit.
+- The north valve chamber connects to the undercroft maintenance channel. A
+  jammed isolation wheel explains why the Hallowfen-facing pulse reaches the
+  condenser.
+- One maintenance alcove holds the children's crawl marks and an old safe
+  waiting point used by residents avoiding the main gate.
+
+The drain should not contain a hidden colony or an unrelated boss. Its tension
+comes from unstable footing, contaminated water, narrow sightlines, and the
+risk of emerging inside a controlled work area.
+
+### Relief maintenance annex
+
+The 40 by 26 annex is the location's abandoned industrial interior. It was a
+field repair plant, not a heavy factory.
+
+- The south loading bay opens onto the annex apron and contains cart stands,
+  a dead overhead hoist, and the Morrow claim desk.
+- The central machine floor holds lathes, pump jigs, frame presses, work pits,
+  and stripped generator housings.
+- The north parts cage contains pipe collars and filter mesh. A bypass schedule
+  beside it preserves the valve order for a reduced local loop.
+- The west generator room contains a cooling jacket that can keep Darius's
+  medicine in the annex while its cooled wagon carries sealed water.
+- The east rear bay is fire-damaged and partly collapsed. Old relief schedules
+  show that official convoys stopped while the receiving lines continued.
+- A floor hatch reaches the relief drain. The hatch can support a stealth
+  route, a resident work route, or later Chain patrols depending on ownership.
+
+The front bays remain in use. Residents salvage and repair there under Morrow
+supervision. The rear should feel abandoned without making the whole building
+look untouched for a century.
+
+### Morrow freight house
+
+The 36 by 22 freight house combines the cartel interiors that need controlled
+access. The yard, medicine cart, grain cages, and animal space remain outside.
+
+- The public office sits beside the main door. Darius negotiates at a scale and
+  route table where workers can hear him.
+- The route room holds toll maps, convoy losses, Red Tithe warnings, and the
+  board for the next medicine run.
+- The ledger cage lies behind the office. It contains pump notes, signature
+  folios, household surety, forged entries, and real delivery records.
+- The bonded store holds high-value parts, drive oil, freight seals, and grain
+  tags. It should never read as a treasure vault detached from road work.
+- Guard bunks and a small mess occupy the quieter west end. Personal wall tags
+  name people lost keeping the route open.
+- A rear service door returns to the repair stands. It creates a second surface
+  exit after the player gains worker trust or opens it from inside.
+
+### Compact clinic
+
+The 36 by 24 clinic is South Measure's field hospital and reintegration office.
+Its clean practice must remain visibly useful.
+
+- The south entrance opens into public triage and a dressing station.
+- A six-bed treatment ward occupies the center. Two beds remain available for
+  charity-cot referrals if the player separates care from the pump bargain.
+- The applicant lane runs along the east side. Interview partitions admit one
+  named applicant while dependents wait outside the marked area.
+- The placement archive and blood-card station occupy the north-east records
+  bay. The detailed archive is controlled, but the public summary can be
+  requested.
+- The cold cabinet, flow monitor, vaccine stock, and backup cell occupy the
+  north-west service bay. The monitor can separate ordinary pressure strain
+  from the repeating buried reply.
+- A one-bed isolation room sits behind a visible observation slit. It is for
+  uncertain exposure, not a secret torture chamber.
+- Staff sleep behind a canvas divider near the rear wash point. The clinic is a
+  mission working beyond its own walls, not a permanent hospital complex.
+
+### Measure Hall
+
+The 34 by 22 Measure Hall is the settlement's civic interior. It occupies a
+repaired examination barrack in Rope Rows.
+
+- The slate school fills the bright front half during the day.
+- The row council uses the rear table after lessons. Water appeals, household
+  disputes, and consent for the hidden list are heard here.
+- A communal kitchen and shared oven occupy the west wall. The bread dispute
+  can begin outside and finish here if referred to council.
+- The public records cabinet holds the current water roll and burial copies,
+  not the original intake archive.
+- The loft stores sound canvas for Last Canvas Day. One marked strip carries
+  inert exposure paint.
+- A narrow side room gives new arrivals a place to sleep during storms. It
+  remains visibly less comfortable than the established row homes.
+
+If residents keep the original roll, the rear council table becomes its later
+custody point. If another power takes it, the empty space remains visible.
+
+### Faber house and workshop
+
+The 22 by 16 Faber interior is small and domestic.
+
+- Noa's pump bench and diagram wall sit beside the entrance.
+- Her father's cup-repair table occupies the common room.
+- The family meal table and two sleeping partitions show how tightly the three
+  live.
+- A rear work shelf holds filed valve stops and the tools Noa would take to
+  school. It does not contain a secret solution to the water decision.
+
+The room exists to make Noa's placement decision concrete. It is not a loot
+house.
+
+### Hidden Rows
+
+The 30 by 18 Hidden Rows map represents several connected rooms behind the wash
+wall, not one oversized house.
+
+- The main entrance comes through a movable drying frame in Rope Rows.
+- Three household rooms share a concealed water branch and cooking flue.
+- A small treatment room holds people who cannot risk Compact or Remnant
+  screening.
+- A meeting room contains the private version of the off-roll water list.
+- The rear passage exits near the grave strip so residents can reach burials
+  without crossing the applicant lane.
+
+This is a protected social space. Entering without consent harms trust. Chests
+contain household goods, not level-scaled loot. If the list becomes public,
+later ownership determines who can place staff or guards at the wash-wall
+entrance.
+
+### Charity cellar
+
+The 22 by 16 cellar lies below Joanna's cot. It is a medicine reserve and courier
+handoff, not a full Choir temple.
+
+- The stair opens beside shelves of clean gauze, fever supplies, milk tins, and
+  water salts.
+- A separate locked cabinet holds suspect suppressant vials and Open Wound
+  prayer cards.
+- Burned crate labels can be reconstructed to show that several deliveries
+  followed the same road network as the Ash Chapel cell.
+- A low rear crawl ends at a collapsed grate. It proves a courier route existed
+  but does not create another exit from the map.
+- A screened patient cot shows why Joanna kept the deliveries. Removing every
+  supply has an immediate human cost upstairs.
+
+The cellar may hold a courier conversation or a search scene. It should not
+turn every person using the cot into a cultist.
+
+### Shops and services kept on the surface
+
+South Measure has trade but no formal shopping district. These services remain
+visible in ordinary streets:
+
+| Service | Placement | Function |
+| --- | --- | --- |
+| Open-air barter market | Empty transport platform at the old measure gates | Food, used clothing, household tools, road gossip, and low-value trade |
+| Boot and plate repair | Rope Rows beside the main wash trough | Equipment repair flavor and a view of local labor |
+| Shared ovens | Rope Rows near Measure Hall | Food distribution, the loaf dispute, and daily settlement life |
+| Morrow quartermaster | Freight-house public office and yard counter | Ducat trade, road supplies, freight seals, and cartel prices |
+| Compact dispensary | Clinic triage desk | Dressings, approved medicine, referrals, and restricted suppressants |
+| Charity cot | South-east arrival edge | Unscreened care, donated medicine, and the Choir foothold |
+| Water issue | Water court | Rations, household standing, and the visible result of every pump outcome |
+
+There is no conventional tavern or inn. Visitors sleep at the arrival fires,
+in a paid Morrow bunk, or on a Measure Hall storm pallet. Drink is shared from
+private stills and cook pots. A polished inn would make the settlement feel
+more legally settled than it is.
+
+### Access and gating
+
+Campaign travel into South Measure begins at the Hallowfen checkpoint gate in
+Censure Road Camp. Its travel choice exists only when
+`censure-road-voss-report-perfect` is set. The unlocked route arrives at
+`(65, 77)` facing `ne`, aligned with the northbound South Chain road. Returning
+through the South Chain arrives at camp `(66, 16)` facing `nw`, aligned back
+into the camp approach. A direct developer-start alias exists for review but
+does not bypass the campaign interaction.
+
+Public surface exploration opens after the first water-court conversation.
+Measure Hall, the Faber house, the clinic's public ward, and the freight-house
+office can be entered without choosing a faction.
+
+The current neutral-state map shell keeps every authored connector traversable
+for route and visual review. The quest-state implementation must apply the
+following access rules without changing those physical routes. Restricted
+spaces use story access rather than one required skill check:
+
+- The Compact archive and cold service bay open through Aurelia, staff trust,
+  evidence, or stealth.
+- The Morrow ledger cage and bonded store open through Darius, an audit, worker
+  trust, or stealth.
+- Hidden Rows open through resident consent, Joanna, Susanna, or discovery of the
+  extra water branch. Forced entry remains possible but has a social cost.
+- The charity cellar opens through Joanna, medicine inspection, reconstructed
+  crate labels, or a quiet search of the cot.
+- The annex parts cage and bypass records open through Morrow permission,
+  resident work access, the drain hatch, or a physical lock route.
+- The undercroft opens through Susanna's civil key, a faction agreement, the
+  collapsed drain, or forced entry at the admission booth.
+
+No failed field check blocks the critical path. Every restricted room has a
+social route and at least one slower physical or evidence route.
+
+### Outcome changes to the maps
+
+The final choices should change custody, staffing, and daily water practice more
+than architecture. South Measure has survived too long to transform into a
+different town in one conversation. Pump authority and the operating plan are
+tracked separately.
+
+- **Compact pump access:** the clinic adds census desks on its exterior apron.
+  Compact staff share the admission stair and records bay. Selected applicants
+  gather at the north verge. Hidden Rows stay concealed unless the player gave
+  up their names.
+- **Morrow pump service:** the freight lane opens first. Service notices appear
+  at the water board, Chain guards remain at the yard and annex, and bonded
+  grain moves into Rope Rows under household tags.
+- **Resident control:** the council holds the pump keys and undercroft stair.
+  The original roll, if preserved, moves to Measure Hall after families have
+  inspected it. The annex front bay becomes a shared repair shop under a tense
+  supply agreement.
+- **Sealed outside access:** the admission stair and drain valve are barred.
+  This authority choice also closes the buried feed and forces emergency
+  rationing.
+
+The water-plan dressing layers over those authority results. Monitored full
+flow places Compact staff and a flow slate at the court. Imported water adds
+cistern tags and fixed ration hours. The isolated loop adds resident valve
+watches. Feed closure leaves storage tallies and the smallest ration board.
+
+Cassian's outcome is layered over any pump result. He may stand at the north
+marker, remain beside a sealed water line, leave an empty repair place, or
+depart with the party. His route never changes who owns the pump by itself.
 
 ## Faction pressure
 
@@ -230,7 +644,7 @@ them, which also means they have no claim in council votes.
 ### Morrow Chain
 
 The Chain provides freight, guards, pump parts, and a market for camp labor. It
-also owns the debts that decide who may leave. Daro can prove that his proposed
+also owns the debts that decide who may leave. Darius can prove that his proposed
 contract is cheaper than the old one. He cannot make service under threat into
 consent.
 
@@ -244,7 +658,7 @@ with needed skills, clean tests, and few dependents. The policy saves those who
 leave while making the remaining community easier to study and harder to
 maintain.
 
-Yara Quell is not running a false lottery. She has a small number of lawful
+Aurelia Priscian is not running a false lottery. She has a small number of lawful
 beds. She also knows the Compact will not accept South Measure as one body,
 because doing so would create a claim for every unresolved receiving camp in
 its archives.
@@ -256,19 +670,19 @@ unentered people in one known place. Priests perform marriages and burials
 there, but Remnant courts do not recognize the camp council as civil authority.
 
 The player's Censure writ grants passage. It does not grant the right to command
-Tarn, assign Compact beds, void cartel contracts, or declare South Measure a
+Cassian, assign Compact beds, void cartel contracts, or declare South Measure a
 lawful town. Using the writ as a threat should win short compliance and produce
 later resentment.
 
 ### Penitent Engines
 
-Tarn is one wounded Engine, not an occupying force. His armor, weapon mount, and
+Cassian is one wounded Engine, not an occupying force. His armor, weapon mount, and
 sealed doctrine make him frightening enough to shift every negotiation around
-him. Daro wants him as road protection. Yara wants access to his filters after
-the Ash Chapel contact. Ressa wants him to spend one day guarding the water
+him. Darius wants him as road protection. Aurelia wants access to his filters after
+the Ash Chapel contact. Susanna wants him to spend one day guarding the water
 line before marching toward another holy ruin.
 
-Tarn owes none of them obedience.
+Cassian owes none of them obedience.
 
 ### Choir foothold
 
@@ -281,61 +695,61 @@ The cot exists because Compact staff turn away unscreened patients and Chain
 medicine carries debt. Destroying it without replacing its ordinary supplies
 will kill people who never attended a rite.
 
-## Brother Tarn and the Ash Chapel
+## Brother Cassian and the Ash Chapel
 
-Brother Tarn was tracking a reliquary signal from **Brother Ors**, a Penitent
-Engine scout lost after a Hallowfen perimeter mission. Tarn's order recorded
-Ors as destroyed. Tarn cut the failure name into his own left breastplate.
+Brother Cassian was tracking a reliquary signal from **Brother Job**, a Penitent
+Engine scout lost after a Hallowfen perimeter mission. Cassian's order recorded
+Job as destroyed. Cassian cut the failure name into his own left breastplate.
 
 The beacon woke again near Ash Chapel.
 
-Tarn followed it to the chapel door. At the threshold, his filters registered
-active Host matter inside sealed Penitent steel. He heard Ors's damaged vox use
+Cassian followed it to the chapel door. At the threshold, his filters registered
+active Host matter inside sealed Penitent steel. He heard Job's damaged vox use
 a private order cadence, followed by a retired reply code from a Hallowfen wall
 checkpoint. The code should have come from a bell tower. The tower had already
 stopped answering.
 
-Tarn withdrew because he was alone, low on purge charge, and faced with proof
-that Penitent steel could carry the rot. Destroying Ors might have erased the
+Cassian withdrew because he was alone, low on purge charge, and faced with proof
+that Penitent steel could carry the rot. Destroying Job might have erased the
 only trace of how the impossible happened. Entering might have given the cult a
 second Engine.
 
-It was a defensible field decision. Tarn has still carved **ASH CHAPEL:
-WITHDREW** beneath Ors's name.
+It was a defensible field decision. Cassian has still carved **ASH CHAPEL:
+WITHDREW** beneath Job's name.
 
 He came to South Measure for drive oil and heard the same pulse in the water
-condenser. The signal travels north through old buried metal. Tarn believes the
+condenser. The signal travels north through old buried metal. Cassian believes the
 silent checkpoint is either sending it or being used as its mouth.
 
 He intends to reach Hallowfen before reporting to the Black Reliquary. A formal
 report would bring a Penitent recovery column. That column would treat every
 piece of Hallowfen, living or dead, as compromised order property.
 
-This is Tarn's first test of duty against tenderness. Reporting at once is the
+This is Cassian's first test of duty against tenderness. Reporting at once is the
 clean order. Walking with the player gives Hallowfen time, but it also conceals
 an impossible corruption from the only force equipped to destroy it.
 
 The later Act I move toward Woundfall remains intact. Evidence recovered in or
 after Hallowfen can show that the buried signal continues beyond the wall. Ash
-Road South does not send Tarn to Woundfall yet.
+Road South does not send Cassian to Woundfall yet.
 
 ## Principal characters
 
-### Steward Ressa Venn
+### Steward Susanna Fontana
 
 **Faction:** South Measure council
 
 **Role:** Elected camp steward and keeper of the public water roll
 
-Ressa was born in Rope Row Four and learned arithmetic by checking household
+Susanna was born in Rope Row Four and learned arithmetic by checking household
 cups against the pump board. She has watched Compact assessors remove gifted
 residents one at a time and call the shrinking work crews progress. She also
 knows that refusing every placement would turn South Measure into a prison of
 its own.
 
-Ressa wants the governor repaired without surrendering the undercroft records
-or another generation of household claims. She will accept an ugly bargain if
-the taps fail. She will not pretend it was justice.
+Susanna wants a water plan that does not turn the undercroft records into payment
+or the ration line into another inherited debt. She will accept an ugly bargain
+if storage runs low. She will not pretend it was justice.
 
 **Voice rule:** Ration clerk under public pressure. She reaches for cups,
 households, shifts, and signatures. Her syntax is patient until someone calls
@@ -345,24 +759,24 @@ South Measure temporary. She never calls its people refugees.
 
 > "My great-grandmother waited here for a bed, and the rest of us inherited her place in line. I keep the water roll because it is the only roll that has ever answered us."
 
-> "Do not promise us a city. Put the coil on the table and name what you want for it."
+> "Do not promise us a city. Put the water schedule on the table and name who pays for it."
 
-### Factor Daro Mett
+### Factor Darius Secundus
 
 **Faction:** Morrow Chain
 
 **Role:** Freight factor, debt holder, and road defense organizer
 
-Daro began as a wagon quartermaster. He can account for every sack that reached
+Darius began as a wagon quartermaster. He can account for every sack that reached
 South Measure during the last lean season and every driver buried beyond the
 ford. He treats this record as proof that the Chain earned authority.
 
-He does not enjoy cruelty. He does enjoy being indispensable. Daro believes a
+He does not enjoy cruelty. He does enjoy being indispensable. Darius believes a
 hard contract is kinder than a clean promise that delivers nothing.
 
-The governor in his yard is not idle hoarding. It protects the cooling box on a
-medicine wagon. If the player takes it for the pump, the next route needs a new
-solution before it crosses Red Tithe country.
+Darius's cistern offer is not effortless charity. The cooled wagon already
+carries medicine across Red Tithe country. Unless the annex cooling jacket can
+hold that stock, every water run delays medicine elsewhere.
 
 **Voice rule:** Caravan quartermaster making terms beside a scale. He uses
 weight, axle, delivery, loss, and surety. His sentences become conditional when
@@ -372,15 +786,15 @@ he wants control. He never says that debt gives him ownership of a person.
 
 > "The Chain owns no one here, only the pump note and the wagons. Hunger handles ownership without asking my leave."
 
-> "Take the governor if you like. When the medicine spoils at the ford, carry that fact as carefully as you carry Ressa's gratitude."
+> "Put water on the cooled wagon if you like. When the medicine waits at the ford, enter that delay beside Susanna's gratitude."
 
-### Assessor Yara Quell
+### Assessor Aurelia Priscian
 
 **Faction:** Lumen Compact, Rationalist field service
 
 **Role:** Reintegration assessor and medical mission lead
 
-Yara believes individual admission is better than collective abandonment. She
+Aurelia believes individual admission is better than collective abandonment. She
 has placed people from camps like South Measure into schools, clinics, and
 machine works. Several are alive because she signed their forms.
 
@@ -390,9 +804,11 @@ continued care. She wants the undercroft because a century of exposure records
 could improve treatment, even if taking them destroys South Measure's best
 claim against the Compact.
 
-Yara carries a compatible governor coil. She can restore the pump quickly. She
-will not release Compact equipment without the census and undercroft agreement
-unless the player gives her a stronger claim or evidence.
+Aurelia can assign two clinicians and a Compact flow monitor to the water court.
+That team can support full output while distinguishing ordinary pipe strain
+from the buried reply. She will not release the staff allocation from its
+census and undercroft terms unless the player wins a consent exception or
+compels the assignment.
 
 **Voice rule:** Physician trained to make civic decisions from incomplete
 models. She uses capacity, exposure, consent, dependents, and placement. Her
@@ -405,20 +821,21 @@ never be admitted.
 
 > "Your council wants recognition. My clinic can offer treatment today. Please do not confuse the smaller promise with a lie."
 
-### Nel Varo
+### Noa Faber
 
 **Faction:** South Measure
 
 **Role:** Condenser mechanic and Compact placement candidate
 
-Nel learned the pump by sleeping beside it during pressure drops. She can hear a
-bad bearing through the water court wall. Yara has offered her a probationary
-place in a Compact machine school, but the offer excludes Nel's father and
+Noa learned the pump by sleeping beside it during pressure drops. She can hear a
+bad bearing through the water court wall. Aurelia has offered her a probationary
+place in a Compact machine school, but the offer excludes Noa's father and
 younger brother.
 
-If Nel leaves, she may gain the legal life her family wanted for her. South
-Measure loses the mechanic most able to keep a repaired governor alive. If she
-stays, the council benefits from a sacrifice it has no right to demand.
+If Noa leaves, she may gain the legal life her family wanted for her. South
+Measure loses the mechanic most able to train the valve watches and keep the
+isolated loop balanced. If she stays, the council benefits from a sacrifice it
+has no right to demand.
 
 **Voice rule:** Young mechanic who trusts sound before institutions. She uses
 valves, grit, pitch, pressure, and tool names. Her jokes are dry and brief. She
@@ -430,13 +847,13 @@ will discuss any machine before admitting that she wants to leave.
 
 > "I want the school, and I want my brother fed next winter. Find a box that can hold both."
 
-### Iven Roa
+### Joanna Medicus
 
 **Faction:** South Measure, compromised by Choir aid
 
 **Role:** Midwife and keeper of the southern charity cot
 
-Iven has delivered children under Compact canvas and buried patients outside
+Joanna has delivered children under Compact canvas and buried patients outside
 Remnant gates. When unfamiliar donors began leaving suppressant, clean gauze,
 and prayer cards, she used the medicine and burned the names off the crates.
 
@@ -453,15 +870,15 @@ around names she will not surrender. She never uses the cult's word
 
 > "The vial lowered a child's fever. If your office needs a fire, burn the card and leave me what works."
 
-> "Your Compact woman wrote unapproved cohort above their beds, and Daro's clerk wants a debt number. Before dawn, I use their names and listen for breath."
+> "Your Compact woman wrote unapproved cohort above their beds, and Darius's clerk wants a debt number. Before dawn, I use their names and listen for breath."
 
-### Brother Tarn
+### Brother Cassian
 
 **Faction:** Penitent Engines
 
 **Role:** Wounded warrior-monk, Ash Chapel witness, possible heavy companion
 
-Tarn arrives as a frightening independent power and leaves as either a road
+Cassian arrives as a frightening independent power and leaves as either a road
 ally, a harsher future patrol, or a man who chose to remain at South Measure for
 one more watch. His existing campaign conflict remains duty against tenderness.
 
@@ -475,7 +892,7 @@ He never says he was afraid, even when describing fear exactly.
 
 **Sample lines:**
 
-> "I reached the first stone. Brother Ors answered from a body our order says cannot exist."
+> "I reached the first stone. Brother Job answered from a body our order says cannot exist."
 
 > "His vox gave a Hallowfen wall code, though the wall itself is silent. I am going to learn who rang."
 
@@ -485,34 +902,38 @@ He never says he was afraid, even when describing fear exactly.
 
 ### Quest purpose
 
-The quest forces the player to decide who gains control of South Measure's
-water crisis and buried history. It also joins the Ash Chapel mystery to the
-silent Hallowfen checkpoints through Tarn.
+The quest asks how a settlement uses a working machine when its normal output
+wakes something below it. The player chooses a water operating plan, chooses
+pump authority in a separate vote, and decides what happens to South Measure's
+buried history. Cassian joins the Ash Chapel mystery to a retired Hallowfen
+checkpoint reply carried through the pipes.
 
 The quest begins at the south chain gate and ends when the north road opens
-toward Old Pilgrim Way. A fast player can accept a faction bargain, isolate the
-buried feed from the surface, and leave. The resident-control outcome requires
-exploration of the undercroft. Inspecting the freight yard gives that outcome a
-stronger supply position but is not mandatory.
+toward Old Pilgrim Way. Every route enters the undercroft because the Intake
+Clerk must be resolved before anyone commits a water plan. The annex, clinic,
+and freight house reveal different practical costs without changing their map
+layouts.
 
 ### Starting state
 
 - The player has received the Hallowfen route from Censure Road Camp.
 - Ash Chapel may have set `inspected-engine-rut` and related Penitent evidence.
 - The chapel ledger may have revealed the Choir of the Open Wound by name.
-- South Measure's condenser is operating at half pressure.
+- South Measure's sound condenser is deliberately throttled.
 - The north road is closed while the water court crowd fills the wagon lane.
 
 ### Main objectives
 
-1. Speak with Ressa Venn at the water court.
-2. Inspect the failing governor with Nel Varo.
-3. Hear Yara Quell's reintegration terms and Daro Mett's contract offer.
-4. Question Brother Tarn about Ash Chapel and Hallowfen.
-5. Find a workable governor route: Compact coil, Morrow field governor, or
-   undercroft repair.
-6. Resolve the awakening beneath the old admission booth.
-7. Decide who keeps the original household roll and control of the pump.
+1. Speak with Susanna Fontana at the water court.
+2. Confirm with Noa Faber that the condenser is sound and deliberately throttled.
+3. Hear the Compact monitoring offer, Morrow cistern terms, resident isolation
+   route, and Cassian's warning.
+4. Trace the buried pulse through the closed work areas.
+5. Resolve the Intake Clerk beneath the old admission booth.
+6. Choose monitored full flow, imported water, an isolated local loop, or feed
+   closure.
+7. Decide pump authority, original-roll custody, Noa's departure, and Cassian's
+   road as separate questions.
 8. Open the north road toward Old Pilgrim Way.
 
 ### Evidence routes
@@ -523,11 +944,17 @@ The player can gather evidence and bargaining power before committing:
   obligations, not an anonymous population study.
 - **Morrow pump ledger:** proves the Chain inflated old emergency repairs, but
   also records real deliveries and guards lost on the road.
-- **Nel's governor assessment:** proves a local repair is possible if the
-  undercroft coupling can be recovered intact.
+- **Noa's flow assessment:** proves that the machine itself is sound and the
+  danger travels through the north feed.
+- **Annex bypass schedule:** proves that a smaller local return can avoid the
+  north line if residents accept continuous valve watches.
+- **Compact flow monitor:** distinguishes ordinary pressure strain from the
+  repeated Hallowfen reply.
+- **Morrow route schedule:** shows what regular cistern service displaces on the
+  medicine road.
 - **Charity cot cards:** connect the new cult's road work to people turned away
   by both formal providers.
-- **Tarn's signal record:** proves the undercroft pulse and Hallowfen reply code
+- **Cassian's signal record:** proves the undercroft pulse and Hallowfen reply code
   share a pattern without explaining what made either one.
 
 No failed field check blocks completion. Search, Engineering, Medicine,
@@ -535,33 +962,34 @@ Doctrine, Security, or direct bargains shorten different routes.
 
 ## Playable structure and branch rules
 
-The location tracks four separate questions:
+The location tracks five separate questions:
 
-- Where does the working governor part come from?
-- Who receives the pump keys when the repair is finished?
-- What happens to the Intake Clerk and the original household roll?
+- How does water move after the Intake Clerk is resolved?
+- Who receives the pump keys and maintenance authority?
+- What happens to the Intake Clerk?
+- Who receives the original household roll?
 - Who leaves South Measure with the party, and who remains behind?
 
-These questions must not collapse into one faction choice. Taking Yara's coil
-does not automatically make the Compact ruler of the pump. Taking Daro's field
-governor does not automatically validate his service contract. Recovering the
-old coupling does not force the council to keep it. The agreement used to gain
-a part, and whether the player honors that agreement, determines the cost.
+These questions must not collapse into one faction choice. Compact monitoring
+does not automatically grant Compact pump custody. Morrow cistern delivery does
+not automatically grant the Chain a service key. A resident isolation loop can
+operate under an outside authority, although its labor and promises may make
+that choice costly. Sealing outside pump access is the exception: it also closes
+the buried feed and forces emergency rationing.
 
-Exploration has no hidden countdown. The water shortage is urgent in the story,
-but the player can inspect every open area before choosing a repair. The crisis
-advances only when the player orders a full-pressure test, brings a governor
-part to the water court, or opens the intake stair.
+Exploration has no hidden countdown. The shortage is urgent in the story, but
+the player can inspect every open area before choosing a plan. Selection remains
+reversible until Susanna commits the operating plan in Measure Hall.
 
 The following actions are irreversible and receive a confirmation line before
 they occur:
 
-- Transmitting Tarn's report to the Black Reliquary.
-- Stealing either outside governor part after its owner refuses a final demand.
+- Transmitting Cassian's report to the Black Reliquary.
+- Compelling Compact monitoring or Morrow deliveries under Censure authority.
 - Giving the Compact custody of the Intake Clerk.
 - Burning the Intake Clerk or the household roll.
-- Signing final pump control over to an outside faction.
-- Sending Nel's forged household papers with a Compact convoy.
+- Committing a final water plan or signing pump control to a faction.
+- Sending Noa's forged household papers with a Compact convoy.
 
 Everything else remains open until the assembly at the old measure gates. A
 signed preliminary agreement can be broken, but the injured faction remembers
@@ -582,61 +1010,52 @@ is holding back a water line.
 
 A family newly arrived from the south presents a Remnant travel scrap at the
 public board. The scrap grants passage but no place on South Measure's water
-roll. Ressa gives the family one cup from the steward's measure and crosses her
+roll. Susanna gives the family one cup from the steward's measure and crosses her
 own household allotment off the board. This is the first sign that the council
 protects people through personal sacrifice because no outside law recognizes
 its decisions.
 
-The condenser coughs. Grey filings strike the bottom of a clear test jar. Nel
-closes the last tap, and the crowd spills into the north wagon lane. Daro's
-guards lower the road chain until the court clears.
+The condenser completes a clean stroke. A second knock rises from the buried
+pipe after its lever stops. Noa closes the last tap, and the crowd spills into
+the north wagon lane. Darius's guards lower the road chain until the court clears.
 
 The opening response sets tone but closes no route:
 
-- **Offer to help the water line.** Ressa takes the party directly to Nel and
-  the failing governor. The council later grants access to its records landing
-  without asking for a pledge.
+- **Offer to help the water line.** Susanna takes the party directly to Noa and
+  the throttled condenser. The council later grants access to its records
+  landing without asking for a pledge.
 - **Invoke the Censure writ.** A guard opens a narrow foot gate for the party,
   but no wagon can pass. Residents treat later demands as official pressure
   until the player performs a useful act.
-- **Ask who ordered the closure.** The guard names Daro as road factor and
-  Ressa as keeper of the water roll. Daro respects the practical question.
-  Ressa makes the player state whether passage or water is the real concern.
+- **Ask who ordered the closure.** The guard names Darius as road factor and
+  Susanna as keeper of the water roll. Darius respects the practical question.
+  Susanna makes the player state whether passage or water is the real concern.
 - **Refuse to enter the dispute.** Free exploration opens from the southern
-  edge. Ressa remains at the board, and the main conversation waits without
+  edge. Susanna remains at the board, and the main conversation waits without
   penalty.
 
 If the player has spare clean water, it can be given to the new family. The gift
 helps them through the current ration and changes their later camp bark. It
 does not repair the system or purchase council loyalty.
 
-### 2. The failing measure
+### 2. The throttled measure
 
-Nel removes the governor cover while Ressa keeps the crowd behind a chalk line.
-The housing has shed two teeth, and the remaining metal vibrates in time with a
-low pulse beneath the court. Nel can hold half pressure for several days. Full
-pressure may scatter metal into the settling tanks.
+Noa opens a finger-wide service plate while Susanna keeps the crowd behind a chalk
+line. The governor sleeve is clean and the bearing note stays even. A second
+knock rises from the buried pipe only after the mechanism settles.
 
-The player can respond to Nel's diagnosis in several ways:
+Noa can open full flow immediately. She refuses because every pressure stroke
+drives a household denial through the settling tank and shakes the intake
+wicket. The current reduced flow leaves the last rows short.
 
-- **Accept half pressure while investigating.** This is the safe default. The
-  last rows remain short of water during exploration.
-- **Ask Nel for a local repair.** She identifies the old intake coupling below
-  the admission booth. This formally opens the resident route.
-- **Call for an outside assessment.** Yara or Daro arrives and identifies a
-  compatible part in their own stores. This opens the chosen negotiation early.
-- **Order one full-pressure test.** One more row receives water before Nel shuts
-  the machine down. The test strengthens the buried pulse and damages the
-  housing. Later repairs need Nel's brace or an outside fitting.
+Engineering confirms the sound housing. Host Signs or Medicine recognizes that
+the reply is patterned rather than mechanical. Cassian can identify the retired
+Hallowfen cadence if the party lacks those fields.
 
-An Engineering check reads the damage before Nel explains it. Host Signs or
-Medicine detects that the pipe rhythm is too regular for loose machinery. If
-the party lacks those skills, Tarn identifies the rhythm during his scene.
-
-Ressa then names the available powers plainly. Yara has a clean coil. Daro has
-a field governor. The old relief office may have a coupling, assuming it and
-the dead below have remained still. Ressa asks the player to hear every price
-before bringing a part to the court.
+Susanna names four proposals. Aurelia can monitor full flow. Darius can close the feed
+and deliver sealed cisterns. Noa can trace an isolated relief return. The camp
+can also close the feed and survive from storage. Susanna asks the player to hear
+every cost, trace the buried line, and resolve the voice below before choosing.
 
 ### 3. A town built inside the queue
 
@@ -658,212 +1077,157 @@ Two political faults become visible during this exploration:
 - Several Bloomborn households live off that roll for protection from Compact
   screening, which also denies them a vote in the row council.
 
-The player may confront Ressa about either practice. She does not deny them.
+The player may confront Susanna about either practice. She does not deny them.
 She asks for a replacement rule that the camp can enforce before the next
 morning's line.
 
 ### 4. The Engine who stopped at the door
 
-Tarn stands at the maintenance side of the condenser with one gauntlet on the
+Cassian stands at the maintenance side of the condenser with one gauntlet on the
 pipe. His armor has been opened for field repair, and the cut beneath Brother
-Ors's name is visible. He recognizes the Censure writ but offers no salute.
+Job's name is visible. He recognizes the Censure writ but offers no salute.
 
 The scene changes according to Ash Chapel exploration:
 
-- If the party inspected the heavy tread, Tarn confirms it as his and names the
+- If the party inspected the heavy tread, Cassian confirms it as his and names the
   threshold where he turned.
-- If the party found the Host-touched Penitent, Tarn identifies the body as
-  Ors from plate cuts and the broken vox cadence.
-- If the party found both, Tarn admits that he left a known impossible body in
+- If the party found the Host-touched Penitent, Cassian identifies the body as
+  Job from plate cuts and the broken vox cadence.
+- If the party found both, Cassian admits that he left a known impossible body in
   a civilian chapel because entering alone risked creating another one.
-- If the party missed the evidence, Tarn gives only the facts needed here. The
+- If the party missed the evidence, Cassian gives only the facts needed here. The
   deeper admission waits until the undercroft answers the same code.
 
-Tarn plays a short contact record. Ors's damaged vox speaks a retired Hallowfen
+Cassian plays a short contact record. Job's damaged vox speaks a retired Hallowfen
 checkpoint reply. The reply follows a private Penitent challenge cadence. One
 source should not know both halves.
 
-The player can judge Tarn without changing the evidence:
+The player can judge Cassian without changing the evidence:
 
-- **Condemn the withdrawal.** Tarn accepts a specific charge and rejects a
+- **Condemn the withdrawal.** Cassian accepts a specific charge and rejects a
   speech about courage. This counts as confronting the Ash Chapel failure,
   which is needed for an honest shared-road agreement.
-- **Call the withdrawal sound field judgment.** Tarn agrees with the facts but
+- **Call the withdrawal sound field judgment.** Cassian agrees with the facts but
   does not erase the word cut into his plate. Working trust improves, though
   his need for accountability remains.
-- **Ask what Ors said.** Tarn shares the Hallowfen reply rhythm and the silent
+- **Ask what Job said.** Cassian shares the Hallowfen reply rhythm and the silent
   checkpoint location. This grants the full signal evidence used below and at
   Hallowfen.
-- **Tell Tarn to report now.** Tarn asks whether the player is ordering a
+- **Tell Cassian to report now.** Cassian asks whether the player is ordering a
   transmission or stating doctrine. Nothing locks until the player confirms
   the transmission.
-- **Ask him to help the water line first.** Tarn agrees to one practical task
+- **Ask him to help the water line first.** Cassian agrees to one practical task
   if the party also investigates the buried pulse. This opens shared-road and
   camp-watch outcomes.
-- **Tell him to leave South Measure alone.** Tarn moves to the north marker but
+- **Tell him to leave South Measure alone.** Cassian moves to the north marker but
   continues his own investigation. He becomes the independent scout unless the
   player speaks to him again before departure.
 
-If the player confirms an immediate Black Reliquary transmission, Tarn sends
+If the player confirms an immediate Black Reliquary transmission, Cassian sends
 the report here. The choice cannot be withdrawn. His later scenes remain, but
 he is now waiting for a force whose orders will outrank his private restraint.
 
-### 5. Three ways to restore pressure
+### 5. Four ways to move water
 
-The player can hear all offers before choosing a part. Each offer remains
-available after the undercroft unless the player attacks the faction, steals
-its property, or gives the disputed evidence away.
+The player can hear every operating proposal before choosing one. No route
+places a component in inventory. The selection remains open until Susanna commits
+it in Measure Hall.
 
-#### Yara's coil
+#### Monitored full flow
 
-Inside the Compact canvas, Yara treats a burn while an assistant calls
-applicants one at a time. Dependents wait outside the marked clean lane. Nel's
-machine-school form lies on Yara's table.
+Inside the Compact canvas, Aurelia treats a burn while an assistant calls
+applicants one at a time. Dependents wait outside the marked clean lane. A flow
+monitor sits beside the patient list.
 
-Yara offers a new governor coil and a season of clinic service. In exchange,
-South Measure must accept a full household exposure census. The Compact also
-receives permanent undercroft access and custody of active Host matter found
-there.
+Aurelia can place two clinicians at the condenser and run full output under a
+written monitoring protocol. The default agreement also grants a full household
+census and Compact access below the court. Doctrine or Speech can limit records
+to consenting patients. Command can compel the team, which keeps the taps safe
+but records the order as coercion. Urgent clinic treatment remains available
+without accepting the monitoring agreement.
 
-The player can answer in these ways:
-
-- **Accept the written terms.** Yara releases the coil. Final Compact custody
-  remains expected but is not locked until the gate assembly.
-- **Demand family placements.** Yara can move a limited set of dependents into
-  review if the player supplies proof of inherited Compact obligation. She
-  will not promise admission for the whole settlement.
-- **Demand treatment without a census.** Yara continues urgent care at the
-  canvas but keeps the coil. This separates her medical duty from the price of
-  the pump.
-- **Offer a copy of the original roll later.** If the roll survives, Yara can
-  accept supervised archive access while the original remains with Ressa. This
-  supports a resident-control compromise.
-- **Claim emergency requisition under the Censure writ.** The writ does not
-  grant civil ownership, and Yara says so. She records the seizure and yields
-  only if the player backs the claim with force. The part becomes
-  Remnant-disputed property, and later Compact aid is reduced.
-- **Steal the coil.** A service opening behind the cold cabinet provides a
-  Security route. Discovery closes lawful Compact bargaining and puts the
-  clinic into guarded withdrawal.
-
-Yara never offers collective citizenship. If pressed for a yes or no answer,
+Aurelia never offers collective citizenship. If pressed for a yes or no answer,
 she admits that her current authority contains no path for South Measure to
 enter as one community.
 
-#### Daro's field governor
+#### Morrow imported ration
 
-Daro opens the medicine cart in front of the player. The field governor is
-bolted into its cooling box. Removing it will not kill anyone at South Measure
-today, but the medicine will not survive the hot ford without another solution.
+Darius lays a cistern schedule beside the medicine route board. His plan closes
+the buried feed and supplies a fixed daily ration in sealed tanks with purifier
+salt. The ration is stable, but every cup depends on the road.
 
-His first contract converts the old pump debt into fixed household service.
-It ends compounding interest, yet it binds people who never signed the original
-repair notes.
+The player can sign a household water contract, pay for one season, or compel an
+emergency service under the Censure writ. Restoring the annex cooling jacket
+creates a less damaging exchange: medicine can remain cold in the annex while
+the cooled wagon carries water. None of these routes grants Morrow the pump key
+automatically.
 
-The responses are:
+The separate ledger dispute remains intact. Publishing only forged entries
+produces a revised debt record and keeps real road losses visible. Voiding every
+surety frees households on the local copy but leaves the Chain able to enforce
+its own record elsewhere.
 
-- **Sign the written contract.** Daro releases the governor and keeps Chain
-  guards on the road. The service term becomes the default Morrow outcome.
-- **Audit the pump ledger.** Search, Trade, or patient comparison with the
-  public water board reveals forged signatures and inflated emergency charges.
-  The same evidence can be gathered without a check by interviewing the named
-  households in Rope Rows.
-- **Offer convoy protection.** Daro accepts a pledge to find cooling or guard
-  the medicine through Red Tithe country. This releases the governor without
-  binding every household, but creates a later road obligation.
-- **Trade another claim.** Direct payment, valuable freight, or a future route
-  seal can purchase the part. The exact system cost belongs in implementation
-  data.
-- **Take the governor by stealth.** The medicine cart can be reached through
-  the repair trench. The player must then carry the part past guards or choose
-  violence when challenged.
-- **Refuse the bargain.** Daro keeps the cart ready for the ford. The resident
-  and Compact routes remain open.
+#### Isolated resident loop
 
-Publishing only the forged entries produces a revised contract and keeps the
-guards in place. Declaring the whole ledger void frees households from the
-player's point of view, but the Chain withdraws freight and enforces its copy
-elsewhere. South Measure then needs another defense and supply arrangement.
+The annex bypass schedule and undercroft manifold show a return that reaches the
+water court without touching the north feed. Noa can close the northbound line
+and open that return after the Intake Clerk is resolved. The loop carries less
+water and requires a resident at the valves every shift. It creates no census
+claim and no delivery debt.
 
-#### The old intake coupling
+The route is available after containment, Cassian's seal, Compact removal,
+controlled killing, or an engineering reseal. Burning the wicket damages too
+much of the old feed for the isolated loop.
 
-Nel believes the original relief works used a compatible mechanical coupling.
-It can be reached through the admission stair. Ressa has the civil key, Daro
-holds an old maintenance crank, and a collapsed drain from the south approach
-provides a third entrance.
+#### Feed closed
 
-The player can gain entry by:
+The player may reject every active feed. Noa closes the buried line and the camp
+survives on stored emergency water. This is the smallest ration and the shortest
+horizon. It remains available even when outside negotiations fail.
 
-- Earning Ressa's permission through the water investigation.
-- Promising supervised access to Yara or a service share to Daro.
-- Opening the civil lock with Security.
-- Clearing the drain with labor and Nel's directions.
-- Forcing the booth door, which wakes the Intake Clerk in an agitated state.
-
-No faction is required. Ressa accompanies an authorized descent. Nel joins if
-the goal includes the coupling. Tarn joins if the player shared his signal
-record or asked him to help the camp.
-
-#### Keep the old works sealed
-
-The player may reject every full repair. Nel can isolate the buried feed and
-keep the condenser at half pressure. This avoids immediate custody claims and
-leaves the household roll below. It also prolongs rationing and drives recent
-arrivals north.
-
-This route is always available, including after a failed theft or broken
-agreement. It is survival by delay, not a failure screen.
+The sealed-authority vote later forces this plan even if another plan was
+committed first. That exception is explicit at the council table.
 
 ### 6. Evidence before ownership
 
-Before moving a part to the water court, the player can gather proof that
-changes the final terms:
+Before committing a water plan, the player can gather proof that changes the
+final terms:
 
-- Nel's signed assessment establishes that South Measure has a workable local
-  repair and a mechanic capable of maintaining it.
+- Noa's signed assessment establishes that the condenser is sound and the
+  north feed carries the danger.
+- The bypass schedule establishes that a resident loop is workable and names
+  the labor it requires.
 - The Morrow ledger separates real deliveries from charges added after the
   fact.
 - The Compact placement archive proves that the institution repeatedly took
   workers from South Measure without opening a collective review.
 - The charity cards show why rejected patients accepted Choir medicine.
 - The off-roll water list proves that the council's protection also excludes.
-- Tarn's contact record links the pipe pulse to Hallowfen.
+- Cassian's contact record links the pipe pulse to Hallowfen.
 
 The evidence is not a set of tokens that unlocks one correct ending. It lets
 the player reduce a chosen harm, expose hypocrisy, or preserve a later claim.
 
-Once the player is ready, bringing a governor part to Nel or opening the old
-stair starts the crisis. A confirmation tells the player that unresolved side
-stories remain accessible afterward, but theft opportunities and preliminary
-contracts may change.
+Once the player is ready, recording the buried pulse below the old stair starts
+the crisis. Unresolved side stories remain accessible. Water-plan selections
+can be withdrawn until Susanna commits one at the council table.
 
 ### 7. The buried office answers
 
-When Nel seats a new part for testing, the whole water court falls quiet. The
-governor does not turn. A voice beneath the admission booth reads a household
-number and says that entry remains denied.
+The clinic monitor, relief schedule, drain valve, and Cassian's contact record all
+point to the same northbound pulse. Susanna writes the four water plans on the back
+of a rejected transport order, then opens the civil stair.
 
-If the player opened the undercroft first, the same voice begins while the
-party is on the records landing. If the player chose half pressure, the voice
-is heard once through the booth floor before Nel closes the buried feed.
+Below the admission booth, a voice reads a household number and says that entry
+remains denied. Susanna recognizes the number as her great-grandmother's. Cassian
+identifies the retired Hallowfen reply beneath the words. The code is using old
+intake metal as a line, and the body in the wicket is answering it.
 
-Ressa recognizes the number as her great-grandmother's. Tarn identifies the
-reply beat under the words. The Hallowfen code is using old intake metal as a
-line, and the body below is answering it.
-
-At the surface, the player decides how far to proceed:
-
-- **Descend and cut the signal at its source.** This opens the full undercroft
-  and every record choice.
-- **Let Yara lead containment.** She brings sedative and extraction tools. Her
-  custody claim becomes harder to refuse once she assumes the risk.
-- **Let Tarn seal the feed from above.** He can stop the immediate pulse by
-  spending most of his remaining charge. The undercroft stays closed, and Tarn
-  must remain for one camp watch.
-- **Have Nel isolate the old pipe.** The body falls quiet, the condenser stays
-  at half pressure, and the sealed outcome remains available.
-- **Force the pump test to continue.** The Intake Clerk tears partly free below.
-  The party must descend into combat or abandon a damaged water court.
+The player must settle the Intake Clerk before committing a water plan. Aurelia can
+prepare living removal, Cassian can cut and seal the answering branch, Noa can map
+the isolation manifold, and Susanna can recover the name in the roll. Forcing the
+wicket releases Junia into a short combat encounter. No route resolves the crisis
+from the surface alone.
 
 ### 8. Descent through the intake undercroft
 
@@ -889,7 +1253,7 @@ rescue convoy. Medicine identifies old restraint marks, while Doctrine notes
 that the office prayer was written as an entry condition rather than comfort.
 
 A locked cabinet holds sound filter cloth and blank blood cards. These are
-useful evidence for Yara's methods, not valuable treasure. Opening the cabinet
+useful evidence for Aurelia's methods, not valuable treasure. Opening the cabinet
 also reveals that Compact recovery staff visited after the Stilling and copied
 selected pages without removing the original roll.
 
@@ -899,19 +1263,18 @@ The original household roll rests inside a lime-lined chest. The pages list
 names, kin, work skills, exposure decisions, and assigned transport numbers.
 Later hands added deaths beside people whose transport never came.
 
-Ressa finds her ancestor. Other entries correspond to graves in Rope Rows and
+Susanna finds her ancestor. Other entries correspond to graves in Rope Rows and
 to families now hidden from the public roll. The player may read the names,
 close the chest untouched, or take the roll toward the surface. Removing it
 before quieting the Clerk makes the mouths in the next room recite faster.
 
 #### Maintenance channel
 
-The old coupling sits beyond a waist-high service hatch. Nel can free it
-without damage if the pulse is quiet. Engineering can do the same. Without
-either, the party can recover it after the encounter with a cracked collar
-that needs an outside brace.
+The isolation manifold sits beyond a waist-high service hatch. Its faded valve
+marks match the bypass schedule in the annex. Noa or Engineering can reconstruct
+the order that closes the north feed before the relief return opens.
 
-Tarn finds a thin black-gold vein under the pipe skin. It has not grown through
+Cassian finds a thin black-gold vein under the pipe skin. It has not grown through
 the metal. It is following it. Cutting the vein stops South Measure from
 repeating the Hallowfen reply, but the stronger signal still points north.
 
@@ -922,7 +1285,7 @@ rotted sleeve and the bone stamp identify the person it was. The body has made
 the act of denial into its anatomy. It does not stalk the vault until disturbed.
 Its mouths keep working while the fused hands stamp dry air.
 
-Ressa speaks her great-grandmother's name. One mouth replaces the household
+Susanna speaks her great-grandmother's name. One mouth replaces the household
 number with that name, then returns to the denial sentence. The response shows
 that memory remains inside the form without turning the scene into a cure.
 
@@ -931,99 +1294,81 @@ that memory remains inside the form without turning the scene into a cure.
 The player receives clear warnings about what each action risks:
 
 - **Contain it in place.** The party cuts the signal, restrains the opened ribs,
-  and closes the wicket around the body. The roll and coupling remain intact.
+  and closes the wicket around the body. The roll and manifold remain usable.
   South Measure inherits a dangerous sealed person beneath its court and may
   ask for help again.
-- **Use Tarn's full seal charge.** Tarn burns the active vein out of the pipe
-  and fixes an order seal over the wound. The roll survives, and the coupling
-  can be recovered safely. Tarn must remain for one camp watch.
-- **Give it to Yara.** Compact staff sedate the form and remove the booth around
-  it. Yara claims the original roll unless separately challenged. Her coil
-  repair is immediate. Compact treatment data improves, while later exposed
-  people face detention based on the sample.
+- **Use Cassian's full seal charge.** Cassian burns the active vein out of the pipe
+  and fixes an order seal over the wound. The roll survives, and the isolated
+  loop remains possible. Cassian must remain for one camp watch.
+- **Give it to Aurelia.** Compact staff sedate the form and remove the booth around
+  it. Aurelia claims the original roll unless separately challenged. Compact
+  treatment data improves, while later exposed people face detention based on
+  the sample.
 - **Kill it without fire.** The form tears free and combat begins, or the party
   performs a controlled killing after restraint. Careful removal preserves the
-  roll. The coupling needs Nel or Engineering to avoid a crack. No faction
-  gains a living sample, and Ressa records the Clerk under its recovered human
-  name if the roll was read.
+  roll and leaves the manifold usable. No faction gains a living sample, and
+  Susanna records the Clerk under its recovered human name if the roll was read.
 - **Burn it under Censure law.** Fire ends the response and sterilizes the
-  triage room. Part of the roll burns, and the coupling warps unless an outside
-  governor is already secured. The Remnant approves the purge. Measure families
-  lose names and proof with the threat.
+  triage room. Part of the roll burns, and the old local loop is no longer safe
+  to open. The Remnant approves the purge. Measure families lose names and proof
+  with the threat.
 - **Withdraw and reseal.** This remains available only before the body tears
-  free. The roll and coupling stay below. The half-pressure or outside-governor
-  route continues, but the Hallowfen-facing body remains in place.
+  free. An engineering reseal can preserve the roll and local-loop option while
+  keeping the Hallowfen-facing body in place.
 
 Containment can be achieved through several preparations. Medicine and Host
 Signs identify where to apply suppressant. Doctrine reads the old work cadence
-that settles the mouths long enough to close the wicket. Tarn can cut the active
-vein while Nel stops pipe vibration. A party without those skills can use the
-office's restraint frame and Ressa's knowledge of the intake sequence. That
+that settles the mouths long enough to close the wicket. Cassian can cut the active
+vein while Noa stops pipe vibration. A party without those skills can use the
+office's restraint frame and Susanna's knowledge of the intake sequence. That
 route takes longer and triggers a short combat phase, but it reaches the same
 contained state if the player protects the frame.
 
 The Intake Clerk never becomes a companion, a speaking oracle, or a source of
 loot. Its useful information comes from the signal and the records around it.
 
-### 10. Repair and the gate assembly
+### 10. Water plan and gate assembly
 
-After the undercroft decision, Nel completes the chosen repair or bolts the
-buried feed shut. The scene moves to the old measure gates. Residents gather by
-row rather than faction. Yara places the Compact agreement on the admission
-counter. Daro puts down the pump note and warehouse key. Ressa brings the
-public water roll.
+After the undercroft decision, Susanna convenes the council in Measure Hall. The
+player commits one operating plan first:
 
-The source of the part changes the price but not the final question:
+- **Monitored full flow:** Compact staff hold the buried rhythm below each tap
+  cycle. Every row receives water, while the monitoring agreement governs what
+  the clinicians may record.
+- **Morrow imported ration:** the buried feed closes and sealed cisterns provide
+  a stable daily ration. Delivery terms govern its cost.
+- **Isolated resident loop:** Noa closes the north feed and opens the relief
+  return. Flow is reduced and residents inherit every valve watch.
+- **Feed closed:** the camp drinks stored emergency water under its smallest
+  ration.
 
-- **Compact coil.** It restores clean full pressure and brings immediate
-  clinical support. The Compact expects census rights, archive access, or the
-  return of seized property.
-- **Morrow field governor.** It gives full pressure with machinery the Chain can
-  service. The medicine cart loses cooling, and Daro expects payment or a road
-  pledge. He will also accept household service.
-- **Original intake coupling.** It permits a resident repair with no outside
-  owner. The old part needs frequent work, and no lawful supplier recognizes
-  it.
-- **No replacement.** Isolating the buried feed leaves half pressure. Rationing
-  continues, and recent households begin leaving.
+Susanna then places four authority keys beside that operating record. Compact pump
+access, Morrow service, resident control, and sealed outside access are separate
+choices. Compact or Morrow can therefore support a plan without automatically
+owning the pump. Sealed outside access is the explicit exception because it
+overrides the plan, closes the feed, and begins emergency rationing.
 
-The player then chooses civil control:
-
-- **Compact custody.** Yara installs or certifies the repair. Her clinic stays,
-  and selected applicants receive placement review. The census begins. The
-  Compact controls undercroft access and can separate households through
-  individual admission.
-- **Morrow contract.** Daro turns the warehouse key over to a Chain mechanic
-  and keeps guards on the road. Service obligations bind households, with
-  severity set by the ledger outcome.
-- **Resident control.** Ressa gives the pump key to Nel or a council mechanic.
-  South Measure writes its own maintenance roll. Parts and freight become
-  uncertain. If Nel leaves, the repair is more fragile.
-- **Sealed and waiting.** Nel keeps half pressure, and the undercroft stays
-  closed. The north lane clears after a final ration. No outside power gains
-  the site, but water hardship pushes people toward the road and the Choir cot.
-
-If the player promised the part to one faction and gives control to another,
-the final dialogue states the breach. Yara may withdraw nonurgent staff. Daro
-may close his grain cages or demand the governor back. The player can return
-the disputed part and choose another repair if one remains available. If not,
-the player must accept half pressure or enforce the seizure.
+A full Compact census agreement is breached if Morrow or residents receive the
+service key. A signed Morrow water contract is breached if Compact or residents
+receive it. Susanna states those consequences before the vote. Consent-limited
+monitoring, paid cisterns, and the cooling-jacket exchange carry no automatic
+custody promise.
 
 ### 11. Who keeps the names
 
 Record custody is decided after pump control. Some combinations require the
 roll to have survived and been removed from the vault.
 
-- **Leave the original with Ressa.** The council restores omitted names and
+- **Leave the original with Susanna.** The council restores omitted names and
   marks graves from the old entries. South Measure keeps its strongest claim
   against inherited exclusion, while Compact research loses direct access.
-- **Give the original to Yara.** Compact archivists preserve and study it.
-  Ressa may receive a certified copy if negotiated. Treatment may improve, but
+- **Give the original to Aurelia.** Compact archivists preserve and study it.
+  Susanna may receive a certified copy if negotiated. Treatment may improve, but
   the names become screening data at later checkpoints.
-- **Let Yara copy it under supervision.** This is available after bargaining
+- **Let Aurelia copy it under supervision.** This is available after bargaining
   with the intact roll. The original stays in South Measure. Both sides retain
   evidence, and future disputes remain possible.
-- **Give Daro household links.** Daro copies kinship pages while the council can
+- **Give Darius household links.** Darius copies kinship pages while the council can
   keep the original. The Chain recognizes some missing deliveries and also
   extends surety claims across family lines.
 - **Seal it below.** The chest returns to the lime vault. No current faction can
@@ -1033,56 +1378,56 @@ roll to have survived and been removed from the vault.
   claimant. Compact and Chain lose evidence. South Measure loses ancestor
   names, burial links, and its oldest legal claim.
 
-With Ressa's consent, the player may carry a certified abstract of the
+With Susanna's consent, the player may carry a certified abstract of the
 withdrawal order and transport failures. This gives later dialogue proof without
 removing family histories from the settlement.
 
-### 12. Nel's decision
+### 12. Noa's decision
 
-Nel's placement is resolved at the same assembly, but nobody receives legal
+Noa's placement is resolved at the same assembly, but nobody receives legal
 ownership of her choice.
 
-- **Support her admission.** Nel leaves for the machine school when the next
+- **Support her admission.** Noa leaves for the machine school when the next
   Compact convoy moves. Her father and brother remain unless another bargain
   included them. She leaves repair cards for the council and later writes back.
 - **Ask her to keep the pump running.** This option succeeds only if the pump is
-  under resident control and the player admits what the request costs. Nel
+  under resident control and the player admits what the request costs. Noa
   agrees to one maintenance season, not a lifetime sentence.
-- **Trade the roll evidence for dependent review.** Yara places Nel's household
+- **Trade the roll evidence for dependent review.** Aurelia places Noa's household
   together under supervised status. The family gains a path out, while Compact
   access to their exposure history expands.
 - **Forge a household skill record.** Security or help from a camp clerk adds
-  Nel's father and brother as required machine dependents. All can leave if the
+  Noa's father and brother as required machine dependents. All can leave if the
   papers survive inspection. Discovery later threatens their status and the
   player's Compact standing.
-- **Tell Nel to decide without advice.** She accepts the school place and leaves
+- **Tell Noa to decide without advice.** She accepts the school place and leaves
   alone. Her trust is higher than if the player presents departure as a duty to
   the camp or to progress.
 
-If Yara withdraws because the player stole the coil, Nel's place is delayed but
-not erased. Yara refuses to use an applicant as punishment for the party. A
+If Aurelia withdraws after a compelled monitoring order, Noa's place is delayed
+but not erased. Aurelia refuses to use an applicant as punishment for the party. A
 later Compact office must process the form.
 
-### 13. Tarn's road
+### 13. Cassian's road
 
-Tarn asks for a final answer beside the north marker. The player chooses among
+Cassian asks for a final answer beside the north marker. The player chooses among
 four states:
 
 - **Share the road to Hallowfen.** This requires the player to learn his Ash
   Chapel failure, ask for the signal truth, and involve him in protecting South
-  Measure. Tarn joins as a temporary companion. He follows the signal, not the
+  Measure. Cassian joins as a temporary companion. He follows the signal, not the
   Censure chain of command.
 - **Let him scout ahead.** This is the default if trust is incomplete or the
-  party does not want a heavy companion. Tarn leaves before the gate opens and
+  party does not want a heavy companion. Cassian leaves before the gate opens and
   appears at the Hallowfen approach.
 - **Transmit to the Black Reliquary.** If not sent earlier, the player can ask
-  Tarn to report now. A recovery force begins moving. Tarn may still scout, but
+  Cassian to report now. A recovery force begins moving. Cassian may still scout, but
   the later force is no longer under his private control.
-- **Ask for one camp watch.** Tarn spends his remaining seal charge or guards
-  the undercroft while the repaired pump completes its first cycle. He stays
+- **Ask for one camp watch.** Cassian spends his remaining seal charge or guards
+  the undercroft while the chosen water plan completes its first cycle. He stays
   behind and can rejoin in later content.
 
-The player can ask Tarn to hire on as Morrow protection or submit to Yara's
+The player can ask Cassian to hire on as Morrow protection or submit to Aurelia's
 filter study. He refuses ownership in both cases. He may exchange drive oil for
 a road watch, or permit a noninvasive medical reading, if the request is framed
 as a limited trade.
@@ -1096,7 +1441,7 @@ chosen result:
   begin the census.
 - Under Morrow control, Chain guards reopen the freight lane and service terms
   appear beside the water board.
-- Under resident control, Ressa removes the old receiving sign and leaves its
+- Under resident control, Susanna removes the old receiving sign and leaves its
   iron posts standing for a future town name.
 - Under the sealed outcome, families from the newest fires shoulder their packs
   before the party leaves.
@@ -1106,7 +1451,7 @@ conversations show the first practical cost of the outcome. Crossing the north
 edge gives a clear confirmation that unresolved local scenes will close.
 
 On the road marker beyond the gate, the old Hallowfen checkpoint symbol has
-been scratched out and redrawn pointing north. If Tarn shared his record, the
+been scratched out and redrawn pointing north. If Cassian shared his record, the
 party hears the reply rhythm once through the buried line. Old Pilgrim Way is
 the next location. Hallowfen remains farther ahead.
 
@@ -1135,17 +1480,17 @@ The player can:
 - Ask how entry works. The family explains that a Censure passage scrap brought
   them to the gate but created no water or voting claim.
 - Share a clean-water supply if one exists in party inventory.
-- Bring their names to Ressa for temporary ration entry.
-- Refer them to Yara, Daro, or Iven. Each referral attaches a different cost:
+- Bring their names to Susanna for temporary ration entry.
+- Refer them to Aurelia, Darius, or Joanna. Each referral attaches a different cost:
   screening, debt, or exposure to Choir couriers.
 
 Adding the family to the temporary water board reduces an established row's
-share unless the pump is restored. Ressa makes that consequence visible before
+share unless the pump is restored. Susanna makes that consequence visible before
 the player confirms it.
 
 #### Charity cot
 
-Iven's treatment space occupies a patched freight awning. It contains ordinary
+Joanna's treatment space occupies a patched freight awning. It contains ordinary
 fever patients, a locked suppressant case, washed bandages, and prayer cards
 with the wound doctrine found at Ash Chapel.
 
@@ -1159,23 +1504,23 @@ Exploration reveals:
   close.
 
 Medicine or Host Signs separates safe stock from suspect stock at once. Without
-those skills, the player can compare batch marks at Yara's clinic or ask Iven
+those skills, the player can compare batch marks at Aurelia's clinic or ask Joanna
 which doses caused heat behind the eyes.
 
 The charity decision has four resolutions:
 
-- **Sort the medicine and let Iven keep the safe stock.** Current treatment
-  continues, while suspect vials are secured or destroyed. Ressa and Iven
-  approve. Yara accepts samples if offered. The Choir loses its tainted stock
+- **Sort the medicine and let Joanna keep the safe stock.** Current treatment
+  continues, while suspect vials are secured or destroyed. Susanna and Joanna
+  approve. Aurelia accepts samples if offered. The Choir loses its tainted stock
   but learns that South Measure still accepts anonymous aid.
-- **Put the cot under council protection.** Ressa assigns watchers and adds
+- **Put the cot under council protection.** Susanna assigns watchers and adds
   patients to the water roll. The council takes responsibility for people it
   had left informal. Courier contact becomes harder.
-- **Transfer patients and supplies to Yara.** Patients receive clean care after
-  screening. Compact medical standing rises, but Iven resents losing control
+- **Transfer patients and supplies to Aurelia.** Patients receive clean care after
+  screening. Compact medical standing rises, but Joanna resents losing control
   of names. Unresolved or Bloomborn patients may enter observation status.
 - **Burn everything.** The active residue and courier mark are destroyed.
-  Remnant approval rises. Iven becomes hostile unless replacement medicine is
+  Remnant approval rises. Joanna becomes hostile unless replacement medicine is
   supplied, and the Choir uses the fire as proof that legal care arrives as
   confiscation.
 
@@ -1197,13 +1542,13 @@ threat as lawful ownership.
 #### Collapsed drain
 
 A shallow runoff trench ends at a slab beneath the intake yard. Search finds
-tool scratches made by generations of camp mechanics. Nel can guide the party
+tool scratches made by generations of camp mechanics. Noa can guide the party
 through after two blockages are cleared.
 
 This is the quiet alternative to the admission-booth lock. It enters the
-maintenance channel instead of the records landing. Using it without Ressa's
+maintenance channel instead of the records landing. Using it without Susanna's
 permission avoids the civil key but causes a confrontation when the party
-emerges with the coupling or roll.
+emerges with the roll or a marked valve plan.
 
 ### Old measure gates
 
@@ -1213,7 +1558,7 @@ The board lists each rope row, its cup count, and the current shortfall. Recent
 arrivals appear in chalk below the ruled lines. A second list, kept behind the
 board, covers hidden households that receive water through trusted neighbors.
 
-The player can compare the board with Daro's pump ledger and the original roll.
+The player can compare the board with Darius's pump ledger and the original roll.
 The three records expose forged signatures, renamed households, and people the
 council protects without recognizing publicly.
 
@@ -1224,19 +1569,19 @@ civil stair key, transport stamps, and a speaking tube down to the undercroft.
 Before the crisis, the tube carries only pipe vibration. After it begins, the
 Intake Clerk speaks through it.
 
-Security opens the clerk side. Ressa provides the key after the player helps
+Security opens the clerk side. Susanna provides the key after the player helps
 with the pump or agrees to a supervised descent. Force breaks the stair seal and
 places the Clerk in its agitated encounter state.
 
 #### Return shelf
 
 Filter mesh, school slates, and sealed needles sit beneath letters from people
-admitted to outside cities. One unopened letter is addressed to Nel's father.
+admitted to outside cities. One unopened letter is addressed to Noa's father.
 
-The player may leave it untouched, give it to Nel, or read it first. The letter
+The player may leave it untouched, give it to Noa, or read it first. The letter
 comes from a former Measure mechanic who warns that Compact probation forbids
 unapproved camp contact. Reading it gives useful context but violates the
-family's privacy. Nel notices if the seal was broken.
+family's privacy. Noa notices if the seal was broken.
 
 The party may donate a suitable practical supply. Residents comment on the
 gift, though it does not alter governance by itself.
@@ -1247,8 +1592,8 @@ The raised platform now serves as a market stage. Scratches at its edge count
 departures, not arrivals. Comparing the count with Compact placement files
 shows that more people were selected than ever reached permanent admission.
 
-This evidence lets the player challenge Yara's use of placement as proof of
-successful reintegration. Yara answers that probation failures are real and
+This evidence lets the player challenge Aurelia's use of placement as proof of
+successful reintegration. Aurelia answers that probation failures are real and
 agrees to disclose the destination of current applicants if pressed.
 
 ### Rope Rows
@@ -1286,7 +1631,7 @@ Its effect is social:
 - Dividing it wins newcomer trust and draws criticism from families already on
   reduced cups.
 - Paying the ration avoids the immediate loss without changing the rule.
-- Sending it to council makes Ressa add a temporary-arrival column after the
+- Sending it to council makes Susanna add a temporary-arrival column after the
   player raises the hidden water list.
 
 #### Last Canvas work frame
@@ -1296,24 +1641,24 @@ cloth will be cut into roof patches on Last Canvas Day. Helping with the frame
 opens quieter conversations about grandparents who still expected transport.
 
 One strip bears old exposure paint. Medicine confirms that it is inert. The
-player can let the residents use it, demand its destruction, or give it to Yara
+player can let the residents use it, demand its destruction, or give it to Aurelia
 for study. Destroying harmless cloth increases fear without providing safety.
 
-#### Varo household
+#### Faber household
 
-Nel's father repairs cup handles beside the door. Her younger brother has
+Noa's father repairs cup handles beside the door. Her younger brother has
 copied pump diagrams onto the wall but cannot read all the labels. Conversation
-here establishes that both want Nel to take the school place. They fear saying
+here establishes that both want Noa to take the school place. They fear saying
 so at the water court, where her departure sounds like abandonment.
 
 The room contains no secret cure for the family-placement problem. It gives the
-player enough knowledge to stop claiming that staying is what Nel's family
+player enough knowledge to stop claiming that staying is what Noa's family
 wants.
 
 #### Hidden households
 
 A wash wall in the rear rows conceals rooms used by Bloomborn and other people
-kept off formal lists. Ressa or Iven reveals the entrance after trust is earned.
+kept off formal lists. Susanna or Joanna reveals the entrance after trust is earned.
 Search can find the extra water line, but entering uninvited damages council
 trust.
 
@@ -1324,12 +1669,12 @@ The player chooses how their names are handled:
 - **Add chosen names to the public water roll.** Residents gain a visible share
   and council standing. Any faction that later controls the board can find
   them.
-- **Give the list to Yara.** Compact clinicians screen and treat the households.
+- **Give the list to Aurelia.** Compact clinicians screen and treat the households.
   Observation and removal become possible.
-- **Give the list to Daro.** The Chain assigns direct rations and work places.
+- **Give the list to Darius.** The Chain assigns direct rations and work places.
   Household surety and debt attach to the names.
 
-Ressa supports adding names only if the listed people consent. She rejects a
+Susanna supports adding names only if the listed people consent. She rejects a
 player order that exposes them for an abstract statement about equality.
 
 #### Grave strip
@@ -1346,37 +1691,34 @@ unnamed, even if the Compact preserves the archive elsewhere.
 
 #### Condenser housing
 
-The housing supports Engineering inspection, Nel's repair route, and the final
-governance scene. A sample jar shows whether the current flow carries metal.
-After repair, its clarity changes with the chosen method.
+The housing supports Engineering inspection, Noa's diagnosis, and the final
+water-plan scene. A sample jar remains clear while the second knock arrives
+through the buried pipe, separating the pulse from a mechanical failure.
 
-The old intake feed can be isolated from here. This is the non-dungeon path to
-the sealed outcome. Tarn can also attach his order seal at this point.
+The old north feed can be isolated from here after the manifold order is known.
+Cassian can also attach his order seal at this point.
 
 #### Maintenance sump
 
-Two shed governor teeth lie beneath a rust screen. Nel can turn them into a
-brace for a cracked undercroft coupling. Finding them preserves resident
-control after rough recovery or a full-pressure test.
-
-Search reaches the teeth quickly. Without Search, helping Nel drain the sump
-takes a short interaction and temporarily closes one public tap.
+Two old governor teeth lie beneath a rust screen. Their wear predates the
+current crisis, while the installed sleeve remains clean. Helping Noa drain the
+sump confirms that the present danger did not begin with fresh metal failure.
 
 #### Ration board dispute
 
 After the first exploration loop, a resident accuses a Chain guard of taking
-water for wagon animals. The guard produces Daro's road-defense allotment.
+water for wagon animals. The guard produces Darius's road-defense allotment.
 
 The player can uphold the allotment, return the water to household cups, or ask
-Daro to replace it from freight stock. Upholding it favors road defense. Taking
+Darius to replace it from freight stock. Upholding it favors road defense. Taking
 it back gives one more row water and makes Chain guards less willing to remain
-after a ledger confrontation. Daro replaces it only after a revised contract
+after a ledger confrontation. Darius replaces it only after a revised contract
 or a road pledge.
 
-#### Tarn's repair place
+#### Cassian's repair place
 
-Tarn's opened plate, drive-oil cup, and signal reader can be inspected with his
-permission. The cut names on his armor confirm that Ors was recorded as a
+Cassian's opened plate, drive-oil cup, and signal reader can be inspected with his
+permission. The cut names on his armor confirm that Job was recorded as a
 failure before Ash Chapel.
 
 Medicine can offer a noninvasive filter reading. Engineering can repair a loose
@@ -1387,34 +1729,35 @@ without the story requirements.
 
 #### Fixed wagon office
 
-Daro's office contains the pump ledger, freight contracts, and a route board.
+Darius's office contains the pump ledger, freight contracts, and a route board.
 The front room is public. The signature folios are locked in a rear drawer.
 
 The player can obtain the full ledger by earning an audit, opening the drawer,
-or copying figures while Daro handles the water-court dispute. Violence is not
-required. If caught searching, Daro offers to finish the audit in public rather
+or copying figures while Darius handles the water-court dispute. Violence is not
+required. If caught searching, Darius offers to finish the audit in public rather
 than start a fight in front of camp workers.
 
 #### Medicine cart
 
-The field governor runs the insulated box. Inspecting the cargo confirms that
-the medicine is real and marked for settlements beyond Red Tithe Ford.
+The insulated box holds real suppressant marked for settlements beyond Red
+Tithe Ford. Its route shares the only cooled wagon suitable for regular cistern
+service.
 
-Engineering removes the part cleanly. Without it, a Chain mechanic will remove
-the part under an agreement. A theft attempt without either damages the cooler,
-which starts the later medicine-spoilage state at once.
+The annex cooling jacket can hold the medicine locally and free the wagon for
+water. Without that work, every imported-water trip delays the next medicine
+run. Nothing is removed from the cart as a pump component.
 
 #### Repair trench
 
 The trench passes beneath the cart stands and reaches the school drainage path.
-It is the stealth route to the governor and ledger office. Chain workers use it
-throughout the day, so concealment depends on timing or worker trust rather than
-an empty patrol puzzle.
+It is a quiet route to the ledger office and medicine-cart lane. Chain workers
+use it throughout the day, so concealment depends on timing or worker trust
+rather than an empty patrol puzzle.
 
 #### Guard bunks
 
 Personal wall tags name drivers and guards killed keeping the south road open.
-Several names also appear as charges in the pump ledger because Daro billed
+Several names also appear as charges in the pump ledger because Darius billed
 their burial transport to South Measure.
 
 This find sharpens the ledger choice. The delivery losses were real. Charging
@@ -1423,14 +1766,14 @@ the bereaved camp for the graves was still a decision.
 #### Grain cages
 
 Household surety tags hang from ration sacks. The player can cut the tags, copy
-them, or leave them. Cutting tags does not erase Daro's master ledger. It lets
+them, or leave them. Cutting tags does not erase Darius's master ledger. It lets
 several families claim unmarked grain during a Chain withdrawal and creates a
 later theft accusation.
 
 #### Drive-oil locker
 
-Daro will trade oil to Tarn for one road watch. The player may buy it, include
-it in a governor bargain, or steal it. Taking the oil helps Tarn leave early.
+Darius will trade oil to Cassian for one road watch. The player may buy it, include
+it in a road bargain, or steal it. Taking the oil helps Cassian leave early.
 Giving it only after he completes a camp watch supports his later rejoining
 state.
 
@@ -1438,18 +1781,18 @@ state.
 
 #### Public clinic
 
-Yara's staff clean wounds and lower fevers without religious conditions.
+Aurelia's staff clean wounds and lower fevers without religious conditions.
 Watching a treatment shows why residents keep coming despite their fear of the
 records. The clinic should never be staged as a false front.
 
-The player can refer charity-cot patients here, request supplies for Iven, or
-offer suspect vials for analysis. Yara gives Iven basic dressings if the player
-separates that request from the governor negotiation.
+The player can refer charity-cot patients here, request supplies for Joanna, or
+offer suspect vials for analysis. Aurelia gives Joanna basic dressings if the player
+separates that request from the monitoring negotiation.
 
 #### Applicant lane
 
 Applicants stand by individual name. Dependents remain in an unmarked waiting
-space. Nel's interview can be overheard only with her permission or by violating
+space. Noa's interview can be overheard only with her permission or by violating
 the canvas partition.
 
 Speaking to applicants reveals mixed motives. Some want to leave. Others filed
@@ -1462,22 +1805,22 @@ The archive lists prior applicants, provisional destinations, failed reviews,
 and returns to South Measure. A standing directive permits individual cases but
 keeps collective camp petitions inactive.
 
-Yara shows the summary if challenged with the transport-platform count. Search
+Aurelia shows the summary if challenged with the transport-platform count. Search
 or Security can reach the detailed pages. Stealing them exposes past failures
 but also removes information families need to trace admitted relatives.
 
-The player can copy the directive, ask Yara to publish the destinations, or
+The player can copy the directive, ask Aurelia to publish the destinations, or
 leave the archive intact. Publishing gives families useful answers and makes
-Yara answer for failures she did not personally cause.
+Aurelia answer for failures she did not personally cause.
 
 #### Cold cabinet
 
-The governor coil sits in the cabinet's lower service bay. The upper shelves
-hold temperature-sensitive medicine. Cutting power to steal the coil spoils
-some stock unless Engineering reroutes the small backup cell.
+A Compact flow monitor sits in the lower service bay beside a backup cell. The
+upper shelves hold temperature-sensitive medicine. The monitor can remain live
+when the lamps dip and can separate the buried reply from ordinary pipe strain.
 
-This makes theft costly without forcing combat. A clean theft preserves the
-medicine but still breaks the Compact agreement.
+Aurelia controls staff access to it. The negotiation concerns monitoring labor and
+record access, not theft of a replacement component.
 
 #### Blood-card station
 
@@ -1493,18 +1836,18 @@ trust.
 ### Intake undercroft
 
 The undercroft exploration follows the full plot sequence, but several optional
-finds can be missed without blocking the repair:
+finds can be missed without blocking the water decision:
 
 - Brass intake hooks connect current addresses to ancestor names.
 - The last staff order proves that samples were removed before civilian rescue.
 - Compact copy marks show later archive access.
 - The full household roll names hidden families and abandoned transports.
-- The maintenance channel contains the original coupling.
+- The maintenance channel contains the isolation manifold and north-feed seam.
 - The black-gold vein and signal beat point toward Hallowfen.
 - The Intake Clerk preserves one human name if the roll is read before its fate
   is chosen.
 
-The drain entrance reaches the coupling first. The civil stair reaches the
+The drain entrance reaches the manifold first. The civil stair reaches the
 records first. This changes what the player knows when the Clerk wakes, but both
 routes can explore every room before leaving if the body is contained or
 destroyed.
@@ -1518,15 +1861,15 @@ religious writ, or entered-person papers. South Measure council marks do not
 count. The player's Censure writ opens the party route after the water lane
 clears.
 
-The player can copy the seal pattern for later forgery, ask Daro for freight
-coverage, or ask Yara to add an applicant convoy. These options affect who
+The player can copy the seal pattern for later forgery, ask Darius for freight
+coverage, or ask Aurelia to add an applicant convoy. These options affect who
 appears on Old Pilgrim Way.
 
 #### North marker and buried line
 
-The marker carries the damaged Hallowfen checkpoint symbol. Tarn's reader
+The marker carries the damaged Hallowfen checkpoint symbol. Cassian's reader
 confirms the signal direction here. Search finds old service cuts that mark the
-buried line's route north. Comparing them with Tarn's record confirms that the
+buried line's route north. Comparing them with Cassian's record confirms that the
 water court was only repeating a stronger source.
 
 #### Departure verge
@@ -1534,9 +1877,9 @@ water court was only repeating a stronger source.
 After the final assembly, the people leaving South Measure gather here. Their
 composition reflects the choices already made: Compact applicants, displaced
 recent arrivals, Chain labor, or a smaller group leaving by choice after a
-resident repair.
+resident isolation plan.
 
-The verge is the last chance to speak with Nel and Tarn. Crossing it closes the
+The verge is the last chance to speak with Noa and Cassian. Crossing it closes the
 location and begins Old Pilgrim Way.
 
 ## Optional conflict and noncombat completion
@@ -1545,10 +1888,10 @@ Ash Road South can be completed without fighting any human faction. The Intake
 Clerk can also be contained without a full combat if the player investigates
 the office or brings the right help.
 
-Human combat occurs only when the player chooses force during a governor theft,
-attacks a clinic or freight worker, or tries to enforce an unlawful seizure
-after being challenged. Guards should surrender or withdraw when their material
-goal is lost. They do not fight to the death over a pump part.
+Human combat occurs only when the player attacks a clinic or freight worker or
+tries to enforce an unlawful seizure after being challenged. Guards should
+surrender or withdraw when their material goal is lost. They do not fight to
+the death over a water schedule.
 
 The Intake Clerk is the location's intended combat set piece. Even there,
 containment, Compact extraction, and surface sealing remain authored paths.
@@ -1560,14 +1903,14 @@ and who gained custody afterward.
 Before the gate assembly, the quest log warns which unfinished choices are
 about to change:
 
-- Unsigned governor bargains close once another faction receives the pump keys.
-- The ledger can still be exposed after a resident repair, but it can no longer
-  reduce a contract the player already rejected.
-- Iven's supplies can be resolved after the pump decision and before departure.
+- Uncommitted monitoring, cistern, and isolation plans close at the assembly.
+- The ledger can still be exposed after a resident plan, but it can no longer
+  reduce a water contract the player already rejected.
+- Joanna's supplies can be resolved after the pump decision and before departure.
 - Hidden households can be added to a resident or Morrow water roll. Under
   Compact custody, disclosure becomes part of the census unless the player
   keeps the list concealed.
-- Nel and Tarn always receive final conversations at the north verge.
+- Noa and Cassian always receive final conversations at the north verge.
 
 The player can walk back through the whole surface map after the main quest.
 The undercroft remains accessible only if it was left under resident control or
@@ -1583,15 +1926,15 @@ quietly taking the roll after promising to leave it buried.
 
 **Location:** Water court
 
-**Characters:** Ressa Venn, Nel Varo, waiting residents, Daro's guards
+**Characters:** Susanna Fontana, Noa Faber, waiting residents, Darius's guards
 
 **Player state:** First entry to Ash Road South
 
 **Purpose:** Establish that South Measure is an old community whose road, water,
 and legal status are controlled by other powers.
 
-**Pressure:** The last rope rows will receive no water if the condenser loses
-more pressure. The player's writ can force passage for the party, but wagons and
+**Pressure:** The last rope rows receive no water while the sound condenser is
+throttled. The player's writ can force passage for the party, but wagons and
 residents still cannot clear the road.
 
 **Player choices:**
@@ -1603,21 +1946,21 @@ residents still cannot clear the road.
 
 **Dialogue beats:**
 
-1. Ressa marks the last filled household cup on the public board.
-2. Nel identifies the governor failure and refuses a temporary overpressure
-   that could poison the settling tanks.
-3. Daro's guard confirms the north lane stays closed until the crowd disperses.
-4. Ressa directs the player to Yara, Daro, and Tarn without granting any of them
+1. Susanna marks the last filled household cup on the public board.
+2. Noa proves the governor and bearings are sound, then lets the buried reply
+   arrive after the lever stops.
+3. Darius's guard confirms the north lane stays closed until the crowd disperses.
+4. Susanna directs the player to Aurelia, Darius, and Cassian without granting any of them
    moral authority.
 
 **Sample lines:**
 
-- Ressa: "Your writ gets your boots through, but it does not fill the last row's cups. Decide what kind of passage you came for."
-- Nel: "I can make it run loud or run clean. Today you only get one."
+- Susanna: "Your writ gets your boots through, but it does not fill the last row's cups. Decide what kind of passage you came for."
+- Noa: "The machine is sound. Full flow makes the north feed answer hard enough to shake the intake wicket."
 
 **Consequences:**
 
-- Opens the governor investigation.
+- Opens the throttled-flow investigation.
 - Records the player's opening posture toward the camp.
 - Allows immediate faction bargains for players who want a short route.
 
@@ -1627,41 +1970,41 @@ residents still cannot clear the road.
 
 **Location:** Water court maintenance side
 
-**Characters:** Brother Tarn, player, optional Ressa or Nel reaction
+**Characters:** Brother Cassian, player, optional Susanna or Noa reaction
 
 **Player state:** Reactive variants for Ash Chapel tread and corpse evidence
 
-**Purpose:** Identify Tarn as the Engine who turned away from Ash Chapel and
+**Purpose:** Identify Cassian as the Engine who turned away from Ash Chapel and
 give a concrete reason for his Hallowfen pursuit.
 
-**Pressure:** Tarn's contact record could call a recovery column if transmitted.
+**Pressure:** Cassian's contact record could call a recovery column if transmitted.
 Withholding it may leave an unknown force using Penitent order codes.
 
 **Player choices:**
 
-- Accuse Tarn of abandoning the chapel.
-- Ask what Brother Ors said from inside.
+- Accuse Cassian of abandoning the chapel.
+- Ask what Brother Job said from inside.
 - Ask why he has not reported to the Black Reliquary.
 - Propose a shared road to Hallowfen.
 - Demand that he help South Measure first.
 
 **Dialogue beats:**
 
-1. Tarn confirms the tread without asking how the player found it.
-2. He names Ors and shows the older failure cut into his plate.
-3. He plays only the Hallowfen reply rhythm, not a clean recording of Ors's
+1. Cassian confirms the tread without asking how the player found it.
+2. He names Job and shows the older failure cut into his plate.
+3. He plays only the Hallowfen reply rhythm, not a clean recording of Job's
    voice.
 4. He admits that a full report could bring forces that will purge before they
    investigate.
 
 **Sample lines:**
 
-- Tarn: "You read the tread correctly. I left civilians with an impossible body, and a clean report will not make that choice cleaner."
-- Tarn: "Black Reliquary recovery law begins with fire. Hallowfen still has people inside its wall, and I have not forgotten the difference."
+- Cassian: "You read the tread correctly. I left civilians with an impossible body, and a clean report will not make that choice cleaner."
+- Cassian: "Black Reliquary recovery law begins with fire. Hallowfen still has people inside its wall, and I have not forgotten the difference."
 
 **Consequences:**
 
-- Opens Tarn's temporary recruitment state.
+- Opens Cassian's temporary recruitment state.
 - Sets the player's initial Penitent relationship through condemnation,
   doctrine, or practical alliance.
 - Makes the silent checkpoint a deliberate mystery rather than a distant map
@@ -1673,90 +2016,90 @@ Withholding it may leave an unknown force using Penitent order codes.
 
 **Location:** Compact counting canvas
 
-**Characters:** Yara Quell, Nel Varo, Ressa Venn, applicants
+**Characters:** Aurelia Priscian, Noa Faber, Susanna Fontana, applicants
 
-**Player state:** Governor failure inspected
+**Player state:** Throttled flow inspected
 
 **Purpose:** Show the Compact's reintegration policy saving individuals while
 preserving the camp's exclusion.
 
-**Pressure:** Yara can release the coil and several placement seals now. Her
-agreement gives the Compact ownership of the undercroft records and unrestricted
-sampling rights.
+**Pressure:** Aurelia can assign a full-flow monitoring team now. Her default
+agreement gives the Compact broad census and undercroft access.
 
 **Player choices:**
 
-- Accept Yara's terms.
+- Accept Aurelia's monitoring terms.
+- Negotiate monitoring limited to consenting patients.
 - Demand family placements for the selected applicants.
 - Use the original roll, if found, to prove inherited Compact obligation.
-- Ask Nel whether she wants the offered place.
-- Refuse access and seek another governor.
+- Ask Noa whether she wants the offered place.
+- Request urgent treatment without accepting the water agreement.
 
 **Dialogue beats:**
 
-1. Yara reads applicants by individual name while dependents stand outside the
+1. Aurelia reads applicants by individual name while dependents stand outside the
    canvas line.
-2. Nel's placement is confirmed, excluding her household.
-3. Ressa refuses to let a water repair become blanket consent for the whole
+2. Noa's placement is confirmed, excluding her household.
+3. Susanna refuses to let a water plan become blanket consent for the whole
    settlement.
-4. Yara distinguishes what she can provide today from what her institution will
+4. Aurelia distinguishes what she can provide today from what her institution will
    not authorize.
 
 **Sample lines:**
 
-- Yara: "Nel Varo has a machine-school bed. Her father does not. If I tear up her form, I have kept the family together by keeping all of them here."
-- Ressa: "You bring one open door and ask us to sign away the floor beneath the camp."
-- Nel: "Stop using my bed as proof that either of you loves me."
+- Aurelia: "Noa Faber has a machine-school bed. Her father does not. If I tear up her form, I have kept the family together by keeping all of them here."
+- Susanna: "You bring one open door and ask us to sign away the floor beneath the camp."
+- Noa: "Stop using my bed as proof that either of you loves me."
 
 **Consequences:**
 
-- Can commit the Compact outcome.
-- Opens Nel's household side decision.
-- Establishes Yara as a possible later Compact contact rather than a one-scene
+- Can select monitored full flow without deciding pump authority.
+- Opens Noa's household side decision.
+- Establishes Aurelia as a possible later Compact contact rather than a one-scene
   villain.
 
-### Scene: The freight governor
+### Scene: The cistern schedule
 
 **Quest:** Names for the Gate
 
 **Location:** Morrow freight yard
 
-**Characters:** Daro Mett, Ressa Venn, Chain guards, optional Tarn
+**Characters:** Darius Secundus, Susanna Fontana, Chain guards, optional Cassian
 
-**Player state:** Governor failure inspected
+**Player state:** Throttled flow inspected
 
-**Purpose:** Make cartel control materially defensible and morally coercive.
+**Purpose:** Make cartel logistics materially defensible and morally coercive.
 
-**Pressure:** The field governor can restore water. Taking it from the medicine
-wagon creates a later supply problem at Red Tithe Ford.
+**Pressure:** Sealed cisterns can provide a stable ration without using the
+buried feed. The same cooled wagon already carries medicine across Red Tithe
+Ford.
 
 **Player choices:**
 
-- Sign Daro's service contract for South Measure.
-- Pay or pledge another compatible part for the medicine route.
-- Expose the inflated pump ledger and demand revised terms.
-- Steal the governor.
-- Refuse and enter the undercroft.
+- Sign Darius's household water contract.
+- Restore the annex cooling jacket and exchange wagon capacity.
+- Pay for one season of deliveries.
+- Expose the inflated pump ledger and demand revised debt terms.
+- Compel emergency delivery under the Censure writ.
+- Refuse and choose another water plan.
 
 **Dialogue beats:**
 
-1. Daro opens the medicine cart so the player can see that the governor is
-   installed, not hidden in a private chest.
-2. Ressa challenges the service-year clause.
-3. Daro names the convoy cost without pretending the contract is generous.
-4. Tarn refuses to enforce either civilian claim unless the player has earned
-   his intervention.
+1. Darius places the cistern schedule beside the medicine route board.
+2. Susanna challenges the service-year clause.
+3. Darius names the convoy cost without pretending the contract is generous.
+4. The cooling-jacket route separates medicine storage from water transport.
 
 **Sample lines:**
 
-- Daro: "There is your hidden treasure, bolted to a box of fever medicine. Choose which machine gets to be necessary."
-- Ressa: "You kept us alive long enough to inherit the debt. That work did not crown you."
+- Darius: "A ration is not a repair. It is water that arrives on schedule, provided the road and the contract both hold."
+- Susanna: "You kept us alive long enough to inherit the debt. That work did not crown you."
 
 **Consequences:**
 
-- Can commit the Morrow outcome.
-- Creates a medicine-wagon state for Red Tithe Ford.
-- Theft produces an immediate Chain pursuit and weakens later road access.
+- Can select Morrow imported water without deciding pump authority.
+- Creates a medicine-wagon schedule for later Red Tithe content.
+- A compelled delivery weakens later Chain access.
 
 ### Scene: Remain outside
 
@@ -1764,85 +2107,84 @@ wagon creates a later supply problem at Red Tithe Ford.
 
 **Location:** Intake undercroft
 
-**Characters:** Player, Ressa, Nel, Tarn, Yara or Daro depending on route
+**Characters:** Player, Susanna, Noa, Cassian, Aurelia or Darius depending on route
 
 **Player state:** Undercroft opened or a faction agreement grants access
 
 **Purpose:** Turn South Measure's founding exclusion into bodily horror and show
 old Host tissue responding toward Hallowfen.
 
-**Pressure:** Removing the original coupling disturbs a calcified intake clerk
-fused to the admission booth supports. Its mouths begin reciting old denials.
-The governor repair sits behind it.
+**Pressure:** Full flow drives the retired checkpoint reply through a calcified
+intake clerk fused to the admission booth supports. Its mouths recite old
+denials. The isolation manifold shares the same chamber.
 
 **Player choices:**
 
-- Use Containment or Tarn's seal charge to quiet the body.
-- Let Yara sedate and remove it for study.
+- Use Containment or Cassian's seal charge to quiet the body.
+- Let Aurelia sedate and remove it for study.
 - Destroy it before it opens fully.
-- Withdraw, seal the undercroft, and accept an outside faction's governor.
+- Reseal the wicket through the old engineering frame.
 
 **Dialogue beats:**
 
 1. The old clerk repeats the sentence that kept the first households outside.
-2. Ressa recognizes her great-grandmother's family number in one of its mouths.
-3. Tarn detects the Hallowfen reply rhythm through the clerk's opened ribs.
-4. The player chooses what matters more: intact evidence, a safe repair, or a
-   living sample.
+2. Susanna recognizes her great-grandmother's family number in one of its mouths.
+3. Cassian detects the Hallowfen reply rhythm through the clerk's opened ribs.
+4. The player chooses what happens to the person, the evidence, and the signal.
 
 **Sample lines:**
 
 - Intake Clerk: "Household denied for unresolved exposure. Remain outside until mercy becomes available."
-- Ressa: "My great-grandmother died under that sentence. Now it knows my voice."
-- Yara: "Do not burn it. This tissue stopped before our oldest field manual was written."
-- Tarn: "It is answering north. Hold the line while I cut the signal from the water."
+- Susanna: "My great-grandmother died under that sentence. Now it knows my voice."
+- Aurelia: "Do not burn it. This tissue stopped before our oldest field manual was written."
+- Cassian: "It is answering north. Hold the line while I cut the signal from the water."
 
 **Consequences:**
 
 - Determines whether the original roll survives.
 - Determines whether the Compact obtains a calcified living subject.
 - Confirms another Hallowfen-facing response without explaining the cause.
-- Enables the resident governor repair if the coupling is recovered.
+- Enables the isolated resident loop when the manifold remains usable.
 
 ### Scene: Who keeps the roll
 
 **Quest:** Names for the Gate
 
-**Location:** Old measure gates after water returns or the undercroft is sealed
+**Location:** Measure Hall after the Intake Clerk is resolved
 
-**Characters:** Ressa, Daro, Yara, Nel, Tarn if present
+**Characters:** Susanna, Darius, Aurelia, Noa, Cassian if present
 
-**Player state:** Crisis resolved
+**Player state:** Water-plan vote open
 
-**Purpose:** Commit control of the pump and historical evidence, then set Tarn's
-road state.
+**Purpose:** Commit the operating plan, pump authority, and historical evidence
+as separate decisions, then set Cassian's road state.
 
 **Pressure:** Every available outcome protects something and leaves another
 claim unresolved.
 
 **Player choices:**
 
-- Give the roll and undercroft access to the Compact.
-- Renew the Morrow water contract.
-- Leave the roll and repaired pump under resident control.
-- Seal the evidence and leave the condenser at half pressure.
+- Commit monitored flow, imported water, the isolated loop, or feed closure.
+- Grant pump access to Compact, Morrow, residents, or nobody outside.
+- Decide the original roll in a separate custody vote.
+- Settle Noa's household and Cassian's road before opening the assembly.
 
-Tarn then asks whether the player will share the Hallowfen route, send his
+Cassian then asks whether the player will share the Hallowfen route, send his
 signal record to the Black Reliquary, or ask him to remain for one camp watch.
 
 **Sample lines:**
 
-- Ressa: "We have been measured enough. If the roll stays, it stays under names we chose."
-- Yara: "Keeping the record here protects a claim. Taking it may protect people who have never heard of this road. I will not call those costs equal."
-- Daro: "A free pump still needs parts next winter. Freedom does not pull a wagon."
-- Tarn: "My road points north, but my order requires the transmitter. Which failure needs me beside it?"
+- Susanna: "We have been measured enough. If the roll stays, it stays under names we chose."
+- Aurelia: "Keeping the record here protects a claim. Taking it may protect people who have never heard of this road. I will not call those costs equal."
+- Darius: "A free pump still needs parts next winter. Freedom does not pull a wagon."
+- Cassian: "My road points north, but my order requires the transmitter. Which failure needs me beside it?"
 
 **Consequences:**
 
 - Opens the road to Old Pilgrim Way.
-- Locks the South Measure governance outcome.
-- Locks Nel's placement state.
-- Sets Tarn to companion, independent scout, Black Reliquary report, or camp
+- Locks the water plan and governance outcome independently.
+- Locks roll custody and Noa's placement state.
+- Sets Cassian to companion, independent scout, Black Reliquary report, or camp
   guard.
 
 ## The Intake Clerk encounter
@@ -1864,94 +2206,89 @@ is a person bent into the office that ruined them.
 Possible encounter behavior:
 
 - **Partial waking:** mouths answer the water pulse while the body remains
-  fixed. Containment, Doctrine, Medicine, or Tarn's seal can quiet it.
-- **Forced opening:** removing the coupling without preparation tears it free
-  of the wicket and starts combat.
-- **Compact custody:** Yara can sedate the form and cut it out intact. This
+  fixed. Containment, Doctrine, Medicine, or Cassian's seal can quiet it.
+- **Forced opening:** tearing the wicket braces without preparation frees Junia
+  and starts combat.
+- **Compact custody:** Aurelia can sedate the form and cut it out intact. This
   avoids combat but turns a still-aware person and the original records into
   Compact property.
 - **Censure:** Fire destroys the form and damages part of the household roll.
-  Ressa accepts the immediate safety and remembers the loss.
+  Susanna accepts the immediate safety and remembers the loss.
 
-The form carries no profitable loot. The coupling and records are recovered
-from the room, not its body.
+The form carries no profitable loot. The manifold and records belong to the
+room, not its body.
 
 ## Major outcomes
 
-### Compact custody
+Water operation and pump authority are independent state groups.
 
-Yara installs the governor coil. The taps return at full pressure, selected
-applicants receive provisional placements, and Compact clinicians remain for a
-season. The Compact takes the original roll and gains access to the intake
-undercroft.
+### Monitored full flow
 
-South Measure receives medicine and loses control of the evidence that proves
-how long it has been studied. Later Compact checkpoints use the new census when
-screening Hallowfen evacuees. Yara becomes a useful contact who expects the
-player to accept controlled harm in exchange for capacity.
+Compact clinicians keep the Hallowfen reply below the tap cycle and every row
+receives water. The full agreement expands census access. Negotiated supervision
+limits records to consenting patients. A compelled team works under protest.
 
-### Morrow contract
+### Morrow imported ration
 
-Daro transfers the freight governor and the Chain keeps the undercroft closed.
-Water returns without a mass Compact census. South Measure signs fixed service
-terms and remains protected by Chain guards.
+The buried feed closes and sealed cisterns provide a stable daily ration. A
+contract creates service debt, a paid season buys time, and the cooling-jacket
+exchange frees the medicine wagon without sacrificing its cargo. Every version
+makes the road part of each cup.
 
-The medicine wagon reaches Red Tithe Ford without cooling unless the player
-finds a replacement part. Morrow access improves, but South Measure residents
-cannot leave while household service remains unpaid.
+### Isolated resident loop
 
-### Resident control
+Noa closes the north feed and opens the old relief return. South Measure keeps a
+reduced local flow without census or delivery claims. Residents inherit a valve
+watch on every shift, and Noa's possible departure becomes more costly.
 
-The player recovers the old coupling, preserves the household roll, and leaves
-the pump under the row council. Ressa refuses both outside ownership claims.
+### Feed closed
 
-This is not a clean victory. South Measure keeps a failing machine without a
-recognized supply contract. Compact placements are delayed. The Chain reduces
-deliveries until a new price is agreed. In return, South Measure can become a
-later evacuation destination whose residents decide who enters.
+The camp drinks from storage under emergency rationing. This protects the line
+from the buried reply but gives the shortest survival horizon. Arrival fires and
+the charity cot feel the shortage first.
 
-### Sealed and waiting
+### Pump authority
 
-The player reseals the undercroft and leaves the condenser at reduced pressure.
-No faction gains the records. The north road opens after the crowd thins, but
-water rationing worsens.
+Compact access, Morrow service, resident control, and sealed outside access can
+each follow the first three plans. Their map dressing reflects keys and staff,
+not the source of water. Sealed outside access is the sole override: it closes
+the feed and converts the result to emergency rationing.
 
-Some households leave for Old Pilgrim Way. The southern charity cot gains
-patients and the Choir gains a stronger foothold. This route preserves evidence
-at the cost of people who cannot drink a future claim.
+Original-roll custody, Noa's placement, and Cassian's route remain separate from
+both water and authority.
 
-## Tarn outcomes
+## Cassian outcomes
 
-Tarn's state is separate from pump control.
+Cassian's state is separate from pump control.
 
 ### Shared road
 
 If the player confronts his Ash Chapel withdrawal, protects South Measure, and
-shares the Hallowfen investigation, Tarn accepts a temporary place in the
+shares the Hallowfen investigation, Cassian accepts a temporary place in the
 party. He does not swear service to the Censure. He states that both parties are
 following the same hostile signal.
 
 His recruitment should feel uneasy. Camp children touch the cold plate on his
-hand after he finishes a water watch. Tarn permits it and later records no
+hand after he finishes a water watch. Cassian permits it and later records no
 explanation for the choice.
 
 ### Independent scout
 
-Tarn takes drive oil from Daro or repairs himself and leaves ahead of the party.
+Cassian takes drive oil from Darius or repairs himself and leaves ahead of the party.
 He appears later near the Hallowfen wall with observations from the silent
 checkpoint approach. His attitude reflects whether the player treated South
 Measure as people, a bargaining piece, or delay.
 
 ### Black Reliquary report
 
-The player persuades or pressures Tarn to transmit the impossible Penitent
+The player persuades or pressures Cassian to transmit the impossible Penitent
 evidence. A recovery force begins moving toward the region. This can provide
 heavy support later, but Hallowfen residents and Bloomborn face Penitent seizure
 or purgation.
 
 ### One camp watch
 
-Tarn spends his remaining charge securing the undercroft and remains until the
+Cassian spends his remaining charge securing the undercroft and remains until the
 water line is stable. He misses the player's departure but can rejoin later.
 This is his first open breach with strict recovery doctrine.
 
@@ -1959,17 +2296,17 @@ This is his first open breach with strict recovery doctrine.
 
 ### Household of one
 
-Nel's Compact placement excludes her father and younger brother. The player can
+Noa's Compact placement excludes her father and younger brother. The player can
 support her departure, convince her to stay, trade evidence for dependent
 places, or forge a household skill record.
 
-No choice should treat Nel as South Measure's property. If she stays, she must
+No choice should treat Noa as South Measure's property. If she stays, she must
 state that the decision is hers. If she leaves, later camp dialogue should
 acknowledge both the working pump she left behind and the life she gained.
 
 ### The debt that drinks
 
-The player can audit Daro's pump ledger. It contains inflated interest and
+The player can audit Darius's pump ledger. It contains inflated interest and
 several forged emergency signatures. It also proves the Chain delivered during
 a season when every official convoy stopped.
 
@@ -1978,9 +2315,9 @@ causes Chain guards to withdraw before the Red Tithe threat is resolved.
 
 ### The charity cot
 
-Iven Roa's medicine came through an Open Wound courier. The player can burn the
-supplies, surrender the patients to Yara, separate clean medicine from suspect
-vials with Medicine or Host Signs, or place the cot under Ressa's protection.
+Joanna Medicus's medicine came through an Open Wound courier. The player can burn the
+supplies, surrender the patients to Aurelia, separate clean medicine from suspect
+vials with Medicine or Host Signs, or place the cot under Susanna's protection.
 
 The careful route saves current patients but lets the courier network know that
 South Measure still needs them. The violent route weakens the cult and proves
@@ -1989,8 +2326,8 @@ its claim that lawful powers offer only fire.
 ### Names under lime
 
 The original household roll is both evidence and a grave list. Compact
-researchers want its exposure history. Daro wants old household links that can
-support debt claims. Ressa wants to restore the names omitted from the public
+researchers want its exposure history. Darius wants old household links that can
+support debt claims. Susanna wants to restore the names omitted from the public
 water board.
 
 If the player reads the roll before deciding, several current families gain
@@ -2003,15 +2340,15 @@ Ash Road South should echo through the rest of Act I:
 
 - **Old Pilgrim Way:** displaced Measure households, Compact applicants, or
   Chain labor crews appear according to the outcome.
-- **Red Tithe Ford:** the medicine wagon has cooling, spoiled stock, or a
-  replacement route based on the governor decision.
+- **Red Tithe Ford:** the medicine wagon remains on its route or shifts to
+  cistern duty according to the cooling-jacket and Morrow water decisions.
 - **Smuggler Switchbacks:** Morrow favor can open the safer path. Chain hostility
   makes the player buy or steal guidance.
-- **Hallowfen:** Tarn may arrive as companion, scout, or herald of a Penitent
+- **Hallowfen:** Cassian may arrive as companion, scout, or herald of a Penitent
   recovery force.
 - **Hallowfen evacuation:** South Measure can accept evacuees only if resident
   control or a protective contract left its water system functioning.
-- **Compact politics:** Yara's records can improve treatment while giving the
+- **Compact politics:** Aurelia's records can improve treatment while giving the
   Compact stronger grounds to detain exposed Hallowfen families.
 - **Choir pressure:** abandoning the water crisis or destroying the charity cot
   without replacement increases later camp recruitment.
@@ -2022,15 +2359,38 @@ to decide who counts as human.
 
 ## Implementation handoff
 
-When Ash Road South becomes runtime content, keep the design source here and
-split playable material by responsibility:
+Ash Road South now keeps its design source here and splits runtime material by
+responsibility:
 
-- Level layout and objects in `data/levels/ash_road_south.json`.
-- Named NPCs in `data/actors/` with stable kebab-case ids.
-- Scene dialogue in separate files under `data/dialogue/`.
-- The main quest and side stories in `data/quests/`.
-- Any new Host enemy in `data/enemies/`, with its renderable kind registered in
-  the sprite catalog only when implementation begins.
+- The surface layout and objects are generated by
+  `scripts/gen-ash-road-south.mjs` into
+  `data/levels/ash_road_south.json`.
+- The six quest records and eight physical South Measure quest items are
+  generated by `scripts/gen-ash-road-south-content.mjs`, with stable ids and
+  outcome groups defined in `scripts/content/south-measure-state.mjs`.
+- The nine helper levels and thirty reciprocal connector dialogues are
+  generated by `scripts/gen-south-measure-submaps.mjs`, with authored copy in
+  `scripts/content/south-measure-submap-content.mjs`.
+- The helper-map census, placement barks, and actor identities are authored in
+  `scripts/content/south-measure-population.mjs`. The 41 character
+  conversations, five evidence conversations, Intake Clerk decisions, and
+  Salome Naso investigation are authored in
+  `scripts/content/south-measure-dialogues.mjs`. Run
+  `scripts/gen-south-measure-population.mjs` before rebuilding the helper maps.
+- Named NPCs live in `data/actors/` with stable kebab-case ids.
+- Scene dialogue lives in separate files under `data/dialogue/`.
+- The main quest and five side stories live in `data/quests/`.
+- Junia Lector begins fixed in the registered `intake-clerk-wicket` prop. Forcing
+  the wicket hides that prop and spawns the dedicated conditional
+  `south-measure-intake-clerk` combat actor. Revealed Salome uses the dedicated
+  `south-measure-false-catechist` actor atlas entry and conditional enemy spawn.
+
+The implemented helper-map slice contains 70 walking NPC placements, Junia's
+fixed wicket presence, two conditional combat encounters, inspectables, gated
+traversal, and dialogue-awarded quest items that are consumed or retained by
+their outcomes. It contains no general ground loot or untracked walk-on exits.
+The journal map derives from each generated level and its markers, so there is
+no separate minimap asset or map-reference registry.
 
 Suggested stable ids:
 
@@ -2038,24 +2398,29 @@ Suggested stable ids:
 - Settlement: `south-measure`
 - Main quest: `names-for-the-gate`
 - Intake encounter: `south-measure-intake-clerk`
-- Tarn signal flag: `tarn-hallowfen-reply-code`
+- Cassian signal flag: `south-measure-north-pulse-traced`
 - Governance flags: `south-measure-compact`, `south-measure-morrow`,
   `south-measure-resident`, `south-measure-sealed`
-- Tarn flags: `tarn-shared-road`, `tarn-independent-scout`,
+- Cassian flags: `tarn-shared-road`, `tarn-independent-scout`,
   `tarn-reliquary-report`, `tarn-camp-watch`
 
 Store the main decisions as mutually exclusive state groups. Do not infer one
 group from another:
 
-- Repair source: `south-measure-part-compact`, `south-measure-part-morrow`,
-  `south-measure-part-intake`, `south-measure-part-none`
+- Water plan: `south-measure-plan-monitored-flow`,
+  `south-measure-plan-morrow-import`, `south-measure-plan-isolated-loop`,
+  `south-measure-plan-feed-closed`
+- Committed water state: `south-measure-water-full`,
+  `south-measure-water-rationed`, `south-measure-water-reduced`,
+  `south-measure-water-emergency`
 - Intake Clerk: `intake-clerk-contained`, `intake-clerk-tarn-sealed`,
   `intake-clerk-compact`, `intake-clerk-killed`, `intake-clerk-burned`,
-  `intake-clerk-resealed`
+  `intake-clerk-resealed`. Every terminal result also sets
+  `intake-clerk-resolved`; the gate assembly cannot close without it.
 - Household roll: `measure-roll-resident`, `measure-roll-compact`,
   `measure-roll-supervised-copy`, `measure-roll-morrow-copy`,
   `measure-roll-sealed`, `measure-roll-destroyed`
-- Nel: `nel-school-alone`, `nel-stays-one-season`,
+- Noa: `nel-school-alone`, `nel-stays-one-season`,
   `nel-family-review`, `nel-family-forged`
 - Charity cot: `charity-stock-sorted`, `charity-council`,
   `charity-compact`, `charity-burned`
@@ -2063,12 +2428,23 @@ group from another:
   `hidden-roll-compact`, `hidden-roll-morrow`
 - Morrow ledger: `morrow-ledger-untouched`, `morrow-ledger-revised`,
   `morrow-ledger-voided`, `morrow-ledger-concealed`
+- Salome Naso: `neri-agent-barred`, `neri-agent-council`,
+  `neri-agent-compact`, `neri-agent-morrow`, `neri-agent-killed`,
+  `neri-agent-tolerated`, `neri-agent-unseen`. Every explicit result also sets
+  `neri-agent-resolved`; an untouched case receives `neri-agent-unseen` only at
+  the north-gate assembly.
+
+Compact monitoring, Morrow cisterns, and resident isolation may be withdrawn
+before the operating plan is committed. This clears the selected plan without
+rewinding journal history. If a full Compact census agreement or signed Morrow
+water contract conflicts with the later authority vote, record
+`compact-monitoring-terms-breached` or `morrow-water-contract-breached`.
 
 Only set states the player actually resolves. An untouched optional story can
 remain unset and receive its default downstream result. Local flavor choices,
 such as the oven dispute or return-shelf letter, need persistence only if a
 later scene reads them.
 
-The final implementation must preserve multiple completion routes, avoid a
-field-check gate on required progress, and carry the chosen state into later
-Act I levels.
+The implementation preserves multiple completion routes and avoids a field
+check on required progress. Later Act I levels should read the stable states
+listed above rather than infer one decision from another.

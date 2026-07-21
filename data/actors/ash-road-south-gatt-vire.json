@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-gatt-vire",
+  "name": "Gaius Cotta",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Freight guard captain",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "shoulder-plate"
+    ],
+    "accent": "dark-hood"
+  }
+}

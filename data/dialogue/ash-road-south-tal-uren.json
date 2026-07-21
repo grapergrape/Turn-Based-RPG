@@ -1,0 +1,50 @@
+{
+  "id": "ash-road-south-tal-uren",
+  "title": "Talmai Calceus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Talmai turns a cracked plate toward the light and runs one thumbnail along the split.",
+        "\"Boots today, armor tomorrow. Pride waits outside because it scratches the bench.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what he can mend",
+          "next": "work"
+        },
+        {
+          "label": "Leave Talmai to the cracked plate",
+          "close": true
+        }
+      ]
+    },
+    "work": {
+      "lines": [
+        "\"Leather and rivets. I can also mend field plate when the crack avoids a joint, or brace a Penitent cover without blessing it.\"",
+        "\"Good repair begins with admitting which piece already failed.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whether he worked on Cassian",
+          "next": "tarn"
+        },
+        {
+          "label": "Leave Talmai to the cracked plate",
+          "close": true
+        }
+      ]
+    },
+    "tarn": {
+      "lines": [
+        "\"He let me fit a hinge pin to the open service plate. Paid by cutting my dead brother’s name where rust would not take it.\"",
+        "\"That was fairer than coin and harder to spend.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Talmai to the cracked plate",
+          "close": true
+        }
+      ]
+    }
+  }
+}

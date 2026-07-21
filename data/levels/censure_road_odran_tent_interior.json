@@ -1,12 +1,15 @@
 {
   "id": "censure-road-odran-tent-interior",
-  "name": "Father Odran's Tent",
+  "name": "Father Augustine's Tent",
   "intro": "Lamp oil and ledger dust have worked into the damp linen. The private tent never quite airs out.",
   "width": 12,
   "height": 10,
   "tileSize": 64,
   "quests": [
     "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "censure-road-odran-tent-exit"
   ],
   "mood": {
     "floorShade": "#15130e",
@@ -47,27 +50,52 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "groundItems": [
     {
-      "id": "odran-tent-exit-transition",
-      "x": 8,
-      "y": 8,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 16,
-          "y": 19
-        }
-      }
+      "id": "odran-tent-loose-ducats",
+      "item": "ducat",
+      "count": 1,
+      "x": 9,
+      "y": 3
     }
   ],
   "objects": [
+    {
+      "id": "odran-tent-votive-pouch",
+      "kind": "small-pouch",
+      "x": 2,
+      "y": 6,
+      "seed": 2603,
+      "name": "Spent Votive Pouch",
+      "interact": {
+        "type": "container",
+        "log": "Beside the folded kneeler, red disposal cord closes a spent votive pouch around one clipped coin.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 1
+          }
+        ]
+      }
+    },
     {
       "kind": "canvas-tent-flap",
       "x": 8,
       "y": 9,
       "id": "odran-tent-exit-flap",
-      "name": "Tent Flap"
+      "name": "Tent Flap",
+      "clickAreas": [
+        { "x0": 8, "y0": 9, "x1": 8, "y1": 9 }
+      ],
+      "interactionMarker": { "x": 8, "y": 8 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-odran-tent-exit"
+      }
     },
     {
       "kind": "camp-bedroll",
@@ -86,7 +114,7 @@
       "seed": 2313,
       "interact": {
         "search": {
-          "title": "Father Odran's Chest",
+          "title": "Father Augustine's Chest",
           "lines": [
             "Folded church linen fills the chest."
           ],
@@ -106,8 +134,11 @@
               "successLog": "Under a stack of priestly cloth, you find a woman's underlinen tucked hard against the chest wall.",
               "failLog": "The linen is folded too tightly. If there is a secret here, it stays flat.",
               "success": {
-                "setFlag": "odran-late-visit-suspected",
-                "log": "The hidden underlinen gives you a reason to watch Father Odran's tent after last bell."
+                "setFlag": [
+                  "odran-late-visit-suspected",
+                  "censure-road-odran-chest-linen-found"
+                ],
+                "log": "The hidden underlinen gives you a reason to watch Father Augustine's tent after last bell."
               }
             }
           ]

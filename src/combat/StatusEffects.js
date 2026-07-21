@@ -72,6 +72,18 @@ export const STATUS_DEFINITIONS = Object.freeze({
     defaultDuration: 2,
     maxStacks: 1
   }),
+  conductive: Object.freeze({
+    id: 'conductive',
+    label: 'Conductive',
+    defaultDuration: 2,
+    maxStacks: 1
+  }),
+  taunting: Object.freeze({
+    id: 'taunting',
+    label: 'Guarding',
+    defaultDuration: 1,
+    maxStacks: 1
+  }),
   fatigued: Object.freeze({
     id: 'fatigued',
     label: 'Fatigued',

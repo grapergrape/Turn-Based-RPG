@@ -1,0 +1,1820 @@
+{
+  "id": "south-measure-compact-clinic",
+  "name": "South Measure Compact Clinic",
+  "intro": "Washed canvas tightens the light around six beds. The cold cabinet keeps a steady hum behind the ward.",
+  "width": 36,
+  "height": 24,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#172635",
+    "floorShadeAlpha": 0.18,
+    "ambient": "#0a0807",
+    "ambientAlpha": 0.12,
+    "vignette": 0.19
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-clinic-main-door-clinic",
+    "south-measure-clinic-yara-quell",
+    "south-measure-clinic-tessa-bair",
+    "south-measure-clinic-evin-sael",
+    "south-measure-clinic-dessa-olt",
+    "south-measure-clinic-rava-tern",
+    "south-measure-clinic-fela-brin",
+    "south-measure-clinic-jalen-olt"
+  ],
+  "tiles": [
+    "####################################",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "####################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "canvas-tent-interior-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "worn-canvas",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 18,
+      "y": 21,
+      "facing": "ne"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-yara-quell",
+        "spawnId": "clinic-yara-quell-0",
+        "characterSlot": "clinic-yara-quell",
+        "x": 17,
+        "y": 19,
+        "facing": "se",
+        "ambient": [
+          "Four beds occupied. Two stay open for collapse cases.",
+          "Care is not consent to a census.",
+          "The flow monitor can read the pulse without opening a patient file."
+        ],
+        "dialogue": "south-measure-clinic-yara-quell",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-tessa-bair",
+        "spawnId": "clinic-tessa-bair-1",
+        "characterSlot": "clinic-tessa-bair",
+        "x": 28,
+        "y": 13,
+        "facing": "se",
+        "ambient": [
+          "Clean dressings above the red latch.",
+          "I sign medicine out by dose, not by gratitude.",
+          "One suppressant vial is missing from the cabinet count."
+        ],
+        "dialogue": "south-measure-clinic-tessa-bair",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-evin-sael",
+        "spawnId": "clinic-evin-sael-2",
+        "characterSlot": "clinic-evin-sael",
+        "x": 11,
+        "y": 8,
+        "facing": "se",
+        "ambient": [
+          "The machine test starts at third bell.",
+          "A city lathe turns true, and the pay carries a stamp.",
+          "My mother packed the small kettle beneath my spare coat."
+        ],
+        "dialogue": "south-measure-clinic-evin-sael",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-dessa-olt",
+        "spawnId": "clinic-dessa-olt-3",
+        "characterSlot": "clinic-dessa-olt",
+        "x": 22,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Jair stays behind the screen until the rhythm settles.",
+          "Isolation is a tool. It is not a sentence.",
+          "Someone has been leaving lesson slips under that cup."
+        ],
+        "dialogue": "south-measure-clinic-dessa-olt",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-pavan-ire",
+        "spawnId": "clinic-pavan-ire-4",
+        "characterSlot": "clinic-pavan-ire",
+        "x": 31,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Blood cards dry on the upper clips.",
+          "Do not stack wet samples.",
+          "The archive knows more names than the ward does."
+        ]
+      },
+      {
+        "actor": "ash-road-south-rin-quor",
+        "spawnId": "clinic-rin-quor-5",
+        "characterSlot": "clinic-rin-quor",
+        "x": 5,
+        "y": 17,
+        "facing": "se",
+        "ambient": [
+          "Wash water first. Floor water second.",
+          "The isolation cloth gets its own basin.",
+          "A clean ward is mostly people doing dull things on time."
+        ]
+      },
+      {
+        "actor": "ash-road-south-anja-kest",
+        "spawnId": "clinic-anja-kest-6",
+        "characterSlot": "clinic-anja-kest",
+        "x": 30,
+        "y": 20,
+        "facing": "se",
+        "ambient": [
+          "Applicant lane starts behind the blue cord.",
+          "Treatment does not promise placement.",
+          "If the answer changes, I strike the old one where you can still read it."
+        ]
+      },
+      {
+        "actor": "ash-road-south-rava-tern",
+        "spawnId": "clinic-rava-tern-7",
+        "characterSlot": "clinic-rava-tern",
+        "x": 12,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "The dust tastes sweet when the condenser surges.",
+          "I came for my lungs, not a new household number.",
+          "Timothy listens longer than the form allows."
+        ],
+        "dialogue": "south-measure-clinic-rava-tern",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-sol-kade",
+        "spawnId": "clinic-sol-kade-8",
+        "characterSlot": "clinic-sol-kade",
+        "x": 16,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "Shoulder is set. Pride can wait.",
+          "The crate shifted before the brake caught.",
+          "Tell Joab I did not drop the medicine case."
+        ]
+      },
+      {
+        "actor": "ash-road-south-menn-vaun",
+        "spawnId": "clinic-menn-vaun-9",
+        "characterSlot": "clinic-menn-vaun",
+        "x": 20,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "Fever broke before dawn.",
+          "Discharge means the unlisted fire again.",
+          "My cousin Salome says letters can keep a place for you."
+        ]
+      },
+      {
+        "actor": "ash-road-south-fela-brin",
+        "spawnId": "clinic-fela-brin-10",
+        "characterSlot": "clinic-fela-brin",
+        "x": 13,
+        "y": 16,
+        "facing": "se",
+        "ambient": [
+          "The oven door kicked smoke across my arm.",
+          "They treated the burn before asking where I sleep.",
+          "Will that record follow me when I ask for water?"
+        ],
+        "dialogue": "south-measure-clinic-fela-brin",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-jalen-olt",
+        "spawnId": "clinic-jalen-olt-11",
+        "characterSlot": "clinic-jalen-olt",
+        "x": 5,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "The second beat is mine. The third comes from the wall.",
+          "Salome says fear is a door you can read from both sides.",
+          "Do not let the lesson card hear my name."
+        ],
+        "dialogue": "south-measure-clinic-jalen-olt",
+        "talkRadius": 1
+      }
+    ],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 18,
+      "y": 23,
+      "id": "clinic-main-door",
+      "name": "Clinic Entrance",
+      "blocking": true,
+      "variant": "clinic",
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 18,
+        "y": 22
+      },
+      "mapMarker": {
+        "label": "Clinic Entrance",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-clinic-main-door-clinic"
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 17,
+      "y": 21,
+      "id": "compact-clinic-triage-desk",
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "name": "Triage Desk",
+      "interact": {
+        "type": "note",
+        "log": "Dressing times and pulse counts cover the slate. The staff record treatment before placement status."
+      },
+      "interactionMarker": {
+        "x": 18,
+        "y": 21
+      }
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 13,
+      "y": 10,
+      "id": "compact-clinic-six-bed-ward",
+      "blocking": true,
+      "variant": "used",
+      "orient": "se",
+      "name": "Treatment Ward",
+      "interact": {
+        "type": "note",
+        "log": "Six narrow beds face the central aisle. Four hold current cases while two remain prepared for charity referrals."
+      },
+      "mapMarker": {
+        "label": "Treatment Ward",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 14,
+        "y": 10
+      }
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 17,
+      "y": 10,
+      "blocking": true,
+      "variant": "used",
+      "orient": "se"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 21,
+      "y": 10,
+      "blocking": true,
+      "variant": "clean",
+      "orient": "se"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 13,
+      "y": 15,
+      "blocking": true,
+      "variant": "used",
+      "orient": "se"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 17,
+      "y": 15,
+      "blocking": true,
+      "variant": "clean",
+      "orient": "se"
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 21,
+      "y": 15,
+      "blocking": true,
+      "variant": "used",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 14,
+      "id": "compact-clinic-applicant-lane",
+      "blocking": false,
+      "orient": "sw",
+      "name": "Applicant Lane",
+      "interact": {
+        "type": "note",
+        "log": "Canvas partitions admit one applicant at a time. Dependent names remain on the forms outside the marked space."
+      },
+      "interactionMarker": {
+        "x": 30,
+        "y": 14
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 29,
+      "y": 3,
+      "id": "compact-clinic-placement-archive",
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "sw",
+      "name": "Placement Archive",
+      "interact": {
+        "type": "note",
+        "log": "The archive records workers admitted one at a time. Dependents remain in the margins beside deferred review marks."
+      },
+      "mapMarker": {
+        "label": "Placement Archive",
+        "kind": "locked"
+      },
+      "interactionMarker": {
+        "x": 30,
+        "y": 3
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 35,
+      "y": 10,
+      "id": "compact-clinic-blood-card-station",
+      "blocking": true,
+      "variant": "blood-card",
+      "wallPlane": "se",
+      "name": "Blood-Card Station",
+      "interact": {
+        "type": "note",
+        "log": "Current cards sit apart from inherited exposure copies. Family names link the two drawers."
+      },
+      "interactionMarker": {
+        "x": 34,
+        "y": 10
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 8,
+      "y": 4,
+      "id": "compact-clinic-cold-service-bay",
+      "blocking": true,
+      "variant": "parts",
+      "orient": "se",
+      "name": "Cold Service Bay",
+      "interact": {
+        "type": "note",
+        "log": "Flow monitors share the locked bay with vaccine stock. A sealed backup cell sits against the rear rail."
+      },
+      "mapMarker": {
+        "label": "Cold Service Bay",
+        "kind": "locked"
+      },
+      "interactionMarker": {
+        "x": 9,
+        "y": 4
+      }
+    },
+    {
+      "kind": "relief-machine",
+      "x": 5,
+      "y": 3,
+      "id": "compact-clinic-flow-monitor",
+      "blocking": true,
+      "variant": "cold-coil",
+      "orient": "sw",
+      "name": "Flow Monitor",
+      "interact": {
+        "type": "note",
+        "log": "The monitor separates ordinary pressure changes from the repeating pulse beneath the court. Its case bears a Compact custody seal."
+      },
+      "mapMarker": {
+        "label": "Flow Monitor",
+        "kind": "quest"
+      },
+      "interactionMarker": {
+        "x": 6,
+        "y": 3
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 13,
+      "y": 3,
+      "id": "compact-clinic-backup-cell",
+      "blocking": true,
+      "variant": "locked-cabinet",
+      "orient": "se",
+      "name": "Backup Cell",
+      "interact": {
+        "type": "note",
+        "log": "The cell carries the cold shelves during generator dips. A separate lead keeps the flow monitors alive after the lamps dim."
+      },
+      "interactionMarker": {
+        "x": 14,
+        "y": 3
+      }
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 5,
+      "y": 11,
+      "id": "compact-clinic-isolation-room",
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "se",
+      "name": "Isolation Room",
+      "interact": {
+        "type": "note",
+        "log": "One bed stands behind a clear observation slit. Dose notes and a speaking tube remain within reach of the patient."
+      },
+      "interactionMarker": {
+        "x": 6,
+        "y": 11
+      }
+    },
+    {
+      "kind": "wash-wall",
+      "x": 20,
+      "y": 3,
+      "id": "compact-clinic-staff-wash",
+      "blocking": true,
+      "orient": "sw",
+      "name": "Staff Wash Point",
+      "interact": {
+        "type": "note",
+        "log": "Boiled cloth dries beside two narrow sleep cots. The clinic staff live inside the same canvas they clean."
+      },
+      "interactionMarker": {
+        "x": 21,
+        "y": 3
+      }
+    },
+    {
+      "kind": "field-satchel",
+      "x": 12,
+      "y": 4,
+      "id": "clinic-censure-field-satchel",
+      "name": "Censure Field Satchel",
+      "blocking": true,
+      "orient": "se",
+      "interact": {
+        "type": "container",
+        "log": "A blue cord marks this satchel for Censure field use.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          },
+          {
+            "item": "drone-service-parts",
+            "count": 1
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 13,
+        "y": 4
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 12,
+      "y": 21,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 22,
+      "y": 21,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 8,
+      "y": 21,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 27,
+      "y": 21,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 10,
+      "y": 22,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 15,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 20,
+      "y": 20,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 25,
+      "y": 22,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 23,
+      "y": 20,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 24,
+      "y": 20,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 25,
+      "y": 20,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 26,
+      "y": 20,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 27,
+      "y": 20,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 28,
+      "y": 20,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 6,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 7,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 8,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 9,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 10,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 11,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 12,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 13,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 15,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 16,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 17,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 18,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 19,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 29,
+      "y": 20,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 11,
+      "y": 9,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 15,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 19,
+      "y": 9,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 23,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 11,
+      "y": 16,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 19,
+      "y": 17,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 11,
+      "y": 13,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 15,
+      "y": 17,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 19,
+      "y": 13,
+      "blocking": true,
+      "variant": "locked-cabinet",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 23,
+      "y": 17,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 12,
+      "y": 8
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 16,
+      "y": 12
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 20,
+      "y": 8
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 24,
+      "y": 14
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 12,
+      "y": 17
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 24,
+      "y": 17
+    },
+    {
+      "kind": "low-stool",
+      "x": 30,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 31,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 30,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 35,
+      "y": 14,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 8,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": false,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 9,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 10,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 11,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": false
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 13,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": false,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 14,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 15,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 16,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 33,
+      "y": 17,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": false
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 25,
+      "y": 3,
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 27,
+      "y": 3,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 31,
+      "y": 3,
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 33,
+      "y": 3,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 29,
+      "y": 5,
+      "blocking": true,
+      "variant": "records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 33,
+      "y": 5,
+      "blocking": false,
+      "variant": "census",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 3,
+      "y": 4,
+      "blocking": true,
+      "variant": "cold-coil",
+      "orient": "se"
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 6,
+      "y": 2,
+      "blocking": true,
+      "variant": "parts",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 9,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 9,
+      "y": 4,
+      "blocking": false,
+      "variant": "grate",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 11,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 5,
+      "y": 4,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "sw",
+      "connected": {
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 13,
+      "y": 4,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "sw",
+      "connected": {
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 5,
+      "y": 5,
+      "blocking": false,
+      "variant": "elbow",
+      "orient": "nw",
+      "connected": {
+        "xPlus": true,
+        "yMinus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 6,
+      "y": 5,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 7,
+      "y": 5,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 8,
+      "y": 5,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 9,
+      "y": 5,
+      "blocking": false,
+      "variant": "valve",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 10,
+      "y": 5,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 11,
+      "y": 5,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 12,
+      "y": 5,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 13,
+      "y": 5,
+      "blocking": false,
+      "variant": "elbow",
+      "orient": "sw",
+      "connected": {
+        "xMinus": true,
+        "yMinus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 9,
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "sw",
+      "connected": {
+        "yMinus": false,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 10,
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 11,
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": false
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 13,
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "sw",
+      "connected": {
+        "yMinus": false,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 14,
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 15,
+      "blocking": true,
+      "variant": "isolation",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": false
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 3,
+      "y": 13,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 2,
+      "y": 10,
+      "blocking": false
+    },
+    {
+      "kind": "farm-bed",
+      "x": 16,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "wash-wall",
+      "x": 23,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 24,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "mortuary-drain",
+      "x": 20,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "mortuary-drain",
+      "x": 23,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "trampled-mud",
+      "x": 19,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "trampled-mud",
+      "x": 21,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "trampled-mud",
+      "x": 22,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "trampled-mud",
+      "x": 24,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "wash-tub",
+      "x": 19,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "wash-tub",
+      "x": 22,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "laundry-line",
+      "x": 20,
+      "y": 6,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 23,
+      "y": 6,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 10,
+      "y": 2,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 10,
+      "y": 4,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 14,
+      "y": 4,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 14,
+      "y": 2
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 11,
+      "y": 6
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 9,
+      "y": 19,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 10,
+      "y": 19,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 11,
+      "y": 19,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 12,
+      "y": 19,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 13,
+      "y": 19,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 14,
+      "y": 19,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 3
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 4
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 5
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 6
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 8
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 14
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 17
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 19
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 20
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 21
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 22
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 4,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 22,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 23,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 25,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 26,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 4,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 22,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 23,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 25,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 26,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 18
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "clinic-loose-field-dressing",
+      "item": "field-dressing",
+      "count": 1,
+      "x": 12,
+      "y": 3
+    }
+  ]
+}

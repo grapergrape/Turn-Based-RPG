@@ -1,0 +1,69 @@
+{
+  "id": "south-measure-annex-holl-varek",
+  "title": "Horace Crispus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Horace pins a relief schedule to the board with one grease-black nail.",
+        "\"Do not lean there. The board is sound, but the wall behind it has opinions.\""
+      ],
+      "choices": [
+        {
+          "label": "Have Horace trace the old return",
+          "next": "return",
+          "effects": {
+            "setFlag": [
+              "south-measure-isolation-route-known",
+              "south-measure-annex-access"
+            ]
+          }
+        },
+        {
+          "label": "Mark the relief return for Noa",
+          "next": "cost",
+          "effects": {
+            "setFlag": [
+              "south-measure-isolation-route-known",
+              "south-measure-helper-routes-open"
+            ],
+            "log": "Horace marks a reduced local loop that can bypass the north feed."
+          }
+        },
+        {
+          "label": "Give Horace the width of the board",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "return": {
+      "lines": [
+        "His nail follows a faded line around the north feed.",
+        "\"Cut here. Open the return by hand. The balance gear lost half its teeth, so every valve needs a person who knows when metal is lying.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the smaller loop costs",
+          "next": "cost"
+        },
+        {
+          "label": "Leave Horace with the schedule",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "cost": {
+      "lines": [
+        "\"Less water reaches the camp, but the buried answer reaches none of it. Put both facts on Noa’s plan.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Horace inspect the return seam",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

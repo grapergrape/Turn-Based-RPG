@@ -1,0 +1,54 @@
+{
+  "id": "seal-driver-pistol",
+  "name": "Seal Driver Pistol",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "specialist pistol",
+  "rarity": "rare",
+  "weight": 1.15,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Closure Engineers",
+    "factions": [
+      "closure-engineers"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "specialist pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 5,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "heavy-sidearm-cartridge",
+      "capacity": 11,
+      "defaultLoaded": 11,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A powder driver converted from a structural fastening tool. Closure engineers insist it remains a tool until someone points it sideways."
+}

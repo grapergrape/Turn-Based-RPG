@@ -1,0 +1,51 @@
+{
+  "id": "south-measure-hall-rian-sile",
+  "title": "Rufus Porta",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Rufus writes beneath an older cup ruling, then leaves room for an objection.",
+        "\"You want the moment an exception becomes law. The page never tells us so neatly.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what Rufus writes instead",
+          "next": "precedent"
+        },
+        {
+          "label": "Ask why full flow worries him",
+          "next": "pressure"
+        },
+        {
+          "label": "Leave the objection space empty",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "precedent": {
+      "lines": [
+        "\"I record who survived the ruling and who paid for it. If the same need returns, memory should not depend on the clerk’s mood.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Rufus finish the exception",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "pressure": {
+      "lines": [
+        "\"At full pressure, every faction can afford a generous promise. I am writing for the morning when the pipe narrows again.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave him to the narrower morning",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

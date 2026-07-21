@@ -1,0 +1,64 @@
+{
+  "id": "south-measure-annex-main-door-surface",
+  "title": "Annex Loading Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The loading doors open from the relief apron into the active front bay."
+      ],
+      "choices": [
+        {
+          "label": "Enter the maintenance annex",
+          "conditions": {
+            "flag": "south-measure-annex-access"
+          },
+          "effects": {
+            "log": "You cross the loading bay into the maintenance annex.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_maintenance_annex.json",
+              "player": {
+                "x": 19,
+                "y": 23,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Open the relief lock",
+          "conditions": {
+            "items": {
+              "censure-entry-roll": 1
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-annex-access",
+              "south-measure-annex-forced"
+            ],
+            "log": "The relief lock yields to the Censure tools.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_maintenance_annex.json",
+              "player": {
+                "x": 19,
+                "y": 23,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay on the annex apron",
+          "effects": {
+            "log": "You leave the loading doors behind."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

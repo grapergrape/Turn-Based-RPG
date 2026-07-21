@@ -1,0 +1,65 @@
+{
+  "id": "bastion-spike-driver",
+  "name": "Bastion Spike Driver",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "heavy coil gun",
+  "rarity": "epic",
+  "weight": 7.4,
+  "groundModel": "support-gun",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Penitent Bastion",
+    "factions": [
+      "penitent-bastion"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "heavy coil gun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 12,
+        "range": 8,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 8,
+        "damage": 15,
+        "range": 8,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 3,
+      "defaultLoaded": 3,
+      "reloadAp": 5
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 73
+  },
+  "description": "A magnetic pile driver cut down into a squad weapon. Its thick armature can open machinery or a barricaded firing slit."
+}

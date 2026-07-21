@@ -1,15 +1,120 @@
 {
   "id": "censure-road-camp-malco",
-  "title": "Evidence Keeper Malco",
+  "title": "Evidence Keeper Melchior",
   "nodes": {
     "start": {
       "lines": [
-        "Evidence Keeper Malco stands outside the shed with tags looped around both wrists.",
+        "Evidence Keeper Melchior stands outside the shed with tags looped around both wrists.",
         "\"Cult relics go in left sacks. Bodies in right sacks. Anything that whispers gets its own shelf and no apology.\""
       ],
       "choices": [
         {
+          "label": "Give him the quiet sack classification",
+          "conditions": {
+            "flag": "censure-road-evidence-low-risk-classified",
+            "flagsAbsent": ["censure-road-evidence-low-risk-reported"],
+            "fieldRatings": {
+              "containment": 50
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-evidence-low-risk-reported",
+            "log": "Melchior moves the quiet sack off the burn list and signs your classification."
+          },
+          "next": "quiet-sack"
+        },
+        {
+          "label": "Tell him the spent packet is active",
+          "conditions": {
+            "flag": "censure-road-evidence-active-packet-found",
+            "flagsAbsent": ["censure-road-evidence-active-packet-reported"],
+            "fieldRatings": {
+              "hostSigns": 60
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-evidence-active-packet-reported",
+            "log": "Melchior retags the packet as active and clears the shelf around it."
+          },
+          "next": "active-packet"
+        },
+        {
+          "label": "Correct the road evidence class",
+          "conditions": {
+            "flag": "long-ash-kill-site-no-opening-found",
+            "flagsAbsent": ["censure-road-report-malco-containment"],
+            "fieldRatings": {
+              "containment": 50
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-malco-containment",
+            "log": "Melchior records that no fresh opening began at the road kill site."
+          },
+          "next": "road-class"
+        },
+        {
+          "label": "Mark the turned medic packet for his shelf",
+          "conditions": {
+            "flag": "censure-road-medic-packet-marked-for-malco",
+            "flagsAbsent": ["censure-road-malco-medic-packet-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-malco-medic-packet-reported",
+            "log": "Melchior moves the turned medic packet to a shelf of its own."
+          },
+          "next": "medic-packet"
+        },
+        {
           "label": "Leave the shed",
+          "close": true
+        }
+      ]
+    },
+    "medic-packet": {
+      "lines": [
+        "Melchior carries the turned packet to the shed with a fire tong.",
+        "\"The line stopped at the cord. That means the knot held, not that the cloth is quiet. It gets a shelf alone.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave him to the shelf tag",
+          "close": true
+        }
+      ]
+    },
+    "quiet-sack": {
+      "lines": [
+        "Melchior checks your seal order twice, then drags the quiet sack away from the red chalk.",
+        "\"Dry seam, no pull. It waits. I enjoy evidence that agrees to wait, though I do not trust its manners.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the sack sealed",
+          "close": true
+        }
+      ]
+    },
+    "active-packet": {
+      "lines": [
+        "Melchior holds the tag by its clean corner and watches the stain gather beneath the knot.",
+        "\"The tag says spent in a fine hand, which is the wrong answer. Stand back while I teach the shelf some distance.\""
+      ],
+      "choices": [
+        {
+          "label": "Give him room",
+          "close": true
+        }
+      ]
+    },
+    "road-class": {
+      "lines": [
+        "Melchior turns the road tag over and writes on the blank side.",
+        "\"No opening at scene. Then the marks were arranged after death or carried in. Aquila can choose which answer ruins her morning.\""
+      ],
+      "choices": [
+        {
+          "label": "Have him seal the correction",
           "close": true
         }
       ]

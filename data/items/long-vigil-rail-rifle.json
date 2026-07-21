@@ -1,0 +1,65 @@
+{
+  "id": "long-vigil-rail-rifle",
+  "name": "Long Vigil Rail Rifle",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "rail rifle",
+  "rarity": "rare",
+  "weight": 5.1,
+  "groundModel": "rail-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Long Vigil",
+    "factions": [
+      "long-vigil"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "rail rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 10,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 13,
+        "range": 10,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 4,
+      "defaultLoaded": 4,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "Vigil marksmen fire this survey-derived rail arm from prepared rests. The charge pack lasts, but the guide surfaces demand constant care."
+}

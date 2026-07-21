@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -230,6 +230,10 @@ const FARM_CROSS_VICTIM_MEMBERS = {
   }
 };
 
+export const FARM_CROSS_VICTIM_MEMBER_IDS = Object.freeze(
+  Object.keys(FARM_CROSS_VICTIM_MEMBERS)
+);
+
 export function drawFarmCrossVictim(ctx, cx, cy, seed, opts = {}) {
   const member = FARM_CROSS_VICTIM_MEMBERS[opts.member] ?? FARM_CROSS_VICTIM_MEMBERS.father;
   const rng = rngFrom(hash2D(seed + 257, seed * 7 + 19));
@@ -247,7 +251,6 @@ export function drawFarmCrossVictim(ctx, cx, cy, seed, opts = {}) {
   const blood = PALETTE.hostRed;
   const darkBlood = PALETTE.rustDark;
 
-  drawShadowBlob(ctx, cx, cy + 4, Math.round(32 * stature), Math.round(13 * stature));
   ctx.save();
   ctx.globalAlpha = 0.86;
   drawIsoDiamond(ctx, cx + 1, cy + 3, Math.round(32 * stature), Math.round(14 * stature), darkBlood);
@@ -367,6 +370,15 @@ export function drawFarmCrossVictim(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx, markY - 5, darkBlood, 1, 10);
   px(ctx, cx - 3, markY + 2, darkBlood, 7, 1);
   px(ctx, cx - 1, markY + 6, darkBlood, 3, 1);
+
+  // Split grain follows the farm timber, while nail heads, coat seams, and a
+  // narrow wet edge preserve detail at the new native pixel size.
+  nativeLinePx(ctx, cx - 1.5, topY + 2.5, cx - 0.5, footY - 4.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - beamHalf + 2.5, barY - 1.5, cx + beamHalf - 3.5, barY - 0.5, PALETTE.woodMid);
+  nativePx(ctx, wristL.x + 0.5, wristL.y - 0.5, PALETTE.rustLight);
+  nativePx(ctx, wristR.x - 0.5, wristR.y - 0.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + lean - 4.5, shoulderY + 3.5, cx + lean - 1.5, hipY - 2.5, member.coat.hi);
+  nativeLinePx(ctx, neckX - 3.5, neckY + 1.5, neckX + 2.5, neckY + 1.5, blood);
 }
 
 export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
@@ -393,7 +405,6 @@ export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
     if (hi) linePx(ctx, x0, y0, x1, y1 - 1, hi, 1);
   };
 
-  drawShadowBlob(ctx, cx, cy + 2, 28, 12);
 
   // A thin, cold seep of light (a grate, not a window) while it still lives.
   if (!killed) {
@@ -528,6 +539,14 @@ export function drawBoundVictim(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 7, footY + 1, PALETTE.outline, 4, 3);
   px(ctx, cx - 6, footY + 1, PALETTE.woodDark, 2, 2);
 
+  // Fine rope fibres, skin shading, and a narrow Host seam survive every
+  // living, dim, and killed branch without changing the human silhouette.
+  nativeLinePx(ctx, cx - 11.5, barY - 0.5, cx + 10.5, barY - 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, leftWrist.x - 1.5, leftWrist.y - 1.5, leftWrist.x + 2.5, leftWrist.y - 1.5, PALETTE.clothTan);
+  nativeLinePx(ctx, rightWrist.x - 1.5, rightWrist.y - 1.5, rightWrist.x + 2.5, rightWrist.y - 1.5, PALETTE.clothTan);
+  nativeLinePx(ctx, cx + lean - 1.5, chestY + 0.5, cx + lean - 3.5, hipY - 6.5, killed ? PALETTE.stoneDark : PALETTE.hostGold);
+  nativePx(ctx, headX - side * 1.5, headY + 2.5, PALETTE.skinLight);
+
 }
 
 export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
@@ -559,7 +578,6 @@ export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
     }
   };
 
-  drawShadowBlob(ctx, cx, cy + 2, 26, 11);
 
   // Uneven wall rings and chains. They hold the body up, but not cleanly.
   for (const s of [-1, 1]) {
@@ -694,6 +712,14 @@ export function drawCalcifiedPenitent(ctx, cx, cy, seed) {
 
   // Blood pooled and gone dark beneath.
   drawNoisePixels(ctx, cx - 10, cy - 3, 20, 8, [cut, PALETTE.stoneDark], 0.07, seed);
+
+  // Calcification resolves into hairline laminations and fracture lips rather
+  // than a uniformly pale body. The face and rib edge retain one lit pixel.
+  nativeLinePx(ctx, cx + tilt - 4.5, shoulderY + 1.5, cx + tilt - 2.5, hipY - 2.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cavX - 0.5, cavY + 0.5, cavX - 5.5, cavY + 5.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cavX + 8.5, cavY + 1.5, cavX + 13.5, cavY + 6.5, PALETTE.stoneDust);
+  nativePx(ctx, skullX - 2.5, skullY + 0.5, PALETTE.hostBone);
+  nativePx(ctx, cx + tilt + side * 2.5, hipY - 1.5, PALETTE.rustDark);
 }
 
 function drawCalcifiedLimb(ctx, points, colors, size = 2) {
@@ -799,7 +825,6 @@ export function drawCalcifiedCrossroadBrother(ctx, cx, cy, seed) {
   const shoulderY = cy - 46;
   const headY = cy - 60;
 
-  drawShadowBlob(ctx, cx, cy + 4, 46, 15);
   drawIsoDiamond(ctx, cx + 1, cy + 2, 34, 12, PALETTE.stoneDark);
   drawThrownRoadOfferings(ctx, cx, cy, seed);
 
@@ -877,6 +902,11 @@ export function drawCalcifiedCrossroadBrother(ctx, cx, cy, seed) {
     }
   }
 
+  nativeLinePx(ctx, cx + lean - 4.5, shoulderY + 1.5, cx + lean - 2.5, hipY - 2.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx - 40.5, shoulderY - 12.5, cx - 27.5, shoulderY - 5.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx + 27.5, shoulderY - 7.5, cx + 45.5, shoulderY - 16.5, PALETTE.stoneDust);
+  nativePx(ctx, cx + side * 7.5, shoulderY + 0.5, PALETTE.hostBone);
+
 }
 
 export function drawCalcifiedScarecrowBrother(ctx, cx, cy, seed) {
@@ -896,7 +926,6 @@ export function drawCalcifiedScarecrowBrother(ctx, cx, cy, seed) {
   const headY = cy - 61;
   const barY = shoulderY + 1;
 
-  drawShadowBlob(ctx, cx, cy + 4, 42, 14);
   drawIsoDiamond(ctx, cx, cy + 2, 36, 12, PALETTE.stoneDark);
 
   // Dry wheat crowded around the base, so it reads as a field placement.
@@ -977,6 +1006,13 @@ export function drawCalcifiedScarecrowBrother(ctx, cx, cy, seed) {
   px(ctx, cx + 15, cy - 43, PALETTE.stoneDark, 1, 3); // legs
   px(ctx, cx + 17, cy - 43, PALETTE.stoneDark, 1, 3);
 
+  // Dry bone lamination, split field timber, and one crow-feather edge remain
+  // single physical pixels so the figure stays gaunt rather than blockier.
+  nativeLinePx(ctx, cx + lean - 4.5, shoulderY + 2.5, cx + lean - 2.5, hipY - 2.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx - 25.5, barY - 1.5, cx + 25.5, barY - 4.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx + 14.5, cy - 45.5, cx + 18.5, cy - 46.5, PALETTE.stoneDark);
+  nativePx(ctx, cx + 19.5, cy - 46.5, PALETTE.hostGold);
+
 }
 
 export function drawCultVictim(ctx, cx, cy, seed) {
@@ -984,7 +1020,6 @@ export function drawCultVictim(ctx, cx, cy, seed) {
   const dark = PALETTE.rustDark;
   const rng = rngFrom(hash2D(seed + 17, seed * 3 + 5));
 
-  drawShadowBlob(ctx, cx, cy + 4, 52, 21);
 
   // A wide, half-dried pool with a drag smear and thrown spatter around it.
   ctx.save();
@@ -1067,5 +1102,14 @@ export function drawCultVictim(ctx, cx, cy, seed) {
   px(ctx, cx - 7, cy + 8, PALETTE.rustMid, 5, 2); // the horn's curve
   px(ctx, cx - 2, cy + 9, PALETTE.rustLight, 2, 1); // the brass mouthpiece
   px(ctx, cx - 9, cy + 10, PALETTE.void, 2, 2); // the bell mouth, silent
+
+  // A fine coat seam, chain links, separated fingers, and the scraped side of
+  // the carved star use the physical-pixel pass without enlarging the wounds.
+  nativeLinePx(ctx, cx - 11.5, cy - 5.5, cx + 8.5, cy - 4.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, nx - 2.5, ny - 2.5, nx + 2.5, ny - 1.5, PALETTE.flash);
+  nativeLinePx(ctx, pcx - 4.5, pcy - 3.5, pcx + 4.5, pcy + 3.5, PALETTE.rustMid);
+  for (const [dx, dy] of [[-1.5, 0.5], [-0.5, 1.5], [0.5, 2.5]]) {
+    nativePx(ctx, cx + dx, cy + dy + 5, PALETTE.skinLight);
+  }
 
 }

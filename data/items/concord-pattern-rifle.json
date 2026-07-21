@@ -1,0 +1,64 @@
+{
+  "id": "concord-pattern-rifle",
+  "name": "Concord Pattern Rifle",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "service rifle",
+  "rarity": "common",
+  "weight": 3.65,
+  "groundModel": "rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Pre-Fall reserve",
+    "origin": "Concord Arsenal",
+    "factions": [
+      "concord-arsenal"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "service rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 8,
+        "range": 8,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "snap-shot",
+        "name": "Snap Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 7,
+        "range": 7,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "full-rifle-cartridge",
+      "capacity": 13,
+      "defaultLoaded": 13,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A pre-collapse reserve rifle with a sealed piston and severe iron furniture. Its old serial plate is often mistaken for a prayer text."
+}

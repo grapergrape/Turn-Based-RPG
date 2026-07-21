@@ -1,0 +1,53 @@
+{
+  "id": "ash-road-south-hara-doss",
+  "title": "Hannah of Bethel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Hannah braces a patched kettle between her boots while Thomas circles the fire.",
+        "\"If this is another arrival question, ask it before the water boils away.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what her family received",
+          "next": "arrival",
+          "effects": {
+            "setFlag": "heard-arrival-water-claim"
+          }
+        },
+        {
+          "label": "Leave the family to its fire",
+          "close": true
+        }
+      ]
+    },
+    "arrival": {
+      "lines": [
+        "\"They gave us Fire Seven and one blanket. The chalk mark is for intake, but we arrived after the water roll closed.\"",
+        "\"They say tomorrow as if children drink calendars.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what drove them from the farm",
+          "next": "road"
+        },
+        {
+          "label": "Leave the family to its fire",
+          "close": true
+        }
+      ]
+    },
+    "road": {
+      "lines": [
+        "\"A pear farm east of the flooded cut. The trees flowered after the soil went black, so we stopped trusting pretty things.\"",
+        "\"Baruch carried the kettle while I carried Thomas. We left the rest for the roots.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the family to its fire",
+          "close": true
+        }
+      ]
+    }
+  }
+}

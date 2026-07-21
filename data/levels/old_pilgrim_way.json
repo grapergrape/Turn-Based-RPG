@@ -1,0 +1,1312 @@
+{
+  "id": "old-pilgrim-way",
+  "name": "Old Pilgrim Way",
+  "intro": "Old Pilgrim Way runs north through dead grain. A branch climbs toward a church whose bell has no rope.",
+  "width": 120,
+  "height": 70,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#1f140d",
+    "floorShadeAlpha": 0.08,
+    "ambient": "#5c513a",
+    "ambientAlpha": 0.04,
+    "vignette": 0.12,
+    "sun": {
+      "enabled": true,
+      "shadowOffsetX": 12,
+      "shadowOffsetY": 6,
+      "shadowAlpha": 0.12
+    }
+  },
+  "quests": [
+    "road-through-the-fields",
+    "the-buried-novitiate",
+    "names-below-the-hill"
+  ],
+  "dialogue": [
+    "old-pilgrim-field-opening",
+    "old-pilgrim-sister-calen",
+    "old-pilgrim-father-noll",
+    "old-pilgrim-oren-bale",
+    "old-pilgrim-evin-sael",
+    "old-pilgrim-gatt-vire",
+    "old-pilgrim-perr-varo",
+    "old-pilgrim-hara-doss",
+    "old-pilgrim-brother-tarn",
+    "old-pilgrim-nel-varo",
+    "old-pilgrim-south-road",
+    "old-pilgrim-north-road",
+    "old-pilgrim-hill-church-entry"
+  ],
+  "tiles": [
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs............gggggggggggggggggggggggggggggg..........dddd",
+    "dddd....................................................srrrrrrs............gggggggggggggggggggggggggggggg..........dddd",
+    "dddd....................................................srrrrrrs............gggggggggggggggggggggggggggggg..........dddd",
+    "dddd....................................................srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggVVVVVVVVVggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggggggsggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggggggggssrggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............gggggggsssrrrggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............ggggsssrrrrrrggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs............gsssrrrrrrrrsggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs..........sssrrrrrrrrrssgggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs.......sssrrrrrrrrrsssgggggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs....sssrrrrrrrrrsssggggggggggggggggggggggg..........dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs.sssrrrrrrrrrsss....................................dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrsssrrrrrrrrrsss.......................................dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrrrrrrrrrsssffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrrrrrrsssfffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrrrsss..ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrsss.....ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "ddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww.......srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "dddd....................................................srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "dddd....................................................srrrrrrs......ffffffffffffffffffffffffffffffffffffffffffff..dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd",
+    "dddd....................................................srrrrrrs....................................................dddd"
+  ],
+  "legend": {
+    ".": {
+      "kind": "floor",
+      "floor": "ash-dirt",
+      "walkable": true
+    },
+    "r": {
+      "kind": "floor",
+      "floor": "ash-road",
+      "walkable": true
+    },
+    "s": {
+      "kind": "floor",
+      "floor": "road-shoulder",
+      "walkable": true
+    },
+    "w": {
+      "kind": "floor",
+      "floor": "wheat-field",
+      "walkable": true
+    },
+    "f": {
+      "kind": "floor",
+      "floor": "furrow-field",
+      "walkable": true
+    },
+    "d": {
+      "kind": "floor",
+      "floor": "forest-floor",
+      "walkable": true
+    },
+    "g": {
+      "kind": "floor",
+      "floor": "graveyard-earth",
+      "walkable": true
+    },
+    "V": {
+      "kind": "graveyard-vigil-chapel-block",
+      "walkable": false
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 60,
+      "y": 67,
+      "facing": "n"
+    },
+    "npcs": [
+      {
+        "actor": "old-pilgrim-sister-calen",
+        "spawnId": "old-pilgrim-sister-calen",
+        "x": 55,
+        "y": 50,
+        "facing": "se",
+        "dialogue": "old-pilgrim-sister-calen",
+        "talkRadius": 1,
+        "ambient": [
+          "“Cups upright for the living. Mouth-down for the missing.”"
+        ],
+        "mapMarker": {
+          "label": "Sister Thecla",
+          "kind": "quest",
+          "reveal": "always"
+        }
+      },
+      {
+        "actor": "old-pilgrim-father-noll",
+        "spawnId": "old-pilgrim-father-noll",
+        "x": 50,
+        "y": 46,
+        "facing": "se",
+        "dialogue": "old-pilgrim-father-noll",
+        "talkRadius": 1,
+        "ambient": [
+          "“An apse stair with no stair. That is either bad copying or good hiding.”"
+        ],
+        "conditions": {
+          "flagsAbsent": [
+            "old-pilgrim-return-lift-open"
+          ]
+        }
+      },
+      {
+        "actor": "old-pilgrim-oren-bale",
+        "spawnId": "old-pilgrim-oren-bale",
+        "x": 53,
+        "y": 53,
+        "facing": "nw",
+        "dialogue": "old-pilgrim-oren-bale",
+        "talkRadius": 1,
+        "ambient": [
+          "Tobias checks the bandage without moving his shoulder."
+        ]
+      },
+      {
+        "actor": "ash-road-south-evin-sael",
+        "spawnId": "old-pilgrim-outcome-compact",
+        "x": 47,
+        "y": 52,
+        "facing": "ne",
+        "dialogue": "old-pilgrim-evin-sael",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "south-measure-compact"
+        }
+      },
+      {
+        "actor": "ash-road-south-gatt-vire",
+        "spawnId": "old-pilgrim-outcome-morrow",
+        "x": 64,
+        "y": 51,
+        "facing": "nw",
+        "dialogue": "old-pilgrim-gatt-vire",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "south-measure-morrow"
+        }
+      },
+      {
+        "actor": "ash-road-south-perr-varo",
+        "spawnId": "old-pilgrim-outcome-resident",
+        "x": 64,
+        "y": 54,
+        "facing": "sw",
+        "dialogue": "old-pilgrim-perr-varo",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "south-measure-resident"
+        }
+      },
+      {
+        "actor": "ash-road-south-hara-doss",
+        "spawnId": "old-pilgrim-outcome-sealed",
+        "x": 47,
+        "y": 54,
+        "facing": "ne",
+        "dialogue": "old-pilgrim-hara-doss",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "south-measure-sealed"
+        }
+      },
+      {
+        "actor": "brother-tarn",
+        "spawnId": "old-pilgrim-tarn-camp",
+        "x": 50,
+        "y": 53,
+        "facing": "ne",
+        "dialogue": "old-pilgrim-brother-tarn",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "tarn-shared-road"
+        }
+      },
+      {
+        "actor": "brother-tarn",
+        "spawnId": "old-pilgrim-tarn-scout",
+        "x": 82,
+        "y": 18,
+        "facing": "ne",
+        "dialogue": "old-pilgrim-brother-tarn",
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "tarn-independent-scout"
+        }
+      },
+      {
+        "actor": "ash-road-south-nel-varo",
+        "spawnId": "old-pilgrim-nel-north",
+        "x": 65,
+        "y": 48,
+        "facing": "ne",
+        "dialogue": "old-pilgrim-nel-varo",
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAtLeast": {
+            "count": 1,
+            "of": [
+              "nel-school-alone",
+              "nel-family-review",
+              "nel-family-forged"
+            ]
+          },
+          "flagsAbsent": [
+            "nel-stays-one-season"
+          ]
+        }
+      }
+    ],
+    "enemies": [
+      {
+        "id": "old-pilgrim-cord-bearer",
+        "spawnId": "old-pilgrim-stage-iv-lead",
+        "x": 82,
+        "y": 39,
+        "facing": "nw",
+        "encounter": "old-pilgrim-field-opening",
+        "dormantUntilCombat": true,
+        "aggroRadius": 0,
+        "loot": [
+          {
+            "item": "relic-rounds",
+            "count": 1
+          }
+        ]
+      },
+      {
+        "id": "old-pilgrim-bell-throat",
+        "spawnId": "old-pilgrim-stage-iv-east",
+        "x": 85,
+        "y": 37,
+        "facing": "sw",
+        "encounter": "old-pilgrim-field-opening",
+        "dormantUntilCombat": true,
+        "aggroRadius": 0
+      },
+      {
+        "id": "old-pilgrim-procession-runner",
+        "spawnId": "old-pilgrim-stage-iv-south",
+        "x": 87,
+        "y": 42,
+        "facing": "nw",
+        "encounter": "old-pilgrim-field-opening",
+        "dormantUntilCombat": true,
+        "aggroRadius": 0
+      },
+      {
+        "id": "old-pilgrim-procession-runner",
+        "spawnId": "old-pilgrim-stage-iv-far",
+        "x": 90,
+        "y": 39,
+        "facing": "sw",
+        "encounter": "old-pilgrim-field-opening",
+        "dormantUntilCombat": true,
+        "aggroRadius": 0
+      },
+      {
+        "id": "old-pilgrim-procession-runner",
+        "spawnId": "old-pilgrim-stage-iv-rut",
+        "x": 84,
+        "y": 44,
+        "facing": "nw",
+        "encounter": "old-pilgrim-field-opening",
+        "dormantUntilCombat": true,
+        "aggroRadius": 0
+      }
+    ]
+  },
+  "objects": [
+    {
+      "kind": "road-sign-post",
+      "x": 60,
+      "y": 69,
+      "id": "old-pilgrim-south-road-post",
+      "name": "South Measure Road",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-south-road"
+      },
+      "blocking": true,
+      "interactionMarker": {
+        "x": 60,
+        "y": 68
+      },
+      "mapMarker": {
+        "label": "South Measure",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "quarantine-sign",
+      "x": 60,
+      "y": 0,
+      "id": "old-pilgrim-north-road-post",
+      "name": "Quarantine Farms Road",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-north-road"
+      },
+      "blocking": true,
+      "interactionMarker": {
+        "x": 60,
+        "y": 1
+      },
+      "mapMarker": {
+        "label": "Quarantine Farms",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "chapel-double-door",
+      "x": 88,
+      "y": 13,
+      "id": "old-pilgrim-hill-church-door",
+      "name": "Hill Church",
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "old-pilgrim-hill-church-entry"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 88,
+        "y": 14
+      },
+      "mapMarker": {
+        "label": "Hill Church",
+        "kind": "exit"
+      }
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 59,
+      "y": 61
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 59,
+      "y": 55
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 60,
+      "y": 48
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 59,
+      "y": 39
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 61,
+      "y": 31
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 66,
+      "y": 24
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 72,
+      "y": 22
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 78,
+      "y": 20
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 83,
+      "y": 18
+    },
+    {
+      "kind": "graveyard-path-stones",
+      "x": 87,
+      "y": 15
+    },
+    {
+      "kind": "pilgrim-road-shrine",
+      "x": 60,
+      "y": 58,
+      "blocking": true,
+      "variant": "road"
+    },
+    {
+      "kind": "pilgrim-road-shrine",
+      "x": 60,
+      "y": 40,
+      "blocking": true,
+      "variant": "road"
+    },
+    {
+      "kind": "pilgrim-road-shrine",
+      "x": 65,
+      "y": 25,
+      "blocking": true,
+      "variant": "branch"
+    },
+    {
+      "kind": "pilgrim-road-shrine",
+      "x": 76,
+      "y": 20,
+      "blocking": true,
+      "variant": "branch"
+    },
+    {
+      "kind": "pilgrim-road-shrine",
+      "x": 85,
+      "y": 16,
+      "blocking": true,
+      "variant": "hill"
+    },
+    {
+      "kind": "road-dust",
+      "x": 55,
+      "y": 61
+    },
+    {
+      "kind": "road-dust",
+      "x": 64,
+      "y": 61
+    },
+    {
+      "kind": "road-dust",
+      "x": 55,
+      "y": 38
+    },
+    {
+      "kind": "road-dust",
+      "x": 64,
+      "y": 38
+    },
+    {
+      "kind": "road-dust",
+      "x": 53,
+      "y": 29
+    },
+    {
+      "kind": "road-dust",
+      "x": 66,
+      "y": 29
+    },
+    {
+      "kind": "road-dust",
+      "x": 73,
+      "y": 24
+    },
+    {
+      "kind": "road-dust",
+      "x": 80,
+      "y": 21
+    },
+    {
+      "kind": "road-dust",
+      "x": 86,
+      "y": 18
+    },
+    {
+      "kind": "ash-tree",
+      "x": 8,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 15,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 24,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 34,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 44,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 10,
+      "y": 47,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 22,
+      "y": 55,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 41,
+      "y": 51,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 73,
+      "y": 29,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 82,
+      "y": 27,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 92,
+      "y": 31,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 105,
+      "y": 25,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 76,
+      "y": 52,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 89,
+      "y": 55,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 108,
+      "y": 47,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 5,
+      "y": 64,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 114,
+      "y": 64,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 7,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "ash-tree",
+      "x": 111,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 12,
+      "y": 22
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 18,
+      "y": 30
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 27,
+      "y": 39
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 37,
+      "y": 25
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 45,
+      "y": 43
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 7,
+      "y": 53
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 72,
+      "y": 34
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 75,
+      "y": 46
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 83,
+      "y": 50
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 91,
+      "y": 38
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 99,
+      "y": 43
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 110,
+      "y": 54
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 51,
+      "y": 58
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 66,
+      "y": 57
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 68,
+      "y": 13
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 77,
+      "y": 16
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 96,
+      "y": 19
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 103,
+      "y": 13
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 11,
+      "y": 18
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 17,
+      "y": 26
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 25,
+      "y": 15
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 33,
+      "y": 44
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 42,
+      "y": 32
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 46,
+      "y": 50
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 73,
+      "y": 31
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 80,
+      "y": 35
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 87,
+      "y": 41
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 96,
+      "y": 28
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 104,
+      "y": 36
+    },
+    {
+      "kind": "wheat-clump",
+      "x": 109,
+      "y": 51
+    },
+    {
+      "kind": "farm-fence",
+      "x": 39,
+      "y": 46,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 40,
+      "y": 46,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 41,
+      "y": 46,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 70,
+      "y": 31,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 71,
+      "y": 31,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 101,
+      "y": 38,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 102,
+      "y": 38,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "farm-fence",
+      "x": 103,
+      "y": 38,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "wall-broken",
+      "x": 36,
+      "y": 48,
+      "blocking": true
+    },
+    {
+      "kind": "wall-broken",
+      "x": 36,
+      "y": 49,
+      "blocking": true
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 38,
+      "y": 50,
+      "blocking": true
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 40,
+      "y": 49,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 35,
+      "y": 51,
+      "blocking": true
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 37,
+      "y": 47
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 49,
+      "y": 49,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "campfire",
+      "x": 52,
+      "y": 51,
+      "blocking": true
+    },
+    {
+      "kind": "field-cart",
+      "x": 54,
+      "y": 53,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "settlement-table",
+      "x": 51,
+      "y": 48,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 48,
+      "y": 52,
+      "blocking": true
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 50,
+      "y": 55,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 56,
+      "y": 55,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "overturned-field-cart",
+      "x": 79,
+      "y": 41,
+      "id": "old-pilgrim-field-cart-before-release",
+      "blocking": true,
+      "orient": "se",
+      "hiddenWhenFlags": [
+        "old-pilgrim-field-cart-flank"
+      ]
+    },
+    {
+      "kind": "overturned-field-cart",
+      "x": 81,
+      "y": 42,
+      "id": "old-pilgrim-field-cart-after-release",
+      "blocking": true,
+      "orient": "sw",
+      "visibleWhenFlags": [
+        "old-pilgrim-field-cart-flank"
+      ]
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 46,
+      "y": 55,
+      "blocking": true,
+      "orient": "se",
+      "visibleWhenFlags": [
+        "south-measure-compact"
+      ]
+    },
+    {
+      "kind": "medicine-cart",
+      "x": 48,
+      "y": 56,
+      "blocking": true,
+      "orient": "se",
+      "visibleWhenFlags": [
+        "south-measure-compact"
+      ]
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 65,
+      "y": 53,
+      "blocking": true,
+      "visibleWhenFlags": [
+        "south-measure-morrow"
+      ]
+    },
+    {
+      "kind": "field-cart",
+      "x": 67,
+      "y": 52,
+      "blocking": true,
+      "orient": "sw",
+      "visibleWhenFlags": [
+        "south-measure-morrow"
+      ]
+    },
+    {
+      "kind": "farm-workbench",
+      "x": 65,
+      "y": 56,
+      "blocking": true,
+      "orient": "sw",
+      "visibleWhenFlags": [
+        "south-measure-resident"
+      ]
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 67,
+      "y": 56,
+      "blocking": true,
+      "visibleWhenFlags": [
+        "south-measure-resident"
+      ]
+    },
+    {
+      "kind": "canvas-tent",
+      "x": 45,
+      "y": 55,
+      "blocking": true,
+      "orient": "se",
+      "visibleWhenFlags": [
+        "south-measure-sealed"
+      ]
+    },
+    {
+      "kind": "camp-bedroll",
+      "x": 47,
+      "y": 57,
+      "blocking": true,
+      "orient": "se",
+      "visibleWhenFlags": [
+        "south-measure-sealed"
+      ]
+    },
+    {
+      "kind": "skeleton",
+      "x": 68,
+      "y": 28,
+      "id": "old-pilgrim-procession-skeleton",
+      "name": "Roadside Pilgrim",
+      "interact": {
+        "type": "note",
+        "log": "Old pilgrim cloth remains under the ribs. The body predates the fresh movement in the east field."
+      }
+    },
+    {
+      "kind": "field-backpack",
+      "x": 42,
+      "y": 47,
+      "id": "old-pilgrim-road-backpack",
+      "name": "Abandoned Road Pack",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The shoulder strap was cut cleanly. A dressing and two ducats remain under the blanket roll.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 2
+          }
+        ]
+      }
+    },
+    {
+      "kind": "small-pouch",
+      "x": 67,
+      "y": 33,
+      "id": "old-pilgrim-procession-pouch",
+      "name": "Procession Pouch",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "A road token and one cartridge sit beneath a knot of rotten cord.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          },
+          {
+            "item": "relic-rounds",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 51,
+      "y": 47,
+      "id": "old-pilgrim-choir-lesson-slip",
+      "name": "Northern Lesson Slip",
+      "interact": {
+        "type": "note",
+        "log": "A copied lesson tells rejected travelers to welcome the voice that knows their name before they speak it."
+      },
+      "visibleWhenFlags": [
+        "choir-influence-south-measure"
+      ]
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 48,
+      "y": 50,
+      "id": "old-pilgrim-nel-south-measure-card",
+      "name": "South Measure Lesson Card",
+      "interact": {
+        "type": "note",
+        "log": "Noa left one alphabet card under a cup: SCHOOL KEPT SOUTH FOR ONE SEASON."
+      },
+      "visibleWhenFlags": [
+        "nel-stays-one-season"
+      ]
+    },
+    {
+      "kind": "corpse",
+      "x": 78,
+      "y": 44,
+      "id": "old-pilgrim-field-lessa",
+      "name": "Leah at the Mule Trace",
+      "interact": {
+        "type": "note",
+        "log": "Leah’s coat is torn at the back, but the body never opened. One hand still grips the mule trace she tried to cut."
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    },
+    {
+      "kind": "corpse",
+      "x": 80,
+      "y": 39,
+      "id": "old-pilgrim-field-venn",
+      "name": "Abner Beneath the Cart Rail",
+      "interact": {
+        "type": "note",
+        "log": "Abner died beneath the rail with Tobias’s red load pin in reach. The unopened knife at the belt carries a cartwright’s mark."
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    },
+    {
+      "kind": "opened-pilgrim-remains",
+      "x": 82,
+      "y": 39,
+      "blocking": false,
+      "variant": "runner",
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    },
+    {
+      "kind": "opened-pilgrim-remains",
+      "x": 85,
+      "y": 37,
+      "blocking": false,
+      "variant": "bell",
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    },
+    {
+      "kind": "opened-pilgrim-remains",
+      "x": 87,
+      "y": 42,
+      "blocking": false,
+      "variant": "cord",
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    },
+    {
+      "kind": "opened-pilgrim-remains",
+      "x": 90,
+      "y": 39,
+      "blocking": false,
+      "variant": "runner",
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    },
+    {
+      "kind": "opened-pilgrim-remains",
+      "x": 84,
+      "y": 44,
+      "blocking": false,
+      "variant": "runner",
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    },
+    {
+      "kind": "field-backpack",
+      "x": 77,
+      "y": 40,
+      "id": "old-pilgrim-field-team-pack",
+      "name": "Leah and Abner’s Road Pack",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The pack was wedged under the dropped cart bed. Two cartridges and the team’s last sealed dressing survived.",
+        "loot": [
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          }
+        ]
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-fields-cleared"
+      ]
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "old-pilgrim-loose-dressing",
+      "item": "field-dressing",
+      "count": 1,
+      "x": 45,
+      "y": 49
+    },
+    {
+      "id": "old-pilgrim-loose-ducat",
+      "item": "ducat",
+      "count": 1,
+      "x": 65,
+      "y": 30
+    },
+    {
+      "id": "old-pilgrim-loose-rounds",
+      "item": "relic-rounds",
+      "count": 1,
+      "x": 77,
+      "y": 43
+    },
+    {
+      "id": "old-pilgrim-loose-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 89,
+      "y": 16
+    },
+    {
+      "id": "old-pilgrim-loose-scrap",
+      "item": "penitent-gear-scrap",
+      "count": 1,
+      "x": 107,
+      "y": 40
+    }
+  ],
+  "combatTriggers": [
+    {
+      "id": "old-pilgrim-field-trigger",
+      "encounter": "old-pilgrim-field-opening",
+      "x": 78,
+      "y": 41,
+      "radius": 4,
+      "dialogue": "old-pilgrim-field-opening",
+      "mapMarker": {
+        "label": "Dead Furrows",
+        "kind": "danger"
+      }
+    }
+  ],
+  "combatIntro": [
+    "Five bodies rise from separate furrows. Each one waits for the lead prayer cord to pull tight."
+  ],
+  "victoryLog": "The last opened pilgrim folds into the dead grain. Nothing else answers from the field.",
+  "onVictory": {
+    "setFlag": [
+      "old-pilgrim-fields-cleared",
+      "old-pilgrim-field-aftermath-ready"
+    ],
+    "questUpdate": {
+      "quest": "road-through-the-fields",
+      "stage": "report-field-attack",
+      "log": "Five Stage IV pilgrims are dead in the east field. Sister Thecla needs the count."
+    }
+  }
+}

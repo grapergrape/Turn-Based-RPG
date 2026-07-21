@@ -12,6 +12,7 @@
       "choices": [
         {
           "label": "Stand aside or burn",
+          "tone": "danger",
           "next": "aggressive"
         },
         {
@@ -27,7 +28,7 @@
     "aggressive": {
       "lines": [
         "\"Then you came with a closed hand,\" the candle-bearer says, almost sorry about it. He sets the candle tray down on the dry font, the way a man frees both hands for work he has done before.",
-        "The throat-singer lifts the shard. \"The Censure only knows how to seal a door. We open them. Come and be opened with the rest.\""
+        "The throat-singer lifts the shard. \"The Censure seals every door it fears. We have learned what waits on the other side, and we can teach you.\""
       ],
       "choices": [
         {
@@ -65,7 +66,7 @@
     "behind": {
       "lines": [
         "You do not watch the shard or the candle. You read the room first, the way the Office teaches, before the room can read you. Past the inverted stole, back in the dark of the nave, something kneels that is too wide at the shoulders and far too still, and a smaller shape moves around it with a bowl, unhurried.",
-        "\"Ah.\" The throat-singer sounds pleased. \"You looked. Most of your kind keep their eyes on our hands until it is too late for their eyes.\" He still does not lower the shard. \"One of the settlement guards, a saint mid-confession. We have been patient with it. Fed slow, opened slow. Patience makes the true icon.\"",
+        "\"Ah.\" The throat-singer sounds pleased. \"You looked. Most of your kind keep their eyes on our hands until it is too late for their eyes.\" He still does not lower the shard. \"One of the settlement guards, a saint mid-confession. We ration its food so the confession lasts, and every new cut waits for the guard to understand the last one. Patience makes the true icon.\"",
         "\"Your warden knew that much,\" the candle-bearer adds. \"He kept his sick at the litany for the very same reason, to open them quiet and call it keeping the peace. We do the honest version, out loud, with the candles lit. You can witness it, or you can be witnessed. No third door waits in this house.\""
       ],
       "choices": [

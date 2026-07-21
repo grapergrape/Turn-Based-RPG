@@ -1,13 +1,17 @@
 {
   "id": "catacombs-survivor-oren",
-  "name": "Oren Rill",
+  "name": "Tobias Ripa",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Ash Chapel settler",
   "appearance": {
     "body": "broad",
     "outfit": "settlement-work-coat",
-    "gear": ["scarred-face", "shoulder-plate", "rope-coil"],
+    "gear": [
+      "scarred-face",
+      "shoulder-plate",
+      "rope-coil"
+    ],
     "accent": "bare-brown"
   },
   "stats": {

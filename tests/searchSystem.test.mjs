@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 
 import {
   completeSearchMethod,
+  investigationRangeForSearch,
   objectSearch,
   resolveSearchMethod,
   restoreSearchCompleted,
@@ -15,6 +16,22 @@ function inventory(items = []) {
   return {
     has: (itemId) => set.has(itemId)
   };
+}
+
+{
+  assert.equal(investigationRangeForSearch(Number.NaN), 1);
+  assert.equal(investigationRangeForSearch(-10), 1);
+  assert.equal(investigationRangeForSearch(27), 1);
+  assert.equal(investigationRangeForSearch(39), 1);
+  assert.equal(investigationRangeForSearch(40), 2);
+  assert.equal(investigationRangeForSearch(49), 2);
+  assert.equal(investigationRangeForSearch(50), 3);
+  assert.equal(investigationRangeForSearch(60), 4);
+  assert.equal(investigationRangeForSearch(80), 6);
+  assert.equal(investigationRangeForSearch(90), 7);
+  assert.equal(investigationRangeForSearch(109), 7);
+  assert.equal(investigationRangeForSearch(110), 8);
+  assert.equal(investigationRangeForSearch(140), 9);
 }
 
 {

@@ -1,13 +1,15 @@
 {
   "id": "catacombs-child-eda",
-  "name": "Eda",
+  "name": "Ruth",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Settlement child",
   "appearance": {
     "body": "child",
     "outfit": "settlement-child-chalk",
-    "gear": ["child-token"],
+    "gear": [
+      "child-token"
+    ],
     "accent": "bare-brown"
   },
   "stats": {

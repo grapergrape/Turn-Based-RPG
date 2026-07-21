@@ -1,0 +1,54 @@
+{
+  "id": "gatehammer-pistol",
+  "name": "Gatehammer Pistol",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "heavy pistol",
+  "rarity": "common",
+  "weight": 1.8,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Gate Wardens",
+    "factions": [
+      "gate-wardens"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "heavy pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 7,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "heavy-sidearm-cartridge",
+      "capacity": 11,
+      "defaultLoaded": 11,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A slab-sided pistol built to crack improvised armor at gate distance. The grip is weighted so the muzzle settles after recoil."
+}

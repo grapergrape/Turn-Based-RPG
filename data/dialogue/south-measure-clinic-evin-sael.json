@@ -1,0 +1,55 @@
+{
+  "id": "south-measure-clinic-evin-sael",
+  "title": "Timothy Cato",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Timothy has folded his placement form around a wrapped gauge and a spare shirt."
+      ],
+      "choices": [
+        {
+          "label": "Ask about the machine-works test",
+          "next": "test"
+        },
+        {
+          "label": "Ask why the shirt is already packed",
+          "next": "packed"
+        },
+        {
+          "label": "Leave Timothy to refold the form",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "test": {
+      "lines": [
+        "His answer comes quickly. \"A true lathe bed with gauges that agree. The pay comes stamped, so a foreman cannot shorten it after the shift.\"",
+        "Then he touches the folded shirt. \"If I fail, my score follows me back to Darius’s yard. The clinic bed does not.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask who packed for him",
+          "next": "packed"
+        },
+        {
+          "label": "Let him study the test form",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "packed": {
+      "lines": [
+        "\"My mother. She put in the good shirt before I told her I had agreed to anything, so I suppose one of us has confidence.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the shirt folded",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-fara-dole",
+  "name": "Leah Scriba",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Grain clerk",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-grey"
+  }
+}

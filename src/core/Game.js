@@ -14,15 +14,23 @@ import { mapLoadingProgress, normalizeLoadingState } from './LoadingProgress.js'
 import { loadLevel, randomPatrolDelay } from './LevelLoader.js';
 import { applyDevPrimaryOverrides } from './DevStart.js';
 import {
+  applyPlaytestInventory,
+  applyPlaytestProgression,
+  playtestClock,
+  playtestRequiredItemIds
+} from './PlaytestProfile.js';
+import {
   PRIMARY_ASSIGNMENT_FLAG,
   createCustomizationState,
   createPrimaryAssignmentState
 } from './CharacterCreation.js';
 import { DialogueEffects } from './DialogueEffects.js';
+import { mergeCodexDefinitions, mergeJournalNotes } from './JournalState.js';
 import { LootSession, enemyHasLoot, enemyHasUnclaimedLoot } from './LootSession.js';
 import { TradeSession } from './TradeSession.js';
 import { TurnManager } from '../combat/TurnManager.js';
 import { CombatSystem, chebyshev } from '../combat/CombatSystem.js';
+import { isMeleeAttack } from '../combat/AttackMode.js';
 import { findPath, findPathToAdjacent } from '../world/Pathfinder.js';
 import { InteractionSystem } from '../world/InteractionSystem.js';
 import {
@@ -72,12 +80,19 @@ import {
   suspicionStateRank,
 } from '../world/PerceptionSystem.js';
 import { PatrolSystem } from '../world/PatrolSystem.js';
+import { TableauSystem } from '../world/TableauSystem.js';
 import { StealthRuntime } from '../world/StealthRuntime.js';
 import { IsometricRenderer } from '../render/IsometricRenderer.js';
+import { WorldAudioRuntime } from '../audio/WorldAudioRuntime.js';
 import { bakePlayerCharacter } from '../render/SpriteAtlas.js';
 import { DEBUG_GRID_DEFAULT, VIEWPORT_HEIGHT } from '../render/renderConfig.js';
 import { DIALOGUE_MAX_CHOICES } from '../ui/dialogueLayout.js';
-import { AREA_TITLE_DURATION, PLAYER_CUSTOM_PREVIEW_SPRITE_ID, SNEAK_ATTACK_MULTIPLIER } from './game/runtimeConstants.js';
+import {
+  AREA_TITLE_DURATION,
+  PLAYER_CUSTOM_PREVIEW_SPRITE_ID,
+  SNEAK_ATTACK_MULTIPLIER,
+  isExplorationMode
+} from './game/runtimeConstants.js';
 import { installGameUiScreens } from './game/GameUiScreens.js';
 import { installGameInventoryScreen } from './game/GameInventoryScreen.js';
 import { installGameDialogueRuntime } from './game/GameDialogueRuntime.js';
@@ -85,6 +100,10 @@ import { installGameCombatRuntime } from './game/GameCombatRuntime.js';
 import { installGameMovementRuntime } from './game/GameMovementRuntime.js';
 import { installGameRuntimeState } from './game/GameRuntimeState.js';
 import { installGameRenderState } from './game/GameRenderState.js';
+import { installGameDroneRuntime } from './game/GameDroneRuntime.js';
+import { installGameDroneCombatRuntime } from './game/GameDroneCombatRuntime.js';
+import { installGameCombatAbilityRuntime } from './game/GameCombatAbilityRuntime.js';
+import { installGameSaveRuntime } from './game/GameSaveRuntime.js';
 import { createLootSessionState, createTradeSessionState } from './game/sessionState.js';
 
 const FACING_OFFSETS = Object.freeze({
@@ -110,15 +129,28 @@ const ADJACENT_INTERACT_OFFSETS = Object.freeze([
 ]);
 
 export class Game {
-  constructor({ canvas, levelPath, atlas, statusElement, bootOptions = {}, debugGrid = null }) {
+  constructor({
+    canvas,
+    levelPath,
+    atlas,
+    statusElement,
+    bootOptions = {},
+    debugGrid = null,
+    saveCoordinator = null,
+    gameVersion = 'dev'
+  }) {
     this.canvas = canvas;
     this.levelPath = levelPath;
+    this.initialLevelPath = levelPath;
     this.atlas = atlas;
     this.statusElement = statusElement;
+    this.saveCoordinator = saveCoordinator;
+    this.gameVersion = gameVersion;
     this.startupOptions = { ...bootOptions };
     this.clock = createGameClock(this.startupOptions.clock);
 
     this.input = new Input(canvas);
+    this.worldAudio = new WorldAudioRuntime();
     this.renderer = new IsometricRenderer(canvas, atlas);
     this.combat = new CombatSystem();
     this.turnManager = new TurnManager();
@@ -150,6 +182,7 @@ export class Game {
       syncFlagConditionalObjects: () => this._syncFlagConditionalObjects(),
       startCombat: (encounterId, options) => this._startCombat(encounterId, options),
       transitionLevel: (effect) => this._transitionLevel(effect),
+      journalStateChanged: () => this._checkJournalUpdates(),
       meetsConditions: (conditions) => this._meetsConditions(conditions),
       logCarryFailure: (carry) => this._logCarryFailure(carry),
       syncInventoryOrder: () => this._syncInventoryOrder(),
@@ -161,6 +194,7 @@ export class Game {
       fieldRating: (fieldId) => this._fieldRating(fieldId),
       enemyPerceptionRating: (enemy, perception) => this._enemyPerceptionRating(enemy, perception),
       faceToward: (actor, target) => this._faceToward(actor, target),
+      deferDetection: (context) => this._consumeDroneDetectionDeferral?.(context) ?? false,
       log: (message) => this._log(message),
       closeUiScreen: () => this._closeUiScreen(),
       startCombat: (encounterId) => this._startCombat(encounterId)
@@ -169,9 +203,23 @@ export class Game {
       applyEffects: (effects) => this._applyEffects(effects),
       removeActorFromLevel: (actor) => this._removeActorFromLevel(actor),
       isCellHidden: (x, y) => this._isCellHidden(x, y),
+      isActorMoving: (actor) => this._isActorMoving(actor),
       occupiedSet: (exclude) => this._occupiedSet(exclude),
       tryStep: (actor, dir, options) => this._tryStep(actor, dir, options),
+      startPatrolActivity: (actor, activity) => this._startPatrolActivity(actor, activity),
+      updatePatrolActivity: (actor, activity, progress) => this._updatePatrolActivity(actor, activity, progress),
+      finishPatrolActivity: (actor, activity, options) => this._finishPatrolActivity(actor, activity, options),
       randomPatrolDelay
+    });
+    this.tableauSystem = new TableauSystem(this, {
+      cancelPatrolActivity: (actor) => this.patrolSystem.cancelActivity(actor),
+      cancelMovement: (actor) => this._cancelNpcMovement(actor),
+      isActorMoving: (actor) => this._isActorMoving(actor),
+      occupiedSet: (exclude) => this._occupiedSet(exclude),
+      tryStep: (actor, dir, options) => this._tryStep(actor, dir, options),
+      startActivity: (actor, activity, owner) => this._startNpcActivity(actor, activity, owner),
+      updateActivity: (actor, activity, progress, owner) => this._updateNpcActivity(actor, activity, progress, owner),
+      finishActivity: (actor, owner) => this._finishNpcActivity(actor, owner)
     });
 
     this.debugGridDefault = debugGrid ?? DEBUG_GRID_DEFAULT;
@@ -186,6 +234,9 @@ export class Game {
     this.loadingState = null;
     this.areaTitle = null;
     this.areaTitleTimer = 0;
+    this.journalNotice = null;
+    this.journalNoticeSnapshot = null;
+    this.journalNoticePollTimer = 0;
     this.pendingExploreTarget = null;
     this.preCombatTarget = null;
     this.dialogueActor = null;
@@ -194,12 +245,27 @@ export class Game {
     this.primaryAssignment = null;
     this.briefingAfter = null;
     this.pendingPrimaryAssignmentTransition = null;
+    this.runId = null;
+    this.runCreatedAt = null;
+    this.playtimeSeconds = 0;
+    this.autosaveElapsed = 0;
+    this.lastSaveAt = null;
+    this.lastSaveError = null;
   }
 
   // (Re)load the level and reset runtime state. Level transitions preserve the
   // run state; restarts intentionally start clean.
   async boot(options = {}) {
     const bootOptions = this._bootOptions(options);
+    const restoredSnapshot = bootOptions.restoreSnapshot ?? null;
+    const restored = this._restoreSnapshotValues?.(restoredSnapshot);
+    const playtestSeed = !bootOptions.preserveRun && !restored ? bootOptions.playtestSeed ?? null : null;
+    const seededQuestStages = playtestSeed
+      ? new Map(Object.entries(playtestSeed.questStages ?? {}))
+      : null;
+    const seededQuestReached = playtestSeed
+      ? new Map(Object.entries(playtestSeed.questReached ?? {}).map(([id, stages]) => [id, new Set(stages)]))
+      : null;
     this.ready = false;
     this._renderLoading(0.03, 'Preparing field load');
     await this._loadingFrame();
@@ -207,29 +273,41 @@ export class Game {
       this.levelStateByPath = new Map();
       this.debugGrid = this.debugGridDefault;
     }
+    if (restored) {
+      this.levelPath = restoredSnapshot.levelPath;
+      this.levelStateByPath = restored.levelStates;
+    }
 
-    const previousInventory = bootOptions.preserveRun ? this.inventory : null;
-    const previousInventoryState = previousInventory?.stateSnapshot?.() ?? null;
-    const previousInventoryOrder = bootOptions.preserveRun && Array.isArray(this.inventoryOrder)
+    const previousInventory = bootOptions.preserveRun && !restored ? this.inventory : null;
+    const previousInventoryState = restored?.inventoryState ?? previousInventory?.stateSnapshot?.() ?? null;
+    const previousInventoryOrder = restored?.inventoryOrder ?? (bootOptions.preserveRun && Array.isArray(this.inventoryOrder)
       ? [...this.inventoryOrder]
-      : [];
-    const previousQuestStages = bootOptions.preserveRun && this.questStages
+      : []);
+    const previousQuestStages = restored?.questStages ?? (bootOptions.preserveRun && this.questStages
       ? new Map(this.questStages)
-      : null;
-    const previousQuestReached = bootOptions.preserveRun && this.questReached
+      : seededQuestStages);
+    const previousQuestReached = restored?.questReached ?? (bootOptions.preserveRun && this.questReached
       ? new Map([...this.questReached].map(([id, reached]) => [id, new Set(reached)]))
-      : null;
-    const previousQuestDefs = bootOptions.preserveRun && this.questDefs
+      : seededQuestReached);
+    const previousQuestDefs = restored?.questDefs ?? (bootOptions.preserveRun && this.questDefs
       ? { ...this.questDefs }
-      : null;
-    const previousFlags = bootOptions.preserveRun && this.flags
+      : null);
+    const previousCodexDefs = restored?.codexDefs ?? (bootOptions.preserveRun && Array.isArray(this.codexDefs)
+      ? [...this.codexDefs]
+      : []);
+    const previousJournalNotes = restored?.journalNotes ?? (bootOptions.preserveRun && Array.isArray(this.journalNotes)
+      ? [...this.journalNotes]
+      : []);
+    const previousFlags = restored?.flags ?? (bootOptions.preserveRun && this.flags
       ? new Set(this.flags)
-      : null;
-    const previousAwardedQuestXp = bootOptions.preserveRun && this.awardedQuestXp
+      : playtestSeed ? new Set(playtestSeed.flags ?? []) : null);
+    const previousAwardedQuestXp = restored?.awardedQuestXp ?? (bootOptions.preserveRun && this.awardedQuestXp
       ? new Set(this.awardedQuestXp)
-      : null;
-    const previousClock = bootOptions.preserveRun ? cloneGameClock(this.clock) : null;
-    const previousPlayer = bootOptions.preserveRun && this.player
+      : null);
+    const previousClock = restored?.clock ?? (bootOptions.preserveRun
+      ? cloneGameClock(this.clock)
+      : playtestClock(playtestSeed));
+    const previousPlayer = restored?.player ?? (bootOptions.preserveRun && this.player
       ? {
           name: this.player.name,
           appearance: this.player.appearance ? JSON.parse(JSON.stringify(this.player.appearance)) : null,
@@ -237,10 +315,21 @@ export class Game {
           maxHp: this.player.maxHp,
           progression: this.player.progression ? JSON.parse(JSON.stringify(this.player.progression)) : null
         }
-      : null;
-    const previousGroundItemSeq = bootOptions.preserveRun ? this.groundItemSeq ?? 0 : 0;
+      : null);
+    const previousGroundItemSeq = restored?.groundItemSeq ?? (bootOptions.preserveRun ? this.groundItemSeq ?? 0 : 0);
+    const previousCompanionRun = restored?.companionRun ?? (bootOptions.preserveRun && typeof this._snapshotCompanionRunState === 'function'
+      ? this._snapshotCompanionRunState()
+      : playtestSeed?.companionRun ?? null);
 
     const level = await loadLevel(this.levelPath, {
+      requiredItemIds: [
+        ...(restoredSnapshot?.requiredItemIds ?? []),
+        ...playtestRequiredItemIds(playtestSeed)
+      ],
+      requiredLevelPaths: [
+        ...(restoredSnapshot?.contentLevelPaths ?? restoredSnapshot?.levels?.map((entry) => entry.path) ?? []),
+        ...(playtestSeed?.requiredLevelPaths ?? [])
+      ],
       onProgress: (state) => this._renderLoading({
         ...state,
         progress: mapLoadingProgress(state.progress, 0.12, 0.68)
@@ -249,6 +338,7 @@ export class Game {
     this._renderLoading(0.7, 'Restoring run state');
     await this._loadingFrame();
     this.level = level;
+    this.worldAudio.setSoundscape(level.soundscape);
     this.grid = level.grid;
     this.player = level.player;
     if (previousPlayer?.name) this.player.name = previousPlayer.name;
@@ -257,11 +347,39 @@ export class Game {
       this.player.progression = JSON.parse(JSON.stringify(previousPlayer.progression));
       if (typeof this.player.refreshProgressionStats === 'function') this.player.refreshProgressionStats();
     }
+    if (playtestSeed?.progression) {
+      applyPlaytestProgression(this.player, playtestSeed.progression, level.techniqueDefs);
+    }
     if (bootOptions.primaries) applyDevPrimaryOverrides(this.player, bootOptions.primaries);
     this.flags = previousFlags ?? new Set();
-    this.enemies = level.enemies;
+    // Conditional spawns must be evaluated against the run being restored,
+    // never against state left on the Game object by the run being replaced.
+    this.questStages = new Map(previousQuestStages ?? []);
+    this.questReached = new Map(
+      [...(previousQuestReached ?? [])].map(([id, reached]) => [id, new Set(reached)])
+    );
+    this.inventoryOrder = previousInventoryOrder;
+    this.inventory = new Inventory(
+      { ...(previousInventory?.itemDefs ?? {}), ...level.itemDefs },
+      {
+        maxCarryWeight: restoredSnapshot?.maxCarryWeight ??
+          previousInventory?.maxCarryWeight ??
+          playtestSeed?.inventory?.maxCarryWeight ??
+          level.playerLoadout?.maxCarryWeight
+      }
+    );
+    if (previousInventoryState) {
+      this.inventory.loadState(previousInventoryState);
+    } else {
+      this._loadStartingInventory(level.playerLoadout);
+    }
+    if (playtestSeed?.inventory) applyPlaytestInventory(this.inventory, playtestSeed.inventory);
+    this._syncInventoryOrder();
+    this._refreshPlayerAttacks?.();
+    this.enemies = (level.enemies ?? []).filter((enemy) => this._meetsConditions(enemy.conditions));
     if (bootOptions.noCombat) this.enemies = [];
     this.npcs = (level.npcs ?? []).filter((npc) => this._meetsConditions(npc.conditions));
+    this.tableauSystem.setTableaux(level.tableaux ?? []);
     this._refreshActorAppearances([...this.enemies, ...this.npcs]);
     this.groundItems = level.groundItems ?? [];
     this.groundItemSeq = previousGroundItemSeq;
@@ -270,23 +388,16 @@ export class Game {
       this.player.hp = Math.max(1, Math.min(this.player.maxHp, Math.round(this.player.maxHp * hpRatio)));
     }
 
-    this.inventory = new Inventory(
-      { ...(previousInventory?.itemDefs ?? {}), ...level.itemDefs },
-      { maxCarryWeight: previousInventory?.maxCarryWeight ?? level.playerLoadout?.maxCarryWeight }
-    );
-    if (previousInventoryState) {
-      this.inventory.loadState(previousInventoryState);
-    } else {
-      this._loadStartingInventory(level.playerLoadout);
-    }
-    this._syncInventoryOrder();
-    this._refreshPlayerAttacks?.();
+    this.companionDefs = level.companionDefs ?? {};
+    this._initializeCompanionRun(previousCompanionRun);
     // Bake the player sprite to match the loaded equipment so the world figure
     // and inventory paper doll reflect the customized actor.
     this._renderLoading(0.78, 'Baking player model');
     this._refreshPlayerAppearance();
     await this._loadingFrame();
-    this.interactions = new InteractionSystem(level.interactables);
+    this.interactions = new InteractionSystem(level.interactables, {
+      meetsConditions: (conditions) => this._meetsConditions(conditions)
+    });
     // Props that murmur on their own (e.g. the crucified Opened Saint) get the
     // same ambient-speech treatment as enemies, on a staggered timer.
     this.speakingProps = (level.props ?? []).filter(
@@ -301,9 +412,10 @@ export class Game {
     this.dialogueDefs = level.dialogueDefs ?? {};
     this.techniqueDefs = level.techniqueDefs ?? {};
     this.questDefs = { ...(previousQuestDefs ?? {}), ...(level.questDefs ?? {}) };
-    // Static journal sources: faction/cult codex and flag-gated field notes.
-    this.codexDefs = level.codex ?? [];
-    this.journalNotes = level.journalNotes ?? [];
+    // Static journal sources accumulate as their levels are visited. A fresh
+    // boot passes empty previous collections and therefore starts a clean run.
+    this.codexDefs = mergeCodexDefinitions(previousCodexDefs, level.codex);
+    this.journalNotes = mergeJournalNotes(previousJournalNotes, level.journalNotes);
     this.questStages = new Map();
     // Per-quest set of every stage id reached, so the journal shows monotonic
     // progress and crosses off objectives regardless of discovery order.
@@ -320,6 +432,7 @@ export class Game {
     this.effects = [];
     this.combatHazards = [];
     this.moving = null;
+    this.explorationMovements = new Map();
     this.pathQueue = [];
     this.pendingExploreTarget = null;
     this.sneakMode = false;
@@ -330,6 +443,7 @@ export class Game {
     this.pendingPrimaryAssignmentTransition = null;
     this.journalSection = 0;
     this.journalFactionIndex = 0;
+    this.journalEvidenceIndex = 0;
     this.journalPrimaryIndex = 0;
     this.journalTechniqueIndex = 0;
     this.journalTurn = null;
@@ -340,6 +454,8 @@ export class Game {
     this.inventoryMoveIndex = null;
     this.inventoryActionMenu = null;
     this.contextActionMenu = null;
+    this.combatAbilityTargeting = null;
+    this.combatAbilityTrayPage = 0;
     this.inventorySplit = null;
     this.inventoryRepair = null;
     this.loot = null;
@@ -373,7 +489,10 @@ export class Game {
 
     this._restoreLevelState();
     this._syncFlagConditionalObjects({ refreshScene: false });
-    if (bootOptions.player) this._teleportPlayer(bootOptions.player);
+    const restoredPlayerPoint = restoredSnapshot?.player?.position
+      ? { ...restoredSnapshot.player.position, facing: restoredSnapshot.player.facing }
+      : null;
+    if (restoredPlayerPoint ?? bootOptions.player) this._teleportPlayer(restoredPlayerPoint ?? bootOptions.player);
     this._refreshHiddenTiles();
     this._revealMapAroundPlayer();
     this._renderLoading(0.88, 'Baking field view');
@@ -391,9 +510,11 @@ export class Game {
     this.areaTitleTimer = AREA_TITLE_DURATION;
     this._log(level.intro || level.name);
     this._startQuests(previousQuestStages, previousQuestReached);
+    this._resetJournalNoticeTracking({ preserveNotice: bootOptions.preserveRun });
     this._log('C crouches. Hold Shift while moving to sprint.');
     this._log('I pack, J journal, M map, H bind wounds.');
     if (bootOptions.skipIntro) this.introSeen = true;
+    this._applyRestoredRuntimeMetadata?.(restoredSnapshot);
 
     // The opening writ plays once, on a fresh start (not on level transitions
     // or R restarts), before the player is dropped into the chapel.
@@ -419,7 +540,12 @@ export class Game {
   }
 
   get actors() {
-    return [this.player, ...this.enemies, ...(this.npcs ?? [])];
+    return [
+      this.player,
+      ...(this.companions ?? []).filter((companion) => !companion.removed),
+      ...this.enemies.filter((enemy) => !enemy.dormant),
+      ...(this.npcs ?? []).filter((npc) => !npc.dormant)
+    ];
   }
 
   _bootOptions(options) {
@@ -450,9 +576,27 @@ export class Game {
   update(dt) {
     if (!this.ready) return;
 
+    this.worldAudio?.update?.(dt, this.player?.position, {
+      paused: this.mode !== 'explore' || Boolean(this.uiScreen)
+    });
+
+    if (this.mode === 'title') {
+      const actions = this.input.consume();
+      const click = this.input.consumeClick();
+      this.input.consumeText?.();
+      this._handleSaveScreen?.(actions, click);
+      return;
+    }
+
     this._advanceAnim(dt);
+    this._advanceSaveRuntime?.(dt);
+    if (this.pendingInitialAutosave && this._canSaveRun?.()) {
+      this.pendingInitialAutosave = false;
+      void this._requestAutosave?.('new run');
+    }
     if (this.mode !== 'intro' && !this.uiScreen) this._advanceClock(dt);
     this._advanceJournalTurn(dt);
+    this._advanceJournalNotice(dt);
     this._advanceGroundItems();
     if (this.areaTitleTimer > 0 && this.mode !== 'intro') {
       this.areaTitleTimer = Math.max(0, this.areaTitleTimer - dt);
@@ -460,6 +604,8 @@ export class Game {
     this._ageEffects(dt);
     this._advanceAmbientSpeech(dt);
     for (const actor of this.actors) this._advanceActorAnim(actor, dt);
+    this._advanceCompanionFollow?.(dt);
+    this._advanceExplorationMovements(dt);
 
     if (this._advanceMovement(dt)) {
       // A step is in flight; consume input but ignore most of it mid-step.
@@ -471,6 +617,11 @@ export class Game {
     const click = this.input.consumeClick();
     const textInput = typeof this.input.consumeText === 'function' ? this.input.consumeText() : [];
 
+    if (this._isSaveScreen?.()) {
+      this._handleSaveScreen(actions, click);
+      return;
+    }
+
     if (this.mode === 'intro') {
       this._handleIntro(actions, click);
       return;
@@ -481,7 +632,7 @@ export class Game {
       return;
     }
 
-    if (this.mode === 'explore' || this.mode === 'victory') {
+    if (isExplorationMode(this.mode)) {
       this._handleExplore(actions, click);
     } else if (this.mode === 'combat') {
       this._handleCombat(actions, click, dt);
@@ -490,10 +641,8 @@ export class Game {
     }
 
     // Continue walking a queued click-to-move path when otherwise idle.
-    if (!this.moving) {
-      this._stepAlongPath();
-      if (!this.moving) this._advanceExplorePatrols(dt);
-    }
+    if (!this.moving) this._stepAlongPath();
+    this._advanceExplorePatrols(dt);
   }
 
   // ---- Opening writ (intro) ----------------------------------------------
@@ -607,9 +756,13 @@ export class Game {
       return;
     }
 
+    if (click?.button === 0 && this.moving?.actor === this.player && isExplorationMode(this.mode)) {
+      this._handleExploreClick(click, { deferReachedTarget: true });
+    }
+
     // Still honour persistent toggles and lightweight screens while animating.
     for (const action of actions) {
-      if (action === 'restart') this.boot();
+      if (action === 'restart') this._requestRunRestart?.();
       else if (action === 'debug') this.debugGrid = !this.debugGrid;
       else if (action === 'toggle-sneak') this._toggleSneakMode();
       else if (action === 'journal') this._toggleJournal();
@@ -633,6 +786,12 @@ export class Game {
         return; // one step per update; trigger check runs on completion
       }
       switch (action) {
+        case 'weapon1':
+          this._selectReadyWeapon('weapon1');
+          break;
+        case 'weapon2':
+          this._selectReadyWeapon('weapon2');
+          break;
         case 'toggle-sneak':
           this._toggleSneakMode();
           break;
@@ -651,7 +810,8 @@ export class Game {
           if (this._interactWithNearbyTarget()) return;
           break;
         case 'cancel':
-          this.preCombatTarget = null;
+          if (this.preCombatTarget) this.preCombatTarget = null;
+          else this._openPauseMenu?.();
           break;
         case 'inventory':
           this._toggleInventory();
@@ -667,8 +827,11 @@ export class Game {
           this._syncInventoryOrder();
           this._clampInventorySelection();
           break;
+        case 'reload':
+          this._reloadSelectedWeapon(false);
+          break;
         case 'restart':
-          this.boot();
+          this._requestRunRestart?.();
           return;
         case 'debug':
           this.debugGrid = !this.debugGrid;
@@ -709,9 +872,13 @@ export class Game {
     return null;
   }
 
-  _handleExploreClick(click) {
+  _handleExploreClick(click, { deferReachedTarget = false } = {}) {
     if (click.y >= VIEWPORT_HEIGHT) return;
     if (click.button === 2) {
+      if (click.ctrlKey) {
+        const cell = this.renderer.toGrid(click.x, click.y);
+        if (this._projectDroneGhostLightExplore?.(cell)) return;
+      }
       this._handlePreCombatTargetClick(click);
       return;
     }
@@ -734,6 +901,11 @@ export class Game {
 
     const sortAfterLoot = Boolean(click.shiftKey);
     if (isTargetInReach(this.player, target)) {
+      if (deferReachedTarget) {
+        this.pendingExploreTarget = { ...target, sortAfterLoot };
+        this.pathQueue = [];
+        return;
+      }
       this._executeExploreTarget(target, { sortAfterLoot });
       return;
     }
@@ -807,7 +979,7 @@ export class Game {
   }
 
   _canOpenWithSneakAttack(target, attack) {
-    if (!this.sneakMode || !target || !attack || attack.range > 1) return false;
+    if (!this.sneakMode || !target || !attack || !isMeleeAttack(attack)) return false;
     if (target.isDead || chebyshev(this.player.position, target.position) > 1) return false;
     if (suspicionStateRank(target.suspicionState ?? SUSPICION_STATES.CALM) >= suspicionStateRank(SUSPICION_STATES.ALERTED)) {
       return false;
@@ -820,8 +992,13 @@ export class Game {
   }
 
   _interactionTargetFromPoint(point, mode = this.mode) {
-    const cell = this.renderer.toGrid(point.x, point.y);
+    const cell = this._interactionHighlightCellFromPoint(point, mode) ?? this.renderer.toGrid(point.x, point.y);
     return this._interactionTargetAtCell(cell, mode);
+  }
+
+  _interactionHighlightCellFromPoint(point, mode = this.mode) {
+    if (!isExplorationMode(mode) || !point || !this.input?.isHeld?.('tab')) return null;
+    return this.renderer.interactionHighlightAt?.(point.x, point.y) ?? null;
   }
 
   _interactionTargetAtCell(cell, mode = this.mode) {
@@ -980,6 +1157,10 @@ export class Game {
       this._pickupGroundItem(object);
       return;
     }
+    if (object?.interact?.type === 'drone-shrine') {
+      this._openDroneShrine(object);
+      return;
+    }
     if (isObjectLocked(object)) {
       this._openLockDialogue(object);
       return;
@@ -1047,7 +1228,10 @@ export class Game {
   _syncFlagConditionalObjects({ refreshScene = true } = {}) {
     let changed = false;
     for (const object of this.level?.props ?? []) {
-      if (syncObjectFlagState(object, this.flags, { grid: this.grid })) changed = true;
+      if (syncObjectFlagState(object, this.flags, { grid: this.grid })) {
+        if (object.hiddenByFlag) object.speech = null;
+        changed = true;
+      }
     }
     if (!changed || !refreshScene) return changed;
     this.pendingExploreTarget = null;
@@ -1069,7 +1253,10 @@ export class Game {
       return;
     }
 
-    const result = this.inventory.add(item.itemId, count, { condition: item.condition });
+    const result = this.inventory.add(item.itemId, count, {
+      condition: item.condition,
+      loaded: item.loaded
+    });
     if (!result.ok) {
       this._log('Could not pick that up.');
       return;
@@ -1288,6 +1475,10 @@ export class Game {
       primaryRating: (primaryId) => this._primaryRating(primaryId),
       itemName: (itemId) => this.inventory.displayName(itemId)
     });
+    // Search completion and its effects are one transaction. DialogueEffects
+    // owns the inventory preflight; check it before recording completion so a
+    // full pack or missing requireAll item leaves the method retryable.
+    if (result.completed && !this.dialogueEffects.canApplyInventoryEffects(result.effects?.inventory)) return;
     if (result.completed) completeSearchMethod(object, method);
     for (const line of result.logs) this._log(line);
 
@@ -1306,3 +1497,7 @@ installGameCombatRuntime(Game);
 installGameMovementRuntime(Game);
 installGameRuntimeState(Game);
 installGameRenderState(Game);
+installGameDroneRuntime(Game);
+installGameDroneCombatRuntime(Game);
+installGameCombatAbilityRuntime(Game);
+installGameSaveRuntime(Game);

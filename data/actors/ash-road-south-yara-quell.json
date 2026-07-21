@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-yara-quell",
+  "name": "Aurelia Priscian",
+  "type": "npc",
+  "faction": "lumen-compact",
+  "role": "Compact reintegration assessor",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "compact-precinct",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-nurse",
+    "gear": [
+      "medicine-bag"
+    ],
+    "accent": "pale-hood"
+  }
+}

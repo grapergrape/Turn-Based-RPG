@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 
 import {
   SECURITY_TOOL_ITEM,
@@ -8,7 +8,7 @@ import {
   securityToolSurvives
 } from '../src/world/LockSystem.js';
 import { buildCharacterSheet } from '../src/core/Progression.js';
-import { searchMethodStatus } from '../src/world/SearchSystem.js';
+import { investigationRangeForSearch, searchMethodStatus } from '../src/world/SearchSystem.js';
 
 async function readJson(path) {
   return JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
@@ -34,6 +34,32 @@ function includesAll(values, expected) {
   return expected.every((value) => values.includes(value));
 }
 
+function collectLevelPickups(level, enemyDefs = new Map()) {
+  const entries = [...(level.groundItems ?? [])];
+  for (const object of level.objects ?? []) {
+    entries.push(...(object.interact?.loot ?? []));
+    for (const method of object.interact?.search?.methods ?? []) {
+      entries.push(...(method.success?.inventory?.add ?? []));
+    }
+    for (const method of object.interact?.lock?.methods ?? []) {
+      entries.push(...(method.success?.inventory?.add ?? []));
+    }
+  }
+  for (const spawn of level.spawns?.enemies ?? []) {
+    entries.push(...(spawn.loot ?? enemyDefs.get(spawn.id)?.loot ?? []));
+  }
+  return entries;
+}
+
+function carriedWeight(entries, itemDefs) {
+  const total = entries.reduce((weight, entry) => {
+    const item = itemDefs.get(entry.item);
+    assert.ok(item, `item definition exists: ${entry.item}`);
+    return weight + item.weight * (entry.count ?? 1);
+  }, 0);
+  return Math.round(total * 10) / 10;
+}
+
 function levelOneRatings() {
   const sheet = buildCharacterSheet(mara);
   const fields = new Map(sheet.fields.map((field) => [field.id, field.value]));
@@ -53,9 +79,12 @@ const [
   cellarLadder,
   bellStairs,
   bellRope,
+  entranceCatechism,
+  selka,
   tomas,
   dalia,
-  wardenOrders
+  wardenOrders,
+  hanne
 ] = await Promise.all([
   readJson('../data/actors/mara-vey.json'),
   readJson('../data/levels/ash_chapel_breach.json'),
@@ -65,15 +94,72 @@ const [
   readJson('../data/dialogue/ash-chapel-cellar-ladder.json'),
   readJson('../data/dialogue/ash-chapel-bell-stairs.json'),
   readJson('../data/dialogue/ash-chapel-bell-rope.json'),
+  readJson('../data/dialogue/ash-chapel-entrance-catechism.json'),
+  readJson('../data/dialogue/ash-chapel-catacombs-selka.json'),
   readJson('../data/dialogue/ash-chapel-catacombs-tomas.json'),
   readJson('../data/dialogue/ash-chapel-catacombs-dalia.json'),
-  readJson('../data/dialogue/ash-chapel-warden-orders.json')
+  readJson('../data/dialogue/ash-chapel-warden-orders.json'),
+  readJson('../data/actors/catacombs-survivor-hanne.json')
 ]);
+
+const itemFiles = (await readdir(new URL('../data/items/', import.meta.url)))
+  .filter((name) => name.endsWith('.json'));
+const itemDefs = new Map((await Promise.all(itemFiles.map((name) =>
+  readJson(`../data/items/${name}`)
+))).map((item) => [item.id, item]));
+const preHanneEnemyIds = new Set((breach.spawns?.enemies ?? []).map((spawn) => spawn.id));
+const preHanneEnemyDefs = new Map((await Promise.all([...preHanneEnemyIds].map((id) =>
+  readJson(`../data/enemies/${id}.json`)
+))).map((enemy) => [enemy.id, enemy]));
+
+{
+  const searchRating = levelOneRatings().fieldRating('search');
+  const investigationRange = investigationRangeForSearch(searchRating);
+  const playerStart = breach.spawns.player;
+  const initiallyHighlighted = (breach.objects ?? []).filter((object) =>
+    object.interact &&
+    Math.max(Math.abs(object.x - playerStart.x), Math.abs(object.y - playerStart.y)) <= investigationRange
+  );
+
+  assert.equal(searchRating, 27);
+  assert.equal(investigationRange, 1);
+  assert.equal(
+    initiallyHighlighted.length,
+    1,
+    'baseline Tab investigation reveals one nearby lead instead of sweeping the tutorial room'
+  );
+}
 
 {
   const startingRolls = mara.inventory.items.filter((entry) => entry.item === SECURITY_TOOL_ITEM);
   assert.equal(startingRolls.length, 1);
   assert.equal(startingRolls[0].count, 1);
+}
+
+{
+  const startingWeight = carriedWeight(mara.inventory.items, itemDefs);
+  const preHanneLoot = [
+    ...collectLevelPickups(breach, preHanneEnemyDefs),
+    ...collectLevelPickups(cellar)
+  ];
+  const preHanneWeight = carriedWeight(preHanneLoot, itemDefs);
+
+  assert.equal(startingWeight, 8.8);
+  assert.equal(preHanneWeight, 4.9);
+  assert.equal(mara.inventory.maxCarryWeight, 14);
+  assert.ok(
+    startingWeight + preHanneWeight <= mara.inventory.maxCarryWeight,
+    'the player can carry every chapel and cellar pickup to Joanna'
+  );
+}
+
+{
+  assert.deepEqual(hanne.trade.buys, [
+    { item: 'censure-entry-roll', price: 2, keep: 1 },
+    { item: 'relic-rounds', price: 1 },
+    { item: 'penitent-gear-scrap', price: 1 },
+    { item: 'tarnished-saint-token', price: 1 }
+  ]);
 }
 
 {
@@ -165,7 +251,12 @@ const [
 
   const climbUp = findChoice(cellarLadder.nodes.start, 'Climb Up');
   assert.equal(climbUp.effects.loadLevel.path, './data/levels/ash_chapel_breach.json');
-  assert.deepEqual(climbUp.effects.loadLevel.player, { x: 36, y: 13 });
+  assert.deepEqual(climbUp.effects.loadLevel.player, { x: 36, y: 14 });
+  assert.equal(
+    breach.objects.some((object) => object.blocking && object.x === 36 && object.y === 14),
+    false,
+    'the cellar return arrives beside the blocking split barrel'
+  );
 }
 
 {
@@ -199,10 +290,10 @@ const [
 {
   const namedRepair = bellRope.nodes['not-repaired'];
   assert.equal(namedRepair.conditions.flag, 'tomas-bell-repair-known');
-  assert.ok(namedRepair.lines.join(' ').includes('Tomas Vek'));
+  assert.ok(namedRepair.lines.join(' ').includes('Tobias Porta'));
 
   const unknownRepair = bellRope.nodes['not-repaired-unknown'];
-  assert.equal(unknownRepair.lines.join(' ').includes('Tomas'), false);
+  assert.equal(unknownRepair.lines.join(' ').includes('Tobias'), false);
 }
 
 {
@@ -217,13 +308,47 @@ const [
 
   assert.ok(breach.journalNotes.some((note) =>
     note.flag === 'dalia-heard-choir-name'
-    && note.text.includes('Dalia Mor')
+    && note.text.includes('Damaris Molitor')
     && note.text.includes('Choir of the Open Wound')
   ));
   assert.ok(breach.journalNotes.some((note) =>
     note.flag === 'read-gate-mother-order'
     && note.text.includes('Hallowfen road went silent')
   ));
+}
+
+{
+  for (const nodeId of ['cult-dead', 'if-safe']) {
+    const reportClear = findChoice(selka.nodes[nodeId], 'Tell her the cultists are dead');
+    assert.equal(
+      includesAll([].concat(reportClear.effects.setFlag), [
+        'survivors-returning-chapel',
+        'tomas-bell-repair-known'
+      ]),
+      true
+    );
+    assert.equal(reportClear.effects.questUpdate.stage, 'bell-hand-known');
+    assert.equal(reportClear.next, 'bell-repair-guide');
+  }
+
+  const askNext = findChoice(selka.nodes.start, 'Ask what still needs doing');
+  assert.equal(askNext.effects.setFlag, 'tomas-bell-repair-known');
+  assert.equal(askNext.effects.questUpdate.stage, 'bell-hand-known');
+  assert.equal(askNext.next, 'bell-repair-guide');
+
+  const guide = selka.nodes['bell-repair-guide'];
+  assert.equal(
+    includesAll(guide.conditions.flagsAbsent, [
+      'tomas-heading-to-bell',
+      'tomas-at-bell',
+      'ash-chapel-bell-repaired'
+    ]),
+    true
+  );
+  assert.equal(guide.else, 'next');
+  assert.ok(guide.lines.join(' ').includes('Tobias'));
+  assert.ok(guide.lines.join(' ').includes('wall stair'));
+  assert.equal(findChoice(guide, 'Go find Tobias').close, true);
 }
 
 {
@@ -282,6 +407,13 @@ const [
   assert.equal(ringBell.effects.showBriefing.afterBriefing.openScreen, 'primary-assignment');
   assert.equal(ringBell.effects.showBriefing.afterBriefing.loadLevel.path, './data/levels/long_ash_road_approach.json');
   assert.deepEqual(ringBell.effects.showBriefing.afterBriefing.loadLevel.player, { x: 142, y: 68 });
+}
+
+{
+  const hostileOpening = findChoice(entranceCatechism.nodes.start, 'Stand aside or burn');
+  assert.equal(hostileOpening.tone, 'danger');
+  assert.equal(hostileOpening.next, 'aggressive');
+  assert.equal(findChoice(entranceCatechism.nodes.aggressive, 'Draw steel').effects.startCombat, 'entrance-catechism');
 }
 
 {

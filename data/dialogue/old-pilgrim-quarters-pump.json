@@ -1,0 +1,64 @@
+{
+  "id": "old-pilgrim-quarters-pump",
+  "title": "Novitiate Pump",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The pump handle moves without resistance. Its leather piston was cut out in narrow strips, then boiled in the refectory pot."
+      ],
+      "choices": [
+        {
+          "label": "Open the feed housing",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 27
+            },
+            "flagsAbsent": [
+              "old-pilgrim-water-pump-known"
+            ]
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-water-pump-known",
+            "xp": 5,
+            "log": "The pump did not break first. Its feed pipe lost pressure from the chapter side, then the piston was taken for food."
+          },
+          "next": "read"
+        },
+        {
+          "label": "Read the cut and cooking marks",
+          "conditions": {
+            "fieldRatings": {
+              "search": 27
+            },
+            "flagsAbsent": [
+              "old-pilgrim-water-pump-known"
+            ]
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-water-pump-known",
+            "xp": 5,
+            "log": "The piston was sacrificed after the line ran dry. Someone divided the leather into equal strips."
+          },
+          "next": "read"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "read": {
+      "lines": [
+        "The feed line continues north toward the chapter cistern. No rupture marks the quarters pipe."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

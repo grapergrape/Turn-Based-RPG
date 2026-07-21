@@ -18,7 +18,7 @@ const attack = { id: 'sidearm', name: 'Sidearm', apCost: 4, damage: 5, range: 5 
 
 {
   const combat = new CombatSystem();
-  const attacker = actor('mara-vey', 'Mara Vey', 'player', { x: 0, y: 0 });
+  const attacker = actor('mara-vey', 'Test Agent', 'player', { x: 0, y: 0 });
   const target = actor('target', 'Target', 'enemy', { x: 3, y: 0 });
   const result = combat.performAttack(attacker, target, attack, {
     chance: 68,
@@ -32,12 +32,12 @@ const attack = { id: 'sidearm', name: 'Sidearm', apCost: 4, damage: 5, range: 5 
   assert.equal(attacker.ap, 2);
   assert.equal(result.effect.text, 'MISS');
   assert.equal(result.effect.type, 'miss');
-  assert.equal(result.logs[0], "Mara Vey's Sidearm missed. Chance 68%, roll 91. Hard cover.");
+  assert.equal(result.logs[0], "Test Agent's Sidearm missed. Chance 68%, roll 91. Hard cover.");
 }
 
 {
   const combat = new CombatSystem();
-  const attacker = actor('mara-vey', 'Mara Vey', 'player', { x: 0, y: 0 });
+  const attacker = actor('mara-vey', 'Test Agent', 'player', { x: 0, y: 0 });
   const target = actor('target', 'Target', 'enemy', { x: 3, y: 0 });
   const result = combat.performAttack(attacker, target, attack, {
     chance: 95,
@@ -50,12 +50,12 @@ const attack = { id: 'sidearm', name: 'Sidearm', apCost: 4, damage: 5, range: 5 
   assert.equal(target.render.state, 'hit');
   assert.equal(attacker.ap, 6);
   assert.equal(result.effect.text, '-5');
-  assert.equal(result.logs[0], "Mara Vey's Sidearm hit. Chance 95%, roll 1. 5 damage to Target.");
+  assert.equal(result.logs[0], "Test Agent's Sidearm hit. Chance 95%, roll 1. 5 damage to Target.");
 }
 
 {
   const combat = new CombatSystem();
-  const attacker = actor('mara-vey', 'Mara Vey', 'player', { x: 0, y: 0 });
+  const attacker = actor('mara-vey', 'Test Agent', 'player', { x: 0, y: 0 });
   const target = actor('target', 'Target', 'enemy', { x: 3, y: 0 });
   const result = combat.performAttack(attacker, target, attack, {
     chance: 95,
@@ -68,5 +68,5 @@ const attack = { id: 'sidearm', name: 'Sidearm', apCost: 4, damage: 5, range: 5 
 
   assert.equal(target.hp, 3);
   assert.equal(result.effect.text, '-7');
-  assert.equal(result.logs[0], "Mara Vey's Sidearm hit. Chance 95%, roll 1. Skill +2. 7 damage to Target.");
+  assert.equal(result.logs[0], "Test Agent's Sidearm hit. Chance 95%, roll 1. Skill +2. 7 damage to Target.");
 }

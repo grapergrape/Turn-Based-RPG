@@ -1,15 +1,96 @@
 {
   "id": "censure-road-camp-sera",
-  "title": "Bell Clerk Sera",
+  "title": "Bell Clerk Sabina",
   "nodes": {
     "start": {
       "lines": [
-        "Bell Clerk Sera has charcoal on her thumb and rope dust on her sleeve.",
+        "Bell Clerk Sabina has charcoal on her thumb and rope dust on her sleeve.",
         "\"One peal means road party. Two means wounded. If you hear four, finish your soup while you still own a stomach.\""
       ],
       "choices": [
         {
+          "label": "Show her the loaded rope splice",
+          "conditions": {
+            "flag": "censure-road-bell-splice-found",
+            "flagsAbsent": ["censure-road-bell-splice-reported"],
+            "fieldRatings": {
+              "engineering": 40
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-bell-splice-reported",
+            "log": "Sabina records that the camp bell was repaired for the alarm pull alone."
+          },
+          "next": "rope-splice"
+        },
+        {
+          "label": "Compare the two missing peal rules",
+          "conditions": {
+            "flags": [
+              "censure-road-bell-peal-found",
+              "long-ash-old-bell-peal-rule-read"
+            ],
+            "flagsAbsent": ["censure-road-report-sera-bell"],
+            "fieldRatings": {
+              "doctrine": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-sera-bell",
+            "log": "Sabina joins the old road peal to the omitted camp return call."
+          },
+          "next": "joined-peals"
+        },
+        {
+          "label": "Show her the scraped return-peal clause",
+          "conditions": {
+            "flag": "censure-road-writ-chapel-peal-clause-found",
+            "flagsAbsent": ["censure-road-sera-chapel-clause-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-sera-chapel-clause-reported",
+            "log": "Sabina restores the return peal to the camp bell card."
+          },
+          "next": "chapel-clause"
+        },
+        {
           "label": "Leave the bell mast",
+          "close": true
+        }
+      ]
+    },
+    "chapel-clause": {
+      "lines": [
+        "Sabina lays the restored clause beside her peal card and measures the missing words with her thumb.",
+        "\"Return call after every party. This mast stops at the outward peal because somebody scraped the answer from paper and practice. I will ring it as written.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her to amend the bell card",
+          "close": true
+        }
+      ]
+    },
+    "rope-splice": {
+      "lines": [
+        "Sabina pinches the loaded strand, then lets it go as if it bit her.",
+        "\"Alarm pull holds. Road call frays. That is not a repair, it is a preference written in rope. I will copy it before somebody improves the evidence.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her to the rope",
+          "close": true
+        }
+      ]
+    },
+    "joined-peals": {
+      "lines": [
+        "Sabina lays two charcoal rubbings together. The missing cuts meet at the edge.",
+        "\"The old bell lost its road return. This mast lost the same answer in ink. Two clerks can make one mistake, but they rarely use the same knife.\""
+      ],
+      "choices": [
+        {
+          "label": "Have her seal the comparison",
           "close": true
         }
       ]

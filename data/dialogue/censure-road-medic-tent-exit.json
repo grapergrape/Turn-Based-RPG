@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-medic-tent-exit",
+  "title": "Medic Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Ash and cook smoke cut through the medic tent's bitter wash."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave the medic tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 60, "y": 46 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the medic tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

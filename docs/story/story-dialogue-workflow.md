@@ -69,16 +69,27 @@ Purpose:
 Pressure:
 [What makes the scene hard: time, law, infection, guilt, hunger, faction force, companion conflict.]
 
+Voice Card for Each Named Speaker:
+- Background: [work, household, class, faction, and place]
+- Present pressure: [what this person needs from this exchange]
+- Social tactic: [how this person handles the listener]
+- Working vocabulary: [concrete nouns and verbs natural to this person]
+- Syntax range: [how calm and pressured speech differ]
+- Avoidance: [what this person will not name plainly]
+- Private contradiction: [where conduct weakens the stated position]
+
 Player Choice:
 - [choice A]
 - [choice B]
-- [choice C if needed]
 
-Dialogue Beats:
-1. [opening fact or accusation]
-2. [faction or character motive]
-3. [choice pressure]
-4. [consequence line]
+Exchange Shape:
+[Describe who takes the initiative and why this scene needs its particular
+shape. A correction, refusal, bargain, interruption, test, or story may replace
+a question and answer.]
+
+Necessary Turns:
+- [turn that changes information, pressure, or trust]
+- [turn that creates the player decision or consequence]
 
 Sample Lines:
 - Speaker: "Line."
@@ -101,6 +112,12 @@ Open Questions:
 
 Dialogue should be short enough to survive inside a tactical RPG.
 
+Compact does not mean identical. Do not standardize named NPC scenes into an
+opening work gesture, one question, a two-line answer, and generic back and exit
+choices. Derive the graph from the exchange pressure. A busy clinician may make
+the player choose one need. A suspicious driver may question the player first.
+A teacher may refuse to explain until the player reads the evidence.
+
 Write lines that do at least one job:
 
 - reveal a fact,
@@ -116,13 +133,13 @@ Cut lines that only restate mood.
 Good line:
 
 ```text
-Kess: "There are six children in that cellar. There are three thousand people behind this gate. Choose your mercy carefully."
+Victorinus: "There are six children in that cellar. There are three thousand people behind this gate. Choose your mercy carefully."
 ```
 
 Weak line:
 
 ```text
-Kess: "This is a dark and difficult time for all of us."
+Victorinus: "This is a dark and difficult time for all of us."
 ```
 
 ## Tone Checks
@@ -151,14 +168,23 @@ A small side quest can use four short scenes. A main quest can have more, but ea
 
 Character entries in `docs/story/characters.md` should include dialogue constraints when a character becomes active in scenes:
 
-- what the character wants,
+- the work, household, class, faction, and place that formed them,
+- what they need from the current exchange,
+- the social tactic they use on a listener,
+- the concrete vocabulary they reach for,
+- how their syntax changes under pressure,
 - what they refuse to say plainly,
-- what kind of language they use,
-- what they never joke about,
-- how they react to The Host,
-- how they react to the player sparing or sacrificing people.
+- the contradiction between their stated belief and conduct.
 
-Keep these notes short. The scene packet is where actual lines belong.
+Keep these notes short. Compare nearby speakers before drafting. At least two
+meaningful voice axes should separate each neighbor, and a line moved to another
+named speaker should require revision. A profession noun or catchphrase does not
+count as a full voice.
+
+For a location-wide pass, read conversations in player order and then group them
+by generator. Search repeated prose, explanatory tails, clipped sentence runs,
+choice labels, and graph shapes. Repeated `Leave` or `Back` labels may be useful
+interface language. Repeated authored questions and identical NPC loops are not.
 
 ## Future Runtime Data
 

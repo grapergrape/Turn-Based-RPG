@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 import { meetsDialogueConditions } from '../src/core/DialogueConditions.js';
+import { buildJournalUpdateSnapshot, journalUpdatedSections } from '../src/core/JournalState.js';
 import { getSprite } from '../src/render/spriteCatalog.js';
 import { Grid } from '../src/world/Grid.js';
 import { isTargetInReach, resolveInteractionTargetAtCell } from '../src/world/InteractionTargeting.js';
+import { syncObjectFlagState } from '../src/world/ObjectFlagState.js';
 
 async function readJson(path) {
   return JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
@@ -180,6 +182,12 @@ const caveGrid = new Grid(caveLevel);
 addBlockingObjects(caveGrid, caveLevel.objects ?? []);
 const crossroadBrotherDialogue = await readJson('../data/dialogue/long-ash-crossroad-brother.json');
 const fieldBrotherDialogue = await readJson('../data/dialogue/long-ash-field-brother.json');
+const carterDialogue = await readJson('../data/dialogue/long-ash-carter-edda-farr.json');
+const carterActor = await readJson('../data/actors/long-ash-carter-edda-farr.json');
+const eddaQuest = await readJson('../data/quests/edda-farrs-account.json');
+const stageIvAmbushDialogue = await readJson('../data/dialogue/long-ash-stage-iv-cart-ambush.json');
+const stageIvLure = await readJson('../data/enemies/stage-iv-lure.json');
+const stageIvRunner = await readJson('../data/enemies/stage-iv-runner.json');
 const caveEntranceDialogue = await readJson('../data/dialogue/long-ash-infected-cave-entrance.json');
 const caveExitDialogue = await readJson('../data/dialogue/long-ash-infected-cave-exit.json');
 const pilgrimRibguard = await readJson('../data/items/pilgrim-ribguard.json');
@@ -294,10 +302,158 @@ const farmExitDialogues = new Map([
 {
   const spawn = level.spawns.player;
   assert.deepEqual(spawn, { actor: 'mara-vey', x: 142, y: 68 });
-  assert.equal(level.spawns.npcs.length, 0, 'Long Ash Road keeps the Holt brothers as object-based NPC presence only');
+  assert.equal(level.spawns.npcs.length, 1, 'Deborah Carbo is the only living road NPC');
+  assert.deepEqual(level.spawns.npcs[0], {
+    actor: 'long-ash-carter-edda-farr',
+    x: 118,
+    y: 47,
+    facing: 'sw',
+    dialogue: 'long-ash-carter-edda-farr',
+    ambient: ['The dry sacks went north. The wet one stayed honest.'],
+    mapMarker: { label: 'Deborah Carbo', kind: 'dialogue', reveal: 'explored' }
+  });
+  assert.equal(pathExists(grid, spawn, { x: 118, y: 47 }), true, 'start reaches Deborah Carbo at the capital spur');
   assert.equal(grid.isWalkable(spawn.x, spawn.y), true);
   assert.equal(pathExists(grid, spawn, { x: 113, y: 32 }), true, 'start reaches the forest crossroad use tile');
   assert.equal(pathExists(grid, spawn, { x: 116, y: 4 }), true, 'start reaches the north road edge');
+}
+
+{
+  assert.equal(carterActor.id, 'long-ash-carter-edda-farr');
+  assert.equal(carterActor.name, 'Deborah Carbo');
+  assert.equal(carterActor.faction, 'ash-road-traders');
+  assert.deepEqual(carterActor.appearance, {
+    body: 'average',
+    outfit: 'settlement-work-coat',
+    gear: ['bandage-sling'],
+    accent: 'bare-brown'
+  });
+
+  const carterGates = [
+    { next: 'road-account', field: 'speech', dc: 40, flag: 'long-ash-carter-road-account-heard' },
+    { next: 'wheel-crush', field: 'medicine', dc: 45, flag: 'long-ash-carter-wheel-crush-read' },
+    { next: 'office-wax', field: 'guile', dc: 55, flag: 'long-ash-carter-cart-knot-revealed' }
+  ];
+  for (const expected of carterGates) {
+    const choice = carterDialogue.nodes['road-topics'].choices.find((entry) => entry.next === expected.next);
+    assert.ok(choice, `Deborah offers ${expected.next}`);
+    assert.deepEqual(choice.conditions.fieldRatings, { [expected.field]: expected.dc });
+    assert.deepEqual(choice.conditions.flagsAbsent, [expected.flag]);
+    assert.equal(choice.effects.setFlag, expected.flag);
+    assert.equal(
+      meetsDialogueConditions(choice.conditions, {
+        fieldRating: (field) => (field === expected.field ? expected.dc - 1 : 100)
+      }),
+      false,
+      `${expected.next} is hidden one point below its threshold`
+    );
+    assert.equal(
+      meetsDialogueConditions(choice.conditions, {
+        fieldRating: (field) => (field === expected.field ? expected.dc : 100)
+      }),
+      true,
+      `${expected.next} is available at its threshold`
+    );
+  }
+  assert.ok(
+    carterDialogue.nodes['road-topics'].choices.some((choice) => choice.next === 'charcoal' && !choice.conditions),
+    'Deborah keeps an ordinary no-stat conversation route'
+  );
+
+  assert.deepEqual(carterDialogue.nodes.start.conditions, {
+    questStages: { 'edda-farrs-account': 'disputed-count' }
+  }, 'Deborah resumes the disputed count if the conversation is interrupted');
+  assert.equal(carterDialogue.nodes.start.else, 'ordinary-start');
+
+  const taskChoice = carterDialogue.nodes['stolen-account'].choices.find((choice) => choice.next === 'task-accepted');
+  assert.equal(taskChoice.effects.setFlag, 'long-ash-edda-purse-tasked');
+  assert.deepEqual(taskChoice.effects.questUpdate, {
+    quest: 'edda-farrs-account',
+    stage: 'find-purse',
+    log: 'Deborah asked you to recover a flat purse with twenty ducats from her stolen charcoal cart.'
+  });
+
+  const returnChoice = carterDialogue.nodes['ordinary-start'].choices.find((choice) => choice.next === 'start');
+  assert.deepEqual(returnChoice.conditions, {
+    questStages: { 'edda-farrs-account': 'return-purse' },
+    items: { ducat: 20 }
+  });
+  assert.deepEqual(returnChoice.effects.inventory.remove, [
+    { item: 'ducat', count: 20, failLog: 'The flat purse no longer holds twenty ducats.' }
+  ]);
+  assert.equal(returnChoice.effects.inventory.requireAll, true);
+  assert.equal(returnChoice.effects.questUpdate.stage, 'disputed-count');
+
+  const settlementChoices = carterDialogue.nodes.start.choices;
+  const payFive = settlementChoices.find((choice) => choice.next === 'paid-five');
+  const refuseFive = settlementChoices.find((choice) => choice.next === 'refused-five');
+  const threaten = settlementChoices.find((choice) => choice.next === 'threatened');
+  assert.deepEqual(payFive.conditions, { items: { ducat: 5 } });
+  assert.deepEqual(payFive.effects.inventory.remove, [
+    { item: 'ducat', count: 5, failLog: 'Deborah waits for five more ducats.' }
+  ]);
+  assert.equal(payFive.effects.questUpdate.stage, 'complete');
+  assert.equal(refuseFive.effects.setFlag, 'long-ash-edda-refused-five');
+  assert.equal(refuseFive.effects.questUpdate.stage, 'complete');
+  assert.equal(threaten.tone, 'danger');
+  assert.equal(threaten.effects.setFlag, 'long-ash-edda-threatened-over-count');
+  assert.equal(threaten.effects.questUpdate.stage, 'complete');
+  assert.match(carterDialogue.nodes['paid-five'].lines.join(' '), /pray for your generous soul/i);
+  assert.match(carterDialogue.nodes.threatened.lines.join(' '), /Censure arithmetic/);
+
+  assert.equal(eddaQuest.id, 'edda-farrs-account');
+  assert.equal(eddaQuest.initialStage, 'speak-to-edda');
+  assert.deepEqual(
+    eddaQuest.stages.map((stage) => stage.id),
+    ['speak-to-edda', 'find-purse', 'return-purse', 'disputed-count', 'complete']
+  );
+  assert.equal(eddaQuest.stages.find((stage) => stage.id === 'complete')?.xp, 20);
+
+  const eddaJournalBase = {
+    questDefs: { [eddaQuest.id]: eddaQuest },
+    questStages: new Map([[eddaQuest.id, 'speak-to-edda']]),
+    questReached: new Map([[eddaQuest.id, new Set(['speak-to-edda'])]]),
+    journalNotes: level.journalNotes,
+    flags: new Set()
+  };
+  const beforeTask = buildJournalUpdateSnapshot(eddaJournalBase);
+  const afterTask = buildJournalUpdateSnapshot({
+    ...eddaJournalBase,
+    questStages: new Map([[eddaQuest.id, 'find-purse']]),
+    questReached: new Map([[eddaQuest.id, new Set(['speak-to-edda', 'find-purse'])]])
+  });
+  assert.deepEqual(
+    journalUpdatedSections(beforeTask, afterTask),
+    ['QUESTS', 'NOTES'],
+    'accepting Deborah\'s task produces the live journal update notice'
+  );
+  const afterSparedAccount = buildJournalUpdateSnapshot({
+    ...eddaJournalBase,
+    flags: new Set(['long-ash-edda-spared-account-heard'])
+  });
+  assert.deepEqual(
+    journalUpdatedSections(beforeTask, afterSparedAccount),
+    ['NOTES'],
+    'learning why Deborah survived produces a journal finding notice'
+  );
+
+  const wheel = level.objects.find((object) => object.id === 'long-ash-edda-detached-wheel');
+  const sacks = level.objects.find((object) => object.id === 'long-ash-edda-charcoal-sacks');
+  assert.deepEqual(
+    { kind: wheel?.kind, x: wheel?.x, y: wheel?.y, blocking: wheel?.blocking },
+    { kind: 'wagon-wheel', x: 120, y: 48, blocking: true },
+    'Deborah stands beside the detached wheel left by the thieves'
+  );
+  assert.deepEqual(
+    { kind: sacks?.kind, x: sacks?.x, y: sacks?.y, blocking: sacks?.blocking },
+    { kind: 'grain-sack-stack', x: 121, y: 49, blocking: true },
+    'the cart has a separate stack of charcoal sacks'
+  );
+  assert.equal(pathExists(grid, level.spawns.player, { x: 118, y: 47 }), true, 'the relocated carter keeps a clear talk lane');
+  const journalFlags = new Set(level.journalNotes.map((note) => note.flag));
+  for (const { flag } of carterGates) assert.ok(journalFlags.has(flag), `${flag} unlocks a journal finding`);
+  assert.ok(journalFlags.has('long-ash-edda-spared-account-heard'));
+  assert.ok(journalFlags.has('long-ash-stage-iv-cart-recognized'));
 }
 
 {
@@ -381,6 +537,21 @@ const farmExitDialogues = new Map([
     wheatObjects.some((object) => grid.isWalkable(object.x, object.y)),
     'player can walk through wheat clump cells'
   );
+
+  const edrin = level.objects.find((object) => object.id === 'long-ash-field-brother');
+  assert.ok(edrin, 'Eleazar Carbo is placed in the wheat field');
+  assert.equal(
+    wheatObjects.some((object) =>
+      Math.abs(object.x - edrin.x) <= 2 && Math.abs(object.y - edrin.y) <= 2
+    ),
+    false,
+    'Eleazar has enough open ground around him to read against the wheat models'
+  );
+  for (let y = edrin.y - 1; y <= edrin.y + 1; y += 1) {
+    for (let x = edrin.x - 1; x <= edrin.x + 1; x += 1) {
+      assert.equal(level.tiles[y][x], 'f', 'Eleazar stands inside a darker trampled field patch');
+    }
+  }
 }
 
 {
@@ -439,6 +610,8 @@ const farmExitDialogues = new Map([
   assert.deepEqual(
     level.dialogue,
     [
+      'long-ash-carter-edda-farr',
+      'long-ash-stage-iv-cart-ambush',
       ...expectedFarmDoors.map((door) => door.dialogue),
       'long-ash-infected-cave-entrance',
       'long-ash-wolf-cultist-evidence',
@@ -449,9 +622,10 @@ const farmExitDialogues = new Map([
       'long-ash-mortuary-chapel-entry',
       'long-ash-listening-shortcut-return'
     ],
-    'farm door, cave entrance, camp exit, and calcified brother dialogues are loaded with the road level'
+    'carter, farm door, cave entrance, camp exit, and calcified brother dialogues are loaded with the road level'
   );
   assert.ok(level.quests.includes('calcified-brothers'), 'Long Ash Road loads the calcified brothers quest');
+  assert.ok(level.quests.includes('edda-farrs-account'), 'Long Ash Road loads Deborah Carbo\'s side quest');
   const fieldReportNode = fieldBrotherDialogue.nodes['report-check'];
   assert.equal(
     meetsDialogueConditions(fieldReportNode.conditions, {
@@ -459,97 +633,115 @@ const farmExitDialogues = new Map([
       questStages: new Map([['calcified-brothers', 'family-known']])
     }),
     true,
-    'Edrin can report on the farm family even if the player found the victims before meeting him'
+    'Eleazar can report on the farm family even if the player found the victims before meeting him'
   );
   assert.deepEqual(
     fieldReportNode.effects,
     { setFlag: 'long-ash-field-brother-met' },
-    'reporting the family state marks Edrin as met without regressing the quest'
+    'reporting the family state marks Eleazar as met without regressing the quest'
   );
   assert.equal(
-    fieldReportNode.lines.some((line) => line.includes('Edrin Holt')),
+    fieldReportNode.lines.some((line) => line.includes('Eleazar Carbo')),
     true,
-    'family-first Edrin report introduces him before asking for the answer'
+    'family-first Eleazar report introduces him before asking for the answer'
   );
   for (const nodeId of ['first', 'first-mentioned', 'first-unknown']) {
     assert.equal(
-      fieldBrotherDialogue.nodes[nodeId].lines.some((line) => line.includes('scare birds off Holt grain')),
+      fieldBrotherDialogue.nodes[nodeId].lines.some((line) => line.includes('scare birds off Carbo grain')),
       true,
-      `${nodeId} names Edrin's scarecrow job on first contact`
+      `${nodeId} names Eleazar's scarecrow job on first contact`
     );
     assert.equal(
       fieldBrotherDialogue.nodes[nodeId].lines.some((line) => line.includes('my first law will make birds illegal')),
       true,
-      `${nodeId} keeps Edrin's king-and-birds line on first contact`
+      `${nodeId} keeps Eleazar's king-and-birds line on first contact`
     );
   }
   assert.equal(
-    fieldBrotherDialogue.nodes.field.lines.some((line) => line.includes('keep the birds off Holt wheat')),
+    fieldBrotherDialogue.nodes.field.lines.some((line) => line.includes('keep the birds off Carbo wheat')),
     true,
-    'Edrin explains the field job when asked why he is there'
+    'Eleazar explains the field job when asked why he is there'
   );
   assert.equal(
     crossroadBrotherDialogue.nodes.kind.choices.some((choice) => choice.label === 'Ask about his brother'),
     false,
-    'Garron does not expose a brother prompt before naming a brother'
+    'Gideon does not expose a brother prompt before naming a brother'
+  );
+  const garronFarmPrompt = crossroadBrotherDialogue.nodes.kind.choices.find(
+    (choice) => choice.label === 'Ask why he points to the farm'
+  );
+  assert.ok(garronFarmPrompt, 'Gideon offers a visible farm prompt before naming Eleazar');
+  assert.equal(
+    garronFarmPrompt.next,
+    'history',
+    'the farm prompt explains Gideon\'s fixed Stilling posture before discussing the Choir'
   );
   assert.equal(
-    crossroadBrotherDialogue.nodes.kind.choices.some((choice) => choice.label === 'Ask why he points to the farm'),
+    crossroadBrotherDialogue.nodes.history.lines.some((line) => line.includes('not bent a finger since')),
     true,
-    'Garron offers a visible farm prompt before naming Edrin'
+    'Gideon states that he cannot move his fixed arms'
   );
   assert.equal(
-    crossroadBrotherDialogue.nodes.task.choices.some((choice) => choice.label === 'Call it Stage III'),
-    true,
-    'Mara can frame Edrin through a Censure infection-stage read'
-  );
-  assert.equal(
-    crossroadBrotherDialogue.nodes.task.choices.some((choice) => choice.label === 'Is Edrin Stage IV?'),
+    [
+      ...crossroadBrotherDialogue.nodes.choir.lines,
+      ...crossroadBrotherDialogue.nodes.task.lines,
+      ...crossroadBrotherDialogue.nodes.coins.lines
+    ].some((line) => /\bI point(?:ed)?\b/i.test(line)),
     false,
-    'Garron no longer receives a glossary-style Stage IV prompt'
+    'Gideon never claims to reposition his arms for travelers or the Choir'
+  );
+  assert.equal(
+    crossroadBrotherDialogue.nodes.task.choices.some((choice) => choice.label === 'Call it Stage IV'),
+    true,
+    'the player can frame Eleazar through a Censure infection-stage read'
+  );
+  assert.equal(
+    crossroadBrotherDialogue.nodes.task.choices.some((choice) => choice.label === 'Is Eleazar Stage IV?'),
+    false,
+    'Gideon no longer receives a glossary-style Stage IV prompt'
   );
   assert.equal(
     crossroadBrotherDialogue.nodes['edrin-stage'].lines.some((line) => line.includes('Censure read')),
     true,
-    'infection-stage language is carried by Mara field assessment'
+    "infection-stage language is carried by the player's field assessment"
   );
   assert.equal(
     crossroadBrotherDialogue.nodes['edrin-stage'].lines.some((line) => line.includes('Stage IV means')),
     false,
-    'Garron does not explain infection stages like a system glossary'
+    'Gideon does not explain infection stages like a system glossary'
   );
   assert.deepEqual(
     visibleChoiceLabels(crossroadBrotherDialogue.nodes['paid-check'], {
       flags: new Set(['long-ash-crossroad-brother-paid'])
     }),
-    ['Ask if he trusts the Choir', 'Ask about the coins', 'Leave Garron to the road'],
-    'Garron remembers when the Edrin job has already been taken'
+    ['Ask if he trusts the Choir', 'Ask about the coins', 'Leave Gideon to the road'],
+    'Gideon remembers when the Eleazar job has already been taken'
   );
   const freshEdrinChoices = visibleChoiceLabels(fieldBrotherDialogue.nodes['first-unknown'], {
     flags: new Set()
   });
-  assert.equal(freshEdrinChoices.includes('Garron sent me'), false, 'player cannot claim Garron sent them before meeting Garron');
-  assert.equal(freshEdrinChoices.includes('Ask who Garron is'), true, 'Edrin supports the field-first discovery order');
+  assert.equal(freshEdrinChoices.includes('Gideon sent me'), false, 'player cannot claim Gideon sent them before meeting Gideon');
+  assert.equal(freshEdrinChoices.includes('Ask who Gideon is'), true, 'Eleazar supports the field-first discovery order');
   assert.deepEqual(
     visibleChoiceLabels(fieldBrotherDialogue.nodes['first-mentioned'], {
       flags: new Set(['long-ash-crossroad-edrin-named'])
     }).slice(0, 1),
-    ['Garron mentioned you'],
-    'Edrin distinguishes Garron mentioning him from Garron sending the player'
+    ['Gideon mentioned you'],
+    'Eleazar distinguishes Gideon mentioning him from Gideon sending the player'
   );
   assert.equal(
     visibleChoiceLabels(fieldBrotherDialogue.nodes.choir, {
       flags: new Set()
-    }).includes('Garron doubts them'),
+    }).includes('Gideon doubts them'),
     false,
-    'Edrin cannot cite Garron doubt before the player hears it'
+    'Eleazar cannot cite Gideon doubt before the player hears it'
   );
   assert.equal(
     visibleChoiceLabels(fieldBrotherDialogue.nodes.choir, {
       flags: new Set(['long-ash-crossroad-choir-doubt-known'])
-    }).includes('Garron doubts them'),
+    }).includes('Gideon doubts them'),
     true,
-    'Edrin can cite Garron doubt after the player hears it'
+    'Eleazar can cite Gideon doubt after the player hears it'
   );
   const actualFarmDoors = level.objects
     .filter((object) => object.kind === 'farm-door' && inRange(object, farmRange))
@@ -611,10 +803,10 @@ const farmExitDialogues = new Map([
   }
   const expectedFarmMachinery = [
     { kind: 'water-pump', x: 15, y: 52, orient: null, blocking: true },
-    { kind: 'wagon-wheel', x: 26, y: 52, orient: null, blocking: true },
+    { kind: 'wagon-wheel', x: 25, y: 52, orient: null, blocking: true },
     { kind: 'feed-trough', x: 18, y: 53, orient: 'se', blocking: true },
     { kind: 'field-plow', x: 23, y: 52, orient: 'sw', blocking: true },
-    { kind: 'field-harrow', x: 26, y: 50, orient: 'sw', blocking: true },
+    { kind: 'field-harrow', x: 27, y: 53, orient: 'sw', blocking: true },
     { kind: 'tool-rack', x: 34, y: 53, orient: null, blocking: true },
     { kind: 'woodpile', x: 29, y: 57, orient: null, blocking: true },
     { kind: 'field-plow', x: 21, y: 59, orient: 'se', blocking: true },
@@ -694,7 +886,7 @@ const farmExitDialogues = new Map([
         object.interact?.questUpdate?.stage === 'family-known'
       ),
     true,
-    'farm family victims are inspectable and advance Edrin report state'
+    'farm family victims are inspectable and advance Eleazar report state'
   );
   assert.ok(
     level.objects.some((object) => object.kind === 'blood-sigil' && inRange(object, farmRange)),
@@ -747,6 +939,12 @@ const farmExitDialogues = new Map([
   const graveyardWalls = graveyardObjects.filter((object) => object.kind === 'graveyard-wall');
   const graveyardPlots = graveyardObjects.filter((object) => object.kind === 'calcified-grave-plot');
   const graveyardHeadstones = graveyardObjects.filter((object) => object.kind === 'calcified-headstone');
+  const attendantShrine = graveyardObjects.find((object) => object.id === 'long-ash-censure-attendant-shrine');
+  assert.ok(attendantShrine, 'the attendant shrine stands outside the graveyard chapels');
+  assert.deepEqual(attendantShrine.interactionMarker, { x: 136, y: 49 });
+  assert.deepEqual(attendantShrine.activationCell, { x: 137, y: 48 });
+  assert.equal(pathExists(grid, level.spawns.player, attendantShrine.interactionMarker), true, 'the road start reaches the shrine use tile');
+  assert.equal(grid.isWalkable(attendantShrine.activationCell.x, attendantShrine.activationCell.y), true, 'the attendant unfolds onto a clear tile');
   assert.ok(graveyardWalls.length >= 60, 'expanded graveyard has a full low perimeter wall');
   assert.ok(graveyardPlots.length >= 24, 'expanded graveyard has dense repeated grave plots');
   assert.ok(graveyardHeadstones.length >= 12, 'plots without a standing body keep a broken headstone stump');
@@ -836,8 +1034,8 @@ const farmExitDialogues = new Map([
     )
   );
   assert.equal(ringGraves.length, 1, 'one grave has Search-gated loot');
-  assert.equal(ringGraves[0].name, 'Ilyen Marr');
-  assert.equal(ringGraves[0].interact.loot, undefined, 'Ilyen Marr has no normal loot array');
+  assert.equal(ringGraves[0].name, 'Jeremiah Fullo');
+  assert.equal(ringGraves[0].interact.loot, undefined, 'Jeremiah Fullo has no normal loot array');
   const search = ringGraves[0].interact.search;
   assert.equal(search.methods.length, 1);
   const ringMethod = search.methods[0];
@@ -875,7 +1073,7 @@ const farmExitDialogues = new Map([
   const crossroadBrother = level.objects.find((object) => object.id === 'long-ash-crossroad-brother');
   assert.ok(crossroadBrother, 'crossroad brother is placed');
   assert.equal(crossroadBrother.kind, 'calcified-crossroad-brother');
-  assert.equal(crossroadBrother.name, 'Garron Holt');
+  assert.equal(crossroadBrother.name, 'Gideon Carbo');
   assert.equal(crossroadBrother.x, 113);
   assert.equal(crossroadBrother.y, 31);
   assert.equal(crossroadBrother.blocking, true);
@@ -901,13 +1099,13 @@ const farmExitDialogues = new Map([
   const fieldBrother = level.objects.find((object) => object.id === 'long-ash-field-brother');
   assert.ok(fieldBrother, 'field brother is placed');
   assert.equal(fieldBrother.kind, 'calcified-scarecrow-brother');
-  assert.equal(fieldBrother.name, 'Edrin Holt');
+  assert.equal(fieldBrother.name, 'Eleazar Carbo');
   assert.equal(fieldBrother.x, 50);
   assert.equal(fieldBrother.y, 35);
   assert.equal(fieldBrother.blocking, true);
   assert.equal(fieldBrother.interact?.dialogue, 'long-ash-field-brother');
   assert.equal(fieldBrother.interact?.type, 'note');
-  assert.equal(level.tiles[fieldBrother.y][fieldBrother.x], 'w', 'field brother stands in wheat');
+  assert.equal(level.tiles[fieldBrother.y][fieldBrother.x], 'f', 'field brother stands on trampled ground within the wheat');
   assert.equal(grid.isWalkable(fieldBrother.x, fieldBrother.y), false, 'field brother blocks his scarecrow cell');
   assert.equal(pathExists(grid, level.spawns.player, { x: 50, y: 36 }), true, 'start reaches the field brother use tile');
   const fieldTarget = resolveInteractionTargetAtCell({
@@ -924,14 +1122,14 @@ const farmExitDialogues = new Map([
   assert.equal(isTargetInReach({ position: { x: 50, y: 36 } }, fieldTarget), true, 'field brother is clickable from the wheat');
 
   const stash = level.objects.find((object) => object.id === 'long-ash-holt-forest-stash');
-  assert.ok(stash, 'Holt forest stash is placed');
+  assert.ok(stash, 'Carbo forest stash is placed');
   assert.equal(stash.kind, 'field-satchel');
-  assert.equal(stash.name, 'Old Holt Stash');
+  assert.equal(stash.name, 'Old Carbo Stash');
   assert.equal(stash.x, 83);
   assert.equal(stash.y, 31);
-  assert.equal(level.tiles[stash.y][stash.x], 'd', 'Holt stash sits on forest floor');
-  assert.equal(grid.isWalkable(stash.x, stash.y), true, 'Holt stash keeps its forest tile walkable');
-  assert.equal(pathExists(grid, level.spawns.player, { x: stash.x, y: stash.y }), true, 'start reaches the Holt stash');
+  assert.equal(level.tiles[stash.y][stash.x], 'd', 'Carbo stash sits on forest floor');
+  assert.equal(grid.isWalkable(stash.x, stash.y), true, 'Carbo stash keeps its forest tile walkable');
+  assert.equal(pathExists(grid, level.spawns.player, { x: stash.x, y: stash.y }), true, 'start reaches the Carbo stash');
   assert.equal(stash.interact?.type, 'container');
   assert.deepEqual(stash.interact?.loot, [
     { item: 'ducat', count: 12 },
@@ -947,9 +1145,9 @@ const farmExitDialogues = new Map([
     interactables: level.objects.filter((object) => object.interact),
     mode: 'explore'
   });
-  assert.equal(stashTarget.type, 'object', 'Holt stash resolves before movement on its walkable tile');
+  assert.equal(stashTarget.type, 'object', 'Carbo stash resolves before movement on its walkable tile');
   assert.equal(stashTarget.object.id, stash.id);
-  assert.equal(isTargetInReach({ position: { x: 83, y: 32 } }, stashTarget), true, 'Holt stash is reachable from an adjacent forest tile');
+  assert.equal(isTargetInReach({ position: { x: 83, y: 32 } }, stashTarget), true, 'Carbo stash is reachable from an adjacent forest tile');
 
   const expectedRoadSigns = [
     {
@@ -1154,6 +1352,149 @@ const farmExitDialogues = new Map([
 }
 
 {
+  const encounterId = 'long-ash-stage-iv-cart-ambush';
+  const ambushEnemies = level.spawns.enemies.filter((enemy) => enemy.encounter === encounterId);
+  assert.equal(ambushEnemies.length, 5, 'the cart ambush has one speaking Stage IV and four runners');
+  assert.equal(ambushEnemies.every((enemy) => enemy.dormantUntilCombat === true), true, 'ambushers remain dormant until the trap is sprung');
+
+  const lure = ambushEnemies.find((enemy) => enemy.spawnId === 'long-ash-stage-iv-lure');
+  assert.deepEqual(
+    { id: lure?.id, x: lure?.x, y: lure?.y, facing: lure?.facing },
+    { id: 'stage-iv-lure', x: 76, y: 35, facing: 'se' },
+    'the speaking Stage IV replaces the prone lure prop when combat starts'
+  );
+  const runners = ambushEnemies.filter((enemy) => enemy.id === 'stage-iv-runner');
+  assert.deepEqual(
+    runners.map(({ x, y, spriteId }) => ({ x, y, spriteId })),
+    [
+      { x: 74, y: 31, spriteId: 'stage-iv-runner-ash' },
+      { x: 77, y: 30, spriteId: 'stage-iv-runner-road' },
+      { x: 70, y: 35, spriteId: 'stage-iv-runner-road' },
+      { x: 82, y: 39, spriteId: 'stage-iv-runner-ash' }
+    ]
+  );
+  assert.equal(runners.every((runner) => grid.isWalkable(runner.x, runner.y)), true, 'all four runners emerge onto walkable cells');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 77, y: 36 }), true, 'the forced close-help position remains reachable');
+
+  assert.equal(stageIvLure.name, 'Stage IV');
+  assert.equal(stageIvLure.stats.hp, 9);
+  assert.deepEqual(stageIvLure.attacks[0], {
+    id: 'prayer-grip', name: 'Prayer Grip', apCost: 3, damage: 2, range: 1
+  });
+  assert.equal(stageIvLure.tags.includes('deceptive'), true, 'the lure is a conscious deceptive Stage IV');
+  assert.equal(stageIvRunner.name, 'Stage IV Runner');
+  assert.equal(stageIvRunner.stats.hp, 4);
+  assert.equal(stageIvRunner.stats.actionPoints, 7);
+  assert.deepEqual(stageIvRunner.attacks[0], {
+    id: 'rushing-rake', name: 'Rushing Rake', apCost: 4, damage: 2, range: 1
+  });
+
+  const trapCart = level.objects.find((object) => object.id === 'long-ash-stage-iv-overturned-cart');
+  const proneLure = level.objects.find((object) => object.id === 'long-ash-stage-iv-cart-lure');
+  const eddaPurse = level.objects.find((object) => object.id === 'long-ash-edda-flat-purse');
+  assert.deepEqual(
+    { kind: trapCart?.kind, name: trapCart?.name, x: trapCart?.x, y: trapCart?.y, blocking: trapCart?.blocking },
+    { kind: 'overturned-field-cart', name: 'Overturned Charcoal Cart', x: 77, y: 35, blocking: true }
+  );
+  assert.deepEqual(
+    { kind: proneLure?.kind, x: proneLure?.x, y: proneLure?.y, hiddenWhenFlags: proneLure?.hiddenWhenFlags },
+    {
+      kind: 'stage-iv-cart-lure',
+      x: 76,
+      y: 35,
+      hiddenWhenFlags: ['long-ash-stage-iv-cart-ambush-sprung']
+    }
+  );
+  assert.equal(getSprite('overturned-field-cart')?.cover, 'hard');
+  assert.equal(getSprite('stage-iv-cart-lure')?.category, 'creature');
+  assert.deepEqual(
+    {
+      kind: eddaPurse?.kind,
+      x: eddaPurse?.x,
+      y: eddaPurse?.y,
+      visibleWhenFlags: eddaPurse?.visibleWhenFlags,
+      loot: eddaPurse?.interact?.loot,
+      questUpdate: eddaPurse?.interact?.questUpdate
+    },
+    {
+      kind: 'field-satchel',
+      x: 78,
+      y: 36,
+      visibleWhenFlags: ['long-ash-stage-iv-cart-ambush-sprung'],
+      loot: [{ item: 'ducat', count: 20 }],
+      questUpdate: {
+        quest: 'edda-farrs-account',
+        stage: 'return-purse',
+        log: 'Deborah\'s flat purse held twenty ducats, exactly the count she gave.'
+      }
+    },
+    'Deborah\'s twenty-ducat purse appears beneath the stolen cart once the trap is sprung'
+  );
+  const hiddenPurse = structuredClone(eddaPurse);
+  syncObjectFlagState(hiddenPurse, new Set());
+  assert.equal(hiddenPurse.hiddenByFlag, true, 'the purse stays concealed while the lure covers the cart bed');
+  syncObjectFlagState(hiddenPurse, new Set(['long-ash-stage-iv-cart-ambush-sprung']));
+  assert.equal(hiddenPurse.hiddenByFlag, false, 'springing the ambush reveals Deborah\'s purse');
+
+  const trigger = level.combatTriggers.find((entry) => entry.id === 'long-ash-stage-iv-cart-ambush-trigger');
+  assert.deepEqual(
+    { encounter: trigger?.encounter, x: trigger?.x, y: trigger?.y, radius: trigger?.radius, dialogue: trigger?.dialogue },
+    { encounter: encounterId, x: 76, y: 35, radius: 5, dialogue: 'long-ash-stage-iv-cart-ambush' }
+  );
+  assert.equal(trigger.forceCombat, undefined, 'proximity opens the trap dialogue instead of starting combat directly');
+  assert.match(trigger.intro.join(' '), /red cloth/, 'the ambushers retain the cult band\'s stolen clothing');
+
+  const eddaCartRead = stageIvAmbushDialogue.nodes.start.choices.find((entry) => entry.next === 'edda-cart-read');
+  assert.deepEqual(eddaCartRead.conditions, { flag: 'long-ash-edda-purse-tasked' });
+  assert.equal(eddaCartRead.effects.setFlag, 'long-ash-stage-iv-cart-recognized');
+  assert.match(stageIvAmbushDialogue.nodes['edda-cart-read'].lines.join(' '), /White cord/);
+  assert.deepEqual(stageIvAmbushDialogue.nodes['edda-cart-read'].choices[0].effects.startCombat.openingAttack, {
+    target: 'long-ash-stage-iv-lure',
+    attackId: 'sidearm',
+    guaranteedHit: true,
+    spendAp: false,
+    failureLog: 'The sidearm is not ready. The old woman rises.'
+  });
+
+  const gateManifest = [
+    { next: 'guile-read', field: 'guile', dc: 45 },
+    { next: 'medicine-read', field: 'medicine', dc: 45 },
+    { next: 'host-signs-read', field: 'hostSigns', dc: 50 }
+  ];
+  for (const expected of gateManifest) {
+    const choice = stageIvAmbushDialogue.nodes.start.choices.find((entry) => entry.next === expected.next);
+    assert.deepEqual(choice?.conditions?.fieldRatings, { [expected.field]: expected.dc });
+    assert.equal(
+      meetsDialogueConditions(choice.conditions, {
+        fieldRating: (field) => (field === expected.field ? expected.dc - 1 : 100)
+      }),
+      false,
+      `${expected.next} stays hidden one point below its threshold`
+    );
+    assert.equal(
+      meetsDialogueConditions(choice.conditions, {
+        fieldRating: (field) => (field === expected.field ? expected.dc : 100)
+      }),
+      true,
+      `${expected.next} appears at its threshold`
+    );
+
+    const fireChoice = stageIvAmbushDialogue.nodes[expected.next].choices[0];
+    assert.equal(fireChoice.label, 'Draw the sidearm');
+    assert.deepEqual(fireChoice.effects.startCombat.openingAttack, {
+      target: 'long-ash-stage-iv-lure',
+      attackId: 'sidearm',
+      guaranteedHit: true,
+      spendAp: false,
+      failureLog: 'The sidearm is not ready. The old woman rises.'
+    });
+  }
+  const closeHelp = stageIvAmbushDialogue.nodes['close-help'].choices[0].effects;
+  assert.deepEqual(closeHelp.teleport, { x: 77, y: 36, facing: 'nw' });
+  assert.deepEqual(closeHelp.startCombat, { encounter: encounterId });
+}
+
+{
   assert.equal(caveLevel.id, 'long-ash-infected-cave');
   assert.equal(caveLevel.name, 'Long Ash Infected Cave');
   assert.equal(caveLevel.width, 24);
@@ -1351,4 +1692,197 @@ const farmExitDialogues = new Map([
     assert.equal(grid.isWalkable(0, y), false, `left edge 0,${y} is blocked`);
     assert.equal(grid.isWalkable(level.width - 1, y), false, `right edge ${level.width - 1},${y} is blocked`);
   }
+}
+
+{
+  const gateManifest = [
+    { object: 'long-ash-holt-water-pump', source: 'search', method: 'strip-pump-collar', field: 'engineering', dc: 40, flag: 'long-ash-pump-sabotage-found' },
+    { object: 'long-ash-holt-farm-cart', source: 'search', method: 'count-drag-marks', field: 'search', dc: 45, flag: 'long-ash-farm-cart-drag-read' },
+    { object: 'long-ash-farm-victim-father', source: 'search', method: 'read-holt-death-order', field: 'medicine', dc: 40, flag: 'long-ash-holt-death-order-read' },
+    { object: 'long-ash-farm-victim-father', source: 'search', method: 'read-erased-defense', field: 'hostSigns', dc: 60, flag: 'long-ash-holt-erased-defense-read' },
+    { object: 'long-ash-holt-tool-rack', source: 'search', method: 'straighten-coffer-hinge', field: 'security', dc: 50, flag: 'long-ash-tool-coffer-opened' },
+    { object: 'long-ash-holt-tool-rack', source: 'search', method: 'tear-coffer-hinge', primary: 'body', dc: 7, flag: 'long-ash-tool-coffer-opened' },
+    { object: 'long-ash-stripped-cart', source: 'search', method: 'find-hidden-axle-cord', field: 'search', dc: 40, flag: 'long-ash-cart-axle-cord-found' },
+    { object: 'long-ash-stripped-cart', source: 'search', method: 'reconstruct-cart-break', field: 'engineering', dc: 55, flag: 'long-ash-cart-sabotage-proved' },
+    { object: 'long-ash-kill-cultist-stable', source: 'search', method: 'separate-kill-site-wounds', field: 'medicine', dc: 45, flag: 'long-ash-kill-site-wounds-read' },
+    { object: 'long-ash-kill-cultist-stable', source: 'search', method: 'test-for-fresh-opening', field: 'hostSigns', dc: 60, flag: 'long-ash-kill-site-no-opening-found' },
+    { object: 'long-ash-kill-wolf-ribsplit', source: 'search', method: 'read-staged-prayer-knots', field: 'doctrine', dc: 50, flag: 'long-ash-wolf-prayer-knots-found' },
+    { object: 'long-ash-old-bell-marker', source: 'search', method: 'read-clapper-removal', field: 'engineering', dc: 45, flag: 'long-ash-old-bell-clapper-removed' },
+    { object: 'long-ash-old-bell-marker', source: 'search', method: 'read-erased-peal-rule', field: 'doctrine', dc: 50, flag: 'long-ash-old-bell-peal-rule-read' },
+    { object: 'long-ash-bell-cache-stones', source: 'search', method: 'trace-bell-cache-stones', field: 'search', dc: 55, flag: 'long-ash-bell-cache-found' },
+    { object: 'grave-eren-voss', source: 'search', method: 'compare-grave-calcification', field: 'medicine', dc: 45, flag: 'long-ash-grave-order-read' },
+    { object: 'grave-eren-voss', source: 'search', method: 'audit-grave-handling', field: 'containment', dc: 60, flag: 'long-ash-grave-burial-error-found' },
+    { object: 'grave-eren-voss', source: 'search', method: 'read-grave-response-pattern', field: 'hostSigns', dc: 65, flag: 'long-ash-grave-response-pattern-found' },
+    { object: 'long-ash-warden-cart-crate', source: 'lock', method: 'recover-warden-route-strip', field: 'search', dc: 45, flag: 'long-ash-warden-route-strip-found' },
+    { object: 'long-ash-north-route-post', source: 'search', method: 'restore-route-peal-rule', field: 'doctrine', dc: 45, flag: 'long-ash-route-post-peal-rule-found' },
+    { object: 'long-ash-dry-stave-barrel', source: 'lock', method: 'find-dry-inner-stave', field: 'search', dc: 40, flag: 'long-ash-dry-stave-cache-found' },
+    { object: 'long-ash-forest-cache-stump', source: 'search', method: 'follow-erased-cache-signs', field: 'search', dc: 63, flag: 'long-ash-forest-cache-found' },
+    { object: 'long-ash-holt-forest-stash', source: 'lock', method: 'read-holt-stash-knot', field: 'search', dc: 40, flag: 'long-ash-holt-stash-knot-read' }
+  ];
+
+  const ids = (level.objects ?? []).map((object) => object.id).filter(Boolean);
+  assert.equal(new Set(ids).size, ids.length, 'Long Ash authored object ids remain unique');
+
+  const ordinaryMaximum = 63;
+  const scarFieldMaximum = 68;
+  const primaryMaximum = 7;
+  const gateDcs = new Set();
+  const gateFields = new Set();
+  for (const expected of gateManifest) {
+    const object = level.objects.find((entry) => entry.id === expected.object);
+    assert.ok(object, `${expected.object} is placed`);
+    assert.ok(getSprite(object.kind), `${expected.object} uses registered ${object.kind} art`);
+    assert.equal(
+      hasReachableAdjacentCell(grid, level.spawns.player, object),
+      true,
+      `${expected.object} has a reachable use cell`
+    );
+    const source = object.interact?.[expected.source];
+    assert.ok(source, `${expected.object} exposes ${expected.source} methods`);
+    const method = source.methods.find((entry) => entry.id === expected.method);
+    assert.ok(method, `${expected.object} keeps stable method ${expected.method}`);
+    assert.equal(method.field, expected.field, `${expected.method} uses the planned field`);
+    assert.equal(method.primary, expected.primary, `${expected.method} uses the planned primary`);
+    assert.equal(method.dc, expected.dc, `${expected.method} keeps its calibrated threshold`);
+    assert.equal([].concat(method.success?.setFlag ?? []).includes(expected.flag), true, `${expected.method} records ${expected.flag}`);
+    if (method.primary) {
+      assert.ok(method.dc <= primaryMaximum, `${expected.method} is achievable at the primary creation cap`);
+    } else {
+      const maximum = ['hostSigns', 'containment', 'purgationTools'].includes(method.field)
+        ? scarFieldMaximum
+        : ordinaryMaximum;
+      assert.ok(method.dc <= maximum, `${expected.method} is achievable by a legal starting specialist`);
+      gateDcs.add(method.dc);
+      gateFields.add(method.field);
+    }
+  }
+  assert.deepEqual([...gateDcs].sort((a, b) => a - b), [40, 45, 50, 55, 60, 63, 65], 'road checks span easy through creation-cap thresholds');
+  assert.deepEqual([...gateFields].sort(), ['containment', 'doctrine', 'engineering', 'hostSigns', 'medicine', 'search', 'security'], 'road checks reward seven distinct fields');
+  assert.equal(
+    gateManifest.filter((entry) => entry.primary === 'body' && entry.dc === 7).length,
+    1,
+    'one optional gate requires a maxed Body primary'
+  );
+
+  const journalFlags = new Set((level.journalNotes ?? []).map((note) => note.flag));
+  for (const flag of new Set(gateManifest.map((entry) => entry.flag))) {
+    assert.ok(journalFlags.has(flag), `${flag} unlocks a journal finding`);
+  }
+  assert.equal(journalFlags.size, level.journalNotes.length, 'Long Ash journal finding flags are unique');
+}
+
+{
+  const lootManifest = new Map([
+    ['long-ash-warden-cart-crate', [
+      { item: 'ducat', count: 4 },
+      { item: 'tinned-beans', count: 1 },
+      { item: 'relic-rounds', count: 1 }
+    ]],
+    ['long-ash-kill-site-satchel', [
+      { item: 'ducat', count: 2 },
+      { item: 'road-warden-chit', count: 1 }
+    ]],
+    ['long-ash-bell-side-satchel', [
+      { item: 'ducat', count: 4 },
+      { item: 'censure-entry-roll', count: 1 },
+      { item: 'road-warden-chit', count: 1 }
+    ]],
+    ['long-ash-dry-stave-barrel', [
+      { item: 'tinned-beans', count: 1 },
+      { item: 'field-dressing', count: 1 }
+    ]],
+    ['long-ash-forest-specialist-cache', [
+      { item: 'ducat', count: 8 },
+      { item: 'relic-rounds', count: 2 },
+      { item: 'tarnished-saint-token', count: 1 }
+    ]],
+    ['long-ash-holt-forest-stash', [
+      { item: 'ducat', count: 12 },
+      { item: 'road-warden-chit', count: 1 },
+      { item: 'tarnished-saint-token', count: 1 }
+    ]]
+  ]);
+  for (const [objectId, expectedLoot] of lootManifest) {
+    const object = level.objects.find((entry) => entry.id === objectId);
+    assert.equal(object?.interact?.type, 'container', `${objectId} is a deterministic container`);
+    assert.deepEqual(object.interact.loot, expectedLoot, `${objectId} keeps its modest authored reward`);
+  }
+
+  const toolRack = level.objects.find((object) => object.id === 'long-ash-holt-tool-rack');
+  const cofferMethods = toolRack.interact.search.methods;
+  for (const method of cofferMethods) {
+    assert.deepEqual(method.success.inventory.add, [
+      { item: 'field-dressing', count: 1 },
+      { item: 'penitent-gear-scrap', count: 2 }
+    ], `${method.id} opens the same tool-coffer reward`);
+    assert.equal(method.conditions.notFlag, 'long-ash-tool-coffer-opened', `${method.id} cannot duplicate the shared reward`);
+  }
+  assert.equal(
+    [].concat(cofferMethods.find((method) => method.id === 'tear-coffer-hinge').success.setFlag).includes('long-ash-tool-coffer-forced'),
+    true,
+    'the Body route records its loud forced result'
+  );
+}
+
+{
+  const stash = level.objects.find((object) => object.id === 'long-ash-holt-forest-stash');
+  assert.deepEqual(stash.visibleWhenFlags, [
+    'long-ash-field-family-truth',
+    'long-ash-field-family-lie'
+  ], 'Eleazar outcome flags reveal the old Carbo stash');
+  const hiddenStash = structuredClone(stash);
+  syncObjectFlagState(hiddenStash, new Set());
+  assert.equal(hiddenStash.hiddenByFlag, true, 'the Carbo stash is concealed before Eleazar gives its location');
+  syncObjectFlagState(hiddenStash, new Set(['long-ash-field-family-truth']));
+  assert.equal(hiddenStash.hiddenByFlag, false, 'truthful news reveals the Carbo stash');
+  syncObjectFlagState(hiddenStash, new Set(['long-ash-field-family-lie']));
+  assert.equal(hiddenStash.hiddenByFlag, false, 'kind news also reveals the Carbo stash');
+
+  const killSiteSatchel = level.objects.find((object) => object.id === 'long-ash-kill-site-satchel');
+  const hiddenSatchel = structuredClone(killSiteSatchel);
+  syncObjectFlagState(hiddenSatchel, new Set());
+  assert.equal(hiddenSatchel.hiddenByFlag, true, 'the discarded satchel is concealed before the casualty trail is read');
+  syncObjectFlagState(hiddenSatchel, new Set(['long-ash-kill-site-wounds-read']));
+  assert.equal(hiddenSatchel.hiddenByFlag, false, 'Medicine evidence reveals the discarded satchel');
+
+  const bellSatchel = structuredClone(level.objects.find((object) => object.id === 'long-ash-bell-side-satchel'));
+  syncObjectFlagState(bellSatchel, new Set());
+  assert.equal(bellSatchel.hiddenByFlag, true, 'the bell satchel is concealed below the shoulder stones');
+  syncObjectFlagState(bellSatchel, new Set(['long-ash-bell-cache-found']));
+  assert.equal(bellSatchel.hiddenByFlag, false, 'the Search 55 result reveals the bell satchel');
+
+  const forestSatchel = structuredClone(level.objects.find((object) => object.id === 'long-ash-forest-specialist-cache'));
+  syncObjectFlagState(forestSatchel, new Set());
+  assert.equal(forestSatchel.hiddenByFlag, true, 'the specialist cache is concealed before the placement signs are read');
+  syncObjectFlagState(forestSatchel, new Set(['long-ash-forest-cache-found']));
+  assert.equal(forestSatchel.hiddenByFlag, false, 'the Search 63 result reveals the specialist cache');
+}
+
+{
+  const corpseIds = [
+    'long-ash-kill-cultist-west',
+    'long-ash-kill-cultist-south',
+    'long-ash-kill-cultist-stable',
+    'long-ash-kill-cultist-east',
+    'long-ash-kill-cultist-center',
+    'long-ash-kill-wolf-spider',
+    'long-ash-kill-wolf-maw',
+    'long-ash-kill-wolf-ribsplit',
+    'long-ash-farm-victim-father',
+    'long-ash-farm-victim-mother',
+    'long-ash-farm-victim-grandparent',
+    'long-ash-farm-victim-older-child',
+    'long-ash-farm-victim-younger-child'
+  ];
+  const corpseLogs = corpseIds.map((id) => {
+    const object = level.objects.find((entry) => entry.id === id);
+    assert.ok(object, `${id} has a stable authored id`);
+    return object.interact?.log;
+  });
+  assert.equal(corpseLogs.every((log) => typeof log === 'string' && log.length > 20), true, 'every road corpse has a useful inspection line');
+  assert.equal(new Set(corpseLogs).size, corpseLogs.length, 'cultists, wolves, and Holts no longer repeat one corpse account');
+
+  assert.equal(pathExists(grid, level.spawns.player, { x: 116, y: 0 }), true, 'new content keeps the Censure road exit reachable');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 24, y: 42 }), true, 'new content keeps the Carbo farm gate reachable');
+  assert.equal(pathExists(grid, level.spawns.player, { x: 127, y: 56 }), true, 'new content keeps the graveyard gate reachable');
 }

@@ -4,14 +4,26 @@
 
 import { itemRarityMeta } from './ItemRarity.js';
 import { buildProfile } from './Progression.js';
+import {
+  attackAmmoCost,
+  attackConditionWear,
+  LEGACY_WEAPON_SLOTS,
+  normalizeWeaponEquipmentSlot,
+  READY_WEAPON_SLOTS,
+  READY_WEAPON_SLOT_SET,
+  weaponAttackDefinitions,
+  weaponAttackRoles,
+  weaponMagazineDefinition,
+  weaponRuntimeAttackId
+} from '../combat/WeaponRules.js';
 
 export const EQUIPMENT_SLOTS = [
   { id: 'clothes', label: 'Clothes' },
   { id: 'armor', label: 'Armor' },
   { id: 'boots', label: 'Boots' },
   { id: 'helmet', label: 'Helmet' },
-  { id: 'sidearm', label: 'Sidearm' },
-  { id: 'melee', label: 'Melee' },
+  { id: 'weapon1', label: 'Weapon 1' },
+  { id: 'weapon2', label: 'Weapon 2' },
   { id: 'trinket', label: 'Trinket' },
   { id: 'ring1', label: 'Ring 1' },
   { id: 'ring2', label: 'Ring 2' }
@@ -19,7 +31,7 @@ export const EQUIPMENT_SLOTS = [
 
 const DEFAULT_MAX_CARRY_WEIGHT = 10;
 const RING_SLOTS = new Set(['ring1', 'ring2']);
-const WEAPON_SLOTS = new Set(['sidearm', 'melee']);
+const WEAPON_SLOTS = new Set(READY_WEAPON_SLOTS);
 const REPAIR_BASE = 15;
 const REPAIR_ENGINEERING_DIVISOR = 10;
 const REPAIR_EXACT_MATCH_BONUS = 10;
@@ -202,7 +214,7 @@ export class Inventory {
   }
 
   equipmentSlotFor(itemId) {
-    return this.itemDefs[this.itemIdFor(itemId)]?.equipment?.slot ?? null;
+    return normalizeWeaponEquipmentSlot(this.itemDefs[this.itemIdFor(itemId)]?.equipment?.slot);
   }
 
   canEquip(itemId) {
@@ -231,6 +243,11 @@ export class Inventory {
       return { ok: false, message: `No spare ${this.displayName(resolvedItemId)} to equip.` };
     }
 
+    if (this.instances.has(equipValue)) {
+      for (const [slotId, value] of this.equipment) {
+        if (slotId !== targetSlot && value === equipValue) this.equipment.set(slotId, null);
+      }
+    }
     this.equipment.set(targetSlot, equipValue);
     return {
       ok: true,
@@ -249,8 +266,14 @@ export class Inventory {
   }
 
   loadEquipment(equipment = {}) {
+    const normalizedEquipment = { ...equipment };
+    for (const [legacySlot, readySlot] of Object.entries(LEGACY_WEAPON_SLOTS)) {
+      if (!normalizedEquipment[readySlot] && normalizedEquipment[legacySlot]) {
+        normalizedEquipment[readySlot] = normalizedEquipment[legacySlot];
+      }
+    }
     for (const slot of EQUIPMENT_SLOTS) {
-      const itemId = equipment[slot.id];
+      const itemId = normalizedEquipment[slot.id];
       const entryKey = this.#equipKeyFor(itemId, slot.id);
       if (!entryKey && (!itemId || !this.has(itemId))) continue;
       const value = entryKey ?? itemId;
@@ -287,10 +310,17 @@ export class Inventory {
       if (entry?.itemId) this.#addInstance(entry.itemId, {
         entryKey: entry.entryKey,
         condition: entry.condition,
+        loaded: entry.loaded,
         ignoreCapacity: true
       });
     }
-    for (const [slotId, value] of Object.entries(snapshot.equipment ?? {})) {
+    const normalizedEquipment = { ...(snapshot.equipment ?? {}) };
+    for (const [legacySlot, readySlot] of Object.entries(LEGACY_WEAPON_SLOTS)) {
+      if (!normalizedEquipment[readySlot] && normalizedEquipment[legacySlot]) {
+        normalizedEquipment[readySlot] = normalizedEquipment[legacySlot];
+      }
+    }
+    for (const [slotId, value] of Object.entries(normalizedEquipment)) {
       const entryKey = this.#equipKeyFor(value, slotId);
       const equipValue = entryKey ?? value;
       if (!this.equipment.has(slotId) || !value || !this.has(equipValue) || !this.#slotAccepts(slotId, equipValue)) continue;
@@ -308,6 +338,8 @@ export class Inventory {
       const build = itemId ? this.itemBuild(itemId) : null;
       const instance = itemKey ? this.instances.get(itemKey) : null;
       const condition = instance ? this.conditionState(itemKey) : null;
+      const magazine = instance ? this.magazineState(itemKey) : null;
+      const weaponDetails = itemId ? this.itemWeaponDetails(itemKey ?? itemId) : null;
       return {
         slot: slot.id,
         label: slot.label,
@@ -329,6 +361,16 @@ export class Inventory {
         conditionMax: condition?.max ?? null,
         conditionTier: condition?.tier.id ?? null,
         conditionLabel: condition?.tier.label ?? '',
+        loaded: magazine?.loaded ?? null,
+        magazineCapacity: magazine?.capacity ?? null,
+        ammoFamily: magazine?.ammoFamily ?? null,
+        ammoItemId: weaponDetails?.ammoItemId ?? null,
+        ammoName: weaponDetails?.ammoName ?? '',
+        reserveAmmo: magazine?.reserve ?? null,
+        reloadAp: magazine?.reloadAp ?? null,
+        attackModes: weaponDetails?.attackModes ?? [],
+        canReload: magazine?.canReload ?? false,
+        emptyWeapon: magazine?.empty ?? false,
         broken: condition?.tier.id === 'broken',
         empty: !itemId
       };
@@ -463,6 +505,132 @@ export class Inventory {
     return this.itemDefs[this.itemIdFor(itemIdOrKey)]?.weapon?.weaponClass ?? null;
   }
 
+  readyWeaponEntry(slotId) {
+    if (!READY_WEAPON_SLOT_SET.has(slotId)) return null;
+    return this.equipment.get(slotId) ?? null;
+  }
+
+  weaponSlotForEntry(entryKey) {
+    for (const slotId of READY_WEAPON_SLOTS) {
+      if (this.equipment.get(slotId) === entryKey) return slotId;
+    }
+    return null;
+  }
+
+  magazineState(entryKey) {
+    const instance = this.instances.get(entryKey);
+    if (!instance) return null;
+    const definition = weaponMagazineDefinition(this.itemDefs[instance.itemId]);
+    if (!definition) return null;
+    const loaded = Math.max(0, Math.min(definition.capacity, cleanCount(instance.loaded)));
+    const ammoItemId = this.ammoItemForFamily(definition.ammoFamily);
+    const reserve = ammoItemId ? this.stackCount(ammoItemId) : 0;
+    return {
+      entryKey,
+      itemId: instance.itemId,
+      ammoItemId,
+      ammoFamily: definition.ammoFamily,
+      capacity: definition.capacity,
+      loaded,
+      reserve,
+      reloadAp: definition.reloadAp,
+      empty: loaded <= 0,
+      full: loaded >= definition.capacity,
+      canReload: loaded < definition.capacity && reserve > 0
+    };
+  }
+
+  ammoItemForFamily(ammoFamily) {
+    if (!ammoFamily) return null;
+    for (const [itemId, itemDef] of Object.entries(this.itemDefs)) {
+      if (itemDef?.type === 'ammo' && itemDef.ammo?.family === ammoFamily) return itemId;
+    }
+    return null;
+  }
+
+  reloadStateForAttack(attack) {
+    return this.magazineState(attack?.weaponEntryKey);
+  }
+
+  reloadWeapon(entryKey) {
+    const instance = this.instances.get(entryKey);
+    const state = this.magazineState(entryKey);
+    if (!instance || !state) return { ok: false, message: 'That weapon does not reload.' };
+    if (state.full) return { ok: false, message: `${this.displayName(entryKey)} is already loaded.` };
+    if (!state.ammoItemId || state.reserve <= 0) {
+      return { ok: false, message: `No ${this.ammoFamilyLabel(state.ammoFamily)} in the pack.` };
+    }
+    const loaded = Math.min(state.capacity - state.loaded, state.reserve);
+    if (loaded <= 0 || !this.remove(state.ammoItemId, loaded)) {
+      return { ok: false, message: `No ${this.ammoFamilyLabel(state.ammoFamily)} in the pack.` };
+    }
+    instance.loaded = state.loaded + loaded;
+    return {
+      ok: true,
+      entryKey,
+      loaded,
+      current: instance.loaded,
+      capacity: state.capacity,
+      reloadAp: state.reloadAp,
+      message: `Reloaded ${this.displayName(entryKey)}. ${instance.loaded}/${state.capacity}.`
+    };
+  }
+
+  ammoFamilyLabel(ammoFamily) {
+    const itemId = this.ammoItemForFamily(ammoFamily);
+    return itemId ? this.displayName(itemId) : String(ammoFamily ?? 'ammunition');
+  }
+
+  itemWeaponDetails(itemIdOrKey) {
+    const itemId = this.itemIdFor(itemIdOrKey);
+    const itemDef = this.itemDefs[itemId] ?? {};
+    const definitions = weaponAttackDefinitions(itemDef);
+    if (!definitions.length) return null;
+
+    const magazine = weaponMagazineDefinition(itemDef);
+    const ammoItemId = magazine ? this.ammoItemForFamily(magazine.ammoFamily) : null;
+    const attacks = this.instances.has(itemIdOrKey)
+      ? this.weaponAttacksForEntry(itemIdOrKey, this.weaponSlotForEntry(itemIdOrKey))
+      : definitions;
+
+    return {
+      ammoFamily: magazine?.ammoFamily ?? null,
+      ammoItemId,
+      ammoName: magazine ? this.ammoFamilyLabel(magazine.ammoFamily) : '',
+      magazineCapacity: magazine?.capacity ?? null,
+      reloadAp: magazine?.reloadAp ?? null,
+      attackModes: attacks.map((attack, index) => {
+        const baseDamage = Math.max(0, Math.floor(Number(attack.baseDamage ?? attack.damage) || 0));
+        const damage = Math.max(0, Math.floor(Number(attack.damage) || 0));
+        return {
+          id: attack.localId ?? attack.id ?? `attack-${index + 1}`,
+          name: attack.name ?? `Attack ${index + 1}`,
+          mode: attack.mode ?? null,
+          damage,
+          baseDamage,
+          apCost: Math.max(0, Math.floor(Number(attack.apCost) || 0)),
+          range: Math.max(0, Math.floor(Number(attack.range) || 0)),
+          accuracyBonus: Number.isFinite(attack.accuracyBonus) ? Math.round(attack.accuracyBonus) : 0,
+          ammoCost: magazine ? attackAmmoCost(attack) : 0,
+          conditionWear: Math.max(0, attackConditionWear(attack)),
+          requiresStationary: Boolean(attack.requiresStationary)
+        };
+      })
+    };
+  }
+
+  consumeWeaponAttack(attack) {
+    const entryKey = attack?.weaponEntryKey;
+    const instance = this.instances.get(entryKey);
+    if (!instance) return true;
+    const state = this.magazineState(entryKey);
+    if (!state) return true;
+    const cost = attackAmmoCost(attack);
+    if (state.loaded < cost) return false;
+    instance.loaded = state.loaded - cost;
+    return true;
+  }
+
   repairCandidates(targetKey) {
     const target = this.instances.get(targetKey);
     const targetState = this.conditionState(targetKey);
@@ -515,65 +683,84 @@ export class Inventory {
   }
 
   weaponAttacks(fallbackAttacks = []) {
-    const weaponAttacks = new Map();
+    const equippedAttacks = [];
     for (const slotId of WEAPON_SLOTS) {
       const entryKey = this.equipment.get(slotId);
-      const attack = this.weaponAttack(entryKey);
-      if (attack) weaponAttacks.set(attack.id, attack);
+      equippedAttacks.push(...this.weaponAttacksForEntry(entryKey, slotId));
     }
 
-    const result = [];
-    const used = new Set();
-    for (const attack of fallbackAttacks ?? []) {
-      const weaponAttack = weaponAttacks.get(attack.id);
-      if (weaponAttack) {
-        result.push(weaponAttack);
-        used.add(weaponAttack.id);
-      } else {
-        result.push({ ...attack });
-      }
-    }
-    for (const attack of weaponAttacks.values()) {
-      if (!used.has(attack.id)) result.push(attack);
-    }
-    return result;
+    const occupiedRoles = new Set(equippedAttacks.flatMap((attack) => attack.roles ?? []));
+    const fallback = (fallbackAttacks ?? [])
+      .filter((attack) => !occupiedRoles.has(attack.id))
+      .map((attack) => ({ ...attack }));
+    return [...fallback, ...equippedAttacks];
   }
 
   weaponAttack(entryKey) {
-    const instance = this.instances.get(entryKey);
-    if (!instance) return null;
-    const itemDef = this.itemDefs[instance.itemId] ?? {};
-    const attack = itemDef.weapon?.attack;
-    if (!attack?.id) return null;
-    const state = this.conditionState(entryKey);
-    const multiplier = state?.tier.multiplier ?? 1;
-    const baseDamage = Math.max(0, Math.floor(Number(attack.damage) || 0));
-    const damage = multiplier <= 0 ? 0 : Math.max(1, Math.round(baseDamage * multiplier));
-    return {
-      ...attack,
-      damage,
-      baseDamage,
-      weaponEntryKey: entryKey,
-      weaponItemId: instance.itemId,
-      condition: state?.condition ?? null,
-      conditionMax: state?.max ?? null,
-      conditionTier: state?.tier.id ?? null,
-      conditionLabel: state?.tier.label ?? '',
-      broken: multiplier <= 0
-    };
+    return this.weaponAttacksForEntry(entryKey, this.weaponSlotForEntry(entryKey))[0] ?? null;
   }
 
-  degradeWeaponAttack(attack, amount = 1) {
+  weaponAttacksForEntry(entryKey, slotId = null) {
+    const instance = this.instances.get(entryKey);
+    if (!instance) return [];
+    const itemDef = this.itemDefs[instance.itemId] ?? {};
+    const attacks = weaponAttackDefinitions(itemDef);
+    if (!attacks.length) return [];
+    const state = this.conditionState(entryKey);
+    const multiplier = state?.tier.multiplier ?? 1;
+    const magazine = this.magazineState(entryKey);
+    return attacks.map((attack, index) => {
+      const localId = attack.id ?? `attack-${index + 1}`;
+      const baseDamage = Math.max(0, Math.floor(Number(attack.damage) || 0));
+      const damage = multiplier <= 0 ? 0 : Math.max(1, Math.round(baseDamage * multiplier));
+      const ammoCost = magazine ? attackAmmoCost(attack) : 0;
+      return {
+        ...attack,
+        id: weaponRuntimeAttackId(entryKey, localId),
+        localId,
+        roles: weaponAttackRoles(itemDef, attack),
+        damage,
+        baseDamage,
+        ammoCost,
+        conditionWear: attackConditionWear(attack),
+        weaponEntryKey: entryKey,
+        weaponItemId: instance.itemId,
+        weaponSlot: slotId,
+        condition: state?.condition ?? null,
+        conditionMax: state?.max ?? null,
+        conditionTier: state?.tier.id ?? null,
+        conditionLabel: state?.tier.label ?? '',
+        loaded: magazine?.loaded ?? null,
+        magazineCapacity: magazine?.capacity ?? null,
+        ammoFamily: magazine?.ammoFamily ?? null,
+        reserveAmmo: magazine?.reserve ?? null,
+        reloadAp: magazine?.reloadAp ?? null,
+        empty: Boolean(magazine && magazine.loaded < ammoCost),
+        broken: multiplier <= 0
+      };
+    });
+  }
+
+  degradeWeaponAttack(attack, amount = null) {
     const entryKey = attack?.weaponEntryKey;
     const instance = this.instances.get(entryKey);
     if (!instance) return false;
-    instance.condition = Math.max(0, cleanCondition(instance.condition, this.conditionMax(instance.itemId)) - cleanCount(amount));
+    const wear = Number.isFinite(amount) ? amount : attackConditionWear(attack);
+    instance.condition = Math.max(0, cleanCondition(instance.condition, this.conditionMax(instance.itemId)) - cleanCount(wear));
     return true;
   }
 
   #resolveEquipSlot(itemId, preferredSlot = null) {
     const itemSlot = this.equipmentSlotFor(itemId);
     if (!itemSlot) return null;
+    if (itemSlot === 'weapon') {
+      const preferred = LEGACY_WEAPON_SLOTS[preferredSlot] ?? preferredSlot;
+      if (READY_WEAPON_SLOT_SET.has(preferred)) return preferred;
+      for (const slotId of READY_WEAPON_SLOTS) {
+        if (!this.equipment.get(slotId)) return slotId;
+      }
+      return 'weapon1';
+    }
     if (itemSlot === 'ring') {
       if (preferredSlot && RING_SLOTS.has(preferredSlot)) return preferredSlot;
       for (const slotId of RING_SLOTS) {
@@ -586,6 +773,7 @@ export class Inventory {
 
   #slotAccepts(slotId, itemId) {
     const itemSlot = this.equipmentSlotFor(itemId);
+    if (itemSlot === 'weapon') return READY_WEAPON_SLOT_SET.has(slotId);
     if (itemSlot === 'ring') return RING_SLOTS.has(slotId);
     return itemSlot === slotId;
   }
@@ -608,6 +796,8 @@ export class Inventory {
     const rarity = this.itemRarity(itemId);
     const build = this.itemBuild(itemId);
     const condition = instance ? this.conditionState(instance.entryKey) : null;
+    const magazine = instance ? this.magazineState(instance.entryKey) : null;
+    const weaponDetails = this.itemWeaponDetails(instance?.entryKey ?? itemId);
     return {
       id: instance?.entryKey ?? itemId,
       entryKey: instance?.entryKey ?? null,
@@ -634,6 +824,16 @@ export class Inventory {
       conditionMax: condition?.max ?? null,
       conditionTier: condition?.tier.id ?? null,
       conditionLabel: condition?.tier.label ?? '',
+      loaded: magazine?.loaded ?? null,
+      magazineCapacity: magazine?.capacity ?? null,
+      ammoFamily: magazine?.ammoFamily ?? null,
+      ammoItemId: weaponDetails?.ammoItemId ?? null,
+      ammoName: weaponDetails?.ammoName ?? '',
+      reserveAmmo: magazine?.reserve ?? null,
+      reloadAp: magazine?.reloadAp ?? null,
+      attackModes: weaponDetails?.attackModes ?? [],
+      canReload: magazine?.canReload ?? false,
+      emptyWeapon: magazine?.empty ?? false,
       broken: condition?.tier.id === 'broken',
       weaponClass: this.weaponClass(idOrKey)
     };
@@ -643,10 +843,17 @@ export class Inventory {
     const max = this.conditionMax(itemId);
     const entryKey = this.#nextEntryKey(itemId, options.entryKey);
     const authoredDefault = this.conditionDefault(itemId);
+    const magazine = weaponMagazineDefinition(this.itemDefs[itemId]);
     const entry = {
       entryKey,
       itemId,
-      condition: cleanCondition(Number.isFinite(options.condition) ? options.condition : authoredDefault, max)
+      condition: cleanCondition(Number.isFinite(options.condition) ? options.condition : authoredDefault, max),
+      ...(magazine ? {
+        loaded: Math.max(0, Math.min(
+          magazine.capacity,
+          Number.isFinite(options.loaded) ? cleanCount(options.loaded) : magazine.defaultLoaded
+        ))
+      } : {})
     };
     this.instances.set(entryKey, entry);
     return entry;

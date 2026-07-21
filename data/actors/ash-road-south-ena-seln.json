@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-ena-seln",
+  "name": "Hannah Quirinus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Queue chalker",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-chain",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-grey"
+  }
+}

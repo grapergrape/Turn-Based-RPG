@@ -2,6 +2,8 @@ import {
 
   FIELD_RATING_IDS,
 
+  PERCEPTION_FACING_IDS,
+
   TRACE_STAGE_VALUES,
 
   errors,
@@ -41,6 +43,7 @@ export function validateQuest(filePath, data) {
   requireString(name, data.id, 'id');
   requireString(name, data.title, 'title');
   requireString(name, data.initialStage, 'initialStage');
+  validateDialogueConditions(name, data.unlockedBy, 'unlockedBy');
   if (typeof data.id === 'string') seenQuestIds.add(data.id);
   if (!Array.isArray(data.stages) || data.stages.length === 0) {
     errors.push(`${name}: stages must be a non-empty array.`);
@@ -115,12 +118,26 @@ export function validateDialogueConditions(name, conditions, fieldName) {
   validateStringList(name, conditions.flags, `${fieldName}.flags`);
   validateStringList(name, conditions.notFlag, `${fieldName}.notFlag`);
   validateStringList(name, conditions.flagsAbsent, `${fieldName}.flagsAbsent`);
+  if (conditions.flagsAtLeast !== undefined) {
+    const threshold = conditions.flagsAtLeast;
+    if (!threshold || typeof threshold !== 'object' || Array.isArray(threshold)) {
+      errors.push(`${name}: ${fieldName}.flagsAtLeast must be an object.`);
+    } else {
+      requireNumber(name, threshold.count, `${fieldName}.flagsAtLeast.count`);
+      validateStringList(name, threshold.of, `${fieldName}.flagsAtLeast.of`);
+      if (typeof threshold.count === 'number' &&
+          (!Number.isInteger(threshold.count) || threshold.count < 1 || threshold.count > (threshold.of?.length ?? 0))) {
+        errors.push(`${name}: ${fieldName}.flagsAtLeast.count must be an integer from 1 through the number of listed flags.`);
+      }
+    }
+  }
   validateStringList(name, conditions.scar, `${fieldName}.scar`);
   validateStringList(name, conditions.scars, `${fieldName}.scars`);
   validateStringList(name, conditions.notScar, `${fieldName}.notScar`);
   validateStringList(name, conditions.scarsAbsent, `${fieldName}.scarsAbsent`);
   validateItemCountMap(name, conditions.items, `${fieldName}.items`);
   validateItemCountMap(name, conditions.itemsMax, `${fieldName}.itemsMax`);
+  validateOptionalBoolean(name, conditions.playerWounded, `${fieldName}.playerWounded`);
 
   if (conditions.questStages !== undefined) {
     if (!conditions.questStages || typeof conditions.questStages !== 'object' || Array.isArray(conditions.questStages)) {
@@ -242,13 +259,26 @@ function validateAfterBriefing(name, afterBriefing, fieldName) {
       errors.push(`${name}: ${fieldName}.openScreen must be character-customization or primary-assignment.`);
     }
   }
-  const loadLevel = afterBriefing.loadLevel ?? afterBriefing.thenLoadLevel;
-  if (loadLevel !== undefined) {
-    if (!loadLevel || typeof loadLevel !== 'object' || Array.isArray(loadLevel)) {
-      errors.push(`${name}: ${fieldName}.loadLevel must be an object.`);
-    } else {
-      if (loadLevel.path !== undefined) requireString(name, loadLevel.path, `${fieldName}.loadLevel.path`);
-      if (loadLevel.player !== undefined) validateGridPoint(name, loadLevel.player, `${fieldName}.loadLevel.player`);
+  validateLoadLevelEffect(
+    name,
+    afterBriefing.loadLevel ?? afterBriefing.thenLoadLevel,
+    `${fieldName}.loadLevel`
+  );
+}
+
+function validateLoadLevelEffect(name, loadLevel, fieldName) {
+  if (loadLevel === undefined) return;
+  if (!loadLevel || typeof loadLevel !== 'object' || Array.isArray(loadLevel)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  requireString(name, loadLevel.path, `${fieldName}.path`);
+  if (loadLevel.player === undefined) return;
+  validateGridPoint(name, loadLevel.player, `${fieldName}.player`);
+  if (loadLevel.player.facing !== undefined) {
+    requireString(name, loadLevel.player.facing, `${fieldName}.player.facing`);
+    if (typeof loadLevel.player.facing === 'string' && !PERCEPTION_FACING_IDS.has(loadLevel.player.facing)) {
+      errors.push(`${name}: ${fieldName}.player.facing must be one of ${[...PERCEPTION_FACING_IDS].join(', ')}.`);
     }
   }
 }
@@ -261,12 +291,18 @@ export function validateDialogueEffects(name, effects, fieldName) {
   }
 
   validateInventoryEffects(name, effects.inventory, `${fieldName}.inventory`);
+  validateStringList(name, effects.setFlag, `${fieldName}.setFlag`);
+  validateStringList(name, effects.clearFlag, `${fieldName}.clearFlag`);
   if (effects.openDoorGroup !== undefined) {
     requireString(name, effects.openDoorGroup, `${fieldName}.openDoorGroup`);
   }
   validateClockEffect(name, effects.clock, `${fieldName}.clock`);
   validateXpNumber(name, effects.xp, `${fieldName}.xp`);
   validateMoveActorEffects(name, effects.moveActor, `${fieldName}.moveActor`);
+  validateActorSpeechEffect(name, effects.actorSpeech, `${fieldName}.actorSpeech`);
+  validateLoadLevelEffect(name, effects.loadLevel, `${fieldName}.loadLevel`);
+  validateQuestUpdates(name, effects.questUpdate, `${fieldName}.questUpdate`);
+  validateHealEffect(name, effects.heal, `${fieldName}.heal`);
 
   const startCombat = effects.startCombat;
   if (startCombat !== undefined) {
@@ -274,11 +310,92 @@ export function validateDialogueEffects(name, effects, fieldName) {
       // Valid compact form.
     } else if (startCombat && typeof startCombat === 'object' && !Array.isArray(startCombat)) {
       requireString(name, startCombat.encounter, `${fieldName}.startCombat.encounter`);
+      validateOptionalBoolean(name, startCombat.fromAltar, `${fieldName}.startCombat.fromAltar`);
+      validateOpeningAttack(name, startCombat.openingAttack, `${fieldName}.startCombat.openingAttack`);
     } else {
       errors.push(`${name}: ${fieldName}.startCombat must be an encounter id or object.`);
     }
   }
   validateShowBriefing(name, effects.showBriefing, `${fieldName}.showBriefing`);
+}
+
+function validateHealEffect(name, heal, fieldName) {
+  if (heal === undefined) return;
+  if (!heal || typeof heal !== 'object' || Array.isArray(heal)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  requireString(name, heal.target, `${fieldName}.target`);
+  if (heal.amount === 'full') return;
+  requireNumber(name, heal.amount, `${fieldName}.amount`);
+  if (typeof heal.amount === 'number' && (!Number.isInteger(heal.amount) || heal.amount < 1)) {
+    errors.push(`${name}: ${fieldName}.amount must be "full" or a positive integer.`);
+  }
+}
+
+function validateOpeningAttack(name, openingAttack, fieldName) {
+  if (openingAttack === undefined) return;
+  if (!openingAttack || typeof openingAttack !== 'object' || Array.isArray(openingAttack)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  requireString(name, openingAttack.target, `${fieldName}.target`);
+  requireString(name, openingAttack.attackId, `${fieldName}.attackId`);
+  validateOptionalBoolean(name, openingAttack.guaranteedHit, `${fieldName}.guaranteedHit`);
+  validateOptionalBoolean(name, openingAttack.spendAp, `${fieldName}.spendAp`);
+  if (openingAttack.failureLog !== undefined) {
+    requireString(name, openingAttack.failureLog, `${fieldName}.failureLog`);
+  }
+}
+
+function validateActorSpeechEffect(name, actorSpeech, fieldName) {
+  if (actorSpeech === undefined) return;
+  if (!actorSpeech || typeof actorSpeech !== 'object' || Array.isArray(actorSpeech)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  if (actorSpeech.target !== undefined) {
+    requireString(name, actorSpeech.target, `${fieldName}.target`);
+  }
+  if (!Array.isArray(actorSpeech.lines) || actorSpeech.lines.length === 0) {
+    errors.push(`${name}: ${fieldName}.lines must be a non-empty array of strings.`);
+  } else {
+    actorSpeech.lines.forEach((line, index) => {
+      requireString(name, line, `${fieldName}.lines[${index}]`);
+    });
+  }
+  for (const key of ['initialDelay', 'interval']) {
+    if (actorSpeech[key] === undefined) continue;
+    requireNumber(name, actorSpeech[key], `${fieldName}.${key}`);
+    if (typeof actorSpeech[key] === 'number' && actorSpeech[key] < 0) {
+      errors.push(`${name}: ${fieldName}.${key} must be zero or greater.`);
+    }
+  }
+  if (actorSpeech.ttl !== undefined) {
+    requireNumber(name, actorSpeech.ttl, `${fieldName}.ttl`);
+    if (typeof actorSpeech.ttl === 'number' && actorSpeech.ttl <= 0) {
+      errors.push(`${name}: ${fieldName}.ttl must be greater than zero.`);
+    }
+  }
+}
+
+function validateQuestUpdates(name, questUpdate, fieldName) {
+  if (questUpdate === undefined) return;
+  const updates = Array.isArray(questUpdate) ? questUpdate : [questUpdate];
+  if (updates.length === 0) {
+    errors.push(`${name}: ${fieldName} must not be an empty array.`);
+    return;
+  }
+  for (const [index, update] of updates.entries()) {
+    const entryName = Array.isArray(questUpdate) ? `${fieldName}[${index}]` : fieldName;
+    if (!update || typeof update !== 'object' || Array.isArray(update)) {
+      errors.push(`${name}: ${entryName} must be an object.`);
+      continue;
+    }
+    requireString(name, update.quest, `${entryName}.quest`);
+    requireString(name, update.stage, `${entryName}.stage`);
+    if (update.log !== undefined) requireString(name, update.log, `${entryName}.log`);
+  }
 }
 
 function validateClockEffect(name, clock, fieldName) {

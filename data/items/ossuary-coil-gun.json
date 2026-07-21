@@ -1,0 +1,65 @@
+{
+  "id": "ossuary-coil-gun",
+  "name": "Ossuary Coil Gun",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "heavy coil gun",
+  "rarity": "epic",
+  "weight": 7.4,
+  "groundModel": "support-gun",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant prototype",
+    "origin": "Ossuary Guard",
+    "factions": [
+      "ossuary-guard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "heavy coil gun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 12,
+        "range": 8,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 8,
+        "damage": 15,
+        "range": 8,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 3,
+      "defaultLoaded": 3,
+      "reloadAp": 5
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A heavy coil gun with ribbed cooling plates like a closed reliquary. Two guards carry its charge cases while a third carries the weapon."
+}

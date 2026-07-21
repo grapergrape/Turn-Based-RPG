@@ -1,0 +1,52 @@
+{
+  "id": "south-measure-varo-perr-varo",
+  "title": "Tobit Faber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Tobit places two tool pins in your palm. \"Close your hand. The burred one catches first.\"",
+        "He waits until you find it before returning to the pump drawing."
+      ],
+      "choices": [
+        {
+          "label": "Ask about the barred room on the drawing",
+          "next": "room"
+        },
+        {
+          "label": "Ask why he studies Noa’s plans",
+          "next": "useful"
+        },
+        {
+          "label": "Give the pins back",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "room": {
+      "lines": [
+        "\"Under the admission booth. Noa drew the stair, and Susanna made her add the barred wicket.\"",
+        "Tobit rubs the page edge. \"The old paper calls the person in it a fixture. Asa says paper can be wrong without tearing.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Tobit with the drawing",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "useful": {
+      "lines": [
+        "\"Because I can learn this without becoming the person who never leaves. If Noa goes, I want her to go because she chose it, not because the house collapsed behind her.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Tobit sort the pins again",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

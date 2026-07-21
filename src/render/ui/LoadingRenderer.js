@@ -1,8 +1,10 @@
 import { normalizeLoadingState, loadingPercent } from '../../core/LoadingProgress.js';
 import { PALETTE } from '../palette.js';
+import { LOGICAL_HEIGHT, LOGICAL_WIDTH } from '../renderConfig.js';
 import {
   bar,
   clipUiText,
+  detailRect,
   rect,
   text,
   textWidth,
@@ -14,8 +16,8 @@ const BAR = { x: PANEL.x + 46, y: PANEL.y + 110, w: PANEL.w - 92, h: 13 };
 
 export function drawLoadingScreen(ctx, rawState = {}) {
   const state = normalizeLoadingState(rawState);
-  const w = ctx.canvas.width;
-  const h = ctx.canvas.height;
+  const w = LOGICAL_WIDTH;
+  const h = LOGICAL_HEIGHT;
   ctx.imageSmoothingEnabled = false;
 
   rect(ctx, 0, 0, w, h, PALETTE.void);
@@ -28,7 +30,7 @@ export function drawLoadingScreen(ctx, rawState = {}) {
   windowFrame(ctx, PANEL, 'FIELD LOAD');
   drawCornerMarks(ctx);
 
-  const title = 'THE HOST';
+  const title = 'VALE IMPRINT';
   text(ctx, title, Math.round((w - textWidth(title, 2)) / 2), PANEL.y + 34, PALETTE.uiWarn, 2);
 
   const message = clipUiText(state.message, 48);
@@ -64,6 +66,7 @@ function drawCornerMarks(ctx) {
     rect(ctx, hx, p.y, 12, 1, c);
     rect(ctx, p.x, hy, 1, 8, c);
     rect(ctx, ix, iy, 8, 1, d);
+    detailRect(ctx, p.x + (p.sx > 0 ? 0.5 : -0.5), p.y + (p.sy > 0 ? 0.5 : -0.5), 0.5, 0.5, PALETTE.uiText);
   }
 }
 
@@ -72,5 +75,6 @@ function drawBarTicks(ctx, progress) {
   for (let x = 7; x < BAR.w - 2; x += 14) {
     const color = x <= filled ? PALETTE.uiText : PALETTE.uiBorderDark;
     rect(ctx, BAR.x + x, BAR.y + 3, 1, BAR.h - 6, color);
+    detailRect(ctx, BAR.x + x + 0.5, BAR.y + 3.5, 0.5, BAR.h - 7, color);
   }
 }

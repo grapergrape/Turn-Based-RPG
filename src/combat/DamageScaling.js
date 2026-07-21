@@ -1,3 +1,5 @@
+import { isRangedAttack } from './AttackMode.js';
+
 export const DAMAGE_SKILL_BASELINE = 35;
 export const DAMAGE_SKILL_STEP = 20;
 export const DAMAGE_SKILL_BONUS_CAP = 4;
@@ -9,7 +11,7 @@ export function damageFieldFor(attack = {}) {
   if (typeof attack.accuracyField === 'string' && attack.accuracyField.trim() !== '') {
     return attack.accuracyField;
   }
-  return attack.range > 1 ? 'firearms' : 'melee';
+  return isRangedAttack(attack) ? 'firearms' : 'melee';
 }
 
 export function calculateAttackDamage({

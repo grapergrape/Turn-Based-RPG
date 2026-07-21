@@ -5,8 +5,8 @@ The current inventory is a small field-pack system, not an infinite loot bag.
 ## Carry weight
 
 - Each item in `data/items/` defines a `weight` in kilograms.
-- The actor loadout can set `inventory.maxCarryWeight`. Mara currently carries
-  up to 10 kg.
+- The actor loadout can set `inventory.maxCarryWeight`. The player currently carries
+  up to 14 kg. The starting kit weighs 7.8 kg, leaving 6.2 kg for field loot.
 - Loot containers check the whole stack before adding it. If the stack would
   exceed the carry limit, the container remains unopened and the player gets a
   pack-full message.
@@ -51,3 +51,14 @@ ring slot on the actor.
 - Ground items are player pickup by default. The data model keeps a
   `pickupPolicy` hook so quest scripts or later NPC animations can opt into
   broader pickup without changing the inventory core.
+
+## Trading
+
+- Trader `stock` entries define what the player can buy and the ducat price for
+  one item.
+- Optional trader `buys` entries define the exact items that trader accepts
+  from the player. Items not listed cannot be sold there.
+- A buy entry can set `keep` to reserve that many copies in the player's pack.
+  Equipped copies are also reserved, so selling cannot strip worn gear.
+- Buying and selling move one item at a time. Currency has zero weight, and a
+  sale immediately frees the sold item's carry weight.

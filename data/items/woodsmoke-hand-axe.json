@@ -1,0 +1,46 @@
+{
+  "id": "woodsmoke-hand-axe",
+  "name": "Woodsmoke Hand Axe",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "axe",
+  "rarity": "uncommon",
+  "weight": 2.1,
+  "groundModel": "axe",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Woodsmoke Camps",
+    "factions": [
+      "woodsmoke-camps"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "axe",
+    "roles": [
+      "melee",
+      "axe",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Hew",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "A camp axe with a bearded edge for shaving beams and catching limbs. Resin smoke has stained the haft nearly black."
+}

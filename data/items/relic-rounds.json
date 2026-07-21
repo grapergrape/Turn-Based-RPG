@@ -3,7 +3,10 @@
   "name": "Relic Rounds",
   "type": "ammo",
   "rarity": "common",
-  "weight": 0.1,
+  "weight": 0.024,
   "groundModel": "rounds",
-  "description": "Hand-pressed cartridges blessed at a Free City shrine. The sidearm never runs dry in this slice."
+  "ammo": {
+    "family": "sidearm-cartridge"
+  },
+  "description": "Common pistol cartridges with ash lacquer around the primers. Censure clerks count them one by one before a field writ."
 }

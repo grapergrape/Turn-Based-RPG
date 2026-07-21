@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-ari-veck",
+  "name": "Asa Aquila",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Hidden-household representative",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-chapel-hand",
+    "gear": [
+      "prayer-cord"
+    ],
+    "accent": "dark-hood"
+  }
+}

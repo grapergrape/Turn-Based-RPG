@@ -1,0 +1,63 @@
+{
+  "id": "ash-road-south-pera-koss",
+  "title": "Perpetua Felix",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Perpetua turns a worn boot sole upward so the honest holes face you.",
+        "\"Everything here has already disappointed someone. That keeps prices sensible.\""
+      ],
+      "choices": [
+        {
+          "label": "Trade at the return shelf",
+          "next": "trade"
+        },
+        {
+          "label": "Ask where the stock comes from",
+          "next": "stock"
+        },
+        {
+          "label": "Leave Perpetua to the shelf",
+          "close": true
+        }
+      ]
+    },
+    "trade": {
+      "lines": [
+        "\"Beans do not come with memories. The rest might.\""
+      ],
+      "choices": [
+        {
+          "label": "See Perpetua’s stock",
+          "effects": {
+            "trade": "ash-road-south-pera-koss"
+          }
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Perpetua to the shelf",
+          "close": true
+        }
+      ]
+    },
+    "stock": {
+      "lines": [
+        "\"Families sell what an admitted person left behind. Travelers trade what the road made too heavy.\"",
+        "\"I ask before I buy letters. I do not ask boots.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Perpetua to the shelf",
+          "close": true
+        }
+      ]
+    }
+  }
+}

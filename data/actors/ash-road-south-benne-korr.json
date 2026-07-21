@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-benne-korr",
+  "name": "Benjamin Nauta",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Wagon loader",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "crate-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

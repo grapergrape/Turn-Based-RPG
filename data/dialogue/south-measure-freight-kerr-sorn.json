@@ -1,0 +1,66 @@
+{
+  "id": "south-measure-freight-kerr-sorn",
+  "title": "Cyrus Longinus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Cyrus palms the freight scale until its needle settles.",
+        "\"Return shelf is honest today. Everything on it has disappointed one owner already.\""
+      ],
+      "choices": [
+        {
+          "label": "Browse the return shelf",
+          "effects": {
+            "trade": "ash-road-south-kerr-sorn"
+          },
+          "close": true
+        },
+        {
+          "label": "Ask what makes the rear store bonded",
+          "next": "surety"
+        },
+        {
+          "label": "Keep your coin",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "surety": {
+      "lines": [
+        "\"A crew signs goods against a route. When the cart fails to return, the signature walks home and sits down with the household.\"",
+        "He nods toward the cage. \"Darius keeps purifier salt back there. I sell what has already done its damage.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask Cyrus to price the damage",
+          "next": "price"
+        },
+        {
+          "label": "Step away from the bonded cage",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "price": {
+      "lines": [
+        "\"Cannot. The scale only weighs what came back.\""
+      ],
+      "choices": [
+        {
+          "label": "Browse what came back",
+          "effects": {
+            "trade": "ash-road-south-kerr-sorn"
+          },
+          "close": true
+        },
+        {
+          "label": "Leave the scale at zero",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

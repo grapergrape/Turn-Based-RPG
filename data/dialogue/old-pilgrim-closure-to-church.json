@@ -1,0 +1,32 @@
+{
+  "id": "old-pilgrim-closure-to-church",
+  "title": "Outer Closure Stair",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The upper stair climbs behind the raised apse. Its outer catches remain released from this side."
+      ],
+      "choices": [
+        {
+          "label": "Climb to the Hill Church",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_hill_church.json",
+              "player": {
+                "x": 22,
+                "y": 2,
+                "facing": "s"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

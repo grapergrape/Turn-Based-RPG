@@ -1,0 +1,46 @@
+{
+  "id": "chapel-breaching-axe",
+  "name": "Chapel Breaching Axe",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "axe",
+  "rarity": "common",
+  "weight": 2.1,
+  "groundModel": "axe",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Ashen Censure",
+    "factions": [
+      "ashen-censure"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "axe",
+    "roles": [
+      "melee",
+      "axe",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Hew",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A compact rescue axe marked for chapel doors. The rear spike finds hinges when the edge cannot."
+}

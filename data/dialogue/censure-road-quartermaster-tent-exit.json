@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-quartermaster-tent-exit",
+  "title": "Quartermaster Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The ration line is audible through the flap."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave the quartermaster tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 28, "y": 30 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the quartermaster tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

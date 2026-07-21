@@ -64,6 +64,7 @@ function drawStatus(ctx, ui, tools) {
     tools.rect(ctx, x + 92, y + 6, 22, 1, PALETTE.uiSuccess);
     tools.rect(ctx, x + 94, y + 4, 8, 1, PALETTE.uiSuccess);
     tools.rect(ctx, x + 104, y + 5, 8, 1, PALETTE.uiBorderLight);
+    tools.detailLine?.(ctx, x + 92.5, y + 6.5, x + 112.5, y + 5.5, PALETTE.uiText);
   }
   y += 9;
   const itemCount = (ui.inventoryItems ?? []).reduce((total, item) => total + item.count, 0);
@@ -99,7 +100,7 @@ function drawCombatStatus(ctx, ui, tools, { x, y, statuses }) {
 
   tools.text(ctx, tools.clip(`ATK ${ui.actionName ?? '-'}`, maxChars), x, y, PALETTE.uiGood);
   y += 9;
-  const detail = [ui.actionChance, ui.actionDamage].filter(Boolean).join(' ') || ui.actionReason || '-';
+  const detail = [ui.actionChance, ui.actionDamage, ui.actionAmmo].filter(Boolean).join(' ') || ui.actionReason || '-';
   tools.text(ctx, tools.clip(detail, maxChars), x, y, ui.actionReason ? PALETTE.uiWarn : PALETTE.uiDim);
   y += 9;
   tools.text(ctx, tools.clip(`> ${ui.target ?? '-'}`, maxChars), x, y, PALETTE.uiBad);

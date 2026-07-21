@@ -1,0 +1,39 @@
+{
+  "id": "south-measure-rows-mell-ossa",
+  "title": "Micah Viator",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Micah places the ferrule of her cane against the concealed branch. A faint pulse travels through the wood.",
+        "\"This pipe knew the hall before the admission booth had footings.\""
+      ],
+      "choices": [
+        {
+          "label": "Follow the old branch with Micah",
+          "next": "route",
+          "effects": {
+            "setFlag": "hidden-water-branch-known"
+          }
+        },
+        {
+          "label": "Leave the branch closed",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "route": {
+      "lines": [
+        "\"It passes under the hall and bends west into the old intake return, though newer stone hides the bend now. We closed it when Junia began speaking household numbers through the water.\"",
+        "Micah lifts the cane from the pipe. \"Do not open it until somebody has made her quiet without pretending she was never there.\""
+      ],
+      "choices": [
+        {
+          "label": "Remember the bend beneath the hall",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

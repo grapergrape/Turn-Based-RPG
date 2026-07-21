@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-tomas",
-  "title": "Tomas Vek",
+  "title": "Tobias Porta",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,7 +8,7 @@
       },
       "else": "hideout",
       "lines": [
-        "Tomas watches the road through a broken shutter.",
+        "Tobias watches the road through a broken shutter.",
         "\"No boot marks since before the knives. Not Remnant boots, not wall boots. Something swallowed the road before the cult found us.\""
       ],
       "choices": [
@@ -27,13 +27,13 @@
             "questUpdate": {
               "quest": "investigate-ash-chapel-cult",
               "stage": "bell-hand-known",
-              "log": "Quest updated: Tomas can repair the chapel bell if you bring him to the frame."
+              "log": "Quest updated: Tobias can repair the chapel bell if you bring him to the frame."
             }
           },
           "next": "bell-repair"
         },
         {
-          "label": "Ask why he listened to Selka",
+          "label": "Ask why he listened to Susanna",
           "next": "selka"
         },
         {
@@ -48,8 +48,8 @@
     },
     "hideout": {
       "lines": [
-        "Tomas has the look of a man who counted exits until the numbers stopped helping.",
-        "\"I ran messages to the Hallowfen outposts on the same route every week. Then the bells quit answering, and Selka put one finger in my face until I agreed not to go alone.\"",
+        "Tobias has the look of a man who counted exits until the numbers stopped helping.",
+        "\"I ran messages to the Hallowfen outposts on the same route every week. Then the bells quit answering, and Susanna put one finger in my face until I agreed not to go alone.\"",
         "\"For once I listened.\""
       ],
       "choices": [
@@ -86,7 +86,7 @@
           "next": "scout"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -109,7 +109,7 @@
       ],
       "choices": [
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -145,13 +145,13 @@
             "questUpdate": {
               "quest": "investigate-ash-chapel-cult",
               "stage": "bell-hand-known",
-              "log": "Quest updated: Tomas can repair the chapel bell if you bring him to the frame."
+              "log": "Quest updated: Tobias can repair the chapel bell if you bring him to the frame."
             }
           },
           "next": "send-to-bell"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         },
         {
@@ -162,15 +162,15 @@
     },
     "send-to-bell": {
       "lines": [
-        "\"You cleared the stair? Then stop asking politely. Show me the old frame.\"",
-        "\"If it is only pin and wedge, I can make it answer. If it bites me, tell Selka I was useful once.\""
+        "\"You cleared the stair? Then stop asking politely and show me the old frame.\"",
+        "\"If it is only pin and wedge, I can make it answer. If it bites me, tell Susanna I was useful once.\""
       ],
       "choices": [
         {
           "label": "Bring him to the bell",
           "effects": {
             "setFlag": "tomas-heading-to-bell",
-            "log": "Tomas grabs his tool roll and runs for the wall stair.",
+            "log": "Tobias grabs his tool roll and runs for the wall stair.",
             "moveActor": {
               "target": "speaker",
               "path": [
@@ -182,7 +182,7 @@
               "removeOnComplete": true,
               "onComplete": {
                 "setFlag": "tomas-reached-bell-stair",
-                "log": "Tomas reaches the bell stair and disappears upward."
+                "log": "Tobias reaches the bell stair and disappears upward."
               }
             }
           },
@@ -205,7 +205,7 @@
           "next": "who"
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -216,7 +216,7 @@
     },
     "who": {
       "lines": [
-        "\"If I knew, I would be more useful and less frightened. Selka says those two states rarely meet in the same man.\"",
+        "\"If I knew, I would be more useful and less frightened. Susanna says those two states rarely meet in the same man.\"",
         "\"The cult wanted the road quiet. I know that much. The part that scares me is whether they found it quiet when they arrived.\""
       ],
       "choices": [
@@ -225,15 +225,15 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         }
       ]
     },
     "selka": {
       "lines": [
-        "\"Because Selka has a voice that can make a grown man feel like an unpaid child.\"",
-        "\"Also because Selka was right, which you will not repeat unless you enjoy feeding her.\""
+        "\"Because Susanna has a voice that can make a grown man feel like an unpaid child.\"",
+        "\"Also because Susanna was right, which you will not repeat unless you enjoy feeding her.\""
       ],
       "choices": [
         {
@@ -256,7 +256,7 @@
       ],
       "choices": [
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         },
         {
@@ -267,7 +267,7 @@
     },
     "scout": {
       "lines": [
-        "\"Runner. Scouts get better boots and worse orders.\"",
+        "\"I was a runner; scouts get better boots and worse orders.\"",
         "\"I carried notices, ration marks, warning scraps. Half the job was arriving before the lie did.\""
       ],
       "choices": [
@@ -296,14 +296,14 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "start"
         }
       ]
     },
     "next-run-before": {
       "lines": [
-        "\"If Selka lets me, I watch the road by daylight and mark what is missing.\"",
+        "\"If Susanna lets me, I watch the road by daylight and mark what is missing.\"",
         "\"If she does not, I will watch it anyway from somewhere she cannot see. I remain a fool. I am only becoming a supervised one.\""
       ],
       "choices": [
@@ -312,7 +312,7 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         }
       ]

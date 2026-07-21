@@ -1,0 +1,98 @@
+{
+  "id": "old-pilgrim-final-water-record",
+  "title": "Chapter Closure Record",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "old-pilgrim-name-roll-chapter"
+        ]
+      },
+      "else": "names",
+      "lines": [
+        "The chapter record repeats one line for six days: OUTER AIR UNSAFE. RELEASE REFUSED.",
+        "The last entry names seven living people and no remaining water. The next line was never written."
+      ],
+      "choices": [
+        {
+          "label": "Copy the final seven names",
+          "effects": {
+            "setFlag": "old-pilgrim-name-roll-chapter",
+            "questUpdate": {
+              "quest": "names-below-the-hill",
+              "stage": "decide-names",
+              "log": "All sixty-one people below the hill are accounted for. Father Noah can receive the recovered rolls."
+            },
+            "xp": 5
+          },
+          "next": "names"
+        },
+        {
+          "label": "Compare the bodies with the record",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 27
+            },
+            "flagsAbsent": [
+              "old-pilgrim-final-record-read"
+            ]
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-final-record-read",
+            "xp": 8,
+            "log": "Hunger and long thirst mark the dead, along with old injuries from the failed breach. None opened to the Host."
+          },
+          "next": "read"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "names": {
+      "lines": [
+        "The final seven are Sister Aurelia Fontana, Sister Claudia, Father Isidore, novice Tabitha Felix, novice Manasseh Rufus, pilgrim Simeon Longus, and pilgrim Orpah Silo.",
+        "Beside the names, a smaller hand wrote: CLEARANCE NEVER CAME. KEEP THE OUTER DOOR SHUT, EVEN WITHOUT WATER."
+      ],
+      "choices": [
+        {
+          "label": "Compare the bodies with the record",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 27
+            },
+            "flagsAbsent": [
+              "old-pilgrim-final-record-read"
+            ]
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-final-record-read",
+            "xp": 8,
+            "log": "Hunger and long thirst mark the dead, along with old injuries from the failed breach. None opened to the Host."
+          },
+          "next": "read"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "read": {
+      "lines": [
+        "The closure did what it was built to do. It kept the Bloom outside and kept every living person inside.",
+        "The release waited for an external clearance that never came."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

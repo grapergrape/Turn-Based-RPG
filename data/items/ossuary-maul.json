@@ -1,0 +1,46 @@
+{
+  "id": "ossuary-maul",
+  "name": "Ossuary Maul",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "blunt",
+  "rarity": "common",
+  "weight": 4.4,
+  "groundModel": "blunt",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Ossuary Guard",
+    "factions": [
+      "ossuary-guard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "blunt",
+    "roles": [
+      "melee",
+      "blunt",
+      "close"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Strike",
+        "mode": "melee",
+        "apCost": 6,
+        "damage": 9,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A square maul used to close stone drawers and break blocked ones open. Pale dust has settled into every grain of the haft."
+}

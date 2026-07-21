@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-jori-cade",
+  "name": "Jonah Mercator",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Labor seeker",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "arrival-fringe",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "teen",
+    "outfit": "settlement-runner",
+    "gear": [
+      "thin-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

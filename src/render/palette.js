@@ -18,6 +18,21 @@ export const PALETTE = {
   rustMid: '#6a321d',
   rustLight: '#9a5630',
 
+  // South Measure material ramps. These distinguish its old civic limewash,
+  // cold relief iron, and fired-clay repairs from generic stone and rust.
+  // Each stays muted enough to sit inside the established ash-road palette.
+  limeDark: '#25261d',
+  limeMid: '#484a3a',
+  limeLight: '#74745b',
+
+  ironDark: '#111619',
+  ironMid: '#2b3335',
+  ironLight: '#626b66',
+
+  clayDark: '#2b1710',
+  clayMid: '#62351f',
+  clayLight: '#9b5a34',
+
   woodDark: '#1f140d',
   woodMid: '#3a2616',
   woodLight: '#54381f',

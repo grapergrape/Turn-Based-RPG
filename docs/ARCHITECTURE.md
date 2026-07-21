@@ -76,6 +76,14 @@ Important docs:
 - `VERTICAL_SLICE.md`: small playable milestone plan.
 - `LORE_INTEGRATION.md`: how the setting should be represented in game systems.
 - `lore/the_host_story_bible.md`: setting canon.
+- `maps/README.md`: act-separated map-planning packages and child-map
+  registries.
+
+Map planning documents use
+`docs/maps/act-N/<main-level-id>/main/` for the main-map reference and
+`docs/maps/act-N/<main-level-id>/submaps/` for connected interiors, dungeons,
+and other helper maps. These are design references only. Playable map data
+remains under `data/levels/`.
 
 ### `scripts/`
 
@@ -102,6 +110,7 @@ Suggested structure:
 ```text
 src/
 ├── main.js
+├── audio/
 ├── core/
 ├── render/
 ├── world/
@@ -156,6 +165,48 @@ state, and render-state building. Reusable runtime rules that do not need to own
 the whole game instance belong in focused modules such as loot, trade, journal,
 dialogue conditions, and dialogue effects.
 
+Run persistence is split under `src/core/save/`:
+
+- `SaveSchema.js` owns the envelope version, slot identifiers, structural
+  validation, safe content references, and sequential migration registry.
+- `SaveCodec.js` creates and reads checksummed JSON envelopes.
+- `SaveRepository.js` owns IndexedDB transactions. It does not know game rules.
+- `SaveCoordinator.js` owns manual-save policy, three-slot autosave rotation,
+  import replacement, compatibility status, and serialized writes.
+- `GameSaveRuntime.js` captures and restores Game state and routes title, pause,
+  save-management, import, and export intent.
+
+Snapshots contain run state and stable content references, not copied level,
+quest, dialogue, or journal definitions. On load, `LevelLoader.js` resolves the
+saved item and visited-level references against the current `data/` tree. This
+keeps compatible saves on current content while the schema migration layer
+handles renamed or reshaped references.
+
+Weapon state follows the same boundary. `Inventory.js` owns the player's two
+ready weapon instances, condition, and loaded ammunition. Shared schema
+normalization lives in `combat/WeaponRules.js`; enemy item references and their
+finite magazines live in `combat/ActorWeaponLoadout.js`. Catalog content stays
+in `data/items/`, and combat receives normalized attacks without hardcoded lore
+or item ids.
+
+Developer fresh-map starts use `PlaytestProfile.js`. It resolves generic,
+inheritable checkpoint data from `data/playtests/` and passes one normalized
+seed into the ordinary `Game.boot()` path. The seed is applied only on a fresh
+boot or restart. Normal level transitions preserve the resulting run state and
+do not reapply it. Playtest jumps do not receive a save coordinator, so their
+state cannot overwrite the normal IndexedDB run.
+
+### `src/audio/`
+
+Dependency-free browser audio synthesis and playback.
+
+`WorldAudioRuntime.js` owns Web Audio setup, procedural ambient buffers,
+physical one-shot recipes, distance and stereo attenuation, voice limits, and
+the small persisted volume setting. Level data chooses generic profiles and
+places their bounds. The audio runtime does not know location names, quests, or
+factions. Audio unlocks only after a browser gesture and degrades to silence
+when Web Audio is unavailable.
+
 ### `src/render/`
 
 Canvas drawing and visual presentation.
@@ -182,6 +233,27 @@ stable. `UIRenderer.js` delegates panel drawing to `src/render/ui/`;
 `src/render/primitives/`; and `SpriteAtlas.js` assembles sprite baking from
 modules under `src/render/sprites/`.
 
+The renderer uses a 640x480 logical design grid over a 1280x960 backing canvas.
+`StaticSceneCache.js` owns the bounded camera-following floor and flat-decal
+surface. `PropSpriteCache.js` owns tightly cropped native rasters for unchanged
+volumetric props. Its prepare/composite split lets the visible model, contact
+mask, cast mask, and hover rim share one exact raster. Animated entries use a
+visible-state signature; continuous timelines are quantized to hard-pixel frame
+steps. Work-responsive entries keep their base raster in that cache and expose
+a separate live overlay for paper, water, tools, loads, cloth, or machinery
+feedback.
+
+`ShadowMaskCache.js` reads those rasters and lazy actor frames into binary
+hard-pixel contact, projected cast, and outline masks under one 24 MiB LRU
+budget. Outdoor casts are first unioned on a native viewport layer and then
+composited once at the level sun alpha, so overlaps never become darker. Indoor
+maps skip that cast layer. Depth rendering pairs each contact mask with its
+model so occlusion fading affects both together. `hoveredWorldTarget` in the
+render state identifies the exact actor or object and action; only that target
+receives a one-native-pixel semantic-color rim and, when necessary, four pixels
+at its separate use cell. Projection, camera state, gameplay positions, UI
+layout, and input mapping stay in logical coordinates.
+
 ### `src/world/`
 
 Maps, tile grids, collision, pathfinding, spatial queries, and world-state logic.
@@ -193,6 +265,8 @@ Examples:
 - `Pathfinder.js`
 - `Zone.js`
 - `PatrolSystem.js`
+- `TableauSystem.js`
+- `NpcActivity.js`
 - `StealthRuntime.js`
 
 Rules:
@@ -200,6 +274,15 @@ Rules:
 - World logic knows what tiles are walkable.
 - World logic does not draw.
 - World logic does not contain UI code.
+
+`NpcActivity.js` is the shared content contract for short civilian work. It
+normalizes motion, prop response, duration, frame timing, and optional sound
+ids without knowing any settlement content. `PatrolSystem.js` triggers those
+activities at ordinary route stops. `TableauSystem.js` coordinates two or more
+actors through reserved gathering cells, staggered work, homeward return, and
+deterministic cooldown. Transient tableau positions are not save authority;
+stable saves capture a reserved participant at the home cell recorded when the
+scene began.
 
 ### `src/combat/`
 
@@ -234,6 +317,27 @@ Rules:
 - Entities hold state.
 - Systems operate on entities.
 - Avoid giant inheritance trees. Prefer simple objects and small classes.
+
+### `src/companions/`
+
+Reusable companion state and progression rules.
+
+The first vertical slice uses one persistent field attendant. Its definition
+lives under `data/companions/`, while `CompanionSystem.js` owns recruitment,
+upgrade prerequisites, costs, stat application, run snapshots, and reboot
+state. `GameDroneRuntime.js` coordinates exploration, shrine registration, and
+journal intent. `GameDroneCombatRuntime.js` coordinates manual turns, active
+abilities, reactions, and temporary field devices.
+
+Rules:
+
+- Companion definitions and upgrade nodes remain data-driven.
+- A companion is an entity with an explicit `team`, `control`, and `ownerId`.
+- General combat code reasons about teams. It must not special-case a named
+  drone model.
+- Renderers consume companion entities and dynamic props. They do not purchase
+  upgrades or resolve abilities.
+- Run persistence snapshots the companion separately from level-local actors.
 
 ### `src/ui/`
 
@@ -272,6 +376,18 @@ Example:
 6. `Renderer` draws the updated state.
 
 Keep this direction clear. Do not let the renderer directly consume keyboard events and move characters.
+
+Save flow remains similarly one-way:
+
+```text
+Game state -> snapshot -> schema and checksum -> coordinator -> IndexedDB
+IndexedDB -> checksum and migration -> snapshot -> content reload -> Game state
+```
+
+The renderer only presents save status. It never reads browser storage. A
+failed write leaves the previous transaction intact. A failed in-session load
+attempts to restore the pre-load snapshot before falling back to the title
+screen.
 
 ## Content loading flow
 

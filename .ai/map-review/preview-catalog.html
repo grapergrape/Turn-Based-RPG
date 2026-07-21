@@ -12,14 +12,31 @@
 <canvas id="c"></canvas>
 <script type="module">
 import * as P from '/src/render/PixelPrimitives.js';
+import { PropSpriteCache } from '/src/render/PropSpriteCache.js';
+import { ShadowMaskCache } from '/src/render/ShadowMaskCache.js';
+import { actorFrameSource, actorShadowProfile } from '/src/render/shadowProfiles.js';
 import { SPRITE_CATALOG, CATEGORY, displayNameForKind } from '/src/render/spriteCatalog.js';
 import { FLOOR_STYLE_IDS } from '/src/render/primitives/terrain.js';
 import { PALETTE } from '/src/render/palette.js';
-import { buildSpriteAtlas, getFrame, SPRITE_ATLAS_IDS } from '/src/render/SpriteAtlas.js';
+import { NATIVE_SCALE } from '/src/render/renderConfig.js';
+import {
+  bakeHumanAppearance,
+  buildSpriteAtlas,
+  getFrame,
+  spriteIdForHumanAppearance,
+  SPRITE_ATLAS_IDS
+} from '/src/render/SpriteAtlas.js';
+import { GROUND_ITEM_MODEL_IDS } from '/src/render/primitives/groundItems.js';
 
 try {
+  const propSprites = new PropSpriteCache();
+  const shadowMasks = new ShadowMaskCache();
   const params = new URLSearchParams(location.search);
-  const SCALE = Number(params.get('scale') ?? '3');
+  const DISPLAY_SCALE = Number(params.get('scale') ?? '1');
+  const SCALE = NATIVE_SCALE * DISPLAY_SCALE;
+  const SHOW_LABELS = params.get('labels') !== '0';
+  const SHEET_TONE = params.get('tone') ?? 'color';
+  const SUBJECT_ONLY = params.get('subjectOnly') === '1' || SHEET_TONE === 'silhouette';
   const section = params.get('section') ?? 'furniture';
   const SEEDS = Number(params.get('seeds') ?? '3');
   const footprintMatch = params.get('footprint')?.match(/^(\d+)x(\d+)$/);
@@ -29,13 +46,54 @@ try {
   const FOOTPRINT_ACTOR = params.get('actor');
   const footprintAtlas = FOOTPRINT_ACTOR ? buildSpriteAtlas() : null;
 
-  const GROUND_MODELS = ['ball', 'boots', 'coat', 'hood', 'vest', 'ribguard', 'ring', 'necklace', 'key', 'paper', 'vial', 'dressing', 'food', 'rounds', 'sidearm', 'chit', 'shard', 'token'];
+  function drawPreparedProp(ctx, entry, prop, x, y, seed, state) {
+    const prepared = propSprites.prepare(entry, prop, seed, state);
+    const contact = shadowMasks.prepareContact(prepared, entry.shadow?.contact);
+    if (contact && SHEET_TONE !== 'silhouette') {
+      ctx.save();
+      ctx.globalAlpha *= entry.shadow.contact.alphaScale;
+      shadowMasks.draw(ctx, contact, x + (prepared?.anchorOffsetX ?? 0), y + (prepared?.anchorOffsetY ?? 0));
+      ctx.restore();
+    }
+    if (!propSprites.composite(ctx, prepared, x, y)) entry.draw(ctx, x, y, seed, state);
+    entry.drawLiveOverlay?.(ctx, x, y, seed, state);
+  }
+
+  function drawActor(ctx, actor, resolved, state, x, y) {
+    if (!resolved?.frame) return;
+    const { sprite, frame, mirror } = resolved;
+    const source = actorFrameSource(sprite, frame);
+    const profile = actorShadowProfile(actor, sprite, state).contact;
+    const contact = shadowMasks.prepareContact(source, profile);
+    if (SHEET_TONE !== 'silhouette') {
+      ctx.save();
+      ctx.globalAlpha *= profile.alphaScale;
+      if (mirror) {
+        ctx.translate(Math.round(x), 0);
+        ctx.scale(-1, 1);
+        shadowMasks.draw(ctx, contact, 0, y);
+      } else {
+        shadowMasks.draw(ctx, contact, x, y);
+      }
+      ctx.restore();
+    }
+    if (mirror) {
+      ctx.save();
+      ctx.translate(Math.round(x), Math.round(y - sprite.anchorY));
+      ctx.scale(-1, 1);
+      ctx.drawImage(frame, -sprite.anchorX, 0, sprite.width, sprite.height);
+      ctx.restore();
+    } else {
+      ctx.drawImage(frame, Math.round(x - sprite.anchorX), Math.round(y - sprite.anchorY), sprite.width, sprite.height);
+    }
+  }
 
   const CELL_W = Number(params.get('cellW') ?? (FOOTPRINT ? Math.max(150, (FOOTPRINT.width + FOOTPRINT.height) * 32 + 70) : 150));
   const CELL_H = Number(params.get('cellH') ?? (FOOTPRINT ? Math.max(185, (FOOTPRINT.width + FOOTPRINT.height) * 16 + 165) : 185));
   const COLS = Number(params.get('cols') ?? '8');
 
   function floorPatch(ctx, cx, cy) {
+    if (SUBJECT_ONLY) return;
     for (let gy = -1; gy <= 1; gy += 1) {
       for (let gx = -1; gx <= 1; gx += 1) {
         const sx = cx + (gx - gy) * 32;
@@ -46,6 +104,7 @@ try {
   }
 
   function footprintFloor(ctx, cx, cy, width, height) {
+    if (SUBJECT_ONLY) return;
     const centerX = (width - 1) / 2;
     const centerY = (height - 1) / 2;
     for (let gy = -1; gy <= height; gy += 1) {
@@ -69,43 +128,58 @@ try {
       }
     } }));
   } else if (section === 'ground-items') {
-    entries = GROUND_MODELS.map((model) => ({ label: model, draw: (ctx, cx, cy, seed) => {
+    const groundModels = params.get('kinds')
+      ? params.get('kinds').split(',')
+      : GROUND_ITEM_MODEL_IDS;
+    entries = groundModels.map((model) => ({ label: model, draw: (ctx, cx, cy, seed) => {
       floorPatch(ctx, cx, cy);
       P.drawGroundItem(ctx, cx, cy, seed, { model, count: 1, drop: 1, pickup: 0 });
     } }));
   } else if (section === 'actors') {
     const atlas = buildSpriteAtlas();
+    const runtimeActorIds = [];
+    for (const appearance of globalThis.__NATIVE_ACTOR_APPEARANCES ?? []) {
+      const id = spriteIdForHumanAppearance(appearance);
+      if (atlas[id]) continue;
+      atlas[id] = bakeHumanAppearance(appearance);
+      runtimeActorIds.push(id);
+    }
     const facing = params.get('facing') ?? 'se';
     const actorState = params.get('state') ?? 'idle';
     const actorFrame = Number(params.get('frame') ?? '0');
     const actorIds = params.get('kinds')
       ? params.get('kinds').split(',')
-      : SPRITE_ATLAS_IDS;
+      : params.get('runtime') === '1'
+        ? runtimeActorIds
+        : SPRITE_ATLAS_IDS;
     entries = actorIds.map((id) => ({ label: id, draw: (ctx, cx, cy) => {
       floorPatch(ctx, cx, cy);
       const resolved = getFrame(atlas, id, actorState, facing, actorFrame);
-      if (!resolved?.frame) return;
-      const { sprite, frame, mirror } = resolved;
-      P.drawShadowBlob(ctx, cx, cy, Math.round(sprite.width * 0.6), Math.round(sprite.width * 0.25));
-      if (mirror) {
-        ctx.save();
-        ctx.translate(Math.round(cx), Math.round(cy - sprite.anchorY));
-        ctx.scale(-1, 1);
-        ctx.drawImage(frame, -sprite.anchorX, 0);
-        ctx.restore();
-      } else {
-        ctx.drawImage(frame, Math.round(cx - sprite.anchorX), Math.round(cy - sprite.anchorY));
-      }
+      drawActor(ctx, { isDead: actorState === 'dead' }, resolved, actorState, cx, cy);
     } }));
   } else {
     const kinds = params.get('kinds')
       ? params.get('kinds').split(',')
       : Object.keys(SPRITE_CATALOG).filter((k) => SPRITE_CATALOG[k].category === section);
-    entries = kinds.map((kind) => ({ label: kind, draw: (ctx, cx, cy, seed) => {
+    const parsedVariants = params.get('variants') ? JSON.parse(params.get('variants')) : null;
+    const variants = Array.isArray(parsedVariants) && parsedVariants.length ? parsedVariants : [null];
+    entries = kinds.flatMap((kind) => variants.map((variant) => {
+      const { label: variantLabel, anim: variantAnim, ...variantProp } = variant ?? {};
+      return { label: variantLabel ?? kind, draw: (ctx, cx, cy, seed) => {
       const entry = SPRITE_CATALOG[kind];
       if (!entry) throw new Error('unknown kind ' + kind);
-      const extra = params.get('prop') ? JSON.parse(params.get('prop')) : {};
-      const anim = { pulse: 0.5, flicker: 0.5, tick: 0, idleFrame: 0, bob: 0 };
+      const extra = {
+        ...(params.get('prop') ? JSON.parse(params.get('prop')) : {}),
+        ...variantProp
+      };
+      const anim = {
+        pulse: 0.5,
+        flicker: 0.5,
+        tick: 0,
+        idleFrame: 0,
+        bob: 0,
+        ...(variantAnim ?? {})
+      };
       if (FOOTPRINT && entry.block) {
         footprintFloor(ctx, cx, cy, FOOTPRINT.width, FOOTPRINT.height);
         const centerX = (FOOTPRINT.width - 1) / 2;
@@ -130,25 +204,14 @@ try {
             },
             ...extra
           };
-          entry.draw(ctx, sx, sy, seed * 101 + cell.x * 17 + cell.y * 31, { prop, anim, pulse: 0.5, flicker: 0.5, player: null });
+          const drawState = { prop, anim, pulse: 0.5, flicker: 0.5, player: null };
+          drawPreparedProp(ctx, entry, prop, sx, sy, seed * 101 + cell.x * 17 + cell.y * 31, drawState);
         }
         if (footprintAtlas && FOOTPRINT_ACTOR) {
           const actorX = cx + Math.round(-FOOTPRINT.height * 16);
           const actorY = cy + Math.round((FOOTPRINT.height + 2) * 8);
           const resolved = getFrame(footprintAtlas, FOOTPRINT_ACTOR, 'idle', 'ne', 0);
-          if (resolved?.frame) {
-            const { sprite, frame, mirror } = resolved;
-            P.drawShadowBlob(ctx, actorX, actorY, Math.round(sprite.width * 0.6), Math.round(sprite.width * 0.25));
-            if (mirror) {
-              ctx.save();
-              ctx.translate(Math.round(actorX), Math.round(actorY - sprite.anchorY));
-              ctx.scale(-1, 1);
-              ctx.drawImage(frame, -sprite.anchorX, 0);
-              ctx.restore();
-            } else {
-              ctx.drawImage(frame, Math.round(actorX - sprite.anchorX), Math.round(actorY - sprite.anchorY));
-            }
-          }
+          drawActor(ctx, { isDead: false }, resolved, 'idle', actorX, actorY);
         }
         return;
       }
@@ -159,8 +222,10 @@ try {
         model: 'key', count: 1, lit: true, state: seed === 2 ? 'opened' : undefined,
         ...extra
       };
-      entry.draw(ctx, cx, cy, seed * 7 + 3, { prop, anim, pulse: 0.5, flicker: 0.5, player: null });
-    } }));
+      const drawState = { prop, anim, pulse: 0.5, flicker: 0.5, player: null };
+      drawPreparedProp(ctx, entry, prop, cx, cy, seed * 7 + 3, drawState);
+      } };
+    }));
   }
 
   const totalCells = entries.length * SEEDS;
@@ -175,6 +240,7 @@ try {
   ctx.scale(SCALE, SCALE);
   ctx.font = '11px monospace';
 
+  const renderErrors = [];
   entries.forEach((entry, kindIdx) => {
     for (let s = 0; s < SEEDS; s += 1) {
       const index = kindIdx * SEEDS + s;
@@ -185,16 +251,41 @@ try {
       try {
         entry.draw(ctx, cx, cy, s + 1);
       } catch (error) {
+        renderErrors.push(`${entry.label}: ${String(error?.stack ?? error)}`);
         ctx.fillStyle = '#c0392b';
         ctx.fillText('ERR ' + String(error?.message ?? error).slice(0, 16), cx - 65, cy);
       }
-      if (s === 0) {
+      if (SHOW_LABELS && s === 0) {
         ctx.fillStyle = '#c8b89a';
         ctx.fillText(entry.label.slice(0, 20), 10 + col * CELL_W + 4, 20 + row * CELL_H + CELL_H - 8);
       }
     }
   });
 
+  if (SHEET_TONE === 'grayscale' || SHEET_TONE === 'silhouette') {
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    for (let offset = 0; offset < pixels.data.length; offset += 4) {
+      const red = pixels.data[offset];
+      const green = pixels.data[offset + 1];
+      const blue = pixels.data[offset + 2];
+      if (SHEET_TONE === 'silhouette') {
+        const isBackground = red === 20 && green === 17 && blue === 12;
+        const value = isBackground ? 10 : 238;
+        pixels.data[offset] = value;
+        pixels.data[offset + 1] = value;
+        pixels.data[offset + 2] = value;
+      } else {
+        const value = Math.round(red * 0.2126 + green * 0.7152 + blue * 0.0722);
+        pixels.data[offset] = value;
+        pixels.data[offset + 1] = value;
+        pixels.data[offset + 2] = value;
+      }
+    }
+    ctx.putImageData(pixels, 0, 0);
+  }
+
+  if (renderErrors.length > 0) throw new Error(renderErrors.join('\n'));
+  globalThis.__AUDIT_ART_BOUNDS = { x: 0, y: 0, width: canvas.width, height: canvas.height };
   document.title = 'CAPTURE-READY';
 } catch (error) {
   document.title = 'CAPTURE-ERROR';

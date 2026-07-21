@@ -4,7 +4,14 @@ import { PALETTE } from '../src/render/palette.js';
 import { UIRenderer } from '../src/render/UIRenderer.js';
 import { drawDialogue } from '../src/render/ui/DialogueRenderer.js';
 import { drawHud } from '../src/render/ui/HudRenderer.js';
-import { DIALOGUE_BOX, buildDialogueLayout } from '../src/ui/dialogueLayout.js';
+import { installGameDialogueRuntime } from '../src/core/game/GameDialogueRuntime.js';
+import { installGameUiScreens } from '../src/core/game/GameUiScreens.js';
+import {
+  DIALOGUE_BOX,
+  DIALOGUE_OPTION_LINE_HEIGHT,
+  buildDialogueLayout,
+  dialogueOptionIndexAt
+} from '../src/ui/dialogueLayout.js';
 
 function mockCtx() {
   return {
@@ -24,7 +31,7 @@ const renderer = new UIRenderer();
 renderer.draw(mockCtx(), {
   screen: null,
   levelName: 'Ash Chapel Breach',
-  actorName: 'Mara Vey',
+  actorName: 'Test Agent',
   role: 'Cult-Breaker, Ashen Censure',
   mode: 'EXPLORE',
   sneakMode: false,
@@ -110,9 +117,63 @@ assert.equal(longLayout.box.h, DIALOGUE_BOX.h);
 assert.ok(longLayout.maxScroll > 0);
 assert.equal(longLayout.optionDetails.length, 5);
 
+const secondOptionPoint = {
+  x: decisionLayout.responseBox.x + 20,
+  y: decisionLayout.responseBox.y + 7 + DIALOGUE_OPTION_LINE_HEIGHT
+};
+assert.equal(dialogueOptionIndexAt({
+  lines: ['One record remains.', 'Choose what follows.'],
+  options: ['1. Keep the vigil', '2. Open the niche', '3. Leave for now']
+}, secondOptionPoint), 1);
+assert.equal(dialogueOptionIndexAt({
+  lines: ['One record remains.'],
+  options: ['1. Keep the vigil']
+}, { x: decisionLayout.responseBox.x - 1, y: decisionLayout.responseBox.y + 7 }), null);
+
+class DialogueInputHarness {}
+installGameDialogueRuntime(DialogueInputHarness);
+installGameUiScreens(DialogueInputHarness);
+
+function dialogueInputHarness() {
+  const harness = new DialogueInputHarness();
+  harness.uiScreen = 'dialogue';
+  harness.dialogue = {
+    lines: ['Choose.'],
+    choices: [{ id: 'first' }, { id: 'second' }, { id: 'third' }],
+    options: ['1. First', '2. Second', '3. Third'],
+    scroll: 0
+  };
+  harness.chosen = null;
+  harness._chooseDialogueOption = (index) => { harness.chosen = index; };
+  return harness;
+}
+
+{
+  const harness = dialogueInputHarness();
+  harness._handleUiScreen(['weapon1'], null);
+  assert.equal(harness.chosen, 0, 'weapon slot key 1 selects dialogue response 1');
+}
+
+{
+  const harness = dialogueInputHarness();
+  harness._handleUiScreen(['weapon2'], null);
+  assert.equal(harness.chosen, 1, 'weapon slot key 2 selects dialogue response 2');
+}
+
+{
+  const harness = dialogueInputHarness();
+  const layout = buildDialogueLayout(harness.dialogue);
+  harness._handleUiScreen([], {
+    button: 0,
+    x: layout.responseBox.x + 20,
+    y: layout.responseBox.y + 7 + DIALOGUE_OPTION_LINE_HEIGHT
+  });
+  assert.equal(harness.chosen, 1, 'clicking dialogue response 2 selects response 2');
+}
+
 const combatText = [];
 drawHud(mockCtx(), {
-  actorName: 'Mara Vey',
+  actorName: 'Test Agent',
   mode: 'COMBAT',
   hp: 11,
   maxHp: 14,
@@ -123,7 +184,7 @@ drawHud(mockCtx(), {
   actionChance: '70%',
   actionDamage: 'D3',
   actionReason: '',
-  target: 'Sava Rell 20/20',
+  target: 'Sapphira Rufa 20/20',
   controls: [],
   log: []
 }, {
@@ -140,4 +201,4 @@ drawHud(mockCtx(), {
 });
 assert.ok(combatText.includes('FX Bleeding'));
 assert.ok(combatText.includes('70% D3'), 'status effects must not hide attack odds and damage');
-assert.ok(combatText.includes('> Sava Rell 20/20'));
+assert.ok(combatText.includes('> Sapphira Rufa 20/20'));

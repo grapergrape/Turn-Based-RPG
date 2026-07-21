@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-ressa-venn",
+  "name": "Susanna Fontana",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Camp steward and keeper of the water roll",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "water-court",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-grey"
+  }
+}

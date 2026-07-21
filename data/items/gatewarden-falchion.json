@@ -1,0 +1,46 @@
+{
+  "id": "gatewarden-falchion",
+  "name": "Gatewarden Falchion",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "sword",
+  "rarity": "common",
+  "weight": 2.1,
+  "groundModel": "sword",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Gate Wardens",
+    "factions": [
+      "gate-wardens"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "sword",
+    "roles": [
+      "melee",
+      "sword",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Cut",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A forward-heavy falchion used to finish work too close for a gate gun. Nicks along the back show where it has pried bolts."
+}

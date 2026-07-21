@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -36,7 +36,6 @@ import {
 export function drawPrayerLectern(ctx, cx, cy, seed, opts = {}) {
   const defiled = Boolean(opts.defiled);
   const rng = rngFrom(hash2D(seed + 43, seed * 7 + 19));
-  drawShadowBlob(ctx, cx, cy + 5, 34, 14);
   drawIsoPrism(ctx, cx, cy, 32, 18, 12, {
     top: PALETTE.woodLight,
     left: PALETTE.woodMid,
@@ -92,11 +91,24 @@ export function drawPrayerLectern(ctx, cx, cy, seed, opts = {}) {
     }
   }
 
+  // Fine page rules, chain facets, and split timber are drawn at the native
+  // resolution. They add construction detail without softening the silhouette.
+  nativeLinePx(ctx, cx - 7.5, cy - 49.5, cx - 0.5, cy - 51.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 1.5, cy - 50.5, cx + 7.5, cy - 48.5, PALETTE.stoneMid);
+  nativeLinePx(ctx, cx - 1.5, cy - 37.5, cx - 1.5, cy - 9.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 18.5, cy - 4.5, cx - 6.5, cy - 4.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx + 6.5, cy - 4.5, cx + 17.5, cy - 4.5, PALETTE.woodDark);
+  if (defiled) {
+    nativeLinePx(ctx, cx + 6.5, cy - 21.5, cx + 8.5, cy - 16.5, PALETTE.stoneDust);
+    nativePx(ctx, cx - 1.5, cy - 23.5, PALETTE.hostBone);
+  } else {
+    nativeLinePx(ctx, cx + 6.5, cy - 45.5, cx + 6.5, cy - 22.5, PALETTE.rustLight);
+    nativePx(ctx, cx + 7.5, cy - 49.5, PALETTE.stoneLight);
+  }
 }
 
 export function drawRitualBowl(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 149, seed * 5 + 11));
-  drawShadowBlob(ctx, cx, cy + 4, 36, 13);
   drawIsoDiamond(ctx, cx + 1, cy + 3, 42, 18, PALETTE.outline);
   drawIsoDiamond(ctx, cx + 1, cy + 2, 36, 15, PALETTE.rustDark);
   for (const dx of [-13, 13]) {
@@ -131,11 +143,17 @@ export function drawRitualBowl(ctx, cx, cy, seed) {
     px(ctx, cx - 14 + Math.floor(rng() * 29), cy - 12 + Math.floor(rng() * 9), rng() < 0.5 ? PALETTE.hostRed : PALETTE.rustDark, 2, 1);
   }
   drawNoisePixels(ctx, cx - 15, cy - 13, 30, 17, [PALETTE.rustDark, PALETTE.hostRed], 0.055, seed);
+
+  nativeLinePx(ctx, cx - 10.5, cy - 12.5, cx - 1.5, cy - 8.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 2.5, cy - 8.5, cx + 10.5, cy - 11.5, PALETTE.rustMid);
+  nativeLinePx(ctx, cx - 7.5, cy - 12.5, cx - 2.5, cy - 11.5, PALETTE.skinLight);
+  nativeLinePx(ctx, cx + 1.5, cy - 11.5, cx + 6.5, cy - 9.5, PALETTE.skinLight);
+  nativeLinePx(ctx, cx + 6.5, cy - 9.5, cx + 6.5, cy - 5.5, PALETTE.skinDark);
+  nativePx(ctx, cx - 0.5, cy - 10.5, PALETTE.hostGold);
 }
 
 export function drawDamagedAltar(ctx, cx, cy, seed, pulse = 0) {
   const rng = rngFrom(hash2D(seed + 181, seed * 11 + 23));
-  drawShadowBlob(ctx, cx, cy + 7, 78, 28);
   // Stone base block.
   drawIsoPrism(ctx, cx, cy, 64, 32, 36, {
     top: PALETTE.stoneLight,
@@ -198,12 +216,20 @@ export function drawDamagedAltar(ctx, cx, cy, seed, pulse = 0) {
   linePx(ctx, cx - 10, cy - 7, cx - 26, cy + 2, PALETTE.hostGold, 1);
   linePx(ctx, cx + 9, cy - 6, cx + 29, cy + 2, PALETTE.hostBlack, 2);
   linePx(ctx, cx + 10, cy - 7, cx + 27, cy + 1, PALETTE.hostGold, 1);
+
+  // Native knife scoring crosses the worn working edge; finer black-gold
+  // capillaries remain under the split stone rather than becoming gore spray.
+  for (const gx of [-7.5, -2.5, 2.5, 6.5]) {
+    nativeLinePx(ctx, cx + gx, cy - 39.5, cx + gx + 2, cy - 36.5, PALETTE.stoneDark);
+  }
+  nativeLinePx(ctx, cx - 9.5, cy - 5.5, cx - 20.5, cy + 0.5, PALETTE.hostBlack);
+  nativeLinePx(ctx, cx - 8.5, cy - 6.5, cx - 19.5, cy - 0.5, PALETTE.hostGold);
+  nativePx(ctx, cx + 16.5, cy - 41.5, pulse ? PALETTE.hostGlow : PALETTE.hostGold);
   drawRubbleCluster(ctx, cx + 31, cy + 9, seed + 185, 3);
 }
 
 export function drawLooseFlagstone(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 157, seed * 7 + 19));
-  drawShadowBlob(ctx, cx, cy + 5, 50, 18);
   // The cavity under the lifted stone.
   drawIsoDiamond(ctx, cx + 5, cy + 3, 46, 20, PALETTE.outline);
   drawIsoDiamond(ctx, cx + 4, cy + 3, 36, 16, PALETTE.void);
@@ -241,6 +267,10 @@ export function drawLooseFlagstone(ctx, cx, cy, seed) {
   linePx(ctx, cx - 13, cy - 12, cx - 2, cy + 1, PALETTE.stoneLight, 1);
   px(ctx, cx - 15, cy - 14, PALETTE.stoneLight, 3, 2); // the flattened tip
 
+  nativeLinePx(ctx, cx - 20.5, cy - 1.5, cx - 8.5, cy - 5.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + 1.5, cy - 10.5, cx + 11.5, cy - 7.5, PALETTE.stoneDark);
+  nativePx(ctx, cx - 12.5, cy - 12.5, PALETTE.stoneLight);
+
 }
 
 export function drawChalkDrawing(ctx, cx, cy, seed) {
@@ -264,7 +294,7 @@ export function drawChalkDrawing(ctx, cx, cy, seed) {
   px(ctx, cx - 8, cy, chalk, 1, 8);
   px(ctx, cx - 10, cy + 8, chalk, 5, 1);
   // Two small stick figures looking up at it, the smaller one holding the
-  // taller one's hand. Corin and Eda drew themselves watching the world.
+  // taller one's hand. Micah and Ruth drew themselves watching the world.
   px(ctx, cx + 10, cy - 4, chalk, 1, 1);
   px(ctx, cx + 10, cy - 2, chalk, 1, 5);
   px(ctx, cx + 8, cy - 1, chalk, 5, 1);
@@ -284,6 +314,12 @@ export function drawChalkDrawing(ctx, cx, cy, seed) {
   }
   ctx.restore();
   drawNoisePixels(ctx, cx - 20, cy - 13, 40, 24, [PALETTE.stoneDust, PALETTE.stoneDark], 0.04, seed);
+  // Broken chalk edges keep the drawing made by small hands: a fine orbit,
+  // the joined hands, and loose powder around the shaft.
+  nativeLinePx(ctx, cx - 16.5, cy - 7.5, cx - 2.5, cy - 3.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 9.5, cy + 0.5, cx + 15.5, cy + 1.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx - 8.5, cy + 0.5, cx - 8.5, cy + 7.5, PALETTE.stoneDust);
+  nativePx(ctx, cx - 10.5, cy + 8.5, PALETTE.hostBone);
 }
 
 export function drawMachineOil(ctx, cx, cy, seed) {
@@ -311,6 +347,11 @@ export function drawMachineOil(ctx, cx, cy, seed) {
     px(ctx, x, y, i % 2 ? PALETTE.hostBlack : PALETTE.rustDark, 2, 1);
   }
   drawNoisePixels(ctx, cx - 18, cy - 8, 36, 16, [PALETTE.rustDark, PALETTE.hostBlack], 0.05, seed);
+  // Thin reflected edges trace the oil film around the black core. They stay
+  // sparse and palette-bound rather than simulating a smooth glossy gradient.
+  nativeLinePx(ctx, cx - 15.5, cy - 5.5, cx - 3.5, cy - 6.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 4.5, cy + 5.5, cx + 14.5, cy + 2.5, PALETTE.stoneDark);
+  nativePx(ctx, cx + 10.5, cy + 1.5, PALETTE.hostGold);
 }
 
 export function drawBloodSigil(ctx, cx, cy, seed) {
@@ -353,6 +394,13 @@ export function drawBloodSigil(ctx, cx, cy, seed) {
   }
   ctx.restore();
   drawNoisePixels(ctx, cx - 18, cy - 10, 36, 20, [blood, dark], 0.065, seed);
+
+  // Fine dragged edges and separated droplets keep the mark hand-painted at
+  // native 2x instead of merely doubling the broad logical strokes.
+  nativeLinePx(ctx, cx - 14.5, cy - 5.5, cx + 13.5, cy + 5.5, PALETTE.rustMid);
+  nativeLinePx(ctx, cx - 0.5, cy - 7.5, cx - 0.5, cy + 8.5, PALETTE.hostRed);
+  nativePx(ctx, cx - 17.5, cy + 4.5, PALETTE.hostRed);
+  nativePx(ctx, cx + 16.5, cy - 3.5, PALETTE.hostGold);
 }
 
 export function drawRitualCircle(ctx, cx, cy, seed) {
@@ -397,6 +445,17 @@ export function drawRitualCircle(ctx, cx, cy, seed) {
   }
   ctx.restore();
   drawNoisePixels(ctx, cx - 35, cy - 18, 70, 36, [dark, PALETTE.stoneDark, blood], 0.052, seed);
+
+  // The outer ring has a thin, irregular wet edge. Short segments preserve
+  // the broken hand-drawn character and avoid a mathematically clean ellipse.
+  for (const [x0, y0, x1, y1, color] of [
+    [-27.5, -7.5, -16.5, -13.5, PALETTE.rustMid],
+    [-8.5, -15.5, 5.5, -15.5, PALETTE.hostRed],
+    [14.5, -13.5, 26.5, -7.5, PALETTE.rustMid],
+    [28.5, 6.5, 17.5, 12.5, PALETTE.hostRed],
+    [-16.5, 12.5, -28.5, 6.5, PALETTE.rustDark]
+  ]) nativeLinePx(ctx, cx + x0, cy + y0, cx + x1, cy + y1, color);
+  nativePx(ctx, cx + 30.5, cy - 0.5, PALETTE.hostGold);
 }
 
 export function drawChoirPentagram(ctx, cx, cy, seed) {
@@ -447,4 +506,15 @@ export function drawChoirPentagram(ctx, cx, cy, seed) {
     const dl = 3 + Math.floor(rng() * 11);
     px(ctx, cx + dx, wy + R, i % 2 ? blood : dark, 1, dl);
   }
+
+
+  // Scraped stone peeks through one side of each painted stroke, while the
+  // longest drips taper to a single native pixel.
+  for (let i = 1; i < order.length; i += 1) {
+    const [x0, y0] = pts[order[i - 1]];
+    const [x1, y1] = pts[order[i]];
+    nativeLinePx(ctx, x0 + 0.5, y0 - 0.5, x1 + 0.5, y1 - 0.5, i % 2 ? PALETTE.rustMid : PALETTE.hostRed);
+  }
+  nativePx(ctx, cx - 10.5, wy + R + 7.5, blood);
+  nativePx(ctx, cx + 7.5, wy + R + 10.5, dark);
 }

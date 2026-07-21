@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-brin-ossa",
+  "name": "Dinah Viator",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Former Chain driver",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "hidden-rows",
+    "morrow-chain"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "crate-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

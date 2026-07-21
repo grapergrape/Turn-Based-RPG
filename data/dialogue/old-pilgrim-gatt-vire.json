@@ -1,0 +1,19 @@
+{
+  "id": "old-pilgrim-gatt-vire",
+  "title": "Gaius Cotta",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Gaius has driven Morrow stakes into both road shoulders. None touch the old center stones.",
+        "“Chain pays for clear passage. It also writes down who cleared it.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

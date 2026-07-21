@@ -1,0 +1,589 @@
+{
+  "id": "old-pilgrim-novitiate-quarters",
+  "name": "Novitiate Quarters",
+  "intro": "Beds and prayer cells hold the congregation where thirst stopped them. The bodies are old, but every door remains shut.",
+  "width": 48,
+  "height": 34,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#0a0807",
+    "floorShadeAlpha": 0.3,
+    "ambient": "#172635",
+    "ambientAlpha": 0.18,
+    "vignette": 0.35
+  },
+  "quests": [
+    "road-through-the-fields",
+    "the-buried-novitiate",
+    "names-below-the-hill"
+  ],
+  "dialogue": [
+    "old-pilgrim-quarters-to-closure",
+    "old-pilgrim-quarters-to-trials",
+    "old-pilgrim-quarters-pump",
+    "old-pilgrim-quarters-cistern",
+    "old-pilgrim-quarters-roll",
+    "old-pilgrim-water-tally"
+  ],
+  "tiles": [
+    "################################################",
+    "#...........#......................#...........#",
+    "#...........#......................#...........#",
+    "#...........#......................#...........#",
+    "#...........#......................#...........#",
+    "#..............................................#",
+    "#..............................................#",
+    "#...........#......................#...........#",
+    "#...........#......................#...........#",
+    "#######################..#######################",
+    "#...........#.......#......#.......#...........#",
+    "#...........#.......#......#.......#...........#",
+    "#...........#.......#......#.......#...........#",
+    "#...........#.......#......#.......#...........#",
+    "#...........#.......#......#.......#...........#",
+    "#...................#......#...................#",
+    "#..............................................#",
+    "#...........#......................#...........#",
+    "#...........#.......#......#.......#...........#",
+    "#...........#.......#......#.......#...........#",
+    "#...........#.......#......#.......#...........#",
+    "#...........#.......#......#.......#...........#",
+    "##########..###########..###########..##########",
+    "#...................#......#...................#",
+    "#...................#......#...................#",
+    "#...................#......#...................#",
+    "#...................#......#...................#",
+    "#..............................................#",
+    "#..............................................#",
+    "#...................#......#...................#",
+    "#...................#......#...................#",
+    "#...................#......#...................#",
+    "#...................#......#...................#",
+    "################################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 24,
+      "y": 31,
+      "facing": "n"
+    },
+    "npcs": [],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "wall-stair-door",
+      "x": 24,
+      "y": 33,
+      "id": "old-pilgrim-quarters-south-door",
+      "name": "Closure Stair Door",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-quarters-to-closure"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 24,
+        "y": 32
+      },
+      "mapMarker": {
+        "label": "Closure Stair",
+        "kind": "exit",
+        "reveal": "always"
+      }
+    },
+    {
+      "kind": "wall-stair-door",
+      "x": 24,
+      "y": 0,
+      "id": "old-pilgrim-quarters-trial-passage",
+      "name": "Profession Passage",
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "old-pilgrim-quarters-to-trials"
+      },
+      "blocking": true,
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 24,
+        "y": 1
+      },
+      "visibleWhenFlags": [
+        "old-pilgrim-trial-route-open"
+      ],
+      "mapMarker": {
+        "label": "Trial Galleries",
+        "kind": "exit"
+      }
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 3,
+      "y": 3,
+      "blocking": true,
+      "orient": "se",
+      "variant": "novice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 7,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "novice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 3,
+      "y": 7,
+      "blocking": true,
+      "orient": "se",
+      "variant": "novice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 8,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "novice"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 15,
+      "y": 3,
+      "blocking": true,
+      "orient": "se",
+      "variant": "priest"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 19,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "priest"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 28,
+      "y": 3,
+      "blocking": true,
+      "orient": "se",
+      "variant": "priest"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 32,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "priest"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 38,
+      "y": 3,
+      "blocking": true,
+      "orient": "se",
+      "variant": "sister"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 43,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "sister"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 39,
+      "y": 7,
+      "blocking": true,
+      "orient": "se",
+      "variant": "sister"
+    },
+    {
+      "kind": "pilgrim-cot",
+      "x": 44,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "sister"
+    },
+    {
+      "kind": "dining-table",
+      "x": 8,
+      "y": 15,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 10,
+      "y": 16,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-table",
+      "x": 39,
+      "y": 15,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 37,
+      "y": 16,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 4,
+      "y": 25,
+      "id": "old-pilgrim-stripped-pantry-shelf",
+      "name": "Stripped Pantry Shelf",
+      "blocking": true,
+      "interact": {
+        "type": "note",
+        "log": "Every peg and leather hinge was cut from the shelf. Even the glue was scraped away.",
+        "search": {
+          "id": "old-pilgrim-pantry-search",
+          "title": "Stripped Pantry",
+          "lines": [
+            "Knife marks divide the shelf fittings into equal shares."
+          ],
+          "methods": [
+            {
+              "id": "old-pilgrim-read-pantry-shares",
+              "label": "Read the division marks",
+              "field": "search",
+              "dc": 25,
+              "successLog": "The congregation rationed leather and glue after the food stores emptied.",
+              "failLog": "The cuts are too crowded to separate repairs from rationing.",
+              "success": {
+                "setFlag": "old-pilgrim-pantry-stripped-known",
+                "xp": 4
+              }
+            },
+            {
+              "id": "old-pilgrim-read-starvation-practice",
+              "label": "Read the starvation measures",
+              "field": "medicine",
+              "dc": 27,
+              "successLog": "The cuts are deliberate portions of boiled leather, not desperate bites.",
+              "failLog": "Time has erased the residue that would show how the fittings were used.",
+              "success": {
+                "setFlag": "old-pilgrim-pantry-stripped-known",
+                "xp": 4
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Stripped Pantry",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 8,
+      "y": 28,
+      "blocking": true
+    },
+    {
+      "kind": "water-pump",
+      "x": 32,
+      "y": 27,
+      "id": "old-pilgrim-novitiate-pump",
+      "name": "Novitiate Pump",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-quarters-pump"
+      },
+      "blocking": true,
+      "mapMarker": {
+        "label": "Dead Pump",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "settling-tank",
+      "x": 39,
+      "y": 27,
+      "id": "old-pilgrim-dry-cistern",
+      "name": "Dry Cistern",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-quarters-cistern"
+      },
+      "blocking": true,
+      "orient": "sw",
+      "mapMarker": {
+        "label": "Dry Cistern",
+        "kind": "search"
+      }
+    },
+    {
+      "kind": "prayer-lectern",
+      "x": 23,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "vigil-candle-rack",
+      "x": 24,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "wall-stash",
+      "x": 47,
+      "y": 27,
+      "blocking": true,
+      "wallPlane": "se"
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 6,
+      "y": 6
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 17,
+      "y": 7
+    },
+    {
+      "kind": "wax-stain",
+      "x": 23,
+      "y": 18
+    },
+    {
+      "kind": "ritual-bowl",
+      "x": 9,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "ritual-bowl",
+      "x": 38,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "pilgrim-memorial-tablet",
+      "x": 16,
+      "y": 27,
+      "id": "old-pilgrim-novitiate-sleeping-roll",
+      "name": "Novitiate Sleeping Roll",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-quarters-roll"
+      },
+      "blocking": true,
+      "variant": "record",
+      "mapMarker": {
+        "label": "Sleeping Roll",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "closure-control-panel",
+      "x": 35,
+      "y": 27,
+      "id": "old-pilgrim-last-water-tally",
+      "name": "Last Water Tally",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "old-pilgrim-water-tally"
+      },
+      "blocking": true,
+      "variant": "tally",
+      "wallPlane": "se",
+      "mapMarker": {
+        "label": "Last Water Tally",
+        "kind": "quest"
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 5,
+      "y": 5,
+      "id": "old-pilgrim-quarters-candidate-one",
+      "name": "Novice in the Candidate Dormitory",
+      "interact": {
+        "type": "note",
+        "log": "The novice died under a shared blanket. A cup was placed beside each hand."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 7,
+      "id": "old-pilgrim-quarters-candidate-two",
+      "name": "Novice Beside the Dormitory Door",
+      "interact": {
+        "type": "note",
+        "log": "The door is open. The novice had nowhere farther to go."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 40,
+      "y": 5,
+      "id": "old-pilgrim-quarters-sister-cell-one",
+      "name": "Nun in the East Cell",
+      "interact": {
+        "type": "note",
+        "log": "A prayer cord crosses the finger bones. The knots stop at the ninth day."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 37,
+      "y": 17,
+      "id": "old-pilgrim-quarters-sister-cell-two",
+      "name": "Nun at the Refectory Bench",
+      "interact": {
+        "type": "note",
+        "log": "A wooden spoon was shaved along both edges. No food stain remains in the bowl."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 16,
+      "y": 5,
+      "id": "old-pilgrim-quarters-priest-cell-one",
+      "name": "Priest in the West Cell",
+      "interact": {
+        "type": "note",
+        "log": "The priest used a folded office robe as a pillow. The pockets are empty."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 10,
+      "y": 14,
+      "id": "old-pilgrim-quarters-priest-cell-two",
+      "name": "Priest at the Common Table",
+      "interact": {
+        "type": "note",
+        "log": "Four tally cuts mark the table beside the ribs. A fifth cut was started."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 6,
+      "y": 27,
+      "id": "old-pilgrim-quarters-pantry-sister",
+      "name": "Sister in the Stripped Pantry",
+      "interact": {
+        "type": "note",
+        "log": "Shelf pegs and leather ties were chewed down to their hard ends. Glue scraps lie between the teeth."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 30,
+      "y": 28,
+      "id": "old-pilgrim-quarters-pump-novice",
+      "name": "Novice at the Dead Pump",
+      "interact": {
+        "type": "note",
+        "log": "Both arm bones lie beneath the pump handle. The leather piston was cut out and boiled."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 40,
+      "y": 29,
+      "id": "old-pilgrim-quarters-cistern-pilgrim-one",
+      "name": "Pilgrim at the Dry Cistern",
+      "interact": {
+        "type": "note",
+        "log": "The skull rests against the tank seam. No damp mark survives beneath it."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 43,
+      "y": 25,
+      "id": "old-pilgrim-quarters-cistern-pilgrim-two",
+      "name": "Pilgrim Beneath the Gauge",
+      "interact": {
+        "type": "note",
+        "log": "A fingernail scratched the final empty mark lower than the gauge could travel."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 23,
+      "y": 18,
+      "id": "old-pilgrim-quarters-prayer-cell-sister",
+      "name": "Nun in the Prayer Cell",
+      "interact": {
+        "type": "note",
+        "log": "The nun died sitting upright. The wall prayer ends with the names of the remaining children."
+      }
+    },
+    {
+      "kind": "skeleton",
+      "x": 24,
+      "y": 3,
+      "id": "old-pilgrim-quarters-north-passage-priest",
+      "name": "Priest at the Profession Passage",
+      "interact": {
+        "type": "note",
+        "log": "The priest faced the trial door with a service plate held against the chest."
+      }
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 18,
+      "y": 27,
+      "id": "old-pilgrim-quarters-record-chest",
+      "name": "Novitiate Record Chest",
+      "blocking": true,
+      "interact": {
+        "type": "container",
+        "log": "The chest holds wax tablets and a saint token. A small purse was left unopened by the trapped congregation.",
+        "loot": [
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 3
+          }
+        ]
+      }
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "old-pilgrim-quarters-loose-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 21,
+      "y": 13
+    }
+  ]
+}

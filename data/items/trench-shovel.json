@@ -1,0 +1,56 @@
+{
+  "id": "trench-shovel",
+  "name": "Trench Shovel",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "field tool",
+  "rarity": "uncommon",
+  "weight": 3.2,
+  "groundModel": "tool-weapon",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "First Winter",
+    "origin": "Remnant Levies",
+    "factions": [
+      "remnant-levies"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "field tool",
+    "roles": [
+      "melee",
+      "field tool",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Tool Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "committed-blow",
+        "name": "Committed Blow",
+        "mode": "melee",
+        "apCost": 5,
+        "damage": 8,
+        "range": 1,
+        "accuracyBonus": -5,
+        "conditionWear": 2
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "A folding entrenching shovel locked open with wire. The edges have been filed despite every quartermaster order."
+}

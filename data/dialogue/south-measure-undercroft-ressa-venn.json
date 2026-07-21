@@ -1,0 +1,78 @@
+{
+  "id": "south-measure-undercroft-ressa-venn",
+  "title": "Susanna Fontana Below the Gate",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Susanna reads the oldest household roll with one finger resting beside the denial column.",
+        "\"My great-grandmother died under that sentence. The thing in the wicket still knows the household number.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what must survive",
+          "next": "survive"
+        },
+        {
+          "label": "Record the buried pulse on the council board",
+          "conditions": {
+            "questStages": {
+              "names-for-the-gate": "trace-buried-pulse"
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-helper-routes-open",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "resolve-intake-clerk",
+              "log": "The buried feed carries the Hallowfen rhythm. Resolve the Intake Clerk before choosing a water plan."
+            }
+          },
+          "next": "routes"
+        },
+        {
+          "label": "Leave Susanna with the roll",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "survive": {
+      "lines": [
+        "\"The names and whoever remains inside that body must survive if we can manage it. I will not call the failure clean if they do not.\"",
+        "\"Read before you cut. Decide the water after the pipe stops answering.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the roll",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "routes": {
+      "lines": [
+        "Susanna writes MONITORED FLOW, IMPORTED WATER, ISOLATED LOOP, and FEED CLOSED on the back of a rejected transport order.",
+        "\"Each answer has a person who pays. We choose after the wicket is quiet.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the roll",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

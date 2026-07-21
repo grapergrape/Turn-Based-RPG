@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-jaro-fen",
+  "name": "Joab Lupus",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Road guard",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "shoulder-plate"
+    ],
+    "accent": "dark-hood"
+  }
+}

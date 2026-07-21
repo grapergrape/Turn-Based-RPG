@@ -1,4 +1,4 @@
-# The Host RPG
+# Vale Imprint
 
 A local-hostable JavaScript top-down turn-based RPG with pixelated graphics, gothic sci-fi horror, faction politics, and tactical party-based exploration/combat.
 
@@ -42,11 +42,35 @@ http://127.0.0.1:8080/?level=basement&x=18&y=4
 http://127.0.0.1:8080/?level=chapel&x=20&y=8&noCombat=1
 ```
 
-Available aliases: `chapel`, `basement` or `cellar`, and `catacombs`. You can
-also pass a level JSON path, for example `?level=data/levels/ash_chapel_catacombs.json`.
+To playtest a complete later map with a coherent arrival state, add
+`playtest=fresh`:
+
+```text
+http://127.0.0.1:8080/?level=road&playtest=fresh
+http://127.0.0.1:8080/?level=camp&playtest=fresh
+http://127.0.0.1:8080/?level=old_pilgrim_trial_galleries&playtest=fresh
+```
+
+The fresh profile completes only the earlier campaign checkpoint. It gives the
+player 10 in every primary, every current technique, extra carrying room, and
+the prior evidence or access items needed by that map. Discoveries, reports,
+rewards, and completion flags owned by the target map remain unset. This avoids
+the contradictory state produced by enabling every story flag at once.
+Long Ash Road begins before its attendant-shrine recruitment. Fresh starts at
+Camp or any later region include a registered Utility Drone Mark I named Pip,
+its available level-scaled upgrade points, and the two service parts awarded by
+the shrine.
+
+Available main-area aliases include `chapel`, `basement` or `cellar`,
+`catacombs`, `road`, `camp`, `south`, and `pilgrim`. You can also pass a level
+file name or JSON path, for example `?level=old_pilgrim_trial_galleries` or
+`?level=data/levels/ash_chapel_catacombs.json`.
 Dev jumps skip the opening writ by default. Add `&intro=1` to view it, `&grid=1`
 to show coordinates, and `&noCombat=1` or `&enemies=0` to suppress enemy spawns.
-Pressing `R` restarts back into the same dev jump.
+Pressing `R` restarts back into the same dev jump. Developer jumps do not read
+or write the normal run saves. In a fresh-profile jump, `R` also restores the
+same arrival checkpoint. `playtest=1` is accepted as shorthand for
+`playtest=fresh`.
 
 Run basic repository/content checks:
 
@@ -76,8 +100,8 @@ The demo loads `data/levels/ash_chapel_breach.json` and its referenced actors,
 enemies, and items. It is a small, complete vertical slice rendered as a
 **grimy isometric pixel-art CRPG scene** rather than a flat tile board.
 
-You play **Mara Vey**, a **cult-breaker of the Ashen Censure** — the Holy
-Remnant's quiet office for hunting and burning blasphemous Host-cults. After a
+You name and shape a **cult-breaker of the Ashen Censure**, the Holy Remnant's
+quiet office for hunting and burning blasphemous Host-cults. After a
 grim opening writ that sets up the job (years of clearing cults along the ash
 roads, and a rising tide of them that no one will explain), you are dropped into
 a ruined quarantine chapel on the old road toward **Hallowfen**. The area works
@@ -140,6 +164,8 @@ Explore mode:
 - **Left-click** a tile: walk there (path-finds around obstacles, turning to face
   each step); or `WASD` / Arrow keys: single step (no AP cost)
 - `E` / `Enter`: interact with the object you are on or beside
+- Hold `Tab`: reveal usable objects, loose items, and searchable bodies; click a
+  revealed label to move to and use that target
 - `1` / `2`: choose dialogue options when a readout offers choices
 - Arrow keys / `W` `S`: scroll a long readout that does not fit (a `▼` and an
   `UP/DN SCROLL` hint appear when there is more to read)
@@ -149,8 +175,14 @@ Explore mode:
   Right switch panels, `1` / `Enter` equip, `2` remove gear
 - `H`: use a Field Dressing (restores 4 HP)
 - `Esc` / `Enter`: close an open inventory or readout panel
-- `R`: restart
+- `Esc`: open the field menu. From there you can resume, save, load, export a
+  backup, or return to the title screen
+- `R`: ask to begin a new run. The existing stored run remains until the new
+  field state is saved successfully
 - `G`: toggle the debug grid (off by default)
+- `\`: mute or unmute world audio
+- `[` / `]`: lower or raise world-audio volume. The setting is remembered in
+  this browser
 
 Combat mode:
 
@@ -159,13 +191,36 @@ Combat mode:
 - `1`: ready melee, `2`: ready sidearm
 - `Tab`: cycle target, or **left-click an enemy** to target it
 - `Space` / `Enter`: attack the selected target
+- Learned player actives and installed drone abilities appear beneath the actor
+  taking its turn. **Left-click an ability**, then click its highlighted enemy,
+  ally, or tile. Self abilities activate immediately. **Right-click** or
+  `Esc` cancels targeting
+- **Right-click** an actor or tile to open the complete action list
 - `E`: end turn
 - `I`: open or close the field pack inventory screen
 - In the field pack: Arrow keys / `W` `S` select an item or gear slot, Left /
   Right switch panels, `1` / `Enter` equip, `2` remove gear
 - `H`: use a Field Dressing
-- `Esc` / `Enter`: close an open inventory or readout panel
-- `R`: restart
+- `Esc`: open the field menu. Manual saving is unavailable during combat
+- `Enter`: close an open inventory or readout panel
+- `R`: ask to begin a new run
+
+Save management:
+
+- The browser keeps one active run with one manual save and three rotating
+  autosaves.
+- Autosaves are written during stable exploration, at level transitions,
+  before combat, and after combat. The game never saves in the middle of a
+  fight.
+- On the title screen, `Continue` opens the newest valid record. `Load Saves`
+  lets you choose a checkpoint.
+- In the save list, `Enter` loads, `X` exports a JSON backup, `Delete` removes
+  one record, and `Esc` goes back.
+- `Import Save` reads a JSON backup. Replacing existing browser saves requires
+  confirmation.
+- A changed game version is shown on the save row. The record still loads when
+  its save format is compatible. Newer unsupported formats and damaged
+  checksums are shown but cannot be loaded.
 
 ### How exploration and combat work
 
@@ -174,7 +229,7 @@ chapel, open the Rusted Reliquary and the Field Satchel for loot, read the Cult
 Ledger, and inspect the split barrel near the south wall. Combat begins when
 you **interact with the corrupted altar / Host growth**, or when you
 **approach a local encounter group**. Only that group joins the current fight.
-Win by clearing the chapel encounters; you lose if Mara reaches 0 HP. Press `R`
+Win by clearing the chapel encounters; you lose if the player reaches 0 HP. Press `R`
 at any time to restart.
 
 ### About the art
@@ -182,14 +237,14 @@ at any time to restart.
 All art is **original, procedurally drawn / hand-authored pixel art** generated
 at runtime on Canvas 2D (no external image assets, no copied material). The
 target is the general presentation of late-1990s isometric post-apocalyptic
-CRPGs: a fixed 640x480 internal buffer upscaled with crisp nearest-neighbor
-scaling, 64x32 isometric floor tiles, a player-centered scrolling camera, a
-muted desaturated palette, hard-banded lighting, volumetric props, grounded
+CRPGs: a native 1280x960 backing canvas over a stable 640x480 logical design
+grid, 64x32 logical isometric floor tiles, a player-centered scrolling camera,
+a muted desaturated palette, hard-banded lighting, volumetric props, grounded
 human-proportioned sprites, and a heavy brown/brass UI layer with a message log,
 status panel, command panel, field pack screen, readout panel, hover labels, and
 drawn cursor states. UI text is rendered with a small bitmap font on the same
-low-resolution canvas as the game view. None of it copies any existing game's
-assets, names, maps, palette, UI, or designs.
+canvas as the game view. None of it copies any existing game's assets, names,
+maps, palette, UI, or designs.
 
 The floor is drawn as broad worn-stone wear zones rather than a contrasting
 checkerboard, and each level can carry a **mood** (a multiplied floor tint, a
@@ -203,18 +258,20 @@ interior walls never hide the figure.
 Actors are drawn as directional animated models. Each baked sprite has **eight
 isometric facings**, four-frame idles, eight-frame walk cycles, six-frame
 attacks, four-frame hit reactions, interact frames, and a ten-frame death
-collapse. Mara is 42x62 px and the Choir cultists use a 44x64 px hooded ritual
+collapse. The player actor is 42x62 px and the Choir cultists use a 44x64 px hooded ritual
 sprite (bloodied stole, a bone rite-knife, a held strip of pale sacrament-flesh).
 The Host-Touched Penitent is a hulking 64x92 px body-horror sprite: a broken bone
 halo, a screaming horned skull, a ribcage cracked and butterflied open over a
 single small wound, shoulder thorns, and elongated bone prayer-arms. Cleared
 actors leave type-specific corpses on the ground.
 
-Sprites are drawn directly at native resolution with clustered pixels, small
-ramps, hard rim pixels, and dithered fabric or flesh texture. The renderer does
-not smooth-scale sprites. Movement is quantized to the eight walk frames so the
-screen cadence stays low-fps and old-school. Combat shows a move path with an
-AP cost under the cursor rather than flooding every reachable tile.
+Sprites use 2x backing canvases with logical anchors and destinations, allowing
+single-native-pixel detail while preserving their established world scale.
+They use clustered pixels, small ramps, hard rim pixels, and dithered fabric or
+flesh texture. The renderer does not smooth-scale sprites. Movement is
+quantized to the eight walk frames so the screen cadence stays low-fps and
+old-school. Combat shows a move path with an AP cost under the cursor rather
+than flooding every reachable tile.
 
 The older `data/maps/demo-map.json`, `data/actors/player.json`, and
 `data/enemies/host-penitent-bastion.json` remain in the repo as reference

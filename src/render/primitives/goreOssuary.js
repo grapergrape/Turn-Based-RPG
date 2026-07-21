@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -35,7 +35,6 @@ import {
 
 export function drawCorpseSilhouette(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 29, seed * 7 + 11));
-  drawShadowBlob(ctx, cx, cy + 3, 46, 18);
   // Dried blood pooled under the body.
   ctx.save();
   ctx.globalAlpha = 0.7;
@@ -86,6 +85,14 @@ export function drawCorpseSilhouette(ctx, cx, cy, seed) {
   px(ctx, cx - 18, cy + 8, PALETTE.outline, 6, 3);
   px(ctx, cx - 17, cy + 8, PALETTE.clothTan, 4, 2); // the loaf
   px(ctx, cx - 16, cy + 8, PALETTE.hostBone, 2, 1); // its floured top
+
+  // Fine material cues stay human-scale: coat stitching, separated fingers,
+  // hair strands, and two shallow scores across the dropped loaf.
+  nativeLinePx(ctx, cx - 5.5, cy - 6.5, cx + 6.5, cy - 5.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 11.5, cy - 6.5, cx + 15.5, cy - 5.5, PALETTE.void);
+  for (const dy of [-0.5, 0.5, 1.5]) nativePx(ctx, cx + 8.5, cy + dy, PALETTE.skinLight);
+  nativeLinePx(ctx, cx - 16.5, cy + 7.5, cx - 15.5, cy + 9.5, PALETTE.skinDark);
+  nativeLinePx(ctx, cx - 14.5, cy + 7.5, cx - 13.5, cy + 9.5, PALETTE.skinDark);
 
 }
 
@@ -161,7 +168,6 @@ export function drawBonePile(ctx, cx, cy, seed) {
   // The ossuary heap has to read as a mounded pile of human remains: a raised
   // dark mass first, then a few large bones the eye can name (skull, femur,
   // rib arc) with black gaps between them. Never an even scatter of white.
-  drawShadowBlob(ctx, cx, cy + 4, 44, 17);
   const rng = rngFrom(hash2D(seed + 61, seed * 9 + 7));
 
   // Raised mound: stacked rows, dark at the base, ashen on the lit crown.
@@ -202,6 +208,9 @@ export function drawBonePile(ctx, cx, cy, seed) {
   px(ctx, cx - 16, cy + 3, PALETTE.clothTan, 4, 1); // cut cord
   px(ctx, cx - 14, cy + 4, PALETTE.clothTan, 2, 1);
   drawNoisePixels(ctx, cx - 18, cy - 8, 36, 16, [PALETTE.stoneDust, PALETTE.rustDark], 0.03, seed);
+  nativeLinePx(ctx, cx - 12.5, cy - 5.5, cx - 4.5, cy - 7.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + 5.5, cy - 1.5, cx + 13.5, cy + 1.5, PALETTE.hostBone);
+  nativePx(ctx, cx + 10.5, cy - 5.5, PALETTE.stoneDust);
 }
 
 export function drawSkeleton(ctx, cx, cy, seed, opts = {}) {
@@ -210,7 +219,6 @@ export function drawSkeleton(ctx, cx, cy, seed, opts = {}) {
   const dark = PALETTE.void;
   const rng = rngFrom(hash2D(seed + 23, seed * 7 + 3));
   const flip = rng() < 0.5 ? 1 : -1; // head left or right
-  drawShadowBlob(ctx, cx, cy + 3, 30, 13);
 
   // The ground keeps the story: a dark decay stain and the rags of whatever
   // they died in bind the bones into one body instead of loose white marks.
@@ -277,6 +285,16 @@ export function drawSkeleton(ctx, cx, cy, seed, opts = {}) {
     px(ctx, cx + reach + flip * 3, cy, PALETTE.hostBone, 1, 1);
     px(ctx, cx + reach, cy, PALETTE.stoneDark, 3, 1); // the furrows they left
   }
+
+
+  // Cortical highlights, teeth, and finger bones are one physical pixel wide.
+  // Their placement follows this body's generated pose instead of floating as
+  // generic noise around the silhouette.
+  nativeLinePx(ctx, hx - flip * 4.5, hy + 1.5, pelX + flip * 1.5, pelY + 0.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, pelX - flip * 0.5, pelY + 3.5, pelX - flip * 8.5, pelY + 10.5, PALETTE.hostBone);
+  for (let tooth = -1; tooth <= 1; tooth += 1) {
+    nativePx(ctx, hx + flip * (tooth * 0.5), hy + 3.5, PALETTE.hostBone);
+  }
 }
 
 export function drawBoneNiche(ctx, cx, cy, seed, opts = {}) {
@@ -291,7 +309,6 @@ export function drawBoneNiche(ctx, cx, cy, seed, opts = {}) {
   const top = cy - h + 4;
   const x = Math.round(cx - w / 2);
 
-  drawShadowBlob(ctx, cx, cy + 4, 34, 14);
   px(ctx, x - 2, top - 2, PALETTE.outline, w + 4, h + 4);
   px(ctx, x - 1, top - 1, lo, w + 2, h + 2);
   px(ctx, x + 2, top + 4, dark, w - 4, h - 7); // deep recess
@@ -368,6 +385,10 @@ export function drawBoneNiche(ctx, cx, cy, seed, opts = {}) {
     px(ctx, mcx, mcy - 2, PALETTE.hostGold, 1, 1); // the pin in the brow
   }
 
+  nativeLinePx(ctx, x + 1.5, top - 3.5, x + 10.5, top - 4.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, x + 4.5, top + 11.5, x + 11.5, top + 11.5, PALETTE.hostBone);
+  nativeLinePx(ctx, x + w - 9.5, top + 19.5, x + w - 4.5, top + 19.5, PALETTE.stoneDust);
+
 }
 
 export function drawStoneTomb(ctx, cx, cy, seed, opts = {}) {
@@ -380,7 +401,6 @@ export function drawStoneTomb(ctx, cx, cy, seed, opts = {}) {
   const slide = opened ? 11 : 5;
   const ly = cy - 16; // top-cap height of the body
 
-  drawShadowBlob(ctx, cx, cy + 5, 58, 20);
   drawIsoPrism(ctx, cx, cy, 48, 25, 18, { top: lo, left: stone, right: PALETTE.stoneDark, outline: PALETTE.outline });
   linePx(ctx, cx - 23, cy - 4, cx + 21, cy - 15, PALETTE.outline, 1);
   linePx(ctx, cx - 21, cy - 5, cx + 18, cy - 15, dust, 1);
@@ -434,6 +454,12 @@ export function drawStoneTomb(ctx, cx, cy, seed, opts = {}) {
   }
   drawNoisePixels(ctx, cx - 24, cy - 22, 52, 28, [lo, PALETTE.stoneDark], 0.045, seed);
   drawNoisePixels(ctx, cx - 27, cy - 4, 55, 12, [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.hostBone], 0.04, seed + 7);
+
+  // Faint tool passes survive inside the lid's broad carved planes. They add
+  // native-scale stone texture without softening the hard slab silhouette.
+  nativeLinePx(ctx, cx + slide - 13.5, ly - 10.5, cx + slide - 5.5, ly - 13.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + slide + 5.5, ly - 6.5, cx + slide + 14.5, ly - 9.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx - 17.5, cy - 12.5, cx - 10.5, cy - 14.5, PALETTE.stoneDust);
 }
 
 export function drawGraveyardWall(ctx, cx, cy, seed, opts = {}) {
@@ -442,7 +468,6 @@ export function drawGraveyardWall(ctx, cx, cy, seed, opts = {}) {
   const len = 0.84 + (rng() > 0.58 ? 0.08 : 0);
   const chipped = rng() > 0.52;
 
-  drawShadowBlob(ctx, cx, cy + 4, 57, 13);
   // Waist-high consecrated masonry: enough mass and cap light that the wall
   // reads as a wall from gameplay distance, not as scattered kerb stones.
   const box = orientedBox(ctx, frame, len, 0.26, 17, {
@@ -510,6 +535,14 @@ export function drawGraveyardWall(ctx, cx, cy, seed, opts = {}) {
   }
   drawNoisePixels(ctx, cx - 26, cy - 15, 52, 19, [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.stoneDust], 0.045, seed);
   drawRubbleCluster(ctx, cx + (seed & 1 ? 18 : -18), cy + 6, seed + 13, 2);
+
+  // Half-pixel seams and cap scratches follow the actual oriented masonry.
+  const nativeCapA = mixPoint(box.cap.left, box.cap.top, 0.18);
+  const nativeCapB = mixPoint(box.cap.left, box.cap.top, 0.58);
+  nativeLinePx(ctx, nativeCapA[0], nativeCapA[1] + 0.5, nativeCapB[0], nativeCapB[1] + 0.5, PALETTE.stoneLight);
+  const nativeFaceA = frame.point(-0.18, 0.13, 6);
+  const nativeFaceB = frame.point(0.18, 0.13, 9);
+  nativeLinePx(ctx, nativeFaceA[0], nativeFaceA[1], nativeFaceB[0], nativeFaceB[1], PALETTE.stoneDark);
 }
 
 const GRAVEYARD_CHAPEL_STYLES = {
@@ -609,6 +642,17 @@ function drawGraveyardChapelFace(ctx, face, style, seed, opts = {}) {
   face.line(0.5, 0.21, 0.62, 0.36, PALETTE.stoneDark, 1);
   face.line(0.5, 0.31, 0.5, 0.67, PALETTE.stoneDark, 1);
   face.line(0.37, 0.71, 0.63, 0.71, PALETTE.stoneDust, 2);
+}
+
+function drawNativeGraveyardChapelFace(face, seed, style, shaded) {
+  const light = shaded ? PALETTE.stoneDark : style.trim;
+  const dark = shaded ? PALETTE.outline : PALETTE.stoneDark;
+  for (let i = 0; i < 5; i += 1) {
+    const hash = hash2D(seed + i * 41, seed * 13 + i * 23);
+    const u = 0.1 + ((hash & 255) / 255) * 0.79;
+    const v = 0.13 + (((hash >>> 8) & 255) / 255) * 0.75;
+    face.nativeLine(u, v, Math.min(0.95, u + 0.075), v + (((hash >>> 16) & 1) ? 0.012 : -0.012), i & 1 ? dark : light);
+  }
 }
 
 function drawChapelGableOculus(ctx, center, style, variant) {
@@ -750,7 +794,6 @@ export function drawGraveyardChapelBlock(ctx, cx, cy, seed, opts = {}) {
   const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
   const wallTop = diamond(cx, cy - style.wallH, TILE_WIDTH, TILE_HEIGHT);
 
-  drawShadowBlob(ctx, cx, cy + 5, 66, 22);
 
   if (!connected.yPlus) {
     poly(ctx, style.wallLit, [wallTop.left, wallTop.bottom, base.bottom, base.left]);
@@ -761,6 +804,7 @@ export function drawGraveyardChapelBlock(ctx, cx, cy, seed, opts = {}) {
       rightEdge: !connected.xPlus,
       window: false
     });
+    drawNativeGraveyardChapelFace(face, seed + 79, style, false);
     face.line(0.03, 0.04, 0.97, 0.04, style.trim, 2);
 
     // The end wall rises into the roof instead of stopping at a flat cap. A
@@ -786,6 +830,7 @@ export function drawGraveyardChapelBlock(ctx, cx, cy, seed, opts = {}) {
       rightEdge: !connected.yMinus,
       window: true
     });
+    drawNativeGraveyardChapelFace(face, seed + 97, style, true);
     face.line(0.04, 0.04, 0.96, 0.04, PALETTE.stoneDark, 2);
   }
 
@@ -818,6 +863,12 @@ export function drawGraveyardChapelBlock(ctx, cx, cy, seed, opts = {}) {
     const b = roofPoint(courseStops[course + 1], depth);
     linePx(ctx, a[0], a[1], b[0], b[1], style.roofShade, 1);
   }
+  const fineSlateA = roofPoint(0.26 + (seed & 3) * 0.06, 0.34);
+  const fineSlateB = roofPoint(0.38 + (seed & 3) * 0.055, 0.34);
+  nativeLinePx(ctx, fineSlateA[0] + 0.5, fineSlateA[1] - 0.5, fineSlateB[0] + 0.5, fineSlateB[1] - 0.5, style.roofLight);
+  const fineSlateC = roofPoint(0.6, 0.58 + ((seed >>> 2) & 3) * 0.06);
+  const fineSlateD = roofPoint(0.74, 0.58 + ((seed >>> 2) & 3) * 0.06);
+  nativeLinePx(ctx, fineSlateC[0] - 0.5, fineSlateC[1] + 0.5, fineSlateD[0] - 0.5, fineSlateD[1] + 0.5, style.roofShade);
   if (leftSlope) {
     linePx(ctx, plane[1][0], plane[1][1], plane[2][0], plane[2][1], PALETTE.outline, 2);
     linePx(ctx, plane[1][0] - 1, plane[1][1] - 1, plane[2][0] - 1, plane[2][1] - 1, style.roofLight, 1);
@@ -884,7 +935,6 @@ export function drawCalcifiedGravePlot(ctx, cx, cy, seed, opts = {}) {
   const sunken = (seed % 4) === 1;
   const openAsh = (seed % 6) === 2;
 
-  drawShadowBlob(ctx, cx, cy + 4, 50, 16);
   orientedBox(ctx, frame, 0.82, 0.52, sunken ? 3 : 5, {
     top: sunken ? PALETTE.stoneDark : PALETTE.stoneMid,
     lit: PALETTE.stoneDust,
@@ -980,6 +1030,15 @@ export function drawCalcifiedGravePlot(ctx, cx, cy, seed, opts = {}) {
     px(ctx, cx + 1, cy - 3, PALETTE.hostBlack, 3, 2); // the hollow
   }
 
+  // Calcified mineral striations sit on the rim and settled fill. Their small
+  // scale distinguishes grown shell from ordinary cut graveyard stone.
+  const mineralA = frame.point(-0.27, -0.13, 8.5);
+  const mineralB = frame.point(0.04, -0.12, 8.5);
+  nativeLinePx(ctx, mineralA[0], mineralA[1], mineralB[0], mineralB[1], PALETTE.hostBone);
+  const ashA = frame.point(-0.12, 0, 10.5);
+  const ashB = frame.point(0.09, 0.03, 10.5);
+  nativeLinePx(ctx, ashA[0], ashA[1], ashB[0], ashB[1], PALETTE.stoneDust);
+
 }
 
 // Not cut stone. These graves were marked the same way as the rest: the
@@ -994,7 +1053,6 @@ export function drawCalcifiedHeadstone(ctx, cx, cy, seed) {
   const shade = PALETTE.stoneDark;
   const out = PALETTE.outline;
 
-  drawShadowBlob(ctx, cx, cy + 3, 28, 10);
   // The low swell of the grave-planting under every stump.
   drawIsoDiamond(ctx, cx, cy + 1, 30, 12, out);
   drawIsoDiamond(ctx, cx, cy, 27, 10, shade);
@@ -1090,6 +1148,11 @@ export function drawCalcifiedHeadstone(ctx, cx, cy, seed) {
   px(ctx, cx + lean + 3, cy - 6, PALETTE.hostGold, 3, 2); // the ring
   px(ctx, cx + lean + 4, cy - 5, PALETTE.void, 1, 1); // its hollow
 
+  // Hairline fractures expose the chalky lamination of the calcified body.
+  nativeLinePx(ctx, cx + lean - 2.5, cy - 12.5, cx + lean + 0.5, cy - 7.5, bone);
+  nativeLinePx(ctx, cx + lean + 2.5, cy - 9.5, cx + lean + 4.5, cy - 5.5, shade);
+  nativePx(ctx, cx - 7.5, cy - 1.5, dust);
+
 }
 
 export function drawGraveyardTombSlab(ctx, cx, cy, seed, opts = {}) {
@@ -1097,7 +1160,6 @@ export function drawGraveyardTombSlab(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 251, seed * 7 + 43));
   const cracked = seed % 3 === 0;
 
-  drawShadowBlob(ctx, cx, cy + 5, 58, 19);
   const base = orientedBox(ctx, frame, 0.9, 0.52, 12, {
     top: PALETTE.stoneMid,
     lit: PALETTE.stoneDust,
@@ -1177,13 +1239,20 @@ export function drawGraveyardTombSlab(ctx, cx, cy, seed, opts = {}) {
   px(ctx, coin[0], coin[1], PALETTE.hostGold, 2, 1);
   px(ctx, coin[0], coin[1] - 1, PALETTE.rustLight, 1, 1);
 
+  // Shallow carving lines contour the effigy and the slab's dressed edge.
+  const nativeEffigyA = frame.point(-0.17, -0.02, 19.5);
+  const nativeEffigyB = frame.point(0.13, 0.07, 19.5);
+  nativeLinePx(ctx, nativeEffigyA[0], nativeEffigyA[1], nativeEffigyB[0], nativeEffigyB[1], PALETTE.stoneLight);
+  const nativeEdgeA = frame.point(-0.3, -0.14, 16.5);
+  const nativeEdgeB = frame.point(0.02, -0.14, 16.5);
+  nativeLinePx(ctx, nativeEdgeA[0], nativeEdgeA[1], nativeEdgeB[0], nativeEdgeB[1], PALETTE.stoneDust);
+
 }
 
 export function drawGraveyardCatacombMouth(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const rng = rngFrom(hash2D(seed + 263, seed * 11 + 47));
 
-  drawShadowBlob(ctx, cx, cy + 6, 66, 21);
   orientedBox(ctx, frame, 1, 0.62, 5, {
     top: PALETTE.stoneMid,
     lit: PALETTE.stoneDust,
@@ -1281,13 +1350,18 @@ export function drawGraveyardCatacombMouth(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx + 4, cy + 3, PALETTE.hostBone, 2, 2); // the stub
   px(ctx, cx + 4, cy + 2, PALETTE.rustDark, 1, 1); // its dead wick
 
+  // Fine jamb tooling and worn tread polish reinforce the depth of the cut
+  // entrance while keeping the throat itself absolute black.
+  nativeLinePx(ctx, jambL[0] - 1.5, jambL[1] - 24.5, jambL[0] - 1.5, jambL[1] - 10.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, jambR[0] + 0.5, jambR[1] - 20.5, jambR[0] + 0.5, jambR[1] - 7.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, thresholdA[0] + 3.5, thresholdA[1] - 1.5, thresholdB[0] - 5.5, thresholdB[1] - 1.5, PALETTE.stoneDust);
+
 }
 
 export function drawGraveyardRemnantCross(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 271, seed * 13 + 53));
   const lean = Math.floor((rng() - 0.5) * 3);
 
-  drawShadowBlob(ctx, cx, cy + 5, 42, 15);
   drawIsoPrism(ctx, cx, cy, 36, 18, 8, {
     top: PALETTE.stoneMid,
     left: PALETTE.stoneDust,
@@ -1346,6 +1420,11 @@ export function drawGraveyardRemnantCross(ctx, cx, cy, seed) {
   px(ctx, cx - 3, cy - 18, PALETTE.rustMid, 6, 1); // the newest cord
   px(ctx, cx + 3, cy - 17, PALETTE.rustMid, 1, 3); // its tail
 
+  // Chalky half-pixel cracks follow the shaft and broken cross arm.
+  nativeLinePx(ctx, stemX - 3.5, cy - 63.5, stemX - 2.5, cy - 53.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, stemX + 1.5, cy - 42.5, stemX + 0.5, cy - 29.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, stemX - 14.5, cy - 49.5, stemX - 7.5, cy - 49.5, PALETTE.hostBone);
+
 }
 
 export function drawGraveyardPackedAsh(ctx, cx, cy, seed) {
@@ -1375,6 +1454,11 @@ export function drawGraveyardPackedAsh(ctx, cx, cy, seed) {
     px(ctx, x, y, PALETTE.outline, 4, 1);
     px(ctx, x + 1, y - 1, rng() < 0.5 ? PALETTE.hostBone : PALETTE.stoneDust, 2, 1);
   }
+  nativeLinePx(ctx, cx - 21.5, cy - 5.5, cx - 7.5, cy - 9.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 3.5, cy + 8.5, cx + 20.5, cy + 3.5, PALETTE.stoneDark);
+  for (const [dx, dy] of [[-16.5, 1.5], [1.5, -5.5], [17.5, -0.5]]) {
+    nativePx(ctx, cx + dx, cy + dy, PALETTE.hostBone);
+  }
 }
 
 export function drawGraveyardPathStones(ctx, cx, cy, seed) {
@@ -1391,6 +1475,8 @@ export function drawGraveyardPathStones(ctx, cx, cy, seed) {
     drawIsoDiamond(ctx, cx + dx, cy + dy, stone.w, stone.h, rng() < 0.45 ? PALETTE.stoneLight : PALETTE.stoneMid);
     px(ctx, cx + dx - 6, cy + dy - 2, PALETTE.stoneDust, 6, 1);
     if (rng() < 0.45) px(ctx, cx + dx + 3, cy + dy + 2, PALETTE.stoneDark, 7, 1);
+    nativeLinePx(ctx, cx + dx - 5.5, cy + dy - 2.5, cx + dx + 1.5, cy + dy - 2.5, PALETTE.stoneLight);
+    nativeLinePx(ctx, cx + dx + 0.5, cy + dy - 0.5, cx + dx + 4.5, cy + dy + 2.5, PALETTE.stoneDark);
   }
   drawNoisePixels(ctx, cx - 23, cy - 10, 46, 20, [PALETTE.stoneDust, PALETTE.stoneDark], 0.035, seed);
 }
@@ -1415,6 +1501,9 @@ export function drawGraveyardRootSeam(ctx, cx, cy, seed) {
     if (i % 2 === 0) linePx(ctx, midX, midY, midX - 5, midY + 4, PALETTE.woodDark, 1);
     if (i === 1) px(ctx, midX + 2, midY - 2, PALETTE.hostBone, 2, 1);
   }
+  nativeLinePx(ctx, cx - 21.5, cy - 5.5, cx - 7.5, cy - 1.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx - 3.5, cy + 5.5, cx + 12.5, cy - 2.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx + 10.5, cy - 2.5, cx + 21.5, cy + 1.5, PALETTE.rustDark);
 }
 
 export function drawGraveyardPrayerScratch(ctx, cx, cy, seed) {
@@ -1440,6 +1529,12 @@ export function drawGraveyardPrayerScratch(ctx, cx, cy, seed) {
   }
   ctx.restore();
   drawNoisePixels(ctx, cx - 18, cy - 9, 36, 18, [PALETTE.stoneDust, PALETTE.stoneDark], 0.05, seed);
+  // The scored glyph has a pale freshly cut lip beside its darker groove,
+  // plus a few hairline plea marks that are legible only at native 2x.
+  nativeLinePx(ctx, x - 0.5, y - 7.5, x - 0.5, y + 6.5, PALETTE.hostBone);
+  nativeLinePx(ctx, x - 7.5, y - 1.5, x + 7.5, y - 1.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, x - 11.5, y + 5.5, x - 5.5, y + 7.5, PALETTE.stoneDust);
+  nativePx(ctx, x + 10.5, y - 5.5, PALETTE.hostBone);
 }
 
 function drawFallenSaint(ctx, cx, cy, seed, settle = 1) {
@@ -1562,6 +1657,14 @@ function drawFallenSaint(ctx, cx, cy, seed, settle = 1) {
   px(ctx, cx - 17, cy + 10, PALETTE.rustMid, 5, 2); // the overturned bowl
   px(ctx, cx - 15, cy + 12, PALETTE.skinMid, 3, 1); // what spilled from it
 
+  // The landed state keeps rib striations, horn lamination, cloth stitching,
+  // and a final black-gold capillary at one physical pixel.
+  nativeLinePx(ctx, cx - 14.5, cy - 2.5, cx - 7.5, cy - 1.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 0.5, cy - 5.5, cx + 3.5, cy - 10.5, PALETTE.hostBone);
+  nativeLinePx(ctx, hx + 5.5, hy - 3.5, hx + 9.5, hy - 4.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, hx - 7.5, hy + 2.5, hx - 8.5, hy + 5.5, PALETTE.hostGold);
+  nativePx(ctx, cx - 14.5, cy - 13.5, PALETTE.skinLight);
+
 }
 
 export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
@@ -1623,7 +1726,6 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
     px(ctx, Math.round(x), Math.round(y), gold, 1, 1);
   };
 
-  drawShadowBlob(ctx, cx, cy + 3, 40, 16);
 
   // --- Cross timber + beam, a little blood down the grain -----------------
   px(ctx, cx - 4, topY, PALETTE.outline, 9, footY - topY + 2);
@@ -1635,6 +1737,13 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - beamHalf + 5, armY + 5, wet, 2, 9); // blood from the left nail
   px(ctx, cx + beamHalf - 6, armY + 5, wet, 2, 7); // from the right nail
   px(ctx, cx, armY + 30, wet, 2, footY - armY - 30); // down the post from the wound
+
+  // Cross grain and nail glints are shared by the living, dead, and released
+  // branches, guaranteeing a native redraw even when the body has fallen.
+  nativeLinePx(ctx, cx - 2.5, topY + 2.5, cx - 1.5, footY - 5.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - beamHalf + 2.5, armY - 1.5, cx + beamHalf - 3.5, armY - 0.5, PALETTE.woodMid);
+  nativePx(ctx, cx - beamHalf + 2.5, armY - 0.5, PALETTE.stoneLight);
+  nativePx(ctx, cx + beamHalf - 3.5, armY - 0.5, PALETTE.stoneLight);
 
   // --- Cut down: the cross hangs empty (torn nails, blood) and the body has
   //     dropped off it to crumple and die on the ground below ---------------
@@ -1843,4 +1952,9 @@ export function drawCrossMartyr(ctx, cx, cy, seed, opts = {}) {
   drawIsoDiamond(ctx, cx + 2, cy + 2, 22, 11, PALETTE.rustDark);
   drawNoisePixels(ctx, cx - 11, cy - 3, 24, 11, [wet, PALETTE.rustDark], 0.1, seed);
   px(ctx, cx - 2, footY, wet, 6, 2);
+  nativeLinePx(ctx, cavX - 0.5, cavTop + 0.5, cavX - 6.5, cavTop + 5.5, rim);
+  nativeLinePx(ctx, cavX + cavW - 0.5, cavTop + 1.5, cavX + cavW + 5.5, cavTop + 6.5, bone);
+  nativeLinePx(ctx, gx - 3.5, gy - 0.5, gx + 3.5, gy - 0.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, gx - 0.5, gy + 8.5, gx + 0.5, gy + 13.5, PALETTE.hostBlack);
+  nativePx(ctx, kneeX + 0.5, kneeY - 0.5, gold);
 }

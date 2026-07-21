@@ -1,13 +1,16 @@
 {
   "id": "censure-bell-clerk-sera",
-  "name": "Bell Clerk Sera",
+  "name": "Bell Clerk Sabina",
   "type": "npc",
   "faction": "holy-remnant",
   "role": "Bell clerk",
   "appearance": {
     "body": "compact",
     "outfit": "settlement-chapel-hand",
-    "gear": ["prayer-cord", "message-tube"],
+    "gear": [
+      "prayer-cord",
+      "message-tube"
+    ],
     "accent": "pale-hood"
   },
   "stats": {
@@ -15,5 +18,9 @@
     "maxHp": 8,
     "actionPoints": 0
   },
-  "tags": ["holy-remnant", "ash-censure", "bell-clerk"]
+  "tags": [
+    "holy-remnant",
+    "ash-censure",
+    "bell-clerk"
+  ]
 }

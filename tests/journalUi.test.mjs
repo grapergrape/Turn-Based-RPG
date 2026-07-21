@@ -1,12 +1,24 @@
 import assert from 'node:assert/strict';
 
 import { buildCharacterSheet } from '../src/core/Progression.js';
-import { JOURNAL_SECTIONS } from '../src/core/JournalState.js';
+import {
+  JOURNAL_SECTIONS,
+  buildJournalState,
+  buildJournalUpdateSnapshot,
+  journalUpdatedSections,
+  visibleJournalSections
+} from '../src/core/JournalState.js';
+import { installGameRuntimeState } from '../src/core/game/GameRuntimeState.js';
+import {
+  JOURNAL_NOTICE_DURATION,
+  JOURNAL_NOTICE_POLL_INTERVAL
+} from '../src/core/game/runtimeConstants.js';
 import { UIRenderer } from '../src/render/UIRenderer.js';
 import {
   JOURNAL_ARROW_BOXES,
   JOURNAL_TECHNIQUE_LIST,
   journalArrowAt,
+  journalEvidenceWindow,
   journalTabAt,
   journalTabBoxes,
   journalTechniqueRowAt,
@@ -31,7 +43,7 @@ function mockCtx() {
 }
 
 const character = buildCharacterSheet({
-  name: 'Mara Vey',
+  name: 'Test Agent',
   role: 'Cult-Breaker, Ashen Censure',
   progression: {
     primaries: {
@@ -61,7 +73,7 @@ const character = buildCharacterSheet({
 
 const baseUi = {
   screen: 'journal',
-  actorName: 'Mara Vey',
+  actorName: 'Test Agent',
   role: 'Cult-Breaker, Ashen Censure',
   mode: 'EXPLORE',
   hp: 14,
@@ -105,7 +117,7 @@ const map = {
     }))
   ).flat(),
   markers: [
-    { id: 'player', kind: 'player', label: 'Mara Vey', x: 1, y: 1, reveal: 'always' },
+    { id: 'player', kind: 'player', label: 'Test Agent', x: 1, y: 1, reveal: 'always' },
     { id: 'quest:test', kind: 'quest', label: 'Test Writ', x: 2, y: 1, reveal: 'explored' },
     { id: 'dialogue:test', kind: 'dialogue', label: 'Test Contact', x: 3, y: 2, reveal: 'explored' }
   ],
@@ -117,6 +129,17 @@ const time = {
   timeLabel: '08:00',
   phaseLabel: 'MORNING'
 };
+
+assert.deepEqual(
+  visibleJournalSections(),
+  JOURNAL_SECTIONS.filter((section) => section !== 'DRONE')
+);
+assert.deepEqual(
+  visibleJournalSections({ attendantAvailable: true }),
+  JOURNAL_SECTIONS
+);
+assert.equal(buildJournalState({ drone: { recruited: false } }).sections.includes('DRONE'), false);
+assert.equal(buildJournalState({ drone: { recruited: true } }).sections.includes('DRONE'), true);
 
 for (let section = 0; section < JOURNAL_SECTIONS.length; section += 1) {
   renderer.draw(mockCtx(), {
@@ -198,5 +221,103 @@ assert.equal(journalTechniqueRowAt({
 }, denseTechniques, 25), 25);
 assert.equal(journalTechniqueRowAt({ x: 320, y: 200 }, denseTechniques, 25), null);
 
+const denseEvidence = Array.from({ length: 12 }, (_, index) =>
+  `Evidence ${index + 1} records a specific field finding with enough detail to occupy several ledger lines during review.`
+);
+const firstEvidenceWindow = journalEvidenceWindow(denseEvidence, 0);
+assert.equal(firstEvidenceWindow.start, 0);
+assert.equal(firstEvidenceWindow.hasPrevious, false);
+assert.equal(firstEvidenceWindow.hasNext, true);
+const lastEvidenceWindow = journalEvidenceWindow(denseEvidence, Number.MAX_SAFE_INTEGER);
+assert.ok(lastEvidenceWindow.start > 0);
+assert.equal(lastEvidenceWindow.end, denseEvidence.length);
+assert.equal(lastEvidenceWindow.hasPrevious, true);
+assert.equal(lastEvidenceWindow.hasNext, false);
+assert.equal(journalEvidenceWindow(denseEvidence, lastEvidenceWindow.start - 1).hasNext, true);
+
+renderer.draw(mockCtx(), {
+  ...baseUi,
+  journal: {
+    section: JOURNAL_SECTIONS.indexOf('NOTES'),
+    sections: JOURNAL_SECTIONS,
+    evidenceIndex: lastEvidenceWindow.start,
+    findings: denseEvidence,
+    quests: [],
+    factions: [],
+    character,
+    techniques: { activePoints: 0, passivePoints: 0, selectedIndex: 0, entries: [] }
+  }
+});
+
 assert.equal(normalizeLedgerText('censure file x 2'), 'CENSURE FILE X 2');
 assert.equal(ledgerTextWidth('C-8'), 15);
+
+const noticeQuestDefs = {
+  test: {
+    id: 'test',
+    title: 'Test Writ',
+    stages: [
+      { id: 'active', task: 'Inspect the record.', description: 'The record remains unread.' },
+      { id: 'evidence', task: 'Follow the new lead.', description: 'The record names a hidden witness.' }
+    ],
+    objectives: [
+      { text: 'Read the record.', stage: 'evidence' }
+    ]
+  }
+};
+const noticeJournalNotes = [
+  { id: 'witness-note', flag: 'found-witness-note', text: 'A witness left a name in the margin.' }
+];
+const noticeCodexDefs = [
+  {
+    id: 'witness-cell',
+    name: 'Witness Cell',
+    unlockedBy: { flag: 'identified-witness-cell' },
+    summary: 'A hidden civic network.'
+  }
+];
+const noticeBase = {
+  questDefs: noticeQuestDefs,
+  questStages: new Map([['test', 'active']]),
+  questReached: new Map([['test', new Set(['active'])]]),
+  journalNotes: noticeJournalNotes,
+  codexDefs: noticeCodexDefs,
+  flags: new Set()
+};
+const noticeBaseline = buildJournalUpdateSnapshot(noticeBase);
+
+const questAdvanced = buildJournalUpdateSnapshot({
+  ...noticeBase,
+  questStages: new Map([['test', 'evidence']]),
+  questReached: new Map([['test', new Set(['active', 'evidence'])]])
+});
+assert.deepEqual(journalUpdatedSections(noticeBaseline, questAdvanced), ['QUESTS', 'NOTES']);
+
+const noteFound = buildJournalUpdateSnapshot({
+  ...noticeBase,
+  flags: new Set(['found-witness-note'])
+});
+assert.deepEqual(journalUpdatedSections(noticeBaseline, noteFound), ['NOTES']);
+
+const factionFound = buildJournalUpdateSnapshot({
+  ...noticeBase,
+  flags: new Set(['identified-witness-cell'])
+});
+assert.deepEqual(journalUpdatedSections(noticeBaseline, factionFound), ['FACTIONS']);
+assert.deepEqual(journalUpdatedSections(null, factionFound), []);
+
+class JournalNoticeHarness {}
+installGameRuntimeState(JournalNoticeHarness);
+
+const noticeHarness = Object.assign(new JournalNoticeHarness(), {
+  ...noticeBase,
+  flags: new Set()
+});
+noticeHarness._resetJournalNoticeTracking();
+assert.equal(noticeHarness.journalNotice, null, 'initial journal state must not announce itself');
+noticeHarness.flags.add('found-witness-note');
+noticeHarness._advanceJournalNotice(JOURNAL_NOTICE_POLL_INTERVAL);
+assert.equal(noticeHarness.journalNotice?.title, 'JOURNAL UPDATED');
+assert.equal(noticeHarness.journalNotice?.detail, 'NOTES');
+noticeHarness._advanceJournalNotice(JOURNAL_NOTICE_DURATION + 0.01);
+assert.equal(noticeHarness.journalNotice, null, 'journal notice expires after its display duration');

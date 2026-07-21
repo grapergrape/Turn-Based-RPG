@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-holl-varek",
+  "name": "Horace Crispus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Relief annex salvage foreman",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "relief-annex",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "shoulder-plate"
+    ],
+    "accent": "dark-hood"
+  }
+}

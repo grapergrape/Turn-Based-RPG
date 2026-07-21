@@ -90,6 +90,7 @@ export function inventoryActionMenuActions(menu = null) {
   const actions = [];
   if (menu?.canUse) actions.push('use');
   if (!menu || menu.canEquip || menu.canUnequip) actions.push('equip');
+  if (menu?.canReload) actions.push('reload');
   if (menu?.canRepair) actions.push('repair');
   actions.push('drop');
   if (!menu || menu.canSplit !== false) actions.push('split');

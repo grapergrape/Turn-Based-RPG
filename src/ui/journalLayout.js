@@ -1,3 +1,5 @@
+import { wrapUiText } from './dialogueLayout.js';
+
 export const JOURNAL_BOOK = Object.freeze({ x: 18, y: 14, w: 604, h: 356 });
 
 export const JOURNAL_PAGES = Object.freeze({
@@ -35,6 +37,13 @@ export const JOURNAL_TECHNIQUE_LIST = Object.freeze({
   textOffset: 3,
   visibleRows: 14
 });
+
+const JOURNAL_EVIDENCE_WRAP_CHARS = 34;
+const JOURNAL_EVIDENCE_LINE_HEIGHT = 10;
+const JOURNAL_EVIDENCE_BLOCK_PADDING = 16;
+const JOURNAL_EVIDENCE_BLOCK_ADVANCE = 13;
+const JOURNAL_PAGE_HEADER_BOTTOM = 34;
+const JOURNAL_PAGE_CONTENT_MARGIN = 14;
 
 export function journalTabBoxes(count) {
   const safeCount = Math.max(0, Math.floor(Number(count) || 0));
@@ -89,6 +98,64 @@ export function journalTechniqueRowAt(point, entries, selectedIndex) {
   const row = Math.floor((point.y - JOURNAL_TECHNIQUE_LIST.y) / JOURNAL_TECHNIQUE_LIST.rowHeight);
   const index = window.start + row;
   return index >= window.start && index < window.end ? index : null;
+}
+
+export function journalEvidenceWindow(findings, requestedStart = 0) {
+  const list = Array.isArray(findings) ? findings : [];
+  if (list.length === 0) {
+    return {
+      count: 0,
+      start: 0,
+      end: 0,
+      entries: [],
+      hasPrevious: false,
+      hasNext: false
+    };
+  }
+
+  let maxStart = list.length - 1;
+  let lastWindow = fitJournalEvidenceWindow(list, maxStart);
+  while (maxStart > 0) {
+    const previousWindow = fitJournalEvidenceWindow(list, maxStart - 1);
+    if (previousWindow.end < list.length) break;
+    maxStart -= 1;
+    lastWindow = previousWindow;
+  }
+
+  const start = Math.max(0, Math.min(maxStart, Math.floor(Number(requestedStart) || 0)));
+  const fitted = start === maxStart ? lastWindow : fitJournalEvidenceWindow(list, start);
+  return {
+    count: list.length,
+    start,
+    end: fitted.end,
+    entries: fitted.entries,
+    hasPrevious: start > 0,
+    hasNext: fitted.end < list.length
+  };
+}
+
+function fitJournalEvidenceWindow(findings, start) {
+  const pages = [JOURNAL_PAGES.left, JOURNAL_PAGES.right];
+  const entries = [];
+  let pageIndex = 0;
+  let y = pages[pageIndex].y + JOURNAL_PAGE_HEADER_BOTTOM;
+  let end = start;
+
+  for (let index = start; index < findings.length; index += 1) {
+    const lines = wrapUiText(findings[index], JOURNAL_EVIDENCE_WRAP_CHARS);
+    const blockHeight = lines.length * JOURNAL_EVIDENCE_LINE_HEIGHT + JOURNAL_EVIDENCE_BLOCK_PADDING;
+    const pageBottom = pages[pageIndex].y + pages[pageIndex].h - JOURNAL_PAGE_CONTENT_MARGIN;
+    if (y + blockHeight > pageBottom) {
+      if (pageIndex + 1 >= pages.length) break;
+      pageIndex += 1;
+      y = pages[pageIndex].y + JOURNAL_PAGE_HEADER_BOTTOM;
+    }
+    entries.push({ index, pageIndex, y, lines });
+    y += lines.length * JOURNAL_EVIDENCE_LINE_HEIGHT + JOURNAL_EVIDENCE_BLOCK_ADVANCE;
+    end = index + 1;
+  }
+
+  return { end, entries };
 }
 
 export function journalArrowAt(point) {

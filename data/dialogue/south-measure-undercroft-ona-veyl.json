@@ -1,0 +1,491 @@
+{
+  "id": "south-measure-undercroft-ona-veyl",
+  "title": "The Intake Clerk",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The figure is fixed through the admission wicket. Fused hands close around a stamp of wrist bone.",
+        "The smaller rib mouth speaks first. \"Household denied for unresolved exposure. Remain outside until mercy becomes available.\""
+      ],
+      "choices": [
+        {
+          "label": "Read the roll beside the wicket",
+          "next": "name",
+          "effects": {
+            "setFlag": "intake-clerk-name-known"
+          }
+        },
+        {
+          "label": "Examine Junia without touching the wicket",
+          "next": "answer"
+        },
+        {
+          "label": "Prepare the wicket before deciding",
+          "next": "prepare",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-contained",
+              "intake-clerk-tarn-sealed",
+              "intake-clerk-compact",
+              "intake-clerk-killed",
+              "intake-clerk-burned",
+              "intake-clerk-resealed"
+            ]
+          }
+        },
+        {
+          "label": "Decide the Clerk’s fate",
+          "next": "fate",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-contained",
+              "intake-clerk-tarn-sealed",
+              "intake-clerk-compact",
+              "intake-clerk-killed",
+              "intake-clerk-burned",
+              "intake-clerk-resealed"
+            ]
+          }
+        },
+        {
+          "label": "Step back from the wicket",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "name": {
+      "lines": [
+        "The last protected entry names Junia Lector, junior admission clerk. A thumb has smeared every later denial except her own.",
+        "The human mouth moves once. \"Junia. Present for duty. Transport deferred.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the wicket",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "answer": {
+      "lines": [
+        "The stamp presses into the fused palms. One lifted rib catches against the iron screen while the human mouth works around a second breath.",
+        "\"Mercy allocation remains empty. Junia Lector remains present for duty.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the wicket",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "prepare": {
+      "lines": [
+        "The feed gauge jumps whenever Junia’s rib mouths reach the household number beneath her own.",
+        "You could brace the wicket before moving Junia, or sedate the living tissue and map where it joins the desk. Leaving it untouched remains possible."
+      ],
+      "choices": [
+        {
+          "label": "Map the living tissue before moving it",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 35
+            }
+          },
+          "effects": {
+            "setFlag": "intake-clerk-medical-prep"
+          },
+          "next": "prepared"
+        },
+        {
+          "label": "Set the restraint frame to Susanna’s intake count",
+          "conditions": {
+            "flag": "intake-clerk-name-known"
+          },
+          "effects": {
+            "setFlag": "intake-clerk-restraint-prep"
+          },
+          "next": "prepared"
+        },
+        {
+          "label": "Use a Compact suppressant vial",
+          "conditions": {
+            "items": {
+              "compact-suppressant": 1
+            }
+          },
+          "effects": {
+            "setFlag": "intake-clerk-suppressed",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "compact-suppressant",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            }
+          },
+          "next": "suppressed",
+          "tone": "commit"
+        },
+        {
+          "label": "Ask Cassian to map the answering signal",
+          "conditions": {
+            "flag": "tarn-water-help-requested"
+          },
+          "effects": {
+            "setFlag": "intake-clerk-signal-mapped"
+          },
+          "next": "mapped"
+        },
+        {
+          "label": "Return to the wicket",
+          "next": "start"
+        }
+      ]
+    },
+    "prepared": {
+      "lines": [
+        "The next denial catches against the new brace and loses one of its voices.",
+        "Junia’s human mouth says her own name before the sequence begins again."
+      ],
+      "choices": [
+        {
+          "label": "Decide the Clerk’s fate",
+          "next": "fate"
+        },
+        {
+          "label": "Wait",
+          "next": "start"
+        }
+      ]
+    },
+    "suppressed": {
+      "lines": [
+        "The suppressant darkens the thin gold seams beneath Junia’s throat. Three rib mouths close. The human mouth keeps breathing.",
+        "The change is temporary, but the wicket stops pulling against its bolts."
+      ],
+      "choices": [
+        {
+          "label": "Decide the Clerk’s fate",
+          "next": "fate"
+        },
+        {
+          "label": "Wait",
+          "next": "start"
+        }
+      ]
+    },
+    "mapped": {
+      "lines": [
+        "Cassian marks the pressure knocks on the floor. Junia answers north only after the pipe answers first.",
+        "The signal can be cut without severing the water feed."
+      ],
+      "choices": [
+        {
+          "label": "Decide the Clerk’s fate",
+          "next": "fate"
+        },
+        {
+          "label": "Wait",
+          "next": "start"
+        }
+      ]
+    },
+    "fate": {
+      "lines": [
+        "The feed controls shake. Junia’s rib mouths begin the denial sequence again."
+      ],
+      "choices": [
+        {
+          "label": "Preserve Junia at the wicket",
+          "next": "preserve"
+        },
+        {
+          "label": "Choose outside custody",
+          "next": "custody"
+        },
+        {
+          "label": "Destroy the wicket or tear Junia free",
+          "next": "destroy"
+        },
+        {
+          "label": "Delay the decision",
+          "next": "start"
+        }
+      ]
+    },
+    "preserve": {
+      "lines": [
+        "Junia’s body bears down on the denial desk. The original roll and northward signal are trapped in the same assembly."
+      ],
+      "choices": [
+        {
+          "label": "Contain Junia after the preparation",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "intake-clerk-medical-prep",
+                "intake-clerk-restraint-prep",
+                "intake-clerk-suppressed"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "intake-clerk-contained",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-preserved"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "The prepared restraint contains Junia without separating her from the denial desk. The original roll remains intact."
+            }
+          },
+          "next": "contained",
+          "tone": "commit"
+        },
+        {
+          "label": "Contain the wicket by field protocol",
+          "conditions": {
+            "fieldRatings": {
+              "containment": 40
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "intake-clerk-contained",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-preserved"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "Field containment quiets Junia inside the wicket. South Measure keeps the original roll beside her."
+            }
+          },
+          "next": "contained",
+          "tone": "commit"
+        },
+        {
+          "label": "Reseal the admission wicket",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 35
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "intake-clerk-resealed",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-preserved"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "The admission wicket is resealed around Junia, preserving the roll while cutting the answering pressure."
+            }
+          },
+          "next": "resealed",
+          "tone": "commit"
+        },
+        {
+          "label": "Let Cassian seal the answering signal",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "tarn-water-help-requested",
+                "intake-clerk-signal-mapped"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "intake-clerk-tarn-sealed",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-preserved",
+              "tarn-clerk-seal-spent"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "Cassian spends his full seal on Junia’s northward signal. Her body and the roll remain at the wicket."
+            }
+          },
+          "next": "sealed",
+          "tone": "commit"
+        },
+        {
+          "label": "Choose another fate",
+          "next": "fate"
+        }
+      ]
+    },
+    "custody": {
+      "lines": [
+        "Aurelia’s treated support frame can carry Junia. No other faction has offered a living-custody protocol."
+      ],
+      "choices": [
+        {
+          "label": "Release Junia to Compact custody",
+          "conditions": {
+            "flag": "heard-yara-quell-terms"
+          },
+          "effects": {
+            "setFlag": [
+              "intake-clerk-compact",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-preserved",
+              "intake-roll-compact-claim"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "Compact clinicians take living custody of Junia. Their claim includes the original household roll."
+            }
+          },
+          "next": "compact",
+          "tone": "commit"
+        },
+        {
+          "label": "Choose another fate",
+          "next": "fate"
+        }
+      ]
+    },
+    "destroy": {
+      "lines": [
+        "The oldest bolts pass through bone and desk wood together. Fire is certain. Removal is not."
+      ],
+      "choices": [
+        {
+          "label": "Burn the body and denial desk",
+          "effects": {
+            "setFlag": [
+              "intake-clerk-burned",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-damaged"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "Junia and the denial desk burn together. Heat damages the original household roll."
+            }
+          },
+          "next": "burned",
+          "tone": "danger"
+        },
+        {
+          "label": "Tear Junia free and face what survives",
+          "effects": {
+            "setFlag": "intake-clerk-forced-open",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_intake_undercroft.json",
+              "player": {
+                "x": 29,
+                "y": 39,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Choose another fate",
+          "next": "fate"
+        }
+      ]
+    },
+    "contained": {
+      "lines": [
+        "The return feed closes. Junia remains fixed, breathing in time with a quiet pipe.",
+        "The roll stays in South Measure."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "sealed": {
+      "lines": [
+        "Cassian’s cord draws tight around the brace. The northward answer stops.",
+        "Junia whispers her own name once, too softly for the rib mouths to repeat."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "resealed": {
+      "lines": [
+        "The admission shutter closes around the old braces. Junia’s human mouth remains on the occupied side.",
+        "The denial sequence continues behind iron at the pace of a sleeping breath."
+      ],
+      "choices": [
+        {
+          "label": "Leave the resealed wicket",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "compact": {
+      "lines": [
+        "Treated cloth closes over the wicket. Compact braces take the body’s weight.",
+        "The original roll is packed beside the sedation case."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "burned": {
+      "lines": [
+        "Fire takes the clerk’s coat before it reaches the opened ribs.",
+        "Several roll pages blacken where the denial desk holds them against the body."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -3,20 +3,20 @@
 ## Scope
 
 This audit covers the Vigil Chapel, Mortuary Chapel, Listening Vault, their
-secrets and UI, and the Sava Rell encounter. Each pass included an isolated
+secrets and UI, and the Sapphira Rufa encounter. Each pass included an isolated
 render or real game capture. The review standard was the project's honest art
 rubric, with 4 as average and 10 reserved for exceptional work.
 
 ## Pass 1: silhouette and material baseline
 
-Reviewed both chapel interiors, the vault prop family, and the first Sava
+Reviewed both chapel interiors, the vault prop family, and the first Sapphira
 silhouette in isolated sheets and authored scenes.
 
 Findings:
 
 - The chapel rooms read as distinct places, but their story props needed a
   clearer functional hierarchy.
-- The first Sava silhouette read too much like a composed cleric.
+- The first Sapphira silhouette read too much like a composed cleric.
 - The listening apparatus needed to dominate the vault without becoming a
   bright fantasy machine.
 
@@ -24,7 +24,7 @@ Actions:
 
 - Separated the Vigil's domestic mourning language from the Mortuary's working
   surfaces and institutional records.
-- Rebuilt Sava around an asymmetrical human body, a canted face, one opened rib
+- Rebuilt Sapphira around an asymmetrical human body, a canted face, one opened rib
   side, fused prayer fingers, and an overlong rake arm.
 - Kept the apparatus in cold metal, stained ceramic, wax, and thin black-gold
   traces from the approved palette.
@@ -46,7 +46,7 @@ Findings:
 - The concealed Mortuary stair left a black floor interruption before it was
   discovered.
 - The original vault chest was brighter than the story-critical apparatus.
-- Sava's human scale held at normal play zoom, but his body-horror landmarks
+- Sapphira's human scale held at normal play zoom, but his body-horror landmarks
   needed stronger asymmetry.
 
 Actions:
@@ -55,7 +55,7 @@ Actions:
   absent while its ordinary floor tile stays visible.
 - Replaced the bright reliquary treatment with a low examiner assay case.
 - Increased the broken bone arc, one-sided rib opening, and fused-hand read
-  while keeping Sava only slightly larger than Mara.
+  while keeping Sapphira only slightly larger than Mara.
 
 Evidence:
 
@@ -91,19 +91,19 @@ Evidence:
 
 ## Pass 4: boss action, HUD, corpse, and balance
 
-Reviewed Sava's attack pose, all facings, death state, target readout, combat
+Reviewed Sapphira's attack pose, all facings, death state, target readout, combat
 intro, and early-game simulation.
 
 Findings:
 
 - The target label and 20 HP readout fit the combat HUD.
 - The encounter is dangerous at adjacency but allows Mara to use the room.
-- A generic collapsed Host corpse lost too much of Sava's authored mass.
+- A generic collapsed Host corpse lost too much of Sapphira's authored mass.
 
 Actions:
 
 - Added a dedicated full-mass death painter with no living glow.
-- Kept one simple 2-damage rake at 3 AP, allowing two attacks only when Sava
+- Kept one simple 2-damage rake at 3 AP, allowing two attacks only when Sapphira
   reaches the player.
 - Set movement to 1 and placed the opening at distance two so positioning and
   the nearby chapel supplies matter.
@@ -125,11 +125,11 @@ chapel approach at player scale.
 Findings:
 
 - The closed Mortuary floor is continuous and does not advertise the stair.
-- The closed vault hides Sava completely.
-- Opening the niche reveals enough of Sava's upper body to establish the threat
+- The closed vault hides Sapphira completely.
+- Opening the niche reveals enough of Sapphira's upper body to establish the threat
   before the first combat action.
 - Completed record choices now alter the physical rooms. A restored vigil
-  closes and disables Hessa's panel, while carried records disappear from their
+  closes and disables Keziah's panel, while carried records disappear from their
   authored document props without removing the furniture beneath them.
 - The exterior roofs, doors, and walls read as aligned small chapels beside a
   player-sized human.
@@ -154,9 +154,9 @@ Evidence:
 - `.ai/visual-audit/2026-07-12-heard-bell-pass-05-static-kinds.png`
 - `.ai/visual-audit/2026-07-12-heard-bell-graveyard-entries-final-scene.png`
 
-## Pass 6: Sava's human silhouette under the Imprint
+## Pass 6: Sapphira's human silhouette under the Imprint
 
-Reviewed Sava again at normal play zoom and in five representative isolated
+Reviewed Sapphira again at normal play zoom and in five representative isolated
 facings. The previous sprite carried the right ideas, but the rear views and
 long-limbed read were still weaker than the front.
 
@@ -164,7 +164,7 @@ Actions:
 
 - Carried the broken aureole, long calcified human face, one-sided rib opening,
   fused prayer hand, and overlong rake arm through the rear and quarter facings.
-- Strengthened the shroud weight and one dropped shoulder without making Sava
+- Strengthened the shroud weight and one dropped shoulder without making Sapphira
   taller than a human-sized enemy.
 - Kept the live wound small, the gold seams under the skin, and all light on the
   body rather than painting an environmental glow into the sprite.
@@ -287,7 +287,7 @@ Actions:
 - Made short dialogue windows compact and bottom-anchored while retaining the
   full-size scrolling layout for long text and five choices.
 - Rebuilt the combat status stack so HP, AP, attack, chance or failure reason,
-  and the full Sava target line all remain visible even when Mara has a status.
+  and the full Sapphira target line all remain visible even when Mara has a status.
 - Suppressed area-title banners during combat.
 
 Evidence:
@@ -305,13 +305,13 @@ the combat panel never trades away tactical information for decoration.
 
 ## Final assessment
 
-- Sava live sprite and motion: 9/10.
-- Sava corpse: 9/10.
+- Sapphira live sprite and motion: 9/10.
+- Sapphira corpse: 9/10.
 - Vigil Chapel, Mortuary Chapel, and Listening Vault: 9/10 each.
 - Chapel secret hero props: 9/10 as a family.
 - Those Who Heard the Bell dialogue and combat UI: 9/10.
 
-All visible art uses hard pixels and the project palette. Sava has a contact
+All visible art uses hard pixels and the project palette. Sapphira has a contact
 shadow, upper-left lighting, no baked environmental glow, and no clean golem or
 chibi proportions. Combat rules and supplies were not changed. Starter Mara's
 distance-two simulation remains 78.1 percent, and the three-dressing case

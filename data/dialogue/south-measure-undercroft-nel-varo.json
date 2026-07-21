@@ -1,0 +1,86 @@
+{
+  "id": "south-measure-undercroft-nel-varo",
+  "title": "Noa Faber at the Isolation Manifold",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Noa has chalked the isolation manifold without disturbing the black-gold line beneath its pipe skin."
+      ],
+      "choices": [
+        {
+          "label": "Ask whether the north feed can be isolated",
+          "next": "isolation"
+        },
+        {
+          "label": "Choose the isolated resident loop",
+          "conditions": {
+            "flag": "south-measure-water-decision-open",
+            "flags": [
+              "south-measure-isolation-route-known",
+              "intake-clerk-resolved"
+            ],
+            "flagsAbsent": [
+              "south-measure-plan-monitored-flow",
+              "south-measure-plan-morrow-import",
+              "south-measure-plan-isolated-loop",
+              "south-measure-plan-feed-closed"
+            ],
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "intake-clerk-contained",
+                "intake-clerk-tarn-sealed",
+                "intake-clerk-compact",
+                "intake-clerk-killed",
+                "intake-clerk-resealed"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-isolated-loop",
+              "resident-isolation-selected"
+            ],
+            "log": "Noa marks the old return for an isolated resident loop."
+          },
+          "next": "chosen"
+        },
+        {
+          "label": "Give Noa room to work",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "isolation": {
+      "lines": [
+        "\"Yes, after the Clerk is quiet. We cut the northbound vein first. The relief return then carries what the old feed no longer can.\"",
+        "\"The loop carries less water. It also carries no Compact census and no Morrow delivery debt.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the manifold",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "chosen": {
+      "lines": [
+        "Noa marks the north-feed seam and circles the relief return.",
+        "\"Then this is our water plan. Tell Susanna before anyone turns a valve.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the hall",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-hall-cassa-rehn",
+  "title": "Cassia Laetus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Cassia slides a burial copy beneath the dry corner of a flour cloth.",
+        "\"Paper lasts longer here than in the council cupboard. Nobody opens that when the roof leaks.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why a burial copy protects water",
+          "next": "copy"
+        },
+        {
+          "label": "Leave Cassia to the next bake",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "copy": {
+      "lines": [
+        "\"A dead witness can prove the household was here before a Compact count. The same line may hand an old debt to the child now carrying the cup.\"",
+        "She folds the cloth back over it. \"So I keep the whole line, however badly it sits.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the copy under dry cloth",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "south-measure-clinic-dessa-olt",
+  "title": "Damaris Celsus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Damaris straightens the isolation screen without looking through its gap.",
+        "\"Before you ask why he is behind it, write this correctly: Jair has an irregular pulse. He does not have fever.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the pulse means",
+          "next": "pulse"
+        },
+        {
+          "label": "Ask about the card beneath his cup",
+          "next": "card",
+          "effects": {
+            "setFlag": [
+              "neri-recruit-list-found",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "Damaris found lesson cards that recast Jair’s irregular pulse as a Choir sign."
+            }
+          }
+        },
+        {
+          "label": "Leave the screen where Damaris placed it",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "pulse": {
+      "lines": [
+        "\"It means his heart repeats an extra interval. I can keep watch without pretending the chart has answered us.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why the lesson card was removed",
+          "next": "card"
+        },
+        {
+          "label": "Accept the limited finding",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "card": {
+      "lines": [
+        "\"Someone called the extra beat a second witness and told him the clinic feared what it could hear.\"",
+        "Damaris tucks the card under her own chart. \"That sentence is harming him now. My uncertainty is not.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Damaris keep the card",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

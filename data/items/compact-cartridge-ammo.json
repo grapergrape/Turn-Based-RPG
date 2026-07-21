@@ -1,0 +1,12 @@
+{
+  "id": "compact-cartridge-ammo",
+  "name": "Loose Compact Cartridges",
+  "type": "ammo",
+  "rarity": "common",
+  "weight": 0.018,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "compact-cartridge"
+  },
+  "description": "Short cased rounds wrapped in waxed paper. Road guns and machine pistols favor them because every settlement press can turn the brass."
+}

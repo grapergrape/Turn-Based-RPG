@@ -1,0 +1,54 @@
+{
+  "id": "veil-pocket-pistol",
+  "name": "Veil Pocket Pistol",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "compact pistol",
+  "rarity": "common",
+  "weight": 1.15,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Veil Brokers",
+    "factions": [
+      "veil-brokers"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "compact pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 6,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-cartridge",
+      "capacity": 8,
+      "defaultLoaded": 8,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A flat pocket pistol with no projecting sight or hammer. Broker coats include a stitched leather square to stop its edges printing through."
+}

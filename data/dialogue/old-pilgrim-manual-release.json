@@ -1,0 +1,71 @@
+{
+  "id": "old-pilgrim-manual-release",
+  "title": "Manual Release Wheel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The wheel is locked at both ends of its travel. Iron filings lie below a housing opened and closed dozens of times."
+      ],
+      "choices": [
+        {
+          "label": "Trace the interlock teeth",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 30
+            },
+            "flagsAbsent": [
+              "old-pilgrim-manual-release-known"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-manual-release-known",
+              "old-pilgrim-breach-brace-known"
+            ],
+            "xp": 5,
+            "log": "The wheel was sound. Automatic closure withdrew the local release tooth and waited for clearance from outside."
+          },
+          "next": "understood"
+        },
+        {
+          "label": "Read the wear left by the trapped hands",
+          "conditions": {
+            "fieldRatings": {
+              "search": 30
+            },
+            "flagsAbsent": [
+              "old-pilgrim-manual-release-known"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-manual-release-known",
+              "old-pilgrim-breach-brace-known"
+            ],
+            "xp": 5,
+            "log": "The wheel turned freely until something inside the wall withdrew its drive tooth. Later blows struck the same housing."
+          },
+          "next": "understood"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "understood": {
+      "lines": [
+        "The people below did not fail to find the release. The release was designed to refuse them.",
+        "A bent brace beside the housing preserves the angle used during the last breach attempt."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

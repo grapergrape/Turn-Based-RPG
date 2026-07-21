@@ -10,11 +10,21 @@
 <canvas id="out"></canvas>
 <script type="module">
 import { loadLevel } from '/src/core/LevelLoader.js';
-import { buildSpriteAtlas, getFrame } from '/src/render/SpriteAtlas.js';
+import {
+  bakeHumanAppearance,
+  buildSpriteAtlas,
+  getFrame,
+  isHumanAppearance,
+  spriteIdForHumanAppearance
+} from '/src/render/SpriteAtlas.js';
 import { computeSceneBounds, gridToScreen, sortKey } from '/src/render/isoMath.js';
 import * as P from '/src/render/PixelPrimitives.js';
+import { PropSpriteCache } from '/src/render/PropSpriteCache.js';
+import { ShadowMaskCache } from '/src/render/ShadowMaskCache.js';
+import { actorFrameSource, actorShadowProfile } from '/src/render/shadowProfiles.js';
 import { getSprite, FLAT_KINDS } from '/src/render/spriteCatalog.js';
 import { PALETTE } from '/src/render/palette.js';
+import { syncObjectFlagState } from '/src/world/ObjectFlagState.js';
 
 const params = new URLSearchParams(location.search);
 const levelPath = params.get('level') ?? './data/levels/censure_road_camp.json';
@@ -22,11 +32,39 @@ const scale = Number(params.get('scale') ?? '0.5');
 const cropX0 = params.has('x0') ? Number(params.get('x0')) : null;
 const openDoorGroups = new Set((params.get('openDoorGroups') ?? '').split(',').filter(Boolean));
 const actorOverrideId = params.get('actorId');
+const actorOverrideState = params.get('actorState') ?? 'idle';
+const actorOverrideFrame = Number(params.get('actorFrame') ?? '0');
+const workTargetId = params.get('workTarget');
+const activeFlags = new Set((params.get('flags') ?? '').split(',').filter(Boolean));
+const includeDormant = params.get('includeDormant') === '1';
+
+function isCatalogBlock(kind) {
+  return Boolean(getSprite(kind)?.block);
+}
+
+function wallPressure(grid, x, y) {
+  let count = 0;
+  for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0]]) {
+    const nx = x + dx;
+    const ny = y + dy;
+    if (!grid.isInside(nx, ny) || isCatalogBlock(grid.getTileDef(nx, ny)?.kind)) count += 1;
+  }
+  return count;
+}
 
 async function main() {
   const level = await loadLevel(levelPath);
   for (const prop of level.props ?? []) {
+    syncObjectFlagState(prop, activeFlags);
     if (prop.doorGroup && openDoorGroups.has(prop.doorGroup)) prop.opened = true;
+    if (workTargetId && prop.id === workTargetId) {
+      prop.workActivity = {
+        actorId: actorOverrideId ?? 'capture-worker',
+        motion: params.get('workMotion') ?? 'reach',
+        response: params.get('workResponse') ?? 'none',
+        frame: Number(params.get('workFrame') ?? '0')
+      };
+    }
   }
   const hiddenCells = new Set();
   for (const region of level.hiddenRegions ?? []) {
@@ -38,107 +76,24 @@ async function main() {
       for (let x = region.x; x < region.x + region.width; x += 1) hiddenCells.add(`${x},${y}`);
     }
   }
+  let actorOverride = null;
   if (actorOverrideId) {
-    const actor = [level.player, ...(level.npcs ?? []), ...(level.enemies ?? [])]
+    actorOverride = [level.player, ...(level.npcs ?? []), ...(level.enemies ?? [])]
       .find((entry) => entry?.id === actorOverrideId || entry?.spawnId === actorOverrideId);
     const actorX = Number(params.get('actorX'));
     const actorY = Number(params.get('actorY'));
-    if (actor && Number.isFinite(actorX) && Number.isFinite(actorY)) actor.moveTo(actorX, actorY);
-    if (actor && params.get('actorFacing')) actor.facing = params.get('actorFacing');
+    if (actorOverride && Number.isFinite(actorX) && Number.isFinite(actorY)) actorOverride.moveTo(actorX, actorY);
+    if (actorOverride && params.get('actorFacing')) actorOverride.facing = params.get('actorFacing');
   }
   const atlas = buildSpriteAtlas();
   const grid = level.grid;
   const bounds = computeSceneBounds(grid.width, grid.height);
   const origin = bounds.origin;
 
-  const scene = document.createElement('canvas');
-  scene.width = bounds.width;
-  scene.height = bounds.height;
-  const ctx = scene.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
-  ctx.fillStyle = PALETTE.void;
-  ctx.fillRect(0, 0, scene.width, scene.height);
-
-  // Floor pass.
-  for (let y = 0; y < grid.height; y += 1) {
-    for (let x = 0; x < grid.width; x += 1) {
-      const def = grid.getTileDef(x, y);
-      if (!def || def.kind === 'wall') continue;
-      if (hiddenCells.has(`${x},${y}`)) continue;
-      const s = gridToScreen(x, y, 0, origin);
-      P.drawStyledFloorCell(ctx, s.x, s.y, x, y, def.floor ?? 'stone');
-    }
-  }
-
-  const propIsVisible = (prop) => (
-    (!prop.hiddenUntilOpened || prop.opened || prop.consumed) &&
-    !hiddenCells.has(`${prop.x},${prop.y}`)
-  );
-  const flatProps = level.props.filter((p) => propIsVisible(p) && FLAT_KINDS.has(p.kind));
-  const volumeProps = level.props.filter((p) => propIsVisible(p) && !FLAT_KINDS.has(p.kind));
-
-  for (const prop of flatProps) {
-    const s = gridToScreen(prop.x, prop.y, 0, origin);
-    const seed = prop.seed ?? P.hash2D(prop.x + 5, prop.y + 5);
-    const entry = getSprite(prop.kind);
-    if (entry && entry.flat) entry.draw(ctx, s.x, s.y, seed, { prop });
-  }
-
-  if (level.mood?.floorShade) {
-    ctx.save();
-    ctx.globalCompositeOperation = 'multiply';
-    ctx.globalAlpha = level.mood.floorShadeAlpha ?? 0.5;
-    ctx.fillStyle = level.mood.floorShade;
-    ctx.fillRect(0, 0, scene.width, scene.height);
-    ctx.restore();
-  }
-
-  // Depth-sorted volumetric props + actors.
-  const anim = { pulse: 0, flicker: 0, tick: 0, idleFrame: 0, bob: 0 };
-  const queue = [];
-  for (const prop of volumeProps) {
-    const zLayer = getSprite(prop.kind)?.layer ?? 2;
-    queue.push({
-      key: sortKey(prop.x, prop.y, zLayer),
-      draw: () => {
-        const s = gridToScreen(prop.x, prop.y, 0, origin);
-        const seed = prop.seed ?? P.hash2D(prop.x + 1, prop.y + 1);
-        const entry = getSprite(prop.kind);
-        if (entry && !entry.flat) entry.draw(ctx, s.x, s.y, seed, { prop, anim, pulse: 0, flicker: 0, player: null });
-      }
-    });
-  }
-  const actors = [level.player, ...(level.npcs ?? []), ...(level.enemies ?? [])];
-  for (const actor of actors) {
-    if (actor.type !== 'player' && hiddenCells.has(`${actor.x},${actor.y}`)) continue;
-    queue.push({
-      key: sortKey(actor.x, actor.y, 3),
-      draw: () => {
-        const s = gridToScreen(actor.x, actor.y, 0, origin);
-        const resolved = getFrame(atlas, actor.spriteId, 'idle', actor.facing ?? 'se', 0);
-        if (!resolved || !resolved.frame) return;
-        const { sprite, frame, mirror } = resolved;
-        P.drawShadowBlob(ctx, s.x, s.y, Math.round(sprite.width * 0.6), Math.round(sprite.width * 0.25));
-        if (mirror) {
-          ctx.save();
-          ctx.translate(Math.round(s.x), Math.round(s.y - sprite.anchorY));
-          ctx.scale(-1, 1);
-          ctx.drawImage(frame, -sprite.anchorX, 0);
-          ctx.restore();
-        } else {
-          ctx.drawImage(frame, Math.round(s.x - sprite.anchorX), Math.round(s.y - sprite.anchorY));
-        }
-      }
-    });
-  }
-  queue.sort((a, b) => a.key - b.key);
-  for (const item of queue) item.draw();
-
-  const out = document.getElementById('out');
   let srcX = 0;
   let srcY = 0;
-  let srcW = scene.width;
-  let srcH = scene.height;
+  let srcW = bounds.width;
+  let srcH = bounds.height;
   if (cropX0 !== null) {
     const x0 = Number(params.get('x0'));
     const y0 = Number(params.get('y0'));
@@ -149,15 +104,215 @@ async function main() {
     const top = gridToScreen(x0, y0, 0, origin);
     const bot = gridToScreen(x1, y1, 0, origin);
     srcX = Math.max(0, a.x - 64);
-    srcW = Math.min(scene.width, b.x + 64) - srcX;
+    srcW = Math.min(bounds.width, b.x + 64) - srcX;
     srcY = Math.max(0, top.y - 120);
-    srcH = Math.min(scene.height, bot.y + 64) - srcY;
+    srcH = Math.min(bounds.height, bot.y + 64) - srcY;
   }
-  out.width = Math.round(srcW * scale);
-  out.height = Math.round(srcH * scale);
-  const octx = out.getContext('2d');
-  octx.imageSmoothingEnabled = false;
-  octx.drawImage(scene, srcX, srcY, srcW, srcH, 0, 0, out.width, out.height);
+
+  const out = document.getElementById('out');
+  out.width = Math.max(1, Math.round(srcW * scale));
+  out.height = Math.max(1, Math.round(srcH * scale));
+  const ctx = out.getContext('2d');
+  const propSprites = new PropSpriteCache();
+  const shadowMasks = new ShadowMaskCache();
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = PALETTE.void;
+  ctx.fillRect(0, 0, out.width, out.height);
+  ctx.setTransform(scale, 0, 0, scale, -srcX * scale, -srcY * scale);
+
+  const inCapture = (screen, pad = 96) => (
+    screen.x + pad >= srcX &&
+    screen.x - pad <= srcX + srcW &&
+    screen.y + pad >= srcY &&
+    screen.y - pad <= srcY + srcH
+  );
+
+  // Floor pass.
+  for (let y = 0; y < grid.height; y += 1) {
+    for (let x = 0; x < grid.width; x += 1) {
+      const def = grid.getTileDef(x, y);
+      if (!def || isCatalogBlock(def.kind)) continue;
+      if (hiddenCells.has(`${x},${y}`)) continue;
+      const s = gridToScreen(x, y, 0, origin);
+      if (!inCapture(s, 40)) continue;
+      P.drawStyledFloorCell(ctx, s.x, s.y, x, y, def.floor ?? 'stone');
+      const pressure = wallPressure(grid, x, y);
+      if (pressure > 0) {
+        P.drawFloorGrime(ctx, s.x, s.y, P.hash2D(x + 33, y + 41), Math.min(1.35, 0.55 + pressure * 0.22));
+      }
+    }
+  }
+
+  const propIsVisible = (prop) => (
+    (!prop.hiddenUntilOpened || prop.opened || prop.consumed) &&
+    !prop.hiddenByFlag &&
+    !hiddenCells.has(`${prop.x},${prop.y}`)
+  );
+  const flatProps = level.props.filter((p) => propIsVisible(p) && FLAT_KINDS.has(p.kind));
+  const volumeProps = level.props.filter((p) => propIsVisible(p) && !FLAT_KINDS.has(p.kind));
+
+  for (const prop of flatProps) {
+    const s = gridToScreen(prop.x, prop.y, 0, origin);
+    if (!inCapture(s, 160)) continue;
+    const seed = prop.seed ?? P.hash2D(prop.x + 5, prop.y + 5);
+    const entry = getSprite(prop.kind);
+    if (entry && entry.flat) entry.draw(ctx, s.x, s.y, seed, { prop });
+  }
+
+  if (level.mood?.floorShade) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = level.mood.floorShadeAlpha ?? 0.5;
+    ctx.fillStyle = level.mood.floorShade;
+    ctx.fillRect(srcX, srcY, srcW, srcH);
+    ctx.restore();
+  }
+
+  // Depth-sorted volumetric props + actors.
+  const anim = { pulse: 0, flicker: 0, tick: 0, idleFrame: 0, bob: 0 };
+  const actors = [level.player, ...(level.npcs ?? []), ...(level.enemies ?? [])];
+  for (const actor of actors) {
+    if (!isHumanAppearance(actor?.appearance)) continue;
+    const spriteId = spriteIdForHumanAppearance(actor.appearance);
+    actor.spriteId = spriteId;
+    if (!atlas[spriteId]) atlas[spriteId] = bakeHumanAppearance(actor.appearance);
+  }
+  const actorVisuals = [];
+  for (const actor of actors) {
+    if (actor.dormant && !includeDormant) continue;
+    if (actor.type !== 'player' && hiddenCells.has(`${actor.x},${actor.y}`)) continue;
+    const s = gridToScreen(actor.x, actor.y, 0, origin);
+    if (!inCapture(s, 160)) continue;
+    const state = actor === actorOverride ? actorOverrideState : 'idle';
+    const frameIndex = actor === actorOverride && Number.isFinite(actorOverrideFrame)
+      ? Math.max(0, Math.floor(actorOverrideFrame))
+      : 0;
+    const resolved = getFrame(atlas, actor.spriteId, actor.isDead ? 'dead' : state, actor.facing ?? 'se', frameIndex);
+    if (!resolved?.frame) continue;
+    actorVisuals.push({
+      actor,
+      state,
+      x: s.x,
+      y: s.y,
+      ...resolved,
+      source: actorFrameSource(resolved.sprite, resolved.frame)
+    });
+  }
+
+  function drawActorMask(targetCtx, mask, visual) {
+    if (!mask) return;
+    if (!visual.mirror) {
+      shadowMasks.draw(targetCtx, mask, visual.x, visual.y);
+      return;
+    }
+    targetCtx.save();
+    targetCtx.translate(Math.round(visual.x), 0);
+    targetCtx.scale(-1, 1);
+    shadowMasks.draw(targetCtx, mask, 0, visual.y);
+    targetCtx.restore();
+  }
+
+  const sun = level.mood?.sun;
+  if (sun?.enabled) {
+    const castLayer = document.createElement('canvas');
+    castLayer.width = out.width;
+    castLayer.height = out.height;
+    const castCtx = castLayer.getContext('2d');
+    castCtx.imageSmoothingEnabled = false;
+    castCtx.setTransform(scale, 0, 0, scale, -srcX * scale, -srcY * scale);
+    const projection = { x: sun.shadowOffsetX ?? 12, y: sun.shadowOffsetY ?? 6 };
+    for (const prop of volumeProps) {
+      const s = gridToScreen(prop.x, prop.y, 0, origin);
+      if (!inCapture(s, 256)) continue;
+      const entry = getSprite(prop.kind);
+      if (!entry || entry.shadow?.cast?.mode === 'none') continue;
+      const seed = prop.seed ?? P.hash2D(prop.x + 1, prop.y + 1);
+      const drawState = { prop, anim, pulse: 0, flicker: 0, player: null };
+      const prepared = propSprites.prepare(entry, prop, seed, drawState);
+      const mask = shadowMasks.prepareCast(prepared, entry.shadow.cast, projection, 1);
+      shadowMasks.draw(
+        castCtx,
+        mask,
+        s.x + (prepared?.anchorOffsetX ?? 0),
+        s.y + (prepared?.anchorOffsetY ?? 0)
+      );
+    }
+    for (const visual of actorVisuals) {
+      const profile = actorShadowProfile(visual.actor, visual.sprite, visual.state).cast;
+      drawActorMask(castCtx, shadowMasks.prepareCast(visual.source, profile, projection, 1), visual);
+    }
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = sun.shadowAlpha ?? 0.16;
+    ctx.drawImage(castLayer, 0, 0);
+    ctx.restore();
+  }
+
+  const queue = [];
+  for (const prop of volumeProps) {
+    const zLayer = getSprite(prop.kind)?.layer ?? 2;
+    queue.push({
+      key: sortKey(prop.x, prop.y, zLayer),
+      draw: () => {
+        const s = gridToScreen(prop.x, prop.y, 0, origin);
+        if (!inCapture(s, 256)) return;
+        const seed = prop.seed ?? P.hash2D(prop.x + 1, prop.y + 1);
+        const entry = getSprite(prop.kind);
+        if (entry && !entry.flat) {
+          const drawState = { prop, anim, pulse: 0, flicker: 0, player: null };
+          const prepared = propSprites.prepare(entry, prop, seed, drawState);
+          const contact = shadowMasks.prepareContact(prepared, entry.shadow?.contact);
+          if (contact) {
+            ctx.save();
+            ctx.globalAlpha = entry.shadow.contact.alphaScale;
+            shadowMasks.draw(
+              ctx,
+              contact,
+              s.x + (prepared?.anchorOffsetX ?? 0),
+              s.y + (prepared?.anchorOffsetY ?? 0)
+            );
+            ctx.restore();
+          }
+          propSprites.composite(ctx, prepared, s.x, s.y);
+          entry.drawLiveOverlay?.(ctx, s.x, s.y, seed, drawState);
+        }
+      }
+    });
+  }
+  for (const visual of actorVisuals) {
+    const { actor, state, sprite, frame, mirror, source } = visual;
+    queue.push({
+      key: sortKey(actor.x, actor.y, 3),
+      draw: () => {
+        const profile = actorShadowProfile(actor, sprite, state).contact;
+        const contact = shadowMasks.prepareContact(source, profile);
+        if (contact) {
+          ctx.save();
+          ctx.globalAlpha = profile.alphaScale;
+          drawActorMask(ctx, contact, visual);
+          ctx.restore();
+        }
+        if (mirror) {
+          ctx.save();
+          ctx.translate(Math.round(visual.x), Math.round(visual.y - sprite.anchorY));
+          ctx.scale(-1, 1);
+          ctx.drawImage(frame, -sprite.anchorX, 0, sprite.width, sprite.height);
+          ctx.restore();
+        } else {
+          ctx.drawImage(
+            frame,
+            Math.round(visual.x - sprite.anchorX),
+            Math.round(visual.y - sprite.anchorY),
+            sprite.width,
+            sprite.height
+          );
+        }
+      }
+    });
+  }
+  queue.sort((a, b) => a.key - b.key);
+  for (const item of queue) item.draw();
+
   document.title = 'CAPTURE-READY';
 }
 

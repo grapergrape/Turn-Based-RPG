@@ -3,40 +3,61 @@
   "title": "Road Confession",
   "initialStage": "seek-confession",
   "objectives": [
-    { "text": "Report your Chapel and Ash Road conduct to Father Odran.", "stage": "seek-confession" },
-    { "text": "Pay or pray through Father Odran's road absolution.", "stage": "record-read" },
-    { "text": "Keep Father Odran's absolution chit.", "stage": "absolved-with-ducats" },
-    { "text": "Keep Father Odran's absolution chit.", "stage": "absolved-with-prayer" },
-    { "text": "Keep Father Odran's absolution chit.", "stage": "absolved-after-lying" }
+    { "text": "Report your Chapel and Ash Road conduct to Father Augustine.", "stage": "seek-confession" },
+    { "text": "Pay or pray through Father Augustine's road absolution.", "stage": "record-read" },
+    { "text": "Keep Father Augustine's absolution chit.", "stage": "absolved-with-ducats" },
+    { "text": "Keep Father Augustine's absolution chit.", "stage": "absolved-with-prayer" },
+    { "text": "Keep Father Augustine's absolution chit.", "stage": "absolved-after-lying" },
+    { "text": "Keep Father Augustine's absolution chit.", "stage": "absolved-by-doctrine" },
+    { "text": "Keep Father Augustine's absolution chit.", "stage": "absolved-by-account" },
+    { "text": "Keep Father Augustine's absolution chit.", "stage": "absolved-by-false-record" }
   ],
   "stages": [
     {
       "id": "seek-confession",
       "task": "Go to confession",
-      "description": "Father Odran says Chapel work and Ash Road work both leave marks. The Censure writes those marks down before sending anyone toward Hallowfen."
+      "description": "Father Augustine says Chapel work and Ash Road work both leave marks. The Censure writes those marks down before sending anyone toward Hallowfen."
     },
     {
       "id": "record-read",
       "task": "Settle the absolution",
-      "description": "Father Odran has read the road record back to you. Absolution costs five ducats, or the missing coin made up in prayers."
+      "description": "Father Augustine has read the road record back to you. Absolution costs five ducats, or the missing coin made up in prayers."
     },
     {
       "id": "absolved-with-ducats",
       "task": "Absolved by payment",
       "xp": 15,
-      "description": "You paid Father Odran's road price. Your soul now has a stamped receipt."
+      "description": "You paid Father Augustine's road price. Your soul now has a stamped receipt."
     },
     {
       "id": "absolved-with-prayer",
       "task": "Absolved by prayer",
       "xp": 15,
-      "description": "You made up the missing ducats with prayers. Father Odran counted each one like a man auditing rain."
+      "description": "You made up the missing ducats with prayers. Father Augustine counted each one like a man auditing rain."
     },
     {
       "id": "absolved-after-lying",
       "task": "Absolved after lying",
       "xp": 10,
-      "description": "You lied about your purse. Father Odran noticed, charged the extra ducat, and stamped the chit anyway."
+      "description": "You lied about your purse. Father Augustine noticed, charged the extra ducat, and stamped the chit anyway."
+    },
+    {
+      "id": "absolved-by-doctrine",
+      "task": "Absolved under field canon",
+      "xp": 15,
+      "description": "You invoked the field canon for service performed under writ. Augustine entered no fee and stamped the chit."
+    },
+    {
+      "id": "absolved-by-account",
+      "task": "Absolved by field account",
+      "xp": 15,
+      "description": "You traded Augustine a clean field account for the fee. He kept the testimony and stamped the chit."
+    },
+    {
+      "id": "absolved-by-false-record",
+      "task": "Absolved on a false line",
+      "xp": 10,
+      "description": "You buried Augustine's fee in a dead-letter entry. The chit is valid until someone reads the ledger closely."
     }
   ]
 }

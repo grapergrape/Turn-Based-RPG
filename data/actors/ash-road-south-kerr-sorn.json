@@ -1,0 +1,107 @@
+{
+  "id": "ash-road-south-kerr-sorn",
+  "name": "Cyrus Longinus",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Morrow quartermaster",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "talkable",
+    "trader"
+  ],
+  "appearance": {
+    "body": "sturdy",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "crate-pack"
+    ],
+    "accent": "bare-light"
+  },
+  "trade": {
+    "title": "Cyrus's Freight Issue",
+    "currency": "ducat",
+    "stock": [
+      {
+        "item": "tinned-beans",
+        "count": 6,
+        "price": 2
+      },
+      {
+        "item": "relic-rounds",
+        "count": 5,
+        "price": 3
+      },
+      {
+        "item": "field-dressing",
+        "count": 2,
+        "price": 5
+      },
+      {
+        "item": "censure-entry-roll",
+        "count": 1,
+        "price": 8
+      },
+      {
+        "item": "camp-issue-ribguard",
+        "count": 1,
+        "price": 11
+      },
+      {
+        "item": "ash-road-boots",
+        "count": 1,
+        "price": 7
+      },
+      {
+        "item": "remnant-service-rifle",
+        "count": 1,
+        "price": 34
+      },
+      {
+        "item": "chapel-breaching-axe",
+        "count": 1,
+        "price": 14
+      },
+      {
+        "item": "trench-shovel",
+        "count": 1,
+        "price": 8
+      },
+      {
+        "item": "penitent-engine-carbine",
+        "count": 1,
+        "price": 65
+      },
+      {
+        "item": "confessor-rail-rifle",
+        "count": 1,
+        "price": 95
+      },
+      {
+        "item": "bastion-spike-driver",
+        "count": 1,
+        "price": 110
+      },
+      {
+        "item": "full-rifle-cartridge-ammo",
+        "count": 30,
+        "price": 2
+      },
+      {
+        "item": "linked-heavy-cartridge-ammo",
+        "count": 12,
+        "price": 4
+      },
+      {
+        "item": "long-armature-ammo",
+        "count": 8,
+        "price": 6
+      }
+    ]
+  }
+}

@@ -13,9 +13,15 @@ export function syncObjectFlagState(object, flags, { grid = null } = {}) {
   if (!object || typeof object !== 'object') return false;
   let changed = false;
 
-  const hiddenByFlag = matchesAnyFlag(object.hiddenWhenFlags, flags);
+  const waitsForVisibleFlag = Array.isArray(object.visibleWhenFlags) && object.visibleWhenFlags.length > 0;
+  const hiddenByFlag = matchesAnyFlag(object.hiddenWhenFlags, flags) ||
+    (waitsForVisibleFlag && !matchesAnyFlag(object.visibleWhenFlags, flags));
   if (Boolean(object.hiddenByFlag) !== hiddenByFlag) {
     object.hiddenByFlag = hiddenByFlag;
+    if (object.blocking && !(object.opened && isPassableWhenOpen(object))) {
+      if (hiddenByFlag) grid?.removeBlocked?.(object.x, object.y);
+      else grid?.addBlocked?.(object.x, object.y);
+    }
     changed = true;
   }
 

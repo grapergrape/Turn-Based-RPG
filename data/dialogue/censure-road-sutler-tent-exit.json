@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-sutler-tent-exit",
+  "title": "Judith's Trade Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Cart wheels grind past outside the trade tent."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave Judith's trade tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 50, "y": 37 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside Judith's tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

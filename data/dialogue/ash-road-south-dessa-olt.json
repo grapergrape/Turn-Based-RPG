@@ -1,0 +1,57 @@
+{
+  "id": "ash-road-south-dessa-olt",
+  "title": "Damaris Celsus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Damaris keeps Anna’s fingers looped through her sleeve while she reads the clinic form.",
+        "\"The form offers one adult while the dependent line says pending. Anna beside me says otherwise.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why she applied",
+          "next": "motive",
+          "effects": {
+            "setFlag": "heard-compact-applicant-motives"
+          }
+        },
+        {
+          "label": "Ask whether she will take the bed alone",
+          "next": "choice"
+        },
+        {
+          "label": "Leave Damaris with Anna",
+          "close": true
+        }
+      ]
+    },
+    "motive": {
+      "lines": [
+        "\"I trained under Joanna. The Compact clinic offers certification and suppressant access.\"",
+        "\"I applied because skill should open a door. I did not know the door would count Anna as luggage.\""
+      ],
+      "choices": [
+        {
+          "label": "Would you take the bed without Anna?",
+          "next": "choice"
+        },
+        {
+          "label": "Do not press her",
+          "close": true
+        }
+      ]
+    },
+    "choice": {
+      "lines": [
+        "\"No. Ask again after three bad winters and I fear the answer might change.\"",
+        "\"That fear is why I want the refusal written now.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the refusal with her",
+          "close": true
+        }
+      ]
+    }
+  }
+}

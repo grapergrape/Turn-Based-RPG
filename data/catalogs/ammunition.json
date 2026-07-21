@@ -1,0 +1,13 @@
+{
+  "families": {
+    "compact-cartridge": "compact-cartridge-ammo",
+    "sidearm-cartridge": "relic-rounds",
+    "heavy-sidearm-cartridge": "heavy-sidearm-cartridge-ammo",
+    "intermediate-cartridge": "intermediate-cartridge-ammo",
+    "full-rifle-cartridge": "full-rifle-cartridge-ammo",
+    "shot-shell": "shot-shell-ammo",
+    "linked-heavy-cartridge": "linked-heavy-cartridge-ammo",
+    "compact-armature": "compact-armature-ammo",
+    "long-armature": "long-armature-ammo"
+  }
+}

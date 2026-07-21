@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-hidden-rows-grave-passage-rows",
+  "title": "Grave-Strip Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The rear door opens beside the named graves, away from the Compact applicant lane."
+      ],
+      "choices": [
+        {
+          "label": "Step onto the grave strip",
+          "effects": {
+            "log": "You leave the Hidden Rows by the grave passage.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 112,
+                "y": 16,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You close the rear door without crossing it."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

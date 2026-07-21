@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-kell-arven",
+  "name": "Kephas Priscus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "North paper broker",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "north-verge",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-runner",
+    "gear": [
+      "message-tube"
+    ],
+    "accent": "dark-hood"
+  }
+}

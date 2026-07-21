@@ -1,0 +1,93 @@
+{
+  "id": "old-pilgrim-water-tally",
+  "title": "Last Water Tally",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The pump board begins with sixty-one names across nine scratched days. Only seven reach the last line.",
+        "Water ended on the fifth day, two days before the pantry emptied. No Host sign is marked beside any name."
+      ],
+      "choices": [
+        {
+          "label": "Reconstruct the water failure",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 2,
+              "of": [
+                "old-pilgrim-empty-tank-known",
+                "old-pilgrim-water-pump-known",
+                "old-pilgrim-water-cistern-known",
+                "old-pilgrim-pantry-stripped-known"
+              ]
+            },
+            "flagsAbsent": [
+              "old-pilgrim-water-failure-understood"
+            ]
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-water-failure-understood",
+            "xp": 8,
+            "log": "The emergency tank was already low when the chapter-side intake failed on day five. The powered seal kept the congregation inside without water."
+          },
+          "next": "failure"
+        },
+        {
+          "label": "Copy the final count",
+          "conditions": {
+            "flagsAbsent": [
+              "old-pilgrim-water-tally-read"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-water-tally-read",
+              "old-pilgrim-trial-route-open"
+            ],
+            "questUpdate": {
+              "quest": "the-buried-novitiate",
+              "stage": "complete-trials",
+              "log": "The buried congregation survived nine days. The water ended before the pressure seal released."
+            },
+            "xp": 10
+          },
+          "next": "copied"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "copied": {
+      "lines": [
+        "The final note is in a nun’s hand: SERVICE VALVE DRY. PROFESSION GALLERY STILL ANSWERS.",
+        "A narrow north passage bears the same four trial marks."
+      ],
+      "choices": [
+        {
+          "label": "Enter the trial passage",
+          "close": true,
+          "tone": "commit"
+        }
+      ]
+    },
+    "failure": {
+      "lines": [
+        "The main intake failed after the emergency reserve had already shrunk. The closure system treated outside air as the only danger.",
+        "By the time hunger mattered, thirst had already decided the count."
+      ],
+      "choices": [
+        {
+          "label": "Return to the tally",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

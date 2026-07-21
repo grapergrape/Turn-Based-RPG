@@ -1,0 +1,40 @@
+{
+  "id": "old-pilgrim-quarters-to-trials",
+  "title": "Profession Passage",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Four worn trial marks lead north from the quarters. The pressure seal behind them never closed."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Trial Galleries",
+          "conditions": {
+            "flag": "old-pilgrim-trial-route-open"
+          },
+          "effects": {
+            "questUpdate": {
+              "quest": "the-buried-novitiate",
+              "stage": "complete-trials",
+              "log": "The old profession galleries still control the chapter door."
+            },
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_trial_galleries.json",
+              "player": {
+                "x": 32,
+                "y": 45,
+                "facing": "n"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

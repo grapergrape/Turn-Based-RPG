@@ -1,0 +1,66 @@
+{
+  "id": "anchorite-induction-pistol",
+  "name": "Anchorite Induction Pistol",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "induction sidearm",
+  "rarity": "uncommon",
+  "weight": 1.5,
+  "groundModel": "accelerator-sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Anchorite Cells",
+    "factions": [
+      "anchorite-cells"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "sidearm",
+      "induction sidearm"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 6,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 9,
+        "range": 5,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": false
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-armature",
+      "capacity": 6,
+      "defaultLoaded": 6,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A silent-looking pistol with a ceramic spine and no chamber for powder. Its induction pack snaps hard enough to betray every shot."
+}

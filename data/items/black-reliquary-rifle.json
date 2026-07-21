@@ -1,0 +1,65 @@
+{
+  "id": "black-reliquary-rifle",
+  "name": "Black Reliquary Rifle",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "anti-materiel rifle",
+  "rarity": "rare",
+  "weight": 4.7,
+  "groundModel": "precision-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Pre-Fall reserve",
+    "origin": "Black Reliquary",
+    "factions": [
+      "black-reliquary"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "anti-materiel rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 9,
+        "accuracyBonus": 10,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "braced-shot",
+        "name": "Braced Shot",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 12,
+        "range": 10,
+        "accuracyBonus": 15,
+        "ammoCost": 1,
+        "conditionWear": 2,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "linked-heavy-cartridge",
+      "capacity": 5,
+      "defaultLoaded": 5,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A massive single-shot rifle recovered from a sealed civil armory. Reliquary teams use it against engine housings, barricades, and things too dense for mercy."
+}

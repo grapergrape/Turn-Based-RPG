@@ -1,0 +1,205 @@
+{
+  "id": "long-ash-stage-iv-cart-ambush",
+  "title": "Woman Beneath the Cart",
+  "mustChoose": true,
+  "nodes": {
+    "start": {
+      "lines": [
+        "A charcoal cart lies on its side across the road. An old woman is caught beneath the axle, one cheek pressed into the ash.",
+        "\"Please. Lift at the wheel. My leg's under it.\""
+      ],
+      "choices": [
+        {
+          "label": "Check the white cord at the left hub",
+          "conditions": {
+            "flag": "long-ash-edda-purse-tasked"
+          },
+          "effects": {
+            "setFlag": "long-ash-stage-iv-cart-recognized"
+          },
+          "next": "edda-cart-read"
+        },
+        {
+          "label": "Make her repeat how the cart fell",
+          "conditions": {
+            "fieldRatings": {
+              "guile": 45
+            }
+          },
+          "effects": {
+            "setFlag": "long-ash-stage-iv-cart-read-guile"
+          },
+          "next": "guile-read"
+        },
+        {
+          "label": "Study the leg beneath the axle",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 45
+            }
+          },
+          "effects": {
+            "setFlag": "long-ash-stage-iv-cart-read-medicine"
+          },
+          "next": "medicine-read"
+        },
+        {
+          "label": "Watch the dark line at her jaw",
+          "conditions": {
+            "fieldRatings": {
+              "hostSigns": 50
+            }
+          },
+          "effects": {
+            "setFlag": "long-ash-stage-iv-cart-read-host-signs"
+          },
+          "next": "host-signs-read"
+        },
+        {
+          "label": "Step in and lift the wheel",
+          "next": "close-help"
+        }
+      ]
+    },
+    "edda-cart-read": {
+      "lines": [
+        "White cord bites the left hub exactly where Deborah described it. Charcoal has spilled beneath the axle.",
+        "The woman watches your hand find the knot. \"Wrong cart.\""
+      ],
+      "choices": [
+        {
+          "label": "Draw the sidearm",
+          "tone": "danger",
+          "effects": {
+            "log": "You fire through Deborah's wheel before the woman can rise.",
+            "setFlag": [
+              "long-ash-stage-iv-cart-trap-read",
+              "long-ash-stage-iv-cart-ambush-sprung"
+            ],
+            "startCombat": {
+              "encounter": "long-ash-stage-iv-cart-ambush",
+              "openingAttack": {
+                "target": "long-ash-stage-iv-lure",
+                "attackId": "sidearm",
+                "guaranteedHit": true,
+                "spendAp": false,
+                "failureLog": "The sidearm is not ready. The old woman rises."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "guile-read": {
+      "lines": [
+        "She first said the wheel rolled over her. Now it fell from the rut, but the request never changes: come within arm's reach.",
+        "\"You heard me. Come closer.\""
+      ],
+      "choices": [
+        {
+          "label": "Draw the sidearm",
+          "tone": "danger",
+          "effects": {
+            "log": "You fire through the wheel before the woman can rise.",
+            "setFlag": [
+              "long-ash-stage-iv-cart-trap-read",
+              "long-ash-stage-iv-cart-ambush-sprung"
+            ],
+            "startCombat": {
+              "encounter": "long-ash-stage-iv-cart-ambush",
+              "openingAttack": {
+                "target": "long-ash-stage-iv-lure",
+                "attackId": "sidearm",
+                "guaranteedHit": true,
+                "spendAp": false,
+                "failureLog": "The sidearm is not ready. The old woman rises."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "medicine-read": {
+      "lines": [
+        "The wheel carries no weight on her leg. Someone swept loose ash back around the uncreased boot after she lay down.",
+        "\"Stop staring and lift.\""
+      ],
+      "choices": [
+        {
+          "label": "Draw the sidearm",
+          "tone": "danger",
+          "effects": {
+            "log": "You fire through the wheel before the woman can rise.",
+            "setFlag": [
+              "long-ash-stage-iv-cart-trap-read",
+              "long-ash-stage-iv-cart-ambush-sprung"
+            ],
+            "startCombat": {
+              "encounter": "long-ash-stage-iv-cart-ambush",
+              "openingAttack": {
+                "target": "long-ash-stage-iv-lure",
+                "attackId": "sidearm",
+                "guaranteedHit": true,
+                "spendAp": false,
+                "failureLog": "The sidearm is not ready. The old woman rises."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "host-signs-read": {
+      "lines": [
+        "A black-gold thread rises under her jaw, then crawls back toward the throat when you look at it. The woman holds still until it is gone.",
+        "\"It hurts. Please.\""
+      ],
+      "choices": [
+        {
+          "label": "Draw the sidearm",
+          "tone": "danger",
+          "effects": {
+            "log": "You fire through the wheel before the woman can rise.",
+            "setFlag": [
+              "long-ash-stage-iv-cart-trap-read",
+              "long-ash-stage-iv-cart-ambush-sprung"
+            ],
+            "startCombat": {
+              "encounter": "long-ash-stage-iv-cart-ambush",
+              "openingAttack": {
+                "target": "long-ash-stage-iv-lure",
+                "attackId": "sidearm",
+                "guaranteedHit": true,
+                "spendAp": false,
+                "failureLog": "The sidearm is not ready. The old woman rises."
+              }
+            }
+          }
+        }
+      ]
+    },
+    "close-help": {
+      "lines": [
+        "You set one boot beside the wheel. The woman slides her free hand from the ash. The palm has fused shut around a row of little teeth.",
+        "\"There you are.\""
+      ],
+      "choices": [
+        {
+          "label": "Tear free",
+          "tone": "danger",
+          "effects": {
+            "log": "The woman catches you at the wrist. Feet break from the roadside brush.",
+            "setFlag": "long-ash-stage-iv-cart-ambush-sprung",
+            "teleport": {
+              "x": 77,
+              "y": 36,
+              "facing": "nw"
+            },
+            "startCombat": {
+              "encounter": "long-ash-stage-iv-cart-ambush"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

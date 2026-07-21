@@ -44,7 +44,16 @@ validateLevel('/tmp/map-marker-valid.json', baseLevel({
     ]
   },
   objects: [
-    { kind: 'paper-scraps', x: 1, y: 2, mapMarker: { label: 'Warden Safe', kind: 'locked' } }
+    {
+      kind: 'paper-scraps',
+      x: 1,
+      y: 2,
+      mapMarker: {
+        label: 'Warden Safe',
+        kind: 'locked',
+        conditions: { flag: 'safe-known', flagsAbsent: ['safe-opened'] }
+      }
+    }
   ],
   combatTriggers: [
     { id: 'test-trigger', encounter: 'test', x: 2, y: 2, mapMarker: { kind: 'danger' } }
@@ -55,11 +64,17 @@ assert.deepEqual(errors, []);
 errors.length = 0;
 validateLevel('/tmp/map-marker-invalid.json', baseLevel({
   objects: [
-    { kind: 'paper-scraps', x: 1, y: 2, mapMarker: { label: '', kind: 'bad', reveal: 'later' } },
+    {
+      kind: 'paper-scraps',
+      x: 1,
+      y: 2,
+      mapMarker: { label: '', kind: 'bad', reveal: 'later', conditions: { flag: 7 } }
+    },
     { kind: 'paper-scraps', x: 2, y: 2, mapMarker: true }
   ]
 }));
 assert.equal(errors.some((error) => error.includes('objects[].mapMarker.kind')), true);
 assert.equal(errors.some((error) => error.includes('objects[].mapMarker.reveal')), true);
 assert.equal(errors.some((error) => error.includes('objects[].mapMarker.label')), true);
+assert.equal(errors.some((error) => error.includes('objects[].mapMarker.conditions.flag')), true);
 assert.equal(errors.some((error) => error.includes('must be false or an object')), true);

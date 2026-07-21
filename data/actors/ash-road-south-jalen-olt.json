@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-jalen-olt",
+  "name": "Jair Celsus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Isolation patient",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "compact-clinic"
+  ],
+  "appearance": {
+    "body": "gaunt",
+    "outfit": "settlement-shawl",
+    "gear": [
+      "bandage-sling"
+    ],
+    "accent": "pale-hood"
+  }
+}

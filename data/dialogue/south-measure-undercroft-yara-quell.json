@@ -1,0 +1,82 @@
+{
+  "id": "south-measure-undercroft-yara-quell",
+  "title": "Aurelia Priscian at the Wicket",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Aurelia watches the Clerk’s throat seam through a square of treated cloth."
+      ],
+      "choices": [
+        {
+          "label": "Ask whether the Clerk is still aware",
+          "next": "aware"
+        },
+        {
+          "label": "Give the Clerk and roll to Compact custody",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-contained",
+              "intake-clerk-tarn-sealed",
+              "intake-clerk-compact",
+              "intake-clerk-killed",
+              "intake-clerk-burned",
+              "intake-clerk-resealed"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "intake-clerk-compact",
+              "intake-clerk-resolved",
+              "south-measure-water-decision-open",
+              "south-measure-north-pulse-traced",
+              "intake-roll-preserved",
+              "intake-roll-compact-claim"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "choose-water-plan",
+              "log": "Aurelia prepares Junia for supported removal. The original roll will travel under Compact claim."
+            }
+          },
+          "next": "custody",
+          "tone": "commit"
+        },
+        {
+          "label": "Leave the examination floor",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "aware": {
+      "lines": [
+        "\"The responses are patterned, but patterns can contain a person. It still protects one name from the denial sequence.\"",
+        "\"Sedation can preserve the tissue. It cannot make custody neutral.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the wicket",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "custody": {
+      "lines": [
+        "Aurelia closes the treated cloth around the wicket opening.",
+        "\"My team will cut the braces with the body supported. South Measure receives a full copy of the roll. The original travels with us.\""
+      ],
+      "choices": [
+        {
+          "label": "Let the Compact prepare the removal",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

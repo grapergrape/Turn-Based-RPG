@@ -1,0 +1,67 @@
+{
+  "id": "old-pilgrim-apse-synthesis",
+  "title": "Raised Apse",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "old-pilgrim-closure-plan-read"
+        ]
+      },
+      "else": "proved",
+      "lines": [
+        "The altar platform is too high for the church floor. Shallow seams divide its front stones into the width of a pressure door.",
+        "One clue gives suspicion. Two matching records would give the mechanism a shape."
+      ],
+      "choices": [
+        {
+          "label": "Set two findings against the apse stonework",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 2,
+              "of": [
+                "old-pilgrim-father-plan-hint",
+                "old-pilgrim-apse-clue-ledger",
+                "old-pilgrim-apse-clue-foundation",
+                "old-pilgrim-apse-clue-bell",
+                "old-pilgrim-tarn-heard-church-seal"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-closure-plan-read",
+              "old-pilgrim-buried-novitiate-found"
+            ],
+            "questUpdate": {
+              "quest": "the-buried-novitiate",
+              "stage": "find-apse-release",
+              "log": "Two independent findings prove that a pressure-rated closure stair lies beneath the raised apse."
+            },
+            "xp": 10
+          },
+          "next": "proved",
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "proved": {
+      "lines": [
+        "The findings point to the same place. The center stones are a pressure door faced to resemble the altar plinth.",
+        "A manual release must sit somewhere along the apse edge."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

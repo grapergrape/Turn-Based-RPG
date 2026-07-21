@@ -1,0 +1,107 @@
+{
+  "id": "south-measure-clinic-jalen-olt",
+  "title": "Jair Celsus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Jair sits behind the isolation screen with two fingers against the pulse below the collarbone."
+      ],
+      "choices": [
+        {
+          "label": "Ask about Salome’s lessons",
+          "next": "lessons",
+          "effects": {
+            "setFlag": [
+              "neri-recruit-list-found",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "Jair says Salome called his irregular pulse a witness and offered him a place outside the clinic."
+            }
+          }
+        },
+        {
+          "label": "Watch the extra rhythm",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 30
+            }
+          },
+          "next": "sign",
+          "effects": {
+            "setFlag": [
+              "neri-host-sign-seen",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "Jair’s pulse answers a click from the lesson card, then stills when the card is closed."
+            }
+          }
+        },
+        {
+          "label": "Read the rhythm as a Host sign",
+          "conditions": {
+            "fieldRatings": {
+              "hostSigns": 30
+            }
+          },
+          "next": "sign",
+          "effects": {
+            "setFlag": [
+              "neri-host-sign-seen",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "Jair’s pulse answers a click from the lesson card, then stills when the card is closed."
+            }
+          }
+        },
+        {
+          "label": "Let Jair rest",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "lessons": {
+      "lines": [
+        "\"She says the second beat is a witness, not a sickness. She offered a place where nobody asks for a clean blood card.\"",
+        "\"I wanted that to be true. I did not agree to travel.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask again",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "sign": {
+      "lines": [
+        "The irregular beat answers a faint click from the lesson card beneath the cup. It stops when the card is folded shut.",
+        "Jair watches your face. \"Damaris heard it answer once and took the card before it could teach me the rhythm.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask again",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

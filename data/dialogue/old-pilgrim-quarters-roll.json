@@ -1,0 +1,53 @@
+{
+  "id": "old-pilgrim-quarters-roll",
+  "title": "Novitiate Sleeping Roll",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "old-pilgrim-name-roll-quarters"
+        ]
+      },
+      "else": "copied",
+      "lines": [
+        "Wax tablets assign every sleeping place. Several names move to the pump room after the fifth day.",
+        "Four novices are marked CANDIDATE GALLERY and do not appear on the dormitory death list."
+      ],
+      "choices": [
+        {
+          "label": "Copy the sleeping roll",
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-name-roll-quarters",
+              "old-pilgrim-quarters-sick-list-known"
+            ],
+            "questUpdate": {
+              "quest": "names-below-the-hill",
+              "stage": "find-trial-roll",
+              "log": "The novitiate roll accounts for everyone except four candidates sent into the profession galleries."
+            },
+            "xp": 5
+          },
+          "next": "copied"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "copied": {
+      "lines": [
+        "The final annotations put active bleeding first and fever cases next. Ordinary thirst comes last, matching the Mercy trial."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

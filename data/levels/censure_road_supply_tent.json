@@ -8,6 +8,9 @@
   "quests": [
     "investigate-ash-chapel-cult"
   ],
+  "dialogue": [
+    "censure-road-supply-tent-exit"
+  ],
   "mood": {
     "floorShade": "#15130e",
     "floorShadeAlpha": 0.12,
@@ -47,27 +50,62 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "journalNotes": [
     {
-      "id": "supply-tent-exit-transition",
-      "x": 9,
-      "y": 8,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 39,
-          "y": 36
-        }
-      }
+      "flag": "censure-road-supply-relief-bundle-found",
+      "text": "A road-relief bundle was filed behind camp rations. Its light cord exposed the mistake."
+    },
+    {
+      "flag": "censure-road-supply-false-stock-mark-found",
+      "text": "The newest powder total copies Ruth's figures but carries the spacing of a trader's price hand."
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "supply-tent-loose-gear",
+      "item": "penitent-gear-scrap",
+      "count": 1,
+      "x": 5,
+      "y": 6
     }
   ],
   "objects": [
+    {
+      "id": "supply-tent-mildewed-pack",
+      "kind": "field-backpack",
+      "x": 9,
+      "y": 6,
+      "seed": 2609,
+      "name": "Written-Off Supply Pack",
+      "interact": {
+        "type": "container",
+        "log": "Behind the ration stacks, a red write-off tag hangs from a mildewed pack whose lower pocket escaped the damp.",
+        "loot": [
+          {
+            "item": "tinned-beans",
+            "count": 2
+          },
+          {
+            "item": "penitent-gear-scrap",
+            "count": 1
+          }
+        ]
+      }
+    },
     {
       "kind": "canvas-tent-flap",
       "x": 9,
       "y": 9,
       "id": "supply-tent-exit-flap",
-      "name": "Tent Flap"
+      "name": "Tent Flap",
+      "clickAreas": [
+        { "x0": 9, "y0": 9, "x1": 9, "y1": 9 }
+      ],
+      "interactionMarker": { "x": 9, "y": 8 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-supply-tent-exit"
+      }
     },
     {
       "kind": "sealed-storage-crate",
@@ -75,7 +113,44 @@
       "y": 3,
       "blocking": true,
       "id": "supply-tent-food-crate",
-      "seed": 2711
+      "seed": 2711,
+      "name": "Relief Stock Crate",
+      "interact": {
+        "type": "note",
+        "log": "Parish relief packets have been stacked under camp ration totals.",
+        "search": {
+          "id": "supply-tent-relief-search",
+          "title": "Relief Stock Crate",
+          "lines": [
+            "The relief packets use a lighter cord. One bundle has slipped behind the ration divider."
+          ],
+          "useLabel": "Check the relief stock",
+          "methods": [
+            {
+              "id": "find-misplaced-relief-bundle",
+              "label": "Follow the light cord",
+              "field": "search",
+              "dc": 45,
+              "successLog": "The misplaced bundle is stamped for road relief, not camp stores. Its bean tin and dressing remain dry.",
+              "failLog": "Cord ends crowd the divider. None gives you a clean line to the missing bundle.",
+              "success": {
+                "setFlag": "censure-road-supply-relief-bundle-found",
+                "inventory": {
+                  "add": [
+                    { "item": "tinned-beans", "count": 1 },
+                    { "item": "field-dressing", "count": 1 }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Relief Stock",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "sealed-storage-crate",
@@ -83,7 +158,38 @@
       "y": 3,
       "blocking": true,
       "id": "supply-tent-ammo-crate",
-      "seed": 2713
+      "seed": 2713,
+      "name": "Powder Stock Crate",
+      "interact": {
+        "type": "note",
+        "log": "Powder totals cover the lid in three hands and two colors of wax.",
+        "search": {
+          "id": "supply-tent-stock-mark-search",
+          "title": "Powder Stock Crate",
+          "lines": [
+            "The newest total sits over an older mark without the usual scraped wax beneath it."
+          ],
+          "useLabel": "Read the powder marks",
+          "methods": [
+            {
+              "id": "identify-false-stock-mark",
+              "label": "Test the newest total",
+              "field": "guile",
+              "dc": 55,
+              "successLog": "The writer copied Ruth's square figures but spaced them like a price list. The stock total came from a trader's hand.",
+              "failLog": "The figures are ugly in the ordinary way. You cannot name the hand behind them.",
+              "success": {
+                "setFlag": "censure-road-supply-false-stock-mark-found"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Powder Stock",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "rusted-barrel",

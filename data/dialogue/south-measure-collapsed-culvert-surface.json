@@ -1,0 +1,83 @@
+{
+  "id": "south-measure-collapsed-culvert-surface",
+  "title": "Collapsed Culvert",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A cleared gap in the fallen stone descends from the charity edge into the eastern relief drain."
+      ],
+      "choices": [
+        {
+          "label": "Crawl into the relief drain",
+          "conditions": {
+            "flag": "drain-access-cleared"
+          },
+          "effects": {
+            "log": "You crawl through the culvert and enter the relief drain.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 41,
+                "y": 15,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Brace the loose channel stones",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 30
+            }
+          },
+          "effects": {
+            "setFlag": "drain-access-cleared",
+            "log": "The culvert stones hold long enough to pass.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 41,
+                "y": 15,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Find a body-wide path through the fall",
+          "conditions": {
+            "fieldRatings": {
+              "search": 30
+            }
+          },
+          "effects": {
+            "setFlag": "drain-access-cleared",
+            "log": "A dry seam leads through the collapsed culvert.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 41,
+                "y": 15,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay by the charity cots",
+          "effects": {
+            "log": "You step back from the broken culvert."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

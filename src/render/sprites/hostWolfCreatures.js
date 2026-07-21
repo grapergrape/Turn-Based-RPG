@@ -1,6 +1,16 @@
 import { PALETTE } from '../palette.js';
 
-import { FACINGS, FACING_META, POSES, compose, linePx, px } from './spriteBake.js';
+import {
+  FACINGS,
+  FACING_META,
+  POSES,
+  compose,
+  detailLinePx,
+  detailPx,
+  linePx,
+  makeLazyFrameList,
+  px
+} from './spriteBake.js';
 
 function wolfSide(meta) {
   return meta.side || (meta.back ? -1 : 1);
@@ -23,6 +33,9 @@ function drawHorn(ctx, baseX, baseY, path, broken = false) {
     const [dx, dy] = path[path.length - 1];
     px(ctx, baseX + dx, baseY + dy - 1, PALETTE.hostBlack, 2, 2); // snapped, jagged tip
   }
+  const [rootX, rootY] = path[0];
+  const [tipX, tipY] = path[path.length - 1];
+  detailLinePx(ctx, baseX + rootX + 0.5, baseY + rootY - 0.5, baseX + tipX + 0.5, baseY + tipY - 0.5, PALETTE.stoneDust);
 }
 
 // A profile goat/ram skull for a fully opened Host head. The long muzzle that
@@ -86,6 +99,10 @@ function drawSkullHead(ctx, hx, hy, s, pose, opts = {}, back = false) {
   } else {
     px(ctx, hx - 2, hy + 4, PALETTE.hostBlack, 7, 1); // clenched jaw seam
   }
+
+  detailLinePx(ctx, hx - s * 5.5, hy - 4.5, hx - s * 1.5, hy - 3.5, bone);
+  detailLinePx(ctx, hx + s * 0.5, hy - 0.5, hx + s * 6.5, hy + 2.5, boneLo);
+  if (!back) detailPx(ctx, hx - (s > 0 ? -0.5 : 0), hy - 0.5, glow);
 }
 
 function drawWolfValeMarks(ctx, bodyCx, bodyY, side, pose) {
@@ -172,6 +189,13 @@ function drawWolfBody(ctx, w, h, facing, pose, opts = {}) {
   const headY = bodyY - 11 + Math.floor(attack / 5) + (meta.back ? -1 : 0);
   drawSkullHead(ctx, headX, headY, side, pose, opts, !!meta.back);
 
+  // Backing-pixel hide and bone construction stays inside the established
+  // silhouette while preserving the uneven Vale Imprint anatomy.
+  detailLinePx(ctx, bodyCx - 15.5, bodyY - 11.5 + backShift, bodyCx + 14.5, bodyY - 11.5 + backShift, PALETTE.stoneDust);
+  detailLinePx(ctx, bodyCx - side * 20.5, bodyY - 7.5, bodyCx - side * 34.5, bodyY - 11.5 + bob, PALETTE.hostGold);
+  detailLinePx(ctx, bodyCx - side * 5.5, bodyY - 8.5, bodyCx + side * 6.5, bodyY - 5.5, PALETTE.hostGold);
+  detailPx(ctx, bodyCx + side * 7.5, bodyY + 1.5, PALETTE.hostBone);
+
   return { bodyCx, bodyY, footY, headX, headY, side, meta };
 }
 
@@ -195,6 +219,8 @@ export function drawHostWolfSpider(ctx, w, h, facing, pose) {
   }
   px(ctx, info.bodyCx - 3, info.bodyY - 9, PALETTE.hostRed, 7, 4);
   px(ctx, info.bodyCx - 1, info.bodyY - 8, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold, 2, 2);
+  detailLinePx(ctx, info.bodyCx - 2.5, info.bodyY - 8.5, info.bodyCx + 2.5, info.bodyY - 6.5, PALETTE.hostGlow);
+  detailLinePx(ctx, info.bodyCx - 11.5, info.bodyY - 14.5, info.bodyCx + 11.5, info.bodyY - 13.5, PALETTE.hostBone);
 }
 
 export function drawHostWolfMaw(ctx, w, h, facing, pose) {
@@ -211,6 +237,8 @@ export function drawHostWolfMaw(ctx, w, h, facing, pose) {
   }
   px(ctx, throatX - 3, throatY - 1, PALETTE.hostRed, 7, 4);
   px(ctx, throatX, throatY, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold, 1, 2);
+  detailLinePx(ctx, throatX - 2.5, throatY - 0.5, throatX + 2.5, throatY + 1.5, PALETTE.hostRed);
+  detailLinePx(ctx, throatX - info.side * 0.5, throatY + 1.5, throatX - info.side * 12.5, throatY + 9.5, PALETTE.hostGold);
 }
 
 export function drawHostWolfRibsplit(ctx, w, h, facing, pose) {
@@ -227,6 +255,9 @@ export function drawHostWolfRibsplit(ctx, w, h, facing, pose) {
   }
   px(ctx, chestX, chestY - 2, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold, 1, 11);
   px(ctx, chestX + 2, chestY + 3, PALETTE.rustDark, 2, 3);
+  detailLinePx(ctx, chestX + 0.5, chestY - 1.5, chestX + 0.5, chestY + 7.5, PALETTE.hostGlow);
+  detailLinePx(ctx, chestX - 5.5, chestY + 0.5, chestX - 12.5, chestY - 3.5, PALETTE.hostBone);
+  detailLinePx(ctx, chestX + 5.5, chestY + 0.5, chestX + 12.5, chestY - 2.5, PALETTE.stoneDust);
 }
 
 function drawWolfDeath(ctx, w, h, variant, frame) {
@@ -265,6 +296,9 @@ function drawWolfDeath(ctx, w, h, variant, frame) {
     }
   }
   px(ctx, cx - 1, cy - 6, frame % 2 ? PALETTE.hostGold : PALETTE.hostRed, 2, 1);
+  detailLinePx(ctx, cx - bodyW / 2 + 3.5, cy - 7.5, cx + bodyW / 2 - 4.5, cy - 7.5, PALETTE.stoneDust);
+  detailLinePx(ctx, cx + 19.5, cy - 11.5, cx + 28.5, cy - 9.5, PALETTE.hostBone);
+  detailPx(ctx, cx - 0.5, cy - 5.5, frame % 2 ? PALETTE.hostGold : PALETTE.hostRed);
 }
 
 export function bakeHostWolf(variant, drawBody) {
@@ -274,12 +308,12 @@ export function bakeHostWolf(variant, drawBody) {
   for (const state of Object.keys(POSES)) {
     frames[state] = {};
     for (const facing of FACINGS) {
-      frames[state][facing] = POSES[state].map((pose) =>
-        compose(w, h, (ctx) => drawBody(ctx, w, h, facing, pose))
+      frames[state][facing] = makeLazyFrameList(POSES[state].length, (frame) =>
+        compose(w, h, (ctx) => drawBody(ctx, w, h, facing, POSES[state][frame]))
       );
     }
   }
-  const death = Array.from({ length: 10 }, (_, frame) =>
+  const death = makeLazyFrameList(10, (frame) =>
     compose(w, h, (ctx) => drawWolfDeath(ctx, w, h, variant, frame))
   );
   return {

@@ -8,6 +8,9 @@
   "quests": [
     "investigate-ash-chapel-cult"
   ],
+  "dialogue": [
+    "censure-road-quartermaster-tent-exit"
+  ],
   "mood": {
     "floorShade": "#15130e",
     "floorShadeAlpha": 0.12,
@@ -47,18 +50,13 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "groundItems": [
     {
-      "id": "quartermaster-tent-exit-transition",
-      "x": 6,
-      "y": 8,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 28,
-          "y": 30
-        }
-      }
+      "id": "quartermaster-tent-dropped-ration",
+      "item": "tinned-beans",
+      "count": 1,
+      "x": 9,
+      "y": 3
     }
   ],
   "objects": [
@@ -67,7 +65,15 @@
       "x": 6,
       "y": 9,
       "id": "quartermaster-tent-exit-flap",
-      "name": "Tent Flap"
+      "name": "Tent Flap",
+      "clickAreas": [
+        { "x0": 6, "y0": 9, "x1": 6, "y1": 9 }
+      ],
+      "interactionMarker": { "x": 6, "y": 8 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-quartermaster-tent-exit"
+      }
     },
     {
       "kind": "settlement-table",
@@ -83,7 +89,45 @@
       "y": 3,
       "blocking": true,
       "id": "quartermaster-tent-sealed-crate",
-      "seed": 2613
+      "seed": 2613,
+      "name": "Field Issue Crate",
+      "interact": {
+        "type": "container",
+        "log": "A field bundle waits beneath Ruth's seal. The wax records one lawful claim.",
+        "lock": {
+          "id": "quartermaster-tent-field-issue-seal",
+          "title": "Field Issue Crate",
+          "lines": [
+            "The crate opens only against the issue mark in Ruth's ledger."
+          ],
+          "methods": [
+            {
+              "id": "claim-authorized-field-issue",
+              "label": "Present the issue mark",
+              "conditions": {
+                "flag": "censure-road-field-issue-authorized",
+                "flagsAbsent": ["censure-road-field-issue-claimed"]
+              },
+              "successLog": "The issue mark matches. The wax lifts cleanly.",
+              "success": {
+                "setFlag": "censure-road-field-issue-claimed"
+              }
+            }
+          ]
+        },
+        "loot": [
+          { "item": "tinned-beans", "count": 1 },
+          { "item": "field-dressing", "count": 1 },
+          { "item": "relic-rounds", "count": 1 },
+          { "item": "ducat", "count": 3 },
+          { "item": "parish-ward-pistol", "count": 1 }
+        ]
+      },
+      "mapMarker": {
+        "label": "Field Issue",
+        "kind": "locked",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "rusted-barrel",

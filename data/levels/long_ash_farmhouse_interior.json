@@ -52,6 +52,15 @@
     "enemies": [],
     "npcs": []
   },
+  "groundItems": [
+    {
+      "id": "farmhouse-pantry-ration",
+      "item": "tinned-beans",
+      "count": 1,
+      "x": 4,
+      "y": 4
+    }
+  ],
   "objects": [
     {
       "kind": "farm-door",

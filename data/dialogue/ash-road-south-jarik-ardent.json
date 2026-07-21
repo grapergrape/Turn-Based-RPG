@@ -1,0 +1,145 @@
+{
+  "id": "ash-road-south-jarik-ardent",
+  "title": "Jeremiah Afer",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "questStages": {
+          "carry-lucky-necklace": "complete"
+        }
+      },
+      "else": "seeking",
+      "lines": [
+        "Jeremiah keeps one hand at his throat, checking that the black cord is still there.",
+        "The lost purse is back on his belt. His entry papers stick out of the coat pocket he swore was empty.",
+        "\"Now I believe my wife is going to laugh until winter.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whether he still plans to reach Hallowfen",
+          "next": "gate"
+        },
+        {
+          "label": "Leave him with his recovered property",
+          "close": true
+        }
+      ]
+    },
+    "seeking": {
+      "conditions": {
+        "questStages": {
+          "carry-lucky-necklace": "charm-received"
+        },
+        "items": {
+          "mirels-lucky-necklace": 1
+        }
+      },
+      "else": "stranded",
+      "lines": [
+        "Jeremiah has emptied both coat pockets onto his blanket. Washers and bent wire lie where money and papers should be.",
+        "He sees the tin saint in your pack and stops searching.",
+        "\"That belongs around my neck. Priscilla sent you all this way?\""
+      ],
+      "choices": [
+        {
+          "label": "Give him Priscilla’s necklace",
+          "conditions": {
+            "items": {
+              "mirels-lucky-necklace": 1
+            }
+          },
+          "effects": {
+            "inventory": {
+              "requireAll": true,
+              "remove": [
+                {
+                  "item": "mirels-lucky-necklace",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "road-warden-chit",
+                  "count": 1
+                }
+              ]
+            },
+            "setFlag": "jarik-necklace-returned",
+            "questUpdate": {
+              "quest": "carry-lucky-necklace",
+              "stage": "complete",
+              "log": "Quest updated: Priscilla’s necklace has reached Jeremiah."
+            },
+            "actorSpeech": {
+              "target": "speaker",
+              "lines": [
+            "My papers were rolled inside the blanket, and my purse is still under the kettle.",
+            "So nobody robbed me. The freight clerk even found my Hallowfen seal.",
+            "Priscilla will never call this chance."
+              ],
+              "initialDelay": 0.2,
+              "interval": 0.6,
+              "ttl": 3.6
+            }
+          },
+          "next": "returned",
+          "tone": "commit"
+        },
+        {
+          "label": "Ask how he ended up here",
+          "next": "gate"
+        },
+        {
+          "label": "Keep the necklace for now",
+          "close": true
+        }
+      ]
+    },
+    "stranded": {
+      "lines": [
+        "Jeremiah works a pump key through the seam of an empty purse, checking for a tear that is not there.",
+        "\"I had Hallowfen work and entered-person papers. The gate clerk found the work order. The papers vanished. No proof I belonged north of the chain, so south I went.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what else went missing",
+          "next": "gate"
+        },
+        {
+          "label": "Leave him to search the seam again",
+          "close": true
+        }
+      ]
+    },
+    "gate": {
+      "lines": [
+        "\"At the gate I still had the work order. My entered-person papers were gone, and the twelve ducats went missing before South Measure wrote me onto Fire Seven.\"",
+        "\"After that my boot split, the freight bell rang early, and Fire Seven gave me the one blanket under the roof leak. A man notices a pattern.\"",
+        "\"I checked every seam twice. Someone cleaned me out without touching my buttons.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the other questions",
+          "next": "start"
+        },
+        {
+          "label": "Leave him with Fire Seven",
+          "close": true
+        }
+      ]
+    },
+    "returned": {
+      "lines": [
+        "Jeremiah slips the cord over his head and works the knot flat with a mechanic’s thumbnail. The tin saint settles against his chest.",
+        "He presses an old brass road chit into your hand.",
+        "\"Hallowfen called it history. Another gate may still respect it. You carried Priscilla’s worry farther than I carried my sense, so take it.\""
+      ],
+      "choices": [
+        {
+          "label": "Watch what the saint does next",
+          "close": true
+        }
+      ]
+    }
+  }
+}

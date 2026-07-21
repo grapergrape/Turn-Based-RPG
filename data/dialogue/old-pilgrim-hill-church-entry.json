@@ -1,0 +1,32 @@
+{
+  "id": "old-pilgrim-hill-church-entry",
+  "title": "Hill Church",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The public doors have dropped from one hinge. Dry leaves lie across the nave beyond them."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Hill Church",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_hill_church.json",
+              "player": {
+                "x": 22,
+                "y": 29,
+                "facing": "n"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

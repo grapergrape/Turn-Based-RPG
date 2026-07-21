@@ -1,0 +1,46 @@
+{
+  "id": "censure-breach-bar",
+  "name": "Censure Breach Bar",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "field tool",
+  "rarity": "common",
+  "weight": 3.2,
+  "groundModel": "tool-weapon",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Ashen Censure",
+    "factions": [
+      "ashen-censure"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "field tool",
+    "roles": [
+      "melee",
+      "field tool",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Tool Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "A flat iron pry bar sized for shrine doors and floor hatches. One end is sharpened enough to settle close disputes."
+}

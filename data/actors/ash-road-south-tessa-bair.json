@@ -1,0 +1,42 @@
+{
+  "id": "ash-road-south-tessa-bair",
+  "name": "Thecla Galenus",
+  "type": "npc",
+  "faction": "lumen-compact",
+  "role": "Compact clinician",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "compact-precinct",
+    "talkable",
+    "trader"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-nurse",
+    "gear": [
+      "medicine-bag"
+    ],
+    "accent": "pale-hood"
+  },
+  "trade": {
+    "title": "Thecla's Clinic Case",
+    "currency": "ducat",
+    "stock": [
+      {
+        "item": "field-dressing",
+        "count": 4,
+        "price": 3
+      },
+      {
+        "item": "compact-suppressant",
+        "count": 1,
+        "price": 14
+      }
+    ]
+  }
+}

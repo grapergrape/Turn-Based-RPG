@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-nim-cord",
+  "name": "Noam Sartor",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Hidden Rows child",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "hidden-rows",
+    "child"
+  ],
+  "appearance": {
+    "body": "child",
+    "outfit": "settlement-child-chalk",
+    "gear": [
+      "tally-tags"
+    ],
+    "accent": "bare-brown"
+  }
+}

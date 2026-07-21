@@ -44,7 +44,7 @@ const exploredCells = new Set([...revealed, '1,3', '2,1']);
 const state = buildJournalMapState({
   grid,
   level: { id: mapData.id, name: mapData.name },
-  player: { name: 'Mara Vey', position: { x: 2, y: 2 } },
+  player: { name: 'Test Agent', position: { x: 2, y: 2 } },
   exploredCells,
   hiddenTiles,
   questDefs: {
@@ -93,6 +93,15 @@ const state = buildJournalMapState({
       x: 3,
       y: 2,
       mapMarker: { kind: 'note', label: 'Secret Note', reveal: 'always' }
+    },
+    {
+      id: 'wall-exit',
+      kind: 'wall-stair-door',
+      name: 'Wall Exit',
+      x: 0,
+      y: 2,
+      interactionMarker: { x: 1, y: 2 },
+      interact: { type: 'secret-exit' }
     }
   ],
   actors: [
@@ -137,3 +146,48 @@ assert.equal(state.markers.some((marker) => marker.label === 'Unseen Note'), fal
 assert.equal(state.markers.some((marker) => marker.label === 'Hidden Search'), false);
 assert.equal(state.markers.some((marker) => marker.label === 'Secret Note'), false);
 assert.equal(state.markers.some((marker) => marker.label === 'Cleared Risk'), false);
+const wallExitMarker = state.markers.find((marker) => marker.label === 'Wall Exit');
+assert.deepEqual(
+  { x: wallExitMarker?.x, y: wallExitMarker?.y },
+  { x: 1, y: 2 },
+  'wall exits mark their reachable interaction cell instead of the blocked wall cell'
+);
+
+const conditionalMarker = {
+  id: 'conditional-marker',
+  kind: 'gravekeeper-chair',
+  name: 'Examiner Chair',
+  x: 2,
+  y: 2,
+  interact: { dialogue: 'test-dialogue' },
+  mapMarker: {
+    label: 'Judgment Chair',
+    kind: 'quest',
+    reveal: 'always',
+    conditions: { flag: 'sava-found' }
+  }
+};
+const conditionalState = (conditionsMet) => buildJournalMapState({
+  grid,
+  level: { id: mapData.id, name: mapData.name },
+  exploredCells,
+  hiddenTiles: new Set(),
+  interactables: [conditionalMarker],
+  mapMarkerConditionsMet: conditionsMet
+});
+
+assert.equal(
+  conditionalState(() => false).markers.some((marker) => marker.label === 'Judgment Chair'),
+  false
+);
+assert.deepEqual(
+  conditionalState(() => true).markers.find((marker) => marker.label === 'Judgment Chair'),
+  {
+    id: 'dialogue:conditional-marker',
+    kind: 'quest',
+    label: 'Judgment Chair',
+    x: 2,
+    y: 2,
+    reveal: 'always'
+  }
+);

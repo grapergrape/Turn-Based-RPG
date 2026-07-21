@@ -1,0 +1,58 @@
+{
+  "id": "ash-road-south-maud-serren",
+  "title": "Monica Grammaticus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Monica holds a slate across both palms while three chalk names dry on it.",
+        "\"Lessons are between water trips. You have until the next jar arrives.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the children learn",
+          "next": "lessons"
+        },
+        {
+          "label": "Ask what she thinks of the census",
+          "next": "census"
+        },
+        {
+          "label": "Let the lesson resume",
+          "close": true
+        }
+      ]
+    },
+    "lessons": {
+      "lines": [
+        "\"Names and sums first, then pump marks with road signs. Poetry waits for a roof loud enough to hide it from practical adults.\"",
+        "\"A child who can read a form is harder to erase with one.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she thinks of the census",
+          "next": "census"
+        },
+        {
+          "label": "Let the lesson resume",
+          "close": true
+        }
+      ]
+    },
+    "census": {
+      "lines": [
+        "\"A census counts the people its boxes expect. My roll begins with who came through the door.\"",
+        "\"The difference looks small until a child has no box.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let the lesson resume",
+          "close": true
+        }
+      ]
+    }
+  }
+}

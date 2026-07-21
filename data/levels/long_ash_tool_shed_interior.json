@@ -50,6 +50,15 @@
     "enemies": [],
     "npcs": []
   },
+  "groundItems": [
+    {
+      "id": "tool-shed-loose-gear",
+      "item": "penitent-gear-scrap",
+      "count": 1,
+      "x": 3,
+      "y": 2
+    }
+  ],
   "objects": [
     {
       "kind": "farm-door",

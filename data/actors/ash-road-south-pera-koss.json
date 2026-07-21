@@ -1,0 +1,57 @@
+{
+  "id": "ash-road-south-pera-koss",
+  "name": "Perpetua Felix",
+  "type": "npc",
+  "faction": "ash-road-traders",
+  "role": "Return-shelf barterer",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "old-measure-gates",
+    "talkable",
+    "trader"
+  ],
+  "appearance": {
+    "body": "sturdy",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "crate-pack"
+    ],
+    "accent": "bare-light"
+  },
+  "trade": {
+    "title": "Perpetua's Return Shelf",
+    "currency": "ducat",
+    "stock": [
+      {
+        "item": "tinned-beans",
+        "count": 3,
+        "price": 1
+      },
+      {
+        "item": "field-dressing",
+        "count": 1,
+        "price": 4
+      },
+      {
+        "item": "tarnished-saint-token",
+        "count": 1,
+        "price": 3
+      },
+      {
+        "item": "road-warden-chit",
+        "count": 1,
+        "price": 4
+      },
+      {
+        "item": "ash-road-boots",
+        "count": 1,
+        "price": 6
+      }
+    ]
+  }
+}

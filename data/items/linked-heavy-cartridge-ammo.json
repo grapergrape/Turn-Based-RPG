@@ -1,0 +1,12 @@
+{
+  "id": "linked-heavy-cartridge-ammo",
+  "name": "Linked Heavy Cartridges",
+  "type": "ammo",
+  "rarity": "uncommon",
+  "weight": 0.12,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "linked-heavy-cartridge"
+  },
+  "description": "Heavy cartridges joined by reusable iron links. A full belt is worth more than the gun in some outer wards."
+}

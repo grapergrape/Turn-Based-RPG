@@ -1,0 +1,54 @@
+{
+  "id": "sexton-six",
+  "name": "Sexton Six",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "revolver",
+  "rarity": "common",
+  "weight": 1.15,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Sexton Crews",
+    "factions": [
+      "sexton-crews"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "revolver"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 5,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "sidearm-cartridge",
+      "capacity": 6,
+      "defaultLoaded": 6,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A compact six-shot revolver carried by grave crews after dark. Lime dust gathers in the flutes and makes the cylinder pale."
+}

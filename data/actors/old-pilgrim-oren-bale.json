@@ -1,0 +1,26 @@
+{
+  "id": "old-pilgrim-oren-bale",
+  "name": "Tobias Faber",
+  "type": "npc",
+  "faction": "road-travelers",
+  "role": "Cartwright",
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "bandage-sling"
+    ],
+    "accent": "bare-brown"
+  },
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "old-pilgrim-way",
+    "cartwright",
+    "survivor",
+    "talkable"
+  ]
+}

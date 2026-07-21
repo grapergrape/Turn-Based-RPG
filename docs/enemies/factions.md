@@ -22,6 +22,12 @@ The Host is the Earthborn alien organism descended from the sample that infected
 
 Common families:
 
+- **Stage IVs:** A Censure field stage, not a species or cult rank. At this stage
+  the Host drives the body, but it can use habits that served the person before
+  infection. A habitual liar may lure help with a coherent voice. Another body
+  may run at anything alive. Runner is one encounter phenotype, not the fate of
+  every Stage IV. Each form still needs a Vale-Imprint damnation-role and visible
+  remains of the person being used.
 - **Penitent Bastions:** Former protectors forced into armored defensive roles.
 - **False Saints:** Former clergy or prophets whose blessings infect and whose hymns organize lesser Host forms.
 - **Madonnas of Ash:** Former caregivers who preserve corpses, victims, and objects with horrific tenderness.
@@ -35,6 +41,8 @@ Current data examples:
 
 - `data/enemies/host-touched-penitent.json`
 - `data/enemies/host-penitent-bastion.json`
+- `data/enemies/stage-iv-lure.json`
+- `data/enemies/stage-iv-runner.json`
 
 ## Choir of the Open Wound
 
@@ -63,7 +71,7 @@ Cartel enemies should usually want something concrete: tolls, medicine, relics, 
 Known groups:
 
 - **Red Tithe:** Raider army using false religious authority. Current data includes `data/enemies/red-tithe-cutthroat.json`.
-- **Morrow Chain:** Disciplined caravan cartel. Potential allies or enemies through Mara Vey.
+- **Morrow Chain:** Disciplined caravan cartel. Potential allies or enemies through Junia Carbo.
 - **Saintbreakers:** Ex-Remnant relic thieves and secret sellers.
 - **Laughing Knives:** Quarantine looters who use sound lures to redirect Host creatures.
 

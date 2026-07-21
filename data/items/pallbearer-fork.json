@@ -1,0 +1,57 @@
+{
+  "id": "pallbearer-fork",
+  "name": "Pallbearer Fork",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "polearm",
+  "rarity": "rare",
+  "weight": 3.1,
+  "groundModel": "pike",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Ceremonial conversion",
+    "origin": "Mourning Houses",
+    "factions": [
+      "mourning-houses"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "polearm",
+    "roles": [
+      "melee",
+      "polearm",
+      "reach"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "reach-strike",
+        "name": "Long Thrust",
+        "mode": "melee",
+        "apCost": 5,
+        "damage": 6,
+        "range": 2,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "hold-reach",
+        "name": "Hold Reach",
+        "mode": "melee",
+        "apCost": 6,
+        "damage": 7,
+        "range": 2,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "requiresStationary": true
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A two-pronged funeral rest turned into a fighting fork. Pallbearers use it to pin what should have stayed on the bier."
+}

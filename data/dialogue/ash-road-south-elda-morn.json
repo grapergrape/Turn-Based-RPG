@@ -1,0 +1,57 @@
+{
+  "id": "ash-road-south-elda-morn",
+  "title": "Claudia Lector",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Claudia works inside a booth whose admission window has been nailed open.",
+        "\"Old intake record or new arrival mark? Those are different forms of waiting.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask when the gates stopped admitting families",
+          "next": "history",
+          "effects": {
+            "setFlag": "heard-return-shelf-separation"
+          }
+        },
+        {
+          "label": "Ask what remains below the booth",
+          "next": "below"
+        },
+        {
+          "label": "Leave Claudia with the old forms",
+          "close": true
+        }
+      ]
+    },
+    "history": {
+      "lines": [
+        "\"Individual placement replaced household admission before my mother’s time. The booth kept its old sign long enough for families to trust the wrong promise.\"",
+        "\"People trusted the sign longer than the policy trusted them.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what survived below the booth",
+          "next": "below"
+        },
+        {
+          "label": "Leave Claudia with the old forms",
+          "close": true
+        }
+      ]
+    },
+    "below": {
+      "lines": [
+        "\"The undercroft held original rolls beside the exposure ledgers. Spare intake hardware occupied the rear cages.\"",
+        "\"The stair was sealed after the lower pipes began answering the condenser out of time.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Claudia with the old forms",
+          "close": true
+        }
+      ]
+    }
+  }
+}

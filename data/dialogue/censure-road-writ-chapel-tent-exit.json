@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-writ-chapel-tent-exit",
+  "title": "Writ Chapel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The bell mast cuts a dark line beyond the chapel flap."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave the writ chapel.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 23, "y": 17 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the writ chapel."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

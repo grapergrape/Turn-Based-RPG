@@ -1,0 +1,24 @@
+{
+  "id": "ash-road-south-mott-rell",
+  "name": "Matthew Nauta",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Freight driver",
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "morrow-yard",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-work-coat",
+    "gear": [],
+    "accent": "bare-brown"
+  }
+}

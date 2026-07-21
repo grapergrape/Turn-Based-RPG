@@ -1,0 +1,57 @@
+{
+  "id": "ash-road-south-eren-holt",
+  "title": "Aaron Carbo",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Aaron has marked eleven short strokes around Fire Seven’s kettle.",
+        "\"Nine cups arrived. Count the strokes before anyone calls that sufficient.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask who is missing from the roll",
+          "next": "claim",
+          "effects": {
+            "setFlag": "heard-arrival-water-claim"
+          }
+        },
+        {
+          "label": "Ask how the arrival fires govern themselves",
+          "next": "fires"
+        },
+        {
+          "label": "Leave Aaron with the count",
+          "close": true
+        }
+      ]
+    },
+    "claim": {
+      "lines": [
+        "\"The Bethel family and five road arrivals. Three more came from the culvert farms.\"",
+        "\"We are not asking to jump the line. We are asking to exist inside it.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how the fires choose speakers",
+          "next": "fires"
+        },
+        {
+          "label": "Leave Aaron with the count",
+          "close": true
+        }
+      ]
+    },
+    "fires": {
+      "lines": [
+        "\"One speaker per fire, changed at dawn. The speaker counts cups and takes blame for noise.\"",
+        "\"It is not law. It is what people build while law checks the wrong folder.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Aaron with the count",
+          "close": true
+        }
+      ]
+    }
+  }
+}

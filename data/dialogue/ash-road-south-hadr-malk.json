@@ -1,0 +1,54 @@
+{
+  "id": "ash-road-south-hadr-malk",
+  "title": "Hadar Niger",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Hadar stands between the tap handle and the crowd, shoulders square without touching his weapon.",
+        "\"Keep one line against the board. If either breaks, the strongest household drinks first.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why he denied Tabitha’s fourth cup",
+          "next": "kesta"
+        },
+        {
+          "label": "Ask who gave the Chain authority here",
+          "next": "authority"
+        },
+        {
+          "label": "Leave Hadar at the valve",
+          "close": true
+        }
+      ]
+    },
+    "kesta": {
+      "lines": [
+        "\"I denied an unlisted draw. Susanna can amend the list and I will fill it.\"",
+        "\"If I make private corrections, every guard becomes a second steward with worse handwriting.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask who gave the Chain authority here",
+          "next": "authority"
+        },
+        {
+          "label": "Leave Hadar at the valve",
+          "close": true
+        }
+      ]
+    },
+    "authority": {
+      "lines": [
+        "\"The council hired guards after two tank fights. Darius pays us now because the council cannot.\"",
+        "\"That answer is not as clean as a uniform makes it look.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Hadar at the valve",
+          "close": true
+        }
+      ]
+    }
+  }
+}

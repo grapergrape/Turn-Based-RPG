@@ -1,5 +1,11 @@
 import { PALETTE } from '../palette.js';
-import { VIEWPORT } from '../renderConfig.js';
+import {
+  LOGICAL_HEIGHT,
+  LOGICAL_WIDTH,
+  NATIVE_PIXEL,
+  VIEWPORT,
+  snapToNativePixel
+} from '../renderConfig.js';
 import { wrapUiText } from '../../ui/dialogueLayout.js';
 
 const OUTCOME_PREFIXES = [
@@ -68,8 +74,8 @@ const FONT = {
 
 // The opening writ: a full-screen wall of grim amber text, paged.
 export function drawBriefing(ctx, data) {
-  const W = ctx.canvas.width;
-  const H = ctx.canvas.height;
+  const W = LOGICAL_WIDTH;
+  const H = LOGICAL_HEIGHT;
   rect(ctx, 0, 0, W, H, PALETTE.void);
   for (let y = 0; y < H; y += 3) rect(ctx, 0, y, W, 1, PALETTE.uiDark);
   for (let x = 20; x < W - 20; x += 29) {
@@ -91,6 +97,8 @@ export function drawBriefing(ctx, data) {
   rect(ctx, left, frame.y + 49, right - left, 1, PALETTE.uiBorderDark);
   rect(ctx, left, frame.y + 52, 38, 1, PALETTE.uiWarn);
   rect(ctx, right - 38, frame.y + 52, 38, 1, PALETTE.uiBorderDark);
+  detailRect(ctx, left + 0.5, frame.y + 49.5, right - left - 1, NATIVE_PIXEL, PALETTE.uiBorderLight);
+  detailRect(ctx, left + 0.5, frame.y + 52.5, 37, NATIVE_PIXEL, PALETTE.uiText);
 
   let y = body.y + 12;
   for (const para of data.page ?? []) {
@@ -108,6 +116,8 @@ export function drawBriefing(ctx, data) {
   const skipText = data.skipPrompt ?? 'ESC: SKIP';
   rect(ctx, left - 2, frame.y + frame.h - 45, textWidth(advanceText) + 8, 13, PALETTE.outline);
   rect(ctx, left - 1, frame.y + frame.h - 44, textWidth(advanceText) + 6, 11, PALETTE.uiDark);
+  detailRect(ctx, left - 0.5, frame.y + frame.h - 43.5, textWidth(advanceText) + 5, NATIVE_PIXEL, PALETTE.uiBorderLight);
+  detailRect(ctx, left - 0.5, frame.y + frame.h - 43.5, NATIVE_PIXEL, 10, PALETTE.uiBorderLight);
   text(ctx, advanceText, left + 2, frame.y + frame.h - 42, PALETTE.uiGood);
   if (skipText) text(ctx, skipText, right - textWidth(skipText), frame.y + frame.h - 40, PALETTE.uiDim);
 }
@@ -121,6 +131,10 @@ export function panelTexture(ctx, box) {
   rect(ctx, box.x + 1, box.y + height - 2, width - 2, 1, PALETTE.uiDark);
   rect(ctx, box.x + 1, box.y + 1, 1, height - 2, PALETTE.uiBorderLight);
   rect(ctx, box.x + width - 2, box.y + 1, 1, height - 2, PALETTE.uiDark);
+  detailRect(ctx, box.x + 1.5, box.y + 1.5, width - 3, NATIVE_PIXEL, PALETTE.uiBorderLight);
+  detailRect(ctx, box.x + 1.5, box.y + 1.5, NATIVE_PIXEL, height - 3, PALETTE.uiBorderLight);
+  detailRect(ctx, box.x + 1.5, box.y + height - 2.5, width - 3, NATIVE_PIXEL, PALETTE.uiBorderDark);
+  detailRect(ctx, box.x + width - 2.5, box.y + 1.5, NATIVE_PIXEL, height - 3, PALETTE.uiBorderDark);
   for (let y = box.y + 5; y < box.y + height - 4; y += 5) {
     rect(ctx, box.x + 3, y, width - 6, 1, PALETTE.uiDark);
   }
@@ -150,6 +164,11 @@ export function windowFrame(ctx, box, title = '') {
   rect(ctx, box.x + 3, box.y + 3, box.w - 6, 13, PALETTE.uiDark);
   rect(ctx, box.x + 5, box.y + 15, box.w - 10, 1, PALETTE.uiBorderDark);
   rect(ctx, box.x + 8, box.y + box.h - 6, box.w - 16, 1, PALETTE.uiDark);
+  detailRect(ctx, box.x + 0.5, box.y + 0.5, box.w - 1, NATIVE_PIXEL, PALETTE.uiBorderLight);
+  detailRect(ctx, box.x + 0.5, box.y + 0.5, NATIVE_PIXEL, box.h - 1, PALETTE.uiBorderLight);
+  detailRect(ctx, box.x + 0.5, box.y + box.h - 1, box.w - 1, NATIVE_PIXEL, PALETTE.uiBorderDark);
+  detailRect(ctx, box.x + box.w - 1, box.y + 0.5, NATIVE_PIXEL, box.h - 1, PALETTE.uiBorderDark);
+  detailRect(ctx, box.x + 4.5, box.y + 14.5, box.w - 9, NATIVE_PIXEL, PALETTE.uiBorderLight);
   for (let x = box.x + 18; x < box.x + box.w - 18; x += 22) {
     rect(ctx, x, box.y + 6, 7, 1, PALETTE.uiBorderDark);
     rect(ctx, x + 3, box.y + box.h - 8, 5, 1, PALETTE.uiBorderDark);
@@ -171,6 +190,7 @@ export function scrollArrow(ctx, x, y, dir, color) {
     const w = dir < 0 ? i * 2 + 1 : 7 - i * 2;
     rect(ctx, x - Math.floor(w / 2), y + i, w, 1, color);
   }
+  detailLine(ctx, x + 0.5, y + (dir < 0 ? 0.5 : 3.5), x + 0.5, y + (dir < 0 ? 2.5 : 1.5), PALETTE.uiText);
 }
 
 export function drawAreaTitle(ctx, areaTitle) {
@@ -204,8 +224,59 @@ export function drawAreaTitle(ctx, areaTitle) {
   rect(ctx, bx + bandW - 18, by + 8, 12, 1, edge);
   rect(ctx, bx + 6, by + 21, 12, 1, PALETTE.uiBorderDark);
   rect(ctx, bx + bandW - 18, by + 21, 12, 1, PALETTE.uiBorderDark);
+  detailRect(ctx, bx + 2.5, by + 2.5, bandW - 5, NATIVE_PIXEL, edge);
+  detailRect(ctx, bx + 2.5, by + 27.5, bandW - 5, NATIVE_PIXEL, PALETTE.uiBorderDark);
   text(ctx, label, x + 2, y + 2, PALETTE.outline, scale);
   text(ctx, label, x, y, textColor, scale);
+}
+
+export function drawJournalNotice(ctx, notice) {
+  const ttl = Math.max(0, notice?.ttl ?? 0);
+  if (ttl <= 0) return;
+
+  const duration = Math.max(notice.duration ?? ttl, 0.001);
+  const progress = Math.max(0, Math.min(1, 1 - ttl / duration));
+  if (progress > 0.82 && Math.floor(ttl * 18) % 2 === 0) return;
+
+  const title = clipUiText(notice.title ?? 'JOURNAL UPDATED', 24);
+  const detail = clipUiText(notice.detail ?? '', 28);
+  const width = Math.min(
+    VIEWPORT.width - 24,
+    Math.max(164, textWidth(title) + 42, textWidth(detail) + 42)
+  );
+  const height = 38;
+  const x = VIEWPORT.width - width - 12;
+  const y = 12;
+  const edge = progress < 0.16 ? PALETTE.uiWarn : PALETTE.uiBorderLight;
+
+  rect(ctx, x - 1, y - 1, width + 2, height + 2, PALETTE.outline);
+  rect(ctx, x, y, width, height, PALETTE.uiPanel);
+  rect(ctx, x + 1, y + 1, width - 2, 2, edge);
+  rect(ctx, x + 1, y + height - 3, width - 2, 2, PALETTE.uiBorderDark);
+  rect(ctx, x + 1, y + 1, 2, height - 2, edge);
+  rect(ctx, x + width - 3, y + 1, 2, height - 2, PALETTE.uiBorderDark);
+  rect(ctx, x + 5, y + 5, width - 10, 1, PALETTE.uiDark);
+  rect(ctx, x + 5, y + height - 7, width - 10, 1, PALETTE.uiDark);
+  detailRect(ctx, x + 1.5, y + 1.5, width - 3, NATIVE_PIXEL, edge);
+  detailRect(ctx, x + 1.5, y + 1.5, NATIVE_PIXEL, height - 3, edge);
+  detailRect(ctx, x + 1.5, y + height - 2.5, width - 3, NATIVE_PIXEL, PALETTE.uiBorderDark);
+  detailRect(ctx, x + width - 2.5, y + 1.5, NATIVE_PIXEL, height - 3, PALETTE.uiBorderDark);
+
+  // A split field ledger: two page blocks, a dark fold, and an amber clasp.
+  rect(ctx, x + 8, y + 9, 18, 18, PALETTE.outline);
+  rect(ctx, x + 9, y + 10, 8, 16, PALETTE.uiBorderLight);
+  rect(ctx, x + 18, y + 10, 7, 16, PALETTE.uiText);
+  rect(ctx, x + 17, y + 10, 1, 16, PALETTE.uiDark);
+  rect(ctx, x + 11, y + 13, 4, 1, PALETTE.uiBorderDark);
+  rect(ctx, x + 20, y + 13, 3, 1, PALETTE.uiBorderDark);
+  rect(ctx, x + 11, y + 17, 4, 1, PALETTE.uiBorderDark);
+  rect(ctx, x + 20, y + 17, 3, 1, PALETTE.uiBorderDark);
+  rect(ctx, x + 15, y + 8, 5, 3, PALETTE.uiWarn);
+  detailRect(ctx, x + 9.5, y + 10.5, 7, NATIVE_PIXEL, PALETTE.uiText);
+  detailRect(ctx, x + 18.5, y + 10.5, 6, NATIVE_PIXEL, PALETTE.uiBorderLight);
+
+  text(ctx, title, x + 34, y + 9, PALETTE.uiText);
+  text(ctx, detail, x + 34, y + 22, PALETTE.uiGood);
 }
 
 export function drawHoverText(ctx, hoverText) {
@@ -216,6 +287,7 @@ export function drawHoverText(ctx, hoverText) {
   rect(ctx, x - 1, y - 1, w + 2, 14, PALETTE.outline);
   rect(ctx, x, y, w, 12, PALETTE.uiDark);
   rect(ctx, x, y, w, 1, PALETTE.uiBorderLight);
+  detailRect(ctx, x + 0.5, y + 0.5, w - 1, NATIVE_PIXEL, PALETTE.uiText);
   text(ctx, label, x + 7, y + 3, PALETTE.uiText);
 }
 
@@ -261,16 +333,20 @@ export function drawCursor(ctx, cursor) {
     cursorLine(ctx, x, y, x, y + 13, PALETTE.uiBorderLight);
     cursorLine(ctx, x, y, x + 7, y + 7, PALETTE.uiBorderLight);
   }
+  detailRect(ctx, x + 0.5, y + 0.5, NATIVE_PIXEL, NATIVE_PIXEL, PALETTE.uiText);
 }
 
 export function screenBackdrop(ctx, fullScreen = false) {
-  const h = fullScreen ? ctx.canvas.height : VIEWPORT.height;
+  const h = fullScreen ? LOGICAL_HEIGHT : VIEWPORT.height;
   for (let y = 0; y < h; y += 2) {
     rect(ctx, 0, y, VIEWPORT.width, 1, 'rgba(5, 5, 5, 0.45)');
   }
   for (let x = 0; x < VIEWPORT.width; x += 24) {
     rect(ctx, x, 0, 7, 1, PALETTE.uiBorderDark);
-    rect(ctx, x + 9, h - 2, 9, 1, PALETTE.uiDark);
+    rect(ctx, x + 9, h - 2, Math.min(9, VIEWPORT.width - (x + 9)), 1, PALETTE.uiDark);
+  }
+  for (let x = 12; x < LOGICAL_WIDTH - 12; x += 36) {
+    detailRect(ctx, x + 0.5, 3.5 + ((x >> 2) % 3), 7, NATIVE_PIXEL, PALETTE.uiBorderDark);
   }
 }
 
@@ -292,6 +368,10 @@ export function inset(ctx, box) {
   rect(ctx, box.x + box.w - 6, box.y + 5, 1, 7, PALETTE.uiBorderDark);
   rect(ctx, box.x + 5, box.y + box.h - 6, 10, 1, PALETTE.uiBorderLight);
   rect(ctx, box.x + box.w - 15, box.y + box.h - 6, 10, 1, PALETTE.uiBorderLight);
+  detailRect(ctx, box.x + 2.5, box.y + 2.5, box.w - 5, NATIVE_PIXEL, PALETTE.uiDark);
+  detailRect(ctx, box.x + 2.5, box.y + 2.5, NATIVE_PIXEL, box.h - 5, PALETTE.uiDark);
+  detailRect(ctx, box.x + 2.5, box.y + box.h - 3, box.w - 5, NATIVE_PIXEL, PALETTE.uiBorderLight);
+  detailRect(ctx, box.x + box.w - 3, box.y + 2.5, NATIVE_PIXEL, box.h - 5, PALETTE.uiBorderLight);
 }
 
 export function bar(ctx, x, y, w, h, ratio, color) {
@@ -304,6 +384,8 @@ export function bar(ctx, x, y, w, h, ratio, color) {
     rect(ctx, x + 1, y + 1, fill, innerH, color);
     rect(ctx, x + 2, y + 2, Math.max(1, fill - 2), 1, PALETTE.uiBorderLight);
     rect(ctx, x + 1, y + h - 2, fill, 1, PALETTE.uiBorderDark);
+    detailRect(ctx, x + 1.5, y + 1.5, Math.max(NATIVE_PIXEL, fill - 1), NATIVE_PIXEL, PALETTE.uiText);
+    detailRect(ctx, x + fill + 0.5, y + 1.5, NATIVE_PIXEL, Math.max(NATIVE_PIXEL, innerH - 1), PALETTE.uiBorderDark);
   }
   for (let i = 8; i < w - 2; i += 8) {
     rect(ctx, x + i, y + 1, 1, innerH, PALETTE.outline);
@@ -320,6 +402,8 @@ export function apPips(ctx, x, y, ap, maxAp) {
     rect(ctx, px + 1, y + 1, 4, 1, active ? PALETTE.uiBorderLight : PALETTE.uiBorderDark);
     rect(ctx, px + 4, y + 2, 1, 4, PALETTE.uiBorderDark);
     if (active) rect(ctx, px + 2, y + 3, 2, 2, PALETTE.uiText);
+    detailRect(ctx, px + 1.5, y + 1.5, 3, NATIVE_PIXEL, active ? PALETTE.uiText : PALETTE.uiBorderDark);
+    detailRect(ctx, px + 4.5, y + 2.5, NATIVE_PIXEL, 3, PALETTE.uiBorderDark);
   }
 }
 
@@ -344,6 +428,8 @@ function rivet(ctx, x, y) {
   rect(ctx, x, y, 4, 4, PALETTE.uiBorderDark);
   rect(ctx, x + 1, y + 1, 2, 2, PALETTE.uiBorderLight);
   rect(ctx, x + 2, y + 2, 1, 1, PALETTE.outline);
+  detailRect(ctx, x + 1.5, y + 1.5, NATIVE_PIXEL, NATIVE_PIXEL, PALETTE.uiText);
+  detailRect(ctx, x + 2.5, y + 2.5, NATIVE_PIXEL, NATIVE_PIXEL, PALETTE.outline);
 }
 
 function frameCornerPlate(ctx, x, y, sx, sy) {
@@ -354,6 +440,8 @@ function frameCornerPlate(ctx, x, y, sx, sy) {
   rect(ctx, x + ox + 1, y + oy + 1, sx > 0 ? 5 : 1, 1, PALETTE.uiBorderLight);
   rect(ctx, x + ox + 1, y + oy + 1, 1, sy > 0 ? 5 : 1, PALETTE.uiBorderLight);
   rect(ctx, x + ox + 3, y + oy + 3, 2, 2, PALETTE.uiDark);
+  detailRect(ctx, x + ox + 1.5, y + oy + 1.5, sx > 0 ? 4 : NATIVE_PIXEL, NATIVE_PIXEL, PALETTE.uiBorderLight);
+  detailRect(ctx, x + ox + 4.5, y + oy + 4.5, NATIVE_PIXEL, NATIVE_PIXEL, PALETTE.outline);
 }
 
 export function text(ctx, str, x, y, color = PALETTE.uiText, scale = 1) {
@@ -417,4 +505,28 @@ function normalize(str) {
 export function rect(ctx, x, y, w, h, color) {
   ctx.fillStyle = color;
   ctx.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
+}
+
+// One physical backing-store pixel expressed on the 640x480 logical grid.
+// Geometry and hit boxes stay on their legacy integer coordinates; this is
+// reserved for hard bevel glints, etching, and icon construction detail.
+export function detailRect(ctx, x, y, w = NATIVE_PIXEL, h = NATIVE_PIXEL, color = PALETTE.uiBorderLight) {
+  if (!color) return;
+  ctx.fillStyle = color;
+  ctx.fillRect(
+    snapToNativePixel(x),
+    snapToNativePixel(y),
+    Math.max(NATIVE_PIXEL, snapToNativePixel(w)),
+    Math.max(NATIVE_PIXEL, snapToNativePixel(h))
+  );
+}
+
+export function detailLine(ctx, x0, y0, x1, y1, color, size = NATIVE_PIXEL) {
+  if (!color) return;
+  const span = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+  const steps = Math.max(1, Math.ceil(span / NATIVE_PIXEL));
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    detailRect(ctx, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, size, size, color);
+  }
 }

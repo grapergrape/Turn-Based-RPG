@@ -1,0 +1,46 @@
+{
+  "id": "foundry-poleaxe",
+  "name": "Foundry Poleaxe",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "axe",
+  "rarity": "common",
+  "weight": 4.4,
+  "groundModel": "axe",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Foundry Compact",
+    "factions": [
+      "foundry-compact"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "axe",
+    "roles": [
+      "melee",
+      "axe",
+      "close"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Hew",
+        "mode": "melee",
+        "apCost": 6,
+        "damage": 9,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A rivet crew fitted a hammer, hook, and cutting face to one reinforced shaft. Every surface has a different argument."
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>
+html,body{margin:0;background:#111;color:#c8b99a;font:13px monospace}
+#grid{display:grid;grid-template-columns:repeat(3,400px);gap:12px;padding:12px}
+figure{margin:0;background:#050505;border:1px solid #3a2d22}
+img{display:block;width:400px;height:300px;object-fit:contain;image-rendering:pixelated}
+figcaption{padding:5px 8px;text-align:center;text-transform:uppercase}
+</style>
+</head>
+<body>
+<main id="grid"></main>
+<script type="module">
+const groups = {
+  chapel: [
+    'ash_chapel_bell_room', 'ash_chapel_breach', 'ash_chapel_catacombs', 'ash_chapel_cellar'
+  ],
+  camp: [
+    'censure_road_camp', 'censure_road_medic_tent', 'censure_road_odran_tent_interior',
+    'censure_road_preceptor_tent', 'censure_road_quartermaster_tent',
+    'censure_road_quarters_tent', 'censure_road_supply_tent',
+    'censure_road_sutler_tent', 'censure_road_writ_chapel_tent'
+  ],
+  longash: [
+    'long_ash_barn_interior', 'long_ash_farmhouse_interior', 'long_ash_grain_shed_interior',
+    'long_ash_infected_cave', 'long_ash_listening_vault', 'long_ash_mortuary_chapel',
+    'long_ash_road_approach', 'long_ash_storage_shed_interior',
+    'long_ash_tool_shed_interior', 'long_ash_vigil_chapel'
+  ],
+  pilgrim: [
+    'old_pilgrim_closure_stair', 'old_pilgrim_hill_church',
+    'old_pilgrim_novitiate_quarters', 'old_pilgrim_sealed_chapter',
+    'old_pilgrim_trial_galleries', 'old_pilgrim_way'
+  ],
+  south: [
+    'ash_road_south', 'south_measure_charity_cellar', 'south_measure_compact_clinic',
+    'south_measure_hidden_rows', 'south_measure_intake_undercroft',
+    'south_measure_measure_hall', 'south_measure_morrow_freight_house',
+    'south_measure_relief_drain', 'south_measure_relief_maintenance_annex',
+    'south_measure_varo_house'
+  ]
+};
+const params = new URLSearchParams(location.search);
+const group = params.get('group') ?? 'chapel';
+const type = params.get('type') === 'full-maps' ? 'full-maps' : 'runtime-levels';
+const names = groups[group];
+if (!names) throw new Error(`Unknown level contact-sheet group: ${group}`);
+const root = params.get('root') ?? '2026-07-17-native-2x-levels';
+const base = `/.ai/visual-audit/${root}/${type}/`;
+const grid = document.getElementById('grid');
+const images = names.map((name) => {
+  const figure = document.createElement('figure');
+  const img = document.createElement('img');
+  img.src = `${base}${name}.png`;
+  img.alt = name;
+  const caption = document.createElement('figcaption');
+  caption.textContent = `${type} ${name}`;
+  figure.append(img, caption);
+  grid.append(figure);
+  return img;
+});
+await Promise.all(images.map((img) => img.decode()));
+document.title = 'CAPTURE-READY';
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{
+  "id": "south-measure-charity-trapdoor-surface",
+  "title": "Charity Cot Stair",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The trapdoor beneath the charity cot opens onto a stair into the medicine cellar."
+      ],
+      "choices": [
+        {
+          "label": "Descend into the charity cellar",
+          "conditions": {
+            "flag": "charity-cellar-access"
+          },
+          "effects": {
+            "log": "You descend beneath the charity cot into the medicine cellar.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 18,
+                "y": 13,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Trace the stock route beneath the cots",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 30
+            }
+          },
+          "effects": {
+            "setFlag": "charity-cellar-access",
+            "log": "Dose marks lead to the charity trapdoor.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 18,
+                "y": 13,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Find the cot-board key hollow",
+          "conditions": {
+            "fieldRatings": {
+              "search": 35
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "charity-cellar-access",
+              "charity-cellar-forced"
+            ],
+            "log": "The cellar key rests behind the cot-side board.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 18,
+                "y": 13,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay by the charity cots",
+          "effects": {
+            "log": "You leave the trapdoor alone."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

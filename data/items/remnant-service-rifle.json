@@ -1,0 +1,53 @@
+{
+  "id": "remnant-service-rifle",
+  "name": "Remnant Service Rifle",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "service rifle",
+  "rarity": "common",
+  "weight": 3.3,
+  "groundModel": "rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Holy Remnant",
+    "factions": [
+      "holy-remnant"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "service rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 7,
+        "range": 7,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "full-rifle-cartridge",
+      "capacity": 12,
+      "defaultLoaded": 12,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "The ordinary rifle of wall troops and road levies. Most examples have passed through three arsenals and twice as many hands."
+}

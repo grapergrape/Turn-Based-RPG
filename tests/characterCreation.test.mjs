@@ -12,6 +12,7 @@ import {
   characterNameIsValid,
   createCustomizationState,
   createPrimaryAssignmentState,
+  customizationCanConfirm,
   customizationResult,
   primaryAssignmentCanConfirm,
   primaryAssignmentResult
@@ -71,7 +72,7 @@ function buildGateGame() {
   game.inventory = { equipmentSnapshot: () => ({}), itemDefs: {} };
   game.player = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Censure Agent',
     type: 'player',
     stats: { hp: 14, maxHp: 14, actionPoints: 6 },
     progression: { level: 1, xp: 0, build: 'field-agent' }
@@ -91,9 +92,16 @@ function buildGateGame() {
   return game;
 }
 
+function namedCustomizationState() {
+  return {
+    ...createCustomizationState(),
+    name: 'Ruth Faber'
+  };
+}
+
 {
-  assert.equal(characterNameIsValid('Mara Vey'), true);
-  assert.equal(characterNameIsValid("Oren D'Vale"), true);
+  assert.equal(characterNameIsValid('Ruth Faber'), true);
+  assert.equal(characterNameIsValid("Tobias D'Rufus"), true);
   assert.equal(characterNameIsValid('A'), false);
   assert.equal(characterNameIsValid('Bad_Name'), false);
   assert.equal(characterNameIsValid('This Name Is Far Too Long'), false);
@@ -130,17 +138,17 @@ function buildGateGame() {
 }
 
 {
-  let state = createCustomizationState({ name: 'Mara Vey' });
-  state = applyCustomizationText({ ...state, name: '' }, [
-    { type: 'char', value: 'J' },
-    { type: 'char', value: 'o' },
-    { type: 'char', value: ' ' },
-    { type: 'char', value: 'V' },
-    { type: 'char', value: 'e' },
-    { type: 'char', value: 'y' }
+  let state = createCustomizationState({ name: 'Saved Agent' });
+  assert.equal(state.name, '');
+  assert.equal(customizationCanConfirm(state), false);
+  state = applyCustomizationText(state, [
+    { type: 'char', value: 'R' },
+    { type: 'char', value: 'u' },
+    { type: 'char', value: 't' },
+    { type: 'char', value: 'h' }
   ]);
   const result = customizationResult(state);
-  assert.equal(result.name, 'Jo Vey');
+  assert.equal(result.name, 'Ruth');
   assert.equal(result.appearance.genderModel, 'female');
   assert.equal(result.appearance.bodyType, 'medium');
   assert.equal(result.appearance.stature, 'average');
@@ -153,7 +161,14 @@ function buildGateGame() {
 }
 
 {
-  let state = createCustomizationState({ name: 'Mara Vey' });
+  assert.throws(
+    () => customizationResult(createCustomizationState()),
+    /Name must be 2 to 18 letters\./
+  );
+}
+
+{
+  let state = namedCustomizationState();
   const change = (fieldId, amount) => {
     state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === fieldId);
     state = changeCustomizationOption(state, amount);
@@ -178,7 +193,7 @@ function buildGateGame() {
 }
 
 {
-  const base = createCustomizationState({ name: 'Mara Vey' });
+  const base = namedCustomizationState();
   for (const field of CHARACTER_CUSTOMIZATION_FIELDS.filter((entry) => entry.kind === 'option')) {
     for (const option of field.options) {
       const result = customizationResult({
@@ -191,7 +206,7 @@ function buildGateGame() {
 }
 
 {
-  let state = createCustomizationState({ name: 'Mara Vey' });
+  let state = namedCustomizationState();
   state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === 'breastSize');
   state = changeCustomizationOption(state, 1);
   assert.equal(state.appearance.breastSize, 6);
@@ -202,7 +217,7 @@ function buildGateGame() {
 }
 
 {
-  let state = createCustomizationState({ name: 'Mara Vey' });
+  let state = namedCustomizationState();
   assert.equal(state.appearance.genderModel, 'female');
   assert.equal(state.appearance.anatomy, 'vulva');
   state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === 'penisSize');
@@ -213,7 +228,7 @@ function buildGateGame() {
 }
 
 {
-  let state = createCustomizationState({ name: 'Mara Vey' });
+  let state = namedCustomizationState();
   state.selectedIndex = CHARACTER_CUSTOMIZATION_FIELDS.findIndex((field) => field.id === 'genderModel');
   state = changeCustomizationOption(state, 1);
   assert.equal(state.appearance.genderModel, 'male');
@@ -260,8 +275,8 @@ function buildGateGame() {
   };
   game.update(0);
   assert.equal(game.uiScreen, 'character-customization');
-  assert.equal(game.player.name, 'Mara Vey');
-  assert.equal(game.characterCreation.name, 'Mara Veye');
+  assert.equal(game.player.name, 'Censure Agent');
+  assert.equal(game.characterCreation.name, 'e');
 }
 
 {

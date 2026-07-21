@@ -85,6 +85,7 @@ export function validateActor(filePath, data) {
   validateActorAppearance(name, data.appearance);
   validateActorTrade(name, data.trade);
   validateActorInventory(name, data.inventory);
+  validateActorWeapons(name, data.weapons);
   validateActorProgression(name, data.progression);
 }
 
@@ -99,6 +100,7 @@ export function validateEnemy(filePath, data) {
   validateLoot(name, data.loot);
   validateActorAppearance(name, data.appearance);
   validateActorTrade(name, data.trade);
+  validateActorWeapons(name, data.weapons);
   validateActorProgression(name, data.progression);
 
   if (data.faction === 'the-host') {
@@ -257,6 +259,33 @@ function validateActorTrade(name, trade) {
       }
     }
   }
+  if (trade.buys !== undefined) {
+    if (!Array.isArray(trade.buys) || trade.buys.length === 0) {
+      errors.push(`${name}: trade.buys must be a non-empty array when provided.`);
+    } else {
+      const seenBuyItems = new Set();
+      for (const [index, entry] of trade.buys.entries()) {
+        requireString(name, entry?.item, `trade.buys[${index}].item`);
+        if (typeof entry?.item === 'string') {
+          referencedItemIds.add(entry.item);
+          if (seenBuyItems.has(entry.item)) {
+            errors.push(`${name}: trade.buys repeats item "${entry.item}".`);
+          }
+          seenBuyItems.add(entry.item);
+        }
+        requireNumber(name, entry?.price, `trade.buys[${index}].price`);
+        if (typeof entry?.price === 'number' && (!Number.isInteger(entry.price) || entry.price <= 0)) {
+          errors.push(`${name}: trade.buys[${index}].price must be a positive integer.`);
+        }
+        if (entry?.keep !== undefined) {
+          requireNumber(name, entry.keep, `trade.buys[${index}].keep`);
+          if (typeof entry.keep === 'number' && (!Number.isInteger(entry.keep) || entry.keep < 0)) {
+            errors.push(`${name}: trade.buys[${index}].keep must be an integer zero or greater.`);
+          }
+        }
+      }
+    }
+  }
 }
 
 function validateActorInventory(name, inventory) {
@@ -291,6 +320,25 @@ function validateActorInventory(name, inventory) {
         }
         requireString(name, itemId, `inventory.equipment.${slot}`);
         if (typeof itemId === 'string') referencedItemIds.add(itemId);
+      }
+    }
+  }
+}
+
+function validateActorWeapons(name, weapons) {
+  if (weapons === undefined) return;
+  if (!Array.isArray(weapons) || weapons.length === 0) {
+    errors.push(`${name}: weapons must be a non-empty array when provided.`);
+    return;
+  }
+  for (const [index, entry] of weapons.entries()) {
+    requireString(name, entry?.item, `weapons[${index}].item`);
+    if (typeof entry?.item === 'string') referencedItemIds.add(entry.item);
+    for (const field of ['loaded', 'reserve']) {
+      if (entry?.[field] === undefined) continue;
+      requireNumber(name, entry[field], `weapons[${index}].${field}`);
+      if (typeof entry[field] === 'number' && (!Number.isInteger(entry[field]) || entry[field] < 0)) {
+        errors.push(`${name}: weapons[${index}].${field} must be a zero or greater integer.`);
       }
     }
   }

@@ -3,7 +3,7 @@
   "name": "Host-Touched Penitent",
   "type": "enemy",
   "faction": "the-host",
-  "description": "A Penitent Engine the Host has overgrown. The cult-monks seal themselves in machine to deny the rot any flesh to take, yet this one kneels broken, black-gold veined thin through the gaps in its plating, bone-thorns pushing through and a shattered halo above a cracked vox-grille. Slow, heavier than any raider, and not a thing the roads believed could happen.",
+  "description": "A Penitent Engine the Host has overgrown. Cult monks seal themselves in machinery to deny the rot any flesh, yet this one kneels broken beneath its plating: thin black-gold veins, emerging bone thorns, and a shattered halo over the cracked vox grille. Its weight and slowness belong to an Engine; the infection should have been impossible.",
   "inspect": "ash-chapel-penitent-corpse",
   "stats": {
     "hp": 11,

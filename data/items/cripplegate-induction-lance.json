@@ -1,0 +1,65 @@
+{
+  "id": "cripplegate-induction-lance",
+  "name": "Cripplegate Induction Lance",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "induction lance",
+  "rarity": "epic",
+  "weight": 7.4,
+  "groundModel": "rail-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Cripplegate Engineers",
+    "factions": [
+      "cripplegate-engineers"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "induction lance"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 12,
+        "range": 8,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 8,
+        "damage": 15,
+        "range": 8,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 3,
+      "defaultLoaded": 3,
+      "reloadAp": 5
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 83
+  },
+  "description": "A long induction projector braced against a spring shoulder. It sends a single iron lance through cover, then demands time and charge."
+}

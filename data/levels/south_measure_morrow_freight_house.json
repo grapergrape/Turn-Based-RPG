@@ -1,0 +1,2030 @@
+{
+  "id": "south-measure-morrow-freight-house",
+  "name": "South Measure Morrow Freight House",
+  "intro": "Freight weights, route slates, and bunk tags fill the house. Every locked cage answers to a working road.",
+  "width": 36,
+  "height": 22,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#1f140d",
+    "floorShadeAlpha": 0.18,
+    "ambient": "#2a160e",
+    "ambientAlpha": 0.1,
+    "vignette": 0.2
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-freight-main-door-freight",
+    "south-measure-freight-rear-door-freight",
+    "south-measure-freight-daro-mett",
+    "south-measure-freight-kerr-sorn",
+    "south-measure-freight-luta-kelm",
+    "south-measure-freight-gatt-vire",
+    "south-measure-freight-vara-sorn",
+    "south-measure-freight-pump-ledger"
+  ],
+  "tiles": [
+    "####################################",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "#..................................#",
+    "######..#########..##########..#####",
+    "#.........#.............#..........#",
+    "#.........#.............#..........#",
+    "#.........#.............#..........#",
+    "#.........#.............#..........#",
+    "#..................................#",
+    "#..................................#",
+    "#.........#.............#..........#",
+    "#.........#.............#..........#",
+    "#.........#.............#..........#",
+    "#.......................#..........#",
+    "#..................................#",
+    "#.........#........................#",
+    "#.........#.............#..........#",
+    "####################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "south-measure-freight-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "farm-plank",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 2,
+      "y": 13,
+      "facing": "se"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-daro-mett",
+        "spawnId": "freight-daro-mett-0",
+        "characterSlot": "freight-daro-mett",
+        "x": 5,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "A route survives by naming its cost before departure.",
+          "Sealed tanks still need a road and a guard shift.",
+          "Water and freight can share a contract. They cannot share the same wagon bed."
+        ],
+        "dialogue": "south-measure-freight-daro-mett",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-kerr-sorn",
+        "spawnId": "freight-kerr-sorn-1",
+        "characterSlot": "freight-kerr-sorn",
+        "x": 7,
+        "y": 15,
+        "facing": "se",
+        "ambient": [
+          "Returns on the left. Camp issue behind the scale.",
+          "Do not lean on the cage unless you owe it money.",
+          "The good boots are expensive because the road already tested them."
+        ],
+        "dialogue": "south-measure-freight-kerr-sorn",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-luta-kelm",
+        "spawnId": "freight-luta-kelm-2",
+        "characterSlot": "freight-luta-kelm",
+        "x": 16,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "The north axle route lost two carts this season.",
+          "A surety mark follows a household farther than a wagon.",
+          "I can price the run. I cannot make the price just."
+        ],
+        "dialogue": "south-measure-freight-luta-kelm",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-gatt-vire",
+        "spawnId": "freight-gatt-vire-3",
+        "characterSlot": "freight-gatt-vire",
+        "x": 27,
+        "y": 14,
+        "facing": "se",
+        "ambient": [
+          "Bonded stores stay behind mesh.",
+          "The rear door opens for crews, not arguments.",
+          "Someone cut one ledger tie and left the lock untouched."
+        ],
+        "dialogue": "south-measure-freight-gatt-vire",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-fara-dole",
+        "spawnId": "freight-fara-dole-4",
+        "characterSlot": "freight-fara-dole",
+        "x": 5,
+        "y": 2,
+        "facing": "se",
+        "ambient": [
+          "Third bunk is empty. Do not put a pack there.",
+          "Memorial tags stay where the crew left them.",
+          "Samson still serves nine bowls when seven drivers return."
+        ]
+      },
+      {
+        "actor": "ash-road-south-jaro-fen",
+        "spawnId": "freight-jaro-fen-5",
+        "characterSlot": "freight-jaro-fen",
+        "x": 13,
+        "y": 17,
+        "facing": "se",
+        "ambient": [
+          "The scale reads light when the floor is damp.",
+          "Crates with blue cord go to the clinic.",
+          "I can lash the cisterns. I will not choose who receives the first cup."
+        ]
+      },
+      {
+        "actor": "ash-road-south-hessa-vir",
+        "spawnId": "freight-hessa-vir-6",
+        "characterSlot": "freight-hessa-vir",
+        "x": 31,
+        "y": 16,
+        "facing": "se",
+        "ambient": [
+          "Rear lane clear. Main lane has claimants.",
+          "A closed door keeps tempers from becoming policy.",
+          "If Darius signs, the cistern wagon moves. Until then, it stays in the yard."
+        ]
+      },
+      {
+        "actor": "ash-road-south-vara-sorn",
+        "spawnId": "freight-vara-sorn-7",
+        "characterSlot": "freight-vara-sorn",
+        "x": 19,
+        "y": 10,
+        "facing": "se",
+        "ambient": [
+          "Black pin for a lost cart. Brass pin for a burial charge.",
+          "This route delivered medicine twice last month.",
+          "A false surety still leaves a real family at the gate."
+        ],
+        "dialogue": "south-measure-freight-vara-sorn",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-sann-vire",
+        "spawnId": "freight-sann-vire-8",
+        "characterSlot": "freight-sann-vire",
+        "x": 7,
+        "y": 3,
+        "facing": "se",
+        "ambient": [
+          "Drivers leave their cups upside down before a bad road.",
+          "The empty bunks are not available.",
+          "I keep stew warm until the loss board gets its last pin."
+        ]
+      }
+    ],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 0,
+      "y": 13,
+      "id": "freight-main-door",
+      "name": "Freight House Main Door",
+      "blocking": true,
+      "variant": "freight",
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 1,
+        "y": 13
+      },
+      "mapMarker": {
+        "label": "Freight House Main Door",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-freight-main-door-freight"
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 29,
+      "y": 21,
+      "id": "freight-rear-door",
+      "name": "Rear Service Door",
+      "blocking": true,
+      "variant": "freight",
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 29,
+        "y": 20
+      },
+      "mapMarker": {
+        "label": "Rear Service Door",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-freight-rear-door-freight"
+      }
+    },
+    {
+      "kind": "south-measure-return-stall",
+      "x": 4,
+      "y": 13,
+      "id": "morrow-public-office",
+      "blocking": true,
+      "variant": "returns",
+      "orient": "sw",
+      "name": "Public Freight Office",
+      "interact": {
+        "type": "note",
+        "log": "The office counter faces the yard door. Contract copies sit where workers can hear every term read aloud."
+      },
+      "interactionMarker": {
+        "x": 5,
+        "y": 13
+      }
+    },
+    {
+      "kind": "freight-scale",
+      "x": 7,
+      "y": 17,
+      "id": "morrow-freight-scale",
+      "blocking": true,
+      "variant": "cargo",
+      "orient": "se",
+      "name": "Freight Scale",
+      "interact": {
+        "type": "note",
+        "log": "Fresh chalk weights cover older relief measures. The balance arm has been repaired often and kept honest."
+      },
+      "interactionMarker": {
+        "x": 8,
+        "y": 17
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 17,
+      "y": 12,
+      "id": "morrow-route-table",
+      "blocking": true,
+      "variant": "route",
+      "orient": "se",
+      "name": "Route Table",
+      "interact": {
+        "type": "note",
+        "log": "Stone markers hold the current road open across the table. Red Tithe warnings crowd the ford approaches."
+      },
+      "interactionMarker": {
+        "x": 18,
+        "y": 12
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 14,
+      "y": 7,
+      "id": "morrow-convoy-loss-board",
+      "blocking": true,
+      "variant": "route",
+      "wallPlane": "sw",
+      "name": "Convoy Loss Board",
+      "interact": {
+        "type": "note",
+        "log": "Paid death shares sit beside wagons that never returned. The same losses reappear later as freight charges."
+      },
+      "mapMarker": {
+        "label": "Convoy Losses",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 14,
+        "y": 8
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 22,
+      "y": 7,
+      "id": "morrow-medicine-run-board",
+      "blocking": true,
+      "variant": "schedules",
+      "wallPlane": "sw",
+      "name": "Medicine Run Board",
+      "interact": {
+        "type": "note",
+        "log": "The next route crosses Red Tithe country at the hot part of the day. Cooler checks fill the margin."
+      },
+      "interactionMarker": {
+        "x": 22,
+        "y": 8
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 16,
+      "y": 6,
+      "id": "morrow-ledger-cage",
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      },
+      "name": "Ledger Cage",
+      "interact": {
+        "type": "note",
+        "log": "Pump notes and signature folios fill shelves behind the cage. The lock faces the public office."
+      },
+      "mapMarker": {
+        "label": "Ledger Cage",
+        "kind": "locked"
+      },
+      "interactionMarker": {
+        "x": 17,
+        "y": 6
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 18,
+      "y": 3,
+      "id": "morrow-pump-ledger",
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "sw",
+      "name": "Pump Ledger",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "south-measure-freight-pump-ledger"
+      },
+      "mapMarker": {
+        "label": "Pump Ledger",
+        "kind": "search"
+      },
+      "interactionMarker": {
+        "x": 19,
+        "y": 3
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 21,
+      "y": 4,
+      "id": "morrow-household-surety-folios",
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "sw",
+      "name": "Household Surety Folios",
+      "interact": {
+        "type": "note",
+        "log": "Work years pass from one household line to another when a debtor leaves. Several names appear beside signatures they could not have made."
+      },
+      "interactionMarker": {
+        "x": 20,
+        "y": 4
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 29,
+      "y": 6,
+      "id": "morrow-bonded-store",
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      },
+      "name": "Bonded Store",
+      "interact": {
+        "type": "note",
+        "log": "Drive oil, freight seals, and grain tags sit behind a separate lock. Every shelf is counted for road work."
+      },
+      "mapMarker": {
+        "label": "Bonded Store",
+        "kind": "locked"
+      },
+      "interactionMarker": {
+        "x": 30,
+        "y": 6
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 0,
+      "y": 4,
+      "id": "morrow-guard-memorial-tags",
+      "blocking": true,
+      "variant": "memorial",
+      "wallPlane": "se",
+      "name": "Guard Memorial Tags",
+      "interact": {
+        "type": "note",
+        "log": "Worn tags name people lost keeping the route open. Grease from passing hands has darkened the wall beneath them."
+      },
+      "mapMarker": {
+        "label": "Memorial Tags",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 1,
+        "y": 4
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 5,
+      "y": 4,
+      "id": "morrow-guard-bunks",
+      "blocking": true,
+      "orient": "se",
+      "name": "Guard Bunks",
+      "interact": {
+        "type": "note",
+        "log": "Road coats hang above narrow beds. Mended straps and family notes share the same pegs."
+      },
+      "interactionMarker": {
+        "x": 6,
+        "y": 4
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 3,
+      "y": 4,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 7,
+      "y": 10,
+      "id": "morrow-guard-mess",
+      "blocking": true,
+      "variant": "cup-repair",
+      "orient": "sw",
+      "name": "Guard Mess",
+      "interact": {
+        "type": "note",
+        "log": "A blackened pot rests beside route cups marked by owner. The quiet wall faces the memorial tags."
+      },
+      "interactionMarker": {
+        "x": 8,
+        "y": 10
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 31,
+      "y": 12,
+      "id": "freight-written-off-road-crate",
+      "name": "Written-Off Road Crate",
+      "blocking": true,
+      "orient": "sw",
+      "interact": {
+        "type": "container",
+        "log": "The Morrow seal is cut through. A red tally marks the load as road loss, cleared for recovery.",
+        "loot": [
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          },
+          {
+            "item": "drone-service-parts",
+            "count": 2
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 32,
+        "y": 12
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 2,
+      "y": 2,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "farm-bed",
+      "x": 7,
+      "y": 2,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "farm-bed",
+      "x": 7,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 2,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "shared-oven",
+      "x": 3,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "dining-table",
+      "x": 6,
+      "y": 9,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 6,
+      "y": 11,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 4,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 8,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 3,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 8,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "tool-rack",
+      "x": 9,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 8,
+      "y": 10
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 11,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 12,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 13,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 14,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 15,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 16,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 17,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 18,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 19,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 20,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 21,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 22,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 23,
+      "y": 2,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 11,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 12,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 13,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 14,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 15,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 19,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 20,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 21,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 22,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 23,
+      "y": 6,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 11,
+      "y": 3,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "sw",
+      "connected": {
+        "yMinus": false,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 11,
+      "y": 4,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 11,
+      "y": 5,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": false
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 23,
+      "y": 3,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "sw",
+      "connected": {
+        "yMinus": false,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 23,
+      "y": 4,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 23,
+      "y": 5,
+      "blocking": true,
+      "variant": "ledger",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": false
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 25,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 26,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 27,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 28,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 31,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 32,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 33,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 34,
+      "y": 6,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 25,
+      "y": 2,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "sw",
+      "connected": {
+        "yMinus": false,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 25,
+      "y": 3,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 25,
+      "y": 4,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": true
+      }
+    },
+    {
+      "kind": "mesh-cage-panel",
+      "x": 25,
+      "y": 5,
+      "blocking": true,
+      "variant": "bonded",
+      "orient": "sw",
+      "connected": {
+        "yMinus": true,
+        "yPlus": false
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 26,
+      "y": 2,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 28,
+      "y": 2,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 30,
+      "y": 2,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-cage",
+      "x": 32,
+      "y": 2,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 34,
+      "y": 2,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 27,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 29,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 31,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-cage",
+      "x": 33,
+      "y": 3,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 26,
+      "y": 4,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 28,
+      "y": 4,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-cage",
+      "x": 30,
+      "y": 4,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 32,
+      "y": 4,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 34,
+      "y": 4,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 27,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-sack-stack",
+      "x": 29,
+      "y": 5,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 31,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "grain-cage",
+      "x": 33,
+      "y": 5,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 12,
+      "y": 4,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 14,
+      "y": 5,
+      "blocking": true,
+      "variant": "current-records",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 20,
+      "y": 5,
+      "blocking": true,
+      "variant": "archive-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 22,
+      "y": 3,
+      "blocking": true,
+      "variant": "locked-cabinet",
+      "orient": "sw"
+    },
+    {
+      "kind": "freight-wagon",
+      "x": 18,
+      "y": 17,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 15,
+      "y": 12,
+      "blocking": true,
+      "variant": "route",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 19,
+      "y": 12,
+      "blocking": true,
+      "variant": "route",
+      "orient": "se"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 16,
+      "y": 17,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 20,
+      "y": 17,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 12,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 16,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 20,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 23,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 14,
+      "y": 18,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 22,
+      "y": 19,
+      "blocking": true
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 27,
+      "y": 11,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 29,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 33,
+      "y": 16,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 27,
+      "y": 18,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 33,
+      "y": 19,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 11,
+      "y": 7,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 25,
+      "y": 7,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 11,
+      "y": 14
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 16,
+      "y": 14
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 20,
+      "y": 15
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 25,
+      "y": 10
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 30,
+      "y": 10
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 34,
+      "y": 14
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 25,
+      "y": 20
+    },
+    {
+      "kind": "road-dust",
+      "x": 1,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 2,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 22,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 23,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 25,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 26,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 29,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 1,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 2,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 22,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 23,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 25,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 26,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 27,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 29,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 31,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 32,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 34,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 14
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 17
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 14
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 17
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 22,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 23,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 25,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 26,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 32,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 33,
+      "y": 18
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 14
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 17
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 19
+    },
+    {
+      "kind": "road-dust",
+      "x": 28,
+      "y": 20
+    },
+    {
+      "kind": "road-dust",
+      "x": 29,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 29,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 29,
+      "y": 17
+    },
+    {
+      "kind": "road-dust",
+      "x": 29,
+      "y": 20
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 14
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 17
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 19
+    },
+    {
+      "kind": "road-dust",
+      "x": 30,
+      "y": 20
+    },
+    {
+      "kind": "south-measure-queue-rail",
+      "x": 3,
+      "y": 15,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-notice-board",
+      "x": 2,
+      "y": 11,
+      "blocking": false,
+      "orient": "se"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 4,
+      "y": 12
+    },
+    {
+      "kind": "fixed-hoist",
+      "x": 29,
+      "y": 18,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "freight-wagon",
+      "x": 31,
+      "y": 18,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 34,
+      "y": 18,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 29,
+      "y": 19,
+      "blocking": false,
+      "variant": "grate",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 20,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 32,
+      "y": 20,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "freight-loose-ducat",
+      "item": "ducat",
+      "count": 1,
+      "x": 32,
+      "y": 12
+    }
+  ]
+}

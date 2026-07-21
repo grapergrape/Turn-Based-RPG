@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!-- Dev-only detached-canvas review for civilian work motions and prop feedback. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>
+html,body{margin:0;background:#090b0d;}canvas{display:block;image-rendering:pixelated;}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import { loadLevel } from '/src/core/LevelLoader.js';
+import {
+  bakeHumanAppearance,
+  buildSpriteAtlas,
+  getFrame,
+  isHumanAppearance,
+  spriteIdForHumanAppearance
+} from '/src/render/SpriteAtlas.js';
+import * as P from '/src/render/PixelPrimitives.js';
+import { PropSpriteCache } from '/src/render/PropSpriteCache.js';
+import { ShadowMaskCache } from '/src/render/ShadowMaskCache.js';
+import { actorFrameSource, actorShadowProfile } from '/src/render/shadowProfiles.js';
+import { PALETTE } from '/src/render/palette.js';
+import { getSprite } from '/src/render/spriteCatalog.js';
+import { rect, text } from '/src/render/ui/UiPrimitives.js';
+
+const view = new URLSearchParams(location.search).get('view') ?? 'motions';
+const level = await loadLevel('./data/levels/ash_road_south.json');
+const atlas = buildSpriteAtlas();
+for (const actor of [level.player, ...level.npcs, ...level.enemies]) {
+  if (!isHumanAppearance(actor?.appearance)) continue;
+  actor.spriteId = spriteIdForHumanAppearance(actor.appearance);
+  if (!atlas[actor.spriteId]) atlas[actor.spriteId] = bakeHumanAppearance(actor.appearance);
+}
+
+const byActor = new Map(level.npcs.map((actor) => [actor.id, actor]));
+const byProp = new Map(level.props.filter((prop) => prop.id).map((prop) => [prop.id, prop]));
+const propSprites = new PropSpriteCache();
+const shadowMasks = new ShadowMaskCache();
+const canvas = document.getElementById('c');
+const logicalWidth = view === 'responses' ? 720 : 720;
+const logicalHeight = view === 'responses' ? 590 : 790;
+canvas.width = logicalWidth * 2;
+canvas.height = logicalHeight * 2;
+canvas.style.width = `${logicalWidth * 2}px`;
+canvas.style.height = `${logicalHeight * 2}px`;
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+ctx.setTransform(2, 0, 0, 2, 0, 0);
+rect(ctx, 0, 0, logicalWidth, logicalHeight, PALETTE.void);
+
+function panel(x, y, width, height, title) {
+  rect(ctx, x, y, width, height, PALETTE.outline);
+  rect(ctx, x + 1, y + 1, width - 2, height - 2, PALETTE.uiPanel);
+  rect(ctx, x + 2, y + 2, width - 4, 1, PALETTE.uiBorderLight);
+  rect(ctx, x + 2, y + height - 3, width - 4, 1, PALETTE.uiBorderDark);
+  text(ctx, title, x + 8, y + 7, PALETTE.uiText);
+}
+
+function floorPatch(cx, cy, seed = 1) {
+  for (let dy = -1; dy <= 1; dy += 1) {
+    for (let dx = -1; dx <= 1; dx += 1) {
+      P.drawStyledFloorCell(
+        ctx,
+        cx + (dx - dy) * 32,
+        cy + (dx + dy) * 16,
+        seed + dx,
+        seed + dy,
+        'south-measure-slab'
+      );
+    }
+  }
+}
+
+function drawProp(propId, x, y, activity) {
+  const source = byProp.get(propId);
+  if (!source) throw new Error(`Missing prop ${propId}`);
+  const prop = { ...source, workActivity: activity };
+  const entry = getSprite(prop.kind);
+  const state = { prop, anim: { pulse: 0, flicker: 0, tick: 0 }, pulse: 0, flicker: 0, player: null };
+  const seed = prop.seed ?? 17;
+  const prepared = propSprites.prepare(entry, prop, seed, state);
+  const contact = shadowMasks.prepareContact(prepared, entry.shadow?.contact);
+  if (contact) {
+    ctx.save();
+    ctx.globalAlpha *= entry.shadow.contact.alphaScale;
+    shadowMasks.draw(ctx, contact, x + (prepared?.anchorOffsetX ?? 0), y + (prepared?.anchorOffsetY ?? 0));
+    ctx.restore();
+  }
+  if (!propSprites.composite(ctx, prepared, x, y)) entry.draw(ctx, x, y, seed, state);
+  entry.drawLiveOverlay?.(ctx, x, y, prop.seed ?? 17, state);
+}
+
+function drawActor(actorId, state, frameIndex, x, y, facing = 'se') {
+  const actor = byActor.get(actorId);
+  if (!actor) throw new Error(`Missing actor ${actorId}`);
+  const resolved = getFrame(atlas, actor.spriteId, state, facing, frameIndex);
+  if (!resolved?.frame) throw new Error(`Missing ${state} frame ${frameIndex}`);
+  const { sprite, frame, mirror } = resolved;
+  const source = actorFrameSource(sprite, frame);
+  const profile = actorShadowProfile(actor, sprite, state).contact;
+  const contact = shadowMasks.prepareContact(source, profile);
+  ctx.save();
+  ctx.globalAlpha *= profile.alphaScale;
+  if (mirror) {
+    ctx.translate(Math.round(x), 0);
+    ctx.scale(-1, 1);
+    shadowMasks.draw(ctx, contact, 0, y);
+  } else {
+    shadowMasks.draw(ctx, contact, x, y);
+  }
+  ctx.restore();
+  if (mirror) {
+    ctx.save();
+    ctx.translate(Math.round(x), Math.round(y - sprite.anchorY));
+    ctx.scale(-1, 1);
+    ctx.drawImage(frame, -sprite.anchorX, 0, sprite.width, sprite.height);
+    ctx.restore();
+    return;
+  }
+  ctx.drawImage(frame, Math.round(x - sprite.anchorX), Math.round(y - sprite.anchorY), sprite.width, sprite.height);
+}
+
+if (view === 'motions') {
+  text(ctx, 'ASH ROAD SOUTH: CIVILIAN WORK MOTIONS', 16, 13, PALETTE.uiWarn);
+  const rows = [
+    { label: 'PUMP', actor: 'ash-road-south-jani-kes', state: 'workPump', frames: [0, 3, 7], prop: 'ash-road-south-wagon-yard-pump', response: 'water' },
+    { label: 'MARK', actor: 'ash-road-south-sela-marr', state: 'workMark', frames: [0, 2, 5], prop: 'ash-road-south-arrival-board', response: 'paper' },
+    { label: 'LIFT', actor: 'ash-road-south-benne-korr', state: 'workLift', frames: [0, 3, 7], prop: 'ash-road-south-wagon-service-hoist', response: 'hoist' },
+    { label: 'KNEEL', actor: 'ash-road-south-rin-quor', state: 'workKneel', frames: [0, 2, 5], prop: 'ash-road-south-settling-tools', response: 'tools' }
+  ];
+  rows.forEach((row, rowIndex) => {
+    row.frames.forEach((frame, columnIndex) => {
+      const x = 12 + columnIndex * 236;
+      const y = 35 + rowIndex * 186;
+      panel(x, y, 224, 174, `${row.label}  FRAME ${frame + 1}`);
+      floorPatch(x + 112, y + 111, 20 + rowIndex * 7 + columnIndex);
+      const activity = { actorId: row.actor, motion: row.state, response: row.response, frame };
+      drawProp(row.prop, x + 151, y + 112, activity);
+      drawActor(row.actor, row.state, frame, x + 70, y + 122);
+    });
+  });
+} else {
+  text(ctx, 'ASH ROAD SOUTH: LIVE PROP RESPONSES', 16, 13, PALETTE.uiWarn);
+  const responses = [
+    ['PAPER', 'ash-road-south-arrival-board', 'paper'],
+    ['WATER', 'ash-road-south-public-taps-west', 'water'],
+    ['TOOLS', 'ash-road-south-settling-tools', 'tools'],
+    ['HOIST', 'ash-road-south-wagon-service-hoist', 'hoist'],
+    ['SCALE', 'ash-road-south-old-gate-scale', 'scale'],
+    ['LOAD', 'ash-road-south-return-shelf', 'load'],
+    ['CLOTH', 'ash-road-south-charity-linen-rack', 'cloth'],
+    ['FLAME', 'ash-road-south-sample-burner', 'flame']
+  ];
+  responses.forEach(([label, propId, response], index) => {
+    const column = index % 4;
+    const row = Math.floor(index / 4);
+    const x = 12 + column * 177;
+    const y = 38 + row * 268;
+    panel(x, y, 165, 250, label);
+    floorPatch(x + 82, y + 140, 70 + index);
+    drawProp(propId, x + 82, y + 148, {
+      actorId: 'review-worker',
+      motion: 'reach',
+      response,
+      frame: response === 'hoist' || response === 'scale' ? 4 : 3
+    });
+  });
+}
+
+document.title = 'CAPTURE-READY';
+</script>
+</body>
+</html>

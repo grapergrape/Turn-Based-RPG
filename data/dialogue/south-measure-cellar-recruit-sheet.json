@@ -1,0 +1,32 @@
+{
+  "id": "south-measure-cellar-recruit-sheet",
+  "title": "Recruit Lesson Sheet",
+  "nodes": {
+    "start": {
+      "effects": {
+        "setFlag": [
+          "neri-recruit-list-found",
+          "neri-investigation-started"
+        ],
+        "questUpdate": {
+          "quest": "lesson-under-the-wrap",
+          "stage": "gather-evidence",
+          "log": "Salome’s lesson sheet names three adults for Choir conversion."
+        }
+      },
+      "lines": [
+        "A reading exercise pairs three names with routes: Peter Molitor to the open wound, Jonah Mercator to courier work, Jair Celsus to transfer.",
+        "The final line reads: ADULT CONSENT AFTER THE SECOND LESSON. NO CHILDREN."
+      ],
+      "choices": [
+        {
+          "label": "Record the evidence",
+          "effects": {
+            "log": "Salome’s lesson sheet names three adults for Choir conversion."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

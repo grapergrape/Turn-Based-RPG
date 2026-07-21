@@ -1,6 +1,7 @@
 import { cellsOnLine } from './PerceptionSystem.js';
 import { isPassableWhenOpen } from './DoorSystem.js';
 import { getSprite } from '../render/spriteCatalog.js';
+import { isMeleeAttack } from '../combat/AttackMode.js';
 
 export const COVER_LEVELS = Object.freeze(['none', 'light', 'hard']);
 
@@ -72,7 +73,17 @@ export function evaluateLineOfFire({
   if (!grid || !from || !to || !attack) {
     return { blocked: false, reason: '', cover: { level: 'none', label: '' } };
   }
-  if (attack.range <= 1) {
+  if (isMeleeAttack(attack)) {
+    if (Number(attack.range) <= 1) {
+      return { blocked: false, reason: '', cover: { level: 'none', label: '' } };
+    }
+    const reachCells = cellsOnLine(from.x, from.y, to.x, to.y);
+    for (let index = 1; index < reachCells.length - 1; index += 1) {
+      const cell = reachCells[index];
+      if (cellBlocksShot(grid, props, cell.x, cell.y)) {
+        return { blocked: true, reason: 'No reach', cover: { level: 'none', label: '' } };
+      }
+    }
     return { blocked: false, reason: '', cover: { level: 'none', label: '' } };
   }
 

@@ -1,0 +1,27 @@
+{
+  "id": "old-pilgrim-sister-calen",
+  "name": "Sister Thecla",
+  "type": "npc",
+  "faction": "holy-remnant",
+  "role": "Road nun",
+  "appearance": {
+    "body": "sturdy",
+    "outfit": "settlement-nurse",
+    "gear": [
+      "medicine-bag",
+      "long-apron"
+    ],
+    "accent": "bare-grey"
+  },
+  "stats": {
+    "hp": 8,
+    "maxHp": 8,
+    "actionPoints": 0
+  },
+  "tags": [
+    "old-pilgrim-way",
+    "holy-remnant",
+    "nun",
+    "talkable"
+  ]
+}

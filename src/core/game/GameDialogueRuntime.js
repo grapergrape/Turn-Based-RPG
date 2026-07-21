@@ -1,7 +1,13 @@
 import { FIELD_RATINGS, PRIMARY_ATTRIBUTES, calculateFieldRating, normalizeProgression } from '../Progression.js';
 import { meetsDialogueConditions } from '../DialogueConditions.js';
-import { DIALOGUE_MAX_CHOICES, buildDialogueLayout } from '../../ui/dialogueLayout.js';
+import {
+  DIALOGUE_MAX_CHOICES,
+  buildDialogueLayout,
+  dialogueOptionIndexAt
+} from '../../ui/dialogueLayout.js';
 import { installGameMethods } from './installGameMethods.js';
+
+const ACTOR_FACINGS = new Set(['e', 'se', 's', 'sw', 'w', 'nw', 'n', 'ne']);
 
 class GameDialogueRuntime {
   _openDialogue(title, lines, kind = 'inspect') {
@@ -92,7 +98,10 @@ class GameDialogueRuntime {
       hasScar: (scarId, rank) => this._hasScar(scarId, rank),
       fieldRating: (fieldId) => this._fieldRating(fieldId),
       traceValue: () => this._traceValue(),
-      itemCount: (itemId) => this.inventory?.count(itemId) ?? 0
+      itemCount: (itemId) => this.inventory?.count(itemId) ?? 0,
+      playerWounded: () => Boolean(
+        this.player && !this.player.isDead && this.player.hp < this.player.maxHp
+      )
     });
   }
 
@@ -127,9 +136,17 @@ class GameDialogueRuntime {
     return this._playerProgression().trace;
   }
 
-  _handleDialogueScreen(actions) {
+  _handleDialogueScreen(actions, click = null) {
     const choices = this.dialogue?.choices ?? [];
     this._syncDialogueLayout();
+    if ((click?.button ?? 0) === 0) {
+      const optionIndex = dialogueOptionIndexAt(this.dialogue, click);
+      if (optionIndex !== null) {
+        if (choices.length > 0) this._chooseDialogueOption(optionIndex);
+        else this._closeDialogueScreen();
+        return;
+      }
+    }
     for (const action of actions) {
       if (action === 'up') {
         this.dialogue.scroll = Math.max(0, (this.dialogue.scroll ?? 0) - 1);
@@ -165,7 +182,7 @@ class GameDialogueRuntime {
 
       if (this.dialogue?.mustChoose && choices.length > 0) {
         if (action === 'restart') {
-          this.boot();
+          this._requestRunRestart?.();
           return;
         }
         if (action === 'debug') this.debugGrid = !this.debugGrid;
@@ -183,7 +200,7 @@ class GameDialogueRuntime {
         return;
       }
       if (action === 'restart') {
-        this.boot();
+        this._requestRunRestart?.();
         return;
       }
       if (action === 'debug') this.debugGrid = !this.debugGrid;
@@ -191,7 +208,15 @@ class GameDialogueRuntime {
   }
 
   _dialogueChoiceIndex(action) {
-    const choiceKeys = { melee: 0, sidearm: 1, choice3: 2, choice4: 3, choice5: 4 };
+    const choiceKeys = {
+      weapon1: 0,
+      weapon2: 1,
+      melee: 0,
+      sidearm: 1,
+      choice3: 2,
+      choice4: 3,
+      choice5: 4
+    };
     return choiceKeys[action] ?? null;
   }
 
@@ -244,11 +269,13 @@ class GameDialogueRuntime {
     this.ready = false;
     this.levelPath = effect.path ?? this.levelPath;
     await this.boot({ preserveRun: true, player: effect.player ?? null });
+    void this._requestAutosave?.('level transition');
   }
 
   _teleportPlayer(point) {
     if (!point || !this.grid.isWalkable(point.x, point.y)) return;
     this.player.moveTo(point.x, point.y);
+    if (ACTOR_FACINGS.has(point.facing)) this.player.facing = point.facing;
     this.player.pxOffset = { x: 0, y: 0 };
     this.player.render.state = this._idleStateFor(this.player);
     this.player.render.frameIndex = 0;

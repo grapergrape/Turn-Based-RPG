@@ -1,6 +1,11 @@
 import { FIELD_RATINGS, calculateFieldRating, normalizeProgression } from '../Progression.js';
 import { manhattan } from '../../combat/CombatSystem.js';
 import { findPath } from '../../world/Pathfinder.js';
+import {
+  activityFrameIndex,
+  activityRenderState,
+  activitySoundFrame
+} from '../../world/NpcActivity.js';
 import { SUSPICION_SEVERITY } from '../../world/PerceptionSystem.js';
 import { gridToScreen, screenFacing } from '../../render/isoMath.js';
 import { VIEWPORT_HEIGHT } from '../../render/renderConfig.js';
@@ -10,7 +15,8 @@ import {
   SPRINT_STEP_DURATION,
   STEP_DURATION,
   TRIGGER_RADIUS,
-  WALK_FRAMES
+  WALK_FRAMES,
+  isExplorationMode
 } from './runtimeConstants.js';
 import { installGameMethods } from './installGameMethods.js';
 
@@ -20,14 +26,26 @@ class GameMovementRuntime {
   // Begin a stepped move of `actor` by `dir` if the destination is free.
   // Returns true if a step started.
   _tryStep(actor, dir, { logBlock = false, moveState = null } = {}) {
-    if (this.moving) return false;
+    const independentExplorationMove = this.mode === 'explore' && actor !== this.player;
+    if (independentExplorationMove) {
+      this.explorationMovements ??= new Map();
+      if (this.explorationMovements.has(actor)) return false;
+    } else if (this.moving) {
+      return false;
+    }
     const nx = actor.position.x + dir.x;
     const ny = actor.position.y + dir.y;
-    if (this._isCellHidden(nx, ny) || !this.grid.isWalkable(nx, ny) || this._isOccupied(nx, ny, actor)) {
+    if (this._isCellHidden(nx, ny) || !this.grid.isWalkable(nx, ny)) {
+      if (logBlock) this._log('The ruins do not give way.');
+      return false;
+    }
+    this._makeWayForFriendlyCompanion?.(actor, nx, ny);
+    if (this._isOccupied(nx, ny, actor)) {
       if (logBlock) this._log('The ruins do not give way.');
       return false;
     }
 
+    this._cancelCompanionFollowMotion?.(actor);
     // Face the way we step (one of eight isometric facings).
     actor.facing = screenFacing(dir.x, dir.y);
     // Screen-space delta is independent of the camera origin (it cancels).
@@ -40,15 +58,17 @@ class GameMovementRuntime {
     actor.render.frameIndex = 0;
     actor.render.timer = 0;
 
-    this.moving = {
+    const movement = {
       actor,
       t: 0,
       stateName,
       sneakMode: actor === this.player && this.mode === 'explore' && this.sneakMode,
-      usedSprint: actor === this.player && this.mode === 'explore' && this._isSprintHeld(),
+      usedSprint: actor === this.player && isExplorationMode(this.mode) && this._isSprintHeld(),
       fromX: actor.pxOffset.x,
       fromY: actor.pxOffset.y
     };
+    if (independentExplorationMove) this.explorationMovements.set(actor, movement);
+    else this.moving = movement;
     return true;
   }
 
@@ -58,11 +78,43 @@ class GameMovementRuntime {
   _advanceMovement(dt) {
     if (!this.moving) return false;
     const move = this.moving;
+    if (this._advanceMovementAnimation(move, dt)) {
+      this.moving = null;
+      this._onStepComplete(move.actor);
+    }
+    return this.moving !== null;
+  }
+
+  // Exploration actors animate independently so a settlement patrol never
+  // owns the player's blocking movement channel or consumes player input.
+  _advanceExplorationMovements(dt) {
+    const movements = this.explorationMovements;
+    if (!(movements instanceof Map) || movements.size === 0) return false;
+    if (this.mode !== 'explore') {
+      this._settleExplorationMovements();
+      return false;
+    }
+
+    for (const [actor, move] of movements) {
+      if (!actor || actor.removed || actor.isDead) {
+        movements.delete(actor);
+        this._settleMovementAnimation(move);
+        continue;
+      }
+      if (!this._advanceMovementAnimation(move, dt)) continue;
+      movements.delete(actor);
+      this._onStepComplete(actor);
+      if (this.mode !== 'explore') break;
+    }
+    return movements.size > 0;
+  }
+
+  _advanceMovementAnimation(move, dt) {
     const movementState = this._movementStateForActiveStep(move);
-    if (move.actor === this.player && this.mode === 'explore' && this._isSprintHeld()) {
+    if (move.actor === this.player && isExplorationMode(this.mode) && this._isSprintHeld()) {
       move.usedSprint = true;
     }
-    const duration = this._stepDurationForState(movementState);
+    const duration = this._stepDurationForState(movementState, move);
     move.t = Math.min((move.t ?? 0) + (dt / duration), 1);
     const ratio = move.t;
     const frameIndex = Math.min(WALK_FRAMES - 1, Math.floor(ratio * WALK_FRAMES));
@@ -76,19 +128,63 @@ class GameMovementRuntime {
       move.actor.render.frameIndex = frameIndex;
     }
 
-    if (ratio >= 1) {
-      move.actor.pxOffset = { x: 0, y: 0 };
-      if (move.actor === this.player && this.mode === 'explore') {
-        move.actor.pendingSuspicionSeverity = this._movementSeverityForCompletedStep(move);
-      }
-      if (move.actor.render.state === movementState) {
-        move.actor.render.state = this._idleStateFor(move.actor);
-        move.actor.render.frameIndex = 0;
-      }
-      this.moving = null;
-      this._onStepComplete(move.actor);
+    if (ratio < 1) return false;
+    move.actor.pxOffset = { x: 0, y: 0 };
+    if (move.actor === this.player && this.mode === 'explore') {
+      move.actor.pendingSuspicionSeverity = this._movementSeverityForCompletedStep(move);
     }
-    return this.moving !== null;
+    if (move.actor.render.state === movementState) {
+      move.actor.render.state = this._idleStateFor(move.actor);
+      move.actor.render.frameIndex = 0;
+    }
+    return true;
+  }
+
+  _settleMovementAnimation(move) {
+    const actor = move?.actor;
+    if (!actor) return;
+    actor.pxOffset = { x: 0, y: 0 };
+    const movementState = this._movementStateForActiveStep(move);
+    if (!actor.isDead && actor.render?.state === movementState) {
+      actor.render.state = this._idleStateFor(actor);
+      actor.render.frameIndex = 0;
+      actor.render.timer = 0;
+    }
+  }
+
+  _settleExplorationMovements() {
+    const movements = this.explorationMovements;
+    if (!(movements instanceof Map) || movements.size === 0) return;
+    const active = [...movements.values()];
+    movements.clear();
+    for (const move of active) this._settleMovementAnimation(move);
+  }
+
+  _settleMovementForCombat() {
+    if (this.mode !== 'explore') return;
+    if (this.moving) {
+      this._settleMovementAnimation(this.moving);
+      this.moving = null;
+    }
+    this._settleExplorationMovements();
+    this.patrolSystem?.cancelAllActivities?.();
+    this.tableauSystem?.cancelAll?.('combat');
+  }
+
+  _isActorMoving(actor) {
+    if (!actor) return false;
+    return this.moving?.actor === actor ||
+      this.explorationMovements?.has?.(actor) ||
+      this.companionFollowMotion?.actor === actor;
+  }
+
+  _cancelNpcMovement(actor) {
+    if (!actor) return false;
+    const movement = this.explorationMovements?.get?.(actor);
+    if (!movement) return false;
+    this.explorationMovements.delete(actor);
+    this._settleMovementAnimation(movement);
+    return true;
   }
 
   _defaultMoveState(actor) {
@@ -96,7 +192,7 @@ class GameMovementRuntime {
   }
 
   _currentPlayerMoveState() {
-    if (this.mode === 'explore' && this._isSprintHeld()) return 'walk';
+    if (isExplorationMode(this.mode) && this._isSprintHeld()) return 'walk';
     return this.mode === 'explore' && this.sneakMode ? 'sneak' : 'walk';
   }
 
@@ -108,8 +204,11 @@ class GameMovementRuntime {
     return move.stateName ?? 'walk';
   }
 
-  _stepDurationForState(stateName) {
-    if (this.mode === 'explore' && this.moving?.actor === this.player && this._isSprintHeld()) {
+  _stepDurationForState(stateName, move = this.moving) {
+    if (isExplorationMode(this.mode) && move?.actor === this.player && this._isSprintHeld()) {
+      return SPRINT_STEP_DURATION;
+    }
+    if (this.mode === 'combat' && move?.actor?.tags?.includes('runner')) {
       return SPRINT_STEP_DURATION;
     }
     return stateName === 'sneak' ? SNEAK_STEP_DURATION : STEP_DURATION;
@@ -234,6 +333,7 @@ class GameMovementRuntime {
       return;
     }
     if (actor === this.player && this.mode === 'explore') {
+      this._syncCompanionFollow?.();
       this._revealMapAroundPlayer();
       const severity = this.player.pendingSuspicionSeverity ?? SUSPICION_SEVERITY.LOW;
       this.player.pendingSuspicionSeverity = null;
@@ -257,6 +357,12 @@ class GameMovementRuntime {
 
   _removeActorFromLevel(actor) {
     if (!actor) return;
+    this.patrolSystem?.cancelActivity?.(actor);
+    const explorationMove = this.explorationMovements?.get?.(actor);
+    if (explorationMove) {
+      this.explorationMovements.delete(actor);
+      this._settleMovementAnimation(explorationMove);
+    }
     actor.removed = true;
     actor.speech = null;
     this.npcs = (this.npcs ?? []).filter((entry) => entry !== actor);
@@ -276,8 +382,18 @@ class GameMovementRuntime {
       if (this._isCellHidden(trigger.x, trigger.y)) continue;
       const encounterId = this._resolveEncounterId(trigger.encounter ?? trigger.id);
       if (this.clearedEncounters.has(encounterId)) continue;
-      if (this._livingEnemiesForEncounter(encounterId).length === 0) continue;
-      if (trigger.forceCombat === true && manhattan(this.player.position, trigger) <= (trigger.radius ?? TRIGGER_RADIUS)) {
+      if (this._livingEnemiesForEncounter(encounterId, { includeDormant: true }).length === 0) continue;
+      const inRange = manhattan(this.player.position, trigger) <= (trigger.radius ?? TRIGGER_RADIUS);
+      if (inRange && trigger.dialogue && !trigger.dialogueSeen) {
+        trigger.dialogueSeen = true;
+        this.pathQueue = [];
+        this.pendingExploreTarget = null;
+        this.preCombatTarget = null;
+        this._faceToward(this.player, trigger);
+        this._openDialogueById(trigger.dialogue);
+        return;
+      }
+      if (trigger.forceCombat === true && inRange) {
         this._startCombat(encounterId);
         return;
       }
@@ -323,7 +439,82 @@ class GameMovementRuntime {
   }
 
   _advanceExplorePatrols(dt) {
+    this.tableauSystem?.advanceExplore?.(dt);
     this.patrolSystem.advanceExplore(dt);
+  }
+
+  _startPatrolActivity(actor, activity) {
+    return this._startNpcActivity(actor, activity, 'patrol');
+  }
+
+  _startNpcActivity(actor, activity, owner = 'activity') {
+    if (!actor || actor.isDead) return false;
+    const target = this.level?.props?.find((prop) => prop.id === activity?.target);
+    if (!target || target.hiddenByFlag || target.killed || target.consumed) return false;
+    if (target.workActivity && target.workActivity.actorId !== (actor.spawnId ?? actor.id)) return false;
+    if (target) this._faceToward(actor, target);
+    const renderState = activityRenderState(activity);
+    actor.npcActivityVisual = {
+      owner,
+      target,
+      activity,
+      renderState,
+      lastSoundFrame: -1
+    };
+    target.workActivity = {
+      actorId: actor.spawnId ?? actor.id,
+      motion: activity?.motion ?? 'reach',
+      response: activity?.response ?? 'none',
+      frame: 0,
+      progress: 0
+    };
+    actor.render.state = renderState;
+    actor.render.frameIndex = 0;
+    actor.render.timer = 0;
+    return true;
+  }
+
+  _updatePatrolActivity(actor, activity, progress) {
+    this._updateNpcActivity(actor, activity, progress, 'patrol');
+  }
+
+  _updateNpcActivity(actor, activity, progress, owner = 'activity') {
+    const visual = actor?.npcActivityVisual;
+    if (!actor || actor.isDead || !visual || visual.owner !== owner) return;
+    const frame = activityFrameIndex(activity, progress);
+    actor.render.state = visual.renderState;
+    actor.render.frameIndex = frame;
+    actor.render.timer = 0;
+    if (visual.target?.workActivity?.actorId === (actor.spawnId ?? actor.id)) {
+      visual.target.workActivity.motion = activity?.motion ?? 'reach';
+      visual.target.workActivity.response = activity?.response ?? 'none';
+      visual.target.workActivity.frame = frame;
+      visual.target.workActivity.progress = Math.max(0, Math.min(1, Number(progress) || 0));
+    }
+    if (frame !== visual.lastSoundFrame && activitySoundFrame(activity, frame)) {
+      this.worldAudio?.playOneShot?.(activity.sound, visual.target.x, visual.target.y, {
+        sourceId: `${owner}:${actor.spawnId ?? actor.id}`
+      });
+    }
+    visual.lastSoundFrame = frame;
+  }
+
+  _finishPatrolActivity(actor) {
+    this._finishNpcActivity(actor, 'patrol');
+  }
+
+  _finishNpcActivity(actor, owner = 'activity') {
+    const visual = actor?.npcActivityVisual;
+    if (!actor || !visual || visual.owner !== owner) return;
+    if (visual.target?.workActivity?.actorId === (actor.spawnId ?? actor.id)) {
+      delete visual.target.workActivity;
+    }
+    const wasOwnedState = actor.render.state === visual.renderState;
+    actor.npcActivityVisual = null;
+    if (actor.isDead || !wasOwnedState) return;
+    actor.render.state = this._idleStateFor(actor);
+    actor.render.frameIndex = 0;
+    actor.render.timer = 0;
   }
 }
 

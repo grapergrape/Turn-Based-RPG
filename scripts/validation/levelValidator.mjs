@@ -28,10 +28,26 @@ import { validateLoot } from './itemValidator.mjs';
 import { validateActorAppearance, validateActorSpriteId } from './renderCatalogValidator.mjs';
 import { validateDialogueConditions, validateDialogueEffects, validateDialogueReference } from './dialogueValidator.mjs';
 import { validateBarkCollection, validateStringList } from './textRules.mjs';
+import {
+  NPC_ACTIVITY_MOTIONS,
+  NPC_ACTIVITY_RESPONSES,
+  NPC_ACTIVITY_SOUNDS
+} from '../../src/world/NpcActivity.js';
 
 const MAP_MARKER_KINDS = new Set(['quest', 'dialogue', 'exit', 'locked', 'search', 'danger', 'note']);
 const MAP_MARKER_REVEALS = new Set(['explored', 'always']);
 const COVER_VALUES = new Set(['none', 'light', 'hard']);
+const PATROL_ACTIVITY_MIN_DURATION = 0.8;
+const PATROL_ACTIVITY_MAX_DURATION = 12;
+const NPC_ACTIVITY_MOTION_SET = new Set(NPC_ACTIVITY_MOTIONS);
+const NPC_ACTIVITY_RESPONSE_SET = new Set(NPC_ACTIVITY_RESPONSES);
+const NPC_ACTIVITY_SOUND_SET = new Set(NPC_ACTIVITY_SOUNDS);
+const AMBIENT_BED_PROFILES = new Set([
+  'receiving-canvas',
+  'waterworks',
+  'freight-yard',
+  'rope-rows'
+]);
 
 function validateTiles(name, data) {
   if (!Array.isArray(data.tiles)) {
@@ -122,6 +138,8 @@ export function validateLevel(filePath, data) {
     }
     validateActorSpriteId(name, point.spriteId, 'spawns.enemies[].spriteId');
     validateActorAppearance(name, point.appearance, 'spawns.enemies[].appearance');
+    validateOptionalBoolean(name, point.dormantUntilCombat, 'spawns.enemies[].dormantUntilCombat');
+    validateDialogueConditions(name, point.conditions, 'spawns.enemies[].conditions');
     if (point.dialogue !== undefined) {
       validateDialogueReference(name, point.dialogue, 'spawns.enemies[].dialogue');
       if (typeof point.dialogue === 'string' && !levelDialogue.has(point.dialogue)) {
@@ -137,6 +155,7 @@ export function validateLevel(filePath, data) {
     validateSpawnPerception(name, data, point, 'spawns.enemies[]');
     validateSpawnPatrol(name, data, point, 'spawns.enemies[]');
     validateLoot(name, point.loot, 'spawns.enemies[].loot');
+    validateSpawnWeapons(name, point.weapons, 'spawns.enemies[].weapons');
     validateMapMarker(name, point.mapMarker, 'spawns.enemies[].mapMarker');
   }
   for (const point of npcs) {
@@ -148,6 +167,7 @@ export function validateLevel(filePath, data) {
     if (typeof actorId === 'string') referencedActorIds.add(actorId);
     validateActorSpriteId(name, point.spriteId, 'spawns.npcs[].spriteId');
     validateActorAppearance(name, point.appearance, 'spawns.npcs[].appearance');
+    validateDialogueConditions(name, point.conditions, 'spawns.npcs[].conditions');
     if (point.dialogue !== undefined) {
       validateDialogueReference(name, point.dialogue, 'spawns.npcs[].dialogue');
       if (typeof point.dialogue === 'string' && !levelDialogue.has(point.dialogue)) {
@@ -180,10 +200,12 @@ export function validateLevel(filePath, data) {
     }
     validateWallMountedObject(name, data, object);
     validateStringList(name, object.hiddenWhenFlags, 'objects[].hiddenWhenFlags');
+    validateStringList(name, object.visibleWhenFlags, 'objects[].visibleWhenFlags');
     validateStringList(name, object.disabledWhenFlags, 'objects[].disabledWhenFlags');
     validateStringList(name, object.closedWhenFlags, 'objects[].closedWhenFlags');
     validateDialogueReference(name, object.interact?.dialogue, 'objects[].interact.dialogue');
     validateDialogueReference(name, object.interact?.lockedDialogue, 'objects[].interact.lockedDialogue');
+    validateInteractionLogVariants(name, object.interact?.logVariants, `objects[${objectIndex}].interact.logVariants`);
     validateLoot(name, object.interact?.loot);
     validateLock(name, object.interact?.lock, 'objects[].interact.lock');
     validateSearch(name, object.interact?.search, 'objects[].interact.search');
@@ -199,12 +221,14 @@ export function validateLevel(filePath, data) {
     }
   }
   validateLevelTransitions(name, data, objects);
-  validateCombatTriggerMapMarkers(name, data);
+  validateCombatTriggers(name, data, levelDialogue);
   validateHiddenRegions(name, data, objects);
   validatePatrolReachability(name, data, [
     ...enemies.map((spawn) => ({ spawn, label: `enemy "${spawn.id}"` })),
     ...npcs.map((spawn) => ({ spawn, label: `npc "${spawn.actor ?? spawn.id}"` }))
   ], objects);
+  validateTableaux(name, data, npcs, objects);
+  validateSoundscape(name, data);
   if (data.groundItems !== undefined) {
     if (!Array.isArray(data.groundItems)) {
       errors.push(`${name}: groundItems must be an array.`);
@@ -247,6 +271,25 @@ export function validateLevel(filePath, data) {
   }
 
   validateTalkableNpcReachability(name, data, npcs, objects);
+}
+
+function validateSpawnWeapons(name, weapons, fieldName) {
+  if (weapons === undefined) return;
+  if (!Array.isArray(weapons) || weapons.length === 0) {
+    errors.push(`${name}: ${fieldName} must be a non-empty array when provided.`);
+    return;
+  }
+  for (const [index, entry] of weapons.entries()) {
+    requireString(name, entry?.item, `${fieldName}[${index}].item`);
+    if (typeof entry?.item === 'string') referencedItemIds.add(entry.item);
+    for (const key of ['loaded', 'reserve']) {
+      if (entry?.[key] === undefined) continue;
+      requireNumber(name, entry[key], `${fieldName}[${index}].${key}`);
+      if (typeof entry[key] === 'number' && (!Number.isInteger(entry[key]) || entry[key] < 0)) {
+        errors.push(`${name}: ${fieldName}[${index}].${key} must be a zero or greater integer.`);
+      }
+    }
+  }
 }
 
 function validateCoverValue(name, value, fieldName) {
@@ -293,6 +336,12 @@ function validateLevelTransitions(name, data, objects) {
     }
     requireString(name, loadLevel.path, `${fieldName}.loadLevel.path`);
     validateGridPoint(name, loadLevel.player, `${fieldName}.loadLevel.player`);
+    if (loadLevel.player?.facing !== undefined) {
+      requireString(name, loadLevel.player.facing, `${fieldName}.loadLevel.player.facing`);
+      if (typeof loadLevel.player.facing === 'string' && !PERCEPTION_FACING_IDS.has(loadLevel.player.facing)) {
+        errors.push(`${name}: ${fieldName}.loadLevel.player.facing must be one of ${[...PERCEPTION_FACING_IDS].join(', ')}.`);
+      }
+    }
   }
 }
 
@@ -325,7 +374,7 @@ function validateClickAreas(name, data, source, fieldName) {
   }
 }
 
-function validateCombatTriggerMapMarkers(name, data) {
+function validateCombatTriggers(name, data, levelDialogue) {
   if (data.combatTrigger !== undefined) {
     validateMapMarker(name, data.combatTrigger?.mapMarker, 'combatTrigger.mapMarker');
   }
@@ -335,7 +384,27 @@ function validateCombatTriggerMapMarkers(name, data) {
     return;
   }
   data.combatTriggers.forEach((trigger, index) => {
-    validateMapMarker(name, trigger?.mapMarker, `combatTriggers[${index}].mapMarker`);
+    const fieldName = `combatTriggers[${index}]`;
+    if (!trigger || typeof trigger !== 'object' || Array.isArray(trigger)) {
+      errors.push(`${name}: ${fieldName} must be an object.`);
+      return;
+    }
+    requireString(name, trigger.id, `${fieldName}.id`);
+    requireString(name, trigger.encounter, `${fieldName}.encounter`);
+    validateGridPoint(name, trigger, fieldName);
+    if (!inBounds(data, trigger)) {
+      errors.push(`${name}: ${fieldName} (${trigger.x}, ${trigger.y}) must stay inside the level bounds.`);
+    }
+    if (trigger.radius !== undefined) requireNumber(name, trigger.radius, `${fieldName}.radius`);
+    validateOptionalBoolean(name, trigger.forceCombat, `${fieldName}.forceCombat`);
+    validateBarkCollection(name, trigger.intro, `${fieldName}.intro`);
+    validateMapMarker(name, trigger.mapMarker, `${fieldName}.mapMarker`);
+    if (trigger.dialogue !== undefined) {
+      validateDialogueReference(name, trigger.dialogue, `${fieldName}.dialogue`);
+      if (typeof trigger.dialogue === 'string' && !levelDialogue.has(trigger.dialogue)) {
+        errors.push(`${name}: combat trigger dialogue "${trigger.dialogue}" must also be listed in level dialogue.`);
+      }
+    }
   });
 }
 
@@ -358,6 +427,7 @@ function validateMapMarker(name, marker, fieldName) {
       errors.push(`${name}: ${fieldName}.reveal must be one of ${[...MAP_MARKER_REVEALS].join(', ')}.`);
     }
   }
+  validateDialogueConditions(name, marker.conditions, `${fieldName}.conditions`);
 }
 
 function validateObjectIds(name, objects) {
@@ -503,6 +573,253 @@ function validateSpawnPatrol(name, data, spawn, fieldName) {
     if (!inBounds(data, point)) {
       errors.push(`${name}: ${fieldName}.patrol.path[${index}] (${point?.x}, ${point?.y}) is out of bounds.`);
     }
+    validatePatrolActivity(name, point?.activity, `${fieldName}.patrol.path[${index}].activity`);
+  }
+}
+
+function validatePatrolActivity(name, activity, fieldName) {
+  if (activity === undefined) return;
+  if (!activity || typeof activity !== 'object' || Array.isArray(activity)) {
+    errors.push(`${name}: ${fieldName} must be an object.`);
+    return;
+  }
+  requireString(name, activity.target, `${fieldName}.target`);
+  requireNumber(name, activity.duration, `${fieldName}.duration`);
+  if (typeof activity.duration === 'number' &&
+    (activity.duration < PATROL_ACTIVITY_MIN_DURATION || activity.duration > PATROL_ACTIVITY_MAX_DURATION)) {
+    errors.push(
+      `${name}: ${fieldName}.duration must be between ${PATROL_ACTIVITY_MIN_DURATION} and ${PATROL_ACTIVITY_MAX_DURATION} seconds.`
+    );
+  }
+  if (activity.motion !== undefined) {
+    requireString(name, activity.motion, `${fieldName}.motion`);
+    if (typeof activity.motion === 'string' && !NPC_ACTIVITY_MOTION_SET.has(activity.motion)) {
+      errors.push(`${name}: ${fieldName}.motion must be one of ${NPC_ACTIVITY_MOTIONS.join(', ')}.`);
+    }
+  }
+  if (activity.response !== undefined) {
+    requireString(name, activity.response, `${fieldName}.response`);
+    if (typeof activity.response === 'string' && !NPC_ACTIVITY_RESPONSE_SET.has(activity.response)) {
+      errors.push(`${name}: ${fieldName}.response must be one of ${NPC_ACTIVITY_RESPONSES.join(', ')}.`);
+    }
+  }
+  if (activity.sound !== undefined) {
+    requireString(name, activity.sound, `${fieldName}.sound`);
+    if (typeof activity.sound === 'string' && !NPC_ACTIVITY_SOUND_SET.has(activity.sound)) {
+      errors.push(`${name}: ${fieldName}.sound must be one of ${NPC_ACTIVITY_SOUNDS.join(', ')}.`);
+    }
+  }
+}
+
+function validateInteractionLogVariants(name, variants, fieldName) {
+  if (variants === undefined) return;
+  if (!Array.isArray(variants) || variants.length === 0) {
+    errors.push(`${name}: ${fieldName} must be a non-empty array.`);
+    return;
+  }
+  for (const [index, variant] of variants.entries()) {
+    const variantName = `${fieldName}[${index}]`;
+    if (!variant || typeof variant !== 'object' || Array.isArray(variant)) {
+      errors.push(`${name}: ${variantName} must be an object.`);
+      continue;
+    }
+    validateDialogueConditions(name, variant.conditions, `${variantName}.conditions`);
+    if (variant.conditions === undefined) {
+      errors.push(`${name}: ${variantName}.conditions is required.`);
+    }
+    validateStringList(name, variant.log, `${variantName}.log`);
+    if (variant.log === undefined) {
+      errors.push(`${name}: ${variantName}.log is required.`);
+    }
+  }
+}
+
+function validateTableaux(name, data, npcs, objects) {
+  if (data.tableaux === undefined) return;
+  if (!Array.isArray(data.tableaux)) {
+    errors.push(`${name}: tableaux must be an array.`);
+    return;
+  }
+
+  const ids = new Set();
+  const actorIds = new Set(npcs.map((npc) => npc.actor ?? npc.id).filter((id) => typeof id === 'string'));
+  const objectsById = new Map(objects.filter((object) => typeof object.id === 'string').map((object) => [object.id, object]));
+  const grid = new Grid(data);
+  for (const object of objects) {
+    if (object.blocking && inBounds(data, object)) grid.addBlocked(object.x, object.y);
+  }
+
+  for (const [tableauIndex, tableau] of data.tableaux.entries()) {
+    const tableauName = `tableaux[${tableauIndex}]`;
+    if (!tableau || typeof tableau !== 'object' || Array.isArray(tableau)) {
+      errors.push(`${name}: ${tableauName} must be an object.`);
+      continue;
+    }
+    requireString(name, tableau.id, `${tableauName}.id`);
+    if (typeof tableau.id === 'string') {
+      if (ids.has(tableau.id)) errors.push(`${name}: ${tableauName}.id "${tableau.id}" is duplicated.`);
+      ids.add(tableau.id);
+    }
+    validateGridPoint(name, tableau.center, `${tableauName}.center`);
+    if (!inBounds(data, tableau.center)) {
+      errors.push(`${name}: ${tableauName}.center must stay inside the level bounds.`);
+    }
+    requireNumber(name, tableau.activationRadius, `${tableauName}.activationRadius`);
+    if (typeof tableau.activationRadius === 'number' && tableau.activationRadius <= 0) {
+      errors.push(`${name}: ${tableauName}.activationRadius must be greater than zero.`);
+    }
+    if (tableau.startDelay !== undefined) {
+      requireNumber(name, tableau.startDelay, `${tableauName}.startDelay`);
+      if (typeof tableau.startDelay === 'number' && tableau.startDelay < 0) {
+        errors.push(`${name}: ${tableauName}.startDelay must be zero or greater.`);
+      }
+    }
+    validatePatrolDelay(name, tableau.cooldown, `${tableauName}.cooldown`);
+
+    if (!Array.isArray(tableau.participants) || tableau.participants.length < 2) {
+      errors.push(`${name}: ${tableauName}.participants must contain at least two actors.`);
+      continue;
+    }
+    const participants = new Set();
+    const reservedSlots = new Set();
+    for (const [participantIndex, participant] of tableau.participants.entries()) {
+      const participantName = `${tableauName}.participants[${participantIndex}]`;
+      if (!participant || typeof participant !== 'object' || Array.isArray(participant)) {
+        errors.push(`${name}: ${participantName} must be an object.`);
+        continue;
+      }
+      requireString(name, participant.actor, `${participantName}.actor`);
+      if (typeof participant.actor === 'string') {
+        if (!actorIds.has(participant.actor)) {
+          errors.push(`${name}: ${participantName}.actor "${participant.actor}" is not an NPC spawn.`);
+        }
+        if (participants.has(participant.actor)) {
+          errors.push(`${name}: ${participantName}.actor "${participant.actor}" is duplicated in the tableau.`);
+        }
+        participants.add(participant.actor);
+      }
+      validateGridPoint(name, participant.slot, `${participantName}.slot`);
+      if (!inBounds(data, participant.slot)) {
+        errors.push(`${name}: ${participantName}.slot must stay inside the level bounds.`);
+      } else if (!grid.isWalkable(participant.slot.x, participant.slot.y)) {
+        errors.push(`${name}: ${participantName}.slot (${participant.slot.x}, ${participant.slot.y}) must be clear and walkable.`);
+      } else {
+        const key = cellKey(participant.slot.x, participant.slot.y);
+        if (reservedSlots.has(key)) errors.push(`${name}: ${participantName}.slot (${key}) is duplicated in the tableau.`);
+        reservedSlots.add(key);
+      }
+      if (participant.delay !== undefined) {
+        requireNumber(name, participant.delay, `${participantName}.delay`);
+        if (typeof participant.delay === 'number' && participant.delay < 0) {
+          errors.push(`${name}: ${participantName}.delay must be zero or greater.`);
+        }
+      }
+      validatePatrolActivity(name, participant.activity, `${participantName}.activity`);
+      const targetId = participant.activity?.target;
+      const target = typeof targetId === 'string' ? objectsById.get(targetId) : null;
+      if (typeof targetId === 'string' && !target) {
+        errors.push(`${name}: ${participantName}.activity target "${targetId}" does not exist.`);
+      } else if (target && inBounds(data, participant.slot)) {
+        const distance = Math.max(
+          Math.abs(participant.slot.x - target.x),
+          Math.abs(participant.slot.y - target.y)
+        );
+        if (distance !== 1) {
+          errors.push(`${name}: ${participantName}.slot must be adjacent to activity target "${targetId}".`);
+        }
+      }
+    }
+
+    if (tableau.barks !== undefined && !Array.isArray(tableau.barks)) {
+      errors.push(`${name}: ${tableauName}.barks must be an array.`);
+    } else {
+      for (const [barkIndex, bark] of (tableau.barks ?? []).entries()) {
+        const barkName = `${tableauName}.barks[${barkIndex}]`;
+        if (!bark || typeof bark !== 'object' || Array.isArray(bark)) {
+          errors.push(`${name}: ${barkName} must be an object.`);
+          continue;
+        }
+        requireNumber(name, bark.at, `${barkName}.at`);
+        if (typeof bark.at === 'number' && bark.at < 0) errors.push(`${name}: ${barkName}.at must be zero or greater.`);
+        requireString(name, bark.actor, `${barkName}.actor`);
+        if (typeof bark.actor === 'string' && !participants.has(bark.actor)) {
+          errors.push(`${name}: ${barkName}.actor "${bark.actor}" is not a participant.`);
+        }
+        requireString(name, bark.text, `${barkName}.text`);
+      }
+    }
+  }
+}
+
+function validateSoundscape(name, data) {
+  const soundscape = data.soundscape;
+  if (soundscape === undefined) return;
+  if (!soundscape || typeof soundscape !== 'object' || Array.isArray(soundscape)) {
+    errors.push(`${name}: soundscape must be an object.`);
+    return;
+  }
+  requireNumber(name, soundscape.maxDistance, 'soundscape.maxDistance');
+  if (typeof soundscape.maxDistance === 'number' && soundscape.maxDistance <= 0) {
+    errors.push(`${name}: soundscape.maxDistance must be greater than zero.`);
+  }
+  requireNumber(name, soundscape.maxOneShots, 'soundscape.maxOneShots');
+  if (typeof soundscape.maxOneShots === 'number' &&
+    (!Number.isInteger(soundscape.maxOneShots) || soundscape.maxOneShots < 1 || soundscape.maxOneShots > 8)) {
+    errors.push(`${name}: soundscape.maxOneShots must be an integer from 1 to 8.`);
+  }
+
+  if (!Array.isArray(soundscape.activityCues)) {
+    errors.push(`${name}: soundscape.activityCues must be an array.`);
+  } else {
+    const cues = new Set();
+    for (const [index, cue] of soundscape.activityCues.entries()) {
+      requireString(name, cue, `soundscape.activityCues[${index}]`);
+      if (typeof cue !== 'string') continue;
+      if (!NPC_ACTIVITY_SOUND_SET.has(cue)) {
+        errors.push(`${name}: soundscape.activityCues[${index}] "${cue}" is not a known activity sound.`);
+      }
+      if (cues.has(cue)) errors.push(`${name}: soundscape.activityCues[${index}] "${cue}" is duplicated.`);
+      cues.add(cue);
+    }
+  }
+
+  if (!Array.isArray(soundscape.ambientBeds) || soundscape.ambientBeds.length === 0) {
+    errors.push(`${name}: soundscape.ambientBeds must be a non-empty array.`);
+    return;
+  }
+  const bedIds = new Set();
+  for (const [index, bed] of soundscape.ambientBeds.entries()) {
+    const bedName = `soundscape.ambientBeds[${index}]`;
+    if (!bed || typeof bed !== 'object' || Array.isArray(bed)) {
+      errors.push(`${name}: ${bedName} must be an object.`);
+      continue;
+    }
+    requireString(name, bed.id, `${bedName}.id`);
+    if (typeof bed.id === 'string') {
+      if (bedIds.has(bed.id)) errors.push(`${name}: ${bedName}.id "${bed.id}" is duplicated.`);
+      bedIds.add(bed.id);
+    }
+    requireString(name, bed.profile, `${bedName}.profile`);
+    if (typeof bed.profile === 'string' && !AMBIENT_BED_PROFILES.has(bed.profile)) {
+      errors.push(`${name}: ${bedName}.profile must be one of ${[...AMBIENT_BED_PROFILES].join(', ')}.`);
+    }
+    if (!bed.bounds || typeof bed.bounds !== 'object' || Array.isArray(bed.bounds)) {
+      errors.push(`${name}: ${bedName}.bounds must be an object.`);
+    } else {
+      for (const key of ['x0', 'y0', 'x1', 'y1']) {
+        requireNumber(name, bed.bounds[key], `${bedName}.bounds.${key}`);
+      }
+      if (['x0', 'y0', 'x1', 'y1'].every((key) => Number.isFinite(bed.bounds[key]))) {
+        if (bed.bounds.x0 < 0 || bed.bounds.y0 < 0 || bed.bounds.x1 >= data.width || bed.bounds.y1 >= data.height ||
+          bed.bounds.x0 > bed.bounds.x1 || bed.bounds.y0 > bed.bounds.y1) {
+          errors.push(`${name}: ${bedName}.bounds must be ordered and stay inside the level.`);
+        }
+      }
+    }
+    requireNumber(name, bed.gain, `${bedName}.gain`);
+    if (typeof bed.gain === 'number' && (bed.gain < 0 || bed.gain > 1)) {
+      errors.push(`${name}: ${bedName}.gain must be from 0 to 1.`);
+    }
   }
 }
 
@@ -543,12 +860,24 @@ function validatePatrolReachability(name, data, actors, objects) {
   for (const object of objects) {
     if (object.blocking && inBounds(data, object)) grid.addBlocked(object.x, object.y);
   }
+  const objectsById = new Map(objects.filter((object) => typeof object.id === 'string').map((object) => [object.id, object]));
   for (const { spawn, label } of patrollers) {
     const patrol = Array.isArray(spawn.patrol) ? { path: spawn.patrol } : spawn.patrol;
     for (const [index, point] of (patrol?.path ?? []).entries()) {
       if (!inBounds(data, point)) continue;
       if (!grid.isWalkable(point.x, point.y)) {
         errors.push(`${name}: ${label} patrol.path[${index}] (${point.x}, ${point.y}) must be walkable.`);
+      }
+      const targetId = point.activity?.target;
+      if (typeof targetId !== 'string') continue;
+      const target = objectsById.get(targetId);
+      if (!target) {
+        errors.push(`${name}: ${label} patrol.path[${index}] activity target "${targetId}" does not exist.`);
+        continue;
+      }
+      const distance = Math.max(Math.abs(point.x - target.x), Math.abs(point.y - target.y));
+      if (distance !== 1) {
+        errors.push(`${name}: ${label} patrol.path[${index}] must be adjacent to activity target "${targetId}".`);
       }
     }
   }

@@ -1,9 +1,10 @@
 import { PALETTE } from '../palette.js';
 import {
   drawNoisePixels,
-  drawShadowBlob,
   hash2D,
   linePx,
+  nativeLinePx,
+  nativePx,
   px,
   rngFrom
 } from './basePixels.js';
@@ -179,6 +180,18 @@ function leafClump(ctx, x, y, w, h, tone, rim = null) {
   px(ctx, Math.round(x + width * 0.24), top + Math.floor(height * 0.42), PALETTE.hostBlack, gap, 2);
   px(ctx, Math.round(x - width * 0.44), top + Math.floor(height * 0.6), PALETTE.hostBlack, gap - 1, 2);
   px(ctx, Math.round(x + width * 0.05), top + Math.floor(height * 0.7), PALETTE.hostBlack, gap - 1, 1);
+
+  // Native-resolution leaf edges keep the clump ragged without turning its
+  // broad, readable mass into noise. These sit inside the upper-left light
+  // and lower fold, so each half-logical mark remains attached to foliage.
+  const lit = rim ?? (tone === PALETTE.woodDark ? PALETTE.woodMid : PALETTE.stoneDust);
+  const litX = Math.round(x - width * 0.24) + 0.5;
+  const litY = top + Math.max(1, Math.floor(height * 0.24)) + 0.5;
+  nativeLinePx(ctx, litX, litY + 1, litX + 2.5, litY, lit);
+  const foldX = Math.round(x + width * 0.15) + 0.5;
+  const foldY = top + Math.max(2, Math.floor(height * 0.63)) + 0.5;
+  nativeLinePx(ctx, foldX, foldY, foldX + 2, foldY + 0.5, shade);
+  nativePx(ctx, Math.round(x - width * 0.42) + 0.5, top + Math.floor(height * 0.5) + 0.5, PALETTE.outline);
 }
 
 function jitter(rng, amount) {
@@ -221,6 +234,23 @@ function drawTrunk(ctx, cx, cy, shape, rng) {
     const sx = cx + lean * 0.35 + jitter(rng, 8);
     px(ctx, sx, sy, PALETTE.stoneDust, 2, 7 + Math.floor(rng() * 5));
     if (i % 2 === 0) px(ctx, sx + 2, sy + 2, PALETTE.rustDark, 2, 5);
+  }
+
+  // Fine bark checks follow the trunk instead of floating beside it. At 2x
+  // they are single backing pixels, small enough to break up the old broad
+  // logical-pixel bands while preserving the established silhouette.
+  for (let i = 0; i < 4; i += 1) {
+    const t = 0.2 + i * 0.17;
+    const sx = cx + (topX - cx) * t - 1.5 + (i & 1);
+    const sy = cy + (topY - cy) * t + 0.5;
+    nativeLinePx(
+      ctx,
+      sx,
+      sy + 2,
+      sx + (i & 1 ? 1 : -0.5),
+      sy - 2.5,
+      i === 0 ? PALETTE.woodLight : PALETTE.stoneDust
+    );
   }
 
   if (shape.brokenTop) {
@@ -281,7 +311,6 @@ function drawAshCanopy(ctx, cx, cy, seed, shape, rng, top) {
 export function drawAshTree(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 101, seed * 3 + 17));
   const shape = TREE_SHAPES[seed % TREE_SHAPES.length];
-  drawShadowBlob(ctx, cx, cy + 5, shape.shadow[0], shape.shadow[1]);
   const top = drawTrunk(ctx, cx, cy, shape, rng);
   drawAshCanopy(ctx, cx, cy, seed, shape, rng, top);
   // One tree in six is a wayside shrine: a small plank nailed at chest
@@ -298,7 +327,6 @@ export function drawAshTree(ctx, cx, cy, seed) {
 
 export function drawAshTreeStump(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 37, seed * 5 + 9));
-  drawShadowBlob(ctx, cx, cy + 4, 34, 13);
   for (const root of [
     [-16, 0, -33, 9, PALETTE.outline, 3],
     [15, -1, 31, 7, PALETTE.outline, 3],
@@ -357,6 +385,12 @@ export function drawAshTreeStump(ctx, cx, cy, seed) {
     linePx(ctx, bx, cy - 20, bx + jitter(rng, 6), cy - 4, PALETTE.outline, 2);
     linePx(ctx, bx, cy - 20, bx + jitter(rng, 6), cy - 4, i % 2 ? PALETTE.stoneDark : PALETTE.rustDark, 1);
   }
+  // Half-pixel growth-ring cuts and bark fibres give the sawn face a finer
+  // material read without widening the stump.
+  nativeLinePx(ctx, cx - 8.5, topY + 1.5, cx - 4.5, topY + 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx + 3.5, topY + 4.5, cx + 7.5, topY + 2.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx - 6.5, cy - 19.5, cx - 5.5, cy - 10.5, PALETTE.stoneDust);
+  nativePx(ctx, cx + 1.5, topY + 5.5, PALETTE.hostGold);
   // A road-prayer charm: two twigs lashed into a crooked cross, planted in
   // the dirt against the stump. Never a clean floating mark.
   px(ctx, cx + 15, cy + 3, PALETTE.void, 4, 1); // contact shadow
@@ -371,7 +405,6 @@ export function drawAshTreeStump(ctx, cx, cy, seed) {
 
 export function drawScrubBush(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 11, seed * 7 + 3));
-  drawShadowBlob(ctx, cx, cy + 3, 38, 12);
   px(ctx, cx - 19, cy - 9, PALETTE.outline, 38, 10);
   px(ctx, cx - 17, cy - 10, PALETTE.woodDark, 34, 8);
   px(ctx, cx - 12, cy - 12, PALETTE.rustDark, 23, 5);
@@ -423,7 +456,6 @@ export function drawFallenAshLog(ctx, cx, cy, seed) {
   const y0 = cy + 3 + leftLean * 3 + jitter(rng, 4);
   const x1 = cx + 28 + jitter(rng, 6);
   const y1 = cy - 4 - leftLean * 3 + jitter(rng, 4);
-  drawShadowBlob(ctx, cx, cy + 5, 54, 13);
 
   linePx(ctx, x0, y0, x1, y1, PALETTE.outline, 10);
   linePx(ctx, x0, y0 - 1, x1, y1 - 1, PALETTE.woodDark, 7);
@@ -465,6 +497,18 @@ export function drawFallenAshLog(ctx, cx, cy, seed) {
   for (let i = 0; i < 7; i += 1) {
     px(ctx, cx - 26 + Math.floor(rng() * 53), cy - 11 + Math.floor(rng() * 16), i % 2 ? PALETTE.stoneDust : PALETTE.hostBlack, 2, 1);
   }
+  // Long grain follows the log axis. The bright upper-left fibre and the dark
+  // lower split are both one native pixel wide.
+  const grain = (t, offset) => [
+    x0 + (x1 - x0) * t + 0.5,
+    y0 + (y1 - y0) * t + offset + 0.5
+  ];
+  const grainA = grain(0.18, -2);
+  const grainB = grain(0.48, -2);
+  const splitA = grain(0.56, 1);
+  const splitB = grain(0.84, 1);
+  nativeLinePx(ctx, grainA[0], grainA[1], grainB[0], grainB[1], PALETTE.woodLight);
+  nativeLinePx(ctx, splitA[0], splitA[1], splitB[0], splitB[1], PALETTE.hostBlack);
   for (const thorn of [
     [-18, -5, -31, -20],
     [6, -7, 15, -22],
@@ -490,6 +534,8 @@ export function drawFallenAshLog(ctx, cx, cy, seed) {
   px(ctx, x1, y1 - 3, PALETTE.rustDark, 2, 4);
   px(ctx, x1, y1 - 2, PALETTE.hostGold, 1, 2);
   px(ctx, x1 + 1, y1 + 1, PALETTE.hostBlack, 1, 1);
+  nativeLinePx(ctx, x1 - 1.5, y1 - 4.5, x1 + 1, y1 - 2.5, PALETTE.woodLight);
+  nativePx(ctx, x1 + 1.5, y1 - 1.5, PALETTE.hostGold);
 
 }
 
@@ -497,7 +543,6 @@ export function drawAshSapling(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 97, seed * 17 + 31));
   const lean = seed % 2 === 0 ? -3 : 3;
   const height = 36 + Math.floor(rng() * 18);
-  drawShadowBlob(ctx, cx, cy + 4, 26, 8);
   linePx(ctx, cx, cy - 4, cx + lean, cy - height, PALETTE.outline, 4);
   linePx(ctx, cx - 1, cy - 5, cx + lean - 1, cy - height + 1, PALETTE.woodDark, 2);
   linePx(ctx, cx + 1, cy - 7, cx + lean + 1, cy - height + 3, PALETTE.woodMid, 1);
@@ -542,7 +587,6 @@ export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
   const count = full ? 20 : 12;
   const heightBase = full ? 23 : 18;
 
-  drawShadowBlob(ctx, cx, cy + 4, full ? 42 : 32, full ? 12 : 9);
 
   // The whole clump shares one prevailing wind lean; dead grain combed the
   // same way is what makes a field read as weather-beaten instead of random.
@@ -567,12 +611,16 @@ export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
       px(ctx, hgx, bendY + 3, PALETTE.outline, 2, 4); // the head hangs, drooping to a point
       px(ctx, hgx, bendY + 4, mid, 1, 3);
       px(ctx, hgx + 1, bendY + 6, shade, 1, 1);
+      nativePx(ctx, baseX + Math.floor(lean * 0.4) + 0.5, bendY + 0.5, PALETTE.stoneDust);
       continue;
     }
 
     linePx(ctx, baseX, baseY, tipX, tipY, PALETTE.outline, 2);
     linePx(ctx, baseX, baseY, tipX, tipY, shade, 1);
     if (i % 2 === 0) linePx(ctx, baseX, baseY - 4, tipX, tipY + 2, mid, 1);
+    if (i % 4 === 0) {
+      nativeLinePx(ctx, baseX + 0.5, baseY - 2.5, tipX + 0.5, tipY + 3.5, mid);
+    }
 
     // A heavy dead grain head: a narrow bristled spindle that noses over with
     // the wind and tapers to a point, not a square block. Fine awns splay off
@@ -585,6 +633,10 @@ export function drawWheatClump(ctx, cx, cy, seed, opts = {}) {
     px(ctx, hx, tipY - 2, shade, 1, 1); // shaded, tapering crown
     px(ctx, hx + nod, tipY - 1, i % 5 === 0 ? PALETTE.hostGold : mid, 1, 1); // awn
     px(ctx, hx - nod, tipY, shade, 1, 1); // awn on the lee side
+    if (i % 3 === 0) {
+      nativeLinePx(ctx, hx + 0.5, tipY + 0.5, hx + nod * 3.5, tipY - 1.5, mid);
+      nativeLinePx(ctx, hx - 0.5, tipY + 1.5, hx - nod * 2.5, tipY + 0.5, shade);
+    }
     if (i % 5 === 0) px(ctx, hx, tipY - 4, PALETTE.hostGold, 1, 2); // Host-touched grain
   }
 

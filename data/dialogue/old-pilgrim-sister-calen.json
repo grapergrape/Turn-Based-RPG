@@ -1,0 +1,128 @@
+{
+  "id": "old-pilgrim-sister-calen",
+  "title": "Sister Thecla",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "old-pilgrim-field-count-reported"
+        ]
+      },
+      "else": "settled",
+      "lines": [
+        "Sister Thecla has three cups on the cart rail. Two are turned mouth-down.",
+        "“Tobias came back alone. I need the field counted before I send another family north.”"
+      ],
+      "choices": [
+        {
+          "label": "Ask what happened in the fields",
+          "conditions": {
+            "questStages": {
+              "road-through-the-fields": "speak-to-road-clergy"
+            }
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-field-search-started",
+            "questUpdate": {
+              "quest": "road-through-the-fields",
+              "stage": "investigate-fields",
+              "log": "Sister Thecla asks for a count from the east field before she opens the north road."
+            }
+          },
+          "next": "field"
+        },
+        {
+          "label": "Report the five opened pilgrims",
+          "conditions": {
+            "flag": "old-pilgrim-fields-cleared",
+            "questStages": {
+              "road-through-the-fields": "report-field-attack"
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-north-road-open",
+              "old-pilgrim-field-count-reported"
+            ],
+            "questUpdate": {
+              "quest": "road-through-the-fields",
+              "stage": "complete",
+              "log": "Sister Thecla has the field count and opens the road toward the Quarantine Farms."
+            }
+          },
+          "next": "reported",
+          "tone": "commit"
+        },
+        {
+          "label": "Ask about the church on the hill",
+          "next": "church"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "field": {
+      "lines": [
+        "“The mule stopped first. Then the furrows stood up around it.” Thecla turns a third cup upright but does not fill it.",
+        "“Bring me a number. Do not bring me a guess.”"
+      ],
+      "choices": [
+        {
+          "label": "Go to the east field",
+          "close": true,
+          "tone": "commit"
+        }
+      ]
+    },
+    "church": {
+      "lines": [
+        "“The hill church predates every road office still keeping paper. Father Noah sleeps below it when the roof behaves.”",
+        "“He says the apse is too high. I say old churches were built by men who liked stairs.”"
+      ],
+      "choices": [
+        {
+          "label": "Return to the road count",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "reported": {
+      "lines": [
+        "Thecla rights the last two cups. “Five bodies, no living bite. Everyone from this camp is accounted for, so I can reopen the road.”",
+        "She drags the north chain into the ditch. “The Farms road is yours.”"
+      ],
+      "choices": [
+        {
+          "label": "Continue north when ready",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "settled": {
+      "lines": [
+        "All three cups stand upright on the cart rail. Sister Thecla has tied the field count beneath them.",
+        "“The north chain is in the ditch. I am keeping the cups here until someone answers from the Farms.”"
+      ],
+      "choices": [
+        {
+          "label": "Ask about the church on the hill",
+          "next": "church"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

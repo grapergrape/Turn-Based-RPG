@@ -14,19 +14,24 @@
     <main>
       <p>
         Isolated render of orientation-aware kitchen furniture (left to right: se, sw, nw, ne)
-        beside non-oriented kitchen pieces, each on a stone floor tile at 3x. Verify the light
+        beside non-oriented kitchen pieces, each on a stone floor tile at native 2x plus a 2x inspection zoom. Verify the light
         stays upper-left in every facing and the contact shadow reads.
       </p>
-      <canvas id="c" width="560" height="760"></canvas>
+      <canvas id="c"></canvas>
     </main>
     <script type="module">
       import * as P from '../src/render/PixelPrimitives.js';
       import { PALETTE } from '../src/render/palette.js';
+      import { NATIVE_SCALE } from '../src/render/renderConfig.js';
 
       const canvas = document.getElementById('c');
+      const DISPLAY_SCALE = 2;
+      const SCALE = NATIVE_SCALE * DISPLAY_SCALE;
+      canvas.width = 560 * SCALE;
+      canvas.height = 460 * SCALE;
       const ctx = canvas.getContext('2d');
       ctx.imageSmoothingEnabled = false;
-      ctx.scale(3, 3);
+      ctx.scale(SCALE, SCALE);
 
       function floor(cx, cy) {
         P.drawIsoDiamond(ctx, cx, cy, 64, 32, PALETTE.stoneDark);

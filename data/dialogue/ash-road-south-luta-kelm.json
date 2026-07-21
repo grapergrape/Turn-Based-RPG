@@ -1,0 +1,61 @@
+{
+  "id": "ash-road-south-luta-kelm",
+  "title": "Lucia Vitalis",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Lucia wipes coolant from a wrench and leaves the clean end for her grip.",
+        "\"If you came about water wagons, look at the medicine box first. Cold cargo owns this one until the annex can take the load.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how to free the cooled wagon",
+          "next": "water-run"
+        },
+        {
+          "label": "Ask what happened at the ford",
+          "next": "ford",
+          "effects": {
+            "setFlag": "heard-chain-road-losses"
+          }
+        },
+        {
+          "label": "Leave Lucia with the cooler",
+          "close": true
+        }
+      ]
+    },
+    "water-run": {
+      "lines": [
+        "\"Patch the annex cooling jacket and the relief bay can hold the suppressant. Then this wagon carries sealed water.\"",
+        "\"Give Junia half a day with no grit in her eyes. I will certify the temperature when she finishes.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Lucia with the cooler",
+          "close": true
+        }
+      ]
+    },
+    "ford": {
+      "lines": [
+        "\"The lead wagon heard chain on stone where there was no wagon beside it. The team bolted into the cut.\"",
+        "\"I recovered a wheel and none of the people who fitted it.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Lucia with the cooler",
+          "close": true
+        }
+      ]
+    }
+  }
+}

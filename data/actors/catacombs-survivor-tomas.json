@@ -1,13 +1,16 @@
 {
   "id": "catacombs-survivor-tomas",
-  "name": "Tomas Vek",
+  "name": "Tobias Porta",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Wall runner",
   "appearance": {
     "body": "lean",
     "outfit": "settlement-runner",
-    "gear": ["message-tube", "thin-pack"],
+    "gear": [
+      "message-tube",
+      "thin-pack"
+    ],
     "accent": "dark-hood"
   },
   "stats": {

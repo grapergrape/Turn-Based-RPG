@@ -1,0 +1,258 @@
+{
+  "id": "ash-road-south-iven-roa",
+  "title": "Joanna Medicus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Joanna Medicus knots a clean rag over a fever patient’s wrist and checks the pulse beneath it. Only then does she face you.",
+        "\"Questions wait until the breathing settles. You may help the waiting by keeping your voice down.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the patients",
+          "next": "patients"
+        },
+        {
+          "label": "Ask about supplies and the donors",
+          "next": "supply-questions"
+        },
+        {
+          "label": "Ask how she protects the cots",
+          "next": "care-questions"
+        },
+        {
+          "label": "Leave the cots quiet",
+          "close": true
+        }
+      ]
+    },
+    "supply-questions": {
+      "lines": [
+        "Joanna checks that the nearest patient remains asleep."
+      ],
+      "choices": [
+        {
+          "label": "Ask where the medicine came from",
+          "next": "medicine"
+        },
+        {
+          "label": "Ask about the prayer cards",
+          "next": "cards"
+        },
+        {
+          "label": "Offer to inspect the cellar stock",
+          "next": "cellar",
+          "effects": {
+            "setFlag": "charity-cellar-access",
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "trace-doses",
+              "log": "Joanna opens the charity trapdoor so the mixed medicine stock can be traced."
+            }
+          }
+        },
+        {
+          "label": "Ask what the Chain asks in return",
+          "next": "chain"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "care-questions": {
+      "lines": [
+        "Joanna lowers her voice until it does not carry past the cots."
+      ],
+      "choices": [
+        {
+          "label": "Ask why Compact care is not enough",
+          "next": "compact"
+        },
+        {
+          "label": "Ask whether she keeps patient names",
+          "next": "names"
+        },
+        {
+          "label": "Ask who teaches after dark",
+          "next": "night"
+        },
+        {
+          "label": "Say Salome noticed a shared fever pattern",
+          "conditions": {
+            "flag": "heard-charity-fever-pattern"
+          },
+          "next": "pattern"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "patients": {
+      "lines": [
+        "\"Peter’s fever is falling while Rhoda’s lungs remain tight. Milcah has slept less than either of them.\"",
+        "\"Those facts matter before faction or debt. Doctrine can wait outside.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let her return to the patients",
+          "close": true
+        }
+      ]
+    },
+    "medicine": {
+      "lines": [
+        "\"Suppressant and gauze, with fever salts packed beneath them. The crates came at night with the donor marks scraped off.\"",
+        "\"The vial lowered a child’s fever. If your office needs a fire, burn the card and leave me what works.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she knows about the donors",
+          "next": "cards"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the stock in her hands",
+          "close": true
+        }
+      ]
+    },
+    "cards": {
+      "effects": {
+        "questUpdate": {
+          "quest": "lesson-under-the-wrap",
+          "stage": "gather-evidence",
+          "log": "The charity prayer cards turn rejection into Choir teaching. Find who reads them after dark."
+        }
+      },
+      "lines": [
+        "\"The words teach that a closed gate proves the body was refused, and that a wound admits everyone.\"",
+        "\"I know the doctrine and have allowed no rite here. I did let a teacher read beside people everyone else left outside.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the cards for now",
+          "close": true
+        }
+      ]
+    },
+    "cellar": {
+      "lines": [
+        "Joanna lifts the cot-side board and takes a short iron key from its hollow back.",
+        "\"The trapdoor is under the charity canvas. Bring the cards back to me before anyone decides that ash is safer than medicine.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Take the cellar key",
+          "close": true
+        }
+      ]
+    },
+    "compact": {
+      "lines": [
+        "\"The clinic screens before it treats. Screening needs forms and a stable line, with consent they can file.\"",
+        "\"Fever does not wait for administrative weather.\""
+      ],
+      "choices": [
+        {
+          "label": "Offer to request Compact treatment",
+          "effects": {
+            "setFlag": "compact-treatment-requested"
+          },
+          "close": true
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave her to the next dose",
+          "close": true
+        }
+      ]
+    },
+    "chain": {
+      "lines": [
+        "\"Chain medicine arrives with a debt number. Compact medicine arrives with a cohort number.\"",
+        "\"Before dawn, I use people’s names and listen for breath.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let the distinction stand",
+          "close": true
+        }
+      ]
+    },
+    "names": {
+      "lines": [
+        "\"I burned the donor names off the crates. I will not give patient names to anyone who begins with custody.\"",
+        "\"Bring me a supply plan and a consent plan. Then we can discuss records.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Ask for no names",
+          "close": true
+        }
+      ]
+    },
+    "pattern": {
+      "lines": [
+        "Joanna checks the cot board against Salome’s dose marks.",
+        "\"Same evening chill in three patients, but only two used the new suppressant. That points to water or weather before medicine.\"",
+        "\"Tell Noa the charity draw turned cloudy after the last pressure drop.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Carry the observation to the water court",
+          "close": true
+        }
+      ]
+    },
+    "night": {
+      "lines": [
+        "\"After dark, Salome teaches letters and reads whatever the patients ask for. Sometimes that includes the cards.\"",
+        "\"A frightened person hearing dangerous words is not the same as a convert. I will watch for the difference.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Wait for daylight",
+          "close": true
+        }
+      ]
+    }
+  }
+}

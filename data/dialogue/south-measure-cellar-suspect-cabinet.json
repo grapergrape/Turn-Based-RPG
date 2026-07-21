@@ -1,0 +1,32 @@
+{
+  "id": "south-measure-cellar-suspect-cabinet",
+  "title": "Suspect Medicine Cabinet",
+  "nodes": {
+    "start": {
+      "effects": {
+        "setFlag": [
+          "neri-suppressant-diversion-found",
+          "neri-investigation-started"
+        ],
+        "questUpdate": {
+          "quest": "lesson-under-the-wrap",
+          "stage": "gather-evidence",
+          "log": "Suppressant doses were diverted to someone hiding a change beneath a chest wrap."
+        }
+      },
+      "lines": [
+        "The suppressant row is short by repeated single doses. Each gap was hidden behind a fever-vial issue.",
+        "A strip of chest-binding cloth is caught behind the cabinet hinge."
+      ],
+      "choices": [
+        {
+          "label": "Record the evidence",
+          "effects": {
+            "log": "Suppressant doses were diverted to someone hiding a change beneath a chest wrap."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

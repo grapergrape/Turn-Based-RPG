@@ -1,0 +1,9 @@
+{
+  "id": "south-measure-original-roll",
+  "name": "Original Household Roll",
+  "type": "quest",
+  "rarity": "rare",
+  "weight": 0.8,
+  "groundModel": "paper",
+  "description": "Lime-stiff household pages from the first admission office. Each water share is bound to burial and placement records, with denial orders written in the same hand."
+}

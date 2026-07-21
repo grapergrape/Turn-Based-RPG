@@ -1,0 +1,67 @@
+{
+  "id": "south-measure-repair-trench-surface",
+  "title": "Morrow Repair Trench",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The repair trench drops beside the medicine-cart lane into the buried service channel."
+      ],
+      "choices": [
+        {
+          "label": "Climb down into the relief drain",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "drain-access-cleared",
+                "morrow-freight-rear-access"
+              ]
+            }
+          },
+          "effects": {
+            "log": "You descend through the Morrow repair trench into the relief drain.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 20,
+                "y": 2,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Lower yourself past the broken shoring",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 30
+            }
+          },
+          "effects": {
+            "setFlag": "drain-access-cleared",
+            "log": "The trench shoring takes your weight.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 20,
+                "y": 2,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay in the freight yard",
+          "effects": {
+            "log": "You leave the trench ladder alone."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

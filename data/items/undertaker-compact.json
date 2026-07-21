@@ -1,0 +1,65 @@
+{
+  "id": "undertaker-compact",
+  "name": "Undertaker Compact",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "compact pistol",
+  "rarity": "common",
+  "weight": 0.7,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Undertaker Guild",
+    "factions": [
+      "undertaker-guild"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "compact pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 4,
+        "range": 4,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "quick-shot",
+        "name": "Quick Shot",
+        "mode": "ranged",
+        "apCost": 2,
+        "damage": 3,
+        "range": 4,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-cartridge",
+      "capacity": 9,
+      "defaultLoaded": 9,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "A squat automatic made for one gloved hand. The guild issues it only when a collection takes workers beyond the lantern line."
+}

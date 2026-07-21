@@ -1,13 +1,15 @@
 {
   "id": "catacombs-survivor-dalia",
-  "name": "Dalia Mor",
+  "name": "Damaris Molitor",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Chapel hand",
   "appearance": {
     "body": "average",
     "outfit": "settlement-chapel-hand",
-    "gear": ["prayer-cord"],
+    "gear": [
+      "prayer-cord"
+    ],
     "accent": "bare-light"
   },
   "stats": {

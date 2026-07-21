@@ -1,25 +1,117 @@
 {
   "id": "censure-sutler-maev",
-  "name": "Sutler Maev",
+  "name": "Sutler Judith",
   "type": "npc",
   "faction": "ash-road-traders",
   "role": "Road sutler",
   "appearance": {
     "body": "heavy",
     "outfit": "settlement-work-coat",
-    "gear": ["ledger", "crate-pack"],
+    "gear": [
+      "ledger",
+      "crate-pack"
+    ],
     "accent": "bare-light"
   },
   "trade": {
-    "title": "Maev's Road Cart",
+    "title": "Judith's Road Cart",
     "currency": "ducat",
     "stock": [
-      { "item": "field-dressing", "count": 2, "price": 4 },
-      { "item": "tinned-beans", "count": 3, "price": 1 },
-      { "item": "relic-rounds", "count": 2, "price": 3 },
-      { "item": "censure-entry-roll", "count": 1, "price": 7 },
-      { "item": "camp-issue-ribguard", "count": 1, "price": 9 },
-      { "item": "ash-road-boots", "count": 1, "price": 6 }
+      {
+        "item": "field-dressing",
+        "count": 2,
+        "price": 4
+      },
+      {
+        "item": "tinned-beans",
+        "count": 3,
+        "price": 1
+      },
+      {
+        "item": "relic-rounds",
+        "count": 2,
+        "price": 3
+      },
+      {
+        "item": "censure-entry-roll",
+        "count": 1,
+        "price": 7
+      },
+      {
+        "item": "camp-issue-ribguard",
+        "count": 1,
+        "price": 9
+      },
+      {
+        "item": "ash-road-boots",
+        "count": 1,
+        "price": 6
+      },
+      {
+        "item": "ash-road-carbine",
+        "count": 1,
+        "price": 28
+      },
+      {
+        "item": "cinder-watch-submachine-gun",
+        "count": 1,
+        "price": 30
+      },
+      {
+        "item": "pilgrim-break-shotgun",
+        "count": 1,
+        "price": 24
+      },
+      {
+        "item": "iron-vow-revolver",
+        "count": 1,
+        "price": 18
+      },
+      {
+        "item": "censer-sabre",
+        "count": 1,
+        "price": 15
+      },
+      {
+        "item": "pilgrim-mace",
+        "count": 1,
+        "price": 10
+      },
+      {
+        "item": "penitent-coil-sidearm",
+        "count": 1,
+        "price": 45
+      },
+      {
+        "item": "vesper-armature-pistol",
+        "count": 1,
+        "price": 40
+      },
+      {
+        "item": "compact-cartridge-ammo",
+        "count": 24,
+        "price": 1
+      },
+      {
+        "item": "heavy-sidearm-cartridge-ammo",
+        "count": 12,
+        "price": 2
+      },
+      {
+        "item": "intermediate-cartridge-ammo",
+        "count": 18,
+        "price": 2
+      },
+      {
+        "item": "shot-shell-ammo",
+        "count": 12,
+        "price": 2
+      },
+      {
+        "item": "compact-armature-ammo",
+        "count": 8,
+        "price": 4
+      }
     ]
   },
   "stats": {
@@ -27,5 +119,8 @@
     "maxHp": 8,
     "actionPoints": 0
   },
-  "tags": ["ash-road-trader", "sutler"]
+  "tags": [
+    "ash-road-trader",
+    "sutler"
+  ]
 }

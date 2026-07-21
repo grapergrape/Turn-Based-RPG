@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-varo-door-varo",
+  "title": "Faber House Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The only door opens into the narrow lane beside the family workshop."
+      ],
+      "choices": [
+        {
+          "label": "Step into Rope Rows",
+          "effects": {
+            "log": "You leave the Faber house through its only door.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 113,
+                "y": 48,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You leave the latch alone."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

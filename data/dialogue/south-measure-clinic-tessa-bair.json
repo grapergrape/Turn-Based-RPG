@@ -1,0 +1,74 @@
+{
+  "id": "south-measure-clinic-tessa-bair",
+  "title": "Thecla Galenus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Thecla finishes counting the cold cabinet before she looks up.",
+        "\"If you need dressings, use the case. If you came about the missing stock, say so while I still have hands for it.\""
+      ],
+      "choices": [
+        {
+          "label": "Browse the clinic case",
+          "effects": {
+            "trade": "ash-road-south-tessa-bair"
+          },
+          "close": true
+        },
+        {
+          "label": "Count the missing stock with her",
+          "next": "missing",
+          "effects": {
+            "setFlag": [
+              "neri-suppressant-diversion-found",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "Thecla found a repeating suppressant shortage hidden behind real patient signatures and false dose times."
+            }
+          }
+        },
+        {
+          "label": "Ask what happens if the Compact notices first",
+          "next": "lockdown"
+        },
+        {
+          "label": "Give the clinician her hands back",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "missing": {
+      "lines": [
+        "\"One suppressant vial disappears every third issue night. The patient signatures are sound, but the written dose times belong to different bodies.\"",
+        "She closes the cabinet. \"Someone outside this ward is paying to keep an opening quiet.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she needs done",
+          "next": "lockdown"
+        },
+        {
+          "label": "Leave the count with Thecla",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "lockdown": {
+      "lines": [
+        "\"Find the person before frightened hands reach for fire. If the Compact locks this cabinet, the innocent patients lose their doses first.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Thecla secure the cabinet",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

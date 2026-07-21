@@ -1,6 +1,6 @@
 {
   "id": "ash-chapel-catacombs-eda",
-  "title": "Eda",
+  "title": "Ruth",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,8 +8,8 @@
       },
       "else": "hideout",
       "lines": [
-        "Eda stands near the chalk drawing, trying not to look proud that it survived.",
-        "\"Corin says I cannot touch the ball, and being right about it was rude of him. Watching still counts.\""
+        "Ruth stands near the chalk drawing, trying not to look proud that it survived.",
+        "\"Micah says I cannot touch the ball, and being right about it was rude of him. Watching still counts.\""
       ],
       "choices": [
         {
@@ -25,7 +25,7 @@
           "next": "scared"
         },
         {
-          "label": "Tell her Corin has the ball back",
+          "label": "Tell her Micah has the ball back",
           "conditions": {
             "questStages": {
               "retrieve-blue-ball": "complete"
@@ -41,9 +41,9 @@
     },
     "hideout": {
       "lines": [
-        "Eda scuffs one shoe over the dust.",
-        "\"I only kicked it because Corin said I could not hit the far wall. I hit farther than that.\"",
-        "\"I said sorry. He said sorry does not roll back.\""
+        "Ruth scuffs one shoe over the dust.",
+        "\"I only kicked it because Micah said I could not hit the far wall; I hit much farther than that.\"",
+        "\"I said sorry, but he says sorry does not roll back.\""
       ],
       "choices": [
         {
@@ -51,7 +51,7 @@
           "next": "ball"
         },
         {
-          "label": "Ask about Corin",
+          "label": "Ask about Micah",
           "next": "corin"
         },
         {
@@ -59,7 +59,7 @@
           "next": "below"
         },
         {
-          "label": "Tell her Corin has the ball back",
+          "label": "Tell her Micah has the ball back",
           "conditions": {
             "questStages": {
               "retrieve-blue-ball": "complete"
@@ -76,7 +76,7 @@
     "ball": {
       "lines": [
         "\"A proper kick needs room. Catacombs have too much room in the wrong direction.\"",
-        "\"If Corin writes a law about it, I want a trial. Selka can be judge. She already looks like one.\""
+        "\"If Micah writes a law about it, I want a trial. Susanna can be judge. She already looks like one.\""
       ],
       "choices": [
         {
@@ -84,7 +84,7 @@
           "next": "defense"
         },
         {
-          "label": "Ask about Corin",
+          "label": "Ask about Micah",
           "next": "corin"
         },
         {
@@ -100,7 +100,7 @@
       ],
       "choices": [
         {
-          "label": "Ask about Corin",
+          "label": "Ask about Micah",
           "next": "corin"
         },
         {
@@ -111,8 +111,8 @@
     },
     "defense": {
       "lines": [
-        "\"The wall moved. Also dust made my foot ambitious.\"",
-        "\"Do not make that face. I said I wanted a trial, not that I would win.\""
+        "\"The wall moved, and dust made my foot ambitious.\"",
+        "\"Do not make that face. I wanted a trial, not a promise I would win.\""
       ],
       "choices": [
         {
@@ -127,7 +127,7 @@
     },
     "corin": {
       "lines": [
-        "\"Corin worries like grown people do, only smaller and louder.\"",
+        "\"Micah worries like grown people do, only smaller and louder.\"",
         "\"He forgives if you wait long enough, or if you find the exact right rock. I am looking for the rock.\""
       ],
       "choices": [
@@ -143,7 +143,7 @@
     },
     "drawing": {
       "lines": [
-        "\"I drew what I dreamed. Selka said not to show the little ones. I said I am one of the little ones, and she made the tired face.\"",
+        "\"I drew what I dreamed. Susanna said not to show the little ones. I said I am one of the little ones, and she made the tired face.\"",
         "\"A round thing hung in the dark, like a coin but cold. I do not know why it was falling.\""
       ],
       "choices": [
@@ -163,7 +163,7 @@
     },
     "dont-draw": {
       "lines": [
-        "\"I can draw turnips instead. Turnips never fall from the sky unless Runa is very angry.\""
+        "\"I can draw turnips instead. Turnips never fall from the sky unless Ruth is very angry.\""
       ],
       "choices": [
         {
@@ -179,11 +179,11 @@
     "below": {
       "lines": [
         "\"The lower hall clicks sometimes, not like teeth. More like someone tapping a cup with one nail.\"",
-        "\"I told Corin: pipes. He said pipes do not wait until everyone is quiet.\""
+        "\"I told Micah: pipes. He said pipes do not wait until everyone is quiet.\""
       ],
       "choices": [
         {
-          "label": "Corin may be right",
+          "label": "Micah may be right",
           "next": "scared"
         },
         {
@@ -195,7 +195,7 @@
     "scared": {
       "lines": [
         "\"Yes.\"",
-        "\"But Hanne says scared people can still hold bandages, and Runa says scared people can still peel beans. I am waiting for someone to need a bean peeled.\""
+        "\"But Joanna says scared people can still hold bandages, and Ruth says scared people can still peel beans. I am waiting for someone to need a bean peeled.\""
       ],
       "choices": [
         {
@@ -203,7 +203,7 @@
           "close": true
         },
         {
-          "label": "Back to other questions",
+          "label": "Back",
           "next": "hideout"
         }
       ]

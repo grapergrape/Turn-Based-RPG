@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-mina-ferl",
+  "name": "Naomi Rufus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Used-clothes seller",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "old-measure-gates",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-shawl",
+    "gear": [
+      "rope-coil"
+    ],
+    "accent": "blue-cloth"
+  }
+}

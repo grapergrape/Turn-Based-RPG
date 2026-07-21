@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-mell-ossa",
+  "name": "Micah Viator",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Old water-branch witness",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "hidden-rows"
+  ],
+  "appearance": {
+    "body": "old-stooped",
+    "outfit": "settlement-shawl",
+    "gear": [
+      "cane"
+    ],
+    "accent": "bare-grey"
+  }
+}

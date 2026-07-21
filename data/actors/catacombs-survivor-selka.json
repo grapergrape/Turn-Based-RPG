@@ -1,13 +1,15 @@
 {
   "id": "catacombs-survivor-selka",
-  "name": "Selka Ardent",
+  "name": "Susanna Afer",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Settlement matron",
   "appearance": {
     "body": "heavy",
     "outfit": "settlement-shawl",
-    "gear": ["ledger"],
+    "gear": [
+      "ledger"
+    ],
     "accent": "bare-grey"
   },
   "stats": {

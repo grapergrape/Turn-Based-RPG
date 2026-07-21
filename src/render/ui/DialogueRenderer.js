@@ -1,4 +1,5 @@
 import { PALETTE } from '../palette.js';
+import { NATIVE_SCALE } from '../renderConfig.js';
 import { getFrame } from '../SpriteAtlas.js';
 import {
   DIALOGUE_LINE_HEIGHT,
@@ -33,7 +34,10 @@ function drawSpeakerPortrait(ctx, tools, spriteId, dialogueBox) {
   const scale = 2.4;
   ctx.drawImage(
     frame,
-    srcX, srcY, srcW, srcH,
+    srcX * NATIVE_SCALE,
+    srcY * NATIVE_SCALE,
+    srcW * NATIVE_SCALE,
+    srcH * NATIVE_SCALE,
     Math.round(inner.x + (inner.w - srcW * scale) / 2),
     Math.round(inner.y + (inner.h - srcH * scale) / 2) + 2,
     Math.round(srcW * scale),
@@ -62,6 +66,7 @@ export function drawDialogue(ctx, ui, tools) {
       tools.rect(ctx, body.x + 3, y + 1, 5, 1, PALETTE.uiBorderDark);
       tools.rect(ctx, body.x + 3, y + 1, 1, 5, PALETTE.uiBorderDark);
       tools.rect(ctx, body.x + 4, y + 2, 2, 1, PALETTE.uiBorderLight);
+      tools.detailRect?.(ctx, body.x + 3.5, y + 1.5, 3, 0.5, PALETTE.uiText);
     }
     tools.outcomeText(ctx, line, body.x + 12, y, PALETTE.uiText);
     paragraphStart = false;
@@ -97,6 +102,8 @@ function drawResponseOption(ctx, tools, responseBox, option, y) {
   tools.rect(ctx, plateX + 1, y, 9, 7, PALETTE.uiDark);
   tools.rect(ctx, plateX + 1, y, 9, 1, color);
   tools.rect(ctx, plateX + 1, y, 1, 7, PALETTE.uiBorderLight);
+  tools.detailRect?.(ctx, plateX + 1.5, y + 0.5, 8, 0.5, color);
+  tools.detailRect?.(ctx, plateX + 1.5, y + 0.5, 0.5, 6, PALETTE.uiText);
   tools.text(ctx, match[1], plateX + 3, y, color);
   tools.text(ctx, match[2], plateX + 16, y, color);
   tools.rect(ctx, plateX + 16, y + 8, responseBox.w - 32, 1, PALETTE.uiDark);

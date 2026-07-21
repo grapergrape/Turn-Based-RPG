@@ -47,7 +47,7 @@ const hostSigns = FIELD_RATINGS.find((field) => field.id === 'hostSigns');
 
 {
   const sheet = buildCharacterSheet({
-    name: 'Mara Vey',
+    name: 'Test Agent',
     role: 'Cult-Breaker, Ashen Censure',
     progression: {
       primaries: {

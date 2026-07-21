@@ -1,6 +1,6 @@
 {
   "id": "long-ash-field-brother",
-  "title": "Edrin Holt",
+  "title": "Eleazar Carbo",
   "nodes": {
     "start": {
       "conditions": {
@@ -8,12 +8,12 @@
       },
       "else": "lie-check",
       "lines": [
-        "\"They are dead. I know. The wheat is too polite now.\"",
+        "\"They are dead, and the wheat is too polite now. I knew before you said it.\"",
         "\"Thank you for not wrapping it in sugar. Sugar brings ants, and I cannot slap them.\""
       ],
       "choices": [
         {
-          "label": "Leave Edrin in the wheat",
+          "label": "Leave Eleazar in the wheat",
           "close": true
         }
       ]
@@ -24,12 +24,12 @@
       },
       "else": "report-known",
       "lines": [
-        "\"Safe. Good. I knew the Choir would speak sternly to them. Very sternly. Holy sternly.\"",
+        "\"Safe, good. I knew the Choir would speak with holy sternness, preferably from a considerable distance.\"",
         "\"When rapture comes, I may only tax them a little. For rope damages.\""
       ],
       "choices": [
         {
-          "label": "Leave Edrin in the wheat",
+          "label": "Leave Eleazar in the wheat",
           "close": true
         }
       ]
@@ -43,8 +43,8 @@
       },
       "else": "report-check",
       "lines": [
-        "\"You saw the yard. Do not tidy your face before you answer. I have watched one hundred harvests. I know tidy means trouble.\"",
-        "\"Are they well? Tell me straight, or tell me kind. I am not sure which I deserve.\""
+        "\"You saw the yard, so do not tidy your face before answering; a hundred harvests taught me that look.\"",
+        "\"Are they well? Tell me straight or kind, because I no longer know which I deserve.\""
       ],
       "choices": [
         {
@@ -54,7 +54,7 @@
               "long-ash-field-family-truth"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
-            "log": "Edrin gives up the location of his old forest stash."
+            "log": "Eleazar gives up the location of his old forest stash."
           },
           "next": "truth"
         },
@@ -65,7 +65,7 @@
               "long-ash-field-family-lie"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
-            "log": "Edrin gives up the location of his old forest stash."
+            "log": "Eleazar gives up the location of his old forest stash."
           },
           "next": "lie"
         },
@@ -77,7 +77,7 @@
               "long-ash-field-brother-mocked"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
-            "log": "Edrin gives up the location of his old forest stash."
+            "log": "Eleazar gives up the location of his old forest stash."
           },
           "next": "cruel-truth"
         },
@@ -99,8 +99,8 @@
       "else": "waiting-check",
       "lines": [
         "A calcified man stands lashed above the wheat. His face moves when he hears your boots in the furrows.",
-        "\"Edrin Holt. If you saw the yard, do not tidy your face before you answer. I have watched one hundred harvests. I know tidy means trouble.\"",
-        "\"Are they well? Tell me straight, or tell me kind. I am not sure which I deserve.\""
+        "\"Eleazar Carbo. You saw the yard, so do not tidy your face before answering; a hundred harvests taught me that look.\"",
+        "\"Are they well? Tell me straight or kind, because I no longer know which I deserve.\""
       ],
       "choices": [
         {
@@ -110,7 +110,7 @@
               "long-ash-field-family-truth"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
-            "log": "Edrin gives up the location of his old forest stash."
+            "log": "Eleazar gives up the location of his old forest stash."
           },
           "next": "truth"
         },
@@ -121,7 +121,7 @@
               "long-ash-field-family-lie"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
-            "log": "Edrin gives up the location of his old forest stash."
+            "log": "Eleazar gives up the location of his old forest stash."
           },
           "next": "lie"
         },
@@ -133,7 +133,7 @@
               "long-ash-field-brother-mocked"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "complete" },
-            "log": "Edrin gives up the location of his old forest stash."
+            "log": "Eleazar gives up the location of his old forest stash."
           },
           "next": "cruel-truth"
         },
@@ -149,7 +149,7 @@
       },
       "else": "first",
       "lines": [
-        "\"Have you checked the Holt house? I would go, but the wheat has promoted me to permanent staff.\"",
+        "\"Have you checked the Carbo house? I would go, but the wheat has promoted me to permanent staff.\"",
         "\"If they are angry, say I kept watch. I still know the sound of their door.\""
       ],
       "choices": [
@@ -165,7 +165,7 @@
           "label": "Mock the field king",
           "effects": {
             "setFlag": "long-ash-field-brother-mocked",
-            "log": "Edrin rustles in his ropes, pleased and offended at once."
+            "log": "Eleazar rustles in his ropes, pleased and offended at once."
           },
           "next": "mocked"
         }
@@ -178,13 +178,13 @@
       "else": "first-mentioned",
       "lines": [
         "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
-        "\"Hail, traveler. Edrin Holt, field hand. The first Holts after the Stilling put me here to scare birds off Holt grain.\"",
+        "\"Hail, traveler. Eleazar Carbo, field hand. The first Holts after the Stilling put me here to scare birds off Carbo grain.\"",
         "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
-        "\"If Garron sent you, tell him I am nearly royal.\""
+        "\"If Gideon sent you, tell him I am nearly royal.\""
       ],
       "choices": [
         {
-          "label": "Garron sent me",
+          "label": "Gideon sent me",
           "conditions": {
             "flag": "long-ash-crossroad-brother-paid"
           },
@@ -218,7 +218,7 @@
               "long-ash-field-brother-mocked"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
-            "log": "Edrin rustles in his ropes, pleased and offended at once."
+            "log": "Eleazar rustles in his ropes, pleased and offended at once."
           },
           "next": "mocked"
         },
@@ -236,13 +236,13 @@
       "else": "first-unknown",
       "lines": [
         "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
-        "\"Hail, traveler. Edrin Holt, field hand. The first Holts after the Stilling put me here to scare birds off Holt grain.\"",
+        "\"Hail, traveler. Eleazar Carbo, field hand. The first Holts after the Stilling put me here to scare birds off Carbo grain.\"",
         "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
-        "\"If Garron sent you, tell him I am nearly royal.\""
+        "\"If Gideon sent you, tell him I am nearly royal.\""
       ],
       "choices": [
         {
-          "label": "Garron mentioned you",
+          "label": "Gideon mentioned you",
           "effects": {
             "setFlag": "long-ash-field-brother-met",
             "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
@@ -273,7 +273,7 @@
               "long-ash-field-brother-mocked"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
-            "log": "Edrin rustles in his ropes, pleased and offended at once."
+            "log": "Eleazar rustles in his ropes, pleased and offended at once."
           },
           "next": "mocked"
         },
@@ -286,13 +286,13 @@
     "first-unknown": {
       "lines": [
         "A calcified man stands lashed above the wheat. His legs are stone, his ribs are pale shell, and his face still works in a narrow patch of living skin.",
-        "\"Hail, traveler. Edrin Holt, field hand. The first Holts after the Stilling put me here to scare birds off Holt grain.\"",
+        "\"Hail, traveler. Eleazar Carbo, field hand. The first Holts after the Stilling put me here to scare birds off Carbo grain.\"",
         "\"I promoted myself to advanced scarecrow after year ten. When I am king, my first law will make birds illegal.\"",
-        "\"If Garron sent you, tell him I am nearly royal.\""
+        "\"If Gideon sent you, tell him I am nearly royal.\""
       ],
       "choices": [
         {
-          "label": "Ask who Garron is",
+          "label": "Ask who Gideon is",
           "effects": {
             "setFlag": "long-ash-field-brother-met",
             "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" }
@@ -323,7 +323,7 @@
               "long-ash-field-brother-mocked"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
-            "log": "Edrin rustles in his ropes, pleased and offended at once."
+            "log": "Eleazar rustles in his ropes, pleased and offended at once."
           },
           "next": "mocked"
         },
@@ -360,8 +360,8 @@
     "field": {
       "lines": [
         "\"The first Holts after the Stilling lashed me here. Practical people. They had grain, crows, and one great-granduncle who could no longer run from work.\"",
-        "\"That became the custom: keep the birds off Holt wheat, take the cup on a pole, wear the winter blanket, shout when wings came down.\"",
-        "\"I hated them for thirty years. Then their children started calling me Uncle Edrin, and hate had to share the field.\""
+        "\"That became the custom: keep the birds off Carbo wheat, take the cup on a pole, wear the winter blanket, shout when wings came down.\"",
+        "\"I hated them for thirty years. Then their children started calling me Uncle Eleazar, and hate had to share the field.\""
       ],
       "choices": [
         {
@@ -381,7 +381,7 @@
     "choir": {
       "lines": [
         "\"The Choir came singing through the wheat and called me holy. Properly holy, not village holy, which mostly meant no one wanted to touch me.\"",
-        "\"They said rapture is coming. The calcified will rise first. Garron will point armies. I will walk to the house and ask why the cups stopped clinking at breakfast.\""
+        "\"They said rapture is coming and calcified men rise first, with Gideon pointing armies. I would rather walk home and ask why the cups stopped clinking at breakfast.\""
       ],
       "choices": [
         {
@@ -389,7 +389,7 @@
           "next": "believes"
         },
         {
-          "label": "Garron doubts them",
+          "label": "Gideon doubts them",
           "conditions": {
             "flag": "long-ash-crossroad-choir-doubt-known"
           },
@@ -407,7 +407,7 @@
     },
     "believes": {
       "lines": [
-        "\"Of course I believe it. A man must have ambitions. Mine were once boots. Now they are standing in the yard without ropes.\"",
+        "\"Of course I believe it; a man must keep an ambition. Mine used to involve boots, but standing in the yard without ropes will do.\"",
         "\"I will be merciful. No shouting at the children. No ropes for anyone who can still feel them.\""
       ],
       "choices": [
@@ -423,7 +423,7 @@
     },
     "garron-doubts": {
       "lines": [
-        "\"Garron doubts anything that arrives singing. He had more road than I did, and the road taught him mean.\"",
+        "\"Gideon doubts anything that arrives singing. He had more road than I did, and the road taught him mean.\"",
         "\"I had wheat and kitchen smoke on clear mornings. That made me easier to fool.\""
       ],
       "choices": [
@@ -455,7 +455,7 @@
     },
     "family-task": {
       "lines": [
-        "\"The Holt house by the yard is mine by blood and habit. They did not start this cruelty. They learned to live around it.\"",
+        "\"The Carbo house by the yard is mine by blood and habit. They did not start this cruelty. They learned to live around it.\"",
         "\"The Choir said they would speak to them about disrespect. I hope that means stern words and not knives. Please check.\""
       ],
       "choices": [
@@ -475,7 +475,7 @@
               "long-ash-field-brother-mocked"
             ],
             "questUpdate": { "quest": "calcified-brothers", "stage": "check-farm-family" },
-            "log": "Edrin goes quiet long enough for the wheat to rasp around him."
+            "log": "Eleazar goes quiet long enough for the wheat to rasp around him."
           },
           "next": "family-bad"
         },
@@ -488,7 +488,7 @@
     "family-bad": {
       "lines": [
         "\"Perhaps. I said worse in year twelve.\"",
-        "\"Still check. Anger is not permission to vanish people. I learned that after year thirteen.\""
+        "\"Check anyway. Anger never granted anyone permission to vanish a household; I learned that after year thirteen.\""
       ],
       "choices": [
         {
@@ -500,13 +500,13 @@
     "truth": {
       "lines": [
         "\"Dead. Ah.\"",
-        "\"The Choir promised stern words. They left the yard quiet instead.\"",
+        "\"So much for the Choir's stern words; they left the yard quiet instead.\"",
         "\"I had a stash before the Stilling. Forest side of the branch road, under roots beside a split stump. Take it. I have no pockets, and no wish to enrich the crows.\""
       ]
     },
     "lie": {
       "lines": [
-        "\"Safe. Good. That is good.\"",
+        "\"Safe, you say. I will hold that word carefully and try not to ask why your face gave it away so cheaply.\"",
         "\"When I rise, I will visit them first and be gracious. I have practiced that word for years.\"",
         "\"I had a stash before the Stilling. Forest side of the branch road, under roots beside a split stump. Take it for the news. I cannot exactly fetch it with dignity.\""
       ]
@@ -514,7 +514,7 @@
     "cruel-truth": {
       "lines": [
         "\"You made the truth wear boots before it came in.\"",
-        "\"Fine. Let it stand there. I have stood in worse company.\"",
+        "\"Leave the cruelty standing if you need the company. I have endured worse.\"",
         "\"Forest side of the branch road, under roots beside a split stump. My old stash is there. Take it and go before I mistake your voice for theirs.\""
       ]
     }

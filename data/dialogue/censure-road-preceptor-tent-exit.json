@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-preceptor-tent-exit",
+  "title": "Preceptor Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Voices from the drill yard carry through the command tent's flap."
+      ],
+      "choices": [
+        {
+          "label": "Return to camp",
+          "effects": {
+            "log": "You leave the preceptor tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_camp.json",
+              "player": { "x": 47, "y": 13 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You stay inside the preceptor tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

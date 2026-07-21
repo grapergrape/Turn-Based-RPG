@@ -10,15 +10,18 @@
 <canvas id="c"></canvas>
 <script type="module">
 window.onerror = (msg) => { document.title = 'CAPTURE-ERROR'; document.body.textContent = String(msg); };
-import * as P from '/src/render/PixelPrimitives.js';
-import { PALETTE } from '/src/render/palette.js';
+  import * as P from '/src/render/PixelPrimitives.js';
+  import { PALETTE } from '/src/render/palette.js';
+  import { NATIVE_SCALE } from '/src/render/renderConfig.js';
 import { gridToScreen } from '/src/render/isoMath.js';
 try {
   const params = new URLSearchParams(location.search);
-  const SCALE = Number(params.get('scale') ?? '4');
+  const DISPLAY_SCALE = Number(params.get('scale') ?? '2');
+  const SCALE = NATIVE_SCALE * DISPLAY_SCALE;
   const STYLE = params.get('style') ?? 'stone';
   const N = Number(params.get('n') ?? '7');
   const MOOD = params.get('mood') === '1';
+  const SHOW_LABELS = params.get('labels') !== '0';
   const canvas = document.getElementById('c');
   const W = (N + 2) * 64, H = (N + 2) * 32 + 40;
   canvas.width = W * SCALE; canvas.height = H * SCALE;
@@ -36,8 +39,11 @@ try {
     ctx.save(); ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = 0.4;
     ctx.fillStyle = '#10141c'; ctx.fillRect(0, 0, W, H); ctx.restore();
   }
-  ctx.font = '10px monospace'; ctx.fillStyle = '#c8b89a';
-  ctx.fillText('floor: ' + STYLE + (MOOD ? ' (mood)' : ''), 6, H - 8);
+  if (SHOW_LABELS) {
+    ctx.font = '10px monospace'; ctx.fillStyle = '#c8b89a';
+    ctx.fillText('floor: ' + STYLE + (MOOD ? ' (mood)' : ''), 6, H - 8);
+  }
+  globalThis.__AUDIT_ART_BOUNDS = { x: 0, y: 0, width: canvas.width, height: canvas.height };
   document.title = 'CAPTURE-READY';
 } catch (e) { document.title = 'CAPTURE-ERROR'; document.body.textContent = String(e?.stack ?? e); }
 </script>

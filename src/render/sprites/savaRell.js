@@ -148,7 +148,7 @@ function drawSavaFront({ ctx, px, linePx, meta, pose, cx: atlasCx, shoulderY, hi
 
   // The free arm has resumed changing before the rest of him. It hangs below
   // the old human wrist, long enough to spoil the upright grave-clerk outline
-  // without making Sava larger than a person.
+  // without making Sapphira larger than a person.
   const attack = pose.attack ?? 0;
   const attackReach = Math.min(6, Math.floor(attack * 0.55));
   const attacking = attackReach > 0;
@@ -211,7 +211,7 @@ function drawSavaFront({ ctx, px, linePx, meta, pose, cx: atlasCx, shoulderY, hi
     }
   }
 
-  // Hessa's burial cloth still clings to the other hip. One long torn panel
+  // Keziah's burial cloth still clings to the other hip. One long torn panel
   // keeps the lower silhouette from resolving into two clean parallel legs.
   const shroudX = c + foldedSide * 4;
   px(ctx, shroudX - 2, hipY, PALETTE.stoneDark, 5, 12);
@@ -306,6 +306,15 @@ export function drawSavaRellDetails(args) {
   } else {
     drawSavaFront(args);
   }
+
+  const { ctx, detailPx, detailLinePx, meta, pose, shoulderY, hipY, headY, torso } = args;
+  const c = torso.bodyCx;
+  const side = directionSide(meta);
+  const openedSide = meta.view === 'front' ? 1 : side;
+  detailLinePx(ctx, c - 7.5, headY - 5.5, c - 3.5, headY - 8.5, PALETTE.hostBone);
+  detailLinePx(ctx, c - 2.5, headY - 1.5, c + 1.5, headY + 7.5, PALETTE.stoneDust);
+  detailLinePx(ctx, c + openedSide * 1.5, shoulderY + 5.5, c + openedSide * 3.5, hipY - 2.5, PALETTE.hostGold);
+  detailPx(ctx, c + openedSide * 2.5, shoulderY + 8.5, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold);
 }
 
 function drawDeadSavaHead({ ctx, px, linePx, x, y, fallen = false }) {
@@ -396,12 +405,14 @@ function drawFallingSava({ ctx, px, linePx, cx, groundY, frame }) {
   px(ctx, headX + 5, headY - 2, PALETTE.stoneDust, 2, 2);
 }
 
-export function drawSavaRellDeath({ ctx, w, h, frame, px, linePx }) {
+export function drawSavaRellDeath({ ctx, w, h, frame, px, linePx, detailPx, detailLinePx }) {
   const cx = Math.floor(w / 2);
   const groundY = h - 6;
 
   if (frame < 4) {
     drawFallingSava({ ctx, px, linePx, cx, groundY, frame });
+    detailLinePx(ctx, cx - 10.5, groundY - 38.5 + frame * 4, cx - 4.5, groundY - 34.5 + frame * 4, PALETTE.stoneDust);
+    detailPx(ctx, cx + 2.5, groundY - 28.5 + frame * 3, PALETTE.hostGold);
     return;
   }
 
@@ -426,7 +437,7 @@ export function drawSavaRellDeath({ ctx, w, h, frame, px, linePx }) {
   linePx(ctx, shoulder.x - 2, shoulder.y - 3, hip.x - 2, hip.y - 3, PALETTE.stoneDust, 2);
   px(ctx, cx - 2, bodyY + 2, PALETTE.rustDark, 10, 2);
 
-  // Hessa's burial cloth pools over the hips and binds the two bent legs into
+  // Keziah's burial cloth pools over the hips and binds the two bent legs into
   // one heavy corpse silhouette without hiding the human joints.
   linePx(ctx, cx - 2, bodyY + 6, cx + 12, bodyY + 10, PALETTE.void, 7);
   linePx(ctx, cx - 2, bodyY + 5, cx + 11, bodyY + 9, PALETTE.stoneDark, 5);
@@ -480,6 +491,10 @@ export function drawSavaRellDeath({ ctx, w, h, frame, px, linePx }) {
   px(ctx, headX - 2, bodyY - 10, PALETTE.hostBone, 4, 1);
   linePx(ctx, headX + 5, bodyY - 7, headX + 8, bodyY - 3, PALETTE.hostBone);
   px(ctx, headX + 9, bodyY - 1, PALETTE.stoneDust, 1, 3);
+  detailLinePx(ctx, cx - 11.5, bodyY + 0.5, cx + 10.5, bodyY + 8.5, PALETTE.stoneDust);
+  detailLinePx(ctx, headX - 5.5, bodyY - 7.5, headX - 1.5, bodyY - 9.5, PALETTE.hostBone);
+  detailLinePx(ctx, cx + 1.5, bodyY + 2.5, cx + 5.5, bodyY + 8.5, PALETTE.hostGold);
+  detailPx(ctx, cx + 2.5, bodyY + 4.5, PALETTE.stoneLight);
 }
 
 export const SAVA_RELL_STYLE = {

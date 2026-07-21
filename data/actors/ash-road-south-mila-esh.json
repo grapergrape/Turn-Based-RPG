@@ -1,0 +1,23 @@
+{
+  "id": "ash-road-south-mila-esh",
+  "name": "Milcah Bassus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Patient caregiver",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "charity-edge",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-shawl",
+    "gear": [],
+    "accent": "bare-brown"
+  }
+}

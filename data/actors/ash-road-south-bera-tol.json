@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-bera-tol",
+  "name": "Rebecca Marinus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Water carrier",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "water-court",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-water-carrier",
+    "gear": [
+      "water-jars"
+    ],
+    "accent": "blue-cloth"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "id": "millward-folding-carbine",
+  "name": "Millward Folding Carbine",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "carbine",
+  "rarity": "uncommon",
+  "weight": 2.6,
+  "groundModel": "carbine",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Millward Compact",
+    "factions": [
+      "millward-compact"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "carbine"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 8,
+        "range": 8,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "intermediate-cartridge",
+      "capacity": 17,
+      "defaultLoaded": 17,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A hinged-stock carbine copied from a pre-collapse security pattern. Millward armorers replace the fragile latch with a plain iron pin."
+}

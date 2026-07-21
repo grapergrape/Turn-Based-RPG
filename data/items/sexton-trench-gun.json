@@ -1,0 +1,64 @@
+{
+  "id": "sexton-trench-gun",
+  "name": "Sexton Trench Gun",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "shotgun",
+  "rarity": "uncommon",
+  "weight": 2.6,
+  "groundModel": "shotgun",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "First Winter",
+    "origin": "Sexton Crews",
+    "factions": [
+      "sexton-crews"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "shotgun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 8,
+        "range": 4,
+        "accuracyBonus": 5,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "close-spread",
+        "name": "Close Spread",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 10,
+        "range": 3,
+        "accuracyBonus": 10,
+        "ammoCost": 1,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "shot-shell",
+      "capacity": 5,
+      "defaultLoaded": 5,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A pump gun shortened for crypt passages and drainage cuts. The steel heat shield is punched with small funeral crosses."
+}

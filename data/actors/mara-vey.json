@@ -1,7 +1,8 @@
 {
   "id": "mara-vey",
-  "name": "Mara Vey",
+  "name": "Censure Agent",
   "type": "player",
+  "spriteId": "player",
   "faction": "holy-remnant",
   "role": "Cult-Breaker, Ashen Censure",
   "background": "A field agent of the Ashen Censure, the Holy Remnant's quiet office for hunting and burning blasphemous Host-cults along the ash roads. Years of it now: find the cell, end it, bury whoever the Censure sent with you last time, move on. No one thanks a cult-breaker, and the cults never stop coming. Lately there are more of them than there should be, and no one in the Office will say why.",
@@ -45,8 +46,14 @@
         "id": "failed-quarantine",
         "name": "Failed Quarantine",
         "rank": 1,
-        "tags": ["quarantine", "guilt", "censure"],
-        "modifiers": { "containment": 5 },
+        "tags": [
+          "quarantine",
+          "guilt",
+          "censure"
+        ],
+        "modifiers": {
+          "containment": 5
+        },
         "summary": "You remember the wrong door.",
         "cost": "Rescue scenes press harder."
       },
@@ -54,8 +61,14 @@
         "id": "burned-false-saint",
         "name": "Burned a False Saint",
         "rank": 1,
-        "tags": ["host", "purgation", "mercy"],
-        "modifiers": { "purgationTools": 5 },
+        "tags": [
+          "host",
+          "purgation",
+          "mercy"
+        ],
+        "modifiers": {
+          "purgationTools": 5
+        },
         "summary": "You killed something that still spoke.",
         "cost": "Mercy scenes cut deeper."
       },
@@ -63,8 +76,14 @@
         "id": "heard-the-choir-below",
         "name": "Heard the Choir Below",
         "rank": 1,
-        "tags": ["host", "fear", "signs"],
-        "modifiers": { "hostSigns": 5 },
+        "tags": [
+          "host",
+          "fear",
+          "signs"
+        ],
+        "modifiers": {
+          "hostSigns": 5
+        },
         "summary": "You know the first sound before a room turns wrong.",
         "cost": "Quiet rooms do not leave you alone."
       }
@@ -77,29 +96,83 @@
     "moveCost": 1
   },
   "attacks": [
-    { "id": "melee", "name": "Censure Knife", "apCost": 3, "damage": 3, "range": 1 }
+    {
+      "id": "melee",
+      "name": "Unarmed",
+      "mode": "melee",
+      "apCost": 3,
+      "damage": 1,
+      "range": 1
+    }
   ],
-  "tags": ["party", "human", "cult-breaker", "ashen-censure"],
+  "tags": [
+    "party",
+    "human",
+    "cult-breaker",
+    "ashen-censure"
+  ],
   "inventory": {
-    "maxCarryWeight": 10,
+    "maxCarryWeight": 14,
     "items": [
-      { "item": "censure-field-coat", "count": 1 },
-      { "item": "scarred-leather-vest", "count": 1 },
-      { "item": "ash-road-boots", "count": 1 },
-      { "item": "censure-hood", "count": 1 },
-      { "item": "censure-sidearm", "count": 1, "condition": 92 },
-      { "item": "censure-entry-roll", "count": 1 },
-      { "item": "tarnished-saint-token", "count": 1 },
-      { "item": "iron-vow-ring", "count": 1 },
-      { "item": "mourning-ring", "count": 1 },
-      { "item": "field-dressing", "count": 1 }
+      {
+        "item": "censure-field-coat",
+        "count": 1
+      },
+      {
+        "item": "scarred-leather-vest",
+        "count": 1
+      },
+      {
+        "item": "ash-road-boots",
+        "count": 1
+      },
+      {
+        "item": "censure-hood",
+        "count": 1
+      },
+      {
+        "item": "censure-sidearm",
+        "count": 1,
+        "condition": 92,
+        "loaded": 7
+      },
+      {
+        "item": "censure-knife",
+        "count": 1,
+        "condition": 94
+      },
+      {
+        "item": "relic-rounds",
+        "count": 24
+      },
+      {
+        "item": "censure-entry-roll",
+        "count": 1
+      },
+      {
+        "item": "tarnished-saint-token",
+        "count": 1
+      },
+      {
+        "item": "iron-vow-ring",
+        "count": 1
+      },
+      {
+        "item": "mourning-ring",
+        "count": 1
+      },
+      {
+        "item": "field-dressing",
+        "count": 1
+      }
     ],
     "equipment": {
       "clothes": "censure-field-coat",
       "armor": "scarred-leather-vest",
       "boots": "ash-road-boots",
       "helmet": "censure-hood",
-      "sidearm": "censure-sidearm",
+      "weapon1": "censure-sidearm",
+      "weapon2": "censure-knife",
       "trinket": "tarnished-saint-token",
       "ring1": "iron-vow-ring",
       "ring2": "mourning-ring"

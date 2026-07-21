@@ -1,21 +1,50 @@
 {
   "id": "catacombs-survivor-hanne",
-  "name": "Hanne Rovik",
+  "name": "Joanna Corvus",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Field nurse",
   "appearance": {
     "body": "compact",
     "outfit": "settlement-nurse",
-    "gear": ["medicine-bag"],
+    "gear": [
+      "medicine-bag"
+    ],
     "accent": "pale-hood"
   },
   "trade": {
-    "title": "Hanne's Medic Pack",
+    "title": "Joanna's Medic Pack",
     "currency": "ducat",
     "stock": [
-      { "item": "field-dressing", "count": 1, "price": 4 },
-      { "item": "tinned-beans", "count": 1, "price": 1 }
+      {
+        "item": "field-dressing",
+        "count": 1,
+        "price": 4
+      },
+      {
+        "item": "tinned-beans",
+        "count": 1,
+        "price": 1
+      }
+    ],
+    "buys": [
+      {
+        "item": "censure-entry-roll",
+        "price": 2,
+        "keep": 1
+      },
+      {
+        "item": "relic-rounds",
+        "price": 1
+      },
+      {
+        "item": "penitent-gear-scrap",
+        "price": 1
+      },
+      {
+        "item": "tarnished-saint-token",
+        "price": 1
+      }
     ]
   },
   "stats": {

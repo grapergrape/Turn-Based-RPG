@@ -9,13 +9,26 @@ const outputPath = join(root, 'data', 'levels', 'long_ash_road_approach.json');
 const WIDTH = 160;
 const HEIGHT = 70;
 const START = { x: 142, y: 68 };
+const WALKABLE_TILES = new Set(['.', 'r', 's', 'w', 'f', 'd', 'g']);
 const GRAVEYARD = { x0: 126, x1: 148, y0: 47, y1: 59 };
 const GRAVEYARD_CHAPELS = [
   { tile: 'V', kind: 'graveyard-vigil-chapel-block', x0: 130, x1: 131, y0: 45, y1: 46 },
   { tile: 'M', kind: 'graveyard-mortuary-chapel-block', x0: 141, x1: 142, y0: 44, y1: 46 }
 ];
 const INFECTED_CAVE = { x: 90, y: 10 };
+const EDRIN_FIELD_POSITION = Object.freeze({ x: 50, y: 35 });
+const groundItems = [
+  { id: 'long-ash-charcoal-cart-rounds', item: 'relic-rounds', count: 2, x: 119, y: 49 },
+  { id: 'long-ash-warden-cart-ration', item: 'tinned-beans', count: 1, x: 111, y: 23 },
+  { id: 'long-ash-holt-forest-dressing', item: 'field-dressing', count: 1, x: 93, y: 25 },
+  { id: 'long-ash-east-road-chit', item: 'road-warden-chit', count: 1, x: 108, y: 52 },
+  { id: 'long-ash-grave-road-ducats', item: 'ducat', count: 3, x: 137, y: 61 },
+  { id: 'long-ash-west-field-gear', item: 'penitent-gear-scrap', count: 1, x: 29, y: 36 },
+  { id: 'long-ash-cave-trail-token', item: 'tarnished-saint-token', count: 1, x: 90, y: 15 }
+];
 const LONG_ASH_DIALOGUES = [
+  'long-ash-carter-edda-farr',
+  'long-ash-stage-iv-cart-ambush',
   'long-ash-farmhouse-door',
   'long-ash-barn-door',
   'long-ash-storage-shed-door',
@@ -30,6 +43,112 @@ const LONG_ASH_DIALOGUES = [
   'long-ash-mortuary-chapel-entry',
   'long-ash-listening-shortcut-return'
 ];
+const LONG_ASH_JOURNAL_NOTES = [
+  {
+    flag: 'long-ash-edda-spared-account-heard',
+    text: 'The cultists left Deborah alive after she failed their test for Remnant loyalty. They took the cart because it could be sold.'
+  },
+  {
+    flag: 'long-ash-stage-iv-cart-recognized',
+    text: 'The overturned cart in the Stage IV trap is Deborah Carbo\'s. Her white hub cord and spilled charcoal survived the road west.'
+  },
+  {
+    flag: 'long-ash-carter-road-account-heard',
+    text: 'Deborah Carbo saw a Censure wagon stop at the north route post. Red-cuffed cultists stole her cart before the old bell gave three closure peals.'
+  },
+  {
+    flag: 'long-ash-carter-wheel-crush-read',
+    text: 'Deborah Carbo\'s crushed foot had swollen for hours before the closure peals. The thieves dropped her cart wheel across it during the robbery.'
+  },
+  {
+    flag: 'long-ash-carter-cart-knot-revealed',
+    text: 'Red office wax on Deborah Carbo\'s knife matched a cord tucked under the stripped cart axle farther up the road.'
+  },
+  {
+    flag: 'long-ash-pump-sabotage-found',
+    text: 'Quarry grit was pressed behind the Carbo pump collar. The handle would survive while the inner sleeve wore itself raw.'
+  },
+  {
+    flag: 'long-ash-farm-cart-drag-read',
+    text: 'Five separate heel cuts leave the Carbo farm cart toward the east lane. The yard was swept after the load passed.'
+  },
+  {
+    flag: 'long-ash-holt-death-order-read',
+    text: 'The Carbo father died from the throat wound. The cross nails and ritual cuts were made after his blood had stopped.'
+  },
+  {
+    flag: 'long-ash-holt-erased-defense-read',
+    text: 'Short defensive cuts on the Carbo father carry no black-gold reaction. A postmortem opening was carved across them to hide the struggle.'
+  },
+  {
+    flag: 'long-ash-tool-coffer-opened',
+    text: 'A buckled coffer under the Carbo tool rack held one clean dressing and two Penitent gear teeth.'
+  },
+  {
+    flag: 'long-ash-cart-axle-cord-found',
+    text: 'A waxed cord under the stripped cart axle carries a road-office knot. Someone used it to hold the brake pin out of sight.'
+  },
+  {
+    flag: 'long-ash-cart-sabotage-proved',
+    text: 'The stripped cart axle failed in a forced sequence. The brake pin was pulled first, then the left wheel was struck loose after the cart stopped.'
+  },
+  {
+    flag: 'long-ash-kill-site-wounds-read',
+    text: 'The cultist at the kill site died from a narrow chest puncture. Wolf damage came later, once the body was already cooling.'
+  },
+  {
+    flag: 'long-ash-kill-site-no-opening-found',
+    text: 'No fresh Host opening began in the kill-site corpse. The black-gold residue was rubbed into dead cuts from another source.'
+  },
+  {
+    flag: 'long-ash-wolf-prayer-knots-found',
+    text: 'Prayer knots were tied across a dead Host wolf after its ribs had cooled. The Censure pattern at the kill site was staged.'
+  },
+  {
+    flag: 'long-ash-old-bell-clapper-removed',
+    text: 'The old field bell lost its clapper to tools, not weather. Four wrench bites remain under the yoke.'
+  },
+  {
+    flag: 'long-ash-old-bell-peal-rule-read',
+    text: 'Three peal rules remain on the old bell yoke. A fourth was cut away with a narrow office chisel.'
+  },
+  {
+    flag: 'long-ash-bell-cache-found',
+    text: 'Loose road stone beside the old bell covered a dry satchel with Censure entry tools, a road chit, and four ducats.'
+  },
+  {
+    flag: 'long-ash-grave-order-read',
+    text: 'The graveyard bodies were already calcified when they were set upright. Stone dust lies beneath the old lifting abrasions.'
+  },
+  {
+    flag: 'long-ash-grave-burial-error-found',
+    text: 'The burial crew wrapped the faces first and left opened ribs exposed to runoff. Their containment order was reversed.'
+  },
+  {
+    flag: 'long-ash-grave-response-pattern-found',
+    text: 'Every black-gold seam in the grave cluster bends toward the old bell marker. The bodies answered one signal before the stone fixed them.'
+  },
+  {
+    flag: 'long-ash-warden-route-strip-found',
+    text: 'A stopped warden cart carried a route strip for the north spur. Its final checkpoint was struck out in red wax.'
+  },
+  {
+    flag: 'long-ash-route-post-peal-rule-found',
+    text: 'The north route post once ordered a fourth peal before road closure. The rule was shaved away after the post was mounted.'
+  },
+  {
+    flag: 'long-ash-dry-stave-cache-found',
+    text: 'One broken supply barrel kept a dry inner stave. Beans and a sealed field dressing were wrapped behind it.'
+  },
+  {
+    flag: 'long-ash-forest-cache-found',
+    text: 'Three nearly erased placement signs led to a tarred cache in the northeast woods.'
+  },
+  {
+    flag: 'long-ash-holt-stash-knot-read',
+    text: 'Eleazar Carbo\'s directions led to his old forest satchel. The outer knot was false, tied to shed rain while the inner cord stayed dry.'
+  }
+];
 const INFECTED_CAVE_OUTSIDE_WOLVES = [
   { id: 'host-wolf-spider', x: 88, y: 13, facing: 'se' },
   { id: 'host-wolf-maw', x: 91, y: 13, facing: 's' },
@@ -38,81 +157,123 @@ const INFECTED_CAVE_OUTSIDE_WOLVES = [
 const GRAVEYARD_BODIES = [
   {
     id: 'grave-eren-voss',
-    name: 'Eren Voss',
+    name: 'Aaron Crispus',
     variant: 'kneeling-fused-hands',
     x: 129,
     y: 50,
-    log: 'Eren Voss kneels in the ash with both hands fused under his chin. The stone kept the prayer and lost the man.'
+    log: 'Aaron Crispus kneels in the ash with both hands fused under his chin. The stone kept the prayer and lost the man.',
+    search: {
+      title: 'Calcified Grave Cluster',
+      lines: [
+        'Aaron faces the road. The bodies behind him stand at different angles, each set above a packed grave.'
+      ],
+      useLabel: 'Inspect Aaron Crispus',
+      methods: [
+        {
+          id: 'compare-grave-calcification',
+          label: 'Compare the calcification order',
+          field: 'medicine',
+          dc: 45,
+          successLog: 'Stone dust lies beneath old lifting abrasions. These bodies were already calcified when they were set upright.',
+          failLog: 'Weather has rounded the fractures until age and handling look alike.',
+          success: {
+            setFlag: 'long-ash-grave-order-read'
+          }
+        },
+        {
+          id: 'audit-grave-handling',
+          label: 'Audit the burial handling',
+          field: 'containment',
+          dc: 60,
+          successLog: 'The crew wrapped the faces first and left opened ribs exposed to runoff. Their containment order was reversed.',
+          failLog: 'Old wraps and wash marks do not give up a safe handling sequence.',
+          success: {
+            setFlag: 'long-ash-grave-burial-error-found'
+          }
+        },
+        {
+          id: 'read-grave-response-pattern',
+          label: 'Trace the fixed black-gold seams',
+          field: 'hostSigns',
+          dc: 65,
+          successLog: 'Every seam bends toward the old bell marker. The bodies answered one signal before the stone fixed them.',
+          failLog: 'The seams break at too many weathered joints to prove a shared direction.',
+          success: {
+            setFlag: 'long-ash-grave-response-pattern-found'
+          }
+        }
+      ]
+    }
   },
   {
     id: 'grave-sister-maud-arel',
-    name: 'Sister Maud Arel',
+    name: 'Sister Monica',
     variant: 'broken-halo',
     x: 132,
     y: 50,
-    log: 'Sister Maud Arel went pale around a broken ring of bone. Half the halo lies in chips at her feet.'
+    log: 'Sister Monica went pale around a broken ring of bone. Half the halo lies in chips at her feet.'
   },
   {
     id: 'grave-toma-kest',
-    name: 'Toma Kest',
+    name: 'Thomas Silo',
     variant: 'rib-open-chest',
     x: 135,
     y: 50,
-    log: 'Toma Kest stands with his ribs opened like little chapel doors. The cavity behind them is dry stone.'
+    log: 'Thomas Silo stands with his ribs opened like little chapel doors. The cavity behind them is dry stone.'
   },
   {
     id: 'grave-iven-rusk',
-    name: 'Iven Rusk',
+    name: 'Isaac Rufus',
     variant: 'reaching-arm',
     x: 138,
     y: 50,
-    log: 'Iven Rusk reaches toward the fence with one stone hand. The other arm is folded into his chest.'
+    log: 'Isaac Rufus reaches toward the fence with one stone hand. The other arm is folded into his chest.'
   },
   {
     id: 'grave-nara-vell',
-    name: 'Nara Vell',
+    name: 'Naomi Felix',
     variant: 'goat-skull',
     x: 129,
     y: 52,
-    log: 'Nara Vell has a long goat skull where her face should be. One horn curls whole, the other snapped at the root.'
+    log: 'Naomi Felix has a long goat skull where her face should be. One horn curls whole, the other snapped at the root.'
   },
   {
     id: 'grave-brother-senn-kade',
-    name: 'Brother Senn Kade',
+    name: 'Brother Malachi Mercator',
     variant: 'thorned-back',
     x: 132,
     y: 52,
-    log: 'Brother Senn Kade is bent forward under pale thorns. They broke through his back and froze there.'
+    log: 'Brother Malachi Mercator is bent forward under pale thorns. They broke through his back and froze there.'
   },
   {
     id: 'grave-lysa-orm',
-    name: 'Lysa Orm',
+    name: 'Susanna Niger',
     variant: 'bell-jaw',
     x: 135,
     y: 52,
-    log: 'Lysa Orm has a jaw pulled wide into a bell shape. Nothing rings when the wind passes through it.'
+    log: 'Susanna Niger has a jaw pulled wide into a bell shape. Nothing rings when the wind passes through it.'
   },
   {
     id: 'grave-arno-pell',
-    name: 'Arno Pell',
+    name: 'Aaron Celsus',
     variant: 'half-prayer-twist',
     x: 138,
     y: 52,
-    log: 'Arno Pell is twisted halfway into prayer, one palm sealed to the chest and one elbow cracked backward.'
+    log: 'Aaron Celsus is twisted halfway into prayer, one palm sealed to the chest and one elbow cracked backward.'
   },
   {
     id: 'grave-ilyen-marr',
-    name: 'Ilyen Marr',
+    name: 'Jeremiah Fullo',
     variant: 'collapsed-shoulder',
     x: 129,
     y: 54,
-    log: 'Ilyen Marr slumps under one collapsed shoulder. The ash at his feet has been packed smoother than the rest.',
+    log: 'Jeremiah Fullo slumps under one collapsed shoulder. The ash at his feet has been packed smoother than the rest.',
     search: {
-      title: "Ilyen Marr's Grave",
+      title: "Jeremiah Fullo's Grave",
       lines: [
         'A narrow seam runs below the packed ash, too straight for weather.'
       ],
-      useLabel: "Inspect Ilyen's grave",
+      useLabel: "Inspect Jeremiah's grave",
       methods: [
         {
           id: 'read-disturbed-ash',
@@ -138,19 +299,19 @@ const GRAVEYARD_BODIES = [
   },
   {
     id: 'grave-vel-sarec',
-    name: 'Vel Sarec',
+    name: 'Levi Sabinus',
     variant: 'buried-lower-body',
     x: 132,
     y: 54,
-    log: 'Vel Sarec rises only from the waist. The rest is buried in a hard swell of ash and root.'
+    log: 'Levi Sabinus rises only from the waist. The rest is buried in a hard swell of ash and root.'
   },
   {
     id: 'grave-otta-fen',
-    name: 'Otta Fen',
+    name: 'Obadiah Lupus',
     variant: 'split-face',
     x: 135,
     y: 54,
-    log: 'Otta Fen split down the face before the Stilling took him. One side is smooth as chalk, the other all dark seam.'
+    log: 'Obadiah Lupus split down the face before the Stilling took him. One side is smooth as chalk, the other all dark seam.'
   }
 ];
 const GRAVEYARD_PLOTS = [
@@ -423,6 +584,16 @@ function paintFarm() {
   paintRect(63, 55, 73, 69, 'w');
   paintRect(76, 60, 86, 69, 'w');
 
+  // Generations approaching Eleazar wore a small dark patch through the wheat.
+  // The open ground separates his unchanged silhouette from the tall crop.
+  paintRect(
+    EDRIN_FIELD_POSITION.x - 1,
+    EDRIN_FIELD_POSITION.y - 1,
+    EDRIN_FIELD_POSITION.x + 1,
+    EDRIN_FIELD_POSITION.y + 1,
+    'f'
+  );
+
   // Creek bed on the far western edge of the planning map, expressed with dark ash floor.
   for (let y = 0; y < HEIGHT; y += 1) {
     const x = 6 + Math.round(Math.sin(y * 0.22) * 1.4);
@@ -491,7 +662,37 @@ function placeFarmObjects() {
     }
   });
 
-  addObject('field-cart', 26, 47, { blocking: true, orient: 'sw', seed: hash(26, 47, 47) });
+  addObject('field-cart', 26, 47, {
+    id: 'long-ash-holt-farm-cart',
+    blocking: true,
+    orient: 'sw',
+    name: 'Carbo Farm Cart',
+    seed: hash(26, 47, 47),
+    interact: {
+      type: 'note',
+      log: 'The cart bed is empty. A broom passed over the yard behind it.',
+      search: {
+        title: 'Carbo Farm Cart',
+        lines: [
+          'Chaff fills the wheel grooves. The ground beneath the rear axle was swept in short, hurried strokes.'
+        ],
+        useLabel: 'Inspect the empty cart',
+        methods: [
+          {
+            id: 'count-drag-marks',
+            label: 'Read the ground beneath the axle',
+            field: 'search',
+            dc: 45,
+            successLog: 'Five separate heel cuts leave the cart toward the east lane. The broom missed the deepest edges.',
+            failLog: 'Wind and chaff break the marks into scraps with no useful order.',
+            success: {
+              setFlag: 'long-ash-farm-cart-drag-read'
+            }
+          }
+        ]
+      }
+    }
+  });
   addObject('field-cart', 13, 58, { blocking: true, orient: 'se', seed: hash(13, 58, 47) });
   addObject('hay-rick', 11, 65, { blocking: true, seed: hash(11, 65, 53) });
   addObject('hay-rick', 52, 51, { blocking: true, seed: hash(52, 51, 53) });
@@ -521,25 +722,177 @@ function addFarmDoor(id, name, x, y, dialogue, log, extraInteract = {}) {
 function placeFarmMachinery() {
   // Yard machinery from the planning map compound: clustered around the house
   // and barns, leaving the fence gates and building footprints clear.
-  addObject('water-pump', 15, 52, { blocking: true, seed: hash(15, 52, 45) });
+  addObject('water-pump', 15, 52, {
+    id: 'long-ash-holt-water-pump',
+    blocking: true,
+    name: 'Carbo Water Pump',
+    seed: hash(15, 52, 45),
+    interact: {
+      type: 'note',
+      log: 'The handle moves. Something grinds inside the iron collar on every downstroke.',
+      search: {
+        title: 'Carbo Water Pump',
+        lines: [
+          'Rust freckles the collar, but the drag comes from deeper in the sleeve.'
+        ],
+        useLabel: 'Work the pump handle',
+        methods: [
+          {
+            id: 'strip-pump-collar',
+            label: 'Strip the pump collar',
+            field: 'engineering',
+            dc: 40,
+            successLog: 'Quarry grit was pressed behind the collar. The handle would survive while the inner sleeve wore itself raw.',
+            failLog: 'Old grease and chaff hide the source of the drag.',
+            success: {
+              setFlag: 'long-ash-pump-sabotage-found'
+            }
+          }
+        ]
+      }
+    }
+  });
   addObject('feed-trough', 18, 53, { blocking: true, orient: 'se', seed: hash(18, 53, 45) });
   addObject('field-plow', 23, 52, { blocking: true, orient: 'sw', seed: hash(23, 52, 45) });
-  addObject('field-harrow', 26, 50, { blocking: true, orient: 'sw', seed: hash(26, 50, 45) });
-  addObject('tool-rack', 34, 53, { blocking: true, seed: hash(34, 53, 45) });
+  addObject('field-harrow', 27, 53, { blocking: true, orient: 'sw', seed: hash(27, 53, 45) });
+  addObject('tool-rack', 34, 53, {
+    id: 'long-ash-holt-tool-rack',
+    blocking: true,
+    name: 'Carbo Tool Rack',
+    seed: hash(34, 53, 45),
+    interact: {
+      type: 'note',
+      log: 'A low iron coffer is bolted beneath the rack. Its hinge has buckled into the lid.',
+      search: {
+        title: 'Carbo Tool Coffer',
+        lines: [
+          'The coffer has no keyway. A bent hinge and a warped lid hold it shut.'
+        ],
+        useLabel: 'Leave the coffer shut',
+        methods: [
+          {
+            id: 'straighten-coffer-hinge',
+            label: 'Straighten the hinge with entry hooks',
+            requiresItem: 'censure-entry-roll',
+            field: 'security',
+            dc: 50,
+            conditions: {
+              notFlag: 'long-ash-tool-coffer-opened'
+            },
+            successLog: 'The hooks pull the hinge pin straight enough to lift the lid without breaking it.',
+            failLog: 'The pin turns inside the buckle, then catches harder.',
+            success: {
+              setFlag: 'long-ash-tool-coffer-opened',
+              inventory: {
+                add: [
+                  { item: 'field-dressing', count: 1 },
+                  { item: 'penitent-gear-scrap', count: 2 }
+                ]
+              }
+            }
+          },
+          {
+            id: 'tear-coffer-hinge',
+            label: 'Wrench the hinge out',
+            primary: 'body',
+            dc: 7,
+            conditions: {
+              notFlag: 'long-ash-tool-coffer-opened'
+            },
+            successLog: 'You brace the rack and wrench. The hinge tears free with a crack that rolls across the yard.',
+            failLog: 'The rack shudders, but the coffer keeps its grip.',
+            success: {
+              setFlag: [
+                'long-ash-tool-coffer-opened',
+                'long-ash-tool-coffer-forced'
+              ],
+              inventory: {
+                add: [
+                  { item: 'field-dressing', count: 1 },
+                  { item: 'penitent-gear-scrap', count: 2 }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  });
   addObject('woodpile', 29, 57, { blocking: true, seed: hash(29, 57, 45) });
   addObject('field-plow', 21, 59, { blocking: true, orient: 'se', seed: hash(21, 59, 45) });
   addObject('field-harrow', 30, 55, { blocking: true, orient: 'sw', seed: hash(30, 55, 45) });
   addObject('feed-trough', 22, 59, { blocking: true, orient: 'sw', seed: hash(22, 59, 45) });
-  addObject('wagon-wheel', 26, 52, { blocking: true, seed: hash(26, 52, 45) });
+  addObject('wagon-wheel', 25, 52, { blocking: true, seed: hash(25, 52, 45) });
 }
 
 function placeFarmVictims() {
   const victims = [
-    { x: 27, y: 51, member: 'father' },
-    { x: 29, y: 51, member: 'mother' },
-    { x: 31, y: 51, member: 'grandparent' },
-    { x: 33, y: 51, member: 'older-child' },
-    { x: 35, y: 51, member: 'younger-child' }
+    {
+      x: 27,
+      y: 51,
+      member: 'father',
+      name: 'Carbo Father',
+      log: 'The father hangs with his chin against the rope. Blood dried under his collar before the cross took his weight.',
+      search: {
+        title: 'Carbo Father',
+        lines: [
+          'His throat, forearms, and the long cut over his chest carry different ages of blood.'
+        ],
+        useLabel: 'Inspect the body',
+        methods: [
+          {
+            id: 'read-holt-death-order',
+            label: 'Order the wounds',
+            field: 'medicine',
+            dc: 40,
+            successLog: 'The throat wound bled freely. The cross nails and ritual cuts did not. He was dead before they raised him.',
+            failLog: 'Dried blood has joined the cuts into one dark sheet.',
+            success: {
+              setFlag: 'long-ash-holt-death-order-read'
+            }
+          },
+          {
+            id: 'read-erased-defense',
+            label: 'Read the black-gold reaction lines',
+            field: 'hostSigns',
+            dc: 60,
+            successLog: 'Short defensive cuts carry no black-gold reaction. A postmortem opening was carved across them to hide the struggle.',
+            failLog: 'The dried seams give no clear boundary between injury and ritual work.',
+            success: {
+              setFlag: 'long-ash-holt-erased-defense-read'
+            }
+          }
+        ]
+      }
+    },
+    {
+      x: 29,
+      y: 51,
+      member: 'mother',
+      name: 'Carbo Mother',
+      log: 'A house key remains tied inside the mother\'s left sleeve. Her right wrist is bound with fresh grain cord.'
+    },
+    {
+      x: 31,
+      y: 51,
+      member: 'grandparent',
+      name: 'Carbo Grandparent',
+      log: 'An old leg splint was cut away before the grandparent was lifted. The split wood lies under the cross.'
+    },
+    {
+      x: 33,
+      y: 51,
+      member: 'older-child',
+      name: 'Older Carbo Child',
+      log: 'One boot is missing from the older child. A bare heel track ends at the yard gate.'
+    },
+    {
+      x: 35,
+      y: 51,
+      member: 'younger-child',
+      name: 'Younger Carbo Child',
+      log: 'A small coat button is caught in the twine. The ash below the cross has not been disturbed since rain.'
+    }
   ];
   for (const victim of victims) {
     addObject('blood-stain', victim.x, victim.y, { seed: hash(victim.x, victim.y, 147) });
@@ -547,10 +900,12 @@ function placeFarmVictims() {
       id: `long-ash-farm-victim-${victim.member}`,
       blocking: true,
       member: victim.member,
+      name: victim.name,
       seed: hash(victim.x, victim.y, 149),
       interact: {
         type: 'note',
-        log: 'The farm family has been raised on rough crosses in the yard. Their field coats are stiff with old blood and chaff.',
+        log: victim.log,
+        ...(victim.search ? { search: victim.search } : {}),
         questUpdate: { quest: 'calcified-brothers', stage: 'family-known' }
       }
     });
@@ -754,6 +1109,18 @@ function placeGraveyardChapelEntries() {
   });
 }
 
+function placeGraveyardAttendantShrine() {
+  addObject('censure-attendant-shrine', 136, 48, {
+    id: 'long-ash-censure-attendant-shrine',
+    name: 'Censure Attendant Shrine',
+    blocking: true,
+    seed: hash(136, 48, 90),
+    interactionMarker: { x: 136, y: 49 },
+    activationCell: { x: 137, y: 48 },
+    interact: { type: 'drone-shrine' }
+  });
+}
+
 function placeGraveyardDressing() {
   addObject('graveyard-remnant-cross', GRAVEYARD_CROSS.x, GRAVEYARD_CROSS.y, {
     id: 'graveyard-remnant-cross',
@@ -798,6 +1165,7 @@ function placeGraveyard() {
   placeGraveyardCatacomb();
   placeGraveyardDressing();
   placeGraveyardChapelEntries();
+  placeGraveyardAttendantShrine();
   // Each body stands one tile up from its plot, planted where a headstone
   // would go: the dead mark their own graves.
   for (const body of GRAVEYARD_BODIES) {
@@ -859,6 +1227,10 @@ function placeWheatModels() {
       const tile = getTile(x, y);
       if (tile !== 'w' && tile !== 'f') continue;
       if (reserved.has(key(x, y)) || hasObjectAt(x, y)) continue;
+      if (
+        Math.abs(x - EDRIN_FIELD_POSITION.x) <= 2 &&
+        Math.abs(y - EDRIN_FIELD_POSITION.y) <= 2
+      ) continue;
       const h = hash(x, y, 109);
       const rowStripe = ((x + Math.floor(y * 0.65)) % 2) === 0;
       const chance = tile === 'w' ? 82 : 45;
@@ -873,30 +1245,131 @@ function placeWheatModels() {
 
 function placeKillSite() {
   const cultists = [
-    [96, 33], [99, 36], [103, 32], [105, 35], [101, 34]
-  ];
-  const cultistEvidence = {
-    name: 'Dead Cultist',
-    interact: {
-      type: 'note',
-      dialogue: 'long-ash-wolf-cultist-evidence',
-      log: 'The dead cultist is torn open near the throat and cuff.'
+    {
+      id: 'long-ash-kill-cultist-west',
+      x: 96,
+      y: 33,
+      log: 'The western cultist fell with one hand trapped under the breastplate. Small teeth worried the free cuff.'
+    },
+    {
+      id: 'long-ash-kill-cultist-south',
+      x: 99,
+      y: 36,
+      log: 'The southern cultist lost a boot in the mud. Wolf bites climb one calf and stop below the knee.'
+    },
+    {
+      id: 'long-ash-kill-cultist-stable',
+      x: 103,
+      y: 32,
+      log: 'This cultist lies clear of the churned center. A narrow puncture marks the chest under the torn robe.',
+      search: {
+        title: 'Cultist at the Kill Site',
+        lines: [
+          'The chest wound, wolf tears, and black-gold smears do not share the same edge.'
+        ],
+        useLabel: 'Inspect the cultist',
+        methods: [
+          {
+            id: 'separate-kill-site-wounds',
+            label: 'Separate the wound ages',
+            field: 'medicine',
+            dc: 45,
+            successLog: 'The chest puncture killed him. Wolf damage came later, once the body was already cooling.',
+            failLog: 'Mud and tooth damage have chewed the wound margins past an easy reading.',
+            success: {
+              setFlag: 'long-ash-kill-site-wounds-read'
+            }
+          },
+          {
+            id: 'test-for-fresh-opening',
+            label: 'Test the black-gold wound edges',
+            field: 'hostSigns',
+            dc: 60,
+            successLog: 'No fresh Host opening began here. Residue from another source was rubbed into cuts after death.',
+            failLog: 'Old blood and black-gold grit answer each other too closely to separate.',
+            success: {
+              setFlag: 'long-ash-kill-site-no-opening-found'
+            }
+          }
+        ]
+      }
+    },
+    {
+      id: 'long-ash-kill-cultist-east',
+      x: 105,
+      y: 35,
+      log: 'A snapped knife rests under the eastern cultist. The blade carries cloth, not fur.'
+    },
+    {
+      id: 'long-ash-kill-cultist-center',
+      x: 101,
+      y: 34,
+      log: 'The center cultist died face down. Someone rolled the body once, searched the belt, then set it back.'
     }
-  };
-  const wolfEvidence = {
+  ];
+  for (const cultist of cultists) {
+    addObject('dead-cultist', cultist.x, cultist.y, {
+      id: cultist.id,
+      seed: hash(cultist.x, cultist.y, 71),
+      name: 'Dead Cultist',
+      interact: {
+        type: 'note',
+        dialogue: 'long-ash-wolf-cultist-evidence',
+        log: cultist.log,
+        ...(cultist.search ? { search: cultist.search } : {})
+      }
+    });
+  }
+  addObject('dead-host-wolf-spider', 98, 32, {
+    id: 'long-ash-kill-wolf-spider',
+    seed: hash(98, 32, 73),
     name: 'Dead Host Wolf',
     interact: {
       type: 'note',
       dialogue: 'long-ash-wolf-cultist-evidence',
-      log: 'The dead wolf lies among torn cult cloth and blackened blood.'
+      log: 'The six-legged wolf folded under itself. Two cult knife cuts cross the bite damage along its flank.'
     }
-  };
-  for (const [x, y] of cultists) {
-    addObject('dead-cultist', x, y, { seed: hash(x, y, 71), ...cultistEvidence });
-  }
-  addObject('dead-host-wolf-spider', 98, 32, { seed: hash(98, 32, 73), ...wolfEvidence });
-  addObject('dead-host-wolf-maw', 102, 35, { seed: hash(102, 35, 73), ...wolfEvidence });
-  addObject('dead-host-wolf-ribsplit', 105, 33, { seed: hash(105, 33, 73), ...wolfEvidence });
+  });
+  addObject('dead-host-wolf-maw', 102, 35, {
+    id: 'long-ash-kill-wolf-maw',
+    seed: hash(102, 35, 73),
+    name: 'Dead Host Wolf',
+    interact: {
+      type: 'note',
+      dialogue: 'long-ash-wolf-cultist-evidence',
+      log: 'The throat-mawed wolf died biting through a red stole. The cloth is still wedged behind its inner teeth.'
+    }
+  });
+  addObject('dead-host-wolf-ribsplit', 105, 33, {
+    id: 'long-ash-kill-wolf-ribsplit',
+    seed: hash(105, 33, 73),
+    name: 'Dead Host Wolf',
+    interact: {
+      type: 'note',
+      dialogue: 'long-ash-wolf-cultist-evidence',
+      log: 'Prayer cord has been tied across the rib-split wolf. The knots sit above blood that had already dried.',
+      search: {
+        title: 'Rib-Split Host Wolf',
+        lines: [
+          'The cord follows a Censure binding pattern, but no field hand would tie it this far from the opened joints.'
+        ],
+        useLabel: 'Inspect the prayer cord',
+        methods: [
+          {
+            id: 'read-staged-prayer-knots',
+            label: 'Read the prayer knots',
+            field: 'doctrine',
+            dc: 50,
+            successLog: 'The knots were tied after the ribs cooled. Someone staged Censure work on a body their rites never touched.',
+            failLog: 'Blood has stiffened the cord into a knot with no clear order.',
+            success: {
+              setFlag: 'long-ash-wolf-prayer-knots-found'
+            }
+          }
+        ]
+      }
+    }
+  });
   for (const [x, y] of [
     [96, 34], [98, 35], [100, 33], [102, 36], [104, 34], [106, 36], [99, 31]
   ]) {
@@ -1001,7 +1474,38 @@ function placeRoadContentPass() {
     seed: hash(121, 63, 191),
     interact: {
       type: 'note',
-      log: 'The field bell has been split through the mouth. Someone took the clapper and scratched the road office mark from the yoke.'
+      log: 'The field bell has been split through the mouth. Someone took the clapper and scratched the road office mark from the yoke.',
+      search: {
+        title: 'Old Bell Marker',
+        lines: [
+          'Rust fills the split mouth. The yoke still carries tool bites and shallow rule notches.'
+        ],
+        useLabel: 'Inspect the broken bell',
+        methods: [
+          {
+            id: 'read-clapper-removal',
+            label: 'Read the clapper fitting',
+            field: 'engineering',
+            dc: 45,
+            successLog: 'Four wrench bites sit under the yoke. The clapper pin was driven out with tools, not lost to weather.',
+            failLog: 'The split mouth has shifted the fitting too far to read cleanly.',
+            success: {
+              setFlag: 'long-ash-old-bell-clapper-removed'
+            }
+          },
+          {
+            id: 'read-erased-peal-rule',
+            label: 'Read the yoke notches',
+            field: 'doctrine',
+            dc: 50,
+            successLog: 'Three peal rules remain. A fourth was cut away with a narrow road-office chisel.',
+            failLog: 'The surviving notches could mark hours, warnings, or a clerk\'s private count.',
+            success: {
+              setFlag: 'long-ash-old-bell-peal-rule-read'
+            }
+          }
+        ]
+      }
     }
   });
   addObject('candle-cluster', 120, 62, {
@@ -1029,7 +1533,38 @@ function placeRoadContentPass() {
     seed: hash(104, 50, 201),
     interact: {
       type: 'note',
-      log: 'The cart was dragged sideways and stripped clean. Red thread is caught on the left wheel.'
+      log: 'The cart was dragged sideways and stripped clean. Red thread is caught on the left wheel.',
+      search: {
+        title: 'Stripped Cart',
+        lines: [
+          'The left wheel leans out from the hub. Mud seals the axle bed and the brake housing.'
+        ],
+        useLabel: 'Inspect the stripped cart',
+        methods: [
+          {
+            id: 'find-hidden-axle-cord',
+            label: 'Search the axle bed',
+            field: 'search',
+            dc: 40,
+            successLog: 'A waxed cord lies under the axle. Its road-office knot held the brake pin out of sight.',
+            failLog: 'Mud and axle grease give you nothing but black fingers.',
+            success: {
+              setFlag: 'long-ash-cart-axle-cord-found'
+            }
+          },
+          {
+            id: 'reconstruct-cart-break',
+            label: 'Reconstruct the break sequence',
+            field: 'engineering',
+            dc: 55,
+            successLog: 'The brake pin was pulled first. Someone struck the wheel loose only after the stopped cart had settled.',
+            failLog: 'Too many hands stripped the running gear after the break.',
+            success: {
+              setFlag: 'long-ash-cart-sabotage-proved'
+            }
+          }
+        ]
+      }
     }
   });
   addObject('field-satchel', 107, 52, {
@@ -1057,26 +1592,247 @@ function placeRoadContentPass() {
     id: 'long-ash-cart-drag-dust',
     seed: hash(106, 51, 209)
   });
+
+  addObject('field-satchel', 107, 34, {
+    id: 'long-ash-kill-site-satchel',
+    name: 'Discarded Kill-Site Satchel',
+    seed: hash(107, 34, 211),
+    visibleWhenFlags: [
+      'long-ash-kill-site-wounds-read'
+    ],
+    interact: {
+      type: 'container',
+      log: 'Beyond the corpse with the narrow chest wound, a satchel strap follows the last clean line through the mud.',
+      loot: [
+        { item: 'ducat', count: 2 },
+        { item: 'road-warden-chit', count: 1 }
+      ]
+    }
+  });
+
+  addObject('rubble-decal', 124, 62, {
+    id: 'long-ash-bell-cache-stones',
+    name: 'Loose Shoulder Stones',
+    seed: hash(124, 62, 213),
+    hiddenWhenFlags: [
+      'long-ash-bell-cache-found'
+    ],
+    interact: {
+      type: 'note',
+      log: 'Flat shoulder stones press into the wet road edge beside the bell.',
+      search: {
+        title: 'Bell-Side Road Cache',
+        lines: [
+          'Rain has packed the shoulder flat. Only the stone edges can show which one was lifted and set back.'
+        ],
+        methods: [
+          {
+            id: 'trace-bell-cache-stones',
+            label: 'Trace the reset stones',
+            field: 'search',
+            dc: 55,
+            successLog: 'Three stones sit on dry grit. The middle one lifts, exposing the satchel knot.',
+            failLog: 'Every stone carries the same wet ash and road pressure.',
+            success: {
+              setFlag: 'long-ash-bell-cache-found'
+            }
+          }
+        ]
+      }
+    }
+  });
+  addObject('field-satchel', 124, 62, {
+    id: 'long-ash-bell-side-satchel',
+    name: 'Bell-Side Road Cache',
+    seed: hash(124, 62, 214),
+    visibleWhenFlags: [
+      'long-ash-bell-cache-found'
+    ],
+    interact: {
+      type: 'container',
+      log: 'A tarred satchel waits in the dry hollow below the lifted stones.',
+      loot: [
+        { item: 'ducat', count: 4 },
+        { item: 'censure-entry-roll', count: 1 },
+        { item: 'road-warden-chit', count: 1 }
+      ]
+    }
+  });
+
+  addObject('field-cart', 113, 23, {
+    id: 'long-ash-stopped-warden-cart',
+    blocking: true,
+    orient: 'nw',
+    name: 'Stopped Warden Cart',
+    seed: hash(113, 23, 215)
+  });
+  addObject('sealed-storage-crate', 112, 23, {
+    id: 'long-ash-warden-cart-crate',
+    blocking: true,
+    name: 'Warden Cart Crate',
+    seed: hash(112, 23, 217),
+    interact: {
+      type: 'container',
+      log: 'The crate is still roped to the stopped cart. A route pocket has been stitched beneath the lid.',
+      lock: {
+        id: 'long-ash-warden-cart-crate-lock',
+        title: 'Warden Cart Crate',
+        lines: [
+          'Wet rope crosses the lid. One corner sits higher where paper has kept the wood from swelling.'
+        ],
+        methods: [
+          {
+            id: 'recover-warden-route-strip',
+            label: 'Find the route pocket',
+            field: 'search',
+            dc: 45,
+            successLog: 'A waxed route strip slides from under the lid. Its final north-spur checkpoint is struck out in red.',
+            failLog: 'Rope, wet wood, and old wax make every seam look deliberate.',
+            success: {
+              setFlag: 'long-ash-warden-route-strip-found'
+            }
+          }
+        ]
+      },
+      loot: [
+        { item: 'ducat', count: 4 },
+        { item: 'tinned-beans', count: 1 },
+        { item: 'relic-rounds', count: 1 }
+      ]
+    }
+  });
+
+  addObject('road-sign-post', 118, 18, {
+    id: 'long-ash-north-route-post',
+    name: 'North Route Post',
+    seed: hash(118, 18, 219),
+    interact: {
+      type: 'note',
+      log: 'A rule board faces the Censure road. One line was shaved down after the post was mounted.',
+      search: {
+        title: 'North Route Post',
+        lines: [
+          'Three peal orders remain under the road-office seal. The bare strip below them is the width of a fourth.'
+        ],
+        useLabel: 'Inspect the route post',
+        methods: [
+          {
+            id: 'restore-route-peal-rule',
+            label: 'Reconstruct the missing peal rule',
+            field: 'doctrine',
+            dc: 45,
+            successLog: 'The missing line ordered a fourth peal before road closure. It was shaved away after the board was fixed in place.',
+            failLog: 'The surviving orders do not fix the missing line\'s office or purpose.',
+            success: {
+              setFlag: 'long-ash-route-post-peal-rule-found'
+            }
+          }
+        ]
+      }
+    }
+  });
+
+  addObject('rusted-barrel', 55, 62, {
+    id: 'long-ash-dry-stave-barrel',
+    blocking: true,
+    name: 'Broken Supply Barrel',
+    seed: hash(55, 62, 221),
+    interact: {
+      type: 'container',
+      log: 'One stave has split outward. The barrel smells of wet iron and old beans.',
+      lock: {
+        id: 'long-ash-dry-stave-lock',
+        title: 'Broken Supply Barrel',
+        lines: [
+          'Rain reached the outer staves. A narrow hollow remains somewhere behind the iron band.'
+        ],
+        methods: [
+          {
+            id: 'find-dry-inner-stave',
+            label: 'Find the dry inner stave',
+            field: 'search',
+            dc: 40,
+            successLog: 'One stave sounds dry. Its inner slat lifts over a sealed wrap.',
+            failLog: 'Every stave answers with the same wet thud.',
+            success: {
+              setFlag: 'long-ash-dry-stave-cache-found'
+            }
+          }
+        ]
+      },
+      loot: [
+        { item: 'tinned-beans', count: 1 },
+        { item: 'field-dressing', count: 1 }
+      ]
+    }
+  });
+
+  addObject('ash-tree-stump', 145, 25, {
+    id: 'long-ash-forest-cache-stump',
+    blocking: true,
+    name: 'Split Ash Stump',
+    seed: hash(145, 25, 223),
+    interact: {
+      type: 'note',
+      log: 'A dead ash stump has split down to its roots. Old cuts crowd the exposed wood.',
+      search: {
+        title: 'Split Ash Stump',
+        lines: [
+          'The roots carry old cuts, animal rub, and weather scars. A true placement sign would be almost gone.'
+        ],
+        methods: [
+          {
+            id: 'follow-erased-cache-signs',
+            label: 'Follow the placement signs',
+            field: 'search',
+            dc: 63,
+            successLog: 'Three shallow cuts agree across separate roots. They lead your hand to a false bark flap and the cache cord.',
+            failLog: 'The forest offers too many scratches and no trustworthy sequence.',
+            success: {
+              setFlag: 'long-ash-forest-cache-found'
+            }
+          }
+        ]
+      }
+    }
+  });
+  addObject('field-satchel', 146, 25, {
+    id: 'long-ash-forest-specialist-cache',
+    name: 'Split Root Cache',
+    seed: hash(146, 25, 224),
+    visibleWhenFlags: [
+      'long-ash-forest-cache-found'
+    ],
+    interact: {
+      type: 'container',
+      log: 'A tarred bundle is pressed under the false bark flap beside the split root.',
+      loot: [
+        { item: 'ducat', count: 8 },
+        { item: 'relic-rounds', count: 2 },
+        { item: 'tarnished-saint-token', count: 1 }
+      ]
+    }
+  });
 }
 
 function placeCalcifiedBrothers() {
   addObject('calcified-crossroad-brother', 113, 31, {
     id: 'long-ash-crossroad-brother',
     blocking: true,
-    name: 'Garron Holt',
+    name: 'Gideon Carbo',
     seed: hash(113, 31, 173),
     interact: {
       type: 'note',
       dialogue: 'long-ash-crossroad-brother',
-      log: 'The man at the crossroads points with both hands. One calcified arm aims up the Hallowfen road.'
+      log: 'Both of the man\'s arms are fixed into directions. One calcified hand marks Hallowfen, the other the Carbo farm.'
     }
   });
 
-  addObject('calcified-scarecrow-brother', 50, 35, {
+  addObject('calcified-scarecrow-brother', EDRIN_FIELD_POSITION.x, EDRIN_FIELD_POSITION.y, {
     id: 'long-ash-field-brother',
     blocking: true,
-    name: 'Edrin Holt',
-    seed: hash(50, 35, 175),
+    name: 'Eleazar Carbo',
+    seed: hash(EDRIN_FIELD_POSITION.x, EDRIN_FIELD_POSITION.y, 175),
     interact: {
       type: 'note',
       dialogue: 'long-ash-field-brother',
@@ -1086,11 +1842,35 @@ function placeCalcifiedBrothers() {
 
   addObject('field-satchel', 83, 31, {
     id: 'long-ash-holt-forest-stash',
-    name: 'Old Holt Stash',
+    name: 'Old Carbo Stash',
     seed: hash(83, 31, 177),
+    visibleWhenFlags: [
+      'long-ash-field-family-truth',
+      'long-ash-field-family-lie'
+    ],
     interact: {
       type: 'container',
       log: 'The roots hide a tarred field satchel. The leather has gone stiff, but the knot kept the water out.',
+      lock: {
+        id: 'long-ash-holt-stash-lock',
+        title: 'Old Carbo Stash',
+        lines: [
+          'Eleazar described a split stump and a false outer knot. Rain has tightened both cords into the roots.'
+        ],
+        methods: [
+          {
+            id: 'read-holt-stash-knot',
+            label: 'Read the false knot',
+            field: 'search',
+            dc: 40,
+            successLog: 'The outer cord sheds rain. The dry inner loop slips free when pulled against the root grain.',
+            failLog: 'Both cords bite deeper into the wet leather.',
+            success: {
+              setFlag: 'long-ash-holt-stash-knot-read'
+            }
+          }
+        ]
+      },
       loot: [
         { item: 'ducat', count: 12 },
         { item: 'road-warden-chit', count: 1 },
@@ -1098,6 +1878,118 @@ function placeCalcifiedBrothers() {
       ]
     }
   });
+}
+
+function placeStrandedCarter() {
+  addObject('wagon-wheel', 120, 48, {
+    id: 'long-ash-edda-detached-wheel',
+    name: 'Deborah Carbo\'s Detached Wheel',
+    blocking: true,
+    seed: hash(120, 48, 179)
+  });
+  addObject('grain-sack-stack', 121, 49, {
+    id: 'long-ash-edda-charcoal-sacks',
+    name: 'Charcoal Sacks',
+    blocking: true,
+    seed: hash(121, 49, 181)
+  });
+}
+
+function placeStageIvCartAmbush() {
+  addObject('overturned-field-cart', 77, 35, {
+    id: 'long-ash-stage-iv-overturned-cart',
+    name: 'Overturned Charcoal Cart',
+    blocking: true,
+    orient: 'sw',
+    seed: hash(77, 35, 183)
+  });
+  addObject('stage-iv-cart-lure', 76, 35, {
+    id: 'long-ash-stage-iv-cart-lure',
+    name: 'Woman Beneath the Cart',
+    seed: hash(76, 35, 185),
+    ambient: [
+      'Please. The wheel. My leg is under it.'
+    ],
+    hiddenWhenFlags: [
+      'long-ash-stage-iv-cart-ambush-sprung'
+    ]
+  });
+  addObject('field-satchel', 78, 36, {
+    id: 'long-ash-edda-flat-purse',
+    name: 'Deborah Carbo\'s Flat Purse',
+    seed: hash(78, 36, 186),
+    visibleWhenFlags: [
+      'long-ash-stage-iv-cart-ambush-sprung'
+    ],
+    interact: {
+      type: 'container',
+      log: 'A flat purse hangs beneath the broken cart bed by a severed white cord. Twenty ducats sit inside in four short stacks.',
+      loot: [
+        { item: 'ducat', count: 20 }
+      ],
+      questUpdate: {
+        quest: 'edda-farrs-account',
+        stage: 'return-purse',
+        log: 'Deborah\'s flat purse held twenty ducats, exactly the count she gave.'
+      }
+    }
+  });
+
+  // These quiet decals reserve the four emergence cells from later forest
+  // scatter without announcing what waits there.
+  for (const [x, y] of [[74, 31], [77, 30], [70, 35], [82, 39]]) {
+    addObject('road-dust', x, y, { seed: hash(x, y, 187) });
+  }
+}
+
+function placeRpgLootAndGrowth() {
+  const placeIfClear = (kind, x, y, extra = {}) => {
+    if (!WALKABLE_TILES.has(getTile(x, y)) || hasObjectAt(x, y)) return null;
+    return addObject(kind, x, y, extra);
+  };
+
+  placeIfClear('field-backpack', 61, 41, {
+    id: 'long-ash-abandoned-field-pack',
+    name: 'Abandoned Field Pack',
+    seed: hash(61, 41, 227),
+    interact: {
+      type: 'container',
+      log: 'A field pack sits where the forest floor rises against the road. Mold has taken the straps, not the waxed lining.',
+      loot: [
+        { item: 'field-dressing', count: 1 },
+        { item: 'tinned-beans', count: 1 },
+        { item: 'ducat', count: 3 }
+      ]
+    }
+  });
+  placeIfClear('small-pouch', 130, 48, {
+    id: 'long-ash-grave-lime-pouch',
+    name: 'Lime-Stiff Pouch',
+    seed: hash(130, 48, 229),
+    interact: {
+      type: 'container',
+      log: 'A small pouch is caught between two grave stones. The cord is stiff with lime.',
+      loot: [
+        { item: 'ducat', count: 2 },
+        { item: 'tarnished-saint-token', count: 1 }
+      ]
+    }
+  });
+
+  for (const [x, y] of [
+    [14, 5], [35, 5], [56, 5], [70, 5], [91, 5], [105, 5],
+    [133, 5], [147, 5], [21, 10], [49, 10], [77, 10], [98, 10],
+    [126, 10], [14, 15], [35, 15], [63, 15], [84, 15], [105, 15],
+    [140, 15], [7, 20], [42, 20], [70, 20], [98, 20], [133, 20],
+    [154, 20], [21, 25], [49, 25], [77, 25], [105, 25], [140, 25],
+    [14, 30], [42, 30], [63, 30], [91, 30], [126, 30], [154, 30],
+    [21, 35], [49, 35], [91, 35], [119, 35]
+  ]) {
+    placeIfClear('dead-grass-tuft', x, y, {
+      id: `long-ash-dead-grass-${x}-${y}`,
+      seed: hash(x, y, 231)
+    });
+  }
 }
 
 function paintForestFloor() {
@@ -1118,6 +2010,8 @@ placeGraveyard();
 placeKillSite();
 placeRoadDressing();
 placeCalcifiedBrothers();
+placeStrandedCarter();
+placeStageIvCartAmbush();
 scatterForest();
 placeMapEdges();
 placeWheatModels();
@@ -1126,6 +2020,7 @@ placeFarmVictims();
 placeInfectedCave();
 placeRoadContentPass();
 clearGraveyardChapelViews();
+placeRpgLootAndGrowth();
 
 objects.sort((a, b) => (a.y - b.y) || (a.x - b.x) || a.kind.localeCompare(b.kind));
 
@@ -1136,8 +2031,9 @@ const level = {
   width: WIDTH,
   height: HEIGHT,
   tileSize: 64,
-  quests: ['investigate-ash-chapel-cult', 'calcified-brothers'],
+  quests: ['investigate-ash-chapel-cult', 'calcified-brothers', 'edda-farrs-account'],
   dialogue: LONG_ASH_DIALOGUES,
+  journalNotes: LONG_ASH_JOURNAL_NOTES,
   tiles: tiles.map((row) => row.join('')),
   legend: {
     '.': { kind: 'floor', floor: 'ash-dirt', walkable: true },
@@ -1171,15 +2067,68 @@ const level = {
   },
   spawns: {
     player: { actor: 'mara-vey', x: START.x, y: START.y },
-    enemies: INFECTED_CAVE_OUTSIDE_WOLVES.map((wolf, index) => ({
-      ...wolf,
-      encounter: 'infected-cave-mouth',
-      spawnId: `infected-cave-mouth-wolf-${index + 1}`,
-      aggroRadius: 2
-    })),
-    npcs: []
+    enemies: [
+      ...INFECTED_CAVE_OUTSIDE_WOLVES.map((wolf, index) => ({
+        ...wolf,
+        encounter: 'infected-cave-mouth',
+        spawnId: `infected-cave-mouth-wolf-${index + 1}`,
+        aggroRadius: 2
+      })),
+      {
+        id: 'stage-iv-lure',
+        x: 76,
+        y: 35,
+        facing: 'se',
+        encounter: 'long-ash-stage-iv-cart-ambush',
+        spawnId: 'long-ash-stage-iv-lure',
+        aggroRadius: 0,
+        dormantUntilCombat: true
+      },
+      ...[
+        { x: 74, y: 31, facing: 'se', spriteId: 'stage-iv-runner-ash' },
+        { x: 77, y: 30, facing: 's', spriteId: 'stage-iv-runner-road' },
+        { x: 70, y: 35, facing: 'e', spriteId: 'stage-iv-runner-road' },
+        { x: 82, y: 39, facing: 'nw', spriteId: 'stage-iv-runner-ash' }
+      ].map((runner, index) => ({
+        id: 'stage-iv-runner',
+        ...runner,
+        encounter: 'long-ash-stage-iv-cart-ambush',
+        spawnId: `long-ash-stage-iv-runner-${index + 1}`,
+        aggroRadius: 0,
+        dormantUntilCombat: true
+      }))
+    ],
+    npcs: [
+      {
+        actor: 'long-ash-carter-edda-farr',
+        x: 118,
+        y: 47,
+        facing: 'sw',
+        dialogue: 'long-ash-carter-edda-farr',
+        ambient: [
+          'The dry sacks went north. The wet one stayed honest.'
+        ],
+        mapMarker: {
+          label: 'Deborah Carbo',
+          kind: 'dialogue',
+          reveal: 'explored'
+        }
+      }
+    ]
   },
   combatTriggers: [
+    {
+      id: 'long-ash-stage-iv-cart-ambush-trigger',
+      encounter: 'long-ash-stage-iv-cart-ambush',
+      x: 76,
+      y: 35,
+      radius: 5,
+      dialogue: 'long-ash-stage-iv-cart-ambush',
+      intro: [
+        'Four bodies break from the ash scrub. Stolen coats hang over strips of red cloth, and every head turns with the old woman.',
+        'The runners come low, ribs working open with each stride.'
+      ]
+    },
     {
       id: 'infected-cave-mouth-trigger',
       encounter: 'infected-cave-mouth',
@@ -1193,6 +2142,7 @@ const level = {
     }
   ],
   victoryLog: 'The cave mouth falls quiet. The black entrance remains.',
+  groundItems,
   objects
 };
 

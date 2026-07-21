@@ -2,7 +2,9 @@ import assert from 'node:assert/strict';
 
 import { meetsDialogueConditions } from '../src/core/DialogueConditions.js';
 import { DialogueEffects } from '../src/core/DialogueEffects.js';
+import { Game } from '../src/core/Game.js';
 import { Inventory } from '../src/core/Inventory.js';
+import { searchMethodCompleted } from '../src/world/SearchSystem.js';
 
 const itemDefs = {
   ducat: {
@@ -61,6 +63,47 @@ function buildRuntime(ducats, { maxCarryWeight = 10 } = {}) {
     clampInventorySelection() {}
   });
   return { game, effects, logs, questUpdate: () => questUpdate };
+}
+
+function buildSearchRuntime({ maxCarryWeight = 10 } = {}) {
+  const logs = [];
+  const transitions = [];
+  const openedSearches = [];
+  let awardedXp = 0;
+  const game = Object.create(Game.prototype);
+  Object.assign(game, {
+    flags: new Set(),
+    inventory: new Inventory(itemDefs, { maxCarryWeight }),
+    _fieldRating: () => 100,
+    _primaryRating: () => 7,
+    _log: (line) => logs.push(line),
+    _openSearchDialogue: (object, lines) => openedSearches.push({ object, lines }),
+    _closeUiScreen() {}
+  });
+  game.dialogueEffects = new DialogueEffects(game, {
+    log: (line) => logs.push(line),
+    awardPlayerExperience: (amount) => {
+      awardedXp += amount;
+    },
+    transitionLevel: (effect) => transitions.push(effect),
+    syncFlagConditionalObjects() {},
+    syncInventoryOrder() {},
+    clampInventorySelection() {}
+  });
+  return {
+    game,
+    logs,
+    transitions,
+    openedSearches,
+    awardedXp: () => awardedXp
+  };
+}
+
+{
+  const evidence = { flagsAtLeast: { count: 2, of: ['copy', 'stock', 'list', 'sign'] } };
+  assert.equal(meetsDialogueConditions(evidence, { flags: new Set(['copy']) }), false);
+  assert.equal(meetsDialogueConditions(evidence, { flags: new Set(['copy', 'sign']) }), true);
+  assert.equal(meetsDialogueConditions(evidence, { flags: new Set(['stock', 'list', 'sign']) }), true);
 }
 
 {
@@ -201,6 +244,135 @@ function buildRuntime(ducats, { maxCarryWeight = 10 } = {}) {
   assert.equal(game.inventory.count('censure-absolution-chit'), 1);
   assert.equal(game.flags.has('paid-confession'), true);
   assert.deepEqual(questUpdate(), { quest: 'censure-road-confession', stage: 'absolved-with-ducats' });
+}
+
+{
+  const updates = [];
+  const game = {
+    flags: new Set(),
+    clock: { yearAfterDescent: 130, fieldDay: 1, minuteOfDay: 480, minuteCarry: 0 },
+    inventory: new Inventory(itemDefs, { maxCarryWeight: 10 })
+  };
+  const effects = new DialogueEffects(game, {
+    applyQuestUpdate: (update) => updates.push(update)
+  });
+  effects.apply({
+    questUpdate: [
+      { quest: 'household-of-one', stage: 'complete' },
+      { quest: 'names-for-the-gate', stage: 'settle-tarn' }
+    ]
+  });
+  assert.deepEqual(updates, [
+    { quest: 'household-of-one', stage: 'complete' },
+    { quest: 'names-for-the-gate', stage: 'settle-tarn' }
+  ]);
+}
+
+{
+  const calls = [];
+  const { game, effects } = buildRuntime(0);
+  game.flags.add('uninstalled-coil');
+  effects.callbacks.syncFlagConditionalObjects = () => calls.push('sync');
+  effects.apply({
+    clearFlag: 'uninstalled-coil',
+    setFlag: 'coil-returned'
+  });
+  assert.equal(game.flags.has('uninstalled-coil'), false);
+  assert.equal(game.flags.has('coil-returned'), true);
+  assert.deepEqual(calls, ['sync']);
+}
+
+{
+  const { game, logs, openedSearches, awardedXp } = buildSearchRuntime({ maxCarryWeight: 0.5 });
+  game.inventory.add('packed-ledger', 1);
+  const method = {
+    id: 'recover-kept-record',
+    field: 'search',
+    dc: 40,
+    successLog: 'The record comes free.',
+    success: {
+      setFlag: 'kept-record-recovered',
+      xp: 7,
+      inventory: { add: [{ item: 'kept-record', count: 1 }] }
+    }
+  };
+  const object = { interact: { search: { methods: [method] } } };
+
+  game._chooseSearchOption({ object, methodId: method.id });
+
+  assert.equal(searchMethodCompleted(object, method), false, 'a full pack does not consume the Search method');
+  assert.equal(game.flags.has('kept-record-recovered'), false);
+  assert.equal(awardedXp(), 0);
+  assert.equal(game.inventory.count('kept-record'), 0);
+  assert.equal(openedSearches.length, 0, 'the current Search dialogue remains open for a retry');
+  assert.deepEqual(logs, [
+    'Too much to carry. Pack 0.5/0.5 kg.',
+    'Need 0.2 kg free.'
+  ]);
+
+  game.inventory.remove('packed-ledger', 1);
+  game._chooseSearchOption({ object, methodId: method.id });
+
+  assert.equal(searchMethodCompleted(object, method), true, 'the same Search method completes after room is made');
+  assert.equal(game.flags.has('kept-record-recovered'), true);
+  assert.equal(awardedXp(), 7);
+  assert.equal(game.inventory.count('kept-record'), 1);
+  assert.equal(openedSearches.length, 1);
+}
+
+{
+  const { game, awardedXp } = buildSearchRuntime();
+  game.inventory.add('ducat', 1);
+  const method = {
+    id: 'exchange-two-ducats',
+    field: 'search',
+    dc: 40,
+    success: {
+      setFlag: 'search-exchange-complete',
+      xp: 3,
+      inventory: {
+        requireAll: true,
+        remove: [{ item: 'ducat', count: 2, failLog: 'Two ducats are required.' }],
+        add: [{ item: 'censure-absolution-chit', count: 1 }]
+      }
+    }
+  };
+  const object = { interact: { search: { methods: [method] } } };
+
+  game._chooseSearchOption({ object, methodId: method.id });
+
+  assert.equal(searchMethodCompleted(object, method), false, 'a missing requireAll item leaves Search retryable');
+  assert.equal(game.flags.has('search-exchange-complete'), false);
+  assert.equal(awardedXp(), 0);
+  assert.equal(game.inventory.count('ducat'), 1);
+  assert.equal(game.inventory.count('censure-absolution-chit'), 0);
+
+  game.inventory.add('ducat', 1);
+  game._chooseSearchOption({ object, methodId: method.id });
+
+  assert.equal(searchMethodCompleted(object, method), true);
+  assert.equal(game.flags.has('search-exchange-complete'), true);
+  assert.equal(awardedXp(), 3);
+  assert.equal(game.inventory.count('ducat'), 0);
+  assert.equal(game.inventory.count('censure-absolution-chit'), 1);
+}
+
+{
+  const { game, transitions, openedSearches } = buildSearchRuntime();
+  const loadLevel = { path: './data/levels/test_interior.json', player: { x: 2, y: 3 } };
+  const method = {
+    id: 'take-stair',
+    field: 'search',
+    dc: 40,
+    success: { loadLevel }
+  };
+  const object = { interact: { search: { methods: [method] } } };
+
+  game._chooseSearchOption({ object, methodId: method.id });
+
+  assert.equal(searchMethodCompleted(object, method), true, 'a successful transition Search still completes');
+  assert.deepEqual(transitions, [loadLevel]);
+  assert.equal(openedSearches.length, 0);
 }
 
 {

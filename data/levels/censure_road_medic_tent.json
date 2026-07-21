@@ -8,6 +8,9 @@
   "quests": [
     "investigate-ash-chapel-cult"
   ],
+  "dialogue": [
+    "censure-road-medic-tent-exit"
+  ],
   "mood": {
     "floorShade": "#15130e",
     "floorShadeAlpha": 0.12,
@@ -47,28 +50,63 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "journalNotes": [
     {
-      "id": "medic-tent-exit-transition",
-      "x": 1,
-      "y": 7,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 60,
-          "y": 46
-        }
-      }
+      "flag": "censure-road-medic-safe-packet-found",
+      "text": "One dressing in the medic crate stayed dry through the center and never lost its seal."
+    },
+    {
+      "flag": "censure-road-medic-packet-marked-for-malco",
+      "text": "A turned medic packet has gathered a dark line along its cord. It belongs on Melchior's sealed shelf."
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "medic-tent-dropped-dressing",
+      "item": "field-dressing",
+      "count": 1,
+      "x": 9,
+      "y": 6
     }
   ],
   "objects": [
+    {
+      "id": "medic-tent-orderly-pack",
+      "kind": "field-backpack",
+      "x": 2,
+      "y": 6,
+      "seed": 2601,
+      "name": "Condemned Orderly Pack",
+      "interact": {
+        "type": "container",
+        "log": "Beneath the rear canvas, red discard cord bites into an orderly's pack whose boiled cloth wrap kept the inner pocket dry.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          }
+        ]
+      }
+    },
     {
       "kind": "canvas-tent-flap",
       "x": 0,
       "y": 7,
       "id": "medic-tent-exit-flap",
       "name": "Tent Flap",
-      "wallPlane": "se"
+      "wallPlane": "se",
+      "clickAreas": [
+        { "x0": 0, "y0": 7, "x1": 0, "y1": 7 }
+      ],
+      "interactionMarker": { "x": 1, "y": 7 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-medic-tent-exit"
+      }
     },
     {
       "kind": "camp-bedroll",
@@ -98,7 +136,54 @@
       "y": 6,
       "blocking": true,
       "id": "medic-tent-supply-crate",
-      "seed": 2921
+      "seed": 2921,
+      "name": "Medic Packet Crate",
+      "interact": {
+        "type": "note",
+        "log": "Joanna has divided the packets by fold, smell, and whether the cloth moved during boiling.",
+        "search": {
+          "id": "medic-tent-packet-search",
+          "title": "Medic Packet Crate",
+          "lines": [
+            "A clean dressing lies under the reject ledger. One sealed packet has been turned label-down."
+          ],
+          "useLabel": "Inspect the medic packets",
+          "methods": [
+            {
+              "id": "recover-safe-dressing",
+              "label": "Verify the clean dressing",
+              "field": "medicine",
+              "dc": 45,
+              "successLog": "The cloth is dry through the center and its seal has never softened. It is safe field stock.",
+              "failLog": "Boiled wax clouds the seal. You leave the dressing with the rejects.",
+              "success": {
+                "setFlag": "censure-road-medic-safe-packet-found",
+                "inventory": {
+                  "add": [
+                    { "item": "field-dressing", "count": 1 }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "mark-packet-for-malco",
+              "label": "Read the turned packet",
+              "field": "hostSigns",
+              "dc": 60,
+              "successLog": "A thin dark line has gathered along the cord without crossing it. The packet belongs on Melchior's sealed shelf.",
+              "failLog": "The cord shadow and the dark line refuse to separate under candlelight.",
+              "success": {
+                "setFlag": "censure-road-medic-packet-marked-for-malco"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Medic Packets",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "candle-cluster",

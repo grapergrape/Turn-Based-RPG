@@ -1,0 +1,35 @@
+{
+  "id": "old-pilgrim-cord-bearer",
+  "name": "Cord-Bearer",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "stage-iv-runner-ash",
+  "description": "Three prayer cords have sunk into a broad human back. Fused forearms pull them taut across a rib cage opened like a processional frame.",
+  "stats": {
+    "hp": 7,
+    "maxHp": 7,
+    "actionPoints": 6,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "cord-reach",
+      "name": "Cord Reach",
+      "apCost": 4,
+      "damage": 2,
+      "range": 2
+    }
+  ],
+  "aggro": [
+    "The cords tighten under the skin before the body moves.",
+    "One heavy knee settles into the furrow."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "stage-iv",
+    "pilgrim",
+    "reach",
+    "human"
+  ]
+}

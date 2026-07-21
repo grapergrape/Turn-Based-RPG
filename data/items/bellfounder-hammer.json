@@ -1,0 +1,46 @@
+{
+  "id": "bellfounder-hammer",
+  "name": "Bellfounder Hammer",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "blunt",
+  "rarity": "common",
+  "weight": 2.1,
+  "groundModel": "blunt",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Bellfounder Guild",
+    "factions": [
+      "bellfounder-guild"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "blunt",
+    "roles": [
+      "melee",
+      "blunt",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A balanced forging hammer with a long wrapped handle. Bellfounders hear flaws in metal and feel them in bone."
+}

@@ -1,0 +1,89 @@
+{
+  "id": "south-measure-hidden-rows-grave-passage-surface",
+  "title": "Grave-Strip Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A narrow door beside the named graves opens into the rear household passage."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Hidden Rows",
+          "conditions": {
+            "flag": "hidden-rows-access"
+          },
+          "effects": {
+            "log": "You enter the Hidden Rows through the grave passage.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_hidden_rows.json",
+              "player": {
+                "x": 24,
+                "y": 2,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Follow the unmarked grave path",
+          "conditions": {
+            "fieldRatings": {
+              "search": 35
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "hidden-rows-access",
+              "hidden-rows-entry-forced"
+            ],
+            "log": "The grave markers leave a narrow path to the hidden door.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_hidden_rows.json",
+              "player": {
+                "x": 24,
+                "y": 2,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Cross the strip without drawing notice",
+          "conditions": {
+            "fieldRatings": {
+              "stealth": 35
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "hidden-rows-access",
+              "hidden-rows-entry-forced"
+            ],
+            "log": "No head turns before the hidden door closes.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_hidden_rows.json",
+              "player": {
+                "x": 24,
+                "y": 2,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay on the grave strip",
+          "effects": {
+            "log": "You leave the narrow door closed."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,1231 @@
+{
+  "id": "south-measure-hall-ressa-venn",
+  "title": "Susanna Fontana at the Council Table",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Susanna leaves the water roll open at the center of the table. Every available chair faces it."
+      ],
+      "choices": [
+        {
+          "label": "Review what remains undecided",
+          "next": "review"
+        },
+        {
+          "label": "Choose emergency feed closure",
+          "conditions": {
+            "flags": [
+              "south-measure-water-decision-open",
+              "intake-clerk-resolved"
+            ],
+            "flagsAbsent": [
+              "south-measure-plan-monitored-flow",
+              "south-measure-plan-morrow-import",
+              "south-measure-plan-isolated-loop",
+              "south-measure-plan-feed-closed"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-plan-feed-closed",
+              "feed-closure-selected"
+            ],
+            "log": "South Measure will close the buried feed and survive on emergency water."
+          },
+          "next": "plan-closed",
+          "tone": "commit"
+        },
+        {
+          "label": "Commit the chosen water plan",
+          "conditions": {
+            "questStages": {
+              "names-for-the-gate": "choose-water-plan"
+            },
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "south-measure-plan-monitored-flow",
+                "south-measure-plan-morrow-import",
+                "south-measure-plan-isolated-loop",
+                "south-measure-plan-feed-closed"
+              ]
+            }
+          },
+          "next": "operate"
+        },
+        {
+          "label": "Continue the settlement decisions",
+          "next": "decisions"
+        },
+        {
+          "label": "Leave the council table",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "review": {
+      "lines": [
+        "\"Resolve the Clerk before choosing water. Once water has a plan, settle who holds the keys and roll; Noa and Cassian must answer for their own departures.\"",
+        "\"The road opens after those names are spoken in public. I will not trade the order for speed.\""
+      ],
+      "choices": [
+        {
+          "label": "Withdraw the Compact monitoring plan",
+          "conditions": {
+            "flag": "south-measure-plan-monitored-flow"
+          },
+          "effects": {
+            "clearFlag": [
+              "south-measure-plan-monitored-flow",
+              "compact-monitoring-agreement",
+              "compact-monitoring-supervised",
+              "compact-monitoring-compelled"
+            ],
+            "setFlag": "compact-monitoring-withdrawn",
+            "log": "Aurelia withdraws the monitoring rota. The water plan remains open."
+          },
+          "next": "start",
+          "tone": "commit"
+        },
+        {
+          "label": "Cancel the Morrow cistern plan",
+          "conditions": {
+            "flag": "south-measure-plan-morrow-import"
+          },
+          "effects": {
+            "clearFlag": [
+              "south-measure-plan-morrow-import",
+              "morrow-water-contract",
+              "morrow-water-exchange",
+              "morrow-water-purchased",
+              "morrow-water-compelled"
+            ],
+            "setFlag": "morrow-water-plan-cancelled",
+            "log": "Darius strikes the cistern schedule. The water plan remains open."
+          },
+          "next": "start",
+          "tone": "commit"
+        },
+        {
+          "label": "Set aside the isolated-loop plan",
+          "conditions": {
+            "flag": "south-measure-plan-isolated-loop"
+          },
+          "effects": {
+            "clearFlag": [
+              "south-measure-plan-isolated-loop",
+              "resident-isolation-selected"
+            ],
+            "setFlag": "resident-isolation-deferred",
+            "log": "Noa leaves the isolation marks in place. The water plan remains open."
+          },
+          "next": "start",
+          "tone": "commit"
+        },
+        {
+          "label": "Return to the decision",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "decisions": {
+      "lines": [
+        "Susanna turns the decision slate to the first unfinished line."
+      ],
+      "choices": [
+        {
+          "label": "Decide control of the pump",
+          "conditions": {
+            "questStages": {
+              "names-for-the-gate": "decide-pump-control"
+            }
+          },
+          "next": "pump"
+        },
+        {
+          "label": "Decide custody of the original roll",
+          "conditions": {
+            "questStages": {
+              "names-for-the-gate": "decide-roll-custody"
+            }
+          },
+          "next": "roll-consent"
+        },
+        {
+          "label": "Settle Noa Faber’s departure",
+          "conditions": {
+            "questStages": {
+              "names-for-the-gate": "settle-nel"
+            }
+          },
+          "next": "nel"
+        },
+        {
+          "label": "Settle Brother Cassian’s departure",
+          "conditions": {
+            "questStages": {
+              "names-for-the-gate": "settle-tarn"
+            }
+          },
+          "next": "tarn"
+        },
+        {
+          "label": "Call the north-gate assembly",
+          "conditions": {
+            "questStages": {
+              "names-for-the-gate": "north-gate-assembly"
+            }
+          },
+          "next": "assembly"
+        }
+      ]
+    },
+    "plan-closed": {
+      "lines": [
+        "Susanna writes FEED CLOSED across the water board.",
+        "\"The pipe goes quiet. The arrival fires drink from storage until storage is gone.\""
+      ],
+      "choices": [
+        {
+          "label": "Commit the operating plan",
+          "next": "operate"
+        }
+      ]
+    },
+    "operate": {
+      "lines": [
+        "Noa waits at the feed board. The hall listens for an answer through the floor pipes."
+      ],
+      "choices": [
+        {
+          "label": "Open monitored full flow",
+          "conditions": {
+            "flag": "south-measure-plan-monitored-flow"
+          },
+          "effects": {
+            "setFlag": "south-measure-water-full",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-pump-control",
+              "log": "Compact monitors hold the buried rhythm below the tap cycle. Every row receives water."
+            },
+            "clearFlag": [
+              "south-measure-water-rationed",
+              "south-measure-water-reduced",
+              "south-measure-water-emergency"
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Begin Morrow cistern rationing",
+          "conditions": {
+            "flag": "south-measure-plan-morrow-import"
+          },
+          "effects": {
+            "setFlag": "south-measure-water-rationed",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-pump-control",
+              "log": "The buried feed closes. Morrow cisterns begin a stable daily ration."
+            },
+            "clearFlag": [
+              "south-measure-water-full",
+              "south-measure-water-reduced",
+              "south-measure-water-emergency"
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Open the isolated resident loop",
+          "conditions": {
+            "flag": "south-measure-plan-isolated-loop"
+          },
+          "effects": {
+            "setFlag": "south-measure-water-reduced",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-pump-control",
+              "log": "Noa closes the north feed and opens the relief return. South Measure keeps a reduced local flow."
+            },
+            "clearFlag": [
+              "south-measure-water-full",
+              "south-measure-water-rationed",
+              "south-measure-water-emergency"
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Close the buried feed",
+          "conditions": {
+            "flag": "south-measure-plan-feed-closed"
+          },
+          "effects": {
+            "setFlag": "south-measure-water-emergency",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-pump-control",
+              "log": "The buried feed closes. South Measure begins emergency rationing from stored water."
+            },
+            "clearFlag": [
+              "south-measure-water-full",
+              "south-measure-water-rationed",
+              "south-measure-water-reduced"
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Delay the water decision",
+          "next": "start"
+        }
+      ]
+    },
+    "pump": {
+      "lines": [
+        "The operating plan is written. Susanna sets four keys beside the water slate."
+      ],
+      "choices": [
+        {
+          "label": "Give pump access to the Compact",
+          "next": "pump-compact"
+        },
+        {
+          "label": "Renew the Morrow service contract",
+          "next": "pump-morrow"
+        },
+        {
+          "label": "Leave the pump under resident control",
+          "next": "pump-resident"
+        },
+        {
+          "label": "Seal outside access and ration every claim",
+          "next": "pump-sealed"
+        },
+        {
+          "label": "Delay the pump vote",
+          "next": "start"
+        }
+      ]
+    },
+    "pump-compact": {
+      "lines": [
+        "Susanna rests one hand on the clinic key.",
+        "\"A signed Morrow water contract breaks here if the Chain loses the service key.\""
+      ],
+      "choices": [
+        {
+          "label": "Confirm Compact pump access",
+          "conditions": {
+            "flagsAbsent": [
+              "morrow-water-contract"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-compact"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "The Compact receives clinical access to the pump and intake."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Break Darius’s water contract and choose Compact access",
+          "conditions": {
+            "flag": "morrow-water-contract"
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-compact",
+              "morrow-water-contract-breached"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "The Compact receives pump access. Darius records the broken water contract."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Return to the pump keys",
+          "next": "pump"
+        }
+      ]
+    },
+    "pump-morrow": {
+      "lines": [
+        "Darius’s service key lies beside the clinic allocation seal.",
+        "\"If full monitoring came under census terms, giving him the pump breaks those terms in public.\""
+      ],
+      "choices": [
+        {
+          "label": "Confirm the Morrow service contract",
+          "conditions": {
+            "flagsAbsent": [
+              "compact-monitoring-agreement"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-morrow"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "The Morrow Chain receives the pump service contract."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Break Aurelia’s census terms and choose Morrow service",
+          "conditions": {
+            "flag": "compact-monitoring-agreement"
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-morrow",
+              "compact-monitoring-terms-breached"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "Morrow receives the service contract. Aurelia records the broken monitoring terms."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Return to the pump keys",
+          "next": "pump"
+        }
+      ]
+    },
+    "pump-resident": {
+      "lines": [
+        "Susanna closes her hand around the resident key.",
+        "\"Keeping it may break an outside promise. The water plan does not erase who supplied the labor.\""
+      ],
+      "choices": [
+        {
+          "label": "Confirm resident control",
+          "conditions": {
+            "flagsAbsent": [
+              "compact-monitoring-agreement",
+              "morrow-water-contract"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-resident"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "South Measure keeps its pump keys and maintenance burden."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Break Aurelia’s census terms and keep resident control",
+          "conditions": {
+            "flag": "compact-monitoring-agreement"
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-resident",
+              "compact-monitoring-terms-breached"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "South Measure keeps the keys. Aurelia records the broken monitoring terms."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Break Darius’s water contract and keep resident control",
+          "conditions": {
+            "flag": "morrow-water-contract"
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-resident",
+              "morrow-water-contract-breached"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "South Measure keeps the keys. Darius records the broken water contract."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Return to the pump keys",
+          "next": "pump"
+        }
+      ]
+    },
+    "pump-sealed": {
+      "lines": [
+        "Susanna turns the outside keys face down.",
+        "\"Rationing can refuse a faction claim. It cannot pretend the promise was never made.\""
+      ],
+      "choices": [
+        {
+          "label": "Close the feed and seal outside access",
+          "conditions": {
+            "flagsAbsent": [
+              "compact-monitoring-agreement",
+              "morrow-water-contract"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-sealed",
+              "south-measure-plan-feed-closed",
+              "south-measure-water-emergency"
+            ],
+            "clearFlag": [
+              "south-measure-plan-monitored-flow",
+              "south-measure-plan-morrow-import",
+              "south-measure-plan-isolated-loop",
+              "south-measure-water-full",
+              "south-measure-water-rationed",
+              "south-measure-water-reduced"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "South Measure closes the buried feed and seals outside pump access."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Break Aurelia’s census terms and seal the pump",
+          "conditions": {
+            "flag": "compact-monitoring-agreement"
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-sealed",
+              "south-measure-plan-feed-closed",
+              "south-measure-water-emergency",
+              "compact-monitoring-terms-breached"
+            ],
+            "clearFlag": [
+              "south-measure-plan-monitored-flow",
+              "south-measure-plan-morrow-import",
+              "south-measure-plan-isolated-loop",
+              "south-measure-water-full",
+              "south-measure-water-rationed",
+              "south-measure-water-reduced"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "South Measure closes the feed. Aurelia records the broken monitoring terms."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Break Darius’s water contract and seal the pump",
+          "conditions": {
+            "flag": "morrow-water-contract"
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-sealed",
+              "south-measure-plan-feed-closed",
+              "south-measure-water-emergency",
+              "morrow-water-contract-breached"
+            ],
+            "clearFlag": [
+              "south-measure-plan-monitored-flow",
+              "south-measure-plan-morrow-import",
+              "south-measure-plan-isolated-loop",
+              "south-measure-water-full",
+              "south-measure-water-rationed",
+              "south-measure-water-reduced"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "decide-roll-custody",
+              "log": "South Measure closes the feed. Darius records the broken water contract."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Return to the pump keys",
+          "next": "pump"
+        }
+      ]
+    },
+    "roll-consent": {
+      "lines": [
+        "Susanna waits for the Hidden Rows consent note before she opens the custody vote."
+      ],
+      "choices": [
+        {
+          "label": "Default unconsulted hidden names to private",
+          "conditions": {
+            "flagsAbsent": [
+              "hidden-roll-private",
+              "hidden-roll-public",
+              "hidden-roll-compact",
+              "hidden-roll-morrow"
+            ]
+          },
+          "effects": {
+            "setFlag": "hidden-roll-private",
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "complete",
+              "log": "Unconsulted Hidden Rows names remain private by default."
+            }
+          },
+          "next": "roll-consent",
+          "tone": "commit"
+        },
+        {
+          "label": "Open the original-roll custody vote",
+          "conditions": {
+            "items": {
+              "south-measure-original-roll": 1
+            },
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "hidden-roll-private",
+                "hidden-roll-public",
+                "hidden-roll-compact",
+                "hidden-roll-morrow"
+              ]
+            }
+          },
+          "next": "roll"
+        },
+        {
+          "label": "Recover the original roll before voting",
+          "conditions": {
+            "itemsMax": {
+              "south-measure-original-roll": 0
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Delay the custody vote",
+          "next": "start"
+        }
+      ]
+    },
+    "roll": {
+      "lines": [
+        "Susanna turns the original roll so the custody seal remains blank.",
+        "\"Pump access and record access are separate votes. Keep them separate in the answer.\""
+      ],
+      "choices": [
+        {
+          "label": "Keep the original under resident custody",
+          "effects": {
+            "setFlag": "measure-roll-resident",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "south-measure-certified-abstract",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "settle-nel",
+              "log": "South Measure keeps the original household roll and issues a certified water abstract."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Give the original to Compact custody",
+          "effects": {
+            "setFlag": "measure-roll-compact",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "south-measure-certified-abstract",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "settle-nel",
+              "log": "Compact clinicians receive the original roll. South Measure keeps a certified water abstract."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Keep the original and permit supervised copies",
+          "effects": {
+            "setFlag": "measure-roll-supervised-copy",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "south-measure-certified-abstract",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "settle-nel",
+              "log": "The original remains local while supervised copies document water rights."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Give Morrow a debt-limited copy",
+          "effects": {
+            "setFlag": "measure-roll-morrow-copy",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "south-measure-certified-abstract",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "settle-nel",
+              "log": "Morrow receives a debt-limited copy. The original leaves the council table."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Consider sealing or destroying the roll",
+          "next": "roll-other"
+        }
+      ]
+    },
+    "roll-other": {
+      "lines": [
+        "The lime-stiff pages can be sealed below or burned before any faction copies them."
+      ],
+      "choices": [
+        {
+          "label": "Seal the original in the undercroft",
+          "effects": {
+            "setFlag": "measure-roll-sealed",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "south-measure-certified-abstract",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "settle-nel",
+              "log": "The original household roll is sealed below. Susanna issues only a certified water abstract."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Destroy the original household roll",
+          "effects": {
+            "setFlag": "measure-roll-destroyed",
+            "inventory": {
+              "remove": [
+                {
+                  "item": "south-measure-original-roll",
+                  "count": 1
+                }
+              ],
+              "add": [
+                {
+                  "item": "south-measure-certified-abstract",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "settle-nel",
+              "log": "The original household roll burns after Susanna certifies the water settlement."
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Return to the custody vote",
+          "next": "roll"
+        }
+      ]
+    },
+    "nel": {
+      "lines": [
+        "Noa puts her machine-school form beside Isaac’s medicine note and Tobit’s work record.",
+        "\"The form wants one household answer. We have never been one answer.\""
+      ],
+      "choices": [
+        {
+          "label": "Send Noa to school as a household of one",
+          "effects": {
+            "setFlag": "nel-school-alone",
+            "questUpdate": [
+              {
+                "quest": "household-of-one",
+                "stage": "complete",
+                "log": "Noa takes the school place alone. Isaac and Tobit remain in South Measure."
+              },
+              {
+                "quest": "names-for-the-gate",
+                "stage": "settle-tarn",
+                "log": "Noa’s departure is settled. Decide where Brother Cassian carries the intake warning."
+              }
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Ask Noa to stay for one maintenance season",
+          "effects": {
+            "setFlag": "nel-stays-one-season",
+            "questUpdate": [
+              {
+                "quest": "household-of-one",
+                "stage": "complete",
+                "log": "Noa stays one season to train Tobit and document the isolated water loop."
+              },
+              {
+                "quest": "names-for-the-gate",
+                "stage": "settle-tarn",
+                "log": "Noa’s departure is settled. Decide where Brother Cassian carries the intake warning."
+              }
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Demand a formal family review",
+          "effects": {
+            "setFlag": "nel-family-review",
+            "questUpdate": [
+              {
+                "quest": "household-of-one",
+                "stage": "complete",
+                "log": "Noa accepts the school place under a formal review of Isaac and Tobit’s status."
+              },
+              {
+                "quest": "names-for-the-gate",
+                "stage": "settle-tarn",
+                "log": "Noa’s departure is settled. Decide where Brother Cassian carries the intake warning."
+              }
+            ]
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Forge one admitted family record",
+          "conditions": {
+            "fieldRatings": {
+              "guile": 40
+            }
+          },
+          "effects": {
+            "setFlag": "nel-family-forged",
+            "questUpdate": [
+              {
+                "quest": "household-of-one",
+                "stage": "complete",
+                "log": "A forged household page carries the whole Faber family into one placement review."
+              },
+              {
+                "quest": "names-for-the-gate",
+                "stage": "settle-tarn",
+                "log": "Noa’s departure is settled. Decide where Brother Cassian carries the intake warning."
+              }
+            ]
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Leave the family decision open",
+          "next": "start"
+        }
+      ]
+    },
+    "tarn": {
+      "lines": [
+        "Brother Cassian plays the intake reply once through his damaged vox. No one in the hall mistakes it for an empty pipe."
+      ],
+      "choices": [
+        {
+          "label": "Take the shared road north with Cassian",
+          "conditions": {
+            "flag": "tarn-shared-road-proposed",
+            "flagsAbsent": [
+              "intake-clerk-tarn-sealed"
+            ]
+          },
+          "effects": {
+            "setFlag": "tarn-shared-road",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "north-gate-assembly",
+              "log": "Cassian joins the northward road long enough to trace the answering signal."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Send Cassian ahead as an independent scout",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-tarn-sealed"
+            ]
+          },
+          "effects": {
+            "setFlag": "tarn-independent-scout",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "north-gate-assembly",
+              "log": "Cassian moves ahead alone to trace the Hallowfen reply."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Order Cassian to report to the Black Reliquary",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-tarn-sealed"
+            ]
+          },
+          "effects": {
+            "setFlag": "tarn-reliquary-report",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "north-gate-assembly",
+              "log": "Cassian carries the intake evidence to the Black Reliquary."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Keep Cassian on South Measure watch",
+          "effects": {
+            "setFlag": "tarn-camp-watch",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "north-gate-assembly",
+              "log": "Cassian remains at South Measure to watch the water line and buried signal."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Delay Cassian’s departure",
+          "next": "start"
+        }
+      ]
+    },
+    "assembly": {
+      "lines": [
+        "Household representatives crowd the north lane. Clinic workers stand beside freight hands, with delegates from the arrival fires nearest the chain.",
+        "Susanna reads the water decision, then leaves one final space on the page for unresolved danger inside the camp."
+      ],
+      "choices": [
+        {
+          "label": "Record unresolved local matters",
+          "next": "assembly-defaults"
+        },
+        {
+          "label": "Resolve the Intake Clerk before closing the gate",
+          "conditions": {
+            "flagsAbsent": [
+              "intake-clerk-resolved"
+            ]
+          },
+          "close": true,
+          "tone": "quiet"
+        },
+        {
+          "label": "Close the assembly with Salome’s case resolved",
+          "conditions": {
+            "flags": [
+              "neri-agent-resolved",
+              "intake-clerk-resolved"
+            ],
+            "flagsAtLeast": {
+              "count": 3,
+              "of": [
+                "morrow-ledger-untouched",
+                "morrow-ledger-revised",
+                "morrow-ledger-voided",
+                "morrow-ledger-concealed",
+                "charity-stock-sorted",
+                "charity-council",
+                "charity-compact",
+                "charity-burned",
+                "hidden-roll-private",
+                "hidden-roll-public",
+                "hidden-roll-compact",
+                "hidden-roll-morrow"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-assembly-complete",
+              "south-measure-north-lane-open"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "depart-north",
+              "log": "South Measure opens the north lane under the chosen water settlement."
+            },
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 65,
+                "y": 5,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Close the assembly with no further accusation",
+          "conditions": {
+            "flag": "intake-clerk-resolved",
+            "flagsAbsent": [
+              "neri-agent-resolved"
+            ],
+            "flagsAtLeast": {
+              "count": 3,
+              "of": [
+                "morrow-ledger-untouched",
+                "morrow-ledger-revised",
+                "morrow-ledger-voided",
+                "morrow-ledger-concealed",
+                "charity-stock-sorted",
+                "charity-council",
+                "charity-compact",
+                "charity-burned",
+                "hidden-roll-private",
+                "hidden-roll-public",
+                "hidden-roll-compact",
+                "hidden-roll-morrow"
+              ]
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "neri-agent-unseen",
+              "neri-agent-resolved",
+              "choir-influence-south-measure",
+              "pate-open-wound-convert",
+              "jori-choir-courier",
+              "jalen-choir-transfer",
+              "south-measure-assembly-complete",
+              "south-measure-north-lane-open"
+            ],
+            "questUpdate": [
+              {
+                "quest": "lesson-under-the-wrap",
+                "stage": "complete",
+                "log": "Salome’s influence remains undiscovered and continues beneath South Measure."
+              },
+              {
+                "quest": "names-for-the-gate",
+                "stage": "depart-north",
+                "log": "South Measure opens the north lane. Salome’s work continues beneath the settlement."
+              }
+            ],
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 65,
+                "y": 5,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Keep the assembly open",
+          "next": "start"
+        }
+      ]
+    },
+    "assembly-defaults": {
+      "lines": [
+        "Susanna leaves three narrow lines for matters that reached the assembly without a separate ruling."
+      ],
+      "choices": [
+        {
+          "label": "Return the Morrow ledger untouched",
+          "conditions": {
+            "flagsAbsent": [
+              "morrow-ledger-untouched",
+              "morrow-ledger-revised",
+              "morrow-ledger-voided",
+              "morrow-ledger-concealed"
+            ]
+          },
+          "effects": {
+            "setFlag": "morrow-ledger-untouched",
+            "questUpdate": {
+              "quest": "debt-that-drinks",
+              "stage": "complete",
+              "log": "The assembly returns the surety ledger untouched."
+            }
+          },
+          "next": "assembly-defaults",
+          "tone": "commit"
+        },
+        {
+          "label": "Place charity stock with the resident council",
+          "conditions": {
+            "flagsAbsent": [
+              "charity-stock-sorted",
+              "charity-council",
+              "charity-compact",
+              "charity-burned"
+            ]
+          },
+          "effects": {
+            "setFlag": "charity-council",
+            "questUpdate": {
+              "quest": "charity-cot",
+              "stage": "complete",
+              "log": "The assembly places unresolved charity stock under resident council custody."
+            }
+          },
+          "next": "assembly-defaults",
+          "tone": "commit"
+        },
+        {
+          "label": "Keep unconsulted hidden names private",
+          "conditions": {
+            "flagsAbsent": [
+              "hidden-roll-private",
+              "hidden-roll-public",
+              "hidden-roll-compact",
+              "hidden-roll-morrow"
+            ]
+          },
+          "effects": {
+            "setFlag": "hidden-roll-private",
+            "questUpdate": {
+              "quest": "names-under-lime",
+              "stage": "complete",
+              "log": "The assembly keeps unconsulted Hidden Rows names private."
+            }
+          },
+          "next": "assembly-defaults",
+          "tone": "commit"
+        },
+        {
+          "label": "Return to the assembly",
+          "next": "assembly"
+        }
+      ]
+    }
+  }
+}

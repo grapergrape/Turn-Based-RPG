@@ -1,0 +1,9 @@
+{
+  "id": "south-measure-charity-cards",
+  "name": "Charity Stock Cards",
+  "type": "quest",
+  "rarity": "uncommon",
+  "weight": 0.2,
+  "groundModel": "paper",
+  "description": "Scorched cards from the charity medicine stock. Single suppressant doses vanish beneath legitimate fever-vial issues."
+}

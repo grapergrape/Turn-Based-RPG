@@ -27,21 +27,32 @@ export class DialogueEffects {
 
   apply(effects) {
     if (!effects) return false;
-    // A blocked inventory transaction is handled even though it applies no
-    // effects. Returning true keeps the current dialogue or lock choice open so
-    // the player can make room and try again without losing flags or rewards.
+    // A blocked transaction is handled even though it applies no effects.
+    // Returning true keeps the current choice open so the player can correct
+    // the problem without losing payment, flags, or rewards.
+    if (!this.canApplyHealingEffect(effects.heal)) return true;
     if (!this.canApplyInventoryEffects(effects.inventory)) return true;
     for (const line of [].concat(effects.log ?? [])) this.callbacks.log?.(line);
+    const clearFlags = [].concat(effects.clearFlag ?? []);
+    for (const flag of clearFlags) this.game.flags.delete(flag);
     const setFlags = [].concat(effects.setFlag ?? []);
     for (const flag of setFlags) this.game.flags.add(flag);
     this.applyInventoryEffects(effects.inventory);
-    if (setFlags.length > 0) this.callbacks.syncFlagConditionalObjects?.();
-    this.callbacks.applyQuestUpdate?.(effects.questUpdate);
+    this.applyHealingEffect(effects.heal);
+    if (clearFlags.length > 0 || setFlags.length > 0) this.callbacks.syncFlagConditionalObjects?.();
+    const questUpdates = [].concat(effects.questUpdate ?? []).filter(Boolean);
+    for (const update of questUpdates) {
+      this.callbacks.applyQuestUpdate?.(update);
+    }
+    if (clearFlags.length > 0 || setFlags.length > 0 || questUpdates.length > 0) {
+      this.callbacks.journalStateChanged?.();
+    }
     if (effects.xp !== undefined) this.callbacks.awardPlayerExperience?.(effects.xp);
     if (effects.kill) this.callbacks.silenceProp?.(effects.kill);
     if (effects.teleport) this.callbacks.teleportPlayer?.(effects.teleport);
     this.applyClockEffect(effects.clock);
     this.applyMoveActorEffects(effects.moveActor);
+    this.applyActorSpeechEffect(effects.actorSpeech);
     if (effects.openDoorGroup) {
       this.callbacks.openDoorGroup?.(effects.openDoorGroup);
     }
@@ -59,8 +70,14 @@ export class DialogueEffects {
     if (effects.startCombat) {
       const start = effects.startCombat;
       const encounter = typeof start === 'string' ? start : start.encounter;
+      const options = typeof start === 'string'
+        ? {}
+        : {
+            fromAltar: Boolean(start.fromAltar),
+            openingAttack: cloneEffect(start.openingAttack)
+          };
       this.callbacks.closeUiScreen?.();
-      this.callbacks.startCombat?.(encounter ?? true, { fromAltar: Boolean(start.fromAltar) });
+      this.callbacks.startCombat?.(encounter ?? true, options);
       return true;
     }
     if (effects.loadLevel) {
@@ -68,6 +85,43 @@ export class DialogueEffects {
       return true;
     }
     return false;
+  }
+
+  canApplyHealingEffect(effect) {
+    if (effect === undefined) return true;
+    const spec = effect && typeof effect === 'object' && !Array.isArray(effect) ? effect : null;
+    const target = spec ? this.effectActor(spec.target ?? 'player') : null;
+    if (!target || target.isDead || !Number.isFinite(target.hp) || !Number.isFinite(target.maxHp)) {
+      this.callbacks.log?.('Treatment cannot be given.');
+      return false;
+    }
+    if (target.hp >= target.maxHp) {
+      this.callbacks.log?.('No wounds need treatment.');
+      return false;
+    }
+    if (this.healingAmount(spec, target) <= 0) {
+      this.callbacks.log?.('Treatment cannot be given.');
+      return false;
+    }
+    return true;
+  }
+
+  applyHealingEffect(effect) {
+    if (effect === undefined) return 0;
+    const target = this.effectActor(effect.target ?? 'player');
+    if (!target) return 0;
+    const amount = this.healingAmount(effect, target);
+    if (amount <= 0) return 0;
+    if (typeof target.heal === 'function') return target.heal(amount);
+    const before = target.hp;
+    target.hp = Math.min(target.maxHp, target.hp + amount);
+    return target.hp - before;
+  }
+
+  healingAmount(effect, target) {
+    if (effect?.amount === 'full') return Math.max(0, target.maxHp - target.hp);
+    const amount = Number(effect?.amount);
+    return Number.isInteger(amount) && amount > 0 ? amount : 0;
   }
 
   applyClockEffect(effect) {
@@ -178,6 +232,28 @@ export class DialogueEffects {
       ? SUSPICION_STATES.WATCHING
       : actor.suspicionState;
     actor.investigationTarget = null;
+  }
+
+  applyActorSpeechEffect(spec) {
+    if (!spec || typeof spec !== 'object' || Array.isArray(spec)) return;
+    const actor = this.effectActor(spec.target ?? 'speaker');
+    if (!actor || actor.isDead || actor.removed) return;
+    const lines = Array.isArray(spec.lines)
+      ? spec.lines.filter((line) => typeof line === 'string' && line.trim().length > 0)
+      : [];
+    if (lines.length === 0) return;
+
+    const initialDelay = Number(spec.initialDelay);
+    const interval = Number(spec.interval);
+    const ttl = Number(spec.ttl);
+    actor.speech = null;
+    actor.actorSpeechQueue = {
+      lines: [...lines],
+      index: 0,
+      delay: Number.isFinite(initialDelay) && initialDelay >= 0 ? initialDelay : 0,
+      interval: Number.isFinite(interval) && interval >= 0 ? interval : 0,
+      ttl: Number.isFinite(ttl) && ttl > 0 ? ttl : null
+    };
   }
 
   effectActor(target) {

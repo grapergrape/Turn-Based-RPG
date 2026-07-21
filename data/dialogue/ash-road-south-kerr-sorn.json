@@ -1,0 +1,66 @@
+{
+  "id": "ash-road-south-kerr-sorn",
+  "title": "Cyrus Longinus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Cyrus has arranged beans and cartridges beside a row of boot leather.",
+        "\"Supplies for coin. Road history is free because nobody can carry enough of it away.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the Chain lost on the north road",
+          "next": "losses",
+          "effects": {
+            "setFlag": "heard-chain-road-losses"
+          }
+        },
+        {
+          "label": "Trade for road supplies",
+          "next": "trade"
+        },
+        {
+          "label": "Leave Cyrus to his stock",
+          "close": true
+        }
+      ]
+    },
+    "losses": {
+      "lines": [
+        "\"Two wagons have been lost since first thaw. One driver came back walking, but three guards did not.\"",
+        "\"Darius paid the death shares. He also wrote every payment into South Measure’s freight rate.\""
+      ],
+      "choices": [
+        {
+          "label": "See Cyrus’s stock",
+          "effects": {
+            "trade": "ash-road-south-kerr-sorn"
+          }
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Cyrus to his stock",
+          "close": true
+        }
+      ]
+    },
+    "trade": {
+      "lines": [
+        "\"Pick it up before you price it. Weight cures most enthusiasm.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Cyrus to his stock",
+          "close": true
+        }
+      ]
+    }
+  }
+}

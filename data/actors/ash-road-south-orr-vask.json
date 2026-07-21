@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-orr-vask",
+  "name": "Obadiah Custos",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Road-marker repairer",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "north-verge",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "sturdy",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "tool-roll"
+    ],
+    "accent": "bare-grey"
+  }
+}

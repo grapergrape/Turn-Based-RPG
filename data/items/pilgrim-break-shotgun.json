@@ -1,0 +1,64 @@
+{
+  "id": "pilgrim-break-shotgun",
+  "name": "Pilgrim Break Gun",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "shotgun",
+  "rarity": "common",
+  "weight": 4,
+  "groundModel": "shotgun",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Road Pilgrims",
+    "factions": [
+      "road-pilgrims"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "shotgun"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 8,
+        "range": 4,
+        "accuracyBonus": 5,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "close-spread",
+        "name": "Close Spread",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 10,
+        "range": 3,
+        "accuracyBonus": 10,
+        "ammoCost": 1,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "shot-shell",
+      "capacity": 7,
+      "defaultLoaded": 7,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A break-action gun with mismatched barrels and a saint card beneath the butt plate. It opens easily with gloved hands."
+}

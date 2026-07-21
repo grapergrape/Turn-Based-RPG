@@ -1,0 +1,56 @@
+{
+  "id": "remnant-trench-knife",
+  "name": "Remnant Trench Knife",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "knife",
+  "rarity": "uncommon",
+  "weight": 0.6,
+  "groundModel": "knife",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "First Winter",
+    "origin": "Holy Remnant",
+    "factions": [
+      "holy-remnant"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "knife",
+    "roles": [
+      "melee",
+      "knife",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Thrust",
+        "mode": "melee",
+        "apCost": 3,
+        "damage": 3,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "quick-cut",
+        "name": "Quick Cut",
+        "mode": "melee",
+        "apCost": 2,
+        "damage": 2,
+        "range": 1,
+        "accuracyBonus": 5,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "A thick knife with a knuckle guard forged during the first wall fighting. Most bear unit marks filed away by later owners."
+}

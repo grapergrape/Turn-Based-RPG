@@ -1,0 +1,68 @@
+{
+  "id": "south-measure-drain-undercroft-valve-undercroft",
+  "title": "Maintenance Channel",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The east channel narrows toward the relief drain. Polluted water moves beyond the valve frame."
+      ],
+      "choices": [
+        {
+          "label": "Enter the relief drain",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "south-measure-civil-access",
+                "hidden-water-branch-known",
+                "drain-undercroft-open"
+              ]
+            }
+          },
+          "effects": {
+            "log": "You follow the maintenance channel into the relief drain.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 12,
+                "y": 2,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Free the return valve",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 35
+            }
+          },
+          "effects": {
+            "setFlag": "drain-undercroft-open",
+            "log": "The return valve opens toward the relief drain.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 12,
+                "y": 2,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Remain in the undercroft",
+          "effects": {
+            "log": "You step back from the drain channel."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

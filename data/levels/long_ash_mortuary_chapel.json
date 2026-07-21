@@ -24,7 +24,7 @@
   "journalNotes": [
     {
       "flag": "heard-bell-register-read",
-      "text": "Hessa Marr recorded deliberate responses from the calcified people in the graveyard."
+      "text": "Keziah Fullo recorded deliberate responses from the calcified people in the graveyard."
     },
     {
       "flag": "heard-bell-docket-read",
@@ -32,7 +32,7 @@
     },
     {
       "flag": "heard-bell-truth-joined",
-      "text": "Sava Rell reacted to Hallowfen before its bells sounded."
+      "text": "Sapphira Rufa reacted to Hallowfen before its bells sounded."
     },
     {
       "flag": "heard-bell-resolved-vigil",
@@ -44,7 +44,7 @@
     },
     {
       "flag": "heard-bell-resolved-evidence",
-      "text": "Hessa's register and the mortuary docket are in your pack."
+      "text": "Keziah's register and the mortuary docket are in your pack."
     }
   ],
   "tiles": [
@@ -103,6 +103,15 @@
           "y": 13
         }
       }
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "mortuary-fallen-saint-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 4,
+      "y": 3
     }
   ],
   "objects": [
@@ -393,8 +402,20 @@
       "doorGroup": "mortuary-chapel-exit",
       "doorLeaf": "north",
       "wallPlane": "sw",
+      "clickAreas": [
+        {
+          "x0": 6,
+          "y0": 10,
+          "x1": 7,
+          "y1": 10
+        }
+      ],
+      "interactionMarker": {
+        "x": 6,
+        "y": 9
+      },
       "interact": {
-        "type": "door",
+        "type": "secret-exit",
         "dialogue": "long-ash-mortuary-chapel-exit",
         "log": "The mortuary doors open onto the graveyard path."
       }
@@ -408,12 +429,7 @@
       "name": "Mortuary Chapel Doors",
       "doorGroup": "mortuary-chapel-exit",
       "doorLeaf": "south",
-      "wallPlane": "sw",
-      "interact": {
-        "type": "door",
-        "dialogue": "long-ash-mortuary-chapel-exit",
-        "log": "The mortuary doors open onto the graveyard path."
-      }
+      "wallPlane": "sw"
     },
     {
       "kind": "paper-scraps",

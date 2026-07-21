@@ -1,0 +1,32 @@
+{
+  "id": "old-pilgrim-chapter-to-trials",
+  "title": "Profession Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The four profession studs hold the chapter door open from within."
+      ],
+      "choices": [
+        {
+          "label": "Return to the Trial Galleries",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_trial_galleries.json",
+              "player": {
+                "x": 32,
+                "y": 2,
+                "facing": "s"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

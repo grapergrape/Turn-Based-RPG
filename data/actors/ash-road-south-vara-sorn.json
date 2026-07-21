@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-vara-sorn",
+  "name": "Valeria Longinus",
+  "type": "npc",
+  "faction": "morrow-chain",
+  "role": "Convoy route clerk",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "morrow-chain"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-grey"
+  }
+}

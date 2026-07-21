@@ -50,6 +50,15 @@
     "enemies": [],
     "npcs": []
   },
+  "groundItems": [
+    {
+      "id": "storage-shed-loose-ration",
+      "item": "tinned-beans",
+      "count": 1,
+      "x": 9,
+      "y": 2
+    }
+  ],
   "objects": [
     {
       "kind": "farm-door",

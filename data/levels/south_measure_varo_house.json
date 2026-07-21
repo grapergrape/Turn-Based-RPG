@@ -1,0 +1,824 @@
+{
+  "id": "south-measure-varo-house",
+  "name": "Faber House and Workshop",
+  "intro": "The Faber family has fitted a home around one pump bench. Every clear surface is already in use.",
+  "width": 22,
+  "height": 16,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#1f140d",
+    "floorShadeAlpha": 0.13,
+    "ambient": "#2a160e",
+    "ambientAlpha": 0.08,
+    "vignette": 0.15
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-varo-door-varo",
+    "south-measure-varo-nel-varo",
+    "south-measure-varo-ilo-varo",
+    "south-measure-varo-perr-varo"
+  ],
+  "tiles": [
+    "######################",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "######################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "south-measure-domestic-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "south-measure-row",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 2,
+      "y": 10,
+      "facing": "se"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-nel-varo",
+        "spawnId": "varo-nel-varo-0",
+        "characterSlot": "varo-nel-varo",
+        "x": 5,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "The bench is level enough for the manifold drawing.",
+          "Every valve plan begins as a drawing someone can dispute.",
+          "Isaac can hear a bad bearing through two walls."
+        ],
+        "dialogue": "south-measure-varo-nel-varo",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-ilo-varo",
+        "spawnId": "varo-ilo-varo-1",
+        "characterSlot": "varo-ilo-varo",
+        "x": 13,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "The old return used a six-turn valve order.",
+          "Do not clean a fault until you mark where it sat.",
+          "Tobit sorted the tool pins by touch."
+        ],
+        "dialogue": "south-measure-varo-ilo-varo",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-perr-varo",
+        "spawnId": "varo-perr-varo-2",
+        "characterSlot": "varo-perr-varo",
+        "x": 17,
+        "y": 4,
+        "facing": "se",
+        "ambient": [
+          "Short pin, long pin, bent pin.",
+          "The pump drawing has a room under the room.",
+          "Noa lets me keep the brass shavings."
+        ],
+        "dialogue": "south-measure-varo-perr-varo",
+        "talkRadius": 1
+      }
+    ],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 0,
+      "y": 10,
+      "id": "varo-main-door",
+      "name": "Faber House Door",
+      "blocking": true,
+      "variant": "domestic",
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 1,
+        "y": 10
+      },
+      "mapMarker": {
+        "label": "Faber House Door",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-varo-door-varo"
+      }
+    },
+    {
+      "kind": "farm-workbench",
+      "x": 4,
+      "y": 10,
+      "id": "varo-house-pump-bench",
+      "blocking": true,
+      "orient": "sw",
+      "name": "Pump Bench",
+      "interact": {
+        "type": "note",
+        "log": "Valve seats and worn washers lie in careful rows. The bench is built for repair work, not spare-part storage."
+      },
+      "interactionMarker": {
+        "x": 5,
+        "y": 10
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 0,
+      "y": 7,
+      "id": "varo-house-diagram-wall",
+      "blocking": true,
+      "variant": "diagram",
+      "wallPlane": "se",
+      "name": "Diagram Wall",
+      "interact": {
+        "type": "note",
+        "log": "Noa Faber's notes correct the old pump manual wherever the actual pipes disagreed."
+      },
+      "interactionMarker": {
+        "x": 1,
+        "y": 7
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 9,
+      "y": 6,
+      "id": "varo-house-cup-repair-table",
+      "blocking": true,
+      "variant": "cup-repair",
+      "orient": "se",
+      "name": "Cup-Repair Table",
+      "interact": {
+        "type": "note",
+        "log": "Tin handles and split cup rims cover the small table. Isaac Faber has marked each repair by household."
+      },
+      "interactionMarker": {
+        "x": 10,
+        "y": 6
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 10,
+      "y": 12,
+      "id": "varo-house-family-table",
+      "blocking": true,
+      "variant": "family-meal",
+      "orient": "se",
+      "name": "Family Meal Table",
+      "interact": {
+        "type": "note",
+        "log": "Three bowls fit around the table when the pump tools are pushed aside. One chair has been braced with pipe offcuts."
+      },
+      "interactionMarker": {
+        "x": 11,
+        "y": 12
+      }
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 15,
+      "y": 3,
+      "id": "varo-house-sleeping-partitions",
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se",
+      "name": "Sleeping Partitions",
+      "interact": {
+        "type": "note",
+        "log": "Two cloth partitions divide the back wall. Folded work coats serve as pillows where the roof seam drips."
+      },
+      "interactionMarker": {
+        "x": 14,
+        "y": 3
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 18,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "farm-bed",
+      "x": 18,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 8,
+      "y": 2,
+      "id": "varo-house-rear-work-shelf",
+      "blocking": true,
+      "variant": "work-shelf",
+      "orient": "se",
+      "name": "Rear Work Shelf",
+      "interact": {
+        "type": "note",
+        "log": "Filed valve stops fill the shelf. Each bears a small correction from years of keeping the condenser steady."
+      },
+      "interactionMarker": {
+        "x": 9,
+        "y": 2
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 14,
+      "y": 2,
+      "id": "varo-house-school-tools",
+      "blocking": true,
+      "variant": "school-tools",
+      "orient": "sw",
+      "name": "Noa's School Tools",
+      "interact": {
+        "type": "note",
+        "log": "A clean gauge and wrapped drawing points sit apart from the household tools, ready to travel if Noa chooses."
+      },
+      "interactionMarker": {
+        "x": 15,
+        "y": 2
+      }
+    },
+    {
+      "kind": "field-satchel",
+      "x": 13,
+      "y": 5,
+      "id": "varo-censure-repair-satchel",
+      "name": "Censure Repair Satchel",
+      "blocking": true,
+      "orient": "sw",
+      "interact": {
+        "type": "container",
+        "log": "A household tag reads FOR CENSURE USE. The strap is looped shut, not locked.",
+        "loot": [
+          {
+            "item": "penitent-gear-scrap",
+            "count": 1
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 14,
+        "y": 5
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 3,
+      "y": 2,
+      "blocking": true,
+      "variant": "work-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 5,
+      "y": 2,
+      "blocking": true,
+      "variant": "work-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 11,
+      "y": 2,
+      "blocking": true,
+      "variant": "work-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 17,
+      "y": 2,
+      "blocking": true,
+      "variant": "work-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 20,
+      "y": 2,
+      "blocking": true
+    },
+    {
+      "kind": "tool-rack",
+      "x": 16,
+      "y": 2,
+      "blocking": true
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 13,
+      "y": 4
+    },
+    {
+      "kind": "south-measure-water-lesson",
+      "x": 14,
+      "y": 4
+    },
+    {
+      "kind": "low-stool",
+      "x": 16,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 0,
+      "y": 8,
+      "blocking": true,
+      "variant": "diagram",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "south-measure-hand-pump",
+      "x": 2,
+      "y": 12,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 6,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "tool-rack",
+      "x": 2,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 6,
+      "y": 9,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 2,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 6,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "tool-rack",
+      "x": 7,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 7,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "machine-oil",
+      "x": 5,
+      "y": 11
+    },
+    {
+      "kind": "machine-oil",
+      "x": 4,
+      "y": 13
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 3,
+      "y": 11
+    },
+    {
+      "kind": "shared-oven",
+      "x": 2,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 5,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "wash-tub",
+      "x": 2,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 7,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "tool-rack",
+      "x": 11,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "dining-bench",
+      "x": 6,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "low-stool",
+      "x": 8,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 11,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 6,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 10,
+      "y": 5,
+      "blocking": false
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 3,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 9,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 17,
+      "y": 3,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 17,
+      "y": 9,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 18,
+      "y": 3,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 18,
+      "y": 9,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 15,
+      "y": 9,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 15,
+      "y": 4,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 15,
+      "y": 5,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 15,
+      "y": 10,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 15,
+      "y": 11,
+      "blocking": true,
+      "variant": "domestic",
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 20,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 20,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 11,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 18,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "laundry-line",
+      "x": 18,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 8,
+      "y": 14,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 12,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 8,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 12,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 14,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 10,
+      "y": 13
+    },
+    {
+      "kind": "dining-table",
+      "x": 13,
+      "y": 8,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "low-stool",
+      "x": 12,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 14,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "chalk-drawing",
+      "x": 13,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 1,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 2,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 4
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 6
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 8
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 14
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 7
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "varo-loose-tinned-beans",
+      "item": "tinned-beans",
+      "count": 1,
+      "x": 4,
+      "y": 14
+    }
+  ]
+}

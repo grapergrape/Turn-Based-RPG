@@ -15,11 +15,18 @@ import {
   seenTechniqueIds
 } from './validation/validationContext.mjs';
 import { validateDialogue, validateQuest } from './validation/dialogueValidator.mjs';
-import { validateItem } from './validation/itemValidator.mjs';
+import { validateItem, validateWeaponCatalog } from './validation/itemValidator.mjs';
 import { validateLevel, validateMap } from './validation/levelValidator.mjs';
 import { validateActor, validateEnemy } from './validation/renderCatalogValidator.mjs';
 import { validateTechnique } from './validation/techniqueValidator.mjs';
 import { validateVerticalSliceContent, validateVerticalSliceLevel } from './validation/verticalSliceValidator.mjs';
+import { validateCompanion, validateCompanionCatalog } from './validation/companionValidator.mjs';
+import { validatePlaytestProfiles } from './validation/playtestProfileValidator.mjs';
+import {
+  registerDialogueRouteContent,
+  registerLevelRouteContent,
+  validateLevelRouteDestinations
+} from './validation/levelRouteValidator.mjs';
 
 async function main() {
   await checkRenderConfig();
@@ -34,16 +41,25 @@ async function main() {
     if (matchDir(filePath, 'levels')) {
       validateLevel(filePath, data);
       validateVerticalSliceLevel(filePath, data);
+      registerLevelRouteContent(filePath, data);
     }
     if (matchDir(filePath, 'actors')) validateActor(filePath, data);
     if (matchDir(filePath, 'enemies')) validateEnemy(filePath, data);
     if (matchDir(filePath, 'items')) validateItem(filePath, data);
     if (matchDir(filePath, 'quests')) validateQuest(filePath, data);
-    if (matchDir(filePath, 'dialogue')) validateDialogue(filePath, data);
+    if (matchDir(filePath, 'dialogue')) {
+      validateDialogue(filePath, data);
+      registerDialogueRouteContent(filePath, data);
+    }
     if (matchDir(filePath, 'techniques')) validateTechnique(filePath, data);
+    if (matchDir(filePath, 'companions')) validateCompanion(filePath, data);
   }
 
   validateVerticalSliceContent();
+  validateWeaponCatalog();
+  validateCompanionCatalog();
+  await validatePlaytestProfiles();
+  validateLevelRouteDestinations();
   for (const id of referencedItemIds) {
     if (!seenItemIds.has(id)) {
       errors.push(`data/items: referenced item "${id}" is missing.`);

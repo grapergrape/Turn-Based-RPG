@@ -218,6 +218,13 @@ Eye + Intelligence + Body
 
 Hidden loot, tracks, staged scenes, secret doors, corpse clues, rubble checks, and physical evidence recovery.
 
+Holding Tab during exploration highlights investigatable targets within range.
+Below Search 40, the highlight reaches only adjacent tiles. From Search 40
+through 90, every 10 points adds one tile, reaching seven tiles at Search 90.
+Above Search 90, every additional 20 points adds another tile. The calculation
+uses eight-direction tile distance and has no separate cap. Eye contributes
+through the derived Search rating.
+
 Combat identity: finds better routes, detects ambush signs, spots usable hazards before the fight starts.
 
 ### Medicine

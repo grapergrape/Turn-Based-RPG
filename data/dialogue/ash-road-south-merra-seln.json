@@ -1,0 +1,53 @@
+{
+  "id": "ash-road-south-merra-seln",
+  "title": "Martha Quirinus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Martha brushes packed ash from a grave marker without touching the cut letters.",
+        "\"Speak the name before you ask about the ground. The order matters here.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask how South Measure records its dead",
+          "next": "names",
+          "effects": {
+            "setFlag": "heard-grave-name-practice"
+          }
+        },
+        {
+          "label": "Leave Martha with the markers",
+          "close": true
+        }
+      ]
+    },
+    "names": {
+      "lines": [
+        "\"I cut the people a family names, starting with household and chosen kin. Cause needs permission, while admission status never enters the stone.\"",
+        "\"The Remnant book writes unentered. Stone has room for the person instead.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the brass-hook memorial",
+          "next": "hook"
+        },
+        {
+          "label": "Leave Martha with the markers",
+          "close": true
+        }
+      ]
+    },
+    "hook": {
+      "lines": [
+        "\"A bridge crew died holding a relief hook above floodwater so children could cross the line.\"",
+        "\"No city claimed the crew. South Measure claimed the story.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Martha with the markers",
+          "close": true
+        }
+      ]
+    }
+  }
+}

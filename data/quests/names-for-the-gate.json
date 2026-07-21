@@ -1,0 +1,139 @@
+{
+  "id": "names-for-the-gate",
+  "title": "Names for the Gate",
+  "initialStage": "reach-water-court",
+  "objectives": [
+    {
+      "text": "Speak with Susanna Fontana at the water court.",
+      "stage": "reach-water-court"
+    },
+    {
+      "text": "Inspect the throttled condenser with Noa Faber.",
+      "stage": "inspect-throttled-flow"
+    },
+    {
+      "text": "Hear the Compact, Morrow, resident, and Cassian proposals.",
+      "stage": "hear-terms"
+    },
+    {
+      "text": "Trace the buried pulse through the closed work areas.",
+      "stage": "trace-buried-pulse"
+    },
+    {
+      "text": "Resolve the Intake Clerk beneath the water court.",
+      "stage": "resolve-intake-clerk"
+    },
+    {
+      "text": "Choose how South Measure will move water.",
+      "stage": "choose-water-plan"
+    },
+    {
+      "text": "Decide who controls the pump.",
+      "stage": "decide-pump-control"
+    },
+    {
+      "text": "Decide custody of the original household roll.",
+      "stage": "decide-roll-custody"
+    },
+    {
+      "text": "Settle Noa Faber’s departure.",
+      "stage": "settle-nel"
+    },
+    {
+      "text": "Settle Brother Cassian’s departure.",
+      "stage": "settle-tarn"
+    },
+    {
+      "text": "Call the north-gate assembly.",
+      "stage": "north-gate-assembly"
+    },
+    {
+      "text": "Walk the opened north lane.",
+      "stage": "depart-north"
+    },
+    {
+      "text": "Cross the opened north chain.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "reach-water-court",
+      "task": "Speak with Susanna Fontana at the water court",
+      "xp": 0,
+      "description": "South Measure’s water queue blocks the northern wagon lane. Noa throttled the condenser after a buried pulse reached the taps."
+    },
+    {
+      "id": "inspect-throttled-flow",
+      "task": "Inspect the throttled condenser with Noa Faber",
+      "xp": 0,
+      "description": "The machine can carry more water. Noa wants the pulse beneath it understood before anyone opens the feed."
+    },
+    {
+      "id": "hear-terms",
+      "task": "Hear every water proposal",
+      "xp": 0,
+      "description": "The Compact, the Morrow Chain, resident mechanics, and Brother Cassian offer different ways to manage the buried signal and the short water line."
+    },
+    {
+      "id": "trace-buried-pulse",
+      "task": "Trace the buried pulse",
+      "xp": 0,
+      "description": "The clinic monitor, freight routes, relief drain, and intake undercroft each reveal part of the water decision."
+    },
+    {
+      "id": "resolve-intake-clerk",
+      "task": "Resolve the Intake Clerk",
+      "xp": 0,
+      "description": "The body beneath the admission booth answers the Hallowfen rhythm through the old feed."
+    },
+    {
+      "id": "choose-water-plan",
+      "task": "Choose the water operating plan",
+      "xp": 0,
+      "description": "South Measure can accept monitored full flow, imported rations, an isolated local loop, or emergency closure."
+    },
+    {
+      "id": "decide-pump-control",
+      "task": "Decide who controls the pump",
+      "xp": 0,
+      "description": "The operating plan leaves the pump keys and maintenance burden unresolved. Outside claims still wait at the council table."
+    },
+    {
+      "id": "decide-roll-custody",
+      "task": "Decide custody of the original roll",
+      "xp": 0,
+      "description": "The household roll can protect water rights, expose private residents, or preserve old debts."
+    },
+    {
+      "id": "settle-nel",
+      "task": "Settle Noa Faber’s departure",
+      "xp": 0,
+      "description": "Noa has a northern school place. Her family’s status determines whether she can use it."
+    },
+    {
+      "id": "settle-tarn",
+      "task": "Settle Brother Cassian’s departure",
+      "xp": 0,
+      "description": "Cassian heard an answer through the intake pipe. Decide where he carries that warning."
+    },
+    {
+      "id": "north-gate-assembly",
+      "task": "Call the north-gate assembly",
+      "xp": 0,
+      "description": "South Measure must hear the water settlement and any unresolved danger before the chain rises."
+    },
+    {
+      "id": "depart-north",
+      "task": "Walk the opened north lane",
+      "xp": 0,
+      "description": "The chain is raised. Susanna’s signed water abstract will carry the settlement beyond South Measure."
+    },
+    {
+      "id": "complete",
+      "task": "Continue north from South Measure",
+      "xp": 75,
+      "description": "South Measure has named its water terms and opened the north chain."
+    }
+  ]
+}

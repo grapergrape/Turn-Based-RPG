@@ -1,0 +1,89 @@
+{
+  "id": "south-measure-hidden-rows-drying-frame-surface",
+  "title": "Drying-Frame Passage",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The movable drying frame in Rope Rows opens into the concealed shared lane."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Hidden Rows",
+          "conditions": {
+            "flag": "hidden-rows-access"
+          },
+          "effects": {
+            "log": "You pass the drying frame and enter the Hidden Rows.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_hidden_rows.json",
+              "player": {
+                "x": 2,
+                "y": 6,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Pass behind the wash cloth unseen",
+          "conditions": {
+            "fieldRatings": {
+              "stealth": 35
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "hidden-rows-access",
+              "hidden-rows-entry-forced"
+            ],
+            "log": "The drying cloth settles before anyone turns.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_hidden_rows.json",
+              "player": {
+                "x": 2,
+                "y": 6,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Find the concealed door catch",
+          "conditions": {
+            "fieldRatings": {
+              "security": 35
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "hidden-rows-access",
+              "hidden-rows-entry-forced"
+            ],
+            "log": "The concealed catch gives under one finger.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_hidden_rows.json",
+              "player": {
+                "x": 2,
+                "y": 6,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay in Rope Rows",
+          "effects": {
+            "log": "You leave the drying frame in place."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

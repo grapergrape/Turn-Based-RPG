@@ -1,15 +1,74 @@
 {
   "id": "censure-road-camp-joric",
-  "title": "Ash Porter Joric",
+  "title": "Ash Porter Baruch",
   "nodes": {
     "start": {
       "lines": [
-        "Ash Porter Joric leans on a crate marked urgent.",
+        "Ash Porter Baruch leans on a crate marked urgent.",
         "\"Urgent means someone shouted near ink. Sacred means the crate is heavier than the man who signed for it.\""
       ],
       "choices": [
         {
+          "label": "Show him the false return weight",
+          "conditions": {
+            "flag": "censure-road-ledger-weight-mismatch-found",
+            "flagsAbsent": ["censure-road-report-joric-ledger"],
+            "fieldRatings": {
+              "search": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-joric-ledger",
+            "log": "Baruch adds his porter tally to the false cart weight."
+          },
+          "next": "false-weight"
+        },
+        {
+          "label": "Give him the cart's break sequence",
+          "conditions": {
+            "flag": "long-ash-cart-sabotage-proved",
+            "flagsAbsent": ["censure-road-report-joric-route"],
+            "fieldRatings": {
+              "engineering": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-joric-route",
+            "inventory": {
+              "add": [
+                { "item": "ducat", "count": 2 }
+              ]
+            },
+            "log": "Baruch corrects the cart sequence and pays two ducats from the disputed porter fee."
+          },
+          "next": "cart-sequence"
+        },
+        {
           "label": "Leave the supply tents",
+          "close": true
+        }
+      ]
+    },
+    "false-weight": {
+      "lines": [
+        "Baruch checks the copied total against a tally cut into his wrist guard.",
+        "\"That cart came back light enough for one man. The ledger kept the missing crates aboard so nobody had to admit where they left. My cuts do not wash off as politely.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave him with the tally",
+          "close": true
+        }
+      ]
+    },
+    "cart-sequence": {
+      "lines": [
+        "Baruch follows the order with two fingers: stop, brace, break.",
+        "\"Axle cord first. Wheel after. Then somebody wrote accident because accident does not need a face. Keep the fee. I was paid to carry the lie.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the disputed fee",
           "close": true
         }
       ]

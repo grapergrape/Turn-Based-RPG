@@ -1,0 +1,39 @@
+{
+  "id": "debt-that-drinks",
+  "title": "The Debt That Drinks",
+  "initialStage": "find-ledger",
+  "objectives": [
+    {
+      "text": "Find the Morrow surety ledger.",
+      "stage": "find-ledger"
+    },
+    {
+      "text": "Compare the false debt with resident testimony.",
+      "stage": "audit-ledger"
+    },
+    {
+      "text": "Decide what survives in the ledger.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "find-ledger",
+      "task": "Find the freight-house surety ledger",
+      "xp": 0,
+      "description": "Morrow burial charges may contain copied household marks."
+    },
+    {
+      "id": "audit-ledger",
+      "task": "Audit the disputed entries",
+      "xp": 0,
+      "description": "The false sureties can be revised, voided, concealed, or left untouched beside genuine medicine routes."
+    },
+    {
+      "id": "complete",
+      "task": "The surety ledger is settled",
+      "xp": 25,
+      "description": "The debt record now carries the consequence chosen in the freight house."
+    }
+  ]
+}

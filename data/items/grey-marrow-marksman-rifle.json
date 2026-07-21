@@ -1,0 +1,65 @@
+{
+  "id": "grey-marrow-marksman-rifle",
+  "name": "Grey Marrow Marksman Rifle",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "marksman rifle",
+  "rarity": "common",
+  "weight": 4.7,
+  "groundModel": "precision-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Grey Marrow Company",
+    "factions": [
+      "grey-marrow-company"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "marksman rifle"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 10,
+        "range": 9,
+        "accuracyBonus": 10,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "braced-shot",
+        "name": "Braced Shot",
+        "mode": "ranged",
+        "apCost": 7,
+        "damage": 12,
+        "range": 10,
+        "accuracyBonus": 15,
+        "ammoCost": 1,
+        "conditionWear": 2,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "full-rifle-cartridge",
+      "capacity": 5,
+      "defaultLoaded": 5,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A long-barreled rifle with a cheek rest carved from pale orchard wood. Company marksmen paint over old contracts but leave the range tables."
+}

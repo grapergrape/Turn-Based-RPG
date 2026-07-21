@@ -2,6 +2,30 @@
 // Search resolves checks only. Game owns UI, effects, and character ratings.
 
 const DEFAULT_SEARCH_FIELD = 'search';
+const INVESTIGATION_BASE_RANGE = 1;
+const INVESTIGATION_FOCUSED_START = 40;
+const INVESTIGATION_EXPERT_START = 90;
+const INVESTIGATION_FOCUSED_SEARCH_PER_TILE = 10;
+const INVESTIGATION_EXPERT_SEARCH_PER_TILE = 20;
+const INVESTIGATION_FOCUSED_BASE_RANGE = INVESTIGATION_BASE_RANGE + 1;
+const INVESTIGATION_EXPERT_BASE_RANGE = INVESTIGATION_FOCUSED_BASE_RANGE +
+  ((INVESTIGATION_EXPERT_START - INVESTIGATION_FOCUSED_START) /
+    INVESTIGATION_FOCUSED_SEARCH_PER_TILE);
+
+export function investigationRangeForSearch(searchRating) {
+  const rating = Number.isFinite(searchRating)
+    ? Math.max(0, searchRating)
+    : 0;
+  if (rating < INVESTIGATION_FOCUSED_START) return INVESTIGATION_BASE_RANGE;
+  if (rating <= INVESTIGATION_EXPERT_START) {
+    return INVESTIGATION_FOCUSED_BASE_RANGE + Math.floor(
+      (rating - INVESTIGATION_FOCUSED_START) / INVESTIGATION_FOCUSED_SEARCH_PER_TILE
+    );
+  }
+  return INVESTIGATION_EXPERT_BASE_RANGE + Math.floor(
+    (rating - INVESTIGATION_EXPERT_START) / INVESTIGATION_EXPERT_SEARCH_PER_TILE
+  );
+}
 
 function lines(value) {
   return [].concat(value ?? []).filter((line) => typeof line === 'string' && line.trim() !== '');

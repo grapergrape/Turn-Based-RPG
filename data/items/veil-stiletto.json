@@ -1,0 +1,56 @@
+{
+  "id": "veil-stiletto",
+  "name": "Veil Stiletto",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "knife",
+  "rarity": "common",
+  "weight": 0.75,
+  "groundModel": "knife",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Veil Brokers",
+    "factions": [
+      "veil-brokers"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "knife",
+    "roles": [
+      "melee",
+      "knife",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Thrust",
+        "mode": "melee",
+        "apCost": 3,
+        "damage": 4,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "quick-cut",
+        "name": "Quick Cut",
+        "mode": "melee",
+        "apCost": 2,
+        "damage": 3,
+        "range": 1,
+        "accuracyBonus": 5,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A rigid triangular blade hidden in a writing case. Brokers deny issuing them and charge a fee to sharpen one."
+}

@@ -1,0 +1,39 @@
+{
+  "id": "charity-cot",
+  "title": "The Charity Cot",
+  "initialStage": "inspect-stock",
+  "objectives": [
+    {
+      "text": "Inspect the burned charity stock.",
+      "stage": "inspect-stock"
+    },
+    {
+      "text": "Trace the missing suppressant doses.",
+      "stage": "trace-doses"
+    },
+    {
+      "text": "Decide the fate of the mixed medicine stock.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "inspect-stock",
+      "task": "Inspect the charity stock",
+      "xp": 0,
+      "description": "Useful medicine, copied labels, and missing suppressants share one cellar."
+    },
+    {
+      "id": "trace-doses",
+      "task": "Trace the missing doses",
+      "xp": 0,
+      "description": "Joanna wants the stock separated before fear or faction custody destroys it."
+    },
+    {
+      "id": "complete",
+      "task": "The charity stock is settled",
+      "xp": 25,
+      "description": "The cellar medicine now follows the custody decision made beside the charity cot."
+    }
+  ]
+}

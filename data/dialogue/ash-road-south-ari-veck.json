@@ -1,0 +1,67 @@
+{
+  "id": "ash-road-south-ari-veck",
+  "title": "Asa Aquila",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Asa waits in a narrow court with no household mark above its entrance.",
+        "\"Rachel did not send you. Say why you found me.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why some households stay off the rolls",
+          "next": "hidden",
+          "effects": {
+            "setFlag": "heard-hidden-household-consent"
+          }
+        },
+        {
+          "label": "Ask whether Susanna may know their names",
+          "next": "consent",
+          "effects": {
+            "setFlag": [
+              "heard-hidden-household-consent",
+              "hidden-rows-access"
+            ]
+          }
+        },
+        {
+          "label": "Leave the unmarked court",
+          "close": true
+        }
+      ]
+    },
+    "hidden": {
+      "lines": [
+        "\"People with failed exposure screens or escaped service notes. Children whose sponsors died between forms also live here.\"",
+        "\"A public roll brings water. It also tells every claimant where to knock.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the unmarked court",
+          "close": true
+        }
+      ]
+    },
+    "consent": {
+      "lines": [
+        "\"Susanna may know the count. Names require each household’s consent and a place to hide the original.\"",
+        "\"Do not purchase trust by spending someone else’s address. I will show you the drying-frame door. Knock before you cross it.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the unmarked court",
+          "close": true
+        }
+      ]
+    }
+  }
+}

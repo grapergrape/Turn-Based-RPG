@@ -1,6 +1,16 @@
 import { PALETTE } from '../palette.js';
 
-import { FACINGS, FACING_META, POSES, compose, linePx, px } from './spriteBake.js';
+import {
+  FACINGS,
+  FACING_META,
+  POSES,
+  compose,
+  detailLinePx,
+  detailPx,
+  linePx,
+  makeLazyFrameList,
+  px
+} from './spriteBake.js';
 
 
 
@@ -101,6 +111,10 @@ function drawRatBody(ctx, cx, cy, side, pose, opts = {}) {
   ratSeg(ctx, bodyCx - side * 16, bodyY - 6, bodyCx - side * 26, bodyY - 8 + bob, PALETTE.hostGold);
   drawRatPrayerRibs(ctx, bodyCx, bodyY, side, pose);
   drawRatFusedHands(ctx, bodyCx, bodyY, side);
+  detailLinePx(ctx, bodyCx - 10.5, bodyY - 11.5, bodyCx + 9.5, bodyY - 11.5, PALETTE.stoneDust);
+  detailLinePx(ctx, wx - 2.5, wy + 0.5, wx + 2.5, wy + 0.5, PALETTE.hostRed);
+  detailLinePx(ctx, headX + side * 1.5, headY + 0.5, headX + side * 6.5, headY + 3.5, PALETTE.hostBone);
+  if (!opts.back) detailPx(ctx, headX + side * 2.5, headY + 2.5, PALETTE.hostGold);
   return { bodyCx, bodyY, headX, headY };
 }
 
@@ -130,6 +144,8 @@ export function drawSixLeggedRat(ctx, w, h, facing, pose) {
   }
   px(ctx, info.bodyCx - side * 3, info.bodyY - 9, PALETTE.hostGold, 2, 2);
   px(ctx, info.bodyCx + side * 6, info.bodyY - 4, PALETTE.hostGold, 1, 4);
+  detailLinePx(ctx, info.bodyCx - 9.5, info.bodyY - 13.5, info.bodyCx + 8.5, info.bodyY - 13.5, PALETTE.hostBone);
+  detailLinePx(ctx, info.bodyCx + side * 5.5, info.bodyY - 3.5, info.bodyCx + side * 6.5, info.bodyY - 0.5, PALETTE.hostGold);
 }
 
 export function drawThroatMawRat(ctx, w, h, facing, pose) {
@@ -173,6 +189,9 @@ export function drawThroatMawRat(ctx, w, h, facing, pose) {
   for (let i = 0; i < 5; i += 1) {
     px(ctx, info.bodyCx - 8 + i * 4, info.bodyY - 15 - (i & 1), PALETTE.hostBone, 2, 1);
   }
+  detailLinePx(ctx, mawX - 4.5, mawY - 3.5, mawX + 4.5, mawY - 3.5, PALETTE.hostBone);
+  detailLinePx(ctx, mawX - 4.5, mawY + 2.5, mawX + 4.5, mawY + 2.5, PALETTE.stoneDust);
+  detailPx(ctx, mawX + 0.5, mawY - 0.5, PALETTE.hostGold);
 }
 
 export function drawTendrilWalkerRat(ctx, w, h, facing, pose) {
@@ -206,6 +225,9 @@ export function drawTendrilWalkerRat(ctx, w, h, facing, pose) {
   for (let i = 0; i < 6; i += 1) {
     ratSeg(ctx, info.bodyCx - side * 12, info.bodyY - 9 + i, info.bodyCx - side * (18 + i), info.bodyY - 15 + i, PALETTE.hostRed);
   }
+  detailLinePx(ctx, info.bodyCx - 5.5, info.bodyY - 6.5, info.bodyCx + 5.5, info.bodyY - 6.5, PALETTE.hostBone);
+  detailLinePx(ctx, info.bodyCx - side * 12.5, info.bodyY - 8.5, info.bodyCx - side * 22.5, info.bodyY - 10.5, PALETTE.hostGold);
+  detailPx(ctx, info.bodyCx + 0.5, info.bodyY - 4.5, PALETTE.hostGlow);
 }
 
 function drawRatDeath(ctx, w, h, variant, frame) {
@@ -225,6 +247,9 @@ function drawRatDeath(ctx, w, h, variant, frame) {
     for (let i = 0; i < 6; i += 1) ratSeg(ctx, cx - 12 + i * 4, cy - 2, cx - 18 + i * 7, cy + 2, PALETTE.hostBone);
   }
   px(ctx, cx - 1, cy - 4, frame % 2 ? PALETTE.hostGold : PALETTE.hostRed, 2, 1);
+  detailLinePx(ctx, cx - wide / 2 + 2.5, cy - 4.5, cx + wide / 2 - 2.5, cy - 4.5, PALETTE.hostRed);
+  detailLinePx(ctx, cx - 10.5, cy - 5.5, cx + 10.5, cy - 5.5, PALETTE.hostBone);
+  detailPx(ctx, cx - 0.5, cy - 3.5, frame % 2 ? PALETTE.hostGold : PALETTE.hostRed);
 }
 
 export function bakeHostRat(variant, drawBody) {
@@ -234,12 +259,12 @@ export function bakeHostRat(variant, drawBody) {
   for (const state of Object.keys(POSES)) {
     frames[state] = {};
     for (const facing of FACINGS) {
-      frames[state][facing] = POSES[state].map((pose) =>
-        compose(w, h, (ctx) => drawBody(ctx, w, h, facing, pose))
+      frames[state][facing] = makeLazyFrameList(POSES[state].length, (frame) =>
+        compose(w, h, (ctx) => drawBody(ctx, w, h, facing, POSES[state][frame]))
       );
     }
   }
-  const death = Array.from({ length: 10 }, (_, frame) =>
+  const death = makeLazyFrameList(10, (frame) =>
     compose(w, h, (ctx) => drawRatDeath(ctx, w, h, variant, frame))
   );
   return {

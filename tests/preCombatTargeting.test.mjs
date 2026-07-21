@@ -67,7 +67,7 @@ function makeGame() {
   };
   const player = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 14, maxHp: 14, actionPoints: 6 },
     attacks: [{ id: 'melee', name: 'Knife', apCost: 1, damage: 3, range: 1 }],
@@ -167,8 +167,8 @@ function makeGame() {
   assert.equal(frame().ui.actionChance, '95%');
   assert.equal(frame().ui.actionDamage, 'D5');
   assert.equal(frame().ui.actionReason, '');
-  target.name = 'Sava Rell';
-  assert.equal(game._targetReadout(target, null), 'Sava Rell 8/8');
+  target.name = 'Sapphira Rufa';
+  assert.equal(game._targetReadout(target, null), 'Rufa 8/8');
   target.name = 'Choir Cutthroat';
   assert.ok(frame().ui.controls.includes('Space Attack'));
 
@@ -225,7 +225,7 @@ function makeGame() {
   assert.equal(target.hp, 5);
   assert.equal(game.mode, 'combat');
   assert.equal(game.player.ap, game.player.maxAp);
-  assert.ok(game.log.some((line) => line.includes("Mara Vey's Knife hit. Chance 70%, roll 1. 3 damage to Choir Cutthroat.")));
+  assert.ok(game.log.some((line) => line.includes("Test Agent's Knife hit. Chance 70%, roll 1. 3 damage to Choir Cutthroat.")));
   assert.equal(game.log.some((line) => line.includes('Not enough AP for that attack.')), false);
 }
 

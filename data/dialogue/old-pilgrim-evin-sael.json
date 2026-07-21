@@ -1,0 +1,19 @@
+{
+  "id": "old-pilgrim-evin-sael",
+  "title": "Timothy Cato",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Timothy measures the shelter cots with a knotted cord. Each result goes onto a Compact placement sheet.",
+        "“South Measure sent names north before it sent timber. I am trying to make that order survivable.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

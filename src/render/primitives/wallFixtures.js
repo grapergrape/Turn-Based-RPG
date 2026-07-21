@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -82,6 +82,7 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
       px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 4, 2);
       px(ctx, p[0], p[1] - 2, tone, 2, 1);
     }
+
   };
 
   const drawBolt = (face, u, v, color = PALETTE.hostGold) => {
@@ -151,6 +152,12 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
       px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 4, 2);
       px(ctx, p[0], p[1] - 2, tone, 2, 1);
     }
+
+    // Native wood fibres sit between the heavy iron bands. They follow the
+    // projected door face and remain thinner than the legacy plank seams.
+    face.nativeLine(0.18, 0.2, 0.42, 0.2, PALETTE.woodLight);
+    face.nativeLine(0.58, 0.38, 0.82, 0.38, PALETTE.woodDark);
+    face.nativeLine(0.2, 0.68, 0.43, 0.68, PALETTE.woodLight);
   };
 
   if (!opened || frame === 0) {
@@ -164,7 +171,6 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
 
   const drawOpeningFrame = () => {
     const sill = doorFace.point(0.5, 1.0);
-    drawShadowBlob(ctx, sill[0], sill[1], TILE_WIDTH * 0.9, TILE_HEIGHT * 0.75);
     doorFace.rect(0.0, 0.0, 1.0, 1.0, PALETTE.outline);
     doorFace.rect(0.05, 0.06, 0.95, 0.94, PALETTE.void);
     doorFace.rect(0.09, 0.11, 0.91, 0.89, PALETTE.hostBlack);
@@ -175,6 +181,8 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
     doorFace.line(0.12, 0.19, 0.32, 0.09, PALETTE.stoneDust, 1);
     doorFace.line(0.72, 0.16, 0.9, 0.3, PALETTE.outline, 1);
     doorFace.line(0.16, 0.84, 0.38, 0.9, PALETTE.stoneDark, 1);
+    doorFace.nativeLine(0.14, 0.045, 0.42, 0.045, PALETTE.stoneLight);
+    doorFace.nativeLine(0.965, 0.24, 0.965, 0.51, PALETTE.stoneDust);
   };
 
   const drawDoorWing = (side, swing) => {
@@ -234,6 +242,8 @@ export function drawChapelDoubleDoor(ctx, cx, cy, seed, opts = {}) {
       px(ctx, p[0] - 1, p[1] - 1, PALETTE.outline, 3, 2);
       px(ctx, p[0], p[1] - 2, tone, 1, 1);
     }
+    wing.nativeLine(0.23, 0.2, 0.48, 0.2, PALETTE.woodLight);
+    wing.nativeLine(0.52, 0.68, 0.79, 0.68, PALETTE.woodDark);
   };
 
   const swing = [0, 0.28, 0.52, 0.76, 1][frame];
@@ -330,6 +340,12 @@ export function drawChapelWindow(ctx, cx, cy, seed = 0, opts = {}) {
   px(ctx, cx - 8, cy - 26, PALETTE.clothTan, 5, 6);
   px(ctx, cx - 8, cy - 26, PALETTE.stoneDust, 5, 1); // its duller sheen
   px(ctx, cx - 6, cy - 23, PALETTE.rustDark, 1, 3); // the tack line
+
+  // Native glazing scratches and a thin masonry highlight add real 2x detail
+  // while preserving the window's hard, slanted wall-face projection.
+  nativeLinePx(ctx, xL + 3.5, faceTop(xL + 3) + 13.5, xL + 8.5, faceTop(xL + 8) + 18.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, xR - 7.5, faceTop(xR - 7) + 18.5, xR - 3.5, faceTop(xR - 3) + 13.5, PALETTE.rustMid);
+  nativeLinePx(ctx, xL - 3.5, faceTop(xL - 3) + 7.5, xR + 2.5, faceTop(xR + 2) + 7.5, PALETTE.stoneLight);
 
 }
 
@@ -459,6 +475,12 @@ export function drawWallSafe(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 4, cy - 15, PALETTE.stoneLight, 1, 1);
   px(ctx, cx - 7, cy - 14, PALETTE.stoneLight, 1, 1);
 
+  // Fine machining marks stay within the safe face in both sealed and looted
+  // states. They do not alter the wall block or its collision silhouette.
+  nativeLinePx(ctx, xL + 3.5, swFaceTop(cx, cy, xL + 3) + topPad + 3.5, xL + 9.5, swFaceTop(cx, cy, xL + 9) + topPad + 3.5, hi);
+  nativeLinePx(ctx, xR - 8.5, swFaceBot(cx, cy, xR - 8) - botPad - 3.5, xR - 2.5, swFaceBot(cx, cy, xR - 2) - botPad - 3.5, PALETTE.stoneDark);
+  nativePx(ctx, midX + 4.5, Math.round((swFaceTop(cx, cy, midX + 4) + swFaceBot(cx, cy, midX + 4)) / 2) - 1.5, brass);
+
 }
 
 export function drawWallStash(ctx, cx, cy, seed, opts = {}) {
@@ -527,6 +549,11 @@ export function drawWallStash(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 7, cy - 18, PALETTE.stoneLight, 2, 1);
   px(ctx, cx + 5, cy - 17, PALETTE.stoneLight, 2, 1);
   px(ctx, cx - 6, cy - 8, PALETTE.stoneDust, 3, 1);
+
+  // The pried slab shows thin sediment layers that become visible only in the
+  // native redraw, with the offset following its open-state displacement.
+  nativeLinePx(ctx, xL + off + 3.5, swFaceTop(cx, cy, xL + 3) + topPad + 4.5, xL + off + 10.5, swFaceTop(cx, cy, xL + 10) + topPad + 4.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, xR + off - 8.5, swFaceBot(cx, cy, xR - 8) - botPad - 3.5, xR + off - 2.5, swFaceBot(cx, cy, xR - 2) - botPad - 3.5, PALETTE.stoneDark);
 
 }
 
@@ -603,5 +630,11 @@ export function drawWallStairDoor(ctx, cx, cy, seed) {
     ctx.fillRect(x, y, 1, 8 - Math.abs(x - (xL + xR) / 2) * 0.2);
   }
   ctx.restore();
+
+  // Fine tread wear and lintel tooling retain the stair's perspective while
+  // separating dressed stone from the absolute black passage behind it.
+  nativeLinePx(ctx, xL + 3.5, swFaceTop(cx, cy, xL + 3) + topPad - 1.5, xL + 13.5, swFaceTop(cx, cy, xL + 13) + topPad - 1.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, xL + 10.5, swFaceBot(cx, cy, xL + 10) - botPad - 5.5, xR - 10.5, swFaceBot(cx, cy, xR - 10) - botPad - 5.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, xR - 5.5, swFaceTop(cx, cy, xR - 5) + topPad + 6.5, xR - 5.5, swFaceBot(cx, cy, xR - 5) - botPad - 6.5, PALETTE.stoneDark);
 
 }

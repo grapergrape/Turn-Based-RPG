@@ -212,7 +212,7 @@ Example:
 ```text
 Ash Chapel Breach
 
-Mara believes the sealed lockbox near the altar contains a road seal. The Wardens claim the chapel is condemned, but their lock is newer than the quarantine notice.
+The player believes the sealed lockbox near the altar contains a road seal. The Wardens claim the chapel is condemned, but their lock is newer than the quarantine notice.
 
 Leads:
 - Inspect the altar lockbox.

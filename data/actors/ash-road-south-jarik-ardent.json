@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-jarik-ardent",
+  "name": "Jeremiah Afer",
+  "type": "npc",
+  "faction": "ash-chapel-settlement",
+  "role": "Stranded Hallowfen pump-mender",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "arrival-fringe",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-mender",
+    "gear": [
+      "tool-roll"
+    ],
+    "accent": "bare-light"
+  }
+}

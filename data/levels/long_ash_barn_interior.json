@@ -53,6 +53,15 @@
     "enemies": [],
     "npcs": []
   },
+  "groundItems": [
+    {
+      "id": "barn-loose-ration",
+      "item": "tinned-beans",
+      "count": 1,
+      "x": 9,
+      "y": 2
+    }
+  ],
   "objects": [
     {
       "kind": "farm-door",

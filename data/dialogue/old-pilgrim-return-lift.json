@@ -1,0 +1,43 @@
+{
+  "id": "old-pilgrim-return-lift",
+  "title": "Chapter Return Lift",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A narrow lift cage rises toward the church bell stair. Its profession catch is linked to the empty pike rack."
+      ],
+      "choices": [
+        {
+          "label": "Release the lift with the pike weight",
+          "conditions": {
+            "questStages": {
+              "the-buried-novitiate": "return-to-light"
+            }
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-return-lift-open",
+            "questUpdate": {
+              "quest": "the-buried-novitiate",
+              "stage": "complete",
+              "log": "The chapter return lift opens into the Hill Church bell stair."
+            },
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_hill_church.json",
+              "player": {
+                "x": 38,
+                "y": 8,
+                "facing": "s"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

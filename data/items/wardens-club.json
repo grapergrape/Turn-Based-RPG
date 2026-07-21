@@ -1,0 +1,46 @@
+{
+  "id": "wardens-club",
+  "name": "Warden Club",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "blunt",
+  "rarity": "common",
+  "weight": 2.1,
+  "groundModel": "blunt",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Gate Wardens",
+    "factions": [
+      "gate-wardens"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "blunt",
+    "roles": [
+      "melee",
+      "blunt",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A lead-cored oak club with a hooked wrist strap. Gate wardens call it the second question."
+}

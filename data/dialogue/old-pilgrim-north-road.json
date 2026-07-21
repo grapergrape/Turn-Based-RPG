@@ -1,0 +1,47 @@
+{
+  "id": "old-pilgrim-north-road",
+  "title": "Road to the Quarantine Farms",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The chain lies in the ditch. Beyond it, Old Pilgrim Way narrows between fallow fields and white quarantine posts."
+      ],
+      "choices": [
+        {
+          "label": "Mark the route north",
+          "conditions": {
+            "flag": "old-pilgrim-north-road-open"
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-way-complete",
+            "showBriefing": {
+              "title": "QUARANTINE FARMS",
+              "pages": [
+                [
+                  "The road leaves the hill church behind and enters the old quarantine allotments.",
+                  "White posts continue north. No farm bell answers Sister Thecla’s opening call."
+                ]
+              ]
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "The field count is not settled",
+          "conditions": {
+            "flagsAbsent": [
+              "old-pilgrim-north-road-open"
+            ]
+          },
+          "close": true,
+          "tone": "quiet"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

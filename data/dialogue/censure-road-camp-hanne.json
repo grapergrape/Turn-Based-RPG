@@ -1,15 +1,173 @@
 {
   "id": "censure-road-camp-hanne",
-  "title": "Sister Hanne",
+  "title": "Sister Joanna",
   "nodes": {
     "start": {
       "lines": [
-        "Sister Hanne boils water with a knife laid across the basin.",
+        "Sister Joanna boils water with a knife laid across the basin.",
         "\"Clean cloth is for wounds. Dirty cloth is for officers who ask why clean cloth is gone.\""
       ],
       "choices": [
         {
+          "label": "Ask about the medic stores",
+          "next": "stores"
+        },
+        {
+          "label": "Give her the road casualty sequence",
+          "conditions": {
+            "flag": "long-ash-kill-site-wounds-read",
+            "flagsAbsent": ["censure-road-report-hanne-medical"],
+            "fieldRatings": {
+              "medicine": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-hanne-medical",
+            "inventory": {
+              "add": [
+                { "item": "field-dressing", "count": 1 }
+              ]
+            },
+            "log": "Joanna records the road wounds in their true order and gives you one safe dressing."
+          },
+          "next": "road-casualties"
+        },
+        {
+          "label": "Report Deborah Carbo's wheel crush",
+          "conditions": {
+            "flag": "long-ash-carter-wheel-crush-read",
+            "flagsAbsent": ["censure-road-report-hanne-medical"],
+            "fieldRatings": {
+              "medicine": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-hanne-medical",
+            "inventory": {
+              "add": [
+                { "item": "field-dressing", "count": 1 }
+              ]
+            },
+            "log": "Joanna records Deborah's untreated crush and gives you one safe dressing."
+          },
+          "next": "carter-crush"
+        },
+        {
           "label": "Leave the medic tent",
+          "close": true
+        }
+      ]
+    },
+    "stores": {
+      "lines": [
+        "Joanna turns the boil ledger so the reject column faces you.",
+        "\"If cloth left this tent, tell me which fold it wore. I count clean stock by what the kettle failed to ruin.\""
+      ],
+      "choices": [
+        {
+          "label": "Show her the refolded dressing packet",
+          "conditions": {
+            "flag": "censure-road-medic-reused-dressing-found",
+            "flagsAbsent": ["censure-road-medic-dressing-reported"],
+            "fieldRatings": {
+              "medicine": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-medic-dressing-reported",
+            "log": "Joanna removes the refolded packet from use and marks the boil ledger."
+          },
+          "next": "reused-dressing"
+        },
+        {
+          "label": "Tell her the glass stain still answers",
+          "conditions": {
+            "flag": "censure-road-medic-host-stain-found",
+            "flagsAbsent": ["censure-road-medic-host-stain-reported"],
+            "fieldRatings": {
+              "hostSigns": 60
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-medic-host-stain-reported",
+            "log": "Joanna marks the responding stain for Melchior's sealed shelf."
+          },
+          "next": "live-stain"
+        },
+        {
+          "label": "Tell her which packet stayed clean",
+          "conditions": {
+            "flag": "censure-road-medic-safe-packet-found",
+            "flagsAbsent": ["censure-road-hanne-safe-packet-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-hanne-safe-packet-reported",
+            "log": "Joanna amends the clean dressing count."
+          },
+          "next": "safe-packet"
+        },
+        {
+          "label": "Leave the medic stores",
+          "close": true
+        }
+      ]
+    },
+    "safe-packet": {
+      "lines": [
+        "Joanna takes the empty wrapper by the wax edge.",
+        "\"Dry at the center, and the seal never softened. You saved one dressing from my reject basin, so I will amend the count.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her the wrapper",
+          "close": true
+        }
+      ]
+    },
+    "reused-dressing": {
+      "lines": [
+        "Joanna opens the packet at one corner and finds the old fold under the steam crease.",
+        "\"Somebody boiled guilt and called it gauze. Put that packet in the red basin. I will ask the supply tent who taught linen to lie.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her to the boil ledger",
+          "close": true
+        }
+      ]
+    },
+    "live-stain": {
+      "lines": [
+        "Joanna steadies the glass with the blunt side of her knife.",
+        "\"It drew away from heat yesterday. Bell motion is new. Melchior gets the sample, the shelf, and my written refusal to carry either.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the sample under glass",
+          "close": true
+        }
+      ]
+    },
+    "road-casualties": {
+      "lines": [
+        "Joanna writes the first wound before she asks where the bodies lay.",
+        "\"Good. Teeth came later. That keeps the wolves out of the death count and puts the knife back in a human hand. Aquila dislikes that sort of accuracy.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the safe dressing",
+          "close": true
+        }
+      ]
+    },
+    "carter-crush": {
+      "lines": [
+        "Joanna draws a wheel-width band across the foot on her slate.",
+        "\"Hours before the peals, then. That puts Carbo on the road before closure and the swelling under my knife tonight. Kettle spirit is not treatment, whatever the kettle claims.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the safe dressing",
           "close": true
         }
       ]

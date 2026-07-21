@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-lena-ossa",
+  "name": "Leah Viator",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Message and burial runner",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "hidden-rows",
+    "teen"
+  ],
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-runner",
+    "gear": [
+      "message-tube"
+    ],
+    "accent": "dark-hood"
+  }
+}

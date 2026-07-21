@@ -1,0 +1,35 @@
+{
+  "id": "stage-iv-lure",
+  "name": "Stage IV",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "stage-iv-lure",
+  "description": "An old woman's work coat hangs from a body the Host still lets speak. One hand is fused beneath the wrist. A broken crescent of bone rises behind her left ear.",
+  "stats": {
+    "hp": 9,
+    "maxHp": 9,
+    "actionPoints": 5,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "prayer-grip",
+      "name": "Prayer Grip",
+      "apCost": 3,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "aggro": [
+    "She plants both feet and lifts the cart clear.",
+    "The old woman smiles with one side of her mouth."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "stage-iv",
+    "speaking",
+    "deceptive",
+    "human"
+  ]
+}

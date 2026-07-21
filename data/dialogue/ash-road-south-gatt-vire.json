@@ -1,0 +1,53 @@
+{
+  "id": "ash-road-south-gatt-vire",
+  "title": "Gaius Cotta",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Gaius watches the wagon lane while speaking, counting each person who crosses the freight rope.",
+        "\"Questions are welcome if they do not stand where a wheel belongs.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why the north road is dangerous",
+          "next": "road",
+          "effects": {
+            "setFlag": "heard-chain-road-losses"
+          }
+        },
+        {
+          "label": "Ask whether the guards would enforce Darius’s contract",
+          "next": "contract"
+        },
+        {
+          "label": "Clear the wagon lane",
+          "close": true
+        }
+      ]
+    },
+    "road": {
+      "lines": [
+        "\"Red Tithe scouts use the ford banks. Something heavier moves after them and leaves no boot marks.\"",
+        "\"We lost three people protecting medicine South Measure never saw. The load went north.\""
+      ],
+      "choices": [
+        {
+          "label": "Clear the wagon lane",
+          "close": true
+        }
+      ]
+    },
+    "contract": {
+      "lines": [
+        "\"I guard freight and taps, then keep the yard orderly enough for both. I will not drag a resident to a service wagon.\"",
+        "\"If Darius writes that order, he can carry it himself.\""
+      ],
+      "choices": [
+        {
+          "label": "Clear the wagon lane",
+          "close": true
+        }
+      ]
+    }
+  }
+}

@@ -1,13 +1,16 @@
 {
   "id": "catacombs-survivor-istra",
-  "name": "Istra Havel",
+  "name": "Judith Porta",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Fence mender",
   "appearance": {
     "body": "old-bent",
     "outfit": "settlement-mender",
-    "gear": ["cane", "tool-roll"],
+    "gear": [
+      "cane",
+      "tool-roll"
+    ],
     "accent": "bare-grey"
   },
   "stats": {

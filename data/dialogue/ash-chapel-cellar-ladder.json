@@ -13,7 +13,7 @@
             "log": "You climb back into the chapel.",
             "loadLevel": {
               "path": "./data/levels/ash_chapel_breach.json",
-              "player": { "x": 36, "y": 13 }
+              "player": { "x": 36, "y": 14 }
             }
           },
           "close": true

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<!-- Dev-only harness for native 2x interface verification. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>
+html,body{margin:0;padding:0;background:#000;overflow:hidden}
+canvas{display:block;image-rendering:pixelated}
+</style>
+</head>
+<body>
+<canvas id="c" width="1280" height="960"></canvas>
+<script type="module">
+import { UIRenderer } from '/src/render/UIRenderer.js';
+import { buildSpriteAtlas } from '/src/render/SpriteAtlas.js';
+import { inventorySlotBox } from '/src/ui/inventoryLayout.js';
+
+function item(model, index = 0, extra = {}) {
+  const rarities = ['common', 'uncommon', 'rare', 'epic', 'legendary'];
+  return {
+    id: `${model}-${index}`,
+    name: `${model} sample ${index + 1}`,
+    type: model,
+    groundModel: model,
+    count: index % 3 === 0 ? 3 : 1,
+    equippedCount: index === 0 ? 1 : 0,
+    rarity: rarities[index % rarities.length],
+    rarityLabel: rarities[index % rarities.length],
+    weight: 0.5 + index / 10,
+    totalWeight: 1 + index / 5,
+    description: 'A field item retained for hard-pixel interface inspection.',
+    ...extra
+  };
+}
+
+const models = [
+  'dressing', 'food', 'rounds', 'sidearm', 'key', 'paper', 'vial', 'shard',
+  'ball', 'boots', 'coat', 'hood', 'vest', 'ribguard', 'ring', 'necklace', 'unknown'
+];
+const items = models.map((model, index) => item(model, index, {
+  equipmentSlot: ['boots', 'armor', 'head', 'ring'].includes(model) ? model : undefined,
+  condition: model === 'sidearm' ? 6 : undefined,
+  conditionMax: model === 'sidearm' ? 10 : undefined,
+  buildLabel: model === 'ribguard' ? 'Road Ghost' : undefined,
+  wornSlots: model === 'ring' ? ['left', 'right'] : undefined
+}));
+const equipmentSlots = ['HEAD', 'ARMOR', 'BOOTS', 'WEAPON', 'RING I', 'RING II', 'TOKEN'].map((label, index) => ({
+  label,
+  name: index % 2 ? 'EMPTY' : items[index]?.name ?? 'FIELD ITEM',
+  empty: index % 2 === 1,
+  rarity: index % 2 ? 'common' : 'rare'
+}));
+
+function base(overrides = {}) {
+  return {
+    screen: null,
+    actorName: 'MARA VEY',
+    role: 'CULT-BREAKER, ASHEN CENSURE',
+    mode: 'EXPLORE',
+    sneakMode: false,
+    hp: 14,
+    maxHp: 14,
+    ap: 6,
+    maxAp: 6,
+    statuses: [],
+    actionName: 'SERVICE KNIFE',
+    actionChance: '74%',
+    actionDamage: 'D4',
+    target: 'OPENED PENITENT 12/12',
+    inventoryItems: [],
+    carryWeight: 3.4,
+    maxCarryWeight: 18,
+    controls: ['CLICK MOVE OR USE', 'WASD MOVE', 'I FIELD PACK'],
+    log: ['SUCCESS: THE LATCH GIVES.', 'FAILED: THE WARD HOLDS.'],
+    cursor: null,
+    ...overrides
+  };
+}
+
+const traderItems = [
+  item('dressing', 0, { price: 3, affordable: true, count: 2 }),
+  item('food', 1, { price: 5, affordable: false, count: 1 }),
+  item('rounds', 2, { price: 8, affordable: false, count: 0 })
+];
+const playerItems = [
+  item('paper', 3, { sellPrice: 1, sellable: true, count: 2 }),
+  item('key', 4, { sellable: false, count: 1 })
+];
+
+const cases = {
+  hud: () => base({
+    areaTitle: { text: 'SOUTH MEASURE', ttl: 4, duration: 5 },
+    hoverText: 'INSPECT THE SEALED RELIQUARY',
+    cursor: { x: 300, y: 210, state: 'move' }
+  }),
+  sneak: () => base({
+    sneakMode: true,
+    statuses: [{ label: 'BLEEDING', stacks: 2 }, { label: 'MARKED', stacks: 1 }],
+    nearbyActionText: 'E OPEN CENSURE GATE',
+    cursor: { x: 300, y: 210, state: 'use' }
+  }),
+  combat: () => base({
+    mode: 'COMBAT', hp: 3, ap: 2,
+    statuses: [{ label: 'BURNING', stacks: 3 }],
+    cursor: { x: 300, y: 210, state: 'attack' }
+  }),
+  context: () => base({
+    hoverText: 'SEALED RELIQUARY',
+    contextActionMenu: {
+      anchor: { x: 590, y: 310 },
+      actions: [
+        { id: 'inspect', label: 'INSPECT', hint: 'READ THE FIELD MARKS' },
+        { id: 'open', label: 'OPEN', enabled: false, reason: 'CENSURE SEAL REQUIRED' },
+        { id: 'leave', label: 'LEAVE' }
+      ]
+    },
+    cursor: { x: 570, y: 305, state: 'inspect' }
+  }),
+  creation: () => base({
+    screen: 'character-customization',
+    characterCreation: {
+      name: 'TEST AGENT', canConfirm: true, previewSpriteId: 'player',
+      rows: Array.from({ length: 15 }, (_, index) => ({
+        label: `OPTION ${index + 1}`,
+        value: index === 7 ? 'MARA VEY' : index,
+        kind: index === 4 ? 'range' : index === 7 ? 'name' : 'choice',
+        min: 0, max: 10, selected: index === 7
+      }))
+    },
+    cursor: { x: 550, y: 350, state: 'move' }
+  }),
+  primary: () => base({
+    screen: 'primary-assignment',
+    primaryAssignment: {
+      canConfirm: true, pointsRemaining: 0,
+      rows: ['BODY', 'AGILITY', 'EYE', 'INTELLIGENCE', 'RELIGION', 'VOICE', 'NERVE'].map((label, index) => ({
+        label, value: 4 + index % 4, selected: index === 3
+      }))
+    }
+  }),
+  inventory: () => base({
+    screen: 'inventory', inventoryItems: items, inventoryIndex: 8,
+    inventoryMoveIndex: 8, inventoryFocus: 'items', equipmentSlots,
+    ducats: 37, figureSpriteId: 'player'
+  }),
+  'inventory-action': () => base({
+    screen: 'inventory', inventoryItems: items, inventoryFocus: 'gear',
+    equipmentIndex: 2, equipmentSlots, figureSpriteId: 'player',
+    inventoryActionMenu: {
+      anchor: inventorySlotBox(0), canUse: true, canEquip: true,
+      canRepair: true, canSplit: true
+    }
+  }),
+  'inventory-split': () => base({
+    screen: 'inventory', inventoryItems: items, equipmentSlots,
+    figureSpriteId: 'player',
+    inventorySplit: { item: items[0], amount: 7, max: 12 }
+  }),
+  'inventory-repair': () => base({
+    screen: 'inventory', inventoryItems: items, equipmentSlots,
+    figureSpriteId: 'player',
+    inventoryRepair: {
+      target: { name: 'SERVICE SIDEARM', condition: 3, conditionMax: 10 },
+      index: 1,
+      donors: [
+        { name: 'MATCHED SIDEARM', condition: 8, conditionMax: 10, exactMatch: true },
+        { name: 'FIELD SIDEARM', condition: 5, conditionMax: 10, exactMatch: false }
+      ]
+    }
+  }),
+  loot: () => base({
+    screen: 'loot', loot: { title: 'RELIQUARY CACHE', entries: items.slice(0, 6), index: 3 }
+  }),
+  'trade-stock': () => base({
+    screen: 'trade',
+    trade: {
+      title: 'FIELD EXCHANGE', traderName: 'HANNE', traderItems, playerItems,
+      stockIndex: 1, playerIndex: 0, focus: 'trader', ducats: 1,
+      canBuy: false, canSell: false, buyHint: 'NOT ENOUGH DUCATS'
+    }
+  }),
+  'trade-player': () => base({
+    screen: 'trade',
+    trade: {
+      title: 'FIELD EXCHANGE', traderName: 'HANNE', traderItems, playerItems,
+      stockIndex: 0, playerIndex: 0, focus: 'player', ducats: 9,
+      canBuy: false, canSell: true
+    }
+  }),
+  dialogue: () => base({
+    screen: 'dialogue',
+    dialogue: {
+      title: 'FIELD INTERVIEW', speakerSpriteId: 'settlement-selka',
+      lines: [
+        'THE LEDGER IS DAMP WHERE THE CAMP RAIN GOT THROUGH.',
+        'SERA KEEPS ONE FINGER ON THE LATEST BELL TALLY.',
+        'THE NORTH ROAD STAYED QUIET ALL MORNING.'
+      ],
+      options: ['1. COMMIT TO THE WRIT', '2. FORCE THE DOOR', '3. LEAVE'],
+      choices: [
+        { effects: { questUpdate: { quest: 'TEST' } }, close: true },
+        { effects: { startCombat: 'TEST' }, close: true },
+        { close: true }
+      ]
+    }
+  })
+};
+
+try {
+  const name = new URLSearchParams(location.search).get('case') ?? 'hud';
+  const atlas = buildSpriteAtlas();
+  const renderer = new UIRenderer(atlas);
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.setTransform(2, 0, 0, 2, 0, 0);
+
+  if (name.startsWith('cursor-')) {
+    renderer.draw(ctx, base({ cursor: { x: 300, y: 210, state: name.slice(7) } }));
+  } else if (name === 'briefing-first' || name === 'briefing-final') {
+    const final = name.endsWith('final');
+    renderer.drawBriefing(ctx, {
+      title: 'FIELD WRIT', pageIndex: final ? 1 : 0, pageCount: 2,
+      page: final
+        ? ['THE FINAL FIELD ORDER IS READY.']
+        : ['THE FIRST FIELD ORDER RECORDS THE APPROACH.', 'THE SECOND PARAGRAPH TESTS THE FULL PAGE RHYTHM.'],
+      nextPrompt: 'ENTER CONTINUE', lastPrompt: 'ENTER BEGIN', skipPrompt: final ? '' : 'ESC SKIP'
+    });
+  } else if (name.startsWith('loading-')) {
+    const progress = Number(name.slice(8)) / 100;
+    renderer.drawLoading(ctx, {
+      progress,
+      message: 'LOADING NATIVE DETAIL AUDIT',
+      detail: progress === 0.5 ? 'MIDPOINT VERIFICATION' : ''
+    });
+  } else {
+    const build = cases[name];
+    if (!build) throw new Error(`Unknown native UI case: ${name}`);
+    renderer.draw(ctx, build());
+  }
+
+  globalThis.__NATIVE_UI_CASES = [
+    ...Object.keys(cases),
+    ...['move', 'inspect', 'talk', 'use', 'loot', 'attack', 'blocked', 'unknown'].map((state) => `cursor-${state}`),
+    'briefing-first', 'briefing-final', 'loading-0', 'loading-50', 'loading-100'
+  ];
+  globalThis.__NATIVE_UI_CASE = name;
+  document.title = 'CAPTURE-READY';
+} catch (error) {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+}
+</script>
+</body>
+</html>

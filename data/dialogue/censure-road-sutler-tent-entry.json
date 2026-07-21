@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-sutler-tent-entry",
+  "title": "Judith's Trade Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Tallies hang beside Judith's trade table beyond the flap."
+      ],
+      "choices": [
+        {
+          "label": "Enter Judith's tent",
+          "effects": {
+            "log": "You enter Judith's trade tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_sutler_tent.json",
+              "player": { "x": 5, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside Judith's tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

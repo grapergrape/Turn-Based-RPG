@@ -1,0 +1,56 @@
+{
+  "id": "reliquary-greatsword",
+  "name": "Reliquary Greatsword",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "sword",
+  "rarity": "common",
+  "weight": 4.4,
+  "groundModel": "sword",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Black Reliquary",
+    "factions": [
+      "black-reliquary"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "sword",
+    "roles": [
+      "melee",
+      "sword",
+      "close"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Cut",
+        "mode": "melee",
+        "apCost": 6,
+        "damage": 9,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "committed-blow",
+        "name": "Committed Blow",
+        "mode": "melee",
+        "apCost": 7,
+        "damage": 11,
+        "range": 1,
+        "accuracyBonus": -5,
+        "conditionWear": 2
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A severe two-handed blade recovered from a ceremonial armory. Reliquary keepers removed the jewels and kept the sound steel."
+}

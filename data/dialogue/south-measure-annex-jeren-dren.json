@@ -1,0 +1,55 @@
+{
+  "id": "south-measure-annex-jeren-dren",
+  "title": "Junia Sabinus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Junia raises one finger before you speak and presses the other hand to the cooling jacket.",
+        "A thin scrape passes through the casing. \"West fitting, not the bearing,\" Junia says."
+      ],
+      "choices": [
+        {
+          "label": "Ask what the scrape proves",
+          "next": "scrape",
+          "effects": {
+            "setFlag": "south-measure-cooling-jacket-known"
+          }
+        },
+        {
+          "label": "Ask what the jacket could carry",
+          "next": "load"
+        },
+        {
+          "label": "Let Junia listen through another cycle",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "scrape": {
+      "lines": [
+        "\"A retired machine should not complain that precisely. Refit the feed and it will hold cold again.\"",
+        "Junia taps the relief schedule with a knuckle. \"This was written by someone standing too far away.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the schedule to Junia",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "load": {
+      "lines": [
+        "\"Medicine first. If Darius sends the cooled wagon back with sealed tanks, water can take the space left over.\""
+      ],
+      "choices": [
+        {
+          "label": "Let the casing speak",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

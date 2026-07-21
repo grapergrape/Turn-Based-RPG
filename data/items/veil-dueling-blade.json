@@ -1,0 +1,46 @@
+{
+  "id": "veil-dueling-blade",
+  "name": "Veil Dueling Blade",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "sword",
+  "rarity": "common",
+  "weight": 2.1,
+  "groundModel": "sword",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Veil Brokers",
+    "factions": [
+      "veil-brokers"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "sword",
+    "roles": [
+      "melee",
+      "sword",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Cut",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 78
+  },
+  "description": "A narrow civilian blade with a deep cup guard and a needle point. Veil contracts sometimes specify whether it may be drawn."
+}

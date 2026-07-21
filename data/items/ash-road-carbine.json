@@ -1,0 +1,53 @@
+{
+  "id": "ash-road-carbine",
+  "name": "Ash Road Carbine",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "carbine",
+  "rarity": "common",
+  "weight": 3.65,
+  "groundModel": "carbine",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Road Wardens",
+    "factions": [
+      "road-wardens"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "carbine"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 6,
+        "range": 6,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "intermediate-cartridge",
+      "capacity": 15,
+      "defaultLoaded": 15,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A short rifle made for riders and cart guards. Ash has polished the forward grip smoother than the factory ever did."
+}

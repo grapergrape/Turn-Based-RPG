@@ -1,0 +1,64 @@
+{
+  "id": "south-measure-annex-service-hatch-surface",
+  "title": "Annex Service Hatch",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The low hatch beside the annex apron opens into the western drain branch."
+      ],
+      "choices": [
+        {
+          "label": "Descend into the relief drain",
+          "conditions": {
+            "flag": "south-measure-annex-access"
+          },
+          "effects": {
+            "log": "You climb down through the annex service hatch into the relief drain.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 2,
+                "y": 16,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Lift the seized service latch",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 30
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-annex-access",
+              "south-measure-annex-forced"
+            ],
+            "log": "The service latch rises with a low metal complaint.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_relief_drain.json",
+              "player": {
+                "x": 2,
+                "y": 16,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay on the annex apron",
+          "effects": {
+            "log": "You step back from the service hatch."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

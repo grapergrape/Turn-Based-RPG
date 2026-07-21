@@ -1,0 +1,66 @@
+{
+  "id": "ash-road-south-tessa-bair",
+  "title": "Thecla Galenus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Thecla closes a medicine case before the dust from a passing cart can reach it.",
+        "\"Tell me whether you need care or supplies. Screening is care with forms attached.\""
+      ],
+      "choices": [
+        {
+          "label": "Request treatment for the charity cots",
+          "next": "charity",
+          "effects": {
+            "setFlag": "compact-treatment-requested"
+          }
+        },
+        {
+          "label": "Trade for medical supplies",
+          "next": "trade"
+        },
+        {
+          "label": "Leave Thecla to the clinic case",
+          "close": true
+        }
+      ]
+    },
+    "charity": {
+      "lines": [
+        "\"I can take the unstable patients under Aurelia’s urgent exception. I need names for dosing, not custody.\"",
+        "\"Bring Joanna’s fever notes. I will bring the screen to her if the line cannot move.\""
+      ],
+      "choices": [
+        {
+          "label": "See Thecla’s supplies",
+          "effects": {
+            "trade": "ash-road-south-tessa-bair"
+          }
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Thecla to the clinic case",
+          "close": true
+        }
+      ]
+    },
+    "trade": {
+      "lines": [
+        "\"Dressings are open stock. The suppressant price includes the seal I must answer for.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Thecla to the clinic case",
+          "close": true
+        }
+      ]
+    }
+  }
+}

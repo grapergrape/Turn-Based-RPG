@@ -1,0 +1,56 @@
+{
+  "id": "south-measure-annex-sora-varek",
+  "title": "Sophia Crispus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Sophia sets an old issue slip beneath a current Morrow claim, leaving both seals uncovered.",
+        "\"If you ask who owns the annex, one of these papers will lie for you.\""
+      ],
+      "choices": [
+        {
+          "label": "Compare the two seals",
+          "next": "seals"
+        },
+        {
+          "label": "Ask where Horace’s work appears",
+          "next": "margin"
+        },
+        {
+          "label": "Leave the claim unsettled",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "seals": {
+      "lines": [
+        "\"The relief office issued these bays to a town that still exists. Morrow paid to recover them after the fire, but recovery is not the same word as ownership unless a clerk needs it to be.\""
+      ],
+      "choices": [
+        {
+          "label": "Read Sophia’s margin",
+          "next": "margin"
+        },
+        {
+          "label": "Fold the claims apart",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "margin": {
+      "lines": [
+        "Horace’s name runs down the edge in smaller ink than either seal.",
+        "\"The form has no box for the years he gave this place. I used the space it forgot to forbid.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Sophia finish the margin",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

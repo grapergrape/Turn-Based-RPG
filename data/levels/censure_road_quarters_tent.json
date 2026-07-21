@@ -8,6 +8,9 @@
   "quests": [
     "investigate-ash-chapel-cult"
   ],
+  "dialogue": [
+    "censure-road-quarters-tent-exit"
+  ],
   "mood": {
     "floorShade": "#15130e",
     "floorShadeAlpha": 0.12,
@@ -47,27 +50,58 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "journalNotes": [
     {
-      "id": "quarters-tent-exit-transition",
-      "x": 6,
-      "y": 8,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 16,
-          "y": 41
-        }
-      }
+      "flag": "censure-road-quarters-coat-cache-found",
+      "text": "The old kit's owner was Paulinus Corda. He hid one ducat in a marked coat cuff and expected to return for it."
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "quarters-tent-loose-ducats",
+      "item": "ducat",
+      "count": 1,
+      "x": 9,
+      "y": 6
     }
   ],
   "objects": [
+    {
+      "id": "quarters-tent-shared-coin-pouch",
+      "kind": "small-pouch",
+      "x": 2,
+      "y": 6,
+      "seed": 2607,
+      "name": "Unclaimed Kit Pouch",
+      "interact": {
+        "type": "container",
+        "log": "Three names were scratched out before the quartermaster's unclaimed mark crossed the clasp.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 2
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          }
+        ]
+      }
+    },
     {
       "kind": "canvas-tent-flap",
       "x": 6,
       "y": 9,
       "id": "quarters-tent-exit-flap",
-      "name": "Tent Flap"
+      "name": "Tent Flap",
+      "clickAreas": [
+        { "x0": 6, "y0": 9, "x1": 6, "y1": 9 }
+      ],
+      "interactionMarker": { "x": 6, "y": 8 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-quarters-tent-exit"
+      }
     },
     {
       "kind": "camp-bedroll",
@@ -96,7 +130,46 @@
       "y": 6,
       "blocking": true,
       "id": "quarters-tent-coat-barrel",
-      "seed": 3021
+      "seed": 3021,
+      "name": "Old Coat Barrel",
+      "interact": {
+        "type": "note",
+        "log": "Discarded field coats fill the barrel. One cuff has the same spoon-pressed letters as the warning in the old kit.",
+        "search": {
+          "id": "quarters-tent-coat-cache-search",
+          "title": "Old Coat Barrel",
+          "lines": [
+            "The marked cuff has been sewn shut above the elbow."
+          ],
+          "useLabel": "Inspect the old coats",
+          "methods": [
+            {
+              "id": "follow-false-bottom-clue",
+              "label": "Open the marked cuff",
+              "field": "search",
+              "dc": 45,
+              "conditions": {
+                "flag": "censure-road-quarters-false-bottom-found"
+              },
+              "successLog": "The cuff holds one ducat and a name rubbed almost flat: ARLEN VOE. The cache owner expected to find his coat again.",
+              "failLog": "The stitches turn under the lining. You cannot open them without cutting the name away.",
+              "success": {
+                "setFlag": "censure-road-quarters-coat-cache-found",
+                "inventory": {
+                  "add": [
+                    { "item": "ducat", "count": 1 }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Old Coat Barrel",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "paper-scraps",

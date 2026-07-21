@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-elda-morn",
+  "name": "Claudia Lector",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Admission clerk",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "old-measure-gates",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "compact",
+    "outfit": "settlement-quartermaster",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-grey"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-freight-rear-door-freight",
+  "title": "Rear Service Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The rear door opens toward the wagon repair stands."
+      ],
+      "choices": [
+        {
+          "label": "Step out by the repair stands",
+          "effects": {
+            "log": "You leave the freight house through the rear service door.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 37,
+                "y": 50,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Remain in the freight house",
+          "effects": {
+            "log": "You leave the rear latch alone."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

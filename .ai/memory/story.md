@@ -9,18 +9,18 @@ Core canon:
 - The alien organism is commonly called **The Host**.
 - Every Earthborn Host strain descends from the sample that infected Father Marius Vale.
 - The **Vale Imprint** is the inherited psychic-biological pattern that makes Host transformations religious body horror instead of random alien mutation.
-- The first apocalypse stopped during **the Stilling**, but the Stilling was an artificial lock created by Dr. Elian Sorell to trap The Host inside the Vale Imprint.
+- The first apocalypse stopped during **the Stilling**, but the Stilling was an artificial lock created by Dr. Diodorus Seneca to trap The Host inside the Vale Imprint.
 - The Stilling both calcified the existing Bloom-era Host (frozen mid-change, faintly conscious, not dead, like Vale and the Pale Orchard) and left an ongoing lock that stops infection from chaining into a new Bloom. New infections after the Stilling still transform victims but do not calcify and cannot spread on their own unless fed. As the lock fails, calcified hosts can thaw and fresh infection can catch again.
 - The Choir of the Open Wound is retconned as a recently emerged, unknown Host-cult (last few years), distinct from the common older Host/satanic cults the Censure has always burned. The protagonist is an experienced cult-breaker meeting THIS cult for the first time and investigates it; its name and doctrine are discovered in play (the Ash Chapel cult ledger reveals the name). Its rapid, coordinated emergence is a symptom of the failing lock. Player-facing slice text must not pre-name the Choir in narration; narration calls them "the cult" until the ledger reveal.
 - Hallowfen is the walled Earthside crash scar the Holy Remnant calls holy ground. Its checkpoint bell towers, not the town itself, are the first Act I silence.
 - Act I begins with the Hallowfen wall crisis: expose or survive a Choir-held checkpoint, enter through that checkpoint or a smuggler tunnel, and decide whether Hallowfen survives the siege.
-- The data-core mystery comes after Hallowfen's fate is settled. The core carries Sorell's damaged warning that the lock is failing, that Sorell cannot repair it, and that the listener must find the Three Witnesses through puzzle clues rather than exact coordinates.
-- Act II is the largest act: towns, side quests, faction courts, companion arcs, and the Three Witnesses. The Witnesses reveal Father Vale as first contact, show that early Host forms were not only Hell-shaped, and prove Sorell created the lock while calcifying into it.
-- Act III narrows around the Choir's way of life and Ysolde's total-immersion rite. The Pontifex is abducted, a moon sigil is left behind, and the Choir tries to manifest Satan by lowering a symbolically worthy body into harvested Host matter.
-- Act IV resolves Woundfall, Vale, and Sorell. Sorell is fused into the lock chamber. Vale tortures Sorell because Sorell turned Vale's fear into humanity's prison. The final choice is about the cost of preserving, breaking, replacing, or renewing that lock.
-- The Long Ash graveyard chapels contain the optional mystery **Those Who Heard the Bell**. Hessa Marr's Vigil Chapel preserves evidence that eleven calcified people remain aware. The Mortuary Chapel hides road-office measurements and Sava Rell, a twelfth subject who turned toward Hallowfen before its bells sounded. The player can keep the vigil, perform censure, or carry the records forward. The implementation plan is locked in `docs/maps/those-who-heard-the-bell.md`.
-- Ash Road South is centered on **South Measure**, a Bloom-era refugee receiving field that became a permanent settlement while remaining outside every city's law. The Lumen Compact inherited its medical rolls and offers narrow individual reintegration without admitting the community. The Morrow Chain keeps its pumps and freight working through coercive debt. Brother Tarn is the Penitent Engine whose tread stopped at the Ash Chapel threshold; a Host-touched lost brother answered him with a retired Hallowfen checkpoint code. The location plan is `docs/story/locations/ash-road-south.md`.
-- The originality guardrail is documented in `docs/story/originality.md`: the story may use familiar CRPG structures, but its spine is first contact through Vale, the Vale Imprint, Sorell's lock, the Choir's false Satan, and the final moral crime scene.
+- The data-core mystery comes after Hallowfen's fate is settled. The core carries Seneca's damaged warning that the lock is failing, that Seneca cannot repair it, and that the listener must find the Three Witnesses through puzzle clues rather than exact coordinates.
+- Act II is the largest act: towns, side quests, faction courts, companion arcs, and the Three Witnesses. The Witnesses reveal Father Vale as first contact, show that early Host forms were not only Hell-shaped, and prove Seneca created the lock while calcifying into it.
+- Act IV narrows around the Choir's way of life and Thecla's total-immersion rite. The Pontifex is abducted, a moon sigil is left behind, and the Choir tries to manifest Satan by lowering a symbolically worthy body into harvested Host matter.
+- Act IV resolves Woundfall, Vale, and Seneca. Seneca is fused into the lock chamber. Vale tortures Seneca because Seneca turned Vale's fear into humanity's prison. The final choice is about the cost of preserving, breaking, replacing, or renewing that lock.
+- The Long Ash graveyard chapels contain the optional mystery **Those Who Heard the Bell**. Keziah Fullo's Vigil Chapel preserves evidence that eleven calcified people remain aware. The Mortuary Chapel hides road-office measurements and Sapphira Rufa, a twelfth subject who turned toward Hallowfen before its bells sounded. The player can keep the vigil, perform censure, or carry the records forward. The implementation plan is locked in `docs/maps/those-who-heard-the-bell.md`.
+- Ash Road South is centered on **South Measure**, a Bloom-era refugee receiving field that became a permanent settlement while remaining outside every city's law. The Lumen Compact inherited its medical rolls and offers narrow individual reintegration without admitting the community. The Morrow Chain keeps its pumps and freight working through coercive debt. Brother Cassian is the Penitent Engine whose tread stopped at the Ash Chapel threshold; a Host-touched lost brother answered him with a retired Hallowfen checkpoint code. The location plan is `docs/story/locations/ash-road-south.md`.
+- The originality guardrail is documented in `docs/story/originality.md`: the story may use familiar CRPG structures, but its spine is first contact through Vale, the Vale Imprint, Seneca's lock, the Choir's false Satan, and the final moral crime scene.
 
 ## Current Direction
 
@@ -39,15 +39,14 @@ Runtime dialogue belongs in future `data/dialogue/` files only after a conversat
 Use `docs/enemies/` for hostile faction and boss design:
 
 - `docs/enemies/factions.md` - The Host, Choir, Ash Cartels, Remnant, Compact, Penitent Engines, Free City militias, Bloomborn hostility cases, and hazards.
-- `docs/enemies/bosses.md` - Hallowfen Gate Cantor, Hallowfen Tribunal, Lazarus Subject, Bell Below, Rooted Witness, Canticle's Choir, Sorell, the First Icon, and other boss concepts.
+- `docs/enemies/bosses.md` - Hallowfen Gate Cantor, Hallowfen Tribunal, Lazarus Subject, Bell Below, Rooted Witness, Canticle's Choir, Seneca, the First Icon, and other boss concepts.
 
-Use `docs/maps/README.md` as the canonical location index for Hallowfen, Ash Roads, Veyr's Gate, Sanctum Aurelian, Meridian Vault, Low Harrow, Cinder Parish, Glassmarket, Pale Orchard, Black Reliquary, Woundfall, Saint Origen Deep Bore, and Europa.
+Use `docs/maps/README.md` as the canonical location index for Hallowfen, Ash Roads, Spindle Gate, Sanctum Aurelian, Meridian Vault, Low Harrow, Cinder Parish, Glassmarket, Pale Orchard, Black Reliquary, Woundfall, Saint Origen Deep Bore, and Europa.
 
-Current title candidate from discussion: **The Vale Imprint** is stronger than **The Host** as a game title, while The Host should remain the organism's common name.
+The final game title is **Vale Imprint**. The Host remains the organism's common name.
 
 ## Open Questions
 
-- Is the final game title **The Vale Imprint**, or is that a subtitle?
 - Is the player character named and voiced, or a configurable field-squad leader?
 - Which faction, if any, initially funds the player's squad?
 - Which companions are mandatory versus optional?

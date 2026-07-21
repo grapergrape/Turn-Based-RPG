@@ -1,0 +1,56 @@
+{
+  "id": "south-measure-drain-ari-veck",
+  "title": "Asa Aquila",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Asa wipes silt from a handprint no wider than two fingers.",
+        "\"When that channel climbs, where would you put the child who made this?\""
+      ],
+      "choices": [
+        {
+          "label": "Point to the upper stair",
+          "next": "high-water"
+        },
+        {
+          "label": "Ask why no names are marked here",
+          "next": "names"
+        },
+        {
+          "label": "Leave the handprints undisturbed",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "high-water": {
+      "lines": [
+        "\"An adult picks the stair. A frightened child picks the hollow beneath it, where the water reaches first.\"",
+        "She points above the stain. A cup and folded cloth wait on an iron hook. \"Those are for getting them out, not for learning who they are.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the missing names",
+          "next": "names"
+        },
+        {
+          "label": "Let Asa finish clearing the flood marks",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "names": {
+      "lines": [
+        "\"A name beside this wall would travel farther than the child. Directions are enough.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the alcove unrecorded",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

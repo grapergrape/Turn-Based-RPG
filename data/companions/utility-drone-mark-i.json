@@ -1,0 +1,137 @@
+{
+  "id": "utility-drone-mark-i",
+  "name": "Utility Drone Mark I",
+  "type": "companion",
+  "model": "Utility Drone Mark I",
+  "spriteId": "utility-drone-mark-i",
+  "team": "player",
+  "control": "player",
+  "serviceItem": "drone-service-parts",
+  "tags": ["machine", "censure", "field-attendant"],
+  "communication": {
+    "mode": "nonverbal",
+    "signals": {
+      "registered": "Prrt?",
+      "combat": "Tik. Tik.",
+      "disabled": "Krrt.",
+      "reboot": "Vrrip."
+    }
+  },
+  "stats": {
+    "hp": 8,
+    "actionPoints": 5,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "arc-pin",
+      "name": "Arc Pin",
+      "apCost": 3,
+      "damage": 2,
+      "range": 4,
+      "mode": "ranged",
+      "accuracyField": "engineering",
+      "damageField": "engineering",
+      "tags": ["energy"]
+    }
+  ],
+  "upgradeEconomy": {
+    "recruitBasePoints": 4,
+    "pointsPerLevel": 2,
+    "nodePointCosts": [1, 1, 2, 2, 3, 3, 4, 5],
+    "nodePartCosts": [0, 0, 0, 0, 1, 1, 2, 3],
+    "ratingThresholds": [27, 40, 55, 70, 85]
+  },
+  "branches": [
+    {
+      "id": "core",
+      "name": "Core",
+      "rating": { "mode": "one", "fields": ["engineering"] },
+      "nodes": [
+        { "id": "core-reinforced-shell", "tier": 1, "name": "Reinforced Shell", "description": "The attendant gains 3 maximum HP.", "effect": "max-hp-3", "requires": [] },
+        { "id": "core-service-cell", "tier": 1, "name": "Service Cell", "description": "The attendant gains 1 maximum AP.", "effect": "max-ap-1", "requires": [] },
+        { "id": "core-fine-servos", "tier": 2, "name": "Fine Servos", "description": "Its first move each turn costs 0 AP.", "effect": "first-move-free", "requires": ["core-reinforced-shell"] },
+        { "id": "core-recovery-loop", "tier": 2, "name": "Recovery Loop", "description": "It repairs 1 HP at the start of its turn.", "effect": "turn-heal-1", "requires": ["core-service-cell"] },
+        { "id": "core-shared-telemetry", "tier": 3, "name": "Shared Telemetry", "description": "Agent and attendant gain 5 hit chance while within 3 tiles.", "effect": "shared-hit-5", "requires": ["core-fine-servos", "core-recovery-loop"] },
+        { "id": "core-reserve-charge", "tier": 3, "name": "Reserve Charge", "description": "Its first nonmove action each encounter costs 1 less AP, to a minimum of 1.", "effect": "reserve-charge", "requires": ["core-fine-servos", "core-recovery-loop"] },
+        { "id": "core-redundant-core", "tier": 4, "name": "Redundant Core", "description": "The first lethal hit each encounter leaves it at 1 HP and grants Braced.", "effect": "redundant-core", "requires": ["core-shared-telemetry", "core-reserve-charge"] },
+        { "id": "core-command-bus", "tier": 5, "name": "Command Bus", "description": "Once each round, spending at least 3 AP grants the other unit 1 AP.", "effect": "command-bus", "requires": ["core-redundant-core"] }
+      ]
+    },
+    {
+      "id": "energy",
+      "name": "Energy",
+      "rating": { "mode": "one", "fields": ["engineering"] },
+      "nodes": [
+        { "id": "energy-tuned-emitter", "tier": 1, "name": "Tuned Emitter", "description": "Arc Pin deals 1 more damage.", "effect": "arc-pin-damage-1", "requires": [] },
+        { "id": "energy-range-lens", "tier": 1, "name": "Range Lens", "description": "Energy attacks gain 1 range and 10 hit chance.", "effect": "energy-range-hit", "requires": [] },
+        { "id": "energy-forked-current", "tier": 2, "name": "Forked Current", "description": "The first Arc Pin hit each turn deals 1 damage to the nearest enemy beside the target.", "effect": "forked-current", "requires": ["energy-tuned-emitter"] },
+        { "id": "energy-capacitor-kick", "tier": 2, "name": "Capacitor Kick", "description": "Grants Overcharge, a 4 AP range 4 attack for 5 damage. Next turn begins with 1 less AP.", "effect": "ability-overcharge", "requires": ["energy-range-lens"] },
+        { "id": "energy-ion-scar", "tier": 3, "name": "Ion Scar", "description": "Energy hits apply Conductive for 2 turns. Energy attacks gain 10 hit chance against Conductive targets.", "effect": "ion-scar", "requires": ["energy-forked-current", "energy-capacitor-kick"] },
+        { "id": "energy-heat-sink", "tier": 3, "name": "Heat Sink", "description": "Overcharge no longer reduces AP on the next turn.", "effect": "heat-sink", "requires": ["energy-forked-current", "energy-capacitor-kick"] },
+        { "id": "energy-arc-sweep", "tier": 4, "name": "Arc Sweep", "description": "Grants a 5 AP range 2 cone attack that deals 3 damage to each target.", "effect": "ability-arc-sweep", "requires": ["energy-ion-scar", "energy-heat-sink"] },
+        { "id": "energy-palatine-circuit", "tier": 5, "name": "Palatine Circuit", "description": "The first energy hit each round chains 2 damage to two enemies within 2 tiles of the target.", "effect": "palatine-circuit", "requires": ["energy-arc-sweep"] }
+      ]
+    },
+    {
+      "id": "bulwark",
+      "name": "Bulwark",
+      "rating": { "mode": "one", "fields": ["engineering"] },
+      "nodes": [
+        { "id": "bulwark-ram-plate", "tier": 1, "name": "Ram Plate", "description": "Grants Ram, a 2 AP melee strike for 3 damage that pushes 1 tile.", "effect": "ability-ram", "requires": [] },
+        { "id": "bulwark-armor-band", "tier": 1, "name": "Armor Band", "description": "The attendant gains 4 maximum HP.", "effect": "max-hp-4", "requires": [] },
+        { "id": "bulwark-guard-stance", "tier": 2, "name": "Guard Stance", "description": "Grants a 2 AP stance with Braced for 2 turns. Enemies within 3 tiles prefer the attendant for 1 round.", "effect": "ability-guard-stance", "requires": ["bulwark-ram-plate"] },
+        { "id": "bulwark-intercept-arm", "tier": 2, "name": "Intercept Arm", "description": "Once each round, it redirects the first attack against an adjacent agent.", "effect": "intercept-arm", "requires": ["bulwark-armor-band"] },
+        { "id": "bulwark-breach-teeth", "tier": 3, "name": "Breach Teeth", "description": "Ram deals 2 more damage and applies Broken Guard for 2 turns.", "effect": "ram-breach", "requires": ["bulwark-guard-stance", "bulwark-intercept-arm"] },
+        { "id": "bulwark-anchor-feet", "tier": 3, "name": "Anchor Feet", "description": "It ignores forced movement, Snared, and Off Balance. An adjacent agent gains light cover.", "effect": "anchor-feet", "requires": ["bulwark-guard-stance", "bulwark-intercept-arm"] },
+        { "id": "bulwark-counter-ram", "tier": 4, "name": "Counter Ram", "description": "Once each round, an adjacent enemy that hits it takes 2 damage.", "effect": "counter-ram", "requires": ["bulwark-breach-teeth", "bulwark-anchor-feet"] },
+        { "id": "bulwark-last-wall", "tier": 5, "name": "Last Wall", "description": "Once each encounter, a lethal attack against the agent within 3 tiles is redirected to the active attendant.", "effect": "last-wall", "requires": ["bulwark-counter-ram"] }
+      ]
+    },
+    {
+      "id": "medical",
+      "name": "Medical",
+      "rating": { "mode": "max", "fields": ["engineering", "medicine"] },
+      "nodes": [
+        { "id": "medical-dressing-arm", "tier": 1, "name": "Dressing Arm", "description": "Grants a 3 AP range 1 treatment that restores 3 HP. Cooldown 2 turns.", "effect": "ability-dressing-arm", "requires": [] },
+        { "id": "medical-clean-line", "tier": 1, "name": "Clean Line", "description": "Grants a 2 AP adjacent treatment that removes one cleansable negative condition.", "effect": "ability-clean-line", "requires": [] },
+        { "id": "medical-triage-optic", "tier": 2, "name": "Triage Optic", "description": "Healing restores 2 more HP when the target is at half health or lower.", "effect": "triage-optic", "requires": ["medical-dressing-arm"] },
+        { "id": "medical-repair-foam", "tier": 2, "name": "Repair Foam", "description": "Grants a 3 AP self repair that restores 4 HP. Cooldown 2 turns.", "effect": "ability-repair-foam", "requires": ["medical-clean-line"] },
+        { "id": "medical-med-station", "tier": 3, "name": "Med Station", "description": "Deploys a station for 4 AP. It lasts 3 rounds and heals an adjacent ally for 1 HP at turn end.", "effect": "deploy-med-station", "requires": ["medical-triage-optic", "medical-repair-foam"] },
+        { "id": "medical-stimulant-needle", "tier": 3, "name": "Stimulant Needle", "description": "Once each encounter, spend 3 AP to give the agent 2 AP and Fatigued.", "effect": "ability-stimulant-needle", "requires": ["medical-triage-optic", "medical-repair-foam"] },
+        { "id": "medical-emergency-clamp", "tier": 4, "name": "Emergency Clamp", "description": "Once each encounter, restore 3 HP after a hit leaves the agent alive at one quarter health or lower.", "effect": "emergency-clamp", "requires": ["medical-med-station", "medical-stimulant-needle"] },
+        { "id": "medical-mercy-rig", "tier": 5, "name": "Mercy Rig", "description": "Med Station lasts 4 rounds, reaches 2 tiles, heals 2 HP, and clears one cleansable condition on its first pulse.", "effect": "mercy-rig", "requires": ["medical-emergency-clamp"] }
+      ]
+    },
+    {
+      "id": "veil",
+      "name": "Veil",
+      "rating": { "mode": "max", "fields": ["engineering", "stealth"] },
+      "nodes": [
+        { "id": "veil-hooded-lamp", "tier": 1, "name": "Hooded Lamp", "description": "The agent gains 5 Stealth while crouched with the attendant active.", "effect": "crouch-stealth-5", "requires": [] },
+        { "id": "veil-survey-glass", "tier": 1, "name": "Survey Glass", "description": "The agent gains 5 Search while the attendant is active.", "effect": "search-5", "requires": [] },
+        { "id": "veil-quiet-bearings", "tier": 2, "name": "Quiet Bearings", "description": "The crouched Stealth bonus rises by 10. Attendant movement creates no hearing suspicion.", "effect": "quiet-bearings", "requires": ["veil-hooded-lamp"] },
+        { "id": "veil-marking-beam", "tier": 2, "name": "Marking Beam", "description": "Grants a 2 AP range 6 action that applies Studied for 2 turns.", "effect": "ability-marking-beam", "requires": ["veil-survey-glass"] },
+        { "id": "veil-ghost-light", "tier": 3, "name": "Ghost Light", "description": "Projects a lure within 5 tiles. In combat, nearby human enemies become Rattled.", "effect": "ability-ghost-light", "requires": ["veil-quiet-bearings", "veil-marking-beam"] },
+        { "id": "veil-shadow-screen", "tier": 3, "name": "Shadow Screen", "description": "Spend 3 AP to grant Faded to agent and attendant for 2 turns. Cooldown 3 turns.", "effect": "ability-shadow-screen", "requires": ["veil-quiet-bearings", "veil-marking-beam"] },
+        { "id": "veil-ambush-link", "tier": 4, "name": "Ambush Link", "description": "Once each encounter, a successful agent sneak opener triggers a free Arc Pin if range and sight permit.", "effect": "ambush-link", "requires": ["veil-ghost-light", "veil-shadow-screen"] },
+        { "id": "veil-vanishing-circuit", "tier": 5, "name": "Vanishing Circuit", "description": "Once each encounter, ordinary perception changes its first detection into an investigation. Forced and scripted detection still applies.", "effect": "vanishing-circuit", "requires": ["veil-ambush-link"] }
+      ]
+    },
+    {
+      "id": "fieldworks",
+      "name": "Fieldworks",
+      "rating": { "mode": "one", "fields": ["engineering"] },
+      "nodes": [
+        { "id": "fieldworks-sensor-stake", "tier": 1, "name": "Sensor Stake", "description": "Deploys a stake for 3 AP. It lasts 3 rounds and grants allies 10 hit chance against enemies within 2 tiles.", "effect": "deploy-sensor-stake", "requires": [] },
+        { "id": "fieldworks-folding-screen", "tier": 1, "name": "Folding Screen", "description": "Deploys adjacent light cover for 3 AP. It lasts 3 rounds.", "effect": "deploy-folding-screen", "requires": [] },
+        { "id": "fieldworks-snare-pod", "tier": 2, "name": "Snare Pod", "description": "Deploys a range 2 hazard for 3 AP. It deals 1 damage and applies Snared for 1 turn.", "effect": "deploy-snare-pod", "requires": ["fieldworks-sensor-stake"] },
+        { "id": "fieldworks-arc-sentry", "tier": 2, "name": "Arc Sentry", "description": "Deploys an adjacent sentry for 4 AP. For 3 rounds it attacks the nearest enemy within 4 tiles for 1 damage.", "effect": "deploy-arc-sentry", "requires": ["fieldworks-folding-screen"] },
+        { "id": "fieldworks-double-rack", "tier": 3, "name": "Double Rack", "description": "The attendant may sustain 2 deployables at once.", "effect": "deploy-limit-2", "requires": ["fieldworks-snare-pod", "fieldworks-arc-sentry"] },
+        { "id": "fieldworks-relay-pylon", "tier": 3, "name": "Relay Pylon", "description": "Deploys a pylon for 3 AP and 3 rounds. Agent and attendant gain 1 AP once per round when starting within 2 tiles.", "effect": "deploy-relay-pylon", "requires": ["fieldworks-snare-pod", "fieldworks-arc-sentry"] },
+        { "id": "fieldworks-rapid-assembly", "tier": 4, "name": "Rapid Assembly", "description": "The first deployment each encounter costs 2 less AP. All deployables last 1 more round.", "effect": "rapid-assembly", "requires": ["fieldworks-double-rack", "fieldworks-relay-pylon"] },
+        { "id": "fieldworks-field-workshop", "tier": 5, "name": "Field Workshop", "description": "Deployable limit becomes 3 and duration gains 2 rounds. Each field device receives its workshop improvement.", "effect": "field-workshop", "requires": ["fieldworks-rapid-assembly"] }
+      ]
+    }
+  ]
+}

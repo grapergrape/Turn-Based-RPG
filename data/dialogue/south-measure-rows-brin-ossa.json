@@ -1,0 +1,55 @@
+{
+  "id": "south-measure-rows-brin-ossa",
+  "title": "Dinah Viator",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Dinah braces the hidden door with one boot.",
+        "\"Which did you follow here, my hand mark or a person?\""
+      ],
+      "choices": [
+        {
+          "label": "Say the freight folio carried his mark",
+          "next": "surety",
+          "effects": {
+            "setFlag": "hidden-rows-chain-witness"
+          }
+        },
+        {
+          "label": "Say no resident name will enter your report",
+          "next": "terms"
+        },
+        {
+          "label": "Refuse to answer",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "surety": {
+      "lines": [
+        "\"I drove the winter runs they paid for. Morrow moved the next unpaid route into my children’s names and kept using my old mark.\"",
+        "His heel stays against the door. \"Break the false entries if you can. Do not attach this room to the proof.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the room out of the folio",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "terms": {
+      "lines": [
+        "Dinah studies you for a moment. \"Then ask Valeria about the surety page. If you return with an address on your tongue, this door will no longer be here.\""
+      ],
+      "choices": [
+        {
+          "label": "Accept Dinah’s condition",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

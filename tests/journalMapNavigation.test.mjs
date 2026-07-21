@@ -56,7 +56,7 @@ const level = {
 function makePlayer() {
   return new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 14, maxHp: 14, actionPoints: 6 },
     attacks: [{ id: 'knife', name: 'Knife', apCost: 1, damage: 3, range: 1 }],
@@ -106,6 +106,7 @@ function makeGame(exploredMapTiles = allCells()) {
   game.awardedQuestXp = new Set();
   game.inventoryOrder = [];
   game.contextActionMenu = null;
+  game.companionRun = { recruited: false };
   game.renderer = {
     toGrid: () => ({ x: 1, y: 1 }),
     renderFrame() {},
@@ -215,7 +216,8 @@ function mapClickFor(game, x, y) {
   game.uiScreen = 'journal';
   game.journalSection = JOURNAL_SECTIONS.indexOf('QUESTS');
   game.journalTurn = null;
-  const techniquesTab = journalTabBoxes(JOURNAL_SECTIONS.length)[JOURNAL_SECTIONS.indexOf('TECHNIQUES')];
+  const sections = game._journalSections();
+  const techniquesTab = journalTabBoxes(sections.length)[sections.indexOf('TECHNIQUES')];
 
   game._handleJournalScreen([], {
     x: techniquesTab.x + 3,
@@ -223,9 +225,28 @@ function mapClickFor(game, x, y) {
     button: 0
   });
 
-  assert.equal(game.journalTurn?.to, JOURNAL_SECTIONS.indexOf('TECHNIQUES'));
+  assert.equal(game.journalTurn?.to, sections.indexOf('TECHNIQUES'));
   game._advanceJournalTurn(game.journalTurn.duration);
-  assert.equal(JOURNAL_SECTIONS[game.journalSection], 'TECHNIQUES');
+  assert.equal(game._currentJournalSectionId(), 'TECHNIQUES');
+}
+
+{
+  const game = makeGame();
+  game.journalSection = game._journalSections().indexOf('TECHNIQUES');
+
+  game._cycleJournalSection(1);
+
+  assert.equal(game.journalTurn?.to, 0, 'the hidden attendant page is skipped');
+}
+
+{
+  const game = makeGame();
+  game.companionRun.recruited = true;
+  game.journalSection = game._journalSections().indexOf('TECHNIQUES');
+
+  game._cycleJournalSection(1);
+
+  assert.equal(game._journalSections()[game.journalTurn?.to], 'DRONE');
 }
 
 {
@@ -252,4 +273,23 @@ function mapClickFor(game, x, y) {
   });
 
   assert.equal(game.journalTechniqueIndex, 12);
+}
+
+{
+  const game = makeGame();
+  game.uiScreen = 'journal';
+  game.journalSection = game._journalSections().indexOf('NOTES');
+  game.journalTurn = null;
+  game.journalEvidenceIndex = 0;
+  game.journalNotes = Array.from({ length: 12 }, (_, index) => ({
+    id: `evidence-${index}`,
+    text: `Evidence ${index + 1} records a specific field finding with enough detail to occupy several ledger lines during review.`
+  }));
+
+  game._handleJournalScreen(['scroll-down']);
+  assert.equal(game.journalEvidenceIndex, 1);
+  game._handleJournalScreen(['scroll-up']);
+  assert.equal(game.journalEvidenceIndex, 0);
+  game._handleJournalScreen(['down']);
+  assert.equal(game.journalEvidenceIndex, 1);
 }

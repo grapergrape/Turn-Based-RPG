@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -47,9 +47,79 @@ export const FLOOR_STYLE_IDS = [
   'mud-track',
   'ash-gravel',
   'worn-canvas',
+  'south-measure-slab',
+  'south-measure-yard',
+  'south-measure-row',
+  'south-measure-grave-strip',
   'cave-stone',
-  'cave-river'
+  'cave-river',
+  'relief-channel-x',
+  'relief-channel-y',
+  'relief-channel-junction'
 ];
+
+const NATIVE_FLOOR_DETAIL = Object.freeze({
+  stone: { mode: 'grit', light: PALETTE.stoneDust, dark: PALETTE.stoneDark, count: 4 },
+  'ash-dirt': { mode: 'grit', light: PALETTE.stoneDust, dark: PALETTE.rustDark, count: 5 },
+  'ash-road': { mode: 'grit', light: PALETTE.stoneDust, dark: PALETTE.stoneDark, count: 4 },
+  'road-shoulder': { mode: 'grit', light: PALETTE.stoneLight, dark: PALETTE.rustDark, count: 5 },
+  'wheat-field': { mode: 'stubble', light: PALETTE.clothTan, dark: PALETTE.woodDark, count: 3 },
+  'furrow-field': { mode: 'stubble', light: PALETTE.woodLight, dark: PALETTE.rustDark, count: 3 },
+  'forest-floor': { mode: 'grain', light: PALETTE.stoneDust, dark: PALETTE.woodDark, count: 3 },
+  'graveyard-earth': { mode: 'grit', light: PALETTE.stoneDust, dark: PALETTE.rustDark, count: 4 },
+  'farm-plank': { mode: 'grain', light: PALETTE.woodLight, dark: PALETTE.outline, count: 3 },
+  'packed-earth': { mode: 'grit', light: PALETTE.stoneMid, dark: PALETTE.rustDark, count: 4 },
+  'mud-track': { mode: 'current', light: PALETTE.woodMid, dark: PALETTE.outline, count: 2 },
+  'ash-gravel': { mode: 'grit', light: PALETTE.stoneLight, dark: PALETTE.outline, count: 6 },
+  'worn-canvas': { mode: 'weave', light: PALETTE.clothTan, dark: PALETTE.woodDark, count: 3 },
+  'south-measure-slab': { mode: 'grit', light: PALETTE.limeLight, dark: PALETTE.limeDark, count: 2 },
+  'south-measure-yard': { mode: 'grit', light: PALETTE.clayLight, dark: PALETTE.ironDark, count: 2 },
+  'south-measure-row': { mode: 'grit', light: PALETTE.clayLight, dark: PALETTE.clayDark, count: 2 },
+  'south-measure-grave-strip': { mode: 'grit', light: PALETTE.limeMid, dark: PALETTE.clayDark, count: 3 },
+  'cave-stone': { mode: 'grit', light: PALETTE.stoneDust, dark: PALETTE.outline, count: 4 },
+  'cave-river': { mode: 'current', light: PALETTE.stoneDust, dark: PALETTE.clothBlueDark, count: 3 },
+  'relief-channel-x': { mode: 'current-x', light: PALETTE.clothBlue, dark: PALETTE.rustDark, count: 2 },
+  'relief-channel-y': { mode: 'current-y', light: PALETTE.clothBlue, dark: PALETTE.rustDark, count: 2 },
+  'relief-channel-junction': { mode: 'current', light: PALETTE.clothBlue, dark: PALETTE.rustDark, count: 3 }
+});
+
+function nativeFloorPoint(cx, cy, rng) {
+  const y = -10 + Math.floor(rng() * 21) + 0.5;
+  const halfSpan = Math.max(2, Math.floor((TILE_WIDTH / 2 - 4) * (1 - Math.abs(y) / (TILE_HEIGHT / 2))));
+  return {
+    x: cx - halfSpan + Math.floor(rng() * Math.max(1, halfSpan * 2)) + 0.5,
+    y: cy + y
+  };
+}
+
+function drawNativeFloorDetail(ctx, cx, cy, gx, gy, style) {
+  const profile = NATIVE_FLOOR_DETAIL[style] ?? NATIVE_FLOOR_DETAIL.stone;
+  const rng = rngFrom(hash2D(gx + 1601, gy + 1613));
+  for (let i = 0; i < profile.count; i += 1) {
+    const point = nativeFloorPoint(cx, cy, rng);
+    if (profile.mode === 'grain') {
+      const length = 2 + Math.floor(rng() * 4);
+      nativeLinePx(ctx, point.x, point.y, point.x + length, point.y - 1.5, profile.dark);
+      nativeLinePx(ctx, point.x + 0.5, point.y - 0.5, point.x + length - 0.5, point.y - 1.5, profile.light);
+    } else if (profile.mode === 'weave') {
+      nativeLinePx(ctx, point.x - 2, point.y + 0.5, point.x + 2, point.y - 1.5, profile.dark);
+      nativeLinePx(ctx, point.x - 1.5, point.y - 1, point.x + 1.5, point.y + 0.5, profile.light);
+    } else if (profile.mode === 'stubble') {
+      const height = 1.5 + (i % 2) * 0.5;
+      nativeLinePx(ctx, point.x, point.y, point.x + 0.5, point.y - height, profile.dark);
+      nativePx(ctx, point.x + 0.5, point.y - height, profile.light);
+    } else if (profile.mode.startsWith('current')) {
+      const length = 3 + Math.floor(rng() * 4);
+      const dx = profile.mode === 'current-y' ? -length : length;
+      const dy = profile.mode === 'current-x' ? Math.round(length / 2) : -Math.round(length / 2);
+      nativeLinePx(ctx, point.x, point.y, point.x + dx, point.y + dy, profile.dark);
+      nativeLinePx(ctx, point.x + 0.5, point.y - 0.5, point.x + dx - 0.5, point.y + dy - 0.5, profile.light);
+    } else {
+      nativePx(ctx, point.x, point.y + 0.5, profile.dark, i % 3 === 0 ? 1 : 0.5, 0.5);
+      nativePx(ctx, point.x, point.y, profile.light);
+    }
+  }
+}
 
 function drawFloorEdgeWear(ctx, cx, cy, seed, light = PALETTE.stoneDust, dark = PALETTE.stoneDark) {
   const d = diamond(cx, cy, TILE_WIDTH - 6, TILE_HEIGHT - 3);
@@ -944,6 +1014,437 @@ function drawWornCanvasFloorCell(ctx, cx, cy, gx, gy) {
   drawNoisePixels(ctx, cx - 28, cy - 11, 56, 22, [PALETTE.woodDark, PALETTE.rustDark, PALETTE.stoneDust, PALETTE.clothTan], 0.052, seed);
 }
 
+function drawSouthMeasureSlabFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 479, gy + 487);
+  const r = rngFrom(seed);
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, PALETTE.limeMid);
+
+  // Two broad, staggered cart-wear courses cross the receiving court. The
+  // course shifts after six columns and drops occasional segments, so the
+  // direction survives at district scale without tracing a logical tile edge.
+  const courseRow = 2 + (Math.floor(gx / 6) & 1);
+  const localRow = ((gy % 12) + 12) % 12;
+  const trafficCourse = localRow === courseRow || localRow === courseRow + 1;
+  if (trafficCourse && ((seed >>> 19) % 6) !== 0) {
+    const drift = ((seed >>> 23) % 7) - 3;
+    const start = -20 + ((seed >>> 8) & 3);
+    const end = 16 + ((seed >>> 11) & 3);
+    const worn = [
+      [cx + start + drift, cy + 7],
+      [cx + end - 4 + drift, cy - 10],
+      [cx + end + 4 + drift, cy - 7],
+      [cx + start + 7 + drift, cy + 10]
+    ];
+    poly(ctx, PALETTE.limeDark, worn);
+    linePx(ctx, worn[0][0] + 2, worn[0][1] - 2, worn[1][0] - 1, worn[1][1] + 1, PALETTE.limeLight, 1);
+    linePx(ctx, worn[2][0] - 2, worn[2][1] + 1, worn[3][0] + 1, worn[3][1] - 1, PALETTE.ironDark, 1);
+    if ((seed & 3) !== 0) {
+      const polishA = mixPoint(worn[0], worn[1], 0.24);
+      const polishB = mixPoint(worn[0], worn[1], 0.72);
+      nativeLinePx(ctx, polishA[0] + 2.5, polishA[1] + 1.5, polishB[0] + 2.5, polishB[1] + 1.5, PALETTE.limeLight);
+    }
+  }
+
+  // A municipal collector jogs once per four-row survey band. Three short
+  // sections lead toward each inlet, then a full-cell break prevents the old
+  // district-long cloned seam.
+  const collectorBand = Math.floor(gy / 4);
+  const collectorBlock = Math.floor(gx / 11);
+  const collectorBase = collectorBlock * 11
+    + 3
+    + (hash2D(collectorBlock + 541, collectorBlock * 19 + 547) % 4);
+  const collectorX = collectorBase
+    + (hash2D(collectorBand + collectorBlock * 7 + 557, collectorBand * 23 + 563) % 3)
+    - 1;
+  const collectorStep = ((gy % 4) + 4) % 4;
+  if (gx === collectorX && collectorStep !== 3) {
+    const drainA = [cx - 14, cy - 9];
+    const drainB = [cx + 14, cy + 5];
+    linePx(ctx, drainA[0], drainA[1], drainB[0], drainB[1], PALETTE.ironDark, 5);
+    linePx(ctx, drainA[0] - 1, drainA[1] - 1, drainB[0] - 1, drainB[1] - 1, PALETTE.ironMid, 3);
+    nativeLinePx(ctx, drainA[0] - 1.5, drainA[1] - 1.5, drainB[0] - 1.5, drainB[1] - 1.5, PALETTE.ironLight);
+    if (collectorStep === 1) {
+      for (const t of [0.36, 0.56, 0.76]) {
+        const grate = mixPoint(drainA, drainB, t);
+        linePx(ctx, grate[0] - 3, grate[1] + 1, grate[0] + 3, grate[1] - 2, PALETTE.clayLight, 1);
+      }
+    }
+  }
+
+  // The receiving court remains one pale civic surface. Repairs sit inside
+  // that field rather than outlining the diamond cells.
+  if ((seed & 15) < 3) {
+    const patchX = cx - 10 + Math.floor(r() * 21);
+    const patchY = cy - 4 + Math.floor(r() * 8);
+    const patchW = 18 + Math.floor(r() * 18);
+    const patchH = 7 + Math.floor(r() * 7);
+    drawIsoDiamond(ctx, patchX, patchY, patchW, patchH, (seed & 16) ? PALETTE.limeDark : PALETTE.limeLight);
+    const patch = diamond(patchX, patchY, patchW, patchH);
+    linePx(ctx, patch.left[0] + 1, patch.left[1], patch.top[0], patch.top[1] + 1, PALETTE.limeLight, 1);
+    linePx(ctx, patch.bottom[0], patch.bottom[1] - 1, patch.right[0] - 1, patch.right[1], PALETTE.limeDark, 1);
+  }
+
+  // Short measured scores survive from the old court survey. Their side,
+  // length and placement are hashed independently, so they never join into a
+  // district-long seam.
+  if (((seed >>> 5) % 9) === 0) {
+    const scoreX = cx - 18 + Math.floor(r() * 19);
+    const scoreY = cy + 4 - Math.floor(r() * 8);
+    const scoreLength = 8 + Math.floor(r() * 10);
+    const rise = 3 + Math.floor(r() * 3);
+    linePx(ctx, scoreX, scoreY, scoreX + scoreLength, scoreY - rise, PALETTE.limeDark, 1);
+    nativeLinePx(ctx, scoreX + 1.5, scoreY - 0.5, scoreX + scoreLength - 1.5, scoreY - rise - 0.5, PALETTE.limeLight);
+    if ((seed & 0x200) !== 0) {
+      linePx(ctx, scoreX + 3, scoreY - 2, scoreX + 6, scoreY + 1, PALETTE.clayMid, 1);
+    }
+  }
+
+  // Fitted iron repair plates are rare civic interventions, not a drain cover
+  // stamped once per cell.
+  if (((seed >>> 11) % 23) === 0) {
+    const plateX = cx - 9 + Math.floor(r() * 19);
+    const plateY = cy - 3 + Math.floor(r() * 7);
+    drawIsoDiamond(ctx, plateX, plateY + 1, 19, 8, PALETTE.ironDark);
+    drawIsoDiamond(ctx, plateX - 1, plateY, 15, 5, PALETTE.ironMid);
+    nativePx(ctx, plateX - 4.5, plateY - 1.5, PALETTE.ironLight);
+    nativePx(ctx, plateX + 3.5, plateY - 1.5, PALETTE.clayLight);
+  }
+
+  if (((seed >>> 17) % 29) === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 12), cy, seed, 2);
+  drawNoisePixels(ctx, cx - 25, cy - 9, 50, 18, [PALETTE.limeLight, PALETTE.limeDark], 0.009, seed);
+
+  // Human traces are events, not a second texture layer. A few court cells
+  // retain paired boots or washers dropped during a plate repair.
+  if (seed % 37 === 0) drawPairedFootprints(ctx, cx, cy, seed + 877, PALETTE.limeDark);
+  if (seed % 43 === 0) {
+    const washerX = cx - 9 + Math.floor(r() * 18);
+    const washerY = cy - 3 + Math.floor(r() * 7);
+    for (const [dx, dy] of [[0, 0], [7, -2], [12, 2]]) {
+      px(ctx, washerX + dx - 2, washerY + dy - 2, PALETTE.ironDark, 5, 5);
+      px(ctx, washerX + dx, washerY + dy, PALETTE.limeMid, 1, 1);
+      nativePx(ctx, washerX + dx - 0.5, washerY + dy - 1.5, PALETTE.ironLight);
+    }
+  }
+}
+
+function drawSouthMeasureYardFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 491, gy + 499);
+  const r = rngFrom(seed);
+  const laneBand = Math.floor(gy / 11);
+  const laneStart = laneBand * 11 + 2 + (hash2D(laneBand + 557, laneBand * 17 + 563) % 6);
+  const freightLane = gy === laneStart || gy === laneStart + 1;
+  const drainBand = Math.floor(gx / 17);
+  const drainX = drainBand * 17 + 3 + (hash2D(drainBand + 569, drainBand * 19 + 571) % 10);
+  const drainRun = gx === drainX;
+  const wearZone = hash2D(Math.floor(gx / 5) + 491, Math.floor(gy / 4) + 499);
+  const base = drainRun
+    ? PALETTE.ironDark
+    : freightLane
+      ? PALETTE.clayDark
+      : wearZone % 5 === 0
+        ? PALETTE.ironDark
+        : PALETTE.clayDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  // Morrow Yard is a compressed bed of clinker and wagon wear. The clinker is
+  // laid in irregular repaired pockets instead of restarting a bright lattice
+  // in every cell. Two-cell freight bands and the cross-drain remain district
+  // features, with their positions offset per broad coordinate band.
+  if (!freightLane && !drainRun) {
+    const clinkerCount = 2 + ((seed >>> 3) % 4);
+    for (let i = 0; i < clinkerCount; i += 1) {
+      const clinkerX = cx - 20 + Math.floor(r() * 41);
+      const clinkerY = cy - 6 + Math.floor(r() * 13);
+      const clinkerW = 8 + Math.floor(r() * 12);
+      const clinkerH = 4 + Math.floor(r() * 5);
+      drawIsoDiamond(ctx, clinkerX, clinkerY + 1, clinkerW + 3, clinkerH + 2, PALETTE.outline);
+      drawIsoDiamond(ctx, clinkerX - 1, clinkerY, clinkerW, clinkerH, i % 3 === 0 ? PALETTE.ironMid : PALETTE.clayMid);
+      if (((seed + i * 7) & 3) === 0) {
+        const top = diamond(clinkerX - 1, clinkerY, clinkerW, clinkerH);
+        linePx(ctx, top.left[0] + 1, top.left[1], top.top[0], top.top[1] + 1, i % 3 === 0 ? PALETTE.ironLight : PALETTE.clayLight, 1);
+      }
+    }
+    if (((seed >>> 7) % 11) === 0) {
+      const strapX = cx - 15 + Math.floor(r() * 13);
+      const strapY = cy + 4 - Math.floor(r() * 8);
+      linePx(ctx, strapX, strapY, strapX + 16, strapY - 6, PALETTE.outline, 2);
+      linePx(ctx, strapX + 2, strapY - 1, strapX + 13, strapY - 5, PALETTE.ironLight, 1);
+    }
+  }
+
+  if (freightLane) {
+    const run = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+    for (const t of [0.28, 0.72]) {
+      const a = mixPoint(run.left, run.top, t);
+      const b = mixPoint(run.bottom, run.right, t);
+      linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 5);
+      linePx(ctx, a[0] + 1, a[1] - 1, b[0] + 1, b[1] - 1, PALETTE.ironMid, 3);
+      if (((seed + Math.round(t * 10)) % 3) === 0) {
+        linePx(ctx, a[0] + 3, a[1] - 2, b[0] - 2, b[1] - 2, PALETTE.ironLight, 1);
+      }
+    }
+  }
+
+  if (drainRun) {
+    const run = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+    const a = mixPoint(run.top, run.right, 0.5);
+    const b = mixPoint(run.left, run.bottom, 0.5);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 7);
+    linePx(ctx, a[0] - 1, a[1] - 1, b[0] - 1, b[1] - 1, PALETTE.ironMid, 4);
+    linePx(ctx, a[0] - 2, a[1] - 2, b[0] - 2, b[1] - 2, PALETTE.ironLight, 1);
+    if (((seed >>> 9) % 5) === 0) {
+      for (const t of [0.34, 0.5, 0.66]) {
+        const p = mixPoint(a, b, t);
+        linePx(ctx, p[0] - 4, p[1] - 2, p[0] + 4, p[1] + 2, PALETTE.outline, 2);
+        linePx(ctx, p[0] - 3, p[1] - 3, p[0] + 3, p[1] + 1, PALETTE.clayLight, 1);
+      }
+    }
+  }
+
+  const looseCount = freightLane || drainRun ? 2 : 1;
+  for (let i = 0; i < looseCount; i += 1) {
+    const x = cx - 22 + Math.floor(r() * 44);
+    const y = cy - 7 + Math.floor(r() * 14);
+    px(ctx, x, y, PALETTE.outline, 3 + (i & 1), 2);
+    px(ctx, x + 1, y - 1, i === 0 ? PALETTE.clayMid : PALETTE.ironLight, 2, 1);
+  }
+  if (((seed >>> 14) % 17) === 0) drawScorchMark(ctx, cx + Math.floor((r() - 0.5) * 12), cy, seed);
+
+  // Dragged chains and abandoned fasteners stay rare within the already busy
+  // clinker bed, but they make the freight wear feel caused by work.
+  if (seed % 31 === 0) drawGroundScratchMarks(ctx, cx, cy, seed + 883, PALETTE.ironLight, 2);
+  if (seed % 47 === 0) {
+    const linkX = cx - 10 + Math.floor(r() * 20);
+    const linkY = cy - 3 + Math.floor(r() * 6);
+    for (const offset of [0, 7]) {
+      drawIsoDiamond(ctx, linkX + offset, linkY - Math.floor(offset / 3), 9, 5, PALETTE.outline);
+      drawIsoDiamond(ctx, linkX + offset, linkY - Math.floor(offset / 3), 5, 2, PALETTE.clayMid);
+    }
+  }
+}
+
+function drawSouthMeasureRowFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 503, gy + 509);
+  const zone = hash2D(Math.floor(gx / 5) + 503, Math.floor(gy / 4) + 509);
+  const runPhase = ((gx % 11) + 11) % 11;
+  const gutter = runPhase === 5;
+  const footLane = runPhase === 4 || runPhase === 6;
+  const base = gutter
+    ? PALETTE.ironDark
+    : footLane
+      ? PALETTE.clayDark
+      : PALETTE.clayDark;
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, base);
+
+  // Rope Rows grew over old service brick. The courses change length and leave
+  // broad quiet patches. Brick coordinates live in the district grid, so the
+  // stagger carries cleanly over logical tile edges instead of restarting a
+  // scratch glyph in every cell.
+  if (!gutter) {
+    const floorPoint = (a, b) => [
+      Math.round(cx + (a - b) * (TILE_WIDTH / 2)),
+      Math.round(cy + (a + b) * (TILE_HEIGHT / 2))
+    ];
+    const courseCount = 4;
+    const brickWidth = 0.34;
+    const jointGap = 0.018;
+    for (let course = 0; course < courseCount; course += 1) {
+      const districtCourse = gy * courseCount + course;
+      const b0 = -0.5 + course / courseCount;
+      const b1 = -0.5 + (course + 1) / courseCount;
+      const stagger = (districtCourse & 1) * brickWidth * 0.5;
+      const firstBrick = Math.floor((gx - stagger) / brickWidth) - 1;
+      const lastBrick = Math.ceil((gx + 1 - stagger) / brickWidth) + 1;
+      for (let brick = firstBrick; brick <= lastBrick; brick += 1) {
+        const worldA0 = brick * brickWidth + stagger;
+        const worldA1 = worldA0 + brickWidth;
+        if (worldA1 <= gx || worldA0 >= gx + 1) continue;
+        const brickSeed = hash2D(brick + 809, districtCourse + 811);
+        if (brickSeed % 19 === 0) continue;
+
+        const clippedA0 = Math.max(gx, worldA0);
+        const clippedA1 = Math.min(gx + 1, worldA1);
+        const a0 = clippedA0 - gx - 0.5 + (worldA0 >= gx ? jointGap : 0);
+        const a1 = clippedA1 - gx - 0.5 - (worldA1 <= gx + 1 ? jointGap : 0);
+        const bb0 = b0 + 0.024;
+        const bb1 = b1 - 0.024;
+        if (a1 <= a0 || bb1 <= bb0) continue;
+
+        const p0 = floorPoint(a0, bb0);
+        const p1 = floorPoint(a1, bb0);
+        const p2 = floorPoint(a1, bb1);
+        const p3 = floorPoint(a0, bb1);
+        const brickColor = brickSeed % 13 === 0
+          ? PALETTE.limeDark
+          : brickSeed % 7 === 0
+            ? PALETTE.ironMid
+            : zone % 7 === 0 || brickSeed % 5 === 0
+              ? PALETTE.clayDark
+              : PALETTE.clayMid;
+        poly(ctx, brickColor, [p0, p1, p2, p3]);
+        if (((brickSeed >>> 7) & 3) === 0) {
+          linePx(ctx, p0[0], p0[1], p1[0], p1[1], brickColor === PALETTE.ironMid ? PALETTE.ironLight : PALETTE.clayLight, 1);
+        }
+      }
+    }
+  }
+
+  // One municipal gutter every eleven columns creates the long service axis.
+  // The neighboring columns are polished household paths rather than extra
+  // drains, giving the run a dark center and softer walked shoulders.
+  const run = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
+  const runA = mixPoint(run.top, run.right, 0.5);
+  const runB = mixPoint(run.left, run.bottom, 0.5);
+  if (gutter) {
+    linePx(ctx, runA[0], runA[1], runB[0], runB[1], PALETTE.outline, 8);
+    linePx(ctx, runA[0] - 1, runA[1] - 1, runB[0] - 1, runB[1] - 1, PALETTE.ironMid, 5);
+    linePx(ctx, runA[0] - 2, runA[1] - 2, runB[0] - 2, runB[1] - 2, PALETTE.ironLight, 1);
+    if (((gy % 5) + 5) % 5 === 2) {
+      for (const t of [0.34, 0.5, 0.66]) {
+        const p = mixPoint(runA, runB, t);
+        linePx(ctx, p[0] - 4, p[1] - 2, p[0] + 4, p[1] + 2, PALETTE.outline, 2);
+        linePx(ctx, p[0] - 3, p[1] - 3, p[0] + 3, p[1] + 1, PALETTE.clayLight, 1);
+      }
+    }
+  } else if (footLane) {
+    linePx(ctx, runA[0], runA[1], runB[0], runB[1], PALETTE.outline, 4);
+    linePx(ctx, runA[0] - 1, runA[1] - 1, runB[0] - 1, runB[1] - 1, PALETTE.clayMid, 2);
+    if (((gy + runPhase) % 7 + 7) % 7 === 3) {
+      const threshold = mixPoint(runA, runB, 0.5);
+      drawIsoDiamond(ctx, threshold[0], threshold[1], 17, 6, PALETTE.outline);
+      drawIsoDiamond(ctx, threshold[0] - 1, threshold[1] - 1, 12, 3, PALETTE.limeLight);
+    }
+  }
+  drawNoisePixels(ctx, cx - 26, cy - 10, 52, 20, [PALETTE.clayLight, PALETTE.ironDark], 0.007, seed);
+
+  // Doorstep counts and compact boot trails occur on separate sparse subsets,
+  // leaving most service brick quiet between actual household thresholds.
+  if (seed % 29 === 0) drawFloorTallyScratches(ctx, cx, cy, seed + 887, PALETTE.limeLight);
+  if (seed % 41 === 0) drawPairedFootprints(ctx, cx, cy, seed + 907, PALETTE.clayDark);
+}
+
+function drawSouthMeasureGraveStripFloorCell(ctx, cx, cy, gx, gy) {
+  const seed = hash2D(gx + 521, gy + 523);
+  const r = rngFrom(seed);
+  drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, PALETTE.clayDark);
+
+  // Most of the strip is quietly settled earth. Broad, low-contrast patches
+  // change weight and axis by family block, so the ground reads as worked soil
+  // without repeating the narrow silhouette of an actual burial cut.
+  const familyX = Math.floor(gx / 4);
+  const familyY = Math.floor(gy / 3);
+  const familySeed = hash2D(familyX + 557, familyY * 23 + 563);
+  const familyGap = familySeed % 6 === 0;
+  if (((seed >>> 1) % 5) !== 0) {
+    const soilR = rngFrom(hash2D(gx + 569, gy + 571));
+    const soilFrame = isoFrame(
+      cx - 4 + Math.floor(soilR() * 9),
+      cy - 2 + Math.floor(soilR() * 5),
+      ((familySeed >>> 4) & 1) === 0 ? 'se' : 'sw'
+    );
+    const soilLength = 0.34 + soilR() * 0.15;
+    const soilWidth = 0.17 + soilR() * 0.08;
+    const settledSoil = [
+      [-soilLength, -soilWidth * 0.25],
+      [-soilLength * 0.58, -soilWidth],
+      [soilLength * 0.46, -soilWidth * 0.88],
+      [soilLength, -soilWidth * 0.12],
+      [soilLength * 0.54, soilWidth],
+      [-soilLength * 0.7, soilWidth * 0.82]
+    ].map(([la, lb]) => soilFrame.point(la, lb));
+    ctx.save();
+    ctx.globalAlpha = familyGap ? 0.08 : 0.12;
+    poly(ctx, (familySeed & 1) ? PALETTE.woodDark : PALETTE.limeDark, settledSoil);
+    ctx.restore();
+  }
+
+  // Four-by-three family blocks leave whole blank intervals. Only about one
+  // eligible cell in thirteen owns a long cut, keeping the ledger language
+  // municipal at close range without scoring the district into parallel bays.
+  const ownsCut = !familyGap && ((seed >>> 6) % 13) === 0;
+  if (ownsCut) {
+    const cutCx = cx - 5 + Math.floor(r() * 11);
+    const cutCy = cy - 2 + Math.floor(r() * 5);
+    const frame = isoFrame(cutCx, cutCy, 'se');
+    const halfLength = 0.62 + r() * 0.12;
+    const halfWidth = 0.075 + r() * 0.035;
+    const localScar = [
+      [-halfLength, -halfWidth * 0.25],
+      [-halfLength + 0.08, -halfWidth],
+      [halfLength - 0.11, -halfWidth * 1.08],
+      [halfLength, -halfWidth * 0.15],
+      [halfLength - 0.07, halfWidth],
+      [-halfLength + 0.1, halfWidth * 0.9]
+    ];
+    const scar = localScar.map(([la, lb]) => frame.point(la, lb));
+    poly(ctx, PALETTE.stoneDark, scar);
+    const settled = localScar.map(([la, lb]) => frame.point(la * 0.91 + 0.015, lb * 0.62, -1));
+    poly(ctx, (seed & 1) ? PALETTE.clayMid : PALETTE.woodDark, settled);
+
+    // Upper-left earth catches the light while the opposite lip remains sunk.
+    const litA = frame.point(-halfLength * 0.72, -halfWidth * 0.72);
+    const litB = frame.point(halfLength * 0.2, -halfWidth * 0.82);
+    linePx(ctx, litA[0], litA[1] - 1, litB[0], litB[1] - 1, PALETTE.clayLight, 1);
+    const sunkA = frame.point(halfLength * 0.18, halfWidth * 0.76);
+    const sunkB = frame.point(halfLength * 0.78, halfWidth * 0.5);
+    linePx(ctx, sunkA[0], sunkA[1] + 1, sunkB[0], sunkB[1] + 1, PALETTE.outline, 1);
+
+    // Broken lime ledgers bracket most cuts. Three unequal fragments and a
+    // short head tick read as accounting marks, never one clean bay stripe.
+    if (((seed >>> 8) & 3) !== 0) {
+      const ledgerA = frame.point(-halfLength * 0.92, -halfWidth * 1.72);
+      const ledgerB = frame.point(halfLength * 0.9, -halfWidth * 1.72);
+      for (const [from, to, color] of [
+        [0.03, 0.2, PALETTE.limeLight],
+        [0.34, 0.52, PALETTE.limeMid],
+        [0.69, 0.88, PALETTE.limeLight]
+      ]) {
+        const a = mixPoint(ledgerA, ledgerB, from);
+        const b = mixPoint(ledgerA, ledgerB, to);
+        linePx(ctx, a[0], a[1], b[0], b[1], color, 1);
+      }
+      const headOuter = frame.point(-halfLength * 0.9, -halfWidth * 1.75);
+      const headInner = frame.point(-halfLength * 0.72, halfWidth * 0.24);
+      linePx(ctx, headOuter[0], headOuter[1], headInner[0], headInner[1], PALETTE.limeMid, 1);
+      const tally = 1 + ((seed >>> 12) & 3);
+      for (let index = 0; index < tally; index += 1) {
+        nativePx(ctx, headOuter[0] + index * 1.5, headOuter[1] - 1.5, index === tally - 1 ? PALETTE.clayLight : PALETTE.limeLight);
+      }
+    }
+  }
+
+  // Short family cords sit across a still smaller set of open survey intervals.
+  // Taller unequal pegs and a visible V-shaped sag distinguish them from lime.
+  const ownsCord = !familyGap && !ownsCut && ((seed >>> 4) % 18) === 0;
+  if (ownsCord) {
+    const cordFrame = isoFrame(cx - 2 + Math.floor(r() * 5), cy + Math.floor(r() * 3), 'se');
+    const pegA = cordFrame.point(-0.34, -0.16);
+    const pegB = cordFrame.point(0.42, 0.12);
+    const heightA = 7 + ((seed >>> 20) & 3);
+    const heightB = 9 + ((seed >>> 22) & 3);
+    for (const [point, height, color] of [
+      [pegA, heightA, PALETTE.woodLight],
+      [pegB, heightB, PALETTE.rustMid]
+    ]) {
+      px(ctx, point[0] - 2, point[1], PALETTE.outline, 5, 3);
+      px(ctx, point[0] - 1, point[1] - height, PALETTE.outline, 3, height + 1);
+      px(ctx, point[0], point[1] - height + 1, color, 1, height - 1);
+    }
+    const topA = [pegA[0], pegA[1] - heightA + 1];
+    const topB = [pegB[0], pegB[1] - heightB + 1];
+    const sag = [Math.round((topA[0] + topB[0]) / 2), Math.round((topA[1] + topB[1]) / 2) + 5];
+    linePx(ctx, topA[0], topA[1], sag[0], sag[1], PALETTE.outline, 2);
+    linePx(ctx, sag[0], sag[1], topB[0], topB[1], PALETTE.outline, 2);
+    nativeLinePx(ctx, topA[0] + 0.5, topA[1] - 0.5, sag[0] + 0.5, sag[1] - 0.5, PALETTE.limeMid);
+    nativeLinePx(ctx, sag[0] + 0.5, sag[1] - 0.5, topB[0] + 0.5, topB[1] - 0.5, PALETTE.limeMid);
+    px(ctx, pegA[0] - 5, pegA[1] - heightA - 5, PALETTE.outline, 9, 5);
+    px(ctx, pegA[0] - 4, pegA[1] - heightA - 4, PALETTE.clothTan, 7, 3);
+    nativePx(ctx, pegA[0] - 1.5, pegA[1] - heightA - 3.5, PALETTE.rustDark);
+  }
+
+  drawNoisePixels(ctx, cx - 25, cy - 9, 50, 18, [PALETTE.clayLight, PALETTE.limeDark, PALETTE.ironDark], 0.012, seed);
+}
+
 function drawCaveStoneFloorCell(ctx, cx, cy, gx, gy) {
   const seed = hash2D(gx + 331, gy + 347);
   const r = rngFrom(seed);
@@ -1017,6 +1518,110 @@ function drawCaveRiverFloorCell(ctx, cx, cy, gx, gy) {
   }
 }
 
+export function reliefChannelGeometry(cx, cy, axis = 'x') {
+  const normalizedAxis = axis === 'y' ? 'y' : 'x';
+  const frame = isoFrame(cx, cy, normalizedAxis === 'x' ? 'se' : 'sw');
+  const quad = (halfWidth) => [
+    frame.point(-0.5, -halfWidth),
+    frame.point(0.5, -halfWidth),
+    frame.point(0.5, halfWidth),
+    frame.point(-0.5, halfWidth)
+  ];
+  const run = (offset) => ({
+    start: frame.point(-0.5, offset),
+    end: frame.point(0.5, offset)
+  });
+  return {
+    axis: normalizedAxis,
+    frame,
+    trough: quad(0.34),
+    water: quad(0.23),
+    banks: [run(-0.34), run(0.34)],
+    flowLines: [run(-0.1), run(0.08)]
+  };
+}
+
+function drawReliefChannelFloorCell(ctx, cx, cy, gx, gy, axis, drawBase = true) {
+  const seed = hash2D(gx + (axis === 'x' ? 419 : 431), gy + (axis === 'x' ? 433 : 443));
+  const rng = rngFrom(seed);
+  const geometry = reliefChannelGeometry(cx, cy, axis);
+  const frame = geometry.frame;
+  const zone = hash2D((gx >> 1) + 71, (gy >> 1) + 73);
+
+  if (drawBase) {
+    drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, zone % 5 === 0 ? PALETTE.limeDark : PALETTE.limeMid);
+  }
+  poly(ctx, PALETTE.outline, geometry.trough);
+  poly(ctx, PALETTE.ironMid, [
+    frame.point(-0.5, -0.3),
+    frame.point(0.5, -0.3),
+    frame.point(0.5, 0.3),
+    frame.point(-0.5, 0.3)
+  ]);
+  poly(ctx, PALETTE.clothBlueDark, geometry.water);
+  poly(ctx, PALETTE.clayDark, [
+    frame.point(-0.5, 0.12),
+    frame.point(0.5, 0.12),
+    frame.point(0.5, 0.23),
+    frame.point(-0.5, 0.23)
+  ]);
+
+  const [bankA, bankB] = geometry.banks;
+  const bankAY = (bankA.start[1] + bankA.end[1]) / 2;
+  const bankBY = (bankB.start[1] + bankB.end[1]) / 2;
+  const lightBank = bankAY <= bankBY ? bankA : bankB;
+  const darkBank = lightBank === bankA ? bankB : bankA;
+  linePx(ctx, lightBank.start[0], lightBank.start[1], lightBank.end[0], lightBank.end[1], PALETTE.limeLight, 2);
+  linePx(ctx, darkBank.start[0], darkBank.start[1], darkBank.end[0], darkBank.end[1], PALETTE.outline, 2);
+
+  for (let i = 0; i < geometry.flowLines.length; i += 1) {
+    const flow = geometry.flowLines[i];
+    linePx(ctx, flow.start[0], flow.start[1], flow.end[0], flow.end[1], i === 0 ? PALETTE.clothBlue : PALETTE.ironLight, 1);
+  }
+
+  // Silt gathers inside the engineered trough. It stays on the local channel
+  // plane, while the two full-length flow lines keep exact neighbor endpoints.
+  if (seed % 4 === 0) {
+    const centerA = -0.28 + rng() * 0.56;
+    poly(ctx, PALETTE.clayDark, [
+      frame.point(centerA - 0.14, 0.1),
+      frame.point(centerA + 0.14, 0.1),
+      frame.point(centerA + 0.11, 0.2),
+      frame.point(centerA - 0.12, 0.2)
+    ]);
+    const glint = frame.point(centerA - 0.03, -0.16);
+    px(ctx, glint[0], glint[1], PALETTE.limeLight, 2, 1);
+  }
+
+  if (seed % 7 === 0) {
+    const braceA = -0.3 + rng() * 0.6;
+    const start = frame.point(braceA, -0.31);
+    const end = frame.point(braceA, 0.31);
+    linePx(ctx, start[0], start[1], end[0], end[1], PALETTE.outline, 3);
+    linePx(ctx, start[0], start[1] - 1, end[0], end[1] - 1, PALETTE.ironLight, 1);
+  }
+}
+
+function drawReliefChannelJunctionFloorCell(ctx, cx, cy, gx, gy) {
+  drawReliefChannelFloorCell(ctx, cx, cy, gx, gy, 'x');
+  drawReliefChannelFloorCell(ctx, cx, cy, gx, gy, 'y', false);
+
+  // Both full-length channel planes retain their exact edge endpoints. The
+  // small center sump masks their overlap so a branch reads as engineered
+  // drainage meeting in one fitted basin, not one texture painted over another.
+  const rim = diamond(cx, cy, 34, 17);
+  const water = diamond(cx, cy, 24, 12);
+  poly(ctx, PALETTE.outline, [rim.top, rim.right, rim.bottom, rim.left]);
+  poly(ctx, PALETTE.ironMid, [
+    [rim.top[0], rim.top[1] + 2],
+    [rim.right[0] - 4, rim.right[1]],
+    [rim.bottom[0], rim.bottom[1] - 2],
+    [rim.left[0] + 4, rim.left[1]]
+  ]);
+  poly(ctx, PALETTE.clothBlueDark, [water.top, water.right, water.bottom, water.left]);
+  linePx(ctx, water.left[0] + 3, water.left[1] - 1, water.right[0] - 3, water.right[1] - 1, PALETTE.clothBlue, 1);
+}
+
 function drawGraveyardEarthCell(ctx, cx, cy, gx, gy) {
   const seed = hash2D(gx + 281, gy + 307);
   const r = rngFrom(seed);
@@ -1070,7 +1675,7 @@ function drawGraveyardEarthCell(ctx, cx, cy, gx, gy) {
   if (seed % 13 === 0) drawCracks(ctx, cx + Math.floor((r() - 0.5) * 14), cy + Math.floor((r() - 0.5) * 5), seed, 2);
 }
 
-export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
+function drawStyledFloorBaseCell(ctx, cx, cy, gx, gy, style = 'stone') {
   switch (style) {
     case 'ash-dirt':
       drawOutdoorFloorCell(ctx, cx, cy, gx, gy, {
@@ -1147,6 +1752,18 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
       drawWornCanvasFloorCell(ctx, cx, cy, gx, gy);
       drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'worn-canvas');
       return;
+    case 'south-measure-slab':
+      drawSouthMeasureSlabFloorCell(ctx, cx, cy, gx, gy);
+      return;
+    case 'south-measure-yard':
+      drawSouthMeasureYardFloorCell(ctx, cx, cy, gx, gy);
+      return;
+    case 'south-measure-row':
+      drawSouthMeasureRowFloorCell(ctx, cx, cy, gx, gy);
+      return;
+    case 'south-measure-grave-strip':
+      drawSouthMeasureGraveStripFloorCell(ctx, cx, cy, gx, gy);
+      return;
     case 'cave-stone':
       drawCaveStoneFloorCell(ctx, cx, cy, gx, gy);
       drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'cave-stone');
@@ -1155,11 +1772,25 @@ export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
       drawCaveRiverFloorCell(ctx, cx, cy, gx, gy);
       drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'cave-river');
       return;
+    case 'relief-channel-x':
+      drawReliefChannelFloorCell(ctx, cx, cy, gx, gy, 'x');
+      return;
+    case 'relief-channel-y':
+      drawReliefChannelFloorCell(ctx, cx, cy, gx, gy, 'y');
+      return;
+    case 'relief-channel-junction':
+      drawReliefChannelJunctionFloorCell(ctx, cx, cy, gx, gy);
+      return;
     case 'stone':
     default:
       drawRuinedStoneFloorCell(ctx, cx, cy, gx, gy);
       drawFloorStoryMarks(ctx, cx, cy, gx, gy, 'stone');
   }
+}
+
+export function drawStyledFloorCell(ctx, cx, cy, gx, gy, style = 'stone') {
+  drawStyledFloorBaseCell(ctx, cx, cy, gx, gy, style);
+  drawNativeFloorDetail(ctx, cx, cy, gx, gy, style);
 }
 
 const FARM_INTERIOR_WALL_STYLES = {
@@ -1191,6 +1822,20 @@ const FARM_INTERIOR_WALL_STYLES = {
     grime: PALETTE.rustDark
   }
 };
+
+function drawNativeFarmWallGrain(face, seed, variant, shaded) {
+  const light = shaded ? PALETTE.stoneDark : PALETTE.woodLight;
+  const dark = shaded ? PALETTE.outline : PALETTE.woodDark;
+  const count = variant === 'barn' ? 5 : 4;
+  for (let i = 0; i < count; i += 1) {
+    const hash = hash2D(seed + i * 19, seed * 3 + i * 7);
+    const u = 0.1 + ((hash & 255) / 255) * 0.78;
+    const v = 0.14 + (((hash >>> 8) & 255) / 255) * 0.62;
+    const drift = ((hash >>> 16) & 1) ? 0.018 : -0.012;
+    const length = variant === 'farmhouse' ? 0.12 : 0.17;
+    face.nativeLine(u, v, u + drift, Math.min(0.94, v + length), i & 1 ? dark : light);
+  }
+}
 
 function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false) {
   const seam = shaded ? PALETTE.outline : style.seam;
@@ -1242,6 +1887,7 @@ function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false)
       face.line(0.66, 0.27, 0.66, 0.34, PALETTE.woodDark, 1);
     }
     nailHeads([0.16, 0.38, 0.62, 0.84], [0.2, 0.78]);
+    drawNativeFarmWallGrain(face, seed, variant, shaded);
     return;
   }
 
@@ -1268,6 +1914,7 @@ function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false)
       face.rect(0.42, 0.23, 0.58, 0.33, PALETTE.void);
     }
     nailHeads([0.12, 0.46, 0.88], [0.3, 0.56, 0.82], shaded ? PALETTE.stoneDark : PALETTE.rustLight);
+    drawNativeFarmWallGrain(face, seed, variant, shaded);
     return;
   }
 
@@ -1290,6 +1937,34 @@ function drawFarmWallFaceDetail(ctx, face, seed, style, variant, shaded = false)
     face.line(0.57, 0.21, 0.57, 0.33, PALETTE.void, 1);
   }
   nailHeads([0.18, 0.57, 0.79], [0.28, 0.58, 0.86], shaded ? PALETTE.void : PALETTE.rustLight);
+  drawNativeFarmWallGrain(face, seed, variant, shaded);
+}
+
+function drawNativeStoneFace(face, seed, shaded = false, rough = false) {
+  const light = shaded ? PALETTE.stoneMid : PALETTE.stoneDust;
+  const dark = shaded ? PALETTE.void : PALETTE.stoneDark;
+  const count = rough ? 7 : 5;
+  for (let i = 0; i < count; i += 1) {
+    const hash = hash2D(seed + i * 23, seed * 5 + i * 11);
+    const u = 0.08 + ((hash & 255) / 255) * 0.82;
+    const v = 0.1 + (((hash >>> 8) & 255) / 255) * 0.8;
+    const horizontal = ((hash >>> 16) & 1) === 0;
+    const tone = i % 3 === 0 ? light : dark;
+    if (horizontal) {
+      face.nativeLine(u, v, Math.min(0.96, u + (rough ? 0.1 : 0.075)), v + (((hash >>> 17) & 1) ? 0.012 : -0.012), tone);
+    } else {
+      face.nativeLine(u, v, u + (((hash >>> 17) & 1) ? 0.012 : -0.012), Math.min(0.96, v + 0.065), tone);
+    }
+  }
+}
+
+function drawNativeCapWear(ctx, cap, seed, light, dark) {
+  const a = mixPoint(cap.left, cap.top, 0.28 + (seed & 3) * 0.08);
+  const b = mixPoint(cap.left, cap.top, 0.48 + (seed & 3) * 0.06);
+  nativeLinePx(ctx, a[0] + 0.5, a[1] - 0.5, b[0] + 0.5, b[1] - 0.5, light);
+  const c = mixPoint(cap.bottom, cap.right, 0.18 + ((seed >>> 2) & 3) * 0.09);
+  const d = mixPoint(cap.bottom, cap.right, 0.36 + ((seed >>> 2) & 3) * 0.07);
+  nativeLinePx(ctx, c[0] - 0.5, c[1] + 0.5, d[0] - 0.5, d[1] + 0.5, dark);
 }
 
 // Weather individual blocks a shade off the base fill so a wall face reads as
@@ -1380,7 +2055,6 @@ export function drawFarmInteriorWallBlock(ctx, cx, cy, heightPx, seed, opts = {}
   const base = diamond(cx, cy, TILE_WIDTH, TILE_HEIGHT);
   const cap = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
 
-  drawShadowBlob(ctx, cx, cy + 2, TILE_WIDTH * 0.64, TILE_HEIGHT * 0.58);
 
   if (!connected.yPlus) {
     poly(ctx, style.lit, [cap.left, cap.bottom, base.bottom, base.left]);
@@ -1400,6 +2074,7 @@ export function drawFarmInteriorWallBlock(ctx, cx, cy, heightPx, seed, opts = {}
   if (!connected.xPlus) linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.woodDark, 1);
   if (!connected.yPlus) linePx(ctx, cap.left[0], cap.left[1], cap.bottom[0], cap.bottom[1], PALETTE.outline, 1);
   drawStoneCapWear(ctx, cap, seed + 71, false);
+  drawNativeCapWear(ctx, cap, seed + 73, style.trim, style.seam);
 
   for (const t of [0.26, 0.52, 0.78]) {
     if (((seed + Math.floor(t * 100)) & 1) === 0) continue;
@@ -1420,7 +2095,6 @@ export function drawIsoWallBlock(ctx, cx, cy, heightPx, seed) {
   const cap = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
   const rng = rngFrom(hash2D(seed + 3, seed * 5 + 7));
 
-  drawShadowBlob(ctx, cx, cy + 2, TILE_WIDTH * 0.7, TILE_HEIGHT * 0.7);
 
   poly(ctx, PALETTE.outline, [
     [cap.top[0], cap.top[1] - 1],
@@ -1439,6 +2113,8 @@ export function drawIsoWallBlock(ctx, cx, cy, heightPx, seed) {
   drawStoneBlockTones(ctx, rightFace, seed + 29, true);
   drawBrokenStoneCourse(ctx, leftFace, seed + 11, false);
   drawBrokenStoneCourse(ctx, rightFace, seed + 29, true);
+  drawNativeStoneFace(leftFace, seed + 101, false, wallH < WALL_HEIGHT * 0.7);
+  drawNativeStoneFace(rightFace, seed + 131, true, wallH < WALL_HEIGHT * 0.7);
 
   poly(ctx, PALETTE.stoneLight, [cap.top, cap.right, cap.bottom, cap.left]);
   poly(ctx, PALETTE.stoneDust, [
@@ -1459,6 +2135,7 @@ export function drawIsoWallBlock(ctx, cx, cy, heightPx, seed) {
     linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 1);
   }
   drawStoneCapWear(ctx, cap, seed + 43, wallH < WALL_HEIGHT * 0.7);
+  drawNativeCapWear(ctx, cap, seed + 47, PALETTE.stoneDust, PALETTE.stoneDark);
   linePx(ctx, cap.left[0], cap.left[1], cap.top[0], cap.top[1], PALETTE.stoneDust, 1);
   linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.outline, 1);
   linePx(ctx, cap.left[0], cap.left[1], cap.bottom[0], cap.bottom[1], PALETTE.outline, 2);
@@ -1501,7 +2178,6 @@ export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
   const cap = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
   const rng = rngFrom(hash2D(seed + 379, seed * 3 + 11));
 
-  drawShadowBlob(ctx, cx, cy + 3, TILE_WIDTH * 0.74, TILE_HEIGHT * 0.74);
 
   if (!connected.yPlus) {
     poly(ctx, PALETTE.stoneMid, [cap.left, cap.bottom, base.bottom, base.left]);
@@ -1523,6 +2199,7 @@ export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
     face.rect(0.64, 0.35, 0.74, 0.4, PALETTE.void);
     face.rect(0.28, 0.18, 0.4, 0.27, PALETTE.outline);
     face.rect(0.3, 0.2, 0.38, 0.25, PALETTE.stoneLight);
+    drawNativeStoneFace(face, seed + 421, false, true);
   }
 
   if (!connected.xPlus) {
@@ -1539,6 +2216,7 @@ export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
     face.line(0.74, 0.14, 0.6, 0.88, PALETTE.stoneDark, 1);
     face.rect(0.58, 0.42, 0.74, 0.52, PALETTE.outline);
     face.rect(0.61, 0.44, 0.71, 0.5, PALETTE.void);
+    drawNativeStoneFace(face, seed + 443, true, true);
   }
 
   poly(ctx, PALETTE.stoneLight, [cap.top, cap.right, cap.bottom, cap.left]);
@@ -1549,6 +2227,7 @@ export function drawCaveWallBlock(ctx, cx, cy, heightPx, seed, opts = {}) {
     mixPoint(cap.left, cap.bottom, 0.78)
   ]);
   drawStoneCapWear(ctx, cap, seed + 397, false);
+  drawNativeCapWear(ctx, cap, seed + 409, PALETTE.stoneDust, PALETTE.void);
 
   linePx(ctx, cap.left[0], cap.left[1], cap.top[0], cap.top[1], PALETTE.stoneDust, 1);
   linePx(ctx, cap.top[0], cap.top[1], cap.right[0], cap.right[1], PALETTE.outline, 1);

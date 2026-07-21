@@ -3,7 +3,7 @@
   "name": "Penitent Bastion",
   "type": "enemy",
   "faction": "the-host",
-  "description": "A former protector the Host has opened and reshaped into an armored, kneeling guardian, fixed in the one posture its damnation allows. It cannot flee. It only guards.",
+  "description": "A former protector the Host has opened and reshaped into an armored guardian, fixed in the kneeling posture its damnation allows. Unable to flee, it guards the same point without relief.",
   "stats": {
     "hp": 18,
     "maxHp": 18,

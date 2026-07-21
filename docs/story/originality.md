@@ -20,7 +20,7 @@ Those are genre tools. They become stale only if they sit on the surface. This s
 1. Humanity finds alien life under Europa.
 2. The first human mind it deeply learns is Father Marius Vale.
 3. Vale's fear of Hell becomes inherited biological grammar.
-4. Sorell saves humanity by turning that grammar into a lock.
+4. Seneca saves humanity by turning that grammar into a lock.
 5. The Choir mistakes the lock's failure for revelation.
 6. The Devil manifestation is Host-made doctrine, not proof that doctrine was right.
 7. The ending asks whether one man's eternal torture can remain the price of survival.
@@ -45,15 +45,15 @@ Guardrail: each Witness changes what the player believes the campaign is about.
 
 - The Confessor's Key: first contact was a priest, not a neutral scientific accident.
 - The Surgeon's Gospel: early Host forms were not only Hell-shaped, so the Vale Imprint is learned and inherited.
-- The Bell in the Water: Sorell made the Stilling lock, calcified into it, and cannot save it alone.
+- The Bell in the Water: Seneca made the Stilling lock, calcified into it, and cannot save it alone.
 
-The player should need investigation, local politics, witness testimony, companion knowledge, and field consequences to find them. Sorell gives puzzle clues, not map pins.
+The player should need investigation, local politics, witness testimony, companion knowledge, and field consequences to find them. Seneca gives puzzle clues, not map pins.
 
 ### Evil Cult Drift
 
 Risk: the Choir becomes a predictable murder cult with red symbols and a demon boss.
 
-Guardrail: Act III must show why people join. Hospices, rejected families, Bloomborn shelter, grief, hunger, shame, and fear should all be visible before the worst rites are revealed. Ysolde is dangerous because she offers belonging and turns that belonging into consent for horror.
+Guardrail: Act III must show why people join. Hospices, rejected families, Bloomborn shelter, grief, hunger, shame, and fear should all be visible before the worst rites are revealed. Thecla is dangerous because she offers belonging and turns that belonging into consent for horror.
 
 The vats and total immersion rite should be awful, but not random. The Choir is trying to make its theology physically true.
 
@@ -69,7 +69,7 @@ This is not "the Devil is real." It is "a living organism learned how to make pe
 
 Risk: Act IV becomes a normal final dungeon where the player kills the source monster.
 
-Guardrail: the final chamber is a moral crime scene. Sorell is fused into the lock and saved the world by preserving Vale's Hell. Vale is victim, relay, monster, witness, and torturer. The player is not deciding whether evil dies. The player is deciding what price survival is allowed to charge.
+Guardrail: the final chamber is a moral crime scene. Seneca is fused into the lock and saved the world by preserving Vale's Hell. Vale is victim, relay, monster, witness, and torturer. The player is not deciding whether evil dies. The player is deciding what price survival is allowed to charge.
 
 ## Act Shape
 
@@ -77,7 +77,7 @@ The current four-act shape helps the story feel specific.
 
 ### Act I: Narrow
 
-Ash Road and Hallowfen stay local. The player should care about a settlement, a wall, checkpoint bells, missing families, compromised guards, and the first proof that this new cult is coordinated. The chapel and road encounters must not reveal Sorell, Vale, Europa, or the full Host truth too early.
+Ash Road and Hallowfen stay local. The player should care about a settlement, a wall, checkpoint bells, missing families, compromised guards, and the first proof that this new cult is coordinated. The chapel and road encounters must not reveal Seneca, Vale, Europa, or the full Host truth too early.
 
 ### Act II: Wide
 
@@ -89,7 +89,7 @@ The focus tightens around the Choir's lair and way of life. The Pontifex abducti
 
 ### Act IV: Abyss
 
-Woundfall is not only the crash site. It is the place where the world-saving lie becomes a person in a wall and a priest who cannot escape his own fear. Faction endings still matter, but the emotional center is Vale and Sorell.
+Woundfall is not only the crash site. It is the place where the world-saving lie becomes a person in a wall and a priest who cannot escape his own fear. Faction endings still matter, but the emotional center is Vale and Seneca.
 
 ## What Makes This Setting Itself
 
@@ -101,7 +101,7 @@ Keep these elements central:
 - Science is not innocent. Explanation can become ownership.
 - The Choir is not random madness. It is a refuge that becomes a body-theology machine.
 - The Devil manifestation is a false confirmation that becomes politically explosive before it is understood.
-- Sorell is neither savior nor villain. Sorell committed an unforgivable act that may still be necessary.
+- Seneca is neither savior nor villain. Seneca committed an unforgivable act that may still be necessary.
 - Vale is not a simple source monster. He is the accidental author of the Host's Earth language and the person most harmed by the lock.
 
 ## Drift Tests

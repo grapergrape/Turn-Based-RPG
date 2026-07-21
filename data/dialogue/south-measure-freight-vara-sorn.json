@@ -1,0 +1,59 @@
+{
+  "id": "south-measure-freight-vara-sorn",
+  "title": "Valeria Longinus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Valeria shifts a medicine pin west and leaves the old hole bare.",
+        "\"Before you ask, the deliveries were real. The board would be easier if they were not.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what was falsified",
+          "next": "marks",
+          "effects": {
+            "setFlag": "morrow-false-surety-found"
+          }
+        },
+        {
+          "label": "Ask why she left the old pinhole visible",
+          "next": "loss"
+        },
+        {
+          "label": "Leave Valeria with both records",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "marks": {
+      "lines": [
+        "\"Someone copied household hand marks into burial charges. Medicine still arrived, and the families named beside it still owe money they never pledged.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the lost wheel team",
+          "next": "loss"
+        },
+        {
+          "label": "Let Valeria preserve the false marks",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "loss": {
+      "lines": [
+        "\"Two runs arrived last month. The next lost a wheel team here.\" Her finger settles on the empty hole.",
+        "\"Erase that loss and the route becomes a sales story. Erase the deliveries and the forgery becomes one too.\""
+      ],
+      "choices": [
+        {
+          "label": "Step away from the route board",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

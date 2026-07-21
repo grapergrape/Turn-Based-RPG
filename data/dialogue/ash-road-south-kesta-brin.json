@@ -1,0 +1,50 @@
+{
+  "id": "ash-road-south-kesta-brin",
+  "title": "Tabitha Rufinus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Tabitha holds four cup handles through the fingers of one hand.",
+        "\"Susanna’s board shows three. My house did not misplace a person.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask who the fourth cup belongs to",
+          "next": "fourth"
+        },
+        {
+          "label": "Leave Tabitha in the water line",
+          "close": true
+        }
+      ]
+    },
+    "fourth": {
+      "lines": [
+        "\"My mother, Sarai Rufinus. She stopped carrying her own jar when her knees turned.\"",
+        "\"The aide copied last winter’s count and mistook dependence for absence.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask whether the guards knew her name",
+          "next": "guards"
+        },
+        {
+          "label": "Leave Tabitha in the water line",
+          "close": true
+        }
+      ]
+    },
+    "guards": {
+      "lines": [
+        "\"Hadar kept the tap shut because the board told him to. I blame the order, but I blame his silence more.\"",
+        "\"He could have said my mother’s name while refusing her water. No order forbade that.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Tabitha in the water line",
+          "close": true
+        }
+      ]
+    }
+  }
+}

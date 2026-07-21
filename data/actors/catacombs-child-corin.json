@@ -1,13 +1,15 @@
 {
   "id": "catacombs-child-corin",
-  "name": "Corin",
+  "name": "Micah",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Settlement child",
   "appearance": {
     "body": "child",
     "outfit": "settlement-child-blue",
-    "gear": ["child-token"],
+    "gear": [
+      "child-token"
+    ],
     "accent": "bare-light"
   },
   "stats": {

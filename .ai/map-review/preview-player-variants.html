@@ -11,7 +11,7 @@
 <script type="module">
 window.onerror = (msg) => { document.title = 'CAPTURE-ERROR'; document.body.textContent = String(msg); };
 import {
-  MARA_DEFAULT_APPEARANCE,
+  PLAYER_DEFAULT_APPEARANCE,
   PLAYER_AGE_IDS,
   PLAYER_BODY_TYPE_IDS,
   PLAYER_FACE_MARK_IDS,
@@ -25,22 +25,24 @@ import {
   PLAYER_STATURE_IDS,
   bakePlayerCharacter
 } from '/src/render/SpriteAtlas.js';
-import { MARA_DEFAULT_EQUIPMENT } from '/src/render/sprites/maraAppearance.js';
+import { PLAYER_DEFAULT_EQUIPMENT } from '/src/render/sprites/playerAppearance.js';
+import { NATIVE_SCALE } from '/src/render/renderConfig.js';
 try {
 
 const params = new URLSearchParams(location.search);
-const SCALE = Number(params.get('scale') ?? '2');
+const DISPLAY_SCALE = Number(params.get('scale') ?? '1');
+const SCALE = NATIVE_SCALE * DISPLAY_SCALE;
 const STATE = params.get('state') ?? 'idle';
 const FRAME = Math.max(0, Number(params.get('frame') ?? '0'));
 
-const { bodyFrame: _legacyBodyFrame, ...base } = MARA_DEFAULT_APPEARANCE;
+const { bodyFrame: _legacyBodyFrame, ...base } = PLAYER_DEFAULT_APPEARANCE;
 
 const optionRows = (prefix, ids, key, overrides = {}) => ids
   .filter((id) => id !== base[key])
   .map((id) => [`${prefix} ${id}`, { ...base, ...overrides, [key]: id }]);
 
 const variants = [
-  ['base (mara default)', base],
+  ['base (player default)', base],
   ...optionRows('gender', PLAYER_GENDER_MODEL_IDS, 'genderModel'),
   ...optionRows('body', PLAYER_BODY_TYPE_IDS, 'bodyType'),
   ...optionRows('stature', PLAYER_STATURE_IDS, 'stature'),
@@ -99,13 +101,13 @@ ctx.fillStyle = '#c8b89a';
 ctx.fillText(`state ${STATE} frame ${FRAME}`, 6, 14);
 COLS.forEach((label, i) => ctx.fillText(label, LABEL_W + i * CELL_W, 14));
 
-const bare = { ...MARA_DEFAULT_EQUIPMENT, clothes: null, armor: null, boots: null, helmet: null };
+const bare = { ...PLAYER_DEFAULT_EQUIPMENT, clothes: null, armor: null, boots: null, helmet: null };
 
 shown.forEach(([label, appearance], row) => {
   const y = 30 + row * CELL_H;
   ctx.fillStyle = '#c8b89a';
   ctx.fillText(label, 6, y + 40);
-  const clothed = bakePlayerCharacter(MARA_DEFAULT_EQUIPMENT, {}, appearance);
+  const clothed = bakePlayerCharacter(PLAYER_DEFAULT_EQUIPMENT, {}, appearance);
   const naked = bakePlayerCharacter(bare, {}, appearance);
   const cells = ALL_FACINGS
     ? ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'].map((facing) => [clothed, facing]).concat([[naked, 's'], [naked, 'se'], [naked, 'e']])
@@ -113,7 +115,7 @@ shown.forEach(([label, appearance], row) => {
   cells.forEach(([sprite, facing], col) => {
     const frames = STATE === 'dead' ? sprite.death : (sprite.frames[STATE]?.[facing] ?? sprite.frames.idle[facing]);
     const frame = frames[Math.min(frames.length - 1, FRAME)];
-    ctx.drawImage(frame, LABEL_W + col * CELL_W + 8, y + 4);
+    ctx.drawImage(frame, LABEL_W + col * CELL_W + 8, y + 4, sprite.width, sprite.height);
   });
 });
 

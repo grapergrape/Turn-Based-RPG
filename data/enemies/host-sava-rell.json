@@ -1,13 +1,13 @@
 {
   "id": "host-sava-rell",
-  "name": "Sava Rell",
+  "name": "Sapphira Rufa",
   "type": "enemy",
   "faction": "the-host",
   "spriteId": "host-sava-rell",
   "description": "A graveyard man thawed after a century inside the mortuary wall. Pale skin still holds his face. One hand has fused in prayer against his chest, and a broken arc of bone leans behind his head while the right ribs work themselves open.",
   "aggro": [
     "Do not strike it again.",
-    "Hessa, hold my head. It keeps turning."
+    "Keziah, hold my head. It keeps turning."
   ],
   "stats": {
     "hp": 20,

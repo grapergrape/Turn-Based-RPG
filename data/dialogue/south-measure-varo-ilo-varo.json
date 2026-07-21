@@ -1,0 +1,52 @@
+{
+  "id": "south-measure-varo-ilo-varo",
+  "title": "Isaac Faber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Isaac taps the bench and listens to the tools answer in their hooks.",
+        "\"If you came to ask whether I allow Noa to leave, save us both the insult.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what he heard in the condenser",
+          "next": "knock"
+        },
+        {
+          "label": "Ask what changes here if Noa leaves",
+          "next": "home"
+        },
+        {
+          "label": "Take the permission question away",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "knock": {
+      "lines": [
+        "\"Bearings true. Governor held exactly where she set it. Then the buried line knocked after her lever stopped, and she believed the machine instead of the schedule.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Isaac listen to the bench",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "home": {
+      "lines": [
+        "He sets one loose tool farther from the edge. \"Tobit and I move supper later now; the room gets quieter.\"",
+        "\"Neither fact belongs on Noa’s decision.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the room out of it",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

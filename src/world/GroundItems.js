@@ -18,6 +18,7 @@ export function createGroundItem({
   itemDef = {},
   count = 1,
   condition = null,
+  loaded = null,
   x,
   y,
   tick = 0,
@@ -34,6 +35,7 @@ export function createGroundItem({
     model: itemDef.groundModel ?? GROUND_ITEM_DEFAULT_MODEL,
     count: amount,
     condition: Number.isFinite(condition) ? Math.max(0, Math.round(condition)) : null,
+    loaded: Number.isFinite(loaded) ? Math.max(0, Math.round(loaded)) : null,
     x,
     y,
     blocking: false,
@@ -58,6 +60,7 @@ export function serializeGroundItem(item) {
     model: item.model ?? GROUND_ITEM_DEFAULT_MODEL,
     count: cleanCount(item.count),
     condition: Number.isFinite(item.condition) ? Math.max(0, Math.round(item.condition)) : null,
+    loaded: Number.isFinite(item.loaded) ? Math.max(0, Math.round(item.loaded)) : null,
     x: item.x,
     y: item.y,
     source: item.source ?? 'player',
@@ -68,7 +71,7 @@ export function serializeGroundItem(item) {
   };
 }
 
-export function hydrateGroundItem(snapshot) {
+export function hydrateGroundItem(snapshot, itemDef = {}) {
   if (!snapshot?.itemId || !Number.isFinite(snapshot.x) || !Number.isFinite(snapshot.y)) return null;
   return {
     ...snapshot,
@@ -76,8 +79,9 @@ export function hydrateGroundItem(snapshot) {
     kind: GROUND_ITEM_KIND,
     count: cleanCount(snapshot.count) || 1,
     condition: Number.isFinite(snapshot.condition) ? Math.max(0, Math.round(snapshot.condition)) : null,
-    name: snapshot.name ?? snapshot.itemId,
-    model: snapshot.model ?? GROUND_ITEM_DEFAULT_MODEL,
+    loaded: Number.isFinite(snapshot.loaded) ? Math.max(0, Math.round(snapshot.loaded)) : null,
+    name: itemDef.name ?? snapshot.name ?? snapshot.itemId,
+    model: itemDef.groundModel ?? snapshot.model ?? GROUND_ITEM_DEFAULT_MODEL,
     blocking: false,
     consumed: false,
     pickupStart: null,

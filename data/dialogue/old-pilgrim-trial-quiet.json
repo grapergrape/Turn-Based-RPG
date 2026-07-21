@@ -1,0 +1,106 @@
+{
+  "id": "old-pilgrim-trial-quiet",
+  "title": "Quiet Threshold",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Six brass cups hang across the passage. A candidate once crossed beneath them without making the sentry arm strike.",
+        "Dust shows the floor stones that move under weight."
+      ],
+      "choices": [
+        {
+          "label": "Cross between the listening cups",
+          "conditions": {
+            "fieldRatings": {
+              "stealth": 32
+            },
+            "flagsAbsent": [
+              "old-pilgrim-trial-quiet"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-quiet",
+              "old-pilgrim-trial-quiet-kept"
+            ],
+            "xp": 8,
+            "log": "The sentry arm remains still. One profession stud rises at the final door."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Read the silence rubric",
+          "conditions": {
+            "fieldRatings": {
+              "doctrine": 32
+            },
+            "flagsAbsent": [
+              "old-pilgrim-trial-quiet"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-quiet",
+              "old-pilgrim-trial-quiet-kept"
+            ],
+            "xp": 8,
+            "log": "The rubric names every safe stone. One profession stud rises at the final door."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Use the severed bell cable as a spacing measure",
+          "conditions": {
+            "flag": "old-pilgrim-bell-cable-known",
+            "flagsAbsent": [
+              "old-pilgrim-trial-quiet"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-quiet",
+              "old-pilgrim-trial-quiet-kept"
+            ],
+            "xp": 5,
+            "log": "The cable knots match the listening-cup intervals. The sentry arm remains still and the Quiet stud rises."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Pin the cups and cross",
+          "conditions": {
+            "flagsAbsent": [
+              "old-pilgrim-trial-quiet"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-quiet",
+              "old-pilgrim-trial-quiet-broken"
+            ],
+            "log": "Two brass cups tear from their cords. The threshold registers a passage, but a side cache shuts."
+          },
+          "next": "passed",
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "passed": {
+      "lines": [
+        "The sentry arm settles against its stop. The Quiet stud remains raised."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

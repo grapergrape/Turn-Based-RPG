@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-maud-serren",
+  "name": "Monica Grammaticus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Slate teacher",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-chapel-hand",
+    "gear": [
+      "ledger"
+    ],
+    "accent": "bare-light"
+  }
+}

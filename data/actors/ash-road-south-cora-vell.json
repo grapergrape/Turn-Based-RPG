@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-cora-vell",
+  "name": "Rhoda Felix",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Charity cot child",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "charity-edge",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "child",
+    "outfit": "settlement-child-blue",
+    "gear": [
+      "child-token"
+    ],
+    "accent": "bare-light"
+  }
+}

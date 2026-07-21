@@ -1,0 +1,54 @@
+{
+  "id": "ash-road-south-cassa-rehn",
+  "title": "Cassia Laetus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Cassia slides a flat loaf from the oven and checks its underside before its top.",
+        "\"If you came to settle the queue, wash your hands. Authority still handles bread here.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the oven dispute",
+          "next": "queue"
+        },
+        {
+          "label": "Ask who owns the ovens",
+          "next": "ownership"
+        },
+        {
+          "label": "Leave Cassia to the oven",
+          "close": true
+        }
+      ]
+    },
+    "queue": {
+      "lines": [
+        "\"Row Six moved its dough ahead of Ezra’s grain load. They had a fever house and no morning meal.\"",
+        "\"The rule says grain work first. The oven says food burns on schedule.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask who owns the ovens",
+          "next": "ownership"
+        },
+        {
+          "label": "Leave Cassia to the oven",
+          "close": true
+        }
+      ]
+    },
+    "ownership": {
+      "lines": [
+        "\"Everyone who patches them and nobody who only points.\"",
+        "\"That arrangement has survived four councils because it cannot fit on a deed.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Cassia to the oven",
+          "close": true
+        }
+      ]
+    }
+  }
+}

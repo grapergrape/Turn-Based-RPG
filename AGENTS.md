@@ -29,6 +29,19 @@ player-facing text. Rewrite with periods, commas, colons, or restructured
 sentences (see the dash-rewrite guide in the skill). Do not ship player-facing
 text until it passes the skill's self-check.
 
+## World naming — MANDATORY
+
+Before you add or revise any player-facing character, family, institution, or
+place name, apply **`name-the-world/SKILL.md`**. Build names from the documented
+biblical, Greek Christian, Late Latin, and Roman social registers. Do not use an
+invented phonetic gimmick as a substitute for culture.
+
+Keep stable content and save IDs independent from display names. Record every
+retcon in `name-the-world/references/retcon-ledger.json`, preserve legacy IDs as
+opaque compatibility keys, and run
+`node name-the-world/scripts/audit-names.mjs` before shipping named content.
+Father Marius Vale and the Vale Imprint are the sole protected Vale anchor.
+
 ## Game art — MANDATORY
 
 Before you draw or edit **anything a player can see** (an animated actor in
@@ -37,7 +50,7 @@ furniture, plant, prop, decal, creature, corpse, gore, sigil, or light in
 `src/render/PixelPrimitives.js` + `src/render/spriteCatalog.js`; or the interface
 in `src/render/UIRenderer.js` and `src/ui/*`), you **must** apply
 **`game_art_skill/SKILL.md`**. It is the single combined art standard, so a
-weaker agent's sprite, prop, or panel still sits beside Mara Vey, the Opened
+weaker agent's sprite, prop, or panel still sits beside the player actor, the Opened
 Saint, and the existing CRPG interface. (It absorbs the former
 `character_creature_art_skill`, which now redirects to it.)
 
@@ -68,6 +81,7 @@ detached-canvas render and in a real scene or screen before shipping.
 10. **Run checks before finishing.** At minimum run `npm run check` after editing data or source files.
 11. **Player-facing text follows the anti-AI-slop skill.** Apply `anti_ai_slop_writing_skill/SKILL.md` to all player-readable text. Hard ban on em-dashes / `--` / `—`. Rewrite, do not dash.
 12. **Register renderable kinds in the sprite catalog.** Every drawable object `kind` (walls, wall fixtures, structures, furniture, props, decals, creatures, lights) is registered once in `src/render/spriteCatalog.js`, with its draw function living in `PixelPrimitives.js`. Add new building blocks there, never by editing a renderer switch or a second list of kinds. See `game_art_skill/SKILL.md` Section 5.
+13. **Names follow the world-naming skill.** Apply `name-the-world/SKILL.md`, keep display names separate from stable IDs, update the retcon ledger, and run the naming audit.
 
 ## Canon and tone rules
 

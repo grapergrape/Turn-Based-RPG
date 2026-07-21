@@ -1,0 +1,1323 @@
+{
+  "id": "south-measure-relief-drain",
+  "name": "South Measure Relief Drain",
+  "intro": "A shallow grey flow moves below the maintenance walk. Every pipe joint carries the condenser's pulse.",
+  "width": 44,
+  "height": 20,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#0a0807",
+    "floorShadeAlpha": 0.3,
+    "ambient": "#172635",
+    "ambientAlpha": 0.2,
+    "vignette": 0.34
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-collapsed-culvert-drain",
+    "south-measure-repair-trench-drain",
+    "south-measure-annex-service-hatch-drain",
+    "south-measure-drain-undercroft-valve-drain",
+    "south-measure-annex-drain-hatch-drain",
+    "south-measure-drain-ari-veck"
+  ],
+  "tiles": [
+    "############################################",
+    "########.........#.......###################",
+    "########.........#.......###.........#######",
+    "########.........#.......###.........#######",
+    "########.........#.......###.........#######",
+    "########.........#.......###.........#######",
+    "########.........#.......###.........#######",
+    "########.........#.......###.........#######",
+    "########.........#.......###.........#######",
+    "#..........................................#",
+    "#..........................................#",
+    "#.......................................y..#",
+    "#.......................................y..#",
+    "#.xxxx..xx+xxxxxxxxx...xxxxxxxxxxx..xxxx+x.#",
+    "#.xxxxxxxx+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx+x.#",
+    "#.xxxxxxxx+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx+x.#",
+    "#.xxxxxxxx+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx+x.#",
+    "#.........y................................#",
+    "#..........................................#",
+    "############################################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "south-measure-service-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "stone",
+      "walkable": true
+    },
+    "x": {
+      "kind": "floor",
+      "floor": "relief-channel-x",
+      "walkable": true
+    },
+    "y": {
+      "kind": "floor",
+      "floor": "relief-channel-y",
+      "walkable": true
+    },
+    "+": {
+      "kind": "floor",
+      "floor": "relief-channel-junction",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 41,
+      "y": 15,
+      "facing": "nw"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-cett-arven",
+        "spawnId": "drain-cett-arven-0",
+        "characterSlot": "drain-cett-arven",
+        "x": 35,
+        "y": 4,
+        "facing": "se",
+        "ambient": [
+          "Basket mesh tore again at the east joint.",
+          "Keep your boots above the grey line.",
+          "The annex runoff reaches charity before anyone signs for it."
+        ]
+      },
+      {
+        "actor": "ash-road-south-pava-dren",
+        "spawnId": "drain-pava-dren-1",
+        "characterSlot": "drain-pava-dren",
+        "x": 26,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Nineteen knocks, then six quiet.",
+          "The wheel is neither open nor shut.",
+          "Junia says the jacket can cool it. I say the hub will shear first."
+        ]
+      },
+      {
+        "actor": "ash-road-south-ari-veck",
+        "spawnId": "drain-ari-veck-2",
+        "characterSlot": "drain-ari-veck",
+        "x": 9,
+        "y": 9,
+        "facing": "se",
+        "ambient": [
+          "Small hands used this ledge during the last flood.",
+          "A waiting place is not safe because adults forgot it.",
+          "I count the children before I count the tools."
+        ],
+        "dialogue": "south-measure-drain-ari-veck",
+        "talkRadius": 1
+      }
+    ],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 43,
+      "y": 15,
+      "id": "drain-collapsed-culvert",
+      "name": "Collapsed Culvert",
+      "blocking": true,
+      "variant": "service",
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 42,
+        "y": 15
+      },
+      "mapMarker": {
+        "label": "Collapsed Culvert",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-collapsed-culvert-drain"
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 20,
+      "y": 0,
+      "id": "drain-repair-trench",
+      "name": "Morrow Repair Trench",
+      "blocking": true,
+      "variant": "service",
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 20,
+        "y": 1
+      },
+      "mapMarker": {
+        "label": "Morrow Repair Trench",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-repair-trench-drain"
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 0,
+      "y": 16,
+      "id": "drain-annex-service-hatch",
+      "name": "Annex Service Hatch",
+      "blocking": true,
+      "variant": "service",
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 1,
+        "y": 16
+      },
+      "mapMarker": {
+        "label": "Annex Service Hatch",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-annex-service-hatch-drain"
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 12,
+      "y": 0,
+      "id": "drain-undercroft-valve",
+      "name": "Undercroft Valve Chamber",
+      "blocking": true,
+      "variant": "service",
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 12,
+        "y": 1
+      },
+      "mapMarker": {
+        "label": "Undercroft Valve Chamber",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-drain-undercroft-valve-drain"
+      }
+    },
+    {
+      "kind": "service-hatch",
+      "x": 4,
+      "y": 12,
+      "id": "drain-annex-floor-hatch",
+      "name": "Annex Floor Hatch",
+      "blocking": true,
+      "variant": "ladder",
+      "orient": "se",
+      "opened": true,
+      "interactionMarker": {
+        "x": 4,
+        "y": 13
+      },
+      "mapMarker": {
+        "label": "Annex Floor Hatch",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-annex-drain-hatch-drain"
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 31,
+      "y": 10,
+      "id": "relief-drain-raised-walk",
+      "blocking": true,
+      "variant": "service",
+      "orient": "se",
+      "name": "Raised Maintenance Walk",
+      "interact": {
+        "type": "note",
+        "log": "Narrow stone treads follow the north wall above the channel. Tool scrapes show where workers still use the route."
+      },
+      "interactionMarker": {
+        "x": 32,
+        "y": 10
+      }
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 26,
+      "y": 13,
+      "id": "relief-drain-polluted-flow",
+      "blocking": false,
+      "name": "Polluted Flow",
+      "interact": {
+        "type": "note",
+        "log": "Grey water carries metal dust toward the charity edge. The silt darkens after each pressure knock."
+      },
+      "interactionMarker": {
+        "x": 27,
+        "y": 13
+      }
+    },
+    {
+      "kind": "intake-screening-frame",
+      "x": 35,
+      "y": 15,
+      "id": "relief-drain-broken-filter-baskets",
+      "blocking": true,
+      "variant": "broken-baskets",
+      "orient": "sw",
+      "damaged": true,
+      "name": "Broken Filter Baskets",
+      "interact": {
+        "type": "note",
+        "log": "Split wicker and corroded mesh lie against the channel lip. None of the baskets can hold another load."
+      },
+      "interactionMarker": {
+        "x": 36,
+        "y": 15
+      }
+    },
+    {
+      "kind": "intake-pump-assembly",
+      "x": 12,
+      "y": 5,
+      "id": "relief-drain-jammed-isolation-wheel",
+      "blocking": true,
+      "variant": "failed",
+      "orient": "se",
+      "name": "Jammed Isolation Wheel",
+      "interact": {
+        "type": "note",
+        "log": "The wheel has stopped between open and shut. Its hub answers every nineteen counts, then rests for six."
+      },
+      "mapMarker": {
+        "label": "Isolation Wheel",
+        "kind": "quest"
+      },
+      "interactionMarker": {
+        "x": 13,
+        "y": 5
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 32,
+      "y": 4,
+      "id": "relief-drain-waiting-alcove",
+      "blocking": true,
+      "orient": "sw",
+      "name": "Maintenance Alcove",
+      "interact": {
+        "type": "note",
+        "log": "Dry cloth scraps and a cracked water cup sit above the flood line. Someone kept this corner ready for frightened children."
+      },
+      "mapMarker": {
+        "label": "Waiting Alcove",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 33,
+        "y": 4
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 37,
+      "y": 8,
+      "id": "relief-drain-childrens-crawl-marks",
+      "blocking": true,
+      "variant": "crawl-marks",
+      "wallPlane": "se",
+      "name": "Crawl Marks",
+      "interact": {
+        "type": "note",
+        "log": "Small palms have cleared the silt from one wall. A chalk arrow points back toward the culvert."
+      },
+      "interactionMarker": {
+        "x": 36,
+        "y": 8
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 22,
+      "y": 0,
+      "id": "relief-drain-trench-work-signs",
+      "blocking": true,
+      "variant": "schedules",
+      "wallPlane": "sw",
+      "name": "Trench Work Signs",
+      "interact": {
+        "type": "note",
+        "log": "Fresh boot cuts and drive oil mark the branch beneath the Morrow yard. Workers still cross here during repair shifts."
+      },
+      "interactionMarker": {
+        "x": 22,
+        "y": 1
+      }
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 29,
+      "y": 15,
+      "id": "drain-flooded-repair-crate",
+      "name": "Flooded Repair Crate",
+      "blocking": true,
+      "orient": "sw",
+      "interact": {
+        "type": "container",
+        "log": "Floodwater carried this repair crate into the filter baskets. Most of the kit has rotted into the boards.",
+        "loot": [
+          {
+            "item": "penitent-gear-scrap",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 1
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 30,
+        "y": 15
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 2,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 3,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 4,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 5,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 6,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 7,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 8,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "broken"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 9,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 10,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 11,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 12,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 13,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 14,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 15,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 16,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "broken"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 17,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 18,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 19,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 20,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 21,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 22,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 23,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 24,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "broken"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 25,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 27,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 28,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 29,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 30,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 32,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "broken"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 33,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 34,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 35,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 36,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 37,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 38,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 39,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 40,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "broken"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 41,
+      "y": 10,
+      "blocking": false,
+      "orient": "se",
+      "variant": "service"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 10,
+      "y": 9,
+      "blocking": true,
+      "variant": "grate",
+      "orient": "sw",
+      "opened": false
+    },
+    {
+      "kind": "service-hatch",
+      "x": 20,
+      "y": 9,
+      "blocking": true,
+      "variant": "ladder",
+      "orient": "se",
+      "opened": true
+    },
+    {
+      "kind": "service-hatch",
+      "x": 30,
+      "y": 9,
+      "blocking": true,
+      "variant": "grate",
+      "orient": "sw",
+      "opened": false
+    },
+    {
+      "kind": "service-hatch",
+      "x": 40,
+      "y": 9,
+      "blocking": true,
+      "variant": "ladder",
+      "orient": "se",
+      "opened": true
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 8,
+      "y": 15
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 14,
+      "y": 13
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 18,
+      "y": 16
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 23,
+      "y": 12
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 28,
+      "y": 15
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 36,
+      "y": 13
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 39,
+      "y": 16
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 7,
+      "y": 13,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 16,
+      "y": 15,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 25,
+      "y": 14,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 31,
+      "y": 12,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-drain-reeds",
+      "x": 38,
+      "y": 15,
+      "blocking": false
+    },
+    {
+      "kind": "relief-machine",
+      "x": 9,
+      "y": 3,
+      "blocking": true,
+      "variant": "pump-jig",
+      "orient": "se"
+    },
+    {
+      "kind": "relief-machine",
+      "x": 15,
+      "y": 3,
+      "blocking": true,
+      "variant": "generator",
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 2,
+      "y": 0,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 7,
+      "y": 0,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 16,
+      "y": 0,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 25,
+      "y": 0,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 31,
+      "y": 0,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 38,
+      "y": 0,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 43,
+      "y": 4,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 43,
+      "y": 8,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 43,
+      "y": 18,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 0,
+      "y": 4,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 0,
+      "y": 9,
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 13,
+      "y": 2,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 9,
+      "y": 7,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 10,
+      "y": 7,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 11,
+      "y": 7,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 12,
+      "y": 7,
+      "blocking": false,
+      "variant": "valve",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 13,
+      "y": 7,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 14,
+      "y": 7,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 15,
+      "y": 7,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 27,
+      "y": 9,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 2,
+      "y": 11,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 3,
+      "y": 11,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 4,
+      "y": 11,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 5,
+      "y": 11,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 6,
+      "y": 11,
+      "blocking": false,
+      "variant": "valve",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 7,
+      "y": 11,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 8,
+      "y": 11,
+      "blocking": false,
+      "variant": "straight",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 7,
+      "y": 12,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "service-hatch",
+      "x": 20,
+      "y": 2,
+      "blocking": false,
+      "variant": "ladder",
+      "orient": "sw",
+      "opened": true
+    },
+    {
+      "kind": "south-measure-pipe-gantry",
+      "x": 20,
+      "y": 4,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 19,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 22,
+      "y": 5,
+      "blocking": true,
+      "variant": "records",
+      "orient": "sw"
+    },
+    {
+      "kind": "tool-rack",
+      "x": 19,
+      "y": 7,
+      "blocking": true
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 23,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 18,
+      "y": 2,
+      "blocking": false,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 24,
+      "y": 2,
+      "blocking": false,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 18,
+      "y": 4,
+      "blocking": false,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 24,
+      "y": 4,
+      "blocking": false,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 18,
+      "y": 6,
+      "blocking": false,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 24,
+      "y": 6,
+      "blocking": false,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "machine-oil",
+      "x": 21,
+      "y": 6
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 22,
+      "y": 7
+    },
+    {
+      "kind": "farm-bed",
+      "x": 35,
+      "y": 5,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 29,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 29,
+      "y": 6,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 34,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "shared-oven",
+      "x": 35,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 33,
+      "y": 6,
+      "blocking": false
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 30,
+      "y": 7,
+      "blocking": true,
+      "variant": "work-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "intake-screening-frame",
+      "x": 33,
+      "y": 14,
+      "blocking": true,
+      "variant": "broken-baskets",
+      "orient": "se",
+      "damaged": true
+    },
+    {
+      "kind": "intake-screening-frame",
+      "x": 37,
+      "y": 16,
+      "blocking": true,
+      "variant": "broken-baskets",
+      "orient": "sw",
+      "damaged": true
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 31,
+      "y": 16,
+      "blocking": true,
+      "orient": "sw",
+      "damaged": true
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 31,
+      "y": 15,
+      "blocking": false,
+      "variant": "broken",
+      "orient": "se",
+      "damaged": true
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 30,
+      "y": 16,
+      "blocking": true
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 40,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 42,
+      "y": 17,
+      "blocking": true
+    },
+    {
+      "kind": "collapsed-culvert",
+      "x": 39,
+      "y": 13,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 42,
+      "y": 15
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 40,
+      "y": 16
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 43,
+      "y": 14,
+      "blocking": false,
+      "variant": "broken",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 43,
+      "y": 16,
+      "blocking": false,
+      "variant": "broken",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "machine-oil",
+      "x": 11,
+      "y": 12
+    },
+    {
+      "kind": "machine-oil",
+      "x": 18,
+      "y": 13
+    },
+    {
+      "kind": "machine-oil",
+      "x": 24,
+      "y": 16
+    },
+    {
+      "kind": "machine-oil",
+      "x": 32,
+      "y": 15
+    },
+    {
+      "kind": "machine-oil",
+      "x": 39,
+      "y": 12
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "drain-loose-gear-scrap",
+      "item": "penitent-gear-scrap",
+      "count": 1,
+      "x": 30,
+      "y": 15
+    }
+  ]
+}

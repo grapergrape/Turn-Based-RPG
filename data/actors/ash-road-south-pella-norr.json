@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-pella-norr",
+  "name": "Priscilla Niger",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Cup runner",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-chain",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "teen",
+    "outfit": "settlement-runner",
+    "gear": [
+      "thin-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

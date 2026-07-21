@@ -11,12 +11,14 @@
 <canvas id="c"></canvas>
 <script type="module">
 window.onerror = (msg) => { document.title = 'CAPTURE-ERROR'; document.body.textContent = String(msg); };
-import * as P from '/src/render/PixelPrimitives.js';
-import { PALETTE } from '/src/render/palette.js';
+  import * as P from '/src/render/PixelPrimitives.js';
+  import { PALETTE } from '/src/render/palette.js';
+  import { NATIVE_SCALE } from '/src/render/renderConfig.js';
 import { gridToScreen } from '/src/render/isoMath.js';
 try {
   const params = new URLSearchParams(location.search);
-  const SCALE = Number(params.get('scale') ?? '5');
+  const DISPLAY_SCALE = Number(params.get('scale') ?? '2');
+  const SCALE = NATIVE_SCALE * DISPLAY_SCALE;
   const MOOD = params.get('mood') !== '0';
   const canvas = document.getElementById('c');
   const CW = 210, CH = 150;

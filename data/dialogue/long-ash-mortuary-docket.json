@@ -12,8 +12,8 @@
       "lines": [
         "The docket records response widths, pin settings, and bell intervals. Names appear once on an intake sheet. Every later page uses subject numbers.",
         "The test columns are bell, familiar voice, prayer office, and pressure pin. The clerk filed each answer as settling.",
-        "Subject Seven responded before the bell was struck. Brother Cal wrote \"woke\" in the first copy, so I burned it and replaced the word with \"settled.\"",
-        "Sava Rell was Subject Twelve. His head turned toward Hallowfen before its bells sounded, so the wardens transferred him to the listening niche.",
+        "Subject Seven responded before the bell was struck. Brother Joel wrote \"woke\" in the first copy, so I burned it and replaced the word with \"settled.\"",
+        "Sapphira Rufa was Subject Twelve. His head turned toward Hallowfen before its bells sounded, so the wardens transferred him to the listening niche.",
         "The old measurements end decades ago. Fresh scoring beside the last pin shows the needle has begun moving north again."
       ],
       "choices": [
@@ -31,7 +31,7 @@
           "close": true
         },
         {
-          "label": "Set the docket beside Hessa's names",
+          "label": "Set the docket beside Keziah's names",
           "conditions": {
             "flag": "heard-bell-register-read"
           },
@@ -43,9 +43,9 @@
             "questUpdate": {
               "quest": "those-who-heard-the-bell",
               "stage": "judge-vigil",
-              "log": "Quest updated: find Sava Rell and decide what remains."
+              "log": "Quest updated: find Sapphira Rufa and decide what remains."
             },
-            "log": "The subject numbers match Hessa's names. Sava answered Hallowfen before the road bells rang."
+            "log": "The subject numbers match Keziah's names. Sapphira answered Hallowfen before the road bells rang."
           },
           "close": true
         }
@@ -53,7 +53,7 @@
     },
     "reread": {
       "lines": [
-        "The clerk called every answer settling. Sava's response came before the bell, and the last needle marks are fresh.",
+        "The clerk called every answer settling. Sapphira's response came before the bell, and the last needle marks are fresh.",
         "One correction is underlined twice: never write woke."
       ],
       "choices": [

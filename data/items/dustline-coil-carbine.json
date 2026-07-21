@@ -1,0 +1,65 @@
+{
+  "id": "dustline-coil-carbine",
+  "name": "Dustline Coil Carbine",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "coil carbine",
+  "rarity": "uncommon",
+  "weight": 3.8,
+  "groundModel": "accelerator-rifle",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement prototype",
+    "origin": "Dustline Compact",
+    "factions": [
+      "dustline-compact"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "coil carbine"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 8,
+        "range": 7,
+        "accuracyBonus": 5,
+        "conditionWear": 2,
+        "ammoCost": 1
+      },
+      {
+        "id": "overcharge",
+        "name": "Overcharge",
+        "mode": "ranged",
+        "apCost": 6,
+        "damage": 11,
+        "range": 7,
+        "accuracyBonus": -5,
+        "ammoCost": 2,
+        "conditionWear": 4,
+        "requiresStationary": true
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "long-armature",
+      "capacity": 7,
+      "defaultLoaded": 7,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 73
+  },
+  "description": "A frontier copy of an industrial coil launcher. Leather dust skirts protect the exposed guide rails better than the original seals did."
+}

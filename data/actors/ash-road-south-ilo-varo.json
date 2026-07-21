@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-ilo-varo",
+  "name": "Isaac Faber",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Rope Rows elder and Noa’s father",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "talkable"
+  ],
+  "appearance": {
+    "body": "old-stooped",
+    "outfit": "settlement-shawl",
+    "gear": [
+      "cane"
+    ],
+    "accent": "bare-grey"
+  }
+}

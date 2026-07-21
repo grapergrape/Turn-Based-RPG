@@ -1,9 +1,8 @@
 import { PRIMARY_ATTRIBUTES, normalizeProgression } from './Progression.js';
-import { MARA_DEFAULT_APPEARANCE, normalizePlayerAppearance } from '../render/SpriteAtlas.js';
+import { PLAYER_DEFAULT_APPEARANCE, normalizePlayerAppearance } from '../render/SpriteAtlas.js';
 
 export const CHARACTER_NAME_MIN = 2;
 export const CHARACTER_NAME_MAX = 18;
-export const DEFAULT_CHARACTER_NAME = 'Mara Vey';
 export const PRIMARY_ASSIGNMENT_BASE = 3;
 export const PRIMARY_ASSIGNMENT_CAP = 7;
 export const PRIMARY_ASSIGNMENT_POINTS = 14;
@@ -172,18 +171,17 @@ export const CHARACTER_CUSTOMIZATION_FIELDS = Object.freeze([
 
 export function defaultCharacterCustomization() {
   return {
-    name: DEFAULT_CHARACTER_NAME,
-    appearance: normalizePlayerAppearance(MARA_DEFAULT_APPEARANCE)
+    name: '',
+    appearance: normalizePlayerAppearance(PLAYER_DEFAULT_APPEARANCE)
   };
 }
 
 export function createCustomizationState(player = {}) {
   const defaults = defaultCharacterCustomization();
-  const name = characterNameIsValid(player?.name) ? normalizeCharacterName(player.name) : defaults.name;
   const appearance = normalizePlayerAppearance(player?.appearance ?? defaults.appearance);
   return {
     selectedIndex: 0,
-    name,
+    name: defaults.name,
     appearance,
     error: ''
   };
@@ -261,9 +259,12 @@ export function customizationCanConfirm(state) {
 
 export function customizationResult(state) {
   const name = normalizeCharacterName(state?.name);
+  if (!characterNameIsValid(name)) {
+    throw new Error(`Name must be ${CHARACTER_NAME_MIN} to ${CHARACTER_NAME_MAX} letters.`);
+  }
   const appearance = normalizePlayerAppearance(state?.appearance);
   return {
-    name: characterNameIsValid(name) ? name : DEFAULT_CHARACTER_NAME,
+    name,
     appearance: {
       genderModel: appearance.genderModel,
       bodyType: appearance.bodyType,

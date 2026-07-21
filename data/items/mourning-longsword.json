@@ -1,0 +1,46 @@
+{
+  "id": "mourning-longsword",
+  "name": "Mourning Longsword",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "sword",
+  "rarity": "rare",
+  "weight": 4.4,
+  "groundModel": "sword",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Mourning Houses",
+    "factions": [
+      "mourning-houses"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "sword",
+    "roles": [
+      "melee",
+      "sword",
+      "close"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Cut",
+        "mode": "melee",
+        "apCost": 6,
+        "damage": 9,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A long two-handed sword kept above a mourning house door. The fuller is filled with names in tiny stamped letters."
+}

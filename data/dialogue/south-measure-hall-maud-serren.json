@@ -1,0 +1,52 @@
+{
+  "id": "south-measure-hall-maud-serren",
+  "title": "Monica Grammaticus",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Monica has left one chair empty at the council table.",
+        "\"Read the room as you would a slate. What is missing?\""
+      ],
+      "choices": [
+        {
+          "label": "Name the empty chair",
+          "next": "chair"
+        },
+        {
+          "label": "Say the council lacks one vote",
+          "next": "vote"
+        },
+        {
+          "label": "Leave the lesson unanswered",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "chair": {
+      "lines": [
+        "\"The chair is present. The patient or arrival parent being discussed is not, and Hidden Rows may not know the vote concerns them.\""
+      ],
+      "choices": [
+        {
+          "label": "Let the absence remain visible",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "vote": {
+      "lines": [
+        "Monica turns a piece of chalk between her fingers. \"A missing vote is a sum. A missing person has a name we may not be entitled to write.\"",
+        "\"The blank stays blank. Nobody gets to fill it with agreement.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the chair empty",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

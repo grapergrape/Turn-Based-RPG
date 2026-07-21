@@ -165,7 +165,7 @@
           ]
         },
         "ambient": [
-          "Jarik should have taken the charm. Stubborn man."
+          "Jeremiah should have taken the charm. Stubborn man."
         ]
       },
       {
@@ -421,6 +421,15 @@
       }
     ]
   },
+  "groundItems": [
+    {
+      "id": "catacombs-entry-saint-token",
+      "item": "tarnished-saint-token",
+      "count": 1,
+      "x": 19,
+      "y": 6
+    }
+  ],
   "objects": [
     {
       "id": "stone-stair-up-20-2",
@@ -3675,7 +3684,7 @@
         "questUpdate": {
           "quest": "retrieve-blue-ball",
           "stage": "ball-found",
-          "log": "Quest updated: you found Corin's blue ball."
+          "log": "Quest updated: you found Micah's blue ball."
         }
       }
     }

@@ -1,0 +1,54 @@
+{
+  "id": "south-measure-rows-seren-vask",
+  "title": "Serena Custos",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Serena hooks one finger beneath his collar but does not move it. \"Looking and taking are different questions.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask to look at the scar plate",
+          "next": "look",
+          "effects": {
+            "setFlag": "hidden-rows-seren-consented"
+          }
+        },
+        {
+          "label": "Ask for a scraping",
+          "next": "sample"
+        },
+        {
+          "label": "Ask neither question",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "look": {
+      "lines": [
+        "Serena loosens the collar. A pale plate ends beneath an old scar without breaking the skin.",
+        "\"It grew for six weeks after the Bloom and has held for nine years. You may carry what you saw, including what it failed to prove.\""
+      ],
+      "choices": [
+        {
+          "label": "Step back after looking",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "sample": {
+      "lines": [
+        "His hand drops from the collar. \"Nothing leaves my skin for your bag. If looking is useless without that, then you did not want to look.\""
+      ],
+      "choices": [
+        {
+          "label": "Withdraw the request",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

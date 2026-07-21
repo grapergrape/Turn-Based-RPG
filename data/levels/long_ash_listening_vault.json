@@ -25,7 +25,7 @@
   "journalNotes": [
     {
       "flag": "heard-bell-register-read",
-      "text": "Hessa Marr recorded deliberate responses from the calcified people in the graveyard."
+      "text": "Keziah Fullo recorded deliberate responses from the calcified people in the graveyard."
     },
     {
       "flag": "heard-bell-docket-read",
@@ -33,7 +33,7 @@
     },
     {
       "flag": "heard-bell-truth-joined",
-      "text": "Sava Rell reacted to Hallowfen before its bells sounded."
+      "text": "Sapphira Rufa reacted to Hallowfen before its bells sounded."
     },
     {
       "flag": "heard-bell-resolved-vigil",
@@ -45,7 +45,7 @@
     },
     {
       "flag": "heard-bell-resolved-evidence",
-      "text": "Hessa's register and the mortuary docket are in your pack."
+      "text": "Keziah's register and the mortuary docket are in your pack."
     }
   ],
   "hiddenRegions": [
@@ -134,12 +134,29 @@
     }
   ],
   "combatIntro": [
-    "The niche seal falls inward. Sava Rell unfolds from a century of stone, one rib seam opening as he draws breath."
+    "The niche seal falls inward. Sapphira Rufa unfolds from a century of stone, one rib seam opening as he draws breath."
   ],
-  "victoryLog": "Sava Rell stops moving. The listening pins keep their last measure.",
+  "victoryLog": "Sapphira Rufa stops moving. The listening pins keep their last measure.",
   "onVictory": {
-    "setFlag": "heard-bell-sava-killed"
+    "setFlag": [
+      "heard-bell-sava-found",
+      "heard-bell-sava-killed"
+    ],
+    "questUpdate": {
+      "quest": "those-who-heard-the-bell",
+      "stage": "judge-at-chair",
+      "log": "Quest updated: pass judgment at the restraint chair."
+    }
   },
+  "groundItems": [
+    {
+      "id": "listening-vault-loose-rounds",
+      "item": "relic-rounds",
+      "count": 2,
+      "x": 4,
+      "y": 8
+    }
+  ],
   "objects": [
     {
       "id": "sava-sealed-listening-niche",
@@ -149,15 +166,15 @@
       "blocking": true,
       "passableWhenOpen": true,
       "wallPlane": "sw",
-      "name": "Sava Rell's Listening Niche",
+      "name": "Sapphira Rufa's Listening Niche",
       "doorGroup": "sava-listening-niche",
       "interact": {
         "type": "door",
         "dialogue": "long-ash-sava-niche",
-        "log": "The niche seal parts around Sava Rell.",
+        "log": "The niche seal parts around Sapphira Rufa.",
         "lock": {
           "id": "sava-listening-niche-seal",
-          "title": "Sava Rell's Listening Niche",
+          "title": "Sapphira Rufa's Listening Niche",
           "lines": [
             "The old seal has split along its right edge. The inner pins remain under load."
           ],
@@ -342,7 +359,18 @@
       "interact": {
         "type": "note",
         "dialogue": "long-ash-heard-bell-judgment",
-        "log": "The chair faces Sava's niche. Its arm straps were cut away, then nailed back on."
+        "log": "The chair faces Sapphira's niche. Its arm straps were cut away, then nailed back on."
+      },
+      "mapMarker": {
+        "label": "Judgment Chair",
+        "kind": "quest",
+        "reveal": "always",
+        "conditions": {
+          "flag": "heard-bell-sava-found",
+          "flagsAbsent": [
+            "heard-bell-resolved"
+          ]
+        }
       }
     },
     {

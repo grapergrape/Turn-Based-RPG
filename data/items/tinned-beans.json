@@ -5,6 +5,6 @@
   "rarity": "common",
   "weight": 0.3,
   "groundModel": "food",
-  "description": "A dented tin from a road store. Restores 1 HP. Consumed on use.",
+  "description": "A dented tin from a road store. Eating it restores 1 HP; nothing remains to pack.",
   "use": { "effect": "heal", "amount": 1 }
 }

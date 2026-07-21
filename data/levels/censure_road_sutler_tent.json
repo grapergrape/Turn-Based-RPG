@@ -1,12 +1,15 @@
 {
   "id": "censure-road-sutler-tent",
-  "name": "Maev's Trade Tent",
+  "name": "Judith's Trade Tent",
   "intro": "Trade goods sit in exact piles, with prices low enough to read and high enough to hurt.",
   "width": 12,
   "height": 10,
   "tileSize": 64,
   "quests": [
     "investigate-ash-chapel-cult"
+  ],
+  "dialogue": [
+    "censure-road-sutler-tent-exit"
   ],
   "mood": {
     "floorShade": "#15130e",
@@ -47,27 +50,62 @@
     "enemies": [],
     "npcs": []
   },
-  "levelTransitions": [
+  "journalNotes": [
     {
-      "id": "sutler-tent-exit-transition",
+      "flag": "censure-road-sutler-dropped-tally-found",
+      "text": "A hidden porter tally records one powder crate sold twice. The second buyer's road name was cut from the strip."
+    },
+    {
+      "flag": "censure-road-sutler-false-price-mark-found",
+      "text": "Judith turned a camp price into a road price with one added chalk stroke, though the crate never moved."
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "sutler-tent-loose-ducats",
+      "item": "ducat",
+      "count": 1,
       "x": 5,
-      "y": 8,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_camp.json",
-        "player": {
-          "x": 50,
-          "y": 37
-        }
-      }
+      "y": 5
     }
   ],
   "objects": [
+    {
+      "id": "sutler-tent-split-trade-pouch",
+      "kind": "small-pouch",
+      "x": 9,
+      "y": 6,
+      "seed": 2611,
+      "name": "Written-Off Trade Pouch",
+      "interact": {
+        "type": "container",
+        "log": "Judith's chalk marks this split pouch as written off, with two coins still wedged in the lining.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 2
+          },
+          {
+            "item": "road-warden-chit",
+            "count": 1
+          }
+        ]
+      }
+    },
     {
       "kind": "canvas-tent-flap",
       "x": 5,
       "y": 9,
       "id": "sutler-tent-exit-flap",
-      "name": "Tent Flap"
+      "name": "Tent Flap",
+      "clickAreas": [
+        { "x0": 5, "y0": 9, "x1": 5, "y1": 9 }
+      ],
+      "interactionMarker": { "x": 5, "y": 8 },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "censure-road-sutler-tent-exit"
+      }
     },
     {
       "kind": "settlement-table",
@@ -83,7 +121,38 @@
       "y": 5,
       "blocking": true,
       "id": "sutler-tent-satchel",
-      "seed": 2813
+      "seed": 2813,
+      "name": "Tally Satchel",
+      "interact": {
+        "type": "note",
+        "log": "Loose price strips and porter tallies crowd the open mouth of Judith's work satchel.",
+        "search": {
+          "id": "sutler-tent-tally-search",
+          "title": "Tally Satchel",
+          "lines": [
+            "One porter tally has slipped behind the stiff back panel."
+          ],
+          "useLabel": "Check the loose tallies",
+          "methods": [
+            {
+              "id": "find-dropped-sutler-tally",
+              "label": "Follow the torn tally edge",
+              "field": "search",
+              "dc": 40,
+              "successLog": "The hidden tally records a powder crate sold twice, once to Ruth and once to a road name cut from the strip.",
+              "failLog": "The torn strips fit too many missing corners to trust one match.",
+              "success": {
+                "setFlag": "censure-road-sutler-dropped-tally-found"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Tally Satchel",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "rusted-crate",
@@ -91,7 +160,38 @@
       "y": 5,
       "blocking": true,
       "id": "sutler-tent-bargain-crate",
-      "seed": 2817
+      "seed": 2817,
+      "name": "Bargain Crate",
+      "interact": {
+        "type": "note",
+        "log": "Old prices remain under the fresh chalk on the bargain crate.",
+        "search": {
+          "id": "sutler-tent-price-mark-search",
+          "title": "Bargain Crate",
+          "lines": [
+            "Judith changes her figures by adding strokes, never by wiping the slate clean."
+          ],
+          "useLabel": "Read the price marks",
+          "methods": [
+            {
+              "id": "catch-altered-price-mark",
+              "label": "Separate the added strokes",
+              "field": "guile",
+              "dc": 55,
+              "successLog": "One extra stroke turns the camp price into the road price. The crate never moved between them.",
+              "failLog": "The chalk has been handled until every figure looks guilty.",
+              "success": {
+                "setFlag": "censure-road-sutler-false-price-mark-found"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Bargain Crate",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "low-stool",

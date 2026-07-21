@@ -1,0 +1,54 @@
+{
+  "id": "ash-road-south-tor-vask",
+  "title": "Titus Custos",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Titus keeps one hand near the South Chain, though the links are too heavy for one person to lift.",
+        "\"Show a writ if you have one. Do not make it do work it cannot.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the writ permits",
+          "next": "writ"
+        },
+        {
+          "label": "Ask why he guards a closed road",
+          "next": "watch"
+        },
+        {
+          "label": "Leave Titus at the chain",
+          "close": true
+        }
+      ]
+    },
+    "writ": {
+      "lines": [
+        "\"It permits your party through a controlled road gate. It cannot command the water court or open the north chain, and it will not move residents out of your way.\"",
+        "\"Preceptor seals are specific because general power makes poor neighbors.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why he guards a closed road",
+          "next": "watch"
+        },
+        {
+          "label": "Leave Titus at the chain",
+          "close": true
+        }
+      ]
+    },
+    "watch": {
+      "lines": [
+        "\"A closed gate still needs a witness. Otherwise the first frightened crowd decides who opened it.\"",
+        "\"I record whose hand opened it and when. I also note whether the hinge fought back.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave Titus at the chain",
+          "close": true
+        }
+      ]
+    }
+  }
+}

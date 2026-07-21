@@ -4,7 +4,7 @@ import { directionSide } from './spriteBake.js';
 
 
 
-export function drawCutthroatDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
+export function drawCutthroatDetails({ ctx, px, linePx, detailPx, detailLinePx, meta, pose, shoulderY, hipY, headY, torso }) {
   const side = directionSide(meta);
   const c = torso.bodyCx;
   const redSide = meta.back ? -1 : 1;
@@ -24,9 +24,12 @@ export function drawCutthroatDetails({ ctx, px, linePx, meta, pose, shoulderY, h
   linePx(ctx, knifeX, shoulderY + 9, knifeX + side * 2, hipY - 4, PALETTE.hostBone);
   px(ctx, knifeX, shoulderY + 9, PALETTE.stoneLight, 1, 8);
   px(ctx, c - 1, hipY - 4, PALETTE.hostBone, 2, 2);
+  detailLinePx(ctx, c - redSide * 4.5, shoulderY + 2.5, c + redSide * 4.5, hipY + 0.5, PALETTE.clothRed);
+  detailLinePx(ctx, knifeX + side * 0.5, shoulderY + 9.5, knifeX + side * 2.5, hipY - 4.5, PALETTE.stoneLight);
+  detailPx(ctx, c - 0.5, hipY - 3.5, PALETTE.hostBone);
 }
 
-export function drawHostDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, footY, torso }) {
+export function drawHostDetails({ ctx, px, linePx, detailPx, detailLinePx, meta, pose, shoulderY, hipY, headY, footY, torso }) {
   const c = torso.bodyCx;
   const pulse = pose.bob ? 1 : 0;
   const half = Math.max(6, Math.floor(torso.shoulderW / 2));
@@ -137,9 +140,14 @@ export function drawHostDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, 
   px(ctx, c + 2, footY - 3, PALETTE.hostGold, half - 1, 1);
   px(ctx, c - half + 2, footY - 2, PALETTE.hostRed, half + 1, 2);
   px(ctx, c + 3, footY - 1, PALETTE.hostRed, half - 2, 1);
+  detailLinePx(ctx, c - half + 0.5, shoulderY + 0.5, c - half - 6.5, shoulderY - 6.5, PALETTE.hostBone);
+  detailLinePx(ctx, c + half - 0.5, shoulderY + 0.5, c + half + 7.5, shoulderY - 3.5, PALETTE.stoneDust);
+  detailLinePx(ctx, c + openSide * 1.5, shoulderY + 5.5, c + openSide * 3.5, hipY - 1.5, PALETTE.hostGold);
+  detailLinePx(ctx, dragX - 1.5, dragHandY + 0.5, dragX + 2.5, dragHandY + 3.5, PALETTE.hostBone);
+  detailPx(ctx, c + openSide * 2.5, footY - 2.5, PALETTE.hostGold);
 }
 
-export function drawChoirDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY, headY, torso }) {
+export function drawChoirDetails({ ctx, px, linePx, detailPx, detailLinePx, meta, pose, shoulderY, hipY, headY, torso }) {
   const side = directionSide(meta);
   const c = torso.bodyCx;
   const redSide = meta.back ? -1 : 1;
@@ -169,6 +177,12 @@ export function drawChoirDetails({ ctx, px, linePx, meta, pose, shoulderY, hipY,
   px(ctx, knifeX + side * 2, hipY - 3, PALETTE.hostBone, 2, 2);
   px(ctx, c - 9, shoulderY + 5, PALETTE.rustMid, 4, 5);
   px(ctx, c - 9, shoulderY + 5, PALETTE.hostGold, 4, 1);
+  detailLinePx(ctx, c - redSide * 4.5, shoulderY + 2.5, c + redSide * 4.5, hipY + 0.5, PALETTE.clothRed);
+  detailLinePx(ctx, knifeX + side * 0.5, shoulderY + 9.5, knifeX + side * 2.5, hipY - 3.5, PALETTE.hostBone);
+  if (!meta.back) {
+    detailPx(ctx, c - 0.5, headY + 6.5, PALETTE.hostRed);
+    detailPx(ctx, c + side * 6.5, hipY - 5.5, PALETTE.hostBone);
+  }
 }
 
 export const CUT_STYLE = {

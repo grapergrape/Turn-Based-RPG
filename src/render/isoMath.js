@@ -53,9 +53,9 @@ export function sortKey(x, y, zLayer = 0) {
   return (x + y) * 8 + zLayer;
 }
 
-// Size of the full pre-rendered scene canvas for a width x height grid, plus
-// the origin (screen position of cell 0,0) inside that canvas. The whole map is
-// baked once at this size; the camera blits a scrolling sub-region from it.
+// Logical projected bounds for a width x height grid, plus the origin (screen
+// position of cell 0,0) inside those bounds. The camera clamps against this
+// full extent while StaticSceneCache bakes only a bounded moving window.
 export function computeSceneBounds(width, height) {
   const minSx = (0 - (height - 1)) * HALF_W; // leftmost point (x=0, y=max)
   const maxSx = ((width - 1) - 0) * HALF_W;   // rightmost point (x=max, y=0)

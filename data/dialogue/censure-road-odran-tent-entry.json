@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-odran-tent-entry",
+  "title": "Father Augustine's Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Augustine's cot and travel chest sit beyond the tied flap."
+      ],
+      "choices": [
+        {
+          "label": "Enter Augustine's tent",
+          "effects": {
+            "log": "You enter Father Augustine's tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_odran_tent_interior.json",
+              "player": { "x": 8, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside Augustine's tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

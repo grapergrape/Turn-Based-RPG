@@ -8,11 +8,11 @@
       },
       "else": "unread",
       "lines": [
-        "Hessa's order matches the cups. Eleven hold old wick stubs. Sava Rell's place has been hammered flat."
+        "Keziah's order matches the cups. Eleven hold old wick stubs. Sapphira Rufa's place has been hammered flat."
       ],
       "choices": [
         {
-          "label": "Speak Lysa Orm's name",
+          "label": "Speak Susanna Niger's name",
           "conditions": {
             "flagsAbsent": [
               "heard-bell-lysa-answered"
@@ -20,12 +20,12 @@
           },
           "effects": {
             "setFlag": "heard-bell-lysa-answered",
-            "log": "Outside, one of Lysa Orm's stone teeth clicks against another."
+            "log": "Outside, one of Susanna Niger's stone teeth clicks against another."
           },
           "close": true
         },
         {
-          "label": "Speak Ilyen Marr's name",
+          "label": "Speak Jeremiah Fullo's name",
           "conditions": {
             "flagsAbsent": [
               "heard-bell-ilyen-answered"
@@ -41,7 +41,7 @@
                 }
               ]
             },
-            "log": "Ash shifts beneath Ilyen's grave. A short brass key lies where his fingers point."
+            "log": "Ash shifts beneath Jeremiah's grave. A short brass key lies where his fingers point."
           },
           "close": true
         },

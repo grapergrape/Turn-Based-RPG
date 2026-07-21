@@ -1,0 +1,31 @@
+{
+  "id": "censure-road-quartermaster-tent-entry",
+  "title": "Quartermaster Tent",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Issue ledgers and sealed crates crowd the tent beyond the flap."
+      ],
+      "choices": [
+        {
+          "label": "Enter the quartermaster tent",
+          "effects": {
+            "log": "You enter the quartermaster tent.",
+            "loadLevel": {
+              "path": "./data/levels/censure_road_quartermaster_tent.json",
+              "player": { "x": 6, "y": 7 }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay outside",
+          "effects": {
+            "log": "You stay outside the quartermaster tent."
+          },
+          "close": true
+        }
+      ]
+    }
+  }
+}

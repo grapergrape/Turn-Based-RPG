@@ -10,11 +10,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -23,6 +21,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -38,7 +38,6 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
   const a = frame.point(-0.42, 0, 0);
   const b = frame.point(0.42, 0, 0);
   const posts = [a, b];
-  drawShadowBlob(ctx, cx, cy + 2, 42, 10);
   for (const p of posts) {
     px(ctx, p[0] - 3, p[1] - 24, PALETTE.outline, 7, 27);
     px(ctx, p[0] - 2, p[1] - 23, PALETTE.woodDark, 5, 24);
@@ -47,6 +46,9 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
     px(ctx, p[0] - 1, p[1] - 27, PALETTE.stoneDust, 5, 3);
     px(ctx, p[0] - 4, p[1] - 7, PALETTE.outline, 9, 2);
     px(ctx, p[0] - 3, p[1] - 8, PALETTE.woodLight, 4, 1);
+    nativeLinePx(ctx, p[0] - 1.5, p[1] - 22.5, p[0] - 0.5, p[1] - 14.5, PALETTE.woodLight);
+    nativeLinePx(ctx, p[0] + 1.5, p[1] - 12.5, p[0] + 1, p[1] - 5.5, PALETTE.stoneDark);
+    nativePx(ctx, p[0] + 0.5, p[1] - 26.5, PALETTE.stoneDust);
   }
   // 488 of these line the fields, so the run needs seeded variety: sound
   // spans, one snapped rail drooping to the dirt, ash drifted at the posts,
@@ -62,6 +64,10 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
       linePx(ctx, mid[0] + 3, mid[1] + 2, b[0], b[1] - lift - 1, PALETTE.woodDark, 2);
       px(ctx, mid[0] - 2, mid[1] - 1, PALETTE.stoneDust, 2, 2); // pale split ends
       px(ctx, mid[0] + 2, mid[1] + 2, PALETTE.stoneDust, 2, 2);
+      nativeLinePx(ctx, a[0] + 1.5, a[1] - lift - 1.5, mid[0] - 3.5, mid[1] - 1.5, PALETTE.woodLight);
+      nativeLinePx(ctx, mid[0] + 4.5, mid[1] + 2.5, b[0] - 1.5, b[1] - lift - 0.5, PALETTE.stoneDark);
+      nativePx(ctx, mid[0] - 0.5, mid[1] - 0.5, PALETTE.hostBone);
+      nativePx(ctx, mid[0] + 2.5, mid[1] + 2.5, PALETTE.hostBone);
       continue;
     }
     linePx(ctx, a[0], a[1] - lift, b[0], b[1] - lift + ((seed + lift) & 1), PALETTE.outline, 5);
@@ -70,6 +76,14 @@ export function drawFarmFence(ctx, cx, cy, seed, opts = {}) {
     const mid = frame.point(0.02, 0, lift - 1);
     px(ctx, mid[0] - 3, mid[1], PALETTE.outline, 7, 2);
     px(ctx, mid[0] - 2, mid[1] - 1, lift > 15 ? PALETTE.woodLight : PALETTE.rustDark, 4, 1);
+    nativeLinePx(
+      ctx,
+      a[0] + 2.5,
+      a[1] - lift - 1.5,
+      b[0] - 2.5,
+      b[1] - lift - 1.5 + ((seed + lift) & 1),
+      lift > 15 ? PALETTE.woodLight : PALETTE.stoneDust
+    );
   }
   if ((seed & 3) === 0) {
     linePx(ctx, cx - 8, cy - 5, cx + 7, cy - 28, PALETTE.outline, 3);
@@ -120,6 +134,12 @@ export function drawTrampledMud(ctx, cx, cy, seed) {
     px(ctx, x + 1, y, PALETTE.rustDark, 2, 1);
   }
   drawNoisePixels(ctx, cx - 25, cy - 10, 50, 20, [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.woodDark], 0.055, seed);
+  // Narrow sole grooves and a wet rim make the overlapping tracks readable
+  // without increasing the footprint silhouettes.
+  nativeLinePx(ctx, cx - 16.5, cy - 4.5, cx - 11.5, cy - 2.5, PALETTE.rustMid);
+  nativeLinePx(ctx, cx + 8.5, cy - 3.5, cx + 13.5, cy - 1.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx - 18.5, cy + 6.5, cx + 5.5, cy + 7.5, PALETTE.stoneDark);
+  nativePx(ctx, cx + 19.5, cy + 3.5, PALETTE.rustLight);
 }
 
 export function drawPracticeScars(ctx, cx, cy, seed) {
@@ -144,6 +164,12 @@ export function drawPracticeScars(ctx, cx, cy, seed) {
   px(ctx, cx - 2, cy - 3, PALETTE.hostBone, 5, 1);
   ctx.restore();
   drawNoisePixels(ctx, cx - 22, cy - 10, 44, 20, [PALETTE.stoneDust, PALETTE.rustDark], 0.03, seed);
+  // Secondary splinters branch from the deep weapon cuts at the new native
+  // pixel width, while a single pale chip catches the upper-left light.
+  nativeLinePx(ctx, cx - 20.5, cy - 7.5, cx - 8.5, cy - 3.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 1.5, cy + 6.5, cx + 10.5, cy - 4.5, PALETTE.rustDark);
+  nativeLinePx(ctx, cx + 8.5, cy - 1.5, cx + 16.5, cy + 2.5, PALETTE.outline);
+  nativePx(ctx, cx - 1.5, cy - 3.5, PALETTE.hostBone);
 }
 
 export function drawSpentCasings(ctx, cx, cy, seed) {
@@ -165,13 +191,23 @@ export function drawSpentCasings(ctx, cx, cy, seed) {
     linePx(ctx, cx + dx, cy + dy, cx + dx + 8, cy + dy - 2, PALETTE.rustDark, 1);
   }
   drawNoisePixels(ctx, cx - 18, cy - 8, 36, 16, [PALETTE.stoneDark, PALETTE.rustDark], 0.025, seed);
+  // Case-mouth rims and primer dimples remain single physical pixels, small
+  // enough to distinguish brass cases from straw or loose stones.
+  for (const [dx, dy, horizontal] of [
+    [-13.5, -4.5, true],
+    [-2.5, 4.5, false],
+    [10.5, -2.5, true]
+  ]) {
+    if (horizontal) nativeLinePx(ctx, cx + dx, cy + dy, cx + dx + 2, cy + dy, PALETTE.hostGold);
+    else nativeLinePx(ctx, cx + dx, cy + dy, cx + dx, cy + dy + 2, PALETTE.rustLight);
+    nativePx(ctx, cx + dx + (horizontal ? 2.5 : 0.5), cy + dy + (horizontal ? 0.5 : 2.5), PALETTE.void);
+  }
 }
 
 export function drawTrainingDummy(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const lean = (seed & 1) ? 2 : -2;
   const rng = rngFrom(hash2D(seed + 59, seed * 7 + 17));
-  drawShadowBlob(ctx, cx, cy + 4, 42, 14);
 
   const baseA = frame.point(-0.42, 0, 2);
   const baseB = frame.point(0.42, 0, 2);
@@ -260,12 +296,17 @@ export function drawTrainingDummy(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 6, cy - 21, PALETTE.hostGold, 2, 1);
   px(ctx, cx + 4, cy - 30, PALETTE.stoneLight, 4, 1); // the parked blade
   px(ctx, cx + 7, cy - 31, PALETTE.woodDark, 3, 2); // its grip
-
+  nativeLinePx(ctx, cx - 11.5 + lean, cy - 46.5, cx + 9.5 + lean, cy - 31.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 8.5 + lean, cy - 38.5, cx + 8.5 + lean, cy - 38.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx - 4.5 + lean, cy - 34.5, cx + 4.5 + lean, cy - 34.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 7.5 + lean, cy - 61.5, cx + 7.5 + lean, cy - 57.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 5.5, cy - 25.5, cx - 5.5, cy - 21.5, PALETTE.clothTan);
+  nativeLinePx(ctx, cx + 3.5, cy - 29.5, cx + 6.5, cy - 30.5, PALETTE.hostBone);
+  nativeLinePx(ctx, baseA[0] + 0.5, baseA[1] - 1.5, baseB[0] - 0.5, baseB[1] - 1.5, PALETTE.woodLight);
 }
 
 export function drawDevilTarget(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'sw');
-  drawShadowBlob(ctx, cx, cy + 5, 50, 15);
 
   const postL = frame.point(-0.34, 0, 0);
   const postR = frame.point(0.34, 0, 0);
@@ -340,6 +381,12 @@ export function drawDevilTarget(ctx, cx, cy, seed, opts = {}) {
   px(ctx, heart[0], heart[1] - 4, PALETTE.woodDark, 1, 4); // the shaft
   px(ctx, heart[0] - 1, heart[1] - 6, PALETTE.clothTan, 3, 2); // fletching
 
+  // Paper fibres and frame grain emerge at native 2x while the painted target
+  // remains a broad, readable training silhouette.
+  face.nativeLine(0.2, 0.14, 0.39, 0.14, PALETTE.stoneDust);
+  face.nativeLine(0.63, 0.76, 0.84, 0.76, PALETTE.woodDark);
+  nativeLinePx(ctx, postL[0] - 0.5, postL[1] - 47.5, postL[0] - 0.5, postL[1] - 34.5, PALETTE.woodLight);
+
 }
 const FARM_VARIANTS = new Set(['farmhouse', 'barn', 'storage-shed', 'grain-shed', 'tool-shed']);
 
@@ -412,6 +459,18 @@ const FARM_BUILDING_STYLES = {
 
 function farmBuildingStyle(variant) {
   return FARM_BUILDING_STYLES[normalizeFarmVariant(variant)];
+}
+
+function drawNativeFarmBuildingFace(face, seed, style, shaded) {
+  const light = shaded ? PALETTE.stoneDark : style.trim;
+  const dark = shaded ? PALETTE.outline : style.wallShade;
+  for (let i = 0; i < 4; i += 1) {
+    const hash = hash2D(seed + i * 31, seed * 7 + i * 17);
+    const u = 0.1 + ((hash & 255) / 255) * 0.8;
+    const v = 0.16 + (((hash >>> 8) & 255) / 255) * 0.68;
+    const drift = ((hash >>> 16) & 1) ? 0.012 : -0.012;
+    face.nativeLine(u, v, u + drift, Math.min(0.94, v + 0.13), i & 1 ? dark : light);
+  }
 }
 
 function drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wallTop, base, roof, roofLift) {
@@ -558,7 +617,6 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
   const wallTop = diamond(cx, cy - wallH, TILE_WIDTH, TILE_HEIGHT);
   const roof = diamond(cx, cy - roofLift, TILE_WIDTH + style.roofW, TILE_HEIGHT + style.roofH);
 
-  drawShadowBlob(ctx, cx, cy + 5, 66, 22);
 
   const drawFaceDetail = (face, salt) => {
     const h = hash2D(seed + salt, seed * 5 + salt);
@@ -602,6 +660,7 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
     face.line(0.04, 0.52, 0.94, 0.52, style.wallShade, 1);
     face.line(0.04, 0.78, 0.94, 0.78, style.wallShade, 1);
     drawFaceDetail(face, 31);
+    drawNativeFarmBuildingFace(face, seed + 31, style, false);
   }
 
   if (!connected.xPlus) {
@@ -612,6 +671,7 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
     face.line(0.07, 0.55, 0.91, 0.55, PALETTE.outline, 1);
     face.line(0.07, 0.8, 0.91, 0.8, PALETTE.outline, 1);
     drawFaceDetail(face, 43);
+    drawNativeFarmBuildingFace(face, seed + 43, style, true);
   }
 
   // Shared roof edges are omitted so connected cells read as one structure.
@@ -673,6 +733,14 @@ export function drawFarmBuildingBlock(ctx, cx, cy, seed, opts = {}) {
     linePx(ctx, base.bottom[0] + 4, base.bottom[1], base.right[0] - 4, base.right[1], PALETTE.stoneDark, 1);
   }
   drawNoisePixels(ctx, cx - 33, cy - roofLift - 14, 66, 36, [style.roofShade, style.wallShade], 0.018, seed);
+  // Fine roof seams use the new native pixel without breaking the connected
+  // cell silhouette. They remain on the roof plane even for interior cells.
+  const roofGrainA = mixPoint(roof.left, roof.top, 0.39);
+  const roofGrainB = mixPoint(roof.bottom, roof.right, 0.39);
+  nativeLinePx(ctx, roofGrainA[0] + 0.5, roofGrainA[1] - 0.5, roofGrainB[0] + 0.5, roofGrainB[1] - 0.5, style.roofLight);
+  const roofGrainC = mixPoint(roof.top, roof.right, 0.61);
+  const roofGrainD = mixPoint(roof.left, roof.bottom, 0.61);
+  nativeLinePx(ctx, roofGrainC[0] - 0.5, roofGrainC[1] + 0.5, roofGrainD[0] - 0.5, roofGrainD[1] + 0.5, style.roofShade);
   drawFarmBuildingVariantMarks(ctx, cx, cy, seed, variant, connected, wallTop, base, roof, roofLift);
   if (!connected.yPlus || !connected.xPlus) drawRubbleCluster(ctx, cx + 24, cy + 8, seed + 227, 2);
   // One block in five carries a boarded window with a red ward brushed over
@@ -861,6 +929,11 @@ function drawFarmWallDoor(ctx, cx, cy, seed, opts = {}) {
     px(ctx, p[0], p[1] - 2, rng() < 0.5 ? style.trim : style.shade, 1, 1);
   }
 
+  // Fine grain follows the wall-projected planks in every authored plane.
+  face.nativeLine(0.17, 0.18, 0.39, 0.18, style.trim);
+  face.nativeLine(0.55, 0.4, 0.81, 0.4, style.shade);
+  face.nativeLine(0.2, 0.76, 0.43, 0.76, PALETTE.woodLight);
+
   const sillA = wallFace.point(u0 - 0.08, 1);
   const sillB = wallFace.point(u1 + 0.08, 1);
   linePx(ctx, sillA[0], sillA[1], sillB[0], sillB[1], PALETTE.outline, 3);
@@ -890,7 +963,6 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
   const top = cy - style.floorHeight;
   const bottom = cy + 2;
 
-  drawShadowBlob(ctx, cx, cy + 4, variant === 'barn' ? 56 : 42, 14);
   drawIsoDiamond(ctx, cx, cy + 2, style.floorWidth + 3, 12, PALETTE.outline);
   drawIsoDiamond(ctx, cx, cy, style.floorWidth - 2, 9, PALETTE.stoneDark);
 
@@ -985,6 +1057,12 @@ export function drawFarmDoor(ctx, cx, cy, seed, opts = {}) {
     linePx(ctx, cx - 4 + lean, sealY + 8, cx + 3 + lean, sealY - 1, PALETTE.stoneLight, 1);
   }
 
+  // Native wood fibres sit between the door's structural braces. They retain
+  // the variant palette and do not change collision or the logical silhouette.
+  nativeLinePx(ctx, left + 4.5, top + 7.5, left + 12.5, top + 7.5, style.trim);
+  nativeLinePx(ctx, cx + lean + 3.5, top + 25.5, cx + lean + 11.5, top + 25.5, style.shade);
+  nativeLinePx(ctx, right - 14.5, bottom - 10.5, right - 6.5, bottom - 10.5, PALETTE.woodLight);
+
 }
 
 function drawFarmWheel(ctx, cx, cy, radius = 7, opts = {}) {
@@ -1031,7 +1109,6 @@ function drawFarmWheel(ctx, cx, cy, radius = 7, opts = {}) {
 export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const rng = rngFrom(hash2D(seed + 191, seed * 5 + 13));
-  drawShadowBlob(ctx, cx, cy + 5, 54, 18);
   const box = orientedBox(ctx, frame, 0.68, 0.36, 12, {
     top: PALETTE.woodLight,
     lit: PALETTE.woodMid,
@@ -1106,6 +1183,14 @@ export function drawFieldCart(ctx, cx, cy, seed, opts = {}) {
   const cartDebris = frame.point(0.62, 0.34);
   drawRubbleCluster(ctx, cartDebris[0], cartDebris[1] + 4, seed + 197, 2);
   drawNoisePixels(ctx, cx - 22, cy - 18, 44, 26, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
+  nativeLinePx(ctx, box.cap.left[0] + 1.5, box.cap.left[1] - 0.5, box.cap.top[0] - 1.5, box.cap.top[1] + 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, axleA[0] + 0.5, axleA[1] - 1.5, axleB[0] - 0.5, axleB[1] - 1.5, PALETTE.woodMid);
+  nativeLinePx(ctx, tongueA[0], tongueA[1] - 0.5, tongueB[0], tongueB[1] - 0.5, PALETTE.woodLight);
+  for (const sackPoint of [sackA, sackB, sack]) {
+    nativeLinePx(ctx, sackPoint[0] - 3.5, sackPoint[1] - 6.5, sackPoint[0] + 2.5, sackPoint[1] - 6.5, PALETTE.hostBone);
+    nativeLinePx(ctx, sackPoint[0] - 2.5, sackPoint[1] - 2.5, sackPoint[0] + 2.5, sackPoint[1] - 2.5, PALETTE.stoneDust);
+  }
+  nativeLinePx(ctx, tarp[0] - 4.5, tarp[1] - 3.5, tarp[0] + 3.5, tarp[1] - 3.5, PALETTE.stoneDark);
 }
 
 export function drawHayRick(ctx, cx, cy, seed) {
@@ -1113,7 +1198,6 @@ export function drawHayRick(ctx, cx, cy, seed) {
   // centre pole, tied with cord, rotting at one flank. Ashen straw tones,
   // never a bright gold dome.
   const rng = rngFrom(hash2D(seed + 83, seed * 5 + 21));
-  drawShadowBlob(ctx, cx, cy + 4, 42, 15);
 
   // Centre pole first, sticking out of the crown.
   px(ctx, cx - 1, cy - 30, PALETTE.outline, 4, 10);
@@ -1162,13 +1246,17 @@ export function drawHayRick(ctx, cx, cy, seed) {
   px(ctx, cx - 11, cy - 3, PALETTE.hostBlack, 6, 4); // the hollow
   px(ctx, cx - 10, cy, PALETTE.woodDark, 4, 1); // pressed floor
   px(ctx, cx - 7, cy - 4, PALETTE.clothDark, 3, 2); // the snagged blanket corner
-
+  nativeLinePx(ctx, cx - 3.5, cy - 19.5, cx - 14.5, cy - 3.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx + 1.5, cy - 18.5, cx + 13.5, cy - 3.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 11.5, cy - 9.5, cx + 11.5, cy - 7.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 15.5, cy - 3.5, cx + 15.5, cy - 1.5, PALETTE.rustMid);
+  nativeLinePx(ctx, cx + 7.5, cy - 5.5, cx + 11.5, cy - 5.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx - 10.5, cy - 2.5, cx - 7.5, cy - 3.5, PALETTE.clothTan);
 }
 
 export function drawFieldPlow(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const rng = rngFrom(hash2D(seed + 211, seed * 3 + 29));
-  drawShadowBlob(ctx, cx, cy + 4, 54, 16);
   const beamA = frame.point(-0.48, -0.02, 8);
   const beamB = frame.point(0.48, -0.02, 5);
   linePx(ctx, beamA[0], beamA[1], beamB[0], beamB[1], PALETTE.outline, 4);
@@ -1240,13 +1328,17 @@ export function drawFieldPlow(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 8, cy - 10, PALETTE.outline, 7, 4);
   px(ctx, cx - 7, cy - 9, PALETTE.clothTan, 5, 2); // the nest
   px(ctx, cx - 5, cy - 10, PALETTE.woodLight, 2, 1);
-
+  nativeLinePx(ctx, beamA[0] + 0.5, beamA[1] - 1.5, beamB[0] - 0.5, beamB[1] - 1.5, PALETTE.woodLight);
+  for (const handle of [handleL, handleR]) nativeLinePx(ctx, beamA[0], beamA[1] - 0.5, handle[0], handle[1] - 0.5, PALETTE.woodMid);
+  nativeLinePx(ctx, blade[0] - 11.5, blade[1] - 3.5, blade[0] + 8.5, blade[1] - 0.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, blade[0] - 10.5, blade[1] + 5.5, blade[0] + 3.5, blade[1] + 8.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cutterTop[0] - 0.5, cutterTop[1], cutterBot[0] - 0.5, cutterBot[1], PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 6.5, cy - 8.5, cx - 2.5, cy - 8.5, PALETTE.hostBone);
 }
 
 export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const rng = rngFrom(hash2D(seed + 223, seed * 5 + 7));
-  drawShadowBlob(ctx, cx, cy + 4, 58, 17);
   const ha = 0.5;
   const hb = 0.28;
   const corners = [
@@ -1321,11 +1413,23 @@ export function drawFieldHarrow(ctx, cx, cy, seed, opts = {}) {
     px(ctx, drag[0] - 24 + Math.floor(rng() * 49), drag[1] - 4 + Math.floor(rng() * 9), rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark, 2, 1);
   }
   drawRubbleCluster(ctx, drag[0] + 22, drag[1] + 4, seed + 229, 2);
+  for (let i = 0; i < corners.length; i += 1) {
+    const a = corners[i];
+    const b = corners[(i + 1) % corners.length];
+    nativeLinePx(ctx, a[0], a[1] - 1.5, b[0], b[1] - 1.5, PALETTE.woodLight);
+  }
+  nativeLinePx(ctx, corners[0][0], corners[0][1] - 1.5, corners[2][0], corners[2][1] - 1.5, PALETTE.woodMid);
+  nativeLinePx(ctx, corners[1][0], corners[1][1] - 1.5, corners[3][0], corners[3][1] - 1.5, PALETTE.woodMid);
+  for (const lb of [-0.12, 0.16]) {
+    for (const la of [-0.36, -0.12, 0.12, 0.36]) {
+      const p = frame.point(la, lb, 6);
+      nativeLinePx(ctx, p[0] - 0.5, p[1] + 0.5, p[0] - 0.5, p[1] + 6.5, PALETTE.rustLight);
+    }
+  }
 }
 
 export function drawWagonWheel(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 233, seed * 11 + 5));
-  drawShadowBlob(ctx, cx, cy + 5, 42, 15);
   const lean = (seed & 1) ? 1 : -1;
   linePx(ctx, cx - 15 * lean, cy + 1, cx + 12 * lean, cy - 39, PALETTE.outline, 4);
   linePx(ctx, cx - 14 * lean, cy, cx + 11 * lean, cy - 38, PALETTE.woodDark, 2);
@@ -1364,13 +1468,18 @@ export function drawWagonWheel(ctx, cx, cy, seed) {
   px(ctx, cx - 3, cy - 22, PALETTE.woodDark, 2, 2); // the stub
   px(ctx, cx + 2, cy - 2, PALETTE.rustDark, 2, 5);
   px(ctx, cx + 2, cy + 3, PALETTE.rustDark, 4, 2);
-
+  nativeLinePx(ctx, cx - 13.5, cy - 21.5, cx + 13.5, cy - 21.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 0.5, cy - 36.5, cx - 0.5, cy - 24.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx + 0.5, cy - 19.5, cx + 0.5, cy - 7.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx - 16.5, cy - 10.5, cx + 17.5, cy - 13.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 13.5, cy - 6.5, cx + 14.5, cy - 6.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 2.5, cy - 25.5, cx - 2.5, cy - 22.5, PALETTE.woodLight);
+  nativePx(ctx, cx + 2.5, cy + 3.5, PALETTE.rustMid);
 }
 
 export function drawFeedTrough(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const rng = rngFrom(hash2D(seed + 241, seed * 13 + 17));
-  drawShadowBlob(ctx, cx, cy + 4, 42, 13);
   const box = orientedBox(ctx, frame, 0.82, 0.3, 10, {
     top: PALETTE.woodDark,
     lit: PALETTE.woodMid,
@@ -1415,11 +1524,18 @@ export function drawFeedTrough(ctx, cx, cy, seed, opts = {}) {
   px(ctx, bird[0] + 2, bird[1] - 3, PALETTE.stoneDust, 3, 1); // the splayed wing
   px(ctx, bird[0] - 2, bird[1] - 1, PALETTE.rustDark, 1, 1); // the head, dropped
   drawNoisePixels(ctx, cx - 18, cy - 14, 36, 20, [PALETTE.woodDark, PALETTE.stoneDark], 0.035, seed);
+  nativeLinePx(ctx, box.cap.left[0] + 1.5, box.cap.left[1] - 0.5, box.cap.top[0] - 1.5, box.cap.top[1] + 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, left[0] + 0.5, left[1] - 1.5, right[0] - 0.5, right[1] - 1.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, braceA[0], braceA[1] - 1.5, braceB[0], braceB[1] - 1.5, PALETTE.woodMid);
+  for (const la of [-0.28, -0.08, 0.1, 0.29]) {
+    const feed = frame.point(la, 0, 13);
+    nativePx(ctx, feed[0] - 0.5, feed[1] - 1.5, PALETTE.hostGold);
+  }
+  nativeLinePx(ctx, bird[0] - 1.5, bird[1] - 2.5, bird[0] + 2.5, bird[1] - 2.5, PALETTE.stoneDust);
 }
 
 export function drawWaterPump(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 251, seed * 7 + 37));
-  drawShadowBlob(ctx, cx, cy + 4, 26, 11);
   drawIsoPrism(ctx, cx, cy + 2, 24, 11, 5, {
     top: PALETTE.stoneMid,
     left: PALETTE.stoneDark,
@@ -1461,11 +1577,17 @@ export function drawWaterPump(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 15, cy + 7, seed + 257, 2);
   drawNoisePixels(ctx, cx - 10, cy - 39, 20, 40, [PALETTE.rustDark, PALETTE.stoneDark], 0.035, seed);
+  nativeLinePx(ctx, cx - 2.5, cy - 37.5, cx - 2.5, cy - 4.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 4.5, cy - 31.5, cx + 19.5, cy - 34.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 5.5, cy - 42.5, cx + 5.5, cy - 42.5, PALETTE.rustMid);
+  nativeLinePx(ctx, cx - 7.5, cy - 40.5, cx + 7.5, cy - 40.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 7.5, cy - 29.5, cx - 22.5, cy - 20.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx + 18.5, cy - 26.5, cx + 15.5, cy - 14.5, PALETTE.stoneDust);
+  nativePx(ctx, cx + 13.5, cy - 23.5, PALETTE.stoneLight);
 }
 
 export function drawToolRack(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 263, seed * 11 + 19));
-  drawShadowBlob(ctx, cx, cy + 4, 34, 12);
   px(ctx, cx - 15, cy - 42, PALETTE.outline, 5, 45);
   px(ctx, cx + 12, cy - 40, PALETTE.outline, 5, 43);
   px(ctx, cx - 14, cy - 41, PALETTE.woodDark, 3, 42);
@@ -1503,11 +1625,18 @@ export function drawToolRack(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 18, cy + 7, seed + 269, 2);
   drawNoisePixels(ctx, cx - 17, cy - 39, 34, 38, [PALETTE.woodDark, PALETTE.stoneDark], 0.035, seed);
+  nativeLinePx(ctx, cx - 13.5, cy - 40.5, cx - 13.5, cy - 3.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx + 13.5, cy - 38.5, cx + 13.5, cy - 3.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx - 15.5, cy - 36.5, cx + 14.5, cy - 34.5, PALETTE.woodLight);
+  for (const [dx, h, tone] of [[-9, 18, PALETTE.rustLight], [-2, 22, PALETTE.stoneDust], [6, 16, PALETTE.rustLight]]) {
+    nativeLinePx(ctx, cx + dx + 0.5, cy - 32.5, cx + dx + 0.5, cy - 34.5 + h, tone);
+  }
+  nativeLinePx(ctx, cx + 8.5, cy - 29.5, cx + 8.5, cy - 17.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 12.5, cy - 30.5, cx + 11.5, cy - 5.5, PALETTE.woodLight);
 }
 
 export function drawWoodpile(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 97, seed * 11 + 3));
-  drawShadowBlob(ctx, cx, cy + 4, 46, 15);
   for (let row = 0; row < 4; row += 1) {
     const count = row % 2 === 0 ? 4 : 3;
     for (let i = 0; i < count; i += 1) {
@@ -1543,6 +1672,18 @@ export function drawWoodpile(ctx, cx, cy, seed) {
   px(ctx, cx + 31, cy - 2, PALETTE.stoneLight, 4, 2); // the bitten-in head
   px(ctx, cx + 31, cy, PALETTE.void, 4, 1); // the split it sits in
   drawRubbleCluster(ctx, cx + 26, cy + 8, seed + 101, 2);
+  for (let row = 0; row < 4; row += 1) {
+    const count = row % 2 === 0 ? 4 : 3;
+    for (let i = 0; i < count; i += 1) {
+      const x = cx - 20 + i * 13 + (row % 2) * 6;
+      const y = cy - 5 - row * 6;
+      nativeLinePx(ctx, x + 0.5, y - 2.5, x + 8.5, y - 2.5, PALETTE.woodLight);
+      nativePx(ctx, x + 9.5, y - 1.5, PALETTE.woodDark);
+    }
+  }
+  nativeLinePx(ctx, cx - 17.5, cy - 21.5, cx + 17.5, cy - 21.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 33.5, cy - 0.5, cx + 35.5, cy - 10.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx + 30.5, cy - 1.5, cx + 33.5, cy - 1.5, PALETTE.hostBone);
 }
 
 export function drawRoadSignPost(ctx, cx, cy, seed) {
@@ -1558,7 +1699,6 @@ export function drawRoadSignPost(ctx, cx, cy, seed) {
   const innerShoulder = shoulderX - side * 3;
   const innerTip = tipX - side * 4;
 
-  drawShadowBlob(ctx, cx, cy + 4, 34, 11);
 
   // Split timber post with a lit left edge and a darker buried foot.
   px(ctx, cx - 5, cy - 52, PALETTE.outline, 11, 57);
@@ -1619,5 +1759,10 @@ export function drawRoadSignPost(ctx, cx, cy, seed) {
   px(ctx, cx + side * 4, cy - 26, PALETTE.outline, 6, 3);
   px(ctx, cx + side * 4, cy - 25, PALETTE.woodDark, 5, 1); // the torn stub
   px(ctx, cx + side * 8, cy - 26, PALETTE.woodLight, 2, 1); // its splinter
+
+  // Split grain follows both the arrow board and its weathered post.
+  nativeLinePx(ctx, innerRoot + side * 3.5, topY + 6.5, innerShoulder - side * 6.5, topY + 6.5, PALETTE.woodLight);
+  nativeLinePx(ctx, innerRoot + side * 5.5, botY - 5.5, innerShoulder - side * 8.5, botY - 5.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx - 1.5, cy - 45.5, cx - 0.5, cy - 31.5, PALETTE.woodLight);
 
 }

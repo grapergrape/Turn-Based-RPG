@@ -1,10 +1,10 @@
 {
   "id": "censure-road-camp-widow-bruna",
-  "title": "Widow Bruna",
+  "title": "Widow Naomi",
   "nodes": {
     "start": {
       "lines": [
-        "Widow Bruna works soap through a strip of bandage cloth. Her sleeves are rolled past the elbows, and gray water darkens the dirt around the tub.",
+        "Widow Naomi works soap through a strip of bandage cloth. Her sleeves are rolled past the elbows, and gray water darkens the dirt around the tub.",
         "\"If it is blood, ash, or soup, I can get half of it out. The other half belongs to God and bad stitching.\""
       ],
       "choices": [
@@ -13,7 +13,7 @@
           "next": "work"
         },
         {
-          "label": "Ask about Father Odran",
+          "label": "Ask about Father Augustine",
           "conditions": {
             "flag": "odran-late-visit-seen",
             "flagsAbsent": ["odran-late-visit-resolved"]
@@ -21,7 +21,7 @@
           "next": "odran"
         },
         {
-          "label": "Leave Bruna",
+          "label": "Leave Naomi",
           "close": true
         }
       ]
@@ -33,7 +33,7 @@
       ],
       "choices": [
         {
-          "label": "Ask about Father Odran",
+          "label": "Ask about Father Augustine",
           "conditions": {
             "flag": "odran-late-visit-seen",
             "flagsAbsent": ["odran-late-visit-resolved"]
@@ -41,28 +41,28 @@
           "next": "odran"
         },
         {
-          "label": "Leave Bruna",
+          "label": "Leave Naomi",
           "close": true
         }
       ]
     },
     "odran": {
       "lines": [
-        "Bruna keeps twisting the cloth long after the water stops falling from it.",
+        "Naomi keeps twisting the cloth long after the water stops falling from it.",
         "\"You saw me walk. Good. Then you also saw I walked on my own feet.\"",
-        "\"He said he could carry my husband's name in the morning office if I came after the last bell. Maybe he can. Maybe he wanted the dark more than the name.\""
+        "\"He said he could carry my husband's name in the morning office if I came after the last bell. Perhaps he can; I cannot tell whether he wanted that or merely wanted the dark.\""
       ],
       "choices": [
         {
           "label": "Promise not to name her",
           "effects": {
             "setFlag": "odran-widow-heard",
-            "log": "Bruna's account gives you a cleaner blade to hold over Father Odran."
+            "log": "Naomi's account gives you a cleaner blade to hold over Father Augustine."
           },
           "close": true
         },
         {
-          "label": "Leave Bruna",
+          "label": "Leave Naomi",
           "close": true
         }
       ]

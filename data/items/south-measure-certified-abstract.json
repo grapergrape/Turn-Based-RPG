@@ -1,0 +1,9 @@
+{
+  "id": "south-measure-certified-abstract",
+  "name": "Certified Water Abstract",
+  "type": "quest",
+  "rarity": "uncommon",
+  "weight": 0.2,
+  "groundModel": "paper",
+  "description": "Susanna Fontana’s signed abstract of the water settlement. It records the operating flow and pump custody. Roll access is entered separately without private household names."
+}

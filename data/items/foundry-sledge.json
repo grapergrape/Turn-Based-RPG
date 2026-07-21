@@ -1,0 +1,46 @@
+{
+  "id": "foundry-sledge",
+  "name": "Foundry Sledge",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "field tool",
+  "rarity": "common",
+  "weight": 3.2,
+  "groundModel": "tool-weapon",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Foundry Compact",
+    "factions": [
+      "foundry-compact"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "field tool",
+    "roles": [
+      "melee",
+      "field tool",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Tool Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A short-handled sledge from a rail crew. The head carries a bright scar where it struck something harder than track."
+}

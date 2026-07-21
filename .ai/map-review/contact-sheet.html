@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<!-- Dev-only contact-sheet harness for visual-audit screenshots. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#090806}canvas{display:block;image-rendering:pixelated}</style>
+</head>
+<body>
+<canvas id="sheet"></canvas>
+<script type="module">
+const params = new URLSearchParams(location.search);
+const prefix = params.get('prefix') ?? '/.ai/visual-audit/ash-road-south-submaps/passes/pass-';
+const suffix = params.get('suffix') ?? '.png';
+const start = Number(params.get('start') ?? 1);
+const end = Number(params.get('end') ?? start);
+const digits = Number(params.get('digits') ?? 3);
+const columns = Number(params.get('cols') ?? 4);
+const cellWidth = Number(params.get('cellW') ?? 400);
+const cellHeight = Number(params.get('cellH') ?? 270);
+const labelHeight = 24;
+
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Could not load ${src}`));
+    image.src = src;
+  });
+}
+
+try {
+  const records = await Promise.all(Array.from({ length: end - start + 1 }, async (_, offset) => {
+    const number = start + offset;
+    const label = String(number).padStart(digits, '0');
+    const src = `${prefix}${label}${suffix}`;
+    return { number, label, src, image: await loadImage(src) };
+  }));
+  const rows = Math.ceil(records.length / columns);
+  const canvas = document.querySelector('#sheet');
+  canvas.width = columns * cellWidth;
+  canvas.height = rows * (cellHeight + labelHeight);
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#090806';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for (let index = 0; index < records.length; index += 1) {
+    const record = records[index];
+    const column = index % columns;
+    const row = Math.floor(index / columns);
+    const x = column * cellWidth;
+    const y = row * (cellHeight + labelHeight);
+    const scale = Math.min(cellWidth / record.image.width, cellHeight / record.image.height);
+    const width = Math.max(1, Math.floor(record.image.width * scale));
+    const height = Math.max(1, Math.floor(record.image.height * scale));
+    const dx = x + Math.floor((cellWidth - width) / 2);
+    const dy = y + Math.floor((cellHeight - height) / 2);
+    ctx.drawImage(record.image, dx, dy, width, height);
+    ctx.fillStyle = '#1d1812';
+    ctx.fillRect(x, y + cellHeight, cellWidth, labelHeight);
+    ctx.fillStyle = '#c8b89a';
+    ctx.font = '15px monospace';
+    ctx.fillText(`PASS ${record.label}`, x + 8, y + cellHeight + 17);
+  }
+  document.title = 'CONTACT-READY';
+} catch (error) {
+  document.title = 'CONTACT-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+}
+</script>
+</body>
+</html>

@@ -1,13 +1,15 @@
 {
   "id": "censure-sister-hanne",
-  "name": "Sister Hanne",
+  "name": "Sister Joanna",
   "type": "npc",
   "faction": "holy-remnant",
   "role": "Medic sister",
   "appearance": {
     "body": "compact",
     "outfit": "settlement-nurse",
-    "gear": ["medicine-bag"],
+    "gear": [
+      "medicine-bag"
+    ],
     "accent": "pale-hood"
   },
   "stats": {
@@ -15,5 +17,9 @@
     "maxHp": 8,
     "actionPoints": 0
   },
-  "tags": ["holy-remnant", "ash-censure", "medic"]
+  "tags": [
+    "holy-remnant",
+    "ash-censure",
+    "medic"
+  ]
 }

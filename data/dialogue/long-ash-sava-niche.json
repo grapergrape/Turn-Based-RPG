@@ -8,7 +8,7 @@
       },
       "else": "resealed",
       "lines": [
-        "The niche stands open. Broken seal stone surrounds the place where Sava waited. Nothing remains to answer the pins."
+        "The niche stands open. Broken seal stone surrounds the place where Sapphira waited. Nothing remains to answer the pins."
       ],
       "choices": [
         {
@@ -23,8 +23,8 @@
       },
       "else": "quieted",
       "lines": [
-        "The pins hold Hessa's last cadence. Twelve names have been pressed into fresh wax across the niche seal.",
-        "Sava does not answer, and the seal gives no reason to call that safety."
+        "The pins hold Keziah's last cadence. Twelve names have been pressed into fresh wax across the niche seal.",
+        "Sapphira does not answer, and the seal gives no reason to call that safety."
       ],
       "choices": [
         {
@@ -44,7 +44,7 @@
       ],
       "choices": [
         {
-          "label": "Leave Sava quiet",
+          "label": "Leave Sapphira quiet",
           "effects": {
             "setFlag": "heard-bell-sava-found",
             "log": "You leave the listening niche sealed."
@@ -68,11 +68,11 @@
     },
     "break-quiet-warning": {
       "lines": [
-        "The pins are holding Sava in Hessa's cadence. Releasing them will wake him before the niche can open clear."
+        "The pins are holding Sapphira in Keziah's cadence. Releasing them will wake him before the niche can open clear."
       ],
       "choices": [
         {
-          "label": "Release the pins and face Sava",
+          "label": "Release the pins and face Sapphira",
           "effects": {
             "setFlag": [
               "heard-bell-test-third",
@@ -81,7 +81,7 @@
             ],
             "openDoorGroup": "sava-listening-niche",
             "startCombat": "sava-listening-niche",
-            "log": "The quieting pins lift. Sava pulls one prayer-bound hand free as the niche opens."
+            "log": "The quieting pins lift. Sapphira pulls one prayer-bound hand free as the niche opens."
           },
           "close": true
         },
@@ -105,7 +105,7 @@
           "label": "Inspect the broken seal",
           "effects": {
             "setFlag": "heard-bell-sava-found",
-            "log": "Sava Rell waits behind the cracked niche seal."
+            "log": "Sapphira Rufa waits behind the cracked niche seal."
           },
           "close": true
         },
@@ -125,7 +125,7 @@
           "label": "Inspect the niche",
           "effects": {
             "setFlag": "heard-bell-sava-found",
-            "log": "The measurements name Sava Rell as the subject inside."
+            "log": "The measurements name Sapphira Rufa as the subject inside."
           },
           "close": true
         },

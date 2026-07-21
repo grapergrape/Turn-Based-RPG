@@ -72,7 +72,7 @@ function makeGame(techniques = [], { playerOverrides = {}, enemyOverrides = {} }
   };
   const player = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 14, maxHp: 14, actionPoints: 8 },
     attacks: [

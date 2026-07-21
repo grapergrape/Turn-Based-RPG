@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-clinic-main-door-surface",
+  "title": "Clinic Entrance",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The south entrance opens from the waiting apron into public triage."
+      ],
+      "choices": [
+        {
+          "label": "Enter the Compact clinic",
+          "effects": {
+            "log": "You enter the Compact clinic through public triage.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_compact_clinic.json",
+              "player": {
+                "x": 18,
+                "y": 21,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay on the clinic apron",
+          "effects": {
+            "log": "You leave the clinic entrance behind."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

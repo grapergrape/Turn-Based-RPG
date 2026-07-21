@@ -1,0 +1,89 @@
+{
+  "id": "south-measure-civil-stair-surface",
+  "title": "Civil Stair",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The civil stair drops beneath the admission booth toward the lime-lined records landing."
+      ],
+      "choices": [
+        {
+          "label": "Descend into the intake undercroft",
+          "conditions": {
+            "flag": "south-measure-civil-access"
+          },
+          "effects": {
+            "log": "You descend from the old measure gates into the intake undercroft.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_intake_undercroft.json",
+              "player": {
+                "x": 29,
+                "y": 39,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Work the civil lock",
+          "conditions": {
+            "fieldRatings": {
+              "security": 30
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-civil-access",
+              "south-measure-entry-forced"
+            ],
+            "log": "The old civil lock gives without breaking.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_intake_undercroft.json",
+              "player": {
+                "x": 29,
+                "y": 39,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Use the Censure entry roll",
+          "conditions": {
+            "items": {
+              "censure-entry-roll": 1
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "south-measure-civil-access",
+              "south-measure-entry-forced"
+            ],
+            "log": "The Censure tools lift the admission-office lock.",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_intake_undercroft.json",
+              "player": {
+                "x": 29,
+                "y": 39,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Stay by the admission booth",
+          "effects": {
+            "log": "You step back from the civil stair."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

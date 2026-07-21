@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-hidden-rows-drying-frame-rows",
+  "title": "Drying-Frame Passage",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The movable drying frame opens back into the Rope Rows wash lane."
+      ],
+      "choices": [
+        {
+          "label": "Return through the wash wall",
+          "effects": {
+            "log": "You pass the drying frame and return to Rope Rows.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 125,
+                "y": 58,
+                "facing": "se"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Remain in the Hidden Rows",
+          "effects": {
+            "log": "You let the drying frame settle closed."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

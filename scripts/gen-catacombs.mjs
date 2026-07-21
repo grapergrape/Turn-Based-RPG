@@ -55,12 +55,12 @@ const spawn = { x: 20, y: 4 };
 reserve(spawn.x, spawn.y);
 
 add({
-  kind: 'loose-flagstone', x: 20, y: 2, name: 'Stone Stair Up',
+  id: 'catacombs-return-stair', kind: 'loose-flagstone', x: 20, y: 2, name: 'Stone Stair Up',
   interact: { type: 'secret-exit', dialogue: 'ash-chapel-catacombs-return', log: 'The cut stair climbs back toward the cellar.' }
 });
 
 const note = (x, y, name, dialogue, log) => {
-  add({ kind: 'paper-scraps', x, y, name, interact: { type: 'note', dialogue, log } });
+  add({ id: `catacombs-note-${dialogue}`, kind: 'paper-scraps', x, y, name, interact: { type: 'note', dialogue, log } });
   reserve(x, y);
 };
 
@@ -80,10 +80,10 @@ note(35, 18, 'Warden\'s Note: the Loud Ones', 'ash-chapel-catacombs-politicals',
 note(9, 31, 'Warden\'s Last Tally', 'ash-chapel-catacombs-deep', 'A page torn from the ledger and left on the bones, the counting given up.');
 note(20, 47, 'Warden\'s Shrine Confession', 'ash-chapel-catacombs-shrine', 'A confession folded into the hands of a skeleton crowned with carved thorn.');
 
-add({ kind: 'stone-tomb', x: 5, y: 13, blocking: true, name: 'Sealed Berth', interact: { type: 'container', log: 'A berth in the fever wall, its slab dragged aside.', loot: [{ item: 'field-dressing', count: 1 }] } });
-add({ kind: 'stone-tomb', x: 13, y: 25, blocking: true, name: 'Foreman\'s Berth', interact: { type: 'container', log: 'A larger berth, the slab carved with a tally of work done.', loot: [{ item: 'relic-rounds', count: 1 }] } });
-add({ kind: 'stone-tomb', x: 26, y: 25, blocking: true, name: 'Unnamed Berth', interact: { type: 'container', log: 'A berth with the name chiselled off the slab.', loot: [{ item: 'tarnished-saint-token', count: 1 }] } });
-add({ kind: 'rusted-reliquary', x: 29, y: 37, blocking: true, name: 'Bone Reliquary', interact: { type: 'container', log: 'A reliquary stuffed with sorted finger-bones instead of relics.', loot: [{ item: 'choir-hymnal-fragment', count: 1 }] } });
+add({ id: 'catacombs-fever-sealed-berth', kind: 'stone-tomb', x: 5, y: 13, blocking: true, name: 'Sealed Berth', interact: { type: 'container', log: 'A berth in the fever wall, its slab dragged aside.', loot: [{ item: 'field-dressing', count: 1 }] } });
+add({ id: 'catacombs-foreman-berth', kind: 'stone-tomb', x: 13, y: 25, blocking: true, name: 'Foreman\'s Berth', interact: { type: 'container', log: 'A larger berth, the slab carved with a tally of work done.', loot: [{ item: 'relic-rounds', count: 1 }] } });
+add({ id: 'catacombs-unnamed-berth', kind: 'stone-tomb', x: 26, y: 25, blocking: true, name: 'Unnamed Berth', interact: { type: 'container', log: 'A berth with the name chiselled off the slab.', loot: [{ item: 'tarnished-saint-token', count: 1 }] } });
+add({ id: 'catacombs-bone-reliquary', kind: 'rusted-reliquary', x: 29, y: 37, blocking: true, name: 'Bone Reliquary', interact: { type: 'container', log: 'A reliquary stuffed with sorted finger-bones instead of relics.', loot: [{ item: 'choir-hymnal-fragment', count: 1 }] } });
 add({ kind: 'host-growth', x: 6, y: 13 });
 add({ kind: 'host-growth', x: 12, y: 8 });
 
@@ -164,7 +164,7 @@ if (unreachable.length) {
 const level = {
   id: 'ash-chapel-catacombs',
   name: 'Ash Chapel Catacombs',
-  intro: 'The stair gives onto cold that has not moved in years. The dark ahead is full of small pale shapes, and they are all the same shape. The warden kept his dead in order. The cut stair behind you is the way back up. Use it (E) when you have seen enough.',
+  intro: 'The stair gives onto cold that has not moved in years. Small pale shapes repeat through the dark in the order the warden imposed on his dead. The cut stair behind you leads back up; click it when you have seen enough.',
   width: W,
   height: H,
   tileSize: 64,
@@ -187,6 +187,9 @@ const level = {
     '.': { kind: 'floor', walkable: true }
   },
   spawns: { player: { actor: 'mara-vey', x: spawn.x, y: spawn.y }, enemies: [] },
+  groundItems: [
+    { id: 'catacombs-entry-saint-token', item: 'tarnished-saint-token', count: 1, x: 19, y: 6 }
+  ],
   objects
 };
 

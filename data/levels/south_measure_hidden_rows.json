@@ -1,0 +1,1493 @@
+{
+  "id": "south-measure-hidden-rows",
+  "name": "South Measure Hidden Rows",
+  "intro": "The drying frame closes behind a shared lane. Pipe heat reaches rooms that do not appear on the public roll.",
+  "width": 30,
+  "height": 18,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#241d19",
+    "floorShadeAlpha": 0.23,
+    "ambient": "#172635",
+    "ambientAlpha": 0.14,
+    "vignette": 0.25
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-hidden-rows-drying-frame-rows",
+    "south-measure-hidden-rows-grave-passage-rows",
+    "south-measure-rows-ari-veck",
+    "south-measure-rows-nara-quen",
+    "south-measure-rows-brin-ossa",
+    "south-measure-rows-mell-ossa",
+    "south-measure-rows-hale-cord",
+    "south-measure-rows-seren-vask"
+  ],
+  "tiles": [
+    "##############################",
+    "#.........#........#.........#",
+    "#.........#........#.........#",
+    "#.........#........#.........#",
+    "#.........#........#.........#",
+    "#.........#........#.........#",
+    "#.........#........#.........#",
+    "#............................#",
+    "#............................#",
+    "#####.########.########.##...#",
+    "#............................#",
+    "#............................#",
+    "#............................#",
+    "#............................#",
+    "#............................#",
+    "#............................#",
+    "#............................#",
+    "##############################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "south-measure-domestic-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "south-measure-row",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 2,
+      "y": 6,
+      "facing": "se"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-ari-veck",
+        "spawnId": "rows-ari-veck-0",
+        "characterSlot": "rows-ari-veck",
+        "x": 14,
+        "y": 8,
+        "facing": "se",
+        "ambient": [
+          "Names stay inside unless the household sends them out.",
+          "The children know both exits and no official route.",
+          "Consent comes before curiosity in these rooms."
+        ],
+        "dialogue": "south-measure-rows-ari-veck",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-mira-soll",
+        "spawnId": "rows-mira-soll-1",
+        "characterSlot": "rows-mira-soll",
+        "x": 3,
+        "y": 13,
+        "facing": "se",
+        "ambient": [
+          "Thread box stays under the dry cot.",
+          "Naomi mends sleeves wide over the nail beds.",
+          "We hear the surface pump through the cooking flue."
+        ]
+      },
+      {
+        "actor": "ash-road-south-nara-quen",
+        "spawnId": "rows-nara-quen-2",
+        "characterSlot": "rows-nara-quen",
+        "x": 6,
+        "y": 13,
+        "facing": "se",
+        "ambient": [
+          "Ask before you look at my hands.",
+          "The nails changed when I was twelve. They stopped there.",
+          "A wider cuff keeps strangers from making a diagnosis."
+        ],
+        "dialogue": "south-measure-rows-nara-quen",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-toll-quen",
+        "spawnId": "rows-toll-quen-3",
+        "characterSlot": "rows-toll-quen",
+        "x": 15,
+        "y": 3,
+        "facing": "se",
+        "ambient": [
+          "Flue draws east when the pump is quiet.",
+          "Smoke tells the surface someone lives below.",
+          "My exposure card burned before the room did."
+        ]
+      },
+      {
+        "actor": "ash-road-south-esi-quen",
+        "spawnId": "rows-esi-quen-4",
+        "characterSlot": "rows-esi-quen",
+        "x": 5,
+        "y": 6,
+        "facing": "se",
+        "ambient": [
+          "The drying wall is the front door today.",
+          "I can reach the hall without seeing the sky.",
+          "Secret means home when adults say it softly."
+        ]
+      },
+      {
+        "actor": "ash-road-south-brin-ossa",
+        "spawnId": "rows-brin-ossa-5",
+        "characterSlot": "rows-brin-ossa",
+        "x": 13,
+        "y": 13,
+        "facing": "se",
+        "ambient": [
+          "I drove Chain freight before the debt learned my children.",
+          "The surety folio uses my old hand mark.",
+          "No guard comes through that wall while I can hear boots."
+        ],
+        "dialogue": "south-measure-rows-brin-ossa",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-mell-ossa",
+        "spawnId": "rows-mell-ossa-6",
+        "characterSlot": "rows-mell-ossa",
+        "x": 14,
+        "y": 12,
+        "facing": "se",
+        "ambient": [
+          "The water branch predates the admission booth.",
+          "We closed it when the intake mouths began counting.",
+          "Old pipes remember routes that ledgers forget."
+        ],
+        "dialogue": "south-measure-rows-mell-ossa",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-lena-ossa",
+        "spawnId": "rows-lena-ossa-7",
+        "characterSlot": "rows-lena-ossa",
+        "x": 18,
+        "y": 14,
+        "facing": "se",
+        "ambient": [
+          "Hall copy in, burial copy out.",
+          "I use the grave passage when the wash wall is watched.",
+          "A folded page looks like laundry if you carry it badly."
+        ]
+      },
+      {
+        "actor": "ash-road-south-hale-cord",
+        "spawnId": "rows-hale-cord-8",
+        "characterSlot": "rows-hale-cord",
+        "x": 25,
+        "y": 7,
+        "facing": "se",
+        "ambient": [
+          "The clinic sample bears my neighbor’s name.",
+          "Treatment helped. The record would still cost us this room.",
+          "Do not call a hidden name false."
+        ],
+        "dialogue": "south-measure-rows-hale-cord",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-ira-cord",
+        "spawnId": "rows-ira-cord-9",
+        "characterSlot": "rows-ira-cord",
+        "x": 24,
+        "y": 13,
+        "facing": "se",
+        "ambient": [
+          "Cot seam first, screen hem second.",
+          "Inspection eyes count beds and miss people.",
+          "Noam tells me who is coming by the pipe rattle."
+        ]
+      },
+      {
+        "actor": "ash-road-south-nim-cord",
+        "spawnId": "rows-nim-cord-10",
+        "characterSlot": "rows-nim-cord",
+        "x": 23,
+        "y": 5,
+        "facing": "se",
+        "ambient": [
+          "Heavy steps mean Chain boots.",
+          "Clinic runners tap twice on the pipe.",
+          "Your left foot lands louder than your right."
+        ]
+      },
+      {
+        "actor": "ash-road-south-seren-vask",
+        "spawnId": "rows-seren-vask-11",
+        "characterSlot": "rows-seren-vask",
+        "x": 25,
+        "y": 12,
+        "facing": "se",
+        "ambient": [
+          "The plate under my scar has not grown in nine years.",
+          "Stable is not the same as harmless to frightened people.",
+          "You may ask. You may not take a sample."
+        ],
+        "dialogue": "south-measure-rows-seren-vask",
+        "talkRadius": 1
+      }
+    ],
+    "enemies": []
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 0,
+      "y": 6,
+      "id": "hidden-rows-drying-frame",
+      "name": "Drying-Frame Passage",
+      "blocking": true,
+      "variant": "domestic",
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 1,
+        "y": 6
+      },
+      "mapMarker": {
+        "label": "Drying-Frame Passage",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-hidden-rows-drying-frame-rows"
+      }
+    },
+    {
+      "kind": "south-measure-door",
+      "x": 24,
+      "y": 0,
+      "id": "hidden-rows-grave-passage-exit",
+      "name": "Grave-Strip Door",
+      "blocking": true,
+      "variant": "domestic",
+      "wallPlane": "sw",
+      "interactionMarker": {
+        "x": 24,
+        "y": 1
+      },
+      "mapMarker": {
+        "label": "Grave-Strip Door",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-hidden-rows-grave-passage-rows"
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 5,
+      "y": 4,
+      "id": "hidden-rows-first-household-room",
+      "blocking": true,
+      "orient": "se",
+      "name": "First Household Room",
+      "interact": {
+        "type": "note",
+        "log": "Mended cups dry beside a low bed. Nothing in the room carries an intake number."
+      },
+      "interactionMarker": {
+        "x": 6,
+        "y": 4
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 14,
+      "y": 4,
+      "id": "hidden-rows-second-household-room",
+      "blocking": true,
+      "orient": "sw",
+      "name": "Second Household Room",
+      "interact": {
+        "type": "note",
+        "log": "Work gloves hang above a child's slate. The wall patch hides an older service stamp."
+      },
+      "interactionMarker": {
+        "x": 15,
+        "y": 4
+      }
+    },
+    {
+      "kind": "farm-bed",
+      "x": 22,
+      "y": 4,
+      "id": "hidden-rows-third-household-room",
+      "blocking": true,
+      "orient": "se",
+      "name": "Third Household Room",
+      "interact": {
+        "type": "note",
+        "log": "A cooking pot shares its shelf with folded burial cloth. The room has been repaired for long use."
+      },
+      "interactionMarker": {
+        "x": 23,
+        "y": 4
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 4,
+      "y": 9,
+      "id": "hidden-rows-concealed-water-branch",
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "sw",
+      "name": "Concealed Water Branch",
+      "interact": {
+        "type": "note",
+        "log": "A narrow pipe feeds the rooms behind the wash wall. Its draw does not appear on the public tap board."
+      },
+      "mapMarker": {
+        "label": "Hidden Water Branch",
+        "kind": "search"
+      },
+      "interactionMarker": {
+        "x": 5,
+        "y": 9
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 19,
+      "y": 9,
+      "id": "hidden-rows-shared-cooking-flue",
+      "blocking": false,
+      "variant": "elbow",
+      "wallPlane": "sw",
+      "connected": {
+        "xMinus": true,
+        "yMinus": true
+      },
+      "name": "Shared Cooking Flue",
+      "interact": {
+        "type": "note",
+        "log": "Three stove pipes meet inside one patched flue. The smoke leaves through an ordinary Rope Rows chimney."
+      },
+      "interactionMarker": {
+        "x": 19,
+        "y": 10
+      }
+    },
+    {
+      "kind": "clinic-bed",
+      "x": 5,
+      "y": 14,
+      "id": "hidden-rows-treatment-room",
+      "blocking": true,
+      "variant": "used",
+      "orient": "se",
+      "name": "Treatment Room",
+      "interact": {
+        "type": "note",
+        "log": "Boiled tools and plain bandages wait beside a narrow cot. The supplies carry no clinic or freight claim."
+      },
+      "interactionMarker": {
+        "x": 6,
+        "y": 14
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 15,
+      "y": 14,
+      "id": "hidden-rows-meeting-table",
+      "blocking": true,
+      "variant": "meeting",
+      "orient": "se",
+      "name": "Household Meeting Table",
+      "interact": {
+        "type": "note",
+        "log": "Water cups mark places around the table. The count can be changed without exposing a name."
+      },
+      "interactionMarker": {
+        "x": 16,
+        "y": 14
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 16,
+      "y": 17,
+      "id": "hidden-rows-private-water-list",
+      "blocking": true,
+      "variant": "private-list",
+      "wallPlane": "sw",
+      "name": "Private Water List",
+      "interact": {
+        "type": "note",
+        "log": "The list records cups beside household names kept off the public roll. A note at the top requires consent before any copy leaves the room."
+      },
+      "mapMarker": {
+        "label": "Private Water List",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 16,
+        "y": 16
+      }
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 4,
+      "id": "hidden-rows-grave-passage",
+      "blocking": true,
+      "variant": "broken",
+      "orient": "sw",
+      "name": "Grave Passage",
+      "interact": {
+        "type": "note",
+        "log": "The rear passage is narrow enough for one person and a burial cloth. Packed earth rises toward the grave strip."
+      },
+      "interactionMarker": {
+        "x": 27,
+        "y": 4
+      }
+    },
+    {
+      "kind": "field-satchel",
+      "x": 8,
+      "y": 15,
+      "id": "hidden-rows-free-clinic-satchel",
+      "name": "Free Clinic Satchel",
+      "blocking": true,
+      "orient": "sw",
+      "interact": {
+        "type": "container",
+        "log": "A cloth tag reads FREE CLINIC. TAKE WHAT THE FEVER NEEDS.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          },
+          {
+            "item": "drone-service-parts",
+            "count": 1
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 9,
+        "y": 15
+      }
+    },
+    {
+      "kind": "laundry-line",
+      "x": 2,
+      "y": 3,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 4,
+      "y": 2,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 7,
+      "y": 2,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 8,
+      "y": 5,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 2,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 1,
+      "y": 5,
+      "blocking": false,
+      "orient": "sw"
+    },
+    {
+      "kind": "laundry-line",
+      "x": 1,
+      "y": 7,
+      "blocking": false,
+      "orient": "se",
+      "variant": "entry-screen"
+    },
+    {
+      "kind": "wash-wall",
+      "x": 3,
+      "y": 8,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "wash-tub",
+      "x": 3,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 8,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "shared-oven",
+      "x": 8,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "dining-table",
+      "x": 4,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 7,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 8,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 2,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 7,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 12,
+      "y": 2,
+      "blocking": true,
+      "variant": "work-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 13,
+      "y": 7,
+      "blocking": true,
+      "variant": "cup-repair",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-repair-rack",
+      "x": 17,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "tool-rack",
+      "x": 17,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 12,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 17,
+      "y": 5,
+      "blocking": true
+    },
+    {
+      "kind": "wash-tub",
+      "x": 21,
+      "y": 2,
+      "blocking": true
+    },
+    {
+      "kind": "dining-table",
+      "x": 23,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 21,
+      "y": 8,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "pantry-shelf",
+      "x": 23,
+      "y": 3,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-water-vessels",
+      "x": 24,
+      "y": 6,
+      "blocking": true
+    },
+    {
+      "kind": "shared-oven",
+      "x": 20,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 3,
+      "y": 6,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 8,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 12,
+      "y": 5,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 17,
+      "y": 6,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 21,
+      "y": 5,
+      "blocking": false
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 24,
+      "y": 7,
+      "blocking": false
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 5,
+      "y": 8
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 15,
+      "y": 7
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 22,
+      "y": 8
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 2,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 3,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 6,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 7,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 8,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 9,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 10,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 11,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 12,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 13,
+      "y": 9,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 15,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 16,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 17,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 18,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 20,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 21,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": true
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 22,
+      "y": 9,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": true,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 24,
+      "y": 9,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "sw",
+      "orient": "se",
+      "connected": {
+        "xMinus": false,
+        "xPlus": false
+      }
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 19,
+      "y": 2,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se",
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 19,
+      "y": 3,
+      "blocking": false,
+      "variant": "valve",
+      "wallPlane": "se",
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 19,
+      "y": 4,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se",
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 19,
+      "y": 5,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se",
+      "orient": "sw"
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 19,
+      "y": 6,
+      "blocking": false,
+      "variant": "straight",
+      "wallPlane": "se",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-hand-pump",
+      "x": 6,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-hand-pump",
+      "x": 15,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-hand-pump",
+      "x": 24,
+      "y": 10,
+      "blocking": true
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 1,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 2,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 3,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 4,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 6,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 7,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 8,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 9,
+      "y": 12,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 2,
+      "y": 15,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 7,
+      "y": 15,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 9,
+      "y": 14,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "wash-wall",
+      "x": 2,
+      "y": 14,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 4,
+      "y": 13,
+      "blocking": false
+    },
+    {
+      "kind": "dining-bench",
+      "x": 13,
+      "y": 16,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "dining-bench",
+      "x": 18,
+      "y": 16,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 12,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 19,
+      "y": 14,
+      "blocking": true
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 20,
+      "y": 15,
+      "blocking": true,
+      "variant": "locked-cabinet",
+      "orient": "sw"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 15,
+      "y": 15
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 2,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 3,
+      "blocking": true,
+      "variant": "broken",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 5,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 6,
+      "blocking": true,
+      "variant": "broken",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 7,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 8,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 11,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 12,
+      "blocking": true,
+      "variant": "broken",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 13,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 14,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 15,
+      "blocking": true,
+      "variant": "broken",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 26,
+      "y": 16,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 25,
+      "y": 2,
+      "blocking": true,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 28,
+      "y": 3
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 27,
+      "y": 6
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 28,
+      "y": 12
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 27,
+      "y": 15
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 28,
+      "y": 8,
+      "blocking": true
+    },
+    {
+      "kind": "road-dust",
+      "x": 1,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 2,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 3,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 4,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 20,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 21,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 22,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 23,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 25,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 15
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 16
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 2
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 3
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 4
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 5
+    },
+    {
+      "kind": "road-dust",
+      "x": 24,
+      "y": 8
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "hidden-rows-loose-tinned-beans",
+      "item": "tinned-beans",
+      "count": 1,
+      "x": 17,
+      "y": 8
+    }
+  ]
+}

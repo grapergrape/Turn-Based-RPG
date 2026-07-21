@@ -1,0 +1,56 @@
+{
+  "id": "processional-crook",
+  "name": "Processional Crook",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "blunt",
+  "rarity": "common",
+  "weight": 2.1,
+  "groundModel": "blunt",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Ceremonial conversion",
+    "origin": "Road Clergy",
+    "factions": [
+      "road-clergy"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "blunt",
+    "roles": [
+      "melee",
+      "blunt",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 5,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "committed-blow",
+        "name": "Committed Blow",
+        "mode": "melee",
+        "apCost": 5,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": -5,
+        "conditionWear": 2
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "A bishop crook sleeved around an iron core after too many road attacks. The curved head can hold a doorway or drag a body clear."
+}

@@ -1,0 +1,56 @@
+{
+  "id": "censure-knife",
+  "name": "Censure Knife",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "knife",
+  "rarity": "rare",
+  "weight": 0.45,
+  "groundModel": "knife",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Ashen Censure",
+    "factions": [
+      "ashen-censure"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "knife",
+    "roles": [
+      "melee",
+      "knife",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Thrust",
+        "mode": "melee",
+        "apCost": 3,
+        "damage": 3,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "quick-cut",
+        "name": "Quick Cut",
+        "mode": "melee",
+        "apCost": 2,
+        "damage": 2,
+        "range": 1,
+        "accuracyBonus": 5,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "A narrow field knife with a hooked guard for cutting cord and clothing. Its blackened blade avoids a bright flash in dark rooms."
+}

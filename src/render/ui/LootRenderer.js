@@ -23,7 +23,11 @@ export function drawLoot(ctx, ui, tools) {
   for (let i = 0; i < Math.min(entries.length, 6); i += 1) {
     const entry = entries[i];
     const selected = i === selectedIndex;
-    if (selected) tools.rect(ctx, LOOT_LIST_BOX.x + 5, y - 3, LOOT_LIST_BOX.w - 10, 24, PALETTE.uiDark);
+    if (selected) {
+      tools.rect(ctx, LOOT_LIST_BOX.x + 5, y - 3, LOOT_LIST_BOX.w - 10, 24, PALETTE.uiDark);
+      tools.detailRect(ctx, LOOT_LIST_BOX.x + 5.5, y - 2.5, LOOT_LIST_BOX.w - 11, 0.5, PALETTE.uiBorderLight);
+      tools.detailRect(ctx, LOOT_LIST_BOX.x + 5.5, y - 2.5, 0.5, 23, PALETTE.uiText);
+    }
     const iconBox = { x: LOOT_LIST_BOX.x + 8, y: y - 5, w: 24, h: 24 };
     tools.drawInventorySlot(ctx, iconBox, entry, { selected: false, moving: false });
     const color = selected ? PALETTE.uiText : PALETTE.uiDim;

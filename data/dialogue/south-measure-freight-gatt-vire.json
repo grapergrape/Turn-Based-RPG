@@ -1,0 +1,55 @@
+{
+  "id": "south-measure-freight-gatt-vire",
+  "title": "Gaius Cotta",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Gaius holds up the severed ledger tie. The rear bolt remains seated.",
+        "\"One cut and no forced lock. How many people did you pass between the yard door and this cage?\""
+      ],
+      "choices": [
+        {
+          "label": "Say the thief knew the folio",
+          "next": "inside",
+          "effects": {
+            "setFlag": "morrow-ledger-tampering-seen"
+          }
+        },
+        {
+          "label": "Suggest a hungry porter took it",
+          "next": "porter"
+        },
+        {
+          "label": "Leave Gaius to count the crossings",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "inside": {
+      "lines": [
+        "Gaius nods once. \"Valeria can tell you which household surety marks changed. I can only tell you the hand that cut this page did not need to search.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the question to Valeria",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "porter": {
+      "lines": [
+        "\"A hungry porter takes food where the lock is weakest. This cut went past a meal to one page.\"",
+        "He threads a fresh tie through the cage. \"Bring me a crossing count before you bring me a culprit.\""
+      ],
+      "choices": [
+        {
+          "label": "Withdraw the accusation",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

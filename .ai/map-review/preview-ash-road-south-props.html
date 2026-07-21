@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!-- Dev-only audit sheet for every non-actor, non-building-shell model placed
+     on Ash Road South. Each row uses a real map prop and its authored options. -->
+<html>
+<head>
+<meta charset="utf-8">
+<base href="/">
+<style>html,body{margin:0;padding:0;background:#14110c;}canvas{display:block;image-rendering:pixelated;}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import { loadLevel } from '/src/core/LevelLoader.js';
+import * as P from '/src/render/PixelPrimitives.js';
+import { getSprite } from '/src/render/spriteCatalog.js';
+import { PALETTE } from '/src/render/palette.js';
+
+const BUILDING_SHELLS = new Set([
+  'south-measure-rowhouse-building-block',
+  'south-measure-annex-building-block',
+  'south-measure-clinic-building-block',
+  'south-measure-freight-building-block',
+  'south-measure-hall-building-block',
+  'south-measure-booth-building-block',
+  'south-measure-burial-building-block'
+]);
+const SIGNATURE_KEYS = [
+  'orient', 'variant', 'state', 'wallPlane', 'wallSide', 'opened', 'locked',
+  'active', 'damaged'
+];
+const GROUND_MODELS = ['food', 'shard', 'chit', 'dressing', 'rounds', 'token'];
+
+function floorPatch(ctx, cx, cy) {
+  for (let gy = -1; gy <= 1; gy += 1) {
+    for (let gx = -1; gx <= 1; gx += 1) {
+      const sx = cx + (gx - gy) * 32;
+      const sy = cy + (gx + gy) * 16;
+      P.drawStyledFloorCell(ctx, sx, sy, gx + 17, gy + 23, 'south-measure-road');
+    }
+  }
+}
+
+function signature(prop) {
+  return SIGNATURE_KEYS
+    .filter((key) => prop[key] !== undefined)
+    .map((key) => `${key}:${String(prop[key])}`)
+    .join(' ');
+}
+
+try {
+  const params = new URLSearchParams(location.search);
+  const filter = new Set((params.get('kinds') ?? '').split(',').filter(Boolean));
+  const includeGround = params.get('ground') !== '0';
+  const onlyGround = params.get('onlyGround') === '1';
+  const cols = Number(params.get('cols') ?? '6');
+  const cellW = Number(params.get('cellW') ?? '220');
+  const cellH = Number(params.get('cellH') ?? '190');
+  const scale = Number(params.get('scale') ?? '1');
+  const level = await loadLevel('./data/levels/ash_road_south.json');
+  const counts = new Map();
+  for (const prop of level.props) counts.set(prop.kind, (counts.get(prop.kind) ?? 0) + 1);
+
+  const seen = new Set();
+  const entries = [];
+  for (const prop of level.props) {
+    if (onlyGround) continue;
+    if (BUILDING_SHELLS.has(prop.kind)) continue;
+    if (filter.size && !filter.has(prop.kind)) continue;
+    const key = `${prop.kind}|${signature(prop)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    entries.push({
+      kind: prop.kind,
+      count: counts.get(prop.kind) ?? 0,
+      label: signature(prop) || 'default',
+      prop
+    });
+  }
+  entries.sort((a, b) => b.count - a.count || a.kind.localeCompare(b.kind) || a.label.localeCompare(b.label));
+  if (includeGround && (filter.size === 0 || onlyGround)) {
+    for (const model of GROUND_MODELS) entries.push({ kind: `item:${model}`, count: 1, label: 'map pickup', model });
+  }
+
+  const rows = Math.ceil(entries.length / cols);
+  const canvas = document.getElementById('c');
+  canvas.width = Math.round((cols * cellW + 20) * scale);
+  canvas.height = Math.round((rows * cellH + 20) * scale);
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = PALETTE.void;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+  ctx.font = '11px monospace';
+  const anim = { pulse: 0.5, flicker: 0.5, tick: 0, idleFrame: 0, bob: 0 };
+  const errors = [];
+
+  entries.forEach((entry, index) => {
+    const col = index % cols;
+    const row = Math.floor(index / cols);
+    const left = 10 + col * cellW;
+    const top = 10 + row * cellH;
+    const cx = left + Math.round(cellW / 2);
+    const cy = top + 112;
+    floorPatch(ctx, cx, cy);
+    try {
+      if (entry.model) {
+        P.drawGroundItem(ctx, cx, cy, index + 11, { model: entry.model, count: 1, drop: 1, pickup: 0 });
+      } else {
+        const sprite = getSprite(entry.kind);
+        if (!sprite) throw new Error(`Unregistered kind ${entry.kind}`);
+        const seed = entry.prop.seed ?? P.hash2D(entry.prop.x + 1, entry.prop.y + 1);
+        const state = { prop: entry.prop, anim, pulse: 0.5, flicker: 0.5, player: null };
+        sprite.draw(ctx, cx, cy, seed, state);
+        sprite.drawLiveOverlay?.(ctx, cx, cy, seed, state);
+      }
+    } catch (error) {
+      errors.push(`${entry.kind}: ${String(error?.stack ?? error)}`);
+      ctx.fillStyle = PALETTE.hostRed;
+      ctx.fillText('RENDER ERROR', left + 6, top + 96);
+    }
+    ctx.fillStyle = PALETTE.uiText;
+    ctx.fillText(`${entry.kind} (${entry.count})`.slice(0, 33), left + 6, top + cellH - 28);
+    ctx.fillStyle = PALETTE.uiTextDim;
+    ctx.fillText(entry.label.slice(0, 34), left + 6, top + cellH - 12);
+  });
+
+  if (errors.length) throw new Error(errors.join('\n'));
+  globalThis.__AUDIT_ART_BOUNDS = { x: 0, y: 0, width: canvas.width, height: canvas.height };
+  globalThis.__AUDIT_ENTRY_COUNT = entries.length;
+  document.title = 'CAPTURE-READY';
+} catch (error) {
+  document.title = 'CAPTURE-ERROR';
+  document.body.textContent = String(error?.stack ?? error);
+}
+</script>
+</body>
+</html>

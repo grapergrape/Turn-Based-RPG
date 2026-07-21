@@ -1,0 +1,309 @@
+{
+  "id": "ash-road-south-brother-tarn",
+  "title": "Brother Cassian",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "south-measure-assembly-complete"
+        ]
+      },
+      "else": "after-assembly",
+      "lines": [
+        "Brother Cassian’s tread assembly is locked beside the condenser. A damaged vox grille turns each breath into a burst of dry static.",
+        "\"Identify purpose. The water queue has priority over ceremony.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what he hears beneath the condenser",
+          "next": "signal",
+          "effects": {
+            "setFlag": "heard-tarn-hallowfen-signal"
+          }
+        },
+        {
+          "label": "Ask about Ash Chapel and Brother Job",
+          "next": "chapel-questions"
+        },
+        {
+          "label": "Ask what he does next",
+          "next": "duty-questions"
+        },
+        {
+          "label": "Step away from the Engine",
+          "close": true
+        }
+      ]
+    },
+    "chapel-questions": {
+      "lines": [
+        "Cassian’s vox grille opens on a short burst of static."
+      ],
+      "choices": [
+        {
+          "label": "Say you found his tread at Ash Chapel",
+          "conditions": {
+            "flag": "inspected-engine-rut"
+          },
+          "next": "tread"
+        },
+        {
+          "label": "Ask about Brother Job",
+          "next": "ors"
+        },
+        {
+          "label": "Ask why he withdrew",
+          "next": "withdrawal"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "duty-questions": {
+      "lines": [
+        "The weapon mount settles one notch away from the water queue."
+      ],
+      "choices": [
+        {
+          "label": "Ask why he has not reported",
+          "next": "reliquary"
+        },
+        {
+          "label": "Ask him to guard the water line first",
+          "next": "water",
+          "effects": {
+            "setFlag": "tarn-water-help-requested"
+          }
+        },
+        {
+          "label": "Propose a shared road to Hallowfen",
+          "next": "road"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "signal": {
+      "lines": [
+        "\"The buried metal carries a retired Hallowfen checkpoint reply. Its pattern is nineteen counts of pulse around six counts of silence.\"",
+        "\"The checkpoint is silent. Something else uses its answer.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask where he heard it first",
+          "next": "chapel"
+        },
+        {
+          "label": "Propose a shared road to Hallowfen",
+          "next": "road"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Listen to the condenser",
+          "close": true
+        }
+      ]
+    },
+    "tread": {
+      "lines": [
+        "\"You read the tread correctly. I reached the first stone and reversed.\"",
+        "A fresh cut on his left breastplate reads ASH CHAPEL: WITHDREW.",
+        "\"A clean report would not make the choice cleaner.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what stopped him",
+          "next": "chapel"
+        },
+        {
+          "label": "Accuse him of leaving civilians behind",
+          "next": "judgment"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Read the plate in silence",
+          "close": true
+        }
+      ]
+    },
+    "chapel": {
+      "lines": [
+        "\"Active Host matter registered inside sealed Penitent steel. Brother Job answered through a body doctrine says cannot exist.\"",
+        "\"Entering risked a second Engine, while destruction risked the only evidence. I lacked purge charge for either certainty.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask exactly what Job said",
+          "next": "ors"
+        },
+        {
+          "label": "Ask why the wall code matters",
+          "next": "code"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Ash Chapel in the record",
+          "close": true
+        }
+      ]
+    },
+    "ors": {
+      "lines": [
+        "\"Brother Job served as a scout on the Hallowfen perimeter. Order status: destroyed.\"",
+        "Cassian touches a worn name cut above the fresh chapel entry.",
+        "\"His vox used private order cadence, then gave the checkpoint reply. The second signal did not belong in his throat.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let Cassian retain the name",
+          "close": true
+        }
+      ]
+    },
+    "code": {
+      "lines": [
+        "\"The reply belonged to a Hallowfen wall tower already absent from the road net.\"",
+        "\"Either the tower still speaks where we cannot hear it, or the buried metal has learned its voice.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the code unanswered",
+          "close": true
+        }
+      ]
+    },
+    "withdrawal": {
+      "lines": [
+        "\"I withdrew. Field judgment calls it defensible, but the plate remains incomplete.\"",
+        "\"I do not record fear. I record reduced charge and impossible contamination, then add the number of civilians behind me.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Accept the field record",
+          "close": true
+        }
+      ]
+    },
+    "judgment": {
+      "lines": [
+        "Static breaks across Cassian’s grille.",
+        "\"Accusation entered. It matches the plate.\"",
+        "\"If condemnation produces a better next action, state it. If not, help me prevent a repeated line.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Withdraw the accusation",
+          "close": true
+        }
+      ]
+    },
+    "reliquary": {
+      "lines": [
+        "\"Black Reliquary recovery law begins with fire. Hallowfen still contains civilians.\"",
+        "\"A formal report is clean duty, while delay preserves evidence and risks spread. I have not found a clean tenderness.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the report unsent",
+          "close": true
+        }
+      ]
+    },
+    "water": {
+      "lines": [
+        "\"Request recorded. One watch at the water line costs no lost road day.\"",
+        "\"Susanna asked for the same act without invoking your writ. Her formulation was stronger.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let him take the watch",
+          "close": true
+        }
+      ]
+    },
+    "road": {
+      "effects": {
+        "setFlag": "tarn-shared-road-proposed"
+      },
+      "lines": [
+        "\"Shared movement improves survival and contaminates both reports.\"",
+        "\"Acceptable. I will decide final route after the condenser source is isolated.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the road open between you",
+          "close": true
+        }
+      ]
+    },
+    "after-assembly": {
+      "lines": [
+        "Cassian has cut the assembly outcome beneath the unfinished Ash Chapel entry on his breastplate."
+      ],
+      "choices": [
+        { "label": "Confirm the shared road", "conditions": { "flag": "tarn-shared-road" }, "next": "after-shared" },
+        { "label": "Ask about the road ahead", "conditions": { "flag": "tarn-independent-scout" }, "next": "after-scout" },
+        { "label": "Ask what the Reliquary will do", "conditions": { "flag": "tarn-reliquary-report" }, "next": "after-report" },
+        { "label": "Ask about the camp watch", "conditions": { "flag": "tarn-camp-watch" }, "next": "after-watch" },
+        { "label": "Step away from the Engine", "close": true }
+      ]
+    },
+    "after-shared": {
+      "lines": ["\"I take the east shoulder and stop when the buried reply changes.\"", "\"Shared road does not mean shared judgment. State disagreement before the weapon turns.\""],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    },
+    "after-scout": {
+      "lines": ["\"I will mark every culvert that carries the answer. Three cuts mean do not follow.\"", "\"If no marks remain, assume the road learned to remove them.\""],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    },
+    "after-report": {
+      "lines": ["\"Reliquary law favors fire because fire produces a clear report.\"", "\"I will include every living household between their certainty and Hallowfen.\""],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    },
+    "after-watch": {
+      "lines": ["\"The pipe answered twice since the vote. I recorded both and woke no child.\"", "\"Go north. If the signal turns behind you, I am already facing it.\""],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    }
+  }
+}

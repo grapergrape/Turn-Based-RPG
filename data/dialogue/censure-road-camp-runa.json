@@ -1,10 +1,10 @@
 {
   "id": "censure-road-camp-runa",
-  "title": "Quartermaster Runa",
+  "title": "Quartermaster Ruth",
   "nodes": {
     "start": {
       "lines": [
-        "Quartermaster Runa pins the ledger open with one flat hand.",
+        "Quartermaster Ruth pins the ledger open with one flat hand.",
         "\"No seal, no ration. No writ, no powder. No, a heroic face is not a seal.\""
       ],
       "choices": [
@@ -13,8 +13,42 @@
           "next": "writ"
         },
         {
-          "label": "Ask about Maev's cart",
+          "label": "Ask about Judith's cart",
           "next": "maev"
+        },
+        {
+          "label": "Order one lawful field issue",
+          "conditions": {
+            "flagsAbsent": ["censure-road-field-issue-authorized"],
+            "fieldRatings": {
+              "command": 50
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-field-issue-authorized",
+              "censure-road-field-issue-commanded"
+            ],
+            "log": "Ruth enters one field issue under your authority."
+          },
+          "next": "issue-command"
+        },
+        {
+          "label": "Copy an issue seal into the margin",
+          "conditions": {
+            "flagsAbsent": ["censure-road-field-issue-authorized"],
+            "fieldRatings": {
+              "guile": 60
+            }
+          },
+          "effects": {
+            "setFlag": [
+              "censure-road-field-issue-authorized",
+              "censure-road-field-issue-forged"
+            ],
+            "log": "Your copied seal enters Ruth's ledger before she turns the page."
+          },
+          "next": "issue-forged"
         },
         {
           "label": "Leave the issue table",
@@ -29,19 +63,118 @@
       ],
       "choices": [
         {
+          "label": "Show her the false return weight",
+          "conditions": {
+            "flag": "censure-road-ledger-weight-mismatch-found",
+            "flagsAbsent": ["censure-road-report-runa-stock"],
+            "fieldRatings": {
+              "search": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-runa-stock",
+            "log": "Ruth strikes the false cart weight and initials the correction for Aquila."
+          },
+          "next": "weight-mismatch"
+        },
+        {
+          "label": "Report the misplaced relief bundle",
+          "conditions": {
+            "flag": "censure-road-supply-relief-bundle-found",
+            "flagsAbsent": ["censure-road-runa-relief-bundle-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-runa-relief-bundle-reported",
+            "log": "Ruth returns the relief bundle to the road stock count."
+          },
+          "next": "relief-bundle"
+        },
+        {
+          "label": "Show her the copied powder total",
+          "conditions": {
+            "flag": "censure-road-supply-false-stock-mark-found",
+            "flagsAbsent": ["censure-road-runa-stock-mark-reported"]
+          },
+          "effects": {
+            "setFlag": "censure-road-runa-stock-mark-reported",
+            "log": "Ruth sets the false powder total aside for comparison with Judith's slate."
+          },
+          "next": "stock-mark"
+        },
+        {
           "label": "Leave the ledger",
+          "close": true
+        }
+      ]
+    },
+    "relief-bundle": {
+      "lines": [
+        "Ruth checks the relief stamp against the ration divider.",
+        "\"Good. The food went where the stamp said, even if my porter did not. I will hang the empty cord from his ledger peg.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave her the cord",
+          "close": true
+        }
+      ]
+    },
+    "stock-mark": {
+      "lines": [
+        "Ruth presses her thumb between each copied figure.",
+        "\"Those totals are mine. The spaces belong to a price hand. I will compare the mark to Judith's slate before dusk.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the false total with Ruth",
           "close": true
         }
       ]
     },
     "maev": {
       "lines": [
-        "\"Maev is not official. Maev is useful. The Church has many words for sin and very few for useful.\"",
+        "\"Judith is not official. Judith is useful. The Church has many words for sin and very few for useful.\"",
         "\"If she overcharges you, tell me. I will nod with great concern.\""
       ],
       "choices": [
         {
           "label": "Leave the quartermaster",
+          "close": true
+        }
+      ]
+    },
+    "issue-command": {
+      "lines": [
+        "Ruth reads your posture before she reads the empty issue line.",
+        "\"Fine. One field bundle, entered under your name. If Aquila asks why, stand exactly like that and waste her time instead of mine.\""
+      ],
+      "choices": [
+        {
+          "label": "Take the issue mark",
+          "close": true
+        }
+      ]
+    },
+    "issue-forged": {
+      "lines": [
+        "Your copied seal dries in the margin while Ruth counts beans with her back turned.",
+        "She closes the ledger on it. \"If that mark is wrong, the wax will remember your thumb better than I do.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the ledger",
+          "close": true
+        }
+      ]
+    },
+    "weight-mismatch": {
+      "lines": [
+        "Ruth runs one nail down the return column and stops at the false total.",
+        "\"Empty cart, full weight. Either Baruch carried a ghost or somebody used my ledger as a blanket. Tell the porter. I will tell Aquila with fewer rude words.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the corrected ledger",
           "close": true
         }
       ]

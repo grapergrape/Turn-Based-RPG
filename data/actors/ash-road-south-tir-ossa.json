@@ -1,0 +1,23 @@
+{
+  "id": "ash-road-south-tir-ossa",
+  "name": "Tirzah Viator",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Mourner",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "grave-strip",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-shawl",
+    "gear": [],
+    "accent": "bare-brown"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "id": "south-measure-cellar-meren-heth",
+  "title": "Matthias Cursor",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Matthias keeps the courier bag open, as if an unlatched buckle proves honesty."
+      ],
+      "choices": [
+        {
+          "label": "Ask where the medicine comes from",
+          "next": "route"
+        },
+        {
+          "label": "Press Matthias about Salome",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "neri-copy-hand-found",
+                "neri-suppressant-diversion-found",
+                "neri-recruit-list-found",
+                "neri-host-sign-seen"
+              ]
+            }
+          },
+          "next": "neri",
+          "effects": {
+            "setFlag": [
+              "neri-recruit-list-found",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "Matthias’s courier list links Salome to named adults and recurring suppressant deliveries."
+            }
+          }
+        },
+        {
+          "label": "Let Matthias finish the count",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "route": {
+      "lines": [
+        "\"The cache sits on the west road. Choir hands leave stock there, but so do Compact deserters, and fever medicine carries no doctrine in the vial.\"",
+        "\"I move doses here because people need them. That does not mean I know every person using the route.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask again",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "neri": {
+      "lines": [
+        "Matthias looks toward the lesson table.",
+        "\"I took her for a sympathizer who knew which frightened adults would accept help. Her list names Peter and Jair beside the nights she needs suppressant; Jonah is marked for courier work.\"",
+        "\"If that means what you think, she lied to the courier route too.\""
+      ],
+      "choices": [
+        {
+          "label": "Detain Matthias for the resident council",
+          "conditions": {
+            "flagsAbsent": [
+              "meren-courier-detained",
+              "meren-courier-barred"
+            ]
+          },
+          "effects": {
+            "setFlag": "meren-courier-detained"
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Bar Matthias from the charity route",
+          "conditions": {
+            "flagsAbsent": [
+              "meren-courier-detained",
+              "meren-courier-barred"
+            ]
+          },
+          "effects": {
+            "setFlag": "meren-courier-barred"
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Ask again",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

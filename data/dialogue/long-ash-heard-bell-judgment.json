@@ -11,7 +11,7 @@
       },
       "else": "incomplete",
       "lines": [
-        "Hessa kept the names. The road office kept the measurements. Sava Rell waits where both records point."
+        "Keziah kept the names. The road office kept the measurements. Sapphira Rufa waits where both records point."
       ],
       "choices": [
         {
@@ -55,7 +55,7 @@
       },
       "else": "killed",
       "lines": [
-        "Sava still lives behind the listening seal. Whatever holds him is weakening, but his breath still follows Hessa's count."
+        "Sapphira still lives behind the listening seal. Whatever holds him is weakening, but his breath still follows Keziah's count."
       ],
       "choices": [
         {
@@ -74,12 +74,12 @@
               "stage": "complete",
               "log": "Quest complete: Those Who Heard the Bell."
             },
-            "log": "You restore the twelve names and reseal Hessa's register. Sava's niche is quiet for now."
+            "log": "You restore the twelve names and reseal Keziah's register. Sapphira's niche is quiet for now."
           },
           "close": true
         },
         {
-          "label": "Perform censure and destroy Sava",
+          "label": "Perform censure and destroy Sapphira",
           "effects": {
             "setFlag": [
               "heard-bell-test-third",
@@ -88,7 +88,7 @@
             ],
             "openDoorGroup": "sava-listening-niche",
             "startCombat": "sava-listening-niche",
-            "log": "The niche opens under censure. Sava unfolds from the stone before the seal can fall clear."
+            "log": "The niche opens under censure. Sapphira unfolds from the stone before the seal can fall clear."
           },
           "close": true
         },
@@ -118,7 +118,7 @@
               "stage": "complete",
               "log": "Quest complete: Those Who Heard the Bell."
             },
-            "log": "You wrap Hessa's register with the mortuary docket. Sava remains sealed below."
+            "log": "You wrap Keziah's register with the mortuary docket. Sapphira remains sealed below."
           },
           "close": true
         },
@@ -130,7 +130,7 @@
     },
     "killed": {
       "lines": [
-        "Sava is dead. The choice now concerns the eleven who remain and the records that proved he could answer."
+        "Sapphira is dead. The choice now concerns the eleven who remain and the records that proved he could answer."
       ],
       "choices": [
         {
@@ -147,7 +147,7 @@
               "stage": "complete",
               "log": "Quest complete: Those Who Heard the Bell."
             },
-            "log": "You restore all twelve names after killing Sava. The writing cannot return him, but it refuses the office number."
+            "log": "You restore all twelve names after killing Sapphira. The writing cannot return him, but it refuses the office number."
           },
           "close": true
         },
@@ -195,7 +195,7 @@
               "stage": "complete",
               "log": "Quest complete: Those Who Heard the Bell."
             },
-            "log": "You take both records. Sava's empty niche remains as part of their evidence."
+            "log": "You take both records. Sapphira's empty niche remains as part of their evidence."
           },
           "close": true
         },
@@ -237,7 +237,7 @@
     },
     "resolved-evidence": {
       "lines": [
-        "Hessa's register and the mortuary docket are in your pack. The road office no longer owns the only account."
+        "Keziah's register and the mortuary docket are in your pack. The road office no longer owns the only account."
       ],
       "choices": [
         {

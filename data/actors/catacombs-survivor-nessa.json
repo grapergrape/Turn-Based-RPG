@@ -1,13 +1,15 @@
 {
   "id": "catacombs-survivor-nessa",
-  "name": "Nessa Quay",
+  "name": "Naomi Nauta",
   "type": "npc",
   "faction": "ash-chapel-settlement",
   "role": "Water keeper",
   "appearance": {
     "body": "compact",
     "outfit": "settlement-water-carrier",
-    "gear": ["water-jars"],
+    "gear": [
+      "water-jars"
+    ],
     "accent": "blue-cloth"
   },
   "stats": {

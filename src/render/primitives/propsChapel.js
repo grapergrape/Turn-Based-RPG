@@ -9,11 +9,9 @@ import {
   drawIsoDiamond,
   drawIsoPrism,
   drawNoisePixels,
-  drawPixelShadow,
   drawPropLeg,
   drawRubbleCluster,
   drawScorchMark,
-  drawShadowBlob,
   drawWarmLightPool,
   drawWaxStain,
   faceTools,
@@ -22,6 +20,8 @@ import {
   isoFrame,
   linePx,
   mixPoint,
+  nativeLinePx,
+  nativePx,
   normalizeOrient,
   ORIENTS,
   orientedBox,
@@ -33,9 +33,8 @@ import {
 
 // Portable props, chapel objects, and camp dressing.
 
-export function drawRustedReliquary(ctx, cx, cy, seed) {
+export function drawRustedReliquary(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 271, seed * 5 + 23));
-  drawShadowBlob(ctx, cx, cy + 5, 43, 17);
 
   // Arched chapel chest: stepped lid, side face, front face.
   poly(ctx, PALETTE.outline, [
@@ -91,59 +90,186 @@ export function drawRustedReliquary(ctx, cx, cy, seed) {
   }
   drawRubbleCluster(ctx, cx + 20, cy + 8, seed + 273, 2);
   drawNoisePixels(ctx, cx - 19, cy - 32, 40, 31, [PALETTE.rustDark, PALETTE.stoneDark], 0.045, seed);
+
+  if (opts.opened) {
+    // The arched lid stands behind the chest while a deep cavity covers the
+    // closed cap. The full body remains in place after the cache is emptied.
+    poly(ctx, PALETTE.outline, [
+      [cx - 10, cy - 27],
+      [cx - 7, cy - 46],
+      [cx + 8, cy - 51],
+      [cx + 21, cy - 39],
+      [cx + 18, cy - 24]
+    ]);
+    poly(ctx, PALETTE.rustMid, [
+      [cx - 7, cy - 28],
+      [cx - 4, cy - 43],
+      [cx + 7, cy - 47],
+      [cx + 17, cy - 37],
+      [cx + 15, cy - 27]
+    ]);
+    poly(ctx, PALETTE.rustDark, [
+      [cx + 7, cy - 47],
+      [cx + 17, cy - 37],
+      [cx + 15, cy - 27],
+      [cx + 7, cy - 31]
+    ]);
+    linePx(ctx, cx - 4, cy - 43, cx + 7, cy - 47, PALETTE.rustLight, 2);
+    linePx(ctx, cx - 6, cy - 29, cx + 15, cy - 27, PALETTE.hostGold, 1);
+    px(ctx, cx - 1, cy - 39, PALETTE.hostBone, 9, 1);
+    px(ctx, cx + 2, cy - 42, PALETTE.hostBone, 2, 7);
+
+    poly(ctx, PALETTE.outline, [
+      [cx - 19, cy - 20],
+      [cx - 7, cy - 28],
+      [cx + 20, cy - 24],
+      [cx + 4, cy - 13]
+    ]);
+    poly(ctx, PALETTE.void, [
+      [cx - 15, cy - 20],
+      [cx - 6, cy - 25],
+      [cx + 15, cy - 23],
+      [cx + 4, cy - 16]
+    ]);
+    linePx(ctx, cx - 15, cy - 19, cx + 3, cy - 15, PALETTE.rustLight, 2);
+    linePx(ctx, cx + 4, cy - 15, cx + 17, cy - 23, PALETTE.rustDark, 2);
+    px(ctx, cx - 4, cy - 17, PALETTE.stoneDark, 7, 2);
+
+    // The forced clasp hangs against the front plate instead of disappearing.
+    linePx(ctx, cx - 1, cy - 12, cx + 3, cy - 4, PALETTE.outline, 2);
+    linePx(ctx, cx, cy - 12, cx + 3, cy - 5, PALETTE.hostGold, 1);
+    px(ctx, cx + 1, cy - 5, PALETTE.outline, 6, 5);
+    px(ctx, cx + 2, cy - 4, PALETTE.rustLight, 4, 3);
+  }
+  nativeLinePx(ctx, cx - 14.5, cy - 24.5, cx + 16.5, cy - 27.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 14.5, cy - 17.5, cx + 17.5, cy - 17.5, PALETTE.hostGold);
+  nativeLinePx(ctx, cx - 16.5, cy - 5.5, cx + 2.5, cy + 2.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 5.5, cy + 2.5, cx + 19.5, cy - 6.5, PALETTE.rustMid);
+  nativePx(ctx, cx - 0.5, cy - 10.5, PALETTE.hostGold);
+  if (opts.opened) {
+    nativeLinePx(ctx, cx - 3.5, cy - 42.5, cx + 7.5, cy - 46.5, PALETTE.rustLight);
+    nativeLinePx(ctx, cx - 13.5, cy - 19.5, cx + 13.5, cy - 22.5, PALETTE.rustMid);
+    nativePx(ctx, cx + 2.5, cy - 3.5, PALETTE.hostGold);
+  }
 }
 
-export function drawFieldSatchel(ctx, cx, cy, seed) {
+export function drawFieldSatchel(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 281, seed * 3 + 37));
-  drawShadowBlob(ctx, cx, cy + 3, 32, 12);
+
+  // The blue shoulder loop establishes the bag silhouette before the small
+  // flap details are read. It is deliberately heavier than a loose pouch.
+  linePx(ctx, cx - 20, cy - 3, cx - 13, cy - 20, PALETTE.outline, 5);
+  linePx(ctx, cx - 13, cy - 20, cx + 4, cy - 24, PALETTE.outline, 5);
+  linePx(ctx, cx + 4, cy - 24, cx + 21, cy - 6, PALETTE.outline, 5);
+  linePx(ctx, cx - 19, cy - 3, cx - 12, cy - 19, PALETTE.clothBlueDark, 2);
+  linePx(ctx, cx - 12, cy - 19, cx + 4, cy - 22, PALETTE.clothBlue, 2);
+  linePx(ctx, cx + 4, cy - 22, cx + 20, cy - 6, PALETTE.clothBlueDark, 2);
   poly(ctx, PALETTE.outline, [
-    [cx - 15, cy - 7],
-    [cx + 2, cy - 15],
-    [cx + 16, cy - 7],
-    [cx + 13, cy + 4],
-    [cx - 6, cy + 9],
-    [cx - 16, cy + 2]
+    [cx - 22, cy - 8],
+    [cx + 2, cy - 19],
+    [cx + 23, cy - 8],
+    [cx + 18, cy + 8],
+    [cx - 7, cy + 14],
+    [cx - 23, cy + 5]
+  ]);
+  poly(ctx, PALETTE.clothDark, [
+    [cx - 19, cy - 7],
+    [cx + 2, cy - 16],
+    [cx + 20, cy - 7],
+    [cx + 15, cy + 6],
+    [cx - 7, cy + 11],
+    [cx - 20, cy + 4]
   ]);
   poly(ctx, PALETTE.skinDark, [
-    [cx - 13, cy - 6],
-    [cx + 2, cy - 13],
-    [cx + 14, cy - 6],
-    [cx + 11, cy + 3],
-    [cx - 6, cy + 7],
-    [cx - 14, cy + 1]
+    [cx - 19, cy + 1],
+    [cx + 15, cy - 5],
+    [cx + 15, cy + 5],
+    [cx - 7, cy + 10]
   ]);
   poly(ctx, PALETTE.clothTan, [
-    [cx - 10, cy - 9],
-    [cx + 2, cy - 14],
-    [cx + 11, cy - 9],
-    [cx + 2, cy - 5]
+    [cx - 14, cy - 10],
+    [cx + 2, cy - 17],
+    [cx + 16, cy - 10],
+    [cx + 3, cy - 2],
+    [cx - 12, cy - 4]
   ]);
-  linePx(ctx, cx - 13, cy - 5, cx - 5, cy - 14, PALETTE.outline, 2);
-  linePx(ctx, cx - 5, cy - 14, cx + 4, cy - 16, PALETTE.outline, 2);
-  linePx(ctx, cx + 4, cy - 16, cx + 14, cy - 6, PALETTE.outline, 2);
-  linePx(ctx, cx - 12, cy - 6, cx - 4, cy - 15, PALETTE.clothDark, 1);
-  linePx(ctx, cx - 4, cy - 15, cx + 4, cy - 15, PALETTE.clothDark, 1);
-  linePx(ctx, cx + 4, cy - 15, cx + 13, cy - 7, PALETTE.clothDark, 1);
-  px(ctx, cx - 1, cy - 10, PALETTE.rustLight, 3, 3);
-  // Censure issue-stamp on the flap: these satchels are standard kit.
-  px(ctx, cx - 6, cy - 12, PALETTE.hostBone, 1, 3);
-  px(ctx, cx - 7, cy - 11, PALETTE.hostBone, 3, 1);
-  px(ctx, cx - 8, cy - 7, PALETTE.stoneDust, 7, 1);
-  px(ctx, cx + 6, cy - 3, PALETTE.clothDark, 5, 1);
-  px(ctx, cx - 14, cy + 1, PALETTE.outline, 8, 2);
-  px(ctx, cx - 13, cy, PALETTE.rustDark, 5, 1);
-  px(ctx, cx + 6, cy - 8, PALETTE.outline, 5, 4);
-  px(ctx, cx + 7, cy - 8, PALETTE.clothTan, 3, 2);
-  px(ctx, cx + 8, cy - 5, PALETTE.hostBone, 2, 1);
-  for (let i = 0; i < 4; i += 1) {
-    const x = cx - 11 + Math.floor(rng() * 23);
-    const y = cy - 8 + Math.floor(rng() * 12);
+  linePx(ctx, cx - 14, cy - 9, cx + 2, cy - 16, PALETTE.stoneDust, 1);
+  linePx(ctx, cx + 2, cy - 16, cx + 15, cy - 10, PALETTE.rustLight, 1);
+  linePx(ctx, cx - 12, cy - 4, cx + 3, cy - 1, PALETTE.outline, 3);
+  linePx(ctx, cx - 11, cy - 5, cx + 3, cy - 2, PALETTE.clothBlueDark, 1);
+
+  // Large side pockets and paired brass clasps keep the kit readable in a
+  // crowded room at native camera scale.
+  px(ctx, cx - 20, cy - 1, PALETTE.outline, 10, 8);
+  px(ctx, cx - 18, cy, PALETTE.rustDark, 7, 5);
+  px(ctx, cx + 10, cy - 4, PALETTE.outline, 9, 8);
+  px(ctx, cx + 11, cy - 3, PALETTE.skinDark, 6, 5);
+  for (const x of [cx - 6, cx + 6]) {
+    px(ctx, x - 2, cy - 5, PALETTE.outline, 5, 6);
+    px(ctx, x - 1, cy - 4, PALETTE.rustLight, 3, 4);
+    px(ctx, x, cy - 3, PALETTE.hostGold, 1, 2);
+  }
+
+  // Censure issue stamp and blue cord are the brightest authored identifiers.
+  px(ctx, cx - 4, cy - 13, PALETTE.hostBone, 3, 9);
+  px(ctx, cx - 7, cy - 10, PALETTE.hostBone, 9, 3);
+  linePx(ctx, cx - 17, cy + 2, cx + 13, cy + 5, PALETTE.clothBlueDark, 3);
+  linePx(ctx, cx - 16, cy + 1, cx + 13, cy + 4, PALETTE.clothBlue, 1);
+  for (let i = 0; i < 5; i += 1) {
+    const x = cx - 16 + Math.floor(rng() * 31);
+    const y = cy - 7 + Math.floor(rng() * 15);
     px(ctx, x, y, rng() < 0.5 ? PALETTE.rustDark : PALETTE.stoneDark, 1, 1);
+  }
+
+  if (opts.opened) {
+    // The flap folds toward the viewer and exposes a dark, collapsed mouth.
+    // Keep the bag on the same footprint so looting never looks like a prop
+    // teleport or a new object appearing on the tile.
+    poly(ctx, PALETTE.outline, [
+      [cx - 17, cy - 9],
+      [cx + 2, cy - 16],
+      [cx + 18, cy - 9],
+      [cx + 4, cy],
+      [cx - 14, cy - 2]
+    ]);
+    poly(ctx, PALETTE.void, [
+      [cx - 13, cy - 8],
+      [cx + 2, cy - 13],
+      [cx + 14, cy - 8],
+      [cx + 3, cy - 3],
+      [cx - 11, cy - 2]
+    ]);
+    px(ctx, cx - 10, cy - 7, PALETTE.skinDark, 22, 2);
+    poly(ctx, PALETTE.outline, [
+      [cx - 15, cy],
+      [cx + 3, cy - 3],
+      [cx + 16, cy + 3],
+      [cx - 4, cy + 11]
+    ]);
+    poly(ctx, PALETTE.clothTan, [
+      [cx - 11, cy + 1],
+      [cx + 3, cy - 1],
+      [cx + 11, cy + 3],
+      [cx - 4, cy + 8]
+    ]);
+    px(ctx, cx - 1, cy + 2, PALETTE.rustDark, 5, 3);
+    linePx(ctx, cx - 17, cy - 2, cx - 23, cy + 8, PALETTE.outline, 3);
+    linePx(ctx, cx - 16, cy - 2, cx - 22, cy + 7, PALETTE.clothBlueDark, 1);
+  }
+  nativeLinePx(ctx, cx - 18.5, cy - 2.5, cx - 11.5, cy - 18.5, PALETTE.clothBlue);
+  nativeLinePx(ctx, cx - 11.5, cy - 18.5, cx + 3.5, cy - 21.5, PALETTE.clothBlue);
+  nativeLinePx(ctx, cx + 4.5, cy - 21.5, cx + 19.5, cy - 5.5, PALETTE.clothBlueDark);
+  nativeLinePx(ctx, cx - 13.5, cy - 8.5, cx + 13.5, cy - 8.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 15.5, cy + 0.5, cx + 12.5, cy + 3.5, PALETTE.clothBlue);
+  nativePx(ctx, cx - 3.5, cy - 9.5, PALETTE.hostBone);
+  if (opts.opened) {
+    nativeLinePx(ctx, cx - 11.5, cy - 6.5, cx + 12.5, cy - 6.5, PALETTE.skinDark);
+    nativeLinePx(ctx, cx - 8.5, cy + 1.5, cx + 9.5, cy + 3.5, PALETTE.stoneDust);
+    nativeLinePx(ctx, cx - 16.5, cy - 1.5, cx - 21.5, cy + 6.5, PALETTE.clothBlueDark);
   }
 }
 
 export function drawBlueBall(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 3, 22, 8);
   drawIsoDiamond(ctx, cx, cy + 2, 20, 8, PALETTE.outline);
   drawIsoDiamond(ctx, cx, cy + 1, 15, 6, PALETTE.stoneDark);
   px(ctx, cx - 6, cy - 8, PALETTE.outline, 13, 10);
@@ -160,11 +286,13 @@ export function drawBlueBall(ctx, cx, cy, seed) {
   px(ctx, cx - 3, cy - 8, PALETTE.stoneDust, 1, 1);
   px(ctx, cx + 5, cy - 1, PALETTE.rustDark, 2, 1);
   drawNoisePixels(ctx, cx - 8, cy - 10, 16, 13, [PALETTE.stoneDark, PALETTE.rustDark], 0.035, seed);
+  nativeLinePx(ctx, cx - 4.5, cy - 7.5, cx + 3.5, cy - 3.5, PALETTE.clothBlue);
+  nativeLinePx(ctx, cx - 2.5, cy - 9.5, cx + 2.5, cy - 9.5, PALETTE.hostBone);
+  nativePx(ctx, cx + 4.5, cy - 1.5, PALETTE.rustDark);
 }
 
 export function drawQuarantineSign(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 131, seed * 5 + 17));
-  drawShadowBlob(ctx, cx, cy + 3, 26, 11);
   // Leaning post.
   linePx(ctx, cx + 2, cy, cx - 4, cy - 38, PALETTE.outline, 4);
   linePx(ctx, cx + 1, cy - 1, cx - 5, cy - 38, PALETTE.stoneDark, 2);
@@ -199,11 +327,15 @@ export function drawQuarantineSign(ctx, cx, cy, seed) {
     const sy = cy - 57 + Math.floor(rng() * 18);
     px(ctx, sx, sy, rng() < 0.5 ? PALETTE.woodDark : PALETTE.stoneDark, 1, 1);
   }
+  // Splinter grain and a thin remnant of flaking paint only become visible at
+  // native 2x. Both stay on the board and its leaning post.
+  nativeLinePx(ctx, cx - 13.5, cy - 47.5, cx + 8.5, cy - 58.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx - 12.5, cy - 45.5, cx + 5.5, cy - 54.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 4.5, cy - 35.5, cx - 1.5, cy - 14.5, PALETTE.woodLight);
   drawRubbleCluster(ctx, cx - 11, cy + 4, seed + 134, 2);
 }
 
 export function drawCandleCluster(ctx, cx, cy, seed, flicker = 0) {
-  drawShadowBlob(ctx, cx, cy + 2, 24, 10);
 
   // Pooled, run-down wax on the stone the cluster has been burning on.
   ctx.save();
@@ -254,14 +386,20 @@ export function drawCandleCluster(ctx, cx, cy, seed, flicker = 0) {
       px(ctx, bx, fy + 2, PALETTE.ember, 1, 2);
       px(ctx, bx, fy, flicker ? PALETTE.flash : PALETTE.hostGold, 1, 2);
       if (flicker) px(ctx, bx, fy - 1, PALETTE.flash, 1, 1);
+      nativePx(ctx, bx - 0.5, fy + 0.5, PALETTE.flash);
     }
+
+    // Hairline wax sheen and a split wick use the new physical pixel without
+    // thickening the candle silhouette.
+    nativeLinePx(ctx, bx - 1.5, top + 1.5, bx - 1.5, cy - 1.5, PALETTE.stoneDust);
+    nativePx(ctx, bx + 0.5, top - 1.5, PALETTE.void);
   }
   px(ctx, cx - 15, cy + 4, PALETTE.stoneDark, 6, 1);
   px(ctx, cx + 9, cy + 4, PALETTE.stoneDark, 5, 1);
+  nativeLinePx(ctx, cx - 9.5, cy + 1.5, cx + 8.5, cy + 2.5, PALETTE.hostBone);
 }
 
 export function drawRubblePile(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 4, 46, 18);
   const rng = rngFrom(hash2D(seed + 51, seed * 8 + 4));
   drawIsoDiamond(ctx, cx, cy + 5, 48, 18, PALETTE.outline);
   drawIsoDiamond(ctx, cx, cy + 4, 40, 14, PALETTE.stoneDark);
@@ -309,11 +447,13 @@ export function drawRubblePile(ctx, cx, cy, seed) {
     px(ctx, cx + dx, cy + dy - 1, (dx + dy + seed) & 1 ? PALETTE.stoneDust : PALETTE.rustDark, 3, 1);
   }
   drawNoisePixels(ctx, cx - 24, cy - 9, 48, 19, [PALETTE.stoneDust, PALETTE.stoneDark, PALETTE.rustDark], 0.065, seed);
+  nativeLinePx(ctx, cx - 16.5, cy - 4.5, cx - 8.5, cy - 8.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + 4.5, cy - 11.5, cx + 12.5, cy - 7.5, PALETTE.stoneDust);
+  nativePx(ctx, cx + 10.5, cy - 14.5, PALETTE.stoneLight);
 }
 
 export function drawCaveStalagmite(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 401, seed * 5 + 17));
-  drawShadowBlob(ctx, cx, cy + 4, 38, 15);
   for (const spike of [
     { dx: -10, w: 13, h: 26 + (seed % 7) },
     { dx: 1, w: 17, h: 38 + ((seed >> 3) % 9) },
@@ -358,6 +498,10 @@ export function drawCaveStalagmite(ctx, cx, cy, seed) {
   px(ctx, cx - 9, cy - 12, PALETTE.stoneLight, 1, 2);
   drawIsoDiamond(ctx, cx - 6, cy + 2, 18, 7, PALETTE.stoneDark);
   px(ctx, cx - 12, cy + 1, PALETTE.stoneDust, 5, 1);
+
+  nativeLinePx(ctx, cx - 8.5, cy - 27.5, cx - 7.5, cy - 15.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + 2.5, cy - 34.5, cx + 3.5, cy - 18.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 11.5, cy - 17.5, cx + 12.5, cy - 8.5, PALETTE.stoneDark);
 
 }
 
@@ -413,6 +557,10 @@ export function drawCaveStalactites(ctx, cx, cy, seed) {
   px(ctx, cx + 2, cy + 6, PALETTE.stoneLight, 1, 1); // the bead mid-fall
   px(ctx, cx + 2, cy + 14, PALETTE.stoneDark, 3, 1); // the wet landing spot
 
+  nativeLinePx(ctx, cx - 17.5, anchorY + 3.5, cx - 16.5, anchorY + 17.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx - 4.5, anchorY + 4.5, cx - 3.5, anchorY + 22.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 10.5, anchorY + 3.5, cx + 10.5, anchorY + 17.5, PALETTE.stoneDark);
+
 }
 
 export function drawCaveFlowstone(ctx, cx, cy, seed) {
@@ -439,6 +587,12 @@ export function drawCaveFlowstone(ctx, cx, cy, seed) {
     px(ctx, x, y, rng() < 0.5 ? PALETTE.hostBone : PALETTE.stoneDust, 1 + Math.floor(rng() * 3), 1);
   }
   ctx.restore();
+  // Mineral laminae follow the broad deposits at one physical pixel. A few
+  // bright calcite pinpoints mark the wet upper-left edges.
+  nativeLinePx(ctx, cx - 21.5, cy - 6.5, cx + 17.5, cy - 8.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 17.5, cy + 5.5, cx + 20.5, cy + 3.5, PALETTE.stoneLight);
+  nativePx(ctx, cx - 13.5, cy - 1.5, PALETTE.hostBone);
+  nativePx(ctx, cx + 14.5, cy - 5.5, PALETTE.stoneDust);
 }
 
 export function drawInfectedCaveEntrance(ctx, cx, cy, seed) {
@@ -447,7 +601,6 @@ export function drawInfectedCaveEntrance(ctx, cx, cy, seed) {
   const base = cy + 8;
   const height = base - top;
 
-  drawShadowBlob(ctx, cx, cy + 13, 238, 50);
   drawIsoDiamond(ctx, cx, cy + 14, 214, 58, PALETTE.outline);
   drawIsoDiamond(ctx, cx, cy + 10, 196, 49, PALETTE.stoneDark);
 
@@ -589,11 +742,17 @@ export function drawInfectedCaveEntrance(ctx, cx, cy, seed) {
   linePx(ctx, cx - 10, cy + 3, cx - 1, cy + 2, PALETTE.woodDark, 1);
   px(ctx, cx - 1, cy + 1, PALETTE.rustDark, 2, 1); // the frayed stop
 
+  // Fine rock laminations and under-skin Host capillaries use the new native
+  // pixel without turning the cliff into floating noise or exposed gore.
+  nativeLinePx(ctx, cx - 96.5, cy - 61.5, cx - 71.5, cy - 53.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, cx + 58.5, cy - 78.5, cx + 81.5, cy - 67.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx - 52.5, cy - 90.5, cx - 57.5, cy - 64.5, PALETTE.hostBlack);
+  nativeLinePx(ctx, cx - 51.5, cy - 91.5, cx - 56.5, cy - 65.5, PALETTE.hostGold);
+
 }
 
-export function drawRustedCrate(ctx, cx, cy, seed) {
+export function drawRustedCrate(ctx, cx, cy, seed, opts = {}) {
   const rng = rngFrom(hash2D(seed + 31, seed * 7 + 5));
-  drawShadowBlob(ctx, cx, cy + 7, 58, 17);
 
   const top = [
     [cx - 31, cy - 13],
@@ -687,6 +846,48 @@ export function drawRustedCrate(ctx, cx, cy, seed) {
   px(ctx, cx + 8, cy - 3, PALETTE.stoneDust, 1, 2);
   px(ctx, cx + 7, cy - 2, PALETTE.stoneDust, 3, 1);
 
+  if (opts.opened) {
+    // A pried lid stands on the back rim. The black inner box and bare front
+    // lip make the empty state readable at normal camera distance.
+    poly(ctx, PALETTE.outline, [
+      [cx - 29, cy - 15],
+      [cx - 7, cy - 26],
+      [cx + 29, cy - 13],
+      [cx + 5, cy + 1]
+    ]);
+    poly(ctx, PALETTE.void, [
+      [cx - 24, cy - 14],
+      [cx - 6, cy - 23],
+      [cx + 24, cy - 12],
+      [cx + 5, cy - 2]
+    ]);
+    poly(ctx, PALETTE.outline, [
+      [cx - 27, cy - 18],
+      [cx - 22, cy - 42],
+      [cx + 20, cy - 31],
+      [cx + 27, cy - 14]
+    ]);
+    poly(ctx, PALETTE.woodDark, [
+      [cx - 24, cy - 19],
+      [cx - 20, cy - 39],
+      [cx + 18, cy - 29],
+      [cx + 24, cy - 15]
+    ]);
+    linePx(ctx, cx - 18, cy - 34, cx + 19, cy - 24, PALETTE.woodLight, 1);
+    linePx(ctx, cx - 12, cy - 20, cx + 21, cy - 12, PALETTE.rustDark, 2);
+    px(ctx, cx - 18, cy - 7, PALETTE.woodLight, 22, 2);
+    px(ctx, cx - 16, cy - 8, PALETTE.rustDark, 5, 1);
+  }
+  nativeLinePx(ctx, cx - 25.5, cy - 12.5, cx + 3.5, cy + 0.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 21.5, cy - 16.5, cx + 16.5, cy - 1.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx + 7.5, cy + 2.5, cx + 28.5, cy - 8.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 22.5, cy - 8.5, cx - 7.5, cy - 15.5, PALETTE.rustMid);
+  nativeLinePx(ctx, cx - 11.5, cy - 11.5, cx - 5.5, cy - 12.5, PALETTE.stoneLight);
+  if (opts.opened) {
+    nativeLinePx(ctx, cx - 19.5, cy - 38.5, cx + 17.5, cy - 28.5, PALETTE.woodLight);
+    nativeLinePx(ctx, cx - 11.5, cy - 19.5, cx + 19.5, cy - 11.5, PALETTE.rustMid);
+    nativeLinePx(ctx, cx - 17.5, cy - 6.5, cx + 3.5, cy - 6.5, PALETTE.woodLight);
+  }
 }
 
 export function drawPaperScraps(ctx, cx, cy, seed) {
@@ -719,6 +920,12 @@ export function drawPaperScraps(ctx, cx, cy, seed) {
     linePx(ctx, x, y, x + 4 + Math.floor(rng() * 5), y + Math.floor(rng() * 3) - 1, PALETTE.stoneDark, 1);
   }
   drawNoisePixels(ctx, cx - 19, cy - 8, 38, 17, [PALETTE.stoneDust, PALETTE.rustDark], 0.055, seed);
+  // Hairline ruling and torn fibres make the scraps read as written paper,
+  // not pale floor chips.
+  nativeLinePx(ctx, cx - 16.5, cy - 4.5, cx - 3.5, cy - 3.5, PALETTE.rustDark);
+  nativeLinePx(ctx, cx + 0.5, cy + 1.5, cx + 11.5, cy + 2.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx + 8.5, cy - 5.5, cx + 15.5, cy - 4.5, PALETTE.clothRed);
+  nativePx(ctx, cx - 0.5, cy + 5.5, PALETTE.hostBone);
 }
 
 export function drawChaffScatter(ctx, cx, cy, seed) {
@@ -748,11 +955,17 @@ export function drawChaffScatter(ctx, cx, cy, seed) {
   }
   drawNoisePixels(ctx, cx - 24, cy - 8, 48, 16, [PALETTE.stoneDust, PALETTE.woodDark], 0.03, seed + 31);
   ctx.restore();
+  // Split awns and husk edges are the smallest readable farm debris at native
+  // resolution; the broad straw lines remain the gameplay silhouette.
+  nativeLinePx(ctx, cx - 18.5, cy - 3.5, cx - 5.5, cy - 2.5, PALETTE.clothTan);
+  nativeLinePx(ctx, cx + 2.5, cy + 2.5, cx + 19.5, cy + 3.5, PALETTE.woodLight);
+  for (const [dx, dy] of [[-12.5, 5.5], [7.5, -5.5], [18.5, 0.5]]) {
+    nativePx(ctx, cx + dx, cy + dy, PALETTE.hostGold);
+  }
 }
 
 export function drawCrackedColumn(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 179, seed * 7 + 13));
-  drawShadowBlob(ctx, cx, cy + 6, 45, 17);
   drawIsoPrism(ctx, cx, cy + 1, 42, 24, 11, {
     top: PALETTE.stoneLight,
     left: PALETTE.stoneMid,
@@ -824,6 +1037,12 @@ export function drawCrackedColumn(ctx, cx, cy, seed) {
   px(ctx, cx - 9, cy + 3, PALETTE.stoneDust, 8, 1);
   px(ctx, cx - 5, cy, PALETTE.rustDark, 2, 1); // one wick stump
 
+  // Half-pixel chisel scars break up the broad shaft drums without weakening
+  // their upper-left light and right-side shadow.
+  nativeLinePx(ctx, shaftX + 5.5, shaftTop + 3.5, shaftX + 5.5, shaftTop + 10.5, PALETTE.stoneLight);
+  nativeLinePx(ctx, shaftX + 11.5, shaftTop + 31.5, shaftX + 14.5, shaftTop + 38.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx - 8.5, cy - 70.5, cx + 2.5, cy - 73.5, PALETTE.stoneLight);
+
 }
 
 export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
@@ -836,7 +1055,6 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
   const wet = PALETTE.hostRed;
   const rng = rngFrom(hash2D(seed + 11, seed * 3 + 5));
 
-  drawShadowBlob(ctx, cx, cy + 4, 36, 16);
   // Plinth.
   drawIsoPrism(ctx, cx, cy, 38, 19, 13, { top: dust, left: stone, right: lo, outline: PALETTE.outline });
   drawIsoPrism(ctx, cx, cy - 12, 30, 15, 5, { top: hi, left: stone, right: lo, outline: PALETTE.outline });
@@ -964,6 +1182,13 @@ export function drawSaintStatue(ctx, cx, cy, seed, opts = {}) {
   px(ctx, cx - 6, cy - 14, PALETTE.stoneDust, 2, 1);
   px(ctx, cx - 11, cy - 11, PALETTE.stoneDust, 6, 1); // the shared wax pool
 
+  // Finer robe folds and a mason's scrape in the plinth are the added native
+  // resolution, not a second outline around the human figure.
+  nativeLinePx(ctx, cx - 5.5, shoulderY + 9.5, cx - 4.5, plinthTop - 4.5, hi);
+  nativeLinePx(ctx, cx + 2.5, shoulderY + 8.5, cx + 1.5, plinthTop - 3.5, lo);
+  nativeLinePx(ctx, cx - 9.5, cy - 9.5, cx + 3.5, cy - 12.5, PALETTE.stoneLight);
+  nativePx(ctx, cx + 9.5, cy - 5.5, dust);
+
 }
 
 export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
@@ -976,7 +1201,6 @@ export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
   const lo = PALETTE.stoneDark;
   const dust = PALETTE.stoneDust;
 
-  drawShadowBlob(ctx, cx, cy + 3, 34, 14);
   // Pedestal: tall enough to read as chapel furniture, not a floor stone.
   drawIsoPrism(ctx, cx, cy, 17, 10, 21, { top: stone, left: lo, right: PALETTE.void, outline: PALETTE.outline });
   // A small upright cross is carved into the pedestal face. Only the authored
@@ -1023,10 +1247,21 @@ export function drawChapelFont(ctx, cx, cy, seed, opts = {}) {
   }
   drawRubbleCluster(ctx, cx + 15, cy + 6, seed + 103, 2);
   drawNoisePixels(ctx, cx - 13, by - 5, 27, 16, [lo, dust], 0.04, seed);
+  nativeLinePx(ctx, cx - 12.5, by - 2.5, cx - 0.5, by - 7.5, hi);
+  nativeLinePx(ctx, cx + 0.5, by - 7.5, cx + 12.5, by - 2.5, stone);
+  nativeLinePx(ctx, cx - 4.5, cy - 19.5, cx - 4.5, cy - 5.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 5.5, cy - 12.5, cx - 2.5, cy - 12.5, PALETTE.stoneDust);
+  if (defiled) {
+    nativeLinePx(ctx, cx - 6.5, by - 2.5, cx + 5.5, by - 0.5, PALETTE.hostRed);
+  } else if (dry) {
+    nativeLinePx(ctx, cx - 5.5, by - 2.5, cx + 4.5, by - 1.5, PALETTE.stoneDust);
+  } else {
+    nativeLinePx(ctx, cx - 5.5, by - 3.5, cx + 2.5, by - 4.5, PALETTE.clothBlue);
+    nativePx(ctx, cx - 4.5, by - 4.5, PALETTE.stoneDust);
+  }
 }
 
 export function drawQuarantineBarricade(ctx, cx, cy, seed) {
-  drawShadowBlob(ctx, cx, cy + 6, 66, 22);
   const rng = rngFrom(hash2D(seed + 67, seed * 5 + 11));
   for (let i = 0; i < 4; i += 1) {
     const dy = i * 5;
@@ -1073,11 +1308,16 @@ export function drawQuarantineBarricade(ctx, cx, cy, seed) {
   px(ctx, cx + 12, cy - 15, PALETTE.hostRed, 2, 2); // its head
   px(ctx, cx + 12, cy - 10, PALETTE.hostRed, 2, 2);
 
+  // Long split grain follows the crossing timbers. The half-pixel width keeps
+  // it from turning the barricade into a field of noisy one-pixel stripes.
+  nativeLinePx(ctx, cx - 24.5, cy - 16.5, cx + 17.5, cy - 6.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 18.5, cy - 7.5, cx + 15.5, cy - 15.5, PALETTE.woodDark);
+  nativeLinePx(ctx, cx - 27.5, cy - 26.5, cx - 26.5, cy - 11.5, PALETTE.woodLight);
+
 }
 
 export function drawCampfire(ctx, cx, cy, seed, flicker = 0) {
   drawWarmLightPool(ctx, cx, cy, seed, flicker);
-  drawShadowBlob(ctx, cx, cy + 4, 42, 16);
   const rng = rngFrom(hash2D(seed + 73, seed * 3 + 19));
   for (let i = 0; i < 8; i += 1) {
     const a = (Math.PI * 2 * i) / 8;
@@ -1129,11 +1369,21 @@ export function drawCampfire(ctx, cx, cy, seed, flicker = 0) {
     px(ctx, sx, sy, i % 2 ? PALETTE.hostGold : PALETTE.ember, 1 + (i === 0 ? 1 : 0), 1);
   }
   drawNoisePixels(ctx, cx - 22, cy - 8, 44, 16, [PALETTE.stoneDark, PALETTE.rustDark], 0.08, seed);
+
+  // Fine char splits follow two logs while pin embers break up the coal bed.
+  // These remain single physical pixels at the native backing resolution.
+  nativeLinePx(ctx, cx - 15.5, cy + 2.5, cx + 11.5, cy - 3.5, PALETTE.woodLight);
+  nativeLinePx(ctx, cx - 8.5, cy + 5.5, cx + 14.5, cy + 1.5, PALETTE.void);
+  for (const [dx, dy, color] of [
+    [-8.5, -0.5, PALETTE.ember],
+    [-2.5, 1.5, PALETTE.hostGold],
+    [4.5, -1.5, PALETTE.flash],
+    [9.5, 2.5, PALETTE.ember]
+  ]) nativePx(ctx, cx + dx, cy + dy, color);
 }
 
 export function drawChapelBanner(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 149, seed * 5 + 31));
-  drawShadowBlob(ctx, cx, cy + 5, 28, 12);
   px(ctx, cx - 2, cy - 62, PALETTE.stoneDark, 4, 62);
   px(ctx, cx - 1, cy - 62, PALETTE.stoneDust, 1, 58);
   px(ctx, cx - 7, cy - 65, PALETTE.outline, 31, 5);
@@ -1171,12 +1421,16 @@ export function drawChapelBanner(ctx, cx, cy, seed) {
   px(ctx, cx + 6, cy - 10, PALETTE.clothTan, 1, 2);
   px(ctx, cx + 8, cy - 12, PALETTE.clothTan, 1, 2);
   linePx(ctx, cx + 3, cy - 10, cx + 9, cy - 11, PALETTE.stoneDust, 1); // the seam
-
+  nativeLinePx(ctx, cx + 3.5, cy - 56.5, cx + 19.5, cy - 53.5, PALETTE.clothRed);
+  nativeLinePx(ctx, cx + 4.5, cy - 31.5, cx + 19.5, cy - 26.5, PALETTE.clothTan);
+  nativeLinePx(ctx, cx + 10.5, cy - 51.5, cx + 10.5, cy - 30.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx + 6.5, cy - 36.5, cx + 15.5, cy - 36.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 3.5, cy - 9.5, cx + 8.5, cy - 10.5, PALETTE.hostBone);
+  for (const x of [4.5, 6.5, 8.5]) nativePx(ctx, cx + x, cy - 11.5, PALETTE.clothTan);
 }
 
 export function drawBrokenBell(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 23, seed * 5 + 3));
-  drawShadowBlob(ctx, cx, cy + 8, 72, 25);
 
   // Heavy keeper frame. The upper beam makes the bell read as hanging in a
   // tower room, while the skewed brace sells cult sabotage rather than age.
@@ -1275,12 +1529,18 @@ export function drawBrokenBell(ctx, cx, cy, seed) {
   px(ctx, cx - 28, cy + 4, PALETTE.woodDark, 4, 2); // the cut strap
   px(ctx, cx - 25, cy + 3, PALETTE.clothTan, 2, 1); // its clean-cut end
 
+  // Cast-metal hairlines track the bell's curve; a finer beam scratch keeps
+  // the supporting timber from reading as a flat brown bar at native scale.
+  nativeLinePx(ctx, cx - 12.5, cy - 46.5, cx - 14.5, cy - 33.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx + 11.5, cy - 43.5, cx + 14.5, cy - 31.5, PALETTE.rustDark);
+  nativeLinePx(ctx, cx - 25.5, cy - 67.5, cx - 4.5, cy - 67.5, PALETTE.woodLight);
+  nativePx(ctx, cx - 3.5, cy - 18.5, PALETTE.hostGold);
+
 }
 
 export function drawBellRope(ctx, cx, cy, seed, opts = {}) {
   const repaired = Boolean(opts.repaired);
   const sway = repaired ? 0 : ((seed & 1) ? 1 : -1);
-  drawShadowBlob(ctx, cx, cy + 4, repaired ? 18 : 23, 8);
 
   // Pulley bracket and grooved wheel.
   px(ctx, cx - 15, cy - 91, PALETTE.outline, 31, 7);
@@ -1334,6 +1594,12 @@ export function drawBellRope(ctx, cx, cy, seed, opts = {}) {
   }
   drawNoisePixels(ctx, cx - 14, cy - 21, 28, 19, [PALETTE.stoneDark, PALETTE.woodDark], 0.05, seed);
   drawRubbleCluster(ctx, cx + 13, cy + 5, seed + 251, 2);
+
+  // Alternating fibres make the rope twisted rather than a solid tan column.
+  nativeLinePx(ctx, ropeX - 0.5, ropeTop + 3.5, ropeX + 0.5, ropeTop + 15.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, ropeX + 0.5, ropeTop + 19.5, ropeX - 0.5, ropeTop + 31.5, PALETTE.woodMid);
+  nativeLinePx(ctx, cx - 3.5, cy - 91.5, cx + 2.5, cy - 92.5, PALETTE.rustLight);
+  nativePx(ctx, ropeX + 1.5, cy - 16.5, PALETTE.clothTan);
 }
 
 export function drawCobweb(ctx, cx, cy, seed) {
@@ -1388,5 +1654,22 @@ export function drawCobweb(ctx, cx, cy, seed) {
   ctx.globalAlpha = 0.5;
   px(ctx, ax - sx * 2, ay - sy * 1, PALETTE.outline, 4, 2);
   px(ctx, ax - sx * 1, ay - sy * 1, PALETTE.hostBone, 2, 1);
+  ctx.restore();
+  // One-native-pixel catch threads sit between the older logical spokes. They
+  // converge on the authored anchor, so the added detail remains a web rather
+  // than pale noise.
+  ctx.save();
+  ctx.globalAlpha = 0.7;
+  for (const tip of [tips[1], tips[3]]) {
+    nativeLinePx(ctx, ax + sx * 0.5, ay + sy * 0.5, tip[0] + 0.5, tip[1] + 0.5, PALETTE.hostBone);
+  }
+  nativeLinePx(
+    ctx,
+    ax + (tips[0][0] - ax) * 0.66,
+    ay + (tips[0][1] - ay) * 0.66,
+    ax + (tips[4][0] - ax) * 0.66,
+    ay + (tips[4][1] - ay) * 0.66,
+    PALETTE.stoneDust
+  );
   ctx.restore();
 }

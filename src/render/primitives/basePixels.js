@@ -1,7 +1,13 @@
 // Reusable seeded pixel, isometric geometry, and surface-detail helpers.
 
 import { PALETTE } from '../palette.js';
-import { TILE_WIDTH, TILE_HEIGHT, WALL_HEIGHT } from '../renderConfig.js';
+import {
+  NATIVE_PIXEL,
+  TILE_WIDTH,
+  TILE_HEIGHT,
+  WALL_HEIGHT,
+  snapToNativePixel
+} from '../renderConfig.js';
 
 export function hash2D(x, y) {
   let h = (Math.imul(x | 0, 374761393) + Math.imul(y | 0, 668265263)) | 0;
@@ -47,6 +53,29 @@ export function px(ctx, x, y, color, w = 1, h = 1) {
   ctx.fillRect(Math.round(x), Math.round(y), w, h);
 }
 
+// A deliberate single-native-pixel mark on the 2x backing store. Existing px
+// calls retain the established logical silhouette; nativePx and nativeLinePx
+// add the smaller material decisions enabled by the redraw.
+export function nativePx(ctx, x, y, color, w = NATIVE_PIXEL, h = NATIVE_PIXEL) {
+  if (!color) return;
+  ctx.fillStyle = color;
+  ctx.fillRect(
+    snapToNativePixel(x),
+    snapToNativePixel(y),
+    Math.max(NATIVE_PIXEL, snapToNativePixel(w)),
+    Math.max(NATIVE_PIXEL, snapToNativePixel(h))
+  );
+}
+
+export function nativeLinePx(ctx, x0, y0, x1, y1, color, size = NATIVE_PIXEL) {
+  const distance = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+  const steps = Math.max(1, Math.ceil(distance / NATIVE_PIXEL));
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    nativePx(ctx, x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, color, size, size);
+  }
+}
+
 export function linePx(ctx, x0, y0, x1, y1, color, size = 1) {
   const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), 1);
   for (let i = 0; i <= steps; i += 1) {
@@ -75,6 +104,11 @@ export function faceTools(ctx, topLeft, topRight, bottomRight, bottomLeft) {
       const a = point(u0, v0);
       const b = point(u1, v1);
       linePx(ctx, a[0], a[1], b[0], b[1], color, size);
+    },
+    nativeLine(u0, v0, u1, v1, color, size = NATIVE_PIXEL) {
+      const a = point(u0, v0);
+      const b = point(u1, v1);
+      nativeLinePx(ctx, a[0], a[1], b[0], b[1], color, size);
     },
     rect(u0, v0, u1, v1, color) {
       poly(ctx, color, [
@@ -231,40 +265,6 @@ export function drawIsoPrism(ctx, cx, cy, w, h, heightPx, colors) {
   }
 }
 
-export function drawShadowBlob(ctx, cx, cy, w, h) {
-  ctx.save();
-  ctx.globalAlpha = 0.32;
-  drawIsoDiamond(ctx, cx, cy, w, h, PALETTE.void);
-  ctx.globalAlpha = 0.18;
-  drawIsoDiamond(ctx, cx, cy, w + 4, h + 2, PALETTE.void);
-  ctx.restore();
-}
-
-export function drawDaylightCastShadow(ctx, cx, cy, opts = {}) {
-  const alpha = Math.max(0, Math.min(1, opts.alpha ?? 0.16));
-  if (alpha <= 0) return;
-
-  const w = Math.max(6, Math.round(opts.width ?? 48));
-  const h = Math.max(3, Math.round(opts.height ?? 16));
-  const offsetX = Math.round(opts.offsetX ?? 12);
-  const offsetY = Math.round(opts.offsetY ?? 6);
-  const x = Math.round(cx + offsetX);
-  const y = Math.round(cy + offsetY);
-
-  ctx.save();
-  ctx.globalAlpha = alpha * 0.6;
-  drawIsoDiamond(ctx, x, y, w + 6, h + 2, PALETTE.void);
-  ctx.globalAlpha = alpha;
-  drawIsoDiamond(ctx, x + 1, y, w, h, PALETTE.void);
-  ctx.globalAlpha = alpha * 0.38;
-  drawIsoDiamond(ctx, x + 3, y + 1, Math.max(6, w - 12), Math.max(3, h - 5), PALETTE.void);
-  ctx.restore();
-}
-
-export function drawPixelShadow(ctx, cx, cy, w, h) {
-  drawShadowBlob(ctx, cx, cy, w, h);
-}
-
 export function drawWarmLightPool(ctx, cx, cy, seed = 0, flicker = 0) {
   ctx.save();
   ctx.globalAlpha = 0.1 + (flicker ? 0.03 : 0);
@@ -306,6 +306,19 @@ export function drawWindowLightPool(ctx, cx, cy, seed = 0) {
     const y = cy - 8 + Math.floor(rng() * 16);
     px(ctx, x, y, i % 2 ? PALETTE.stoneDust : PALETTE.hostBone, 1, 1); // dust in the beam
   }
+
+  // At native 2x the shaft keeps a narrow lit rim beside the mullion shadow,
+  // plus isolated half-pixel motes instead of enlarging every old dust fleck.
+  ctx.save();
+  ctx.globalAlpha = 0.24;
+  nativeLinePx(ctx, cx - 10.5, cy - 1.5, cx - 1.5, cy - 5.5, PALETTE.hostBone);
+  nativeLinePx(ctx, cx + 1.5, cy - 4.5, cx + 10.5, cy - 0.5, PALETTE.stoneDust);
+  for (let i = 0; i < 6; i += 1) {
+    const x = cx - 17.5 + Math.floor(rng() * 35) + 0.5;
+    const y = cy - 7.5 + Math.floor(rng() * 15) + 0.5;
+    nativePx(ctx, x, y, i % 3 === 0 ? PALETTE.hostBone : PALETTE.stoneDust);
+  }
+  ctx.restore();
 }
 
 export function drawDitherRect(ctx, x, y, w, h, colorA, colorB, seed = 0) {
@@ -321,7 +334,10 @@ export function drawDitherRect(ctx, x, y, w, h, colorA, colorB, seed = 0) {
 }
 
 export function drawNoisePixels(ctx, x, y, w, h, colors, density, seed = 0) {
-  const rng = rngFrom(hash2D(seed + x * 7, y * 13 + 1));
+  // Texture belongs to the authored object, not its current screen position.
+  // Including x/y here made scratches and specks reshuffle while the camera
+  // moved and also prevented native prop rasters from matching live draws.
+  const rng = rngFrom(hash2D(seed + 271, seed * 13 + 1));
   const count = Math.max(1, Math.floor(w * h * density));
   for (let i = 0; i < count; i += 1) {
     const dx = Math.floor(rng() * w);
@@ -358,6 +374,9 @@ export function drawScorchMark(ctx, cx, cy, seed) {
   }
   if ((seed & 1) === 0) px(ctx, cx + 9, cy - 3, PALETTE.ember, 2, 1);
   drawNoisePixels(ctx, cx - 23, cy - 10, 46, 20, [PALETTE.stoneDark, PALETTE.rustDark, PALETTE.void], 0.1, seed);
+  nativeLinePx(ctx, cx - 19.5, cy - 5.5, cx - 7.5, cy - 9.5, PALETTE.rustDark);
+  nativeLinePx(ctx, cx + 8.5, cy + 7.5, cx + 20.5, cy + 3.5, PALETTE.void);
+  nativePx(ctx, cx + 8.5, cy - 3.5, PALETTE.ember);
 }
 
 export function drawWaxStain(ctx, cx, cy, seed) {
@@ -382,6 +401,9 @@ export function drawWaxStain(ctx, cx, cy, seed) {
     px(ctx, cx + dx, cy - h - 4, PALETTE.stoneDark, 1, 3);
   }
   drawNoisePixels(ctx, cx - 17, cy - 7, 34, 15, [PALETTE.hostBone, PALETTE.stoneDust, PALETTE.clothTan], 0.06, seed);
+  nativeLinePx(ctx, cx - 15.5, cy - 1.5, cx - 5.5, cy - 5.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 4.5, cy + 5.5, cx + 15.5, cy + 2.5, PALETTE.hostBone);
+  nativePx(ctx, cx + 1.5, cy - 12.5, PALETTE.void);
 }
 
 export function drawBloodStainDecal(ctx, cx, cy, seed) {
@@ -400,6 +422,9 @@ export function drawBloodStainDecal(ctx, cx, cy, seed) {
     px(ctx, x, y, i % 3 === 0 ? PALETTE.hostRed : PALETTE.rustDark, 1 + Math.floor(rng() * 3), 1);
   }
   if ((seed & 1) === 0) linePx(ctx, cx - 3, cy + 2, cx + 25, cy + 9, PALETTE.rustDark, 2);
+  nativeLinePx(ctx, cx - 20.5, cy - 4.5, cx - 9.5, cy - 8.5, PALETTE.rustDark);
+  nativeLinePx(ctx, cx + 4.5, cy + 6.5, cx + 18.5, cy + 3.5, PALETTE.hostRed);
+  nativePx(ctx, cx + 23.5, cy + 8.5, PALETTE.rustDark);
 }
 
 export function drawRoadDustDecal(ctx, cx, cy, seed) {
@@ -421,6 +446,12 @@ export function drawRoadDustDecal(ctx, cx, cy, seed) {
     linePx(ctx, x, y, x + len, y - 2 + Math.floor(rng() * 5), i % 2 ? PALETTE.stoneDust : PALETTE.stoneMid, 1);
   }
   drawNoisePixels(ctx, cx - 29, cy - 11, 58, 22, [PALETTE.stoneDust, PALETTE.stoneMid, PALETTE.rustDark], 0.075, seed);
+  // Fine parallel ruts sit between the broad wheel tracks, with individual
+  // grit grains left at the broken edges.
+  nativeLinePx(ctx, cx - 25.5, cy - 4.5, cx + 23.5, cy - 7.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx - 24.5, cy + 5.5, cx + 21.5, cy + 2.5, PALETTE.stoneMid);
+  nativePx(ctx, cx - 27.5, cy + 1.5, PALETTE.rustDark);
+  nativePx(ctx, cx + 26.5, cy - 0.5, PALETTE.stoneDust);
 }
 
 export function drawGlassDebrisDecal(ctx, cx, cy, seed) {
@@ -446,6 +477,8 @@ export function drawGlassDebrisDecal(ctx, cx, cy, seed) {
       [x + Math.floor(w * 0.35), y + 2]
     ]);
     if (i % 3 === 0) px(ctx, x + 1, y - 1, PALETTE.flash, 1, 1);
+    nativeLinePx(ctx, x + 0.5, y - 0.5, x + Math.floor(w * 0.45) - 0.5, y - 2.5, PALETTE.flash);
+    nativePx(ctx, x + w - 1.5, y - 0.5, PALETTE.stoneDust);
   }
   drawNoisePixels(ctx, cx - 24, cy - 9, 48, 18, [PALETTE.stoneDust, PALETTE.stoneDark], 0.035, seed);
 }
@@ -469,6 +502,11 @@ export function drawDustDecal(ctx, cx, cy, seed) {
     px(ctx, cx + dx + flip * 2, cy + dy + 1, PALETTE.stoneDark, 3, 1);
   }
   drawNoisePixels(ctx, cx - 25, cy - 10, 50, 20, [PALETTE.stoneDust, PALETTE.stoneMid], 0.07, seed);
+  nativeLinePx(ctx, cx - 20.5, cy - 6.5, cx - 7.5, cy - 8.5, PALETTE.stoneDust);
+  nativeLinePx(ctx, cx + 2.5, cy + 6.5, cx + 18.5, cy + 3.5, PALETTE.stoneMid);
+  for (const [dx, dy] of [[-15.5, 2.5], [0.5, -4.5], [21.5, -0.5]]) {
+    nativePx(ctx, cx + dx, cy + dy, PALETTE.stoneDust);
+  }
 }
 
 export function drawFloorCrackDecal(ctx, cx, cy, seed) {
@@ -496,6 +534,9 @@ export function drawFloorCrackDecal(ctx, cx, cy, seed) {
     y = ny;
   }
   drawRubbleCluster(ctx, cx + 9, cy + 2, seed + 29, 4);
+  nativeLinePx(ctx, cx - 18.5, cy - 2.5, cx - 4.5, cy + 1.5, PALETTE.void);
+  nativeLinePx(ctx, cx - 3.5, cy + 1.5, cx + 12.5, cy - 3.5, PALETTE.stoneDark);
+  nativeLinePx(ctx, cx + 4.5, cy - 0.5, cx + 9.5, cy + 5.5, PALETTE.outline);
 }
 
 export function drawCracks(ctx, cx, cy, seed, count = 3) {
@@ -548,6 +589,8 @@ export function drawRubbleDecal(ctx, cx, cy, seed) {
     drawIsoDiamond(ctx, cx + dx, cy + dy, slab[2], slab[3], rng() < 0.35 ? PALETTE.stoneMid : PALETTE.stoneLight);
     px(ctx, cx + dx - 5, cy + dy - 2, PALETTE.stoneDust, 6, 1);
     px(ctx, cx + dx + 2, cy + dy + 2, PALETTE.stoneDark, 7, 1);
+    nativeLinePx(ctx, cx + dx - 5.5, cy + dy - 2.5, cx + dx + 1.5, cy + dy - 2.5, PALETTE.stoneLight);
+    nativeLinePx(ctx, cx + dx + 2.5, cy + dy + 1.5, cx + dx + 7.5, cy + dy + 1.5, PALETTE.stoneDark);
   }
   drawRubbleCluster(ctx, cx + 1, cy + 1, seed + 31, 9);
   drawNoisePixels(ctx, cx - 24, cy - 9, 48, 18, [PALETTE.stoneDust, PALETTE.stoneDark], 0.055, seed);
@@ -616,5 +659,13 @@ export function drawHostGrowth(ctx, cx, cy, seed, pulse = 0) {
   px(ctx, cx - 12, cy + 2, PALETTE.hostBone, 2, 1);
   px(ctx, cx - 10, cy + 3, PALETTE.hostBone, 2, 1);
   px(ctx, cx - 13, cy + 3, PALETTE.stoneDust, 2, 1); // the knuckle ridge
+
+  // Fine black-gold capillaries remain embedded in the flesh, with a wet rim
+  // and bone lamination that use the new one-physical-pixel vocabulary.
+  nativeLinePx(ctx, cx - 3.5, cy - 4.5, cx - 10.5, cy - 7.5, PALETTE.hostBlack);
+  nativeLinePx(ctx, cx + 2.5, cy - 3.5, cx + 11.5, cy - 6.5, PALETTE.hostGold);
+  nativeLinePx(ctx, cx - 2.5, cy - 5.5, cx + 3.5, cy - 5.5, PALETTE.rustLight);
+  nativeLinePx(ctx, cx - 8.5, cy - 5.5, cx - 7.5, cy - 12.5, PALETTE.stoneDust);
+  nativePx(ctx, cx - 12.5, cy + 1.5, PALETTE.stoneLight);
 
 }

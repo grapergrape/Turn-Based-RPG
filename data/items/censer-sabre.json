@@ -1,0 +1,46 @@
+{
+  "id": "censer-sabre",
+  "name": "Censer Sabre",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "sword",
+  "rarity": "uncommon",
+  "weight": 2.1,
+  "groundModel": "sword",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Processional Guard",
+    "factions": [
+      "processional-guard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "sword",
+    "roles": [
+      "melee",
+      "sword",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Cut",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A curved guard sabre with a perforated brass basket. Old incense soot blackens the holes around the hand."
+}

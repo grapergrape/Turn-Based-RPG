@@ -5,12 +5,16 @@
 // movement). Systems mutate this; it contains no rendering or rule logic.
 
 import { scaleStatsForProgression } from '../core/Progression.js';
+import { resolveAttackReference } from '../combat/WeaponRules.js';
 
 export class Entity {
   constructor({
     id,
     name,
     type,
+    team = null,
+    control = null,
+    ownerId = null,
     faction = null,
     role = null,
     background = null,
@@ -28,6 +32,9 @@ export class Entity {
     this.id = id;
     this.name = name;
     this.type = type;
+    this.team = team ?? (type === 'enemy' ? 'enemy' : type === 'player' ? 'player' : null);
+    this.control = control ?? (type === 'player' ? 'player' : null);
+    this.ownerId = ownerId;
     this.faction = faction;
     this.role = role;
     this.background = background;
@@ -76,7 +83,7 @@ export class Entity {
   }
 
   getAttack(attackId) {
-    return this.attacks.find((attack) => attack.id === attackId) ?? null;
+    return resolveAttackReference(this.attacks, attackId);
   }
 
   takeDamage(amount) {

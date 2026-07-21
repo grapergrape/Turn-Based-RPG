@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-meren-heth",
+  "name": "Matthias Cursor",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Charity medicine courier",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "charity",
+    "choir-contact"
+  ],
+  "appearance": {
+    "body": "lean",
+    "outfit": "settlement-runner",
+    "gear": [
+      "message-tube"
+    ],
+    "accent": "dark-hood"
+  }
+}

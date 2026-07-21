@@ -2,14 +2,64 @@
   "id": "censure-sidearm",
   "name": "Censure Sidearm",
   "type": "weapon",
-  "rarity": "common",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "autoloading pistol",
+  "rarity": "uncommon",
   "weight": 1.1,
   "groundModel": "sidearm",
-  "equipment": { "slot": "sidearm" },
-  "weapon": {
-    "weaponClass": "pistol",
-    "attack": { "id": "sidearm", "name": "Sidearm", "apCost": 4, "damage": 5, "range": 5 }
+  "equipment": {
+    "slot": "weapon"
   },
-  "condition": { "max": 100, "default": 92 },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Ashen Censure",
+    "factions": [
+      "ashen-censure"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "autoloading pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 5,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "quick-shot",
+        "name": "Quick Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 4,
+        "range": 5,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "sidearm-cartridge",
+      "capacity": 7,
+      "defaultLoaded": 7,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 92
+  },
   "description": "A black service pistol with a worn shrine stamp on the slide. Reliable if kept clean. Unforgiving if neglected."
 }

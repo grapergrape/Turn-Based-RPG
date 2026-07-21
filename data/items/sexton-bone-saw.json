@@ -1,0 +1,56 @@
+{
+  "id": "sexton-bone-saw",
+  "name": "Sexton Bone Saw",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "knife",
+  "rarity": "common",
+  "weight": 0.75,
+  "groundModel": "knife",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Industrial conversion",
+    "origin": "Sexton Crews",
+    "factions": [
+      "sexton-crews"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "knife",
+    "roles": [
+      "melee",
+      "knife",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Thrust",
+        "mode": "melee",
+        "apCost": 3,
+        "damage": 3,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "quick-cut",
+        "name": "Quick Cut",
+        "mode": "melee",
+        "apCost": 2,
+        "damage": 2,
+        "range": 1,
+        "accuracyBonus": 5,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 82
+  },
+  "description": "A short grave saw with a sharpened back edge. Sextons use it on roots, coffin boards, and worse obstructions."
+}

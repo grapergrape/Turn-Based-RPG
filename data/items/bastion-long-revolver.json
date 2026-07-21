@@ -1,0 +1,65 @@
+{
+  "id": "bastion-long-revolver",
+  "name": "Bastion Long Revolver",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "revolver",
+  "rarity": "common",
+  "weight": 0.85,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Remnant issue",
+    "origin": "Penitent Bastion",
+    "factions": [
+      "penitent-bastion"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "revolver"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 4,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "quick-shot",
+        "name": "Quick Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 3,
+        "range": 5,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "heavy-sidearm-cartridge",
+      "capacity": 6,
+      "defaultLoaded": 6,
+      "reloadAp": 4
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "Bastion officers carry this long-barreled revolver as a badge and last defense. The sights are filed for the inner wall distances."
+}

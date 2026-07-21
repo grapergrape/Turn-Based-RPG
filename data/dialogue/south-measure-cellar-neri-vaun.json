@@ -1,0 +1,374 @@
+{
+  "id": "south-measure-cellar-neri-vaun",
+  "title": "Salome Naso",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "neri-agent-exposed",
+          "neri-agent-resolved"
+        ]
+      },
+      "else": "changed",
+      "lines": [
+        "Salome wipes chalk from a lesson card. Before using a patient’s name, she checks who is near enough to hear it.",
+        "\"Adults ask for letters after the cots settle. Reading gives fear somewhere to stand.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she teaches the rejected adults",
+          "next": "lessons"
+        },
+        {
+          "label": "Watch the breath beneath her chest wrap",
+          "conditions": {
+            "fieldRatings": {
+              "medicine": 35
+            }
+          },
+          "next": "sign",
+          "effects": {
+            "setFlag": [
+              "neri-host-sign-seen",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "A second rhythm moves beneath Salome’s chest wrap and answers her lesson cadence."
+            }
+          }
+        },
+        {
+          "label": "Read the movement as a Host sign",
+          "conditions": {
+            "fieldRatings": {
+              "hostSigns": 35
+            }
+          },
+          "next": "sign",
+          "effects": {
+            "setFlag": [
+              "neri-host-sign-seen",
+              "neri-investigation-started"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "gather-evidence",
+              "log": "A second rhythm moves beneath Salome’s chest wrap and answers her lesson cadence."
+            }
+          }
+        },
+        {
+          "label": "Lay out the evidence against her",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 2,
+              "of": [
+                "neri-copy-hand-found",
+                "neri-suppressant-diversion-found",
+                "neri-recruit-list-found",
+                "neri-host-sign-seen"
+              ]
+            }
+          },
+          "next": "confrontation"
+        },
+        {
+          "label": "Leave the lesson table",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "changed": {
+      "conditions": {
+        "flag": "neri-agent-exposed"
+      },
+      "else": "resolved",
+      "lines": [
+        "Salome’s chest wrap has split along a narrow vertical mouth. Small teeth close behind each word.",
+        "A second voice repeats the last confession from inside her ribs."
+      ],
+      "choices": [
+        {
+          "label": "End the False Catechist here",
+          "effects": {
+            "startCombat": "south-measure-false-catechist"
+          },
+          "close": true,
+          "tone": "danger"
+        },
+        {
+          "label": "Let her leave through the west route",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 17,
+                "y": 11,
+                "facing": "ne"
+              }
+            },
+            "setFlag": [
+              "neri-agent-tolerated",
+              "choir-influence-south-measure",
+              "pate-open-wound-convert",
+              "jori-choir-courier",
+              "jalen-choir-transfer",
+              "neri-agent-resolved"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "complete",
+              "log": "Salome leaves by the west route. Her South Measure converts remain connected to the Choir."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Use a suppressant and place her before the council",
+          "conditions": {
+            "items": {
+              "compact-suppressant": 1
+            }
+          },
+          "effects": {
+            "inventory": {
+              "remove": [
+                {
+                  "item": "compact-suppressant",
+                  "count": 1
+                }
+              ],
+              "requireAll": true
+            },
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 17,
+                "y": 11,
+                "facing": "ne"
+              }
+            },
+            "setFlag": [
+              "neri-agent-council",
+              "neri-agent-resolved"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "complete",
+              "log": "A suppressant closes Salome’s second mouth long enough for resident custody."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        }
+      ]
+    },
+    "resolved": {
+      "lines": [
+        "The lesson table has changed since the confrontation. No untouched card looks harmless now."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "lessons": {
+      "lines": [
+        "\"Rejected people learn to read themselves as errors on a form, so I begin with the name each one still owns.\"",
+        "\"Prayer cards sometimes arrive with the medicine. I explain the words and let the reader decide which comfort survives them.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the lesson table",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "sign": {
+      "lines": [
+        "Salome stops breathing. The cloth over her sternum continues to draw inward around a thin row of moving points.",
+        "A second whisper shapes your last question beneath her answer.",
+        "Salome tightens the wrap. \"You know what untreated fear does to a room. Do not make mine public without cause.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to the evidence",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "confrontation": {
+      "lines": [
+        "You lay out what you found. Salome watches which pieces you hold back and which ones you place within her reach.",
+        "Salome sets the chalk down without looking away. \"The clinic measures them for rejection, and the Chain already owns their working years. I gave them a door they could choose.\"",
+        "Something behind her sternum repeats: \"A door.\""
+      ],
+      "choices": [
+        {
+          "label": "Bar her from South Measure",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 17,
+                "y": 11,
+                "facing": "ne"
+              }
+            },
+            "setFlag": [
+              "neri-agent-barred",
+              "neri-agent-resolved"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "complete",
+              "log": "Salome is barred from South Measure and the lesson route is broken."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Place her before the resident council",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 17,
+                "y": 11,
+                "facing": "ne"
+              }
+            },
+            "setFlag": [
+              "neri-agent-council",
+              "neri-agent-resolved"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "complete",
+              "log": "Salome is placed before the resident council with the evidence against her."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Choose outside custody",
+          "next": "custody"
+        },
+        {
+          "label": "Permit supervised lessons and watch the conversions",
+          "effects": {
+            "setFlag": [
+              "neri-agent-tolerated",
+              "choir-influence-south-measure",
+              "pate-open-wound-convert",
+              "jori-choir-courier",
+              "jalen-choir-transfer",
+              "neri-agent-resolved"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "complete",
+              "log": "Salome’s lessons continue under supervision, and three adults remain on her conversion route."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Order her to show what is under the wrap",
+          "effects": {
+            "setFlag": "neri-agent-exposed",
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 17,
+                "y": 11,
+                "facing": "ne"
+              }
+            }
+          },
+          "close": true,
+          "tone": "danger"
+        }
+      ]
+    },
+    "custody": {
+      "lines": [
+        "Salome’s second voice repeats the names Compact and Morrow before she does."
+      ],
+      "choices": [
+        {
+          "label": "Give her to Compact clinicians",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 17,
+                "y": 11,
+                "facing": "ne"
+              }
+            },
+            "setFlag": [
+              "neri-agent-compact",
+              "neri-agent-resolved"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "complete",
+              "log": "Compact clinicians take custody of Salome and the opening beneath her wrap."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Give her to the Morrow Chain",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/south_measure_charity_cellar.json",
+              "player": {
+                "x": 17,
+                "y": 11,
+                "facing": "ne"
+              }
+            },
+            "setFlag": [
+              "neri-agent-morrow",
+              "neri-agent-resolved"
+            ],
+            "questUpdate": {
+              "quest": "lesson-under-the-wrap",
+              "stage": "complete",
+              "log": "The Morrow Chain takes custody of Salome and closes her charity route."
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Choose a South Measure outcome",
+          "next": "confrontation"
+        }
+      ]
+    }
+  }
+}

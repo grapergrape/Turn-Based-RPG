@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-orsa-veck",
+  "name": "Rachel Aquila",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Market porter",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "old-measure-gates",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "broad",
+    "outfit": "settlement-work-coat",
+    "gear": [
+      "crate-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

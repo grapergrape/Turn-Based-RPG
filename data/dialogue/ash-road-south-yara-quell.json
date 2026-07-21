@@ -1,0 +1,229 @@
+{
+  "id": "ash-road-south-yara-quell",
+  "title": "Assessor Aurelia Priscian",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Aurelia Priscian lays one applicant form over another until no dependent’s name is hidden.",
+        "\"I can answer for beds and treatment. I can also assign a condenser monitoring team. I cannot answer for every Compact decision that made this place.\""
+      ],
+      "choices": [
+        {
+          "label": "Hear the Compact terms",
+          "next": "terms",
+          "effects": {
+            "setFlag": "heard-yara-quell-terms"
+          }
+        },
+        {
+          "label": "Ask about placements and applicants",
+          "next": "placement-questions"
+        },
+        {
+          "label": "Ask what the Compact wants and offers",
+          "next": "compact-questions"
+        },
+        {
+          "label": "Leave the counting canvas",
+          "close": true
+        }
+      ]
+    },
+    "placement-questions": {
+      "lines": [
+        "Aurelia squares the applicant forms against the edge of her case."
+      ],
+      "choices": [
+        {
+          "label": "Ask about individual placements",
+          "next": "beds"
+        },
+        {
+          "label": "Tell her what the applicants said",
+          "conditions": {
+            "flag": "heard-compact-applicant-motives"
+          },
+          "next": "applicants"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "compact-questions": {
+      "lines": [
+        "Aurelia folds the full-flow protocol beneath the applicant forms."
+      ],
+      "choices": [
+        {
+          "label": "Ask why she wants the census",
+          "next": "census"
+        },
+        {
+          "label": "Ask about the flow monitors",
+          "next": "monitor"
+        },
+        {
+          "label": "Request urgent treatment without the agreement",
+          "next": "care",
+          "effects": {
+            "setFlag": "compact-treatment-requested"
+          }
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "terms": {
+      "lines": [
+        "\"I assign monitors and treatment stock if South Measure permits a full exposure census. The undercroft records pass to Compact custody under the same agreement.\"",
+        "\"Those are substantial terms. Calling them care does not make them smaller.\""
+      ],
+      "choices": [
+        {
+          "label": "Request treatment without the full agreement",
+          "next": "care",
+          "effects": {
+            "setFlag": "compact-treatment-requested"
+          }
+        },
+        {
+          "label": "Ask who receives a placement",
+          "next": "beds"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Take no agreement yet",
+          "close": true
+        }
+      ]
+    },
+    "beds": {
+      "lines": [
+        "\"I have beds for applicants, not for a settlement. A kinder sentence will not make more beds.\"",
+        "\"The admitted list includes Noa’s school place and Timothy’s works test. Damaris’s clinic review excludes her child, as the other offers exclude dependents.\""
+      ],
+      "choices": [
+        {
+          "label": "Then the offer separates families",
+          "next": "families"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the forms untouched",
+          "close": true
+        }
+      ]
+    },
+    "census": {
+      "lines": [
+        "\"Exposure histories here span generations. That record could improve suppressant timing and inherited-risk models.\"",
+        "\"It could also prove that the Compact kept named obligations open for a century. I understand why Susanna does not hand it over.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask who would own the record",
+          "next": "undercroft"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the census unsigned",
+          "close": true
+        }
+      ]
+    },
+    "monitor": {
+      "lines": [
+        "\"The instruments separate ordinary pipe strain from the buried reply. Full flow needs two staff at the condenser and access below the court.\"",
+        "\"That allocation requires a care agreement. I can challenge the rule, but I cannot pretend it is not written.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the protocol unsigned",
+          "close": true
+        }
+      ]
+    },
+    "families": {
+      "lines": [
+        "\"Yes. Capacity limits become family separation when written onto actual people.\"",
+        "\"If I tear up Noa’s form, I have kept her family together by keeping all of them here. That is not mercy either.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let her return to the forms",
+          "close": true
+        }
+      ]
+    },
+    "undercroft": {
+      "lines": [
+        "\"Compact custody means controlled access with verified copies. Residents lose any veto over research use.\"",
+        "\"Supervised local custody would protect consent better. My office will say it weakens the data.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Make no promise about the records",
+          "close": true
+        }
+      ]
+    },
+    "care": {
+      "lines": [
+        "\"Thecla can begin urgent treatment without a settlement agreement. I will sign that exception.\"",
+        "\"It does not assign the monitoring team. Please do not confuse the smaller promise with a lie.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Send the request to Thecla",
+          "close": true
+        }
+      ]
+    },
+    "applicants": {
+      "lines": [
+        "Aurelia checks Timothy’s form, then Damaris’s dependent sheet.",
+        "\"They understand the choice, which does not make it freely chosen.\"",
+        "\"I can put the pressure into the record, but ink cannot remove it.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave their motives on the record",
+          "close": true
+        }
+      ]
+    }
+  }
+}

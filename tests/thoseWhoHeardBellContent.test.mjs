@@ -24,7 +24,14 @@ test('chapel quest and item records preserve the locked plan', async () => {
   assert.deepEqual(quest.stages.map((stage) => [stage.id, stage.xp ?? 0]), [
     ['investigate-chapels', 0],
     ['judge-vigil', 50],
+    ['judge-at-chair', 0],
     ['complete', 50]
+  ]);
+  assert.deepEqual(quest.objectives, [
+    { text: 'Search the graveyard chapels.', stage: 'judge-vigil' },
+    { text: 'Find Sapphira Rufa.', stage: 'judge-at-chair' },
+    { text: 'Pass judgment at the restraint chair.', stage: 'complete', reveal: 'judge-at-chair' },
+    { text: 'The twelve have been judged.', stage: 'complete', reveal: 'complete' }
   ]);
 
   const expectedItems = new Map([
@@ -46,15 +53,15 @@ test('chapel quest and item records preserve the locked plan', async () => {
 test('either document order joins the truth and advances the quest', async () => {
   const book = await json('data/dialogue/long-ash-book-of-kept-names.json');
   const docket = await json('data/dialogue/long-ash-mortuary-docket.json');
-  const bookJoin = choice(book.nodes['entries-intact'], "Set Hessa's record beside the docket");
-  const docketJoin = choice(docket.nodes.start, "Set the docket beside Hessa's names");
+  const bookJoin = choice(book.nodes['entries-intact'], "Set Keziah's record beside the docket");
+  const docketJoin = choice(docket.nodes.start, "Set the docket beside Keziah's names");
 
   for (const route of [bookJoin, docketJoin]) {
     assert.equal(flagsFrom(route.effects).has('heard-bell-truth-joined'), true);
     assert.deepEqual(route.effects.questUpdate, {
       quest: 'those-who-heard-the-bell',
       stage: 'judge-vigil',
-      log: 'Quest updated: find Sava Rell and decide what remains.'
+      log: 'Quest updated: find Sapphira Rufa and decide what remains.'
     });
   }
 });
@@ -80,13 +87,13 @@ test('the listening test keeps the third strike and quiet routes distinct', asyn
   }
 });
 
-test('breaking a completed quieting requires a warning before Sava opens', async () => {
+test('breaking a completed quieting requires a warning before Sapphira opens', async () => {
   const dialogue = await json('data/dialogue/long-ash-sava-niche.json');
   const warningRoute = choice(dialogue.nodes.quieted, 'Undo the quieting and open the niche');
   assert.equal(warningRoute.next, 'break-quiet-warning');
   assert.equal(warningRoute.effects, undefined);
 
-  const confirm = choice(dialogue.nodes['break-quiet-warning'], 'Release the pins and face Sava');
+  const confirm = choice(dialogue.nodes['break-quiet-warning'], 'Release the pins and face Sapphira');
   assert.equal(confirm.effects.openDoorGroup, 'sava-listening-niche');
   assert.equal(confirm.effects.startCombat, 'sava-listening-niche');
   assert.equal(flagsFrom(confirm.effects).has('heard-bell-sava-found'), true);
@@ -123,7 +130,7 @@ test('every completed judgment sets exactly one outcome flag', async () => {
   assert.equal(flagsFrom(livingVigil.effects).has('heard-bell-sava-quieted'), true);
   assert.equal(flagsFrom(livingVigil.effects).has('heard-bell-sava-resealed'), true);
 
-  const liveCensure = choice(dialogue.nodes.living, 'Perform censure and destroy Sava');
+  const liveCensure = choice(dialogue.nodes.living, 'Perform censure and destroy Sapphira');
   assert.equal(flagsFrom(liveCensure.effects).has('heard-bell-resolved'), false);
   assert.equal(liveCensure.effects.openDoorGroup, 'sava-listening-niche');
   assert.equal(liveCensure.effects.startCombat, 'sava-listening-niche');
@@ -140,7 +147,7 @@ test('every completed judgment sets exactly one outcome flag', async () => {
 test('the reachable censure reward is acknowledged and claim-gated', async () => {
   const voss = await json('data/dialogue/censure-road-camp-voss.json');
   const maev = await json('data/dialogue/censure-road-camp-maev.json');
-  const acknowledge = choice(voss.nodes['heard-bell-censure-report'], 'Leave the report with Voss');
+  const acknowledge = choice(voss.nodes['heard-bell-censure-report'], 'Leave the report with Aquila');
   assert.equal(acknowledge.effects.setFlag, 'heard-bell-censure-report-acknowledged');
 
   const rewardEntry = choice(maev.nodes.start, 'Collect the graveyard censure bundle');

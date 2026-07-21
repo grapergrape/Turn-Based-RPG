@@ -1,0 +1,166 @@
+{
+  "id": "old-pilgrim-father-noll-below",
+  "title": "Father Noah",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "old-pilgrim-names-decided"
+      },
+      "else": "unsettled",
+      "lines": [
+        "Father Noah works beside the raised apse. Below it, the pressure door remains open and the church no longer pretends the stair is absent."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "unsettled": {
+      "conditions": {
+        "flags": [
+          "old-pilgrim-name-roll-closure",
+          "old-pilgrim-name-roll-quarters",
+          "old-pilgrim-name-roll-trials",
+          "old-pilgrim-name-roll-chapter"
+        ]
+      },
+      "else": "incomplete",
+      "lines": [
+        "Father Noah stands inside the church with the four copied rolls laid across the hospice table. He keeps one hand off the paper.",
+        "“Sixty-one names. Carving them here gives the Remnant a claim on the site. A road-book copy tells every northern clerk what lies below. Back in the chapter, the dead keep their privacy but lose their witness.”"
+      ],
+      "choices": [
+        {
+          "label": "Carve the sixty-one names in the church",
+          "conditions": {
+            "flags": [
+              "old-pilgrim-name-roll-closure",
+              "old-pilgrim-name-roll-quarters",
+              "old-pilgrim-name-roll-trials",
+              "old-pilgrim-name-roll-chapter"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-names-decided",
+              "old-pilgrim-names-memorial"
+            ],
+            "questUpdate": {
+              "quest": "names-below-the-hill",
+              "stage": "complete",
+              "log": "Father Noah begins a public memorial for the sixty-one people sealed below the Hill Church."
+            }
+          },
+          "next": "memorial",
+          "tone": "commit"
+        },
+        {
+          "label": "Put a copy in the northbound road book",
+          "conditions": {
+            "flags": [
+              "old-pilgrim-name-roll-closure",
+              "old-pilgrim-name-roll-quarters",
+              "old-pilgrim-name-roll-trials",
+              "old-pilgrim-name-roll-chapter"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-names-decided",
+              "old-pilgrim-names-road-copy"
+            ],
+            "questUpdate": {
+              "quest": "names-below-the-hill",
+              "stage": "complete",
+              "log": "A copy of the sixty-one names enters the northbound road book. The buried site is now part of the living route."
+            }
+          },
+          "next": "road",
+          "tone": "commit"
+        },
+        {
+          "label": "Return the rolls to the sealed chapter",
+          "conditions": {
+            "flags": [
+              "old-pilgrim-name-roll-closure",
+              "old-pilgrim-name-roll-quarters",
+              "old-pilgrim-name-roll-trials",
+              "old-pilgrim-name-roll-chapter"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-names-decided",
+              "old-pilgrim-names-sealed"
+            ],
+            "questUpdate": {
+              "quest": "names-below-the-hill",
+              "stage": "complete",
+              "log": "The recovered rolls return to the Sealed Chapter. Father Noah keeps only the count above ground."
+            }
+          },
+          "next": "sealed",
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "incomplete": {
+      "lines": [
+        "Father Noah has cleared the hospice table and weighted each recovered page with a cup.",
+        "“The count says sixty-one. The names still break in the middle. I will not call a broken roll a memorial.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "memorial": {
+      "lines": [
+        "Noah sets a nail at the left edge of the apse plaster. “Then the names get the first word, not an office.”",
+        "He begins with Sister Aurelia Fontana."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "road": {
+      "lines": [
+        "Noah sands the copy and folds it into oilcloth. “Clerks may use it, and families may too. I cannot promise who will be allowed to read it first.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "sealed": {
+      "lines": [
+        "Noah gathers the copies without stacking them. “The count stays here. The names go back to the people who carried them.”"
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

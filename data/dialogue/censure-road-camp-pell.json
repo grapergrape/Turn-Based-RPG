@@ -1,10 +1,10 @@
 {
   "id": "censure-road-camp-pell",
-  "title": "Writ Runner Pell",
+  "title": "Writ Runner Philip",
   "nodes": {
     "start": {
       "lines": [
-        "Writ Runner Pell keeps one hand on the board and the other on a message tube.",
+        "Writ Runner Philip keeps one hand on the board and the other on a message tube.",
         "\"I run writs because paper complains less than officers. Paper also weighs less when it dies.\""
       ],
       "choices": [
@@ -15,9 +15,39 @@
           },
           "effects": {
             "setFlag": "odran-late-visit-suspected",
-            "log": "Pell's rumor gives you a reason to watch Father Odran after last bell."
+            "log": "Philip's rumor gives you a reason to watch Father Augustine after last bell."
           },
           "next": "last-bell"
+        },
+        {
+          "label": "Ask who carried the cut road name",
+          "conditions": {
+            "flag": "censure-road-writ-board-erasure-found",
+            "flagsAbsent": ["censure-road-report-pell-writ"],
+            "fieldRatings": {
+              "guile": 45
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-report-pell-writ",
+            "log": "Philip identifies the clerk route behind the erased road name."
+          },
+          "next": "cut-name"
+        },
+        {
+          "label": "Show him the forged correction",
+          "conditions": {
+            "flag": "censure-road-writ-board-forgery-found",
+            "flagsAbsent": ["censure-road-writ-forgery-reported"],
+            "fieldRatings": {
+              "guile": 50
+            }
+          },
+          "effects": {
+            "setFlag": "censure-road-writ-forgery-reported",
+            "log": "Philip marks the forged correction for Aquila and keeps one copy outside the board file."
+          },
+          "next": "forged-hand"
         },
         {
           "label": "Leave the writ board",
@@ -27,13 +57,37 @@
     },
     "last-bell": {
       "lines": [
-        "Pell looks toward the chapel before he answers.",
+        "Philip looks toward the chapel before he answers.",
         "\"I run messages after bell sometimes. I keep my eyes on the road, not tents.\"",
-        "\"Still. The widow with the wash basket passes Odran's rope after last bell like she knows which knot gives. Not supper bell. Last bell.\""
+        "\"Still, the widow with the wash basket passes Augustine's rope after the last bell, and she knows which knot gives. I mean last bell, not supper.\""
       ],
       "choices": [
         {
           "label": "Leave the writ board",
+          "close": true
+        }
+      ]
+    },
+    "cut-name": {
+      "lines": [
+        "Philip rolls the message tube between both palms until the wax seam shows.",
+        "\"I carried all three orders from Clerk Tavin's table. The names were whole when they went in. If Tavin cut them, he did it here. If he did not, somebody owns his knife.\""
+      ],
+      "choices": [
+        {
+          "label": "Have him mark the clerk route",
+          "close": true
+        }
+      ]
+    },
+    "forged-hand": {
+      "lines": [
+        "Philip compares the closing stroke to the cramped notes inside his tube.",
+        "\"Officers hook the road name so runners cannot add a stop. This one ends clean. Pretty work, if you plan to send people nowhere.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave him one clean copy",
           "close": true
         }
       ]

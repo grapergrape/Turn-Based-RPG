@@ -7,7 +7,7 @@ import { Entity } from '../src/entities/Entity.js';
 function makeGame() {
   const player = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 20, maxHp: 20, actionPoints: 6 },
     attacks: [{ id: 'melee', name: 'Knife', apCost: 2, damage: 3, range: 1 }],
@@ -57,7 +57,7 @@ function makeGame() {
   const api = installDevConsole(makeGame(), { enabled: true, target });
 
   assert.equal(target.hostDebug, api);
-  assert.equal(api.game().player.name, 'Mara Vey');
+  assert.equal(api.game().player.name, 'Test Agent');
   assert(api.builds().includes('breaker'));
 
   const created = api.createBuild('breaker', { level: 6 });

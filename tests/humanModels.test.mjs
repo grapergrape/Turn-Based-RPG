@@ -12,6 +12,7 @@ import {
   HUMAN_OUTFIT_IDS,
   isHumanAppearance,
   spriteIdForHumanAppearance,
+  SPRITE_POSE_FRAME_COUNTS,
   SPRITE_ATLAS_IDS
 } from '../src/render/SpriteAtlas.js';
 
@@ -62,6 +63,15 @@ for (const id of hostWolfIds) {
   assert.ok(atlasIds.has(id), `${id} is missing from SPRITE_ATLAS_IDS`);
 }
 
+const stageIvIds = ['stage-iv-lure', 'stage-iv-runner-ash', 'stage-iv-runner-road'];
+for (const id of stageIvIds) {
+  assert.ok(atlasIds.has(id), `${id} is missing from SPRITE_ATLAS_IDS`);
+}
+
+assert.ok(atlasIds.has('brother-tarn'), 'Brother Cassian is missing from SPRITE_ATLAS_IDS');
+assert.ok(atlasIds.has('south-measure-false-catechist'), 'The False Catechist is missing from SPRITE_ATLAS_IDS');
+assert.ok(atlasIds.has('south-measure-intake-clerk'), 'The released Intake Clerk is missing from SPRITE_ATLAS_IDS');
+
 const survivorAppearance = {
   body: 'broad',
   outfit: 'settlement-work-coat',
@@ -89,6 +99,16 @@ assert.equal(survivorModel.height, 64);
 assert.equal(survivorModel.appearance.gear.join(','), 'scarred-face,shoulder-plate,rope-coil');
 
 const atlas = buildSpriteAtlas();
+for (const id of stageIvIds) {
+  const sprite = atlas[id];
+  assert.ok(sprite, `${id} was not baked into the actor atlas`);
+  assert.equal(sprite.death.length, 10);
+  for (const [state, count] of Object.entries(SPRITE_POSE_FRAME_COUNTS)) {
+    for (const facing of ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']) {
+      assert.equal(sprite.frames[state][facing].length, count, `${id} lacks ${state} ${facing} frames`);
+    }
+  }
+}
 for (const id of HUMAN_MODEL_IDS) {
   const sprite = atlas[id];
   assert.ok(sprite, `${id} was not baked into the atlas`);
@@ -98,6 +118,39 @@ for (const id of HUMAN_MODEL_IDS) {
   assert.ok(sprite.frames.idle.s.length > 0);
   assert.ok(sprite.frames.walk.se.length > 0);
   assert.ok(sprite.frames.attack.e.length > 0);
+}
+
+const tarnSprite = atlas['brother-tarn'];
+assert.ok(tarnSprite, 'Brother Cassian was not baked into the actor atlas');
+assert.equal(tarnSprite.width, 58);
+assert.equal(tarnSprite.height, 78);
+assert.equal(tarnSprite.death.length, 10);
+for (const state of ['idle', 'walk', 'sneakIdle', 'sneak', 'attack', 'hit', 'interact']) {
+  for (const facing of ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']) {
+    assert.ok(tarnSprite.frames[state][facing].length > 0, `Brother Cassian lacks ${state} ${facing} frames`);
+  }
+}
+
+const falseCatechistSprite = atlas['south-measure-false-catechist'];
+assert.ok(falseCatechistSprite, 'The False Catechist was not baked into the actor atlas');
+assert.equal(falseCatechistSprite.width, 44);
+assert.equal(falseCatechistSprite.height, 64);
+assert.equal(falseCatechistSprite.death.length, 10);
+for (const state of ['idle', 'walk', 'sneakIdle', 'sneak', 'attack', 'hit', 'interact']) {
+  for (const facing of ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']) {
+    assert.ok(falseCatechistSprite.frames[state][facing].length > 0, `The False Catechist lacks ${state} ${facing} frames`);
+  }
+}
+
+const intakeClerkSprite = atlas['south-measure-intake-clerk'];
+assert.ok(intakeClerkSprite, 'The released Intake Clerk was not baked into the actor atlas');
+assert.equal(intakeClerkSprite.width, 48);
+assert.equal(intakeClerkSprite.height, 68);
+assert.equal(intakeClerkSprite.death.length, 10);
+for (const state of ['idle', 'walk', 'sneakIdle', 'sneak', 'attack', 'hit', 'interact']) {
+  for (const facing of ['n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw']) {
+    assert.ok(intakeClerkSprite.frames[state][facing].length > 0, `The released Intake Clerk lacks ${state} ${facing} frames`);
+  }
 }
 
 for (const id of hostWolfIds) {

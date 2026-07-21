@@ -1,0 +1,66 @@
+{
+  "id": "old-pilgrim-father-noll",
+  "title": "Father Noah",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Father Noah holds a page against the light leaking through his shelter roof.",
+        "“The church inventory lists an apse stair. The church has no apse stair.”"
+      ],
+      "choices": [
+        {
+          "label": "Read the copied closure line",
+          "conditions": {
+            "fieldRatings": {
+              "doctrine": 27
+            }
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-father-plan-hint",
+            "xp": 5
+          },
+          "next": "plan"
+        },
+        {
+          "label": "Ask who served the church",
+          "next": "people"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "plan": {
+      "lines": [
+        "The line assigns an inner pressure key to the closure stair and an outer release to the raised apse.",
+        "Noah taps the word inner. “There are two doors, though the public church only shows one.”"
+      ],
+      "choices": [
+        {
+          "label": "Search the church apse",
+          "close": true,
+          "tone": "commit"
+        }
+      ]
+    },
+    "people": {
+      "lines": [
+        "“Priests kept the road altar while nuns ran the hospice and taught the novices. Any spare basin marked a pilgrim bed.”",
+        "He folds the page. “There were vows in the ledgers, then two pressure doors.”"
+      ],
+      "choices": [
+        {
+          "label": "Return to the inventory page",
+          "next": "start"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

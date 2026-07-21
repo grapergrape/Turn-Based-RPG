@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { Inventory } from '../src/core/Inventory.js';
 import { itemRarityMeta } from '../src/core/ItemRarity.js';
 import { UIRenderer } from '../src/render/UIRenderer.js';
+import { buildWeaponDetailRows } from '../src/render/ui/WeaponDetailRenderer.js';
 import {
   INVENTORY_ACTION_BOXES,
   INVENTORY_SPLIT_BOX,
@@ -17,6 +18,7 @@ import {
 import {
   TRADE_BUTTONS,
   tradeActionAt,
+  tradeListOffset,
   tradePlayerIndexAt,
   tradePlayerRowBox,
   tradeTraderIndexAt,
@@ -99,6 +101,22 @@ assert.equal(inventory.equipmentEntries().find((entry) => entry.slot === 'boots'
 assert.equal(itemRarityMeta('legendary').rank, 4);
 assert.equal(itemRarityMeta('unknown').id, 'common');
 
+assert.deepEqual(buildWeaponDetailRows({
+  ammoName: 'Full Rifle Cartridges',
+  loaded: 3,
+  magazineCapacity: 8,
+  reserveAmmo: 12,
+  reloadAp: 2,
+  attackModes: [
+    { name: 'Single Shot', damage: 6, baseDamage: 6, apCost: 4, range: 7, accuracyBonus: 5, ammoCost: 1 },
+    { name: 'Braced Shot', damage: 7, baseDamage: 9, apCost: 5, range: 8, accuracyBonus: 10, ammoCost: 1, requiresStationary: true }
+  ]
+}).map((row) => row.text), [
+  'AMMO: Full Rifle Cartridges  LOADED 3/8  RESERVE 12  RELOAD 2 AP',
+  'Single Shot: DMG 6  4 AP  RANGE 7  ACC +5%  USES 1',
+  'Braced Shot: DMG 7 BASE 9  5 AP  RANGE 8  ACC +10%  USES 1  STATIONARY'
+]);
+
 const firstSlot = inventorySlotBox(0);
 assert.equal(inventorySlotAt({ x: firstSlot.x + 2, y: firstSlot.y + 2 }), 0);
 assert.equal(inventorySlotAt({ x: 1, y: 1 }), null);
@@ -133,6 +151,15 @@ assert.equal(tradePlayerIndexAt({
   x: tradePlayerRowBox(0).x + 1,
   y: tradePlayerRowBox(0).y + 1
 }, 1), 0);
+assert.equal(tradeListOffset(8, 12), 3);
+assert.equal(tradePlayerIndexAt({
+  x: tradePlayerRowBox(0).x + 1,
+  y: tradePlayerRowBox(0).y + 1
+}, 12, tradeListOffset(8, 12)), 3);
+assert.equal(tradeTraderIndexAt({
+  x: tradeTraderRowBox(5).x + 1,
+  y: tradeTraderRowBox(5).y + 1
+}, 12, tradeListOffset(8, 12)), 8);
 assert.equal(tradeActionAt({
   x: TRADE_BUTTONS.buy.x + 1,
   y: TRADE_BUTTONS.buy.y + 1
@@ -141,7 +168,7 @@ assert.equal(tradeActionAt({
 const renderer = new UIRenderer();
 renderer.draw(mockCtx(), {
   screen: 'inventory',
-  actorName: 'Mara Vey',
+  actorName: 'Test Agent',
   role: 'Cult-Breaker, Ashen Censure',
   mode: 'EXPLORE',
   hp: 14,
@@ -176,7 +203,7 @@ renderer.draw(mockCtx(), {
 
 renderer.draw(mockCtx(), {
   screen: 'trade',
-  actorName: 'Mara Vey',
+  actorName: 'Test Agent',
   role: 'Cult-Breaker, Ashen Censure',
   mode: 'EXPLORE',
   hp: 14,
@@ -188,8 +215,8 @@ renderer.draw(mockCtx(), {
   maxCarryWeight: inventory.maxCarryWeight,
   controls: ['E Buy', 'Esc Close'],
   trade: {
-    title: "Hanne's Medic Pack",
-    traderName: 'Hanne Rovik',
+    title: "Joanna's Medic Pack",
+    traderName: 'Joanna Corvus',
     traderItems: [
       { ...entries.find((entry) => entry.id === 'field-dressing'), count: 1, price: 4, affordable: true },
       {
@@ -219,7 +246,7 @@ renderer.draw(mockCtx(), {
 
 renderer.draw(mockCtx(), {
   screen: 'loot',
-  actorName: 'Mara Vey',
+  actorName: 'Test Agent',
   role: 'Cult-Breaker, Ashen Censure',
   mode: 'EXPLORE',
   hp: 14,

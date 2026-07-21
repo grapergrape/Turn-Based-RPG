@@ -1,0 +1,106 @@
+{
+  "id": "old-pilgrim-trial-burden",
+  "title": "Burden Gallery",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A stone reliquary frame hangs across the passage. Counterweight cords vanish into two wall shafts.",
+        "The candidate was meant to move the burden without dropping the empty shrine."
+      ],
+      "choices": [
+        {
+          "label": "Take the frame’s weight",
+          "conditions": {
+            "fieldRatings": {
+              "engineering": 32
+            },
+            "flagsAbsent": [
+              "old-pilgrim-trial-burden"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-burden",
+              "old-pilgrim-trial-burden-kept"
+            ],
+            "xp": 8,
+            "log": "Both cords share the load. The frame rises and the Burden stud follows."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Lift while the left cord turns",
+          "conditions": {
+            "fieldRatings": {
+              "melee": 32
+            },
+            "flagsAbsent": [
+              "old-pilgrim-trial-burden"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-burden",
+              "old-pilgrim-trial-burden-kept"
+            ],
+            "xp": 8,
+            "log": "The frame rises before the right cord takes strain. The Burden stud follows."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Brace it at the closure crew’s breach angle",
+          "conditions": {
+            "flag": "old-pilgrim-breach-brace-known",
+            "flagsAbsent": [
+              "old-pilgrim-trial-burden"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-burden",
+              "old-pilgrim-trial-burden-kept"
+            ],
+            "xp": 5,
+            "log": "The old brace angle divides the weight between frame and wall. The Burden stud rises without a stone falling."
+          },
+          "next": "passed"
+        },
+        {
+          "label": "Drag the frame clear",
+          "conditions": {
+            "flagsAbsent": [
+              "old-pilgrim-trial-burden"
+            ]
+          },
+          "effects": {
+            "setFlag": [
+              "old-pilgrim-trial-burden",
+              "old-pilgrim-trial-burden-broken"
+            ],
+            "log": "Stone tears across stone. The passage opens, but the reliquary drawer breaks under the frame."
+          },
+          "next": "passed",
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "passed": {
+      "lines": [
+        "The empty shrine rests above the passage. The Burden stud remains raised."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

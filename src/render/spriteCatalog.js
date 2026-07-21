@@ -31,7 +31,12 @@
 //   flat       true = a flat ground decal, drawn in the floor pass.
 //   block      true = a wall-grid block (rendered as / into a wall block). A
 //              `wall-*` kind is a block by convention.
+//   animated   true = the draw reads animation time, pulse, or flicker and must
+//              include animation state in the prepared native raster key.
 //   cover      optional combat cover rating: "light" or "hard".
+//   shadow     resolved shape-aware contact and daylight mask profiles. Entries
+//              may inherit a category profile; unusual geometry is overridden
+//              by kind below. Flat decals explicitly resolve to `none`.
 
 import * as P from './PixelPrimitives.js';
 import { WALL_HEIGHT } from './renderConfig.js';
@@ -47,14 +52,125 @@ export const CATEGORY = {
   GORE: 'gore',             // corpses and blood bodies
   CREATURE: 'creature',     // Host victims / monsters rendered as world props
   LIGHT: 'light',           // emissive props: candles, campfires
-  PLANT: 'plant'            // greenery (none yet; reserved for future biomes)
+  PLANT: 'plant'            // ash-choked trees, scrub, grain, and low growth
 };
+
+export const SHADOW_MODES = Object.freeze({
+  CONTACT: Object.freeze(['ground-band', 'full-silhouette', 'custom', 'none']),
+  CAST: Object.freeze(['silhouette', 'custom', 'none'])
+});
+
+const CONTACT_NONE = Object.freeze({
+  mode: 'none', depth: 0, spread: 0, offsetX: 0, offsetY: 0, alphaScale: 0,
+  reason: 'flat or non-grounded visual'
+});
+const CAST_NONE = Object.freeze({
+  mode: 'none', referenceHeight: 0, alphaScale: 0,
+  reason: 'flat, embedded, hanging, or self-emissive visual'
+});
+
+const FULL_CONTACT_KINDS = new Set([
+  'camp-bedroll',
+  'farm-bed',
+  'pilgrim-cot',
+  'calcified-grave-plot',
+  'graveyard-tomb-slab',
+  'stone-stairwell',
+  'measure-grave-plot',
+  'charity-cot',
+  'south-measure-sleeping-pallet',
+  'fallen-ash-log',
+  'ground-item',
+  'corpse',
+  'cult-victim',
+  'skeleton',
+  'dead-cultist',
+  'dead-host-wolf-spider',
+  'dead-host-wolf-maw',
+  'dead-host-wolf-ribsplit',
+  'host-wolf-remains',
+  'stage-iv-cart-lure',
+  'opened-pilgrim-remains'
+]);
+
+const NON_GROUNDED_KINDS = new Set([
+  'vigil-candle-rack',
+  'mortuary-tag-board',
+  'south-measure-wall-board',
+  'cave-stalactites',
+  'chapel-banner',
+  'choir-pentagram',
+  'window-light-pool'
+]);
+
+function resolvedShadowProfile(kind, entry) {
+  if (entry.flat) {
+    return {
+      contact: { ...CONTACT_NONE, reason: 'flat decal is already part of the floor' },
+      cast: { ...CAST_NONE, reason: 'flat decal has no volume to project' },
+      inheritedFrom: 'flat'
+    };
+  }
+
+  if (NON_GROUNDED_KINDS.has(kind)) {
+    return {
+      contact: { ...CONTACT_NONE, reason: 'reviewed wall-mounted, hanging, or terrain-owned visual' },
+      cast: { ...CAST_NONE, reason: 'reviewed wall-mounted, hanging, or terrain-owned visual' },
+      inheritedFrom: 'reviewed-none'
+    };
+  }
+
+  const opacityThreshold = entry.category === CATEGORY.LIGHT ? 192 : 128;
+  const contact = FULL_CONTACT_KINDS.has(kind)
+    ? {
+        mode: 'full-silhouette', depth: 18, spread: 1,
+        offsetX: 0, offsetY: 1, alphaScale: 0.3, opacityThreshold
+      }
+    : entry.block
+      ? {
+          mode: 'custom', custom: 'wall-foot', depth: 10, spread: 1,
+          offsetX: 0, offsetY: 1, alphaScale: 0.3, opacityThreshold
+        }
+      : {
+          mode: 'ground-band', depth: entry.category === CATEGORY.PLANT ? 12 : 9,
+          spread: 1, offsetX: 0, offsetY: 1, alphaScale: 0.3, opacityThreshold
+        };
+
+  const cast = entry.category === CATEGORY.LIGHT
+    ? { ...CAST_NONE, reason: 'self-emissive model does not receive an outdoor cast projection' }
+    : {
+        mode: entry.block ? 'custom' : 'silhouette',
+        ...(entry.block ? { custom: 'connected-block' } : {}),
+        referenceHeight: entry.block ? 64 : entry.category === CATEGORY.PLANT ? 52 : 56,
+        alphaScale: 1,
+        opacityThreshold
+      };
+
+  return {
+    contact,
+    cast,
+    inheritedFrom: entry.block ? 'connected-block' : entry.category
+  };
+}
+
+function finalizeCatalog(catalog) {
+  return Object.fromEntries(Object.entries(catalog).map(([kind, entry]) => [
+    kind,
+    {
+      ...entry,
+      shadow: entry.shadow ?? resolvedShadowProfile(kind, entry)
+    }
+  ]));
+}
 
 const DISPLAY_NAMES = {
   'broken-pew': 'Broken Pew',
   'rusted-reliquary': 'Rusted Reliquary',
   'rusted-barrel': 'Rusted Barrel',
   'field-satchel': 'Field Satchel',
+  'field-backpack': 'Field Backpack',
+  'small-pouch': 'Small Pouch',
+  'dead-grass-tuft': 'Dead Grass Tuft',
   corpse: 'Corpse',
   'paper-scraps': 'Paper Scraps',
   'quarantine-sign': 'Quarantine Sign',
@@ -130,14 +246,76 @@ const DISPLAY_NAMES = {
   'farm-workbench': 'Farm Workbench',
   'stable-divider': 'Stable Divider',
   'vigil-candle-rack': 'Twelve-Cup Vigil Rack',
-  'gravekeeper-chair': "Hessa's Chair",
+  'gravekeeper-chair': "Keziah's Chair",
   'mortuary-washing-table': 'Mortuary Washing Table',
   'examiner-assay-case': "Examiner's Assay Case",
   'mortuary-drain': 'Mortuary Drain',
   'mortuary-tag-board': 'Mortuary Tag Board',
   'listening-apparatus': 'Listening Apparatus',
   'listening-wire': 'Listening Wire',
-  'sealed-listening-niche': 'Sealed Listening Niche'
+  'sealed-listening-niche': 'Sealed Listening Niche',
+  'pilgrim-road-shrine': 'Pilgrim Road Shrine',
+  'opened-pilgrim-remains': 'Opened Pilgrim Remains',
+  'pilgrim-cot': 'Novitiate Cot',
+  'pilgrim-memorial-tablet': 'Ecclesiate Record Stand',
+  'closure-control-panel': 'Closure Control',
+  'pilgrim-trial-frame': 'Profession Trial Mechanism',
+  'processional-pike-rack': 'Processional Pike Rack',
+  'south-measure-rowhouse-building-block': 'Measure Rowhouse',
+  'relief-annex-building-block': 'Relief Maintenance Annex',
+  'compact-clinic-building-block': 'Compact Clinic',
+  'morrow-freight-house-building-block': 'Morrow Freight House',
+  'measure-hall-building-block': 'Measure Hall',
+  'admission-booth-building-block': 'Admission Booth',
+  'south-measure-burial-shed-building-block': 'Burial Tool Shed',
+  'water-condenser': 'Water Condenser',
+  'settling-tank': 'Settling Tank',
+  'public-tap-stand': 'Public Taps',
+  'intake-screening-frame': 'Intake Screening Frame',
+  'fixed-hoist': 'Relief Hoist',
+  'freight-wagon': 'Freight Wagon',
+  'medicine-cart': 'Medicine Cart',
+  'grain-cage': 'Grain Cage',
+  'laundry-line': 'Laundry Line',
+  'shared-oven': 'Shared Oven',
+  'wash-wall': 'Wash Wall',
+  'measure-grave-plot': 'Measure Grave',
+  'south-measure-grave-family-rail': 'Family Grave Tally',
+  'charity-cot': 'Charity Cot',
+  'collapsed-culvert': 'Collapsed Drain',
+  'south-chain-gate': 'South Chain',
+  'north-chain-gate': 'North Chain',
+  'south-measure-intake-wall': 'Intake Masonry Wall',
+  'south-measure-service-wall': 'Relief Service Wall',
+  'south-measure-freight-wall': 'Freight House Wall',
+  'south-measure-domestic-wall': 'Measure Domestic Wall',
+  'south-measure-door': 'South Measure Door',
+  'service-hatch': 'Service Hatch',
+  'service-pipe-run': 'Service Pipe Run',
+  'utility-railing': 'Utility Railing',
+  'south-measure-wall-board': 'South Measure Wall Board',
+  'south-measure-worktable': 'South Measure Worktable',
+  'south-measure-storage': 'South Measure Storage',
+  'south-measure-custody-rest': 'Empty Custody Rest',
+  'south-measure-tally-scraps': 'Measure Tally Scraps',
+  'south-measure-work-grit': 'Measure Work Grit',
+  'south-measure-service-stain': 'Measure Service Stain',
+  'mesh-cage-panel': 'Mesh Cage Panel',
+  'relief-machine': 'Relief Machine',
+  'intake-pump-assembly': 'Intake Pump Assembly',
+  'freight-scale': 'Freight Scale',
+  'clinic-bed': 'Clinic Bed',
+  'cloth-partition': 'Cloth Partition',
+  'intake-clerk-wicket': 'Intake Clerk Wicket',
+  'overturned-field-cart': 'Overturned Handcart',
+  'stage-iv-cart-lure': 'Woman Beneath the Cart',
+  'censure-attendant-shrine': 'Censure Attendant Shrine',
+  'drone-sensor-stake': 'Sensor Stake',
+  'drone-folding-screen': 'Folding Screen',
+  'drone-snare-pod': 'Snare Pod',
+  'drone-arc-sentry': 'Arc Sentry',
+  'drone-relay-pylon': 'Relay Pylon',
+  'drone-med-station': 'Med Station'
 };
 
 export function displayNameForKind(kind) {
@@ -157,6 +335,17 @@ const cover = (entry, level) => ({ ...entry, cover: level });
 const oriented = (fn, category, layer = 2) => ({
   category, layer, draw: (ctx, x, y, seed, c) => fn(ctx, x, y, seed, { orient: c.prop.orient })
 });
+const workResponsive = (entry) => ({
+  ...entry,
+  drawLiveOverlay: (ctx, x, y, seed, c) => {
+    if (!c?.prop?.workActivity) return;
+    P.drawSouthMeasureWorkResponse(ctx, x, y, seed, {
+      activity: c.prop.workActivity,
+      kind: c.prop.kind,
+      orient: c.prop.orient
+    });
+  }
+});
 // A flat ground decal that takes (ctx, cx, cy, seed).
 const decal = (fn) => ({ category: CATEGORY.DECAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => fn(ctx, x, y, seed) });
 const farmBuildingBlock = (variant = null) => ({
@@ -173,6 +362,50 @@ const graveyardChapelBlock = (variant) => ({
     variant
   })
 });
+const southMeasureBlock = (variant) => ({
+  category: CATEGORY.STRUCTURE, layer: 0, block: true, cover: 'hard',
+  draw: (ctx, x, y, seed, c) => P.drawSouthMeasureBuildingBlock(ctx, x, y, seed, {
+    connected: c.prop.connected,
+    variant: c.prop.variant ?? variant
+  })
+});
+const southMeasureInteriorWall = (variant) => ({
+  category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
+  draw: (ctx, x, y, seed, c) => P.drawSouthMeasureInteriorWallBlock(ctx, x, y, WALL_HEIGHT, seed, {
+    connected: c.prop.connected,
+    variant
+  })
+});
+function southMeasureInteriorOptions(prop = {}) {
+  return {
+    orient: prop.orient,
+    variant: prop.variant,
+    state: prop.state,
+    wallPlane: prop.wallPlane,
+    wallSide: prop.wallSide,
+    connected: prop.connected,
+    opened: Boolean(prop.opened || prop.consumed),
+    locked: Boolean(prop.locked || (prop.interact?.lock && !prop.unlocked)),
+    active: Boolean(prop.active),
+    damaged: Boolean(prop.damaged)
+  };
+}
+
+function oldPilgrimOptions(prop = {}) {
+  return {
+    orient: prop.orient,
+    variant: prop.variant,
+    state: prop.state,
+    wallPlane: prop.wallPlane,
+    wallSide: prop.wallSide,
+    opened: Boolean(prop.opened || prop.consumed)
+  };
+}
+const southMeasureInteriorProp = (fn, category, layer = 2) => ({
+  category,
+  layer,
+  draw: (ctx, x, y, seed, c) => fn(ctx, x, y, seed, southMeasureInteriorOptions(c.prop))
+});
 
 function barrelShowsLadder(prop) {
   const type = prop?.interact?.type;
@@ -181,7 +414,7 @@ function barrelShowsLadder(prop) {
   return Boolean(prop.revealed || prop.opened || prop.unlocked);
 }
 
-export const SPRITE_CATALOG = {
+const RAW_SPRITE_CATALOG = {
   // --- Terrain blocks (tile-driven walls) --------------------------------
   'wall': {
     category: CATEGORY.TERRAIN, layer: 0, block: true, cover: 'hard',
@@ -218,13 +451,17 @@ export const SPRITE_CATALOG = {
       variant: 'shed'
     })
   },
+  'south-measure-intake-wall': southMeasureInteriorWall('intake'),
+  'south-measure-service-wall': southMeasureInteriorWall('service'),
+  'south-measure-freight-wall': southMeasureInteriorWall('freight'),
+  'south-measure-domestic-wall': southMeasureInteriorWall('domestic'),
 
   // --- Wall fixtures (a feature set into the SW face of a wall block) -----
   // Block first, then the fixture overlay, at the same cell. A fixture that
   // carries loot/locks (safe, stash) is placed as an authored object on a wall
   // cell; a purely visual fixture (window) can be a legend tile.
   'wall-window': {
-    category: CATEGORY.FIXTURE, layer: 0, block: true, cover: 'hard',
+    category: CATEGORY.FIXTURE, layer: 0, block: true, cover: 'hard', animated: true,
     draw: (ctx, x, y, seed, c) => {
       P.drawIsoWallBlock(ctx, x, y, c.prop.height ?? WALL_HEIGHT, seed);
       P.drawChapelWindow(ctx, x, y, seed, { dim: c.prop.dim, flicker: c.flicker });
@@ -265,8 +502,18 @@ export const SPRITE_CATALOG = {
       wallSide: c.prop.wallSide
     })
   },
+  'south-measure-door': cover(southMeasureInteriorProp(P.drawSouthMeasureDoor, CATEGORY.FIXTURE, 0), 'hard'),
+  'south-measure-wall-board': southMeasureInteriorProp(P.drawSouthMeasureWallBoard, CATEGORY.FIXTURE, 0),
 
   // --- Structures (free-standing architecture) ---------------------------
+  'pilgrim-road-shrine': cover({
+    category: CATEGORY.STRUCTURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawPilgrimRoadShrine(ctx, x, y, seed, oldPilgrimOptions(c.prop))
+  }, 'hard'),
+  'pilgrim-trial-frame': cover({
+    category: CATEGORY.STRUCTURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawPilgrimTrialFrame(ctx, x, y, seed, oldPilgrimOptions(c.prop))
+  }, 'hard'),
   'cracked-column': cover(simple(P.drawCrackedColumn, CATEGORY.STRUCTURE), 'hard'),
   'saint-statue': {
     category: CATEGORY.STRUCTURE, layer: 2,
@@ -285,7 +532,14 @@ export const SPRITE_CATALOG = {
   'graveyard-catacomb-mouth': oriented(P.drawGraveyardCatacombMouth, CATEGORY.STRUCTURE, 4),
   'graveyard-bone-marker': simple(P.drawCalcifiedGraveMarker, CATEGORY.STRUCTURE),
   'graveyard-remnant-cross': simple(P.drawGraveyardRemnantCross, CATEGORY.STRUCTURE),
-  'stone-stairwell': oriented(P.drawStoneStairwell, CATEGORY.STRUCTURE, 1),
+  'stone-stairwell': {
+    category: CATEGORY.STRUCTURE,
+    layer: 1,
+    draw: (ctx, x, y, seed, c) => P.drawStoneStairwell(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: c.prop.variant
+    })
+  },
   'quarantine-barricade': cover(simple(P.drawQuarantineBarricade, CATEGORY.STRUCTURE), 'hard'),
   'broken-bell': simple(P.drawBrokenBell, CATEGORY.STRUCTURE),
   'bell-rope': {
@@ -296,7 +550,7 @@ export const SPRITE_CATALOG = {
   },
   'quarantine-sign': simple(P.drawQuarantineSign, CATEGORY.STRUCTURE),
   'chapel-double-door': {
-    category: CATEGORY.STRUCTURE, layer: 18, cover: 'hard',
+    category: CATEGORY.STRUCTURE, layer: 18, cover: 'hard', animated: true,
     draw: (ctx, x, y, seed, c) => {
       const opened = Boolean(c.prop.opened || c.prop.consumed);
       const start = c.prop.openedAt;
@@ -313,7 +567,7 @@ export const SPRITE_CATALOG = {
     }
   },
   'damaged-altar': {
-    category: CATEGORY.STRUCTURE, layer: 2, cover: 'hard',
+    category: CATEGORY.STRUCTURE, layer: 2, cover: 'hard', animated: true,
     draw: (ctx, x, y, seed, c) => P.drawDamagedAltar(ctx, x, y, seed, c.pulse)
   },
   'farm-building-block': farmBuildingBlock(),
@@ -322,6 +576,19 @@ export const SPRITE_CATALOG = {
   'tool-shed-building-block': farmBuildingBlock('tool-shed'),
   'storage-shed-building-block': farmBuildingBlock('storage-shed'),
   'grain-shed-building-block': farmBuildingBlock('grain-shed'),
+  'south-measure-rowhouse-building-block': southMeasureBlock('rowhouse'),
+  'relief-annex-building-block': southMeasureBlock('annex'),
+  'compact-clinic-building-block': southMeasureBlock('clinic'),
+  'morrow-freight-house-building-block': southMeasureBlock('freight'),
+  'measure-hall-building-block': southMeasureBlock('hall'),
+  'admission-booth-building-block': southMeasureBlock('booth'),
+  'south-measure-burial-shed-building-block': southMeasureBlock('burial'),
+  'south-measure-berm-block': {
+    category: CATEGORY.STRUCTURE, layer: 0, block: true, cover: 'hard',
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureBermBlock(ctx, x, y, seed, {
+      connected: c.prop.connected
+    })
+  },
   'canvas-tent-building-block': {
     category: CATEGORY.STRUCTURE, layer: 0, block: true, cover: 'hard',
     draw: (ctx, x, y, seed, c) => P.drawCanvasTentBlock(ctx, x, y, seed, {
@@ -357,13 +624,88 @@ export const SPRITE_CATALOG = {
       wallSide: c.prop.wallSide
     })
   },
+  'water-condenser': cover(simple(P.drawSouthMeasureCondenser, CATEGORY.STRUCTURE, 4), 'hard'),
+  'settling-tank': cover(simple(P.drawSouthMeasureSettlingTank, CATEGORY.STRUCTURE), 'hard'),
+  'south-measure-settling-vat': cover(workResponsive(simple(P.drawSouthMeasureSettlingVat, CATEGORY.STRUCTURE)), 'hard'),
+  'public-tap-stand': cover(workResponsive(oriented(P.drawSouthMeasureTapStand, CATEGORY.STRUCTURE)), 'light'),
+  'intake-screening-frame': cover(workResponsive({
+    category: CATEGORY.STRUCTURE,
+    layer: 4,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureScreeningFrame(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: c.prop.variant,
+      damaged: Boolean(c.prop.damaged)
+    })
+  }), 'light'),
+  'fixed-hoist': cover(workResponsive(simple(P.drawSouthMeasureFixedHoist, CATEGORY.STRUCTURE, 4)), 'hard'),
+  'collapsed-culvert': cover(simple(P.drawSouthMeasureCollapsedCulvert, CATEGORY.STRUCTURE, 4), 'hard'),
+  'south-chain-gate': {
+    category: CATEGORY.STRUCTURE, layer: 4, cover: 'hard',
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureChainGate(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: 'south'
+    })
+  },
+  'north-chain-gate': {
+    category: CATEGORY.STRUCTURE, layer: 4, cover: 'hard',
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureChainGate(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: 'north'
+    })
+  },
+  'measure-boundary-fence': cover(oriented(P.drawMeasureBoundaryFence, CATEGORY.STRUCTURE), 'light'),
+  'south-measure-receiving-shelter': cover(oriented(P.drawSouthMeasureReceivingShelter, CATEGORY.STRUCTURE, 4), 'hard'),
+  'south-measure-charity-canopy': cover(oriented(P.drawSouthMeasureCharityCanopy, CATEGORY.STRUCTURE, 4), 'light'),
+  'south-measure-pipe-gantry': cover(oriented(P.drawSouthMeasurePipeGantry, CATEGORY.STRUCTURE, 4), 'hard'),
+  'south-measure-queue-rail': cover(oriented(P.drawSouthMeasureQueueRail, CATEGORY.STRUCTURE), 'light'),
+  'south-measure-brass-hook-memorial': cover(simple(P.drawSouthMeasureBrassHookMemorial, CATEGORY.STRUCTURE, 4), 'hard'),
+  'south-measure-grave-family-rail': cover(oriented(P.drawSouthMeasureGraveFamilyRail, CATEGORY.STRUCTURE, 2), 'light'),
+  'south-measure-sample-burner': cover(workResponsive(simple(P.drawSouthMeasureSampleBurner, CATEGORY.STRUCTURE, 4)), 'hard'),
+  'service-hatch': southMeasureInteriorProp(P.drawSouthMeasureServiceHatch, CATEGORY.STRUCTURE, 1),
+  'service-pipe-run': southMeasureInteriorProp(P.drawSouthMeasureServicePipeRun, CATEGORY.STRUCTURE, 1),
+  'utility-railing': cover(southMeasureInteriorProp(P.drawSouthMeasureUtilityRailing, CATEGORY.STRUCTURE, 2), 'light'),
+  'mesh-cage-panel': cover(southMeasureInteriorProp(P.drawSouthMeasureMeshCagePanel, CATEGORY.STRUCTURE, 2), 'light'),
+  'relief-machine': cover(southMeasureInteriorProp(P.drawSouthMeasureReliefMachine, CATEGORY.STRUCTURE, 4), 'hard'),
+  'intake-pump-assembly': cover(southMeasureInteriorProp(P.drawSouthMeasureIntakePumpAssembly, CATEGORY.STRUCTURE, 4), 'hard'),
 
   // --- Furniture (placed objects) ----------------------------------------
   'broken-pew': cover(simple(P.drawBrokenPew, CATEGORY.FURNITURE), 'light'),
-  'rusted-reliquary': simple(P.drawRustedReliquary, CATEGORY.FURNITURE),
-  'field-satchel': simple(P.drawFieldSatchel, CATEGORY.FURNITURE),
-  'rusted-crate': cover(simple(P.drawRustedCrate, CATEGORY.FURNITURE), 'hard'),
-  'sealed-storage-crate': cover(simple(P.drawSealedStorageCrate, CATEGORY.FURNITURE), 'hard'),
+  'rusted-reliquary': {
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawRustedReliquary(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed)
+    })
+  },
+  'field-satchel': {
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawFieldSatchel(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed)
+    })
+  },
+  'field-backpack': {
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawFieldBackpack(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed)
+    })
+  },
+  'south-measure-service-pack': {
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureServicePack(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed)
+    })
+  },
+  'rusted-crate': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawRustedCrate(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed)
+    })
+  }, 'hard'),
+  'sealed-storage-crate': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSealedStorageCrate(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed)
+    })
+  }, 'hard'),
   'canvas-tent': simple(P.drawCanvasTent, CATEGORY.FURNITURE),
   'canvas-tent-flap': {
     category: CATEGORY.FIXTURE, layer: 1, cover: 'light',
@@ -383,6 +725,22 @@ export const SPRITE_CATALOG = {
   'kitchen-counter': oriented(P.drawKitchenCounter, CATEGORY.FURNITURE),
   'farm-prep-table': oriented(P.drawFarmPrepTable, CATEGORY.FURNITURE),
   'farm-bed': cover(oriented(P.drawFarmBed, CATEGORY.FURNITURE), 'light'),
+  'pilgrim-cot': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawPilgrimCot(ctx, x, y, seed, oldPilgrimOptions(c.prop))
+  }, 'light'),
+  'pilgrim-memorial-tablet': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawPilgrimMemorialTablet(ctx, x, y, seed, oldPilgrimOptions(c.prop))
+  }, 'light'),
+  'closure-control-panel': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawClosureControlPanel(ctx, x, y, seed, oldPilgrimOptions(c.prop))
+  }, 'hard'),
+  'processional-pike-rack': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawProcessionalPikeRack(ctx, x, y, seed, oldPilgrimOptions(c.prop))
+  }, 'light'),
   'grain-sack-stack': cover(simple(P.drawGrainSackStack, CATEGORY.FURNITURE), 'light'),
   'grain-bin': cover(oriented(P.drawGrainBin, CATEGORY.FURNITURE), 'hard'),
   'farm-workbench': cover(oriented(P.drawFarmWorkbench, CATEGORY.FURNITURE), 'hard'),
@@ -419,10 +777,12 @@ export const SPRITE_CATALOG = {
   'rusted-barrel': {
     category: CATEGORY.FURNITURE, layer: 2, cover: 'light',
     draw: (ctx, x, y, seed, c) => P.drawRustedBarrel(ctx, x, y, seed, {
-      ladder: barrelShowsLadder(c.prop)
+      ladder: barrelShowsLadder(c.prop),
+      opened: c.prop.interact?.type === 'container' && Boolean(c.prop.opened || c.prop.consumed)
     })
   },
   'field-cart': cover(oriented(P.drawFieldCart, CATEGORY.FURNITURE), 'hard'),
+  'overturned-field-cart': cover(oriented(P.drawOverturnedFieldCart, CATEGORY.FURNITURE), 'hard'),
   'hay-rick': cover(simple(P.drawHayRick, CATEGORY.FURNITURE), 'hard'),
   'field-plow': oriented(P.drawFieldPlow, CATEGORY.FURNITURE),
   'field-harrow': oriented(P.drawFieldHarrow, CATEGORY.FURNITURE),
@@ -433,6 +793,66 @@ export const SPRITE_CATALOG = {
   'devil-target': cover(oriented(P.drawDevilTarget, CATEGORY.STRUCTURE), 'light'),
   'wagon-wheel': simple(P.drawWagonWheel, CATEGORY.FURNITURE),
   'woodpile': cover(simple(P.drawWoodpile, CATEGORY.FURNITURE), 'hard'),
+  'freight-wagon': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureFreightWagon(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: 'freight'
+    })
+  }, 'hard'),
+  'medicine-cart': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureFreightWagon(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: 'medicine'
+    })
+  }, 'hard'),
+  'south-measure-medicine-cart': cover({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureFreightWagon(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: 'measure-medicine'
+    })
+  }, 'hard'),
+  'grain-cage': cover(oriented(P.drawSouthMeasureGrainCage, CATEGORY.FURNITURE), 'hard'),
+  'laundry-line': workResponsive(southMeasureInteriorProp(P.drawSouthMeasureLaundryLine, CATEGORY.FURNITURE)),
+  'shared-oven': cover(simple(P.drawSouthMeasureSharedOven, CATEGORY.FURNITURE), 'light'),
+  'wash-wall': cover(workResponsive(oriented(P.drawSouthMeasureWashWall, CATEGORY.FURNITURE)), 'light'),
+  'measure-grave-plot': oriented(P.drawSouthMeasureGravePlot, CATEGORY.FURNITURE, 1),
+  'charity-cot': cover(oriented(P.drawSouthMeasureCharityCot, CATEGORY.FURNITURE), 'light'),
+  'south-measure-sleeping-pallet': cover(oriented(P.drawSouthMeasureSleepingPallet, CATEGORY.FURNITURE), 'light'),
+  'south-measure-hand-pump': cover(workResponsive(simple(P.drawSouthMeasureHandPump, CATEGORY.FURNITURE)), 'light'),
+  'south-measure-water-vessels': cover(workResponsive({
+    category: CATEGORY.FURNITURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureWaterVessels(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: c.prop.variant
+    })
+  }), 'light'),
+  'south-measure-water-lesson': oriented(P.drawSouthMeasureWaterLesson, CATEGORY.FURNITURE),
+  'south-measure-notice-board': cover(workResponsive({
+    category: CATEGORY.FURNITURE,
+    layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureNoticeBoard(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: c.prop.variant
+    })
+  }), 'light'),
+  'south-measure-return-stall': cover(workResponsive({
+    category: CATEGORY.FURNITURE,
+    layer: 4,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureReturnStall(ctx, x, y, seed, {
+      orient: c.prop.orient,
+      variant: c.prop.variant
+    })
+  }), 'hard'),
+  'south-measure-repair-rack': cover(workResponsive(oriented(P.drawSouthMeasureRepairRack, CATEGORY.FURNITURE)), 'light'),
+  'south-measure-worktable': cover(southMeasureInteriorProp(P.drawSouthMeasureWorktable, CATEGORY.FURNITURE), 'light'),
+  'south-measure-storage': cover(southMeasureInteriorProp(P.drawSouthMeasureStorage, CATEGORY.FURNITURE), 'hard'),
+  'south-measure-custody-rest': cover(southMeasureInteriorProp(P.drawSouthMeasureCustodyRest, CATEGORY.FURNITURE), 'light'),
+  'freight-scale': cover(workResponsive(southMeasureInteriorProp(P.drawSouthMeasureFreightScale, CATEGORY.FURNITURE)), 'light'),
+  'clinic-bed': cover(southMeasureInteriorProp(P.drawSouthMeasureClinicBed, CATEGORY.FURNITURE), 'light'),
+  'cloth-partition': cover(southMeasureInteriorProp(P.drawSouthMeasureClothPartition, CATEGORY.FURNITURE), 'light'),
 
   // --- Props (misc small props, caches) ----------------------------------
   'rubble-pile': cover(simple(P.drawRubblePile, CATEGORY.PROP), 'light'),
@@ -441,6 +861,12 @@ export const SPRITE_CATALOG = {
   'bone-pile': simple(P.drawBonePile, CATEGORY.PROP),
   'bone-niche': simple(P.drawBoneNiche, CATEGORY.PROP), // wall ossuary shelf of skulls + bones
   'loose-flagstone': simple(P.drawLooseFlagstone, CATEGORY.PROP), // a floor stash block
+  'small-pouch': {
+    category: CATEGORY.PROP, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawSmallPouch(ctx, x, y, seed, {
+      opened: Boolean(c.prop.opened || c.prop.consumed)
+    })
+  },
   'blue-ball': {
     category: CATEGORY.PROP, layer: 2,
     draw: (ctx, x, y, seed, c) => {
@@ -448,7 +874,7 @@ export const SPRITE_CATALOG = {
     }
   },
   'ground-item': {
-    category: CATEGORY.PROP, layer: 2,
+    category: CATEGORY.PROP, layer: 2, animated: true,
     draw: (ctx, x, y, seed, c) => {
       const now = c.anim?.tick ?? 0;
       const dropDuration = c.prop.dropDuration ?? 0.38;
@@ -478,6 +904,39 @@ export const SPRITE_CATALOG = {
   'fallen-ash-log': simple(P.drawFallenAshLog, CATEGORY.PLANT),
   'ash-sapling': simple(P.drawAshSapling, CATEGORY.PLANT),
   'scrub-bush': simple(P.drawScrubBush, CATEGORY.PLANT),
+  'dead-grass-tuft': simple(P.drawDeadGrassTuft, CATEGORY.PLANT),
+  'south-measure-drain-reeds': simple(P.drawSouthMeasureDrainReeds, CATEGORY.PLANT),
+  'south-measure-tumbleweed': {
+    category: CATEGORY.PLANT, layer: 4, animated: true,
+    animationKey: (prop, seed, c) => {
+      const pose = P.southMeasureTumbleweedPose(seed, {
+        tick: c.anim?.tick ?? 0,
+        phase: prop.phase,
+        direction: prop.direction
+      });
+      return `${pose.rollFrame}:${pose.hop}`;
+    },
+    placementOffset: (prop, seed, c) => {
+      const pose = P.southMeasureTumbleweedPose(seed, {
+        tick: c.anim?.tick ?? 0,
+        phase: prop.phase,
+        direction: prop.direction
+      });
+      return { x: pose.offsetX, y: pose.offsetY };
+    },
+    draw: (ctx, x, y, seed, c) => {
+      const pose = P.southMeasureTumbleweedPose(seed, {
+        tick: c.anim?.tick ?? 0,
+        phase: c.prop.phase,
+        direction: c.prop.direction
+      });
+      P.drawSouthMeasureTumbleweed(ctx, x, y, seed, {
+        fixed: true,
+        rollFrame: pose.rollFrame,
+        hop: pose.hop
+      });
+    }
+  },
   'wheat-clump': {
     category: CATEGORY.PLANT, layer: 4, canopyRadius: 1, canopyAlpha: 0.32,
     draw: (ctx, x, y, seed, c) => P.drawWheatClump(ctx, x, y, seed, {
@@ -487,7 +946,7 @@ export const SPRITE_CATALOG = {
 
   // --- Lights (emissive props) -------------------------------------------
   'candle-cluster': {
-    category: CATEGORY.LIGHT, layer: 2,
+    category: CATEGORY.LIGHT, layer: 2, animated: true,
     draw: (ctx, x, y, seed, c) => {
       P.drawWarmLightPool(ctx, x, y, seed, c.flicker);
       P.drawCandleCluster(ctx, x, y, seed, c.flicker);
@@ -498,15 +957,18 @@ export const SPRITE_CATALOG = {
     draw: (ctx, x, y, seed) => P.drawWindowLightPool(ctx, x, y, seed)
   },
   'campfire': {
-    category: CATEGORY.LIGHT, layer: 2,
+    category: CATEGORY.LIGHT, layer: 2, animated: true,
     draw: (ctx, x, y, seed, c) => P.drawCampfire(ctx, x, y, seed, c.flicker)
+  },
+  'south-measure-arrival-hearth': {
+    category: CATEGORY.LIGHT, layer: 2, animated: true,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureArrivalHearth(ctx, x, y, seed, c.flicker)
   },
 
   // --- Host growth (effect) ----------------------------------------------
   'host-growth': {
-    category: CATEGORY.CREATURE, layer: 2,
+    category: CATEGORY.CREATURE, layer: 2, animated: true,
     draw: (ctx, x, y, seed, c) => {
-      P.drawShadowBlob(ctx, x, y + 2, 30, 14);
       P.drawHostGrowth(ctx, x, y, seed, c.pulse);
     }
   },
@@ -523,7 +985,7 @@ export const SPRITE_CATALOG = {
 
   // --- Creatures (Host victims / monsters rendered as world props) -------
   'cross-martyr': {
-    category: CATEGORY.CREATURE, layer: 2,
+    category: CATEGORY.CREATURE, layer: 2, animated: true,
     draw: (ctx, x, y, seed, c) => P.drawCrossMartyr(ctx, x, y, seed, {
       pulse: c.pulse,
       flicker: c.flicker,
@@ -537,7 +999,7 @@ export const SPRITE_CATALOG = {
     })
   },
   'bound-victim': {
-    category: CATEGORY.CREATURE, layer: 2,
+    category: CATEGORY.CREATURE, layer: 2, animated: true,
     draw: (ctx, x, y, seed, c) => P.drawBoundVictim(ctx, x, y, seed, {
       pulse: c.pulse, flicker: c.flicker, killed: c.prop.killed, dim: c.prop.dim
     })
@@ -555,6 +1017,21 @@ export const SPRITE_CATALOG = {
   'dead-host-wolf-maw': simple(P.drawDeadHostWolfMaw, CATEGORY.CREATURE),
   'dead-host-wolf-ribsplit': simple(P.drawDeadHostWolfRibsplit, CATEGORY.CREATURE),
   'host-wolf-remains': simple(P.drawHostWolfRemains, CATEGORY.CREATURE),
+  'stage-iv-cart-lure': simple(P.drawStageIvCartLure, CATEGORY.CREATURE),
+  'opened-pilgrim-remains': {
+    category: CATEGORY.CREATURE, layer: 2,
+    draw: (ctx, x, y, seed, c) => P.drawOpenedPilgrimRemains(ctx, x, y, seed, oldPilgrimOptions(c.prop))
+  },
+  'intake-clerk-wicket': cover(southMeasureInteriorProp(P.drawSouthMeasureIntakeClerkWicket, CATEGORY.CREATURE, 4), 'hard'),
+
+  // --- Companion field hardware -----------------------------------------
+  'censure-attendant-shrine': cover(simple(P.drawCensureAttendantShrine, CATEGORY.STRUCTURE, 4), 'hard'),
+  'drone-sensor-stake': simple(P.drawDroneSensorStake, CATEGORY.PROP, 4),
+  'drone-folding-screen': cover(simple(P.drawDroneFoldingScreen, CATEGORY.STRUCTURE, 4), 'light'),
+  'drone-snare-pod': simple(P.drawDroneSnarePod, CATEGORY.PROP, 4),
+  'drone-arc-sentry': simple(P.drawDroneArcSentry, CATEGORY.STRUCTURE, 4),
+  'drone-relay-pylon': simple(P.drawDroneRelayPylon, CATEGORY.STRUCTURE, 4),
+  'drone-med-station': simple(P.drawDroneMedStation, CATEGORY.FURNITURE, 4),
 
   // --- Ritual imagery ----------------------------------------------------
   'choir-pentagram': simple(P.drawChoirPentagram, CATEGORY.RITUAL), // wall-mounted, but drawn as a prop overlay
@@ -582,12 +1059,22 @@ export const SPRITE_CATALOG = {
   'spent-casings': decal((ctx, x, y, seed) => P.drawSpentCasings(ctx, x, y, seed)),
   'chalk-drawing': decal((ctx, x, y, seed) => P.drawChalkDrawing(ctx, x, y, seed)),
   'machine-oil': decal((ctx, x, y, seed) => P.drawMachineOil(ctx, x, y, seed)),
+  'south-measure-tally-scraps': decal((ctx, x, y, seed) => P.drawSouthMeasureTallyScraps(ctx, x, y, seed)),
+  'south-measure-work-grit': decal((ctx, x, y, seed) => P.drawSouthMeasureWorkGrit(ctx, x, y, seed)),
+  'south-measure-service-stain': {
+    category: CATEGORY.DECAL,
+    layer: 0,
+    flat: true,
+    draw: (ctx, x, y, seed, c) => P.drawSouthMeasureServiceStain(ctx, x, y, seed, { variant: c.prop.variant })
+  },
   'mortuary-drain': decal((ctx, x, y, seed) => P.drawMortuaryDrain(ctx, x, y, seed)),
   'listening-wire': decal((ctx, x, y, seed) => P.drawListeningWire(ctx, x, y, seed)),
   'cobweb': decal((ctx, x, y, seed) => P.drawCobweb(ctx, x, y, seed)),
   'blood-sigil': { category: CATEGORY.RITUAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => P.drawBloodSigil(ctx, x, y, seed) },
   'ritual-circle': { category: CATEGORY.RITUAL, layer: 0, flat: true, draw: (ctx, x, y, seed) => P.drawRitualCircle(ctx, x, y, seed) }
 };
+
+export const SPRITE_CATALOG = finalizeCatalog(RAW_SPRITE_CATALOG);
 
 // Derived views (kept in sync automatically; never maintain a second list).
 export const FLAT_KINDS = new Set(

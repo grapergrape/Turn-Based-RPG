@@ -1,13 +1,16 @@
 {
   "id": "censure-brother-caldus",
-  "name": "Brother Caldus",
+  "name": "Brother Cyprian",
   "type": "npc",
   "faction": "holy-remnant",
   "role": "Drill brother",
   "appearance": {
     "body": "broad",
     "outfit": "settlement-work-coat",
-    "gear": ["shoulder-plate", "rope-coil"],
+    "gear": [
+      "shoulder-plate",
+      "rope-coil"
+    ],
     "accent": "bare-brown"
   },
   "stats": {
@@ -15,5 +18,9 @@
     "maxHp": 10,
     "actionPoints": 0
   },
-  "tags": ["holy-remnant", "ash-censure", "drill"]
+  "tags": [
+    "holy-remnant",
+    "ash-censure",
+    "drill"
+  ]
 }

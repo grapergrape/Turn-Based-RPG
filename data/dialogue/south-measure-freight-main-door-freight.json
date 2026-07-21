@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-freight-main-door-freight",
+  "title": "Freight House Main Door",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The public door opens beside the yard scale and medicine-cart lane."
+      ],
+      "choices": [
+        {
+          "label": "Step into the freight yard",
+          "effects": {
+            "log": "You leave the freight house through the public office.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 30,
+                "y": 48,
+                "facing": "nw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Stay inside",
+          "effects": {
+            "log": "You turn back toward the route table."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

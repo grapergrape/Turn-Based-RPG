@@ -1,0 +1,66 @@
+{
+  "id": "ash-road-south-ilo-varo",
+  "title": "Isaac Faber",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Isaac sits where he can see the water court through two laundry lines.",
+        "\"If this is about Noa’s school, do not ask what I permit. She is not a tool I own.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what he hopes Noa will do",
+          "next": "nel",
+          "effects": {
+            "setFlag": "heard-varo-family-wishes",
+            "questUpdate": {
+              "quest": "household-of-one",
+              "stage": "review-record",
+              "log": "Isaac wants Noa to take the school place without making his fear her duty."
+            }
+          }
+        },
+        {
+          "label": "Leave Isaac to the view",
+          "close": true
+        }
+      ]
+    },
+    "nel": {
+      "lines": [
+        "\"She should go learn every machine they kept behind their walls, then come back only if she wants the work here.\"",
+        "\"I also hope she stays until my hands stop shaking. Both hopes are mine to manage, not hers.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what happens to Tobit",
+          "next": "perr"
+        },
+        {
+          "label": "Let the two hopes remain his",
+          "next": "start"
+        },
+        {
+          "label": "Leave Isaac to the view",
+          "close": true
+        }
+      ]
+    },
+    "perr": {
+      "lines": [
+        "\"He learns the pump or finds another trade. He is not a parcel tied to Noa’s placement.\"",
+        "\"The Compact calls him a dependent. South Measure calls him when the roof leaks.\""
+      ],
+      "choices": [
+        {
+          "label": "Return to Noa’s choice",
+          "next": "start"
+        },
+        {
+          "label": "Leave Isaac to the view",
+          "close": true
+        }
+      ]
+    }
+  }
+}

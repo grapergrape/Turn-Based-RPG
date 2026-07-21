@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-oss-kade",
+  "name": "Othniel Mercator",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Laundry repairer",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "rope-rows",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "average",
+    "outfit": "settlement-shawl",
+    "gear": [
+      "rope-coil"
+    ],
+    "accent": "blue-cloth"
+  }
+}

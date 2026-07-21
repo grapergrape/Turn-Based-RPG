@@ -108,6 +108,45 @@ The lore should influence systems:
 - Enemy designs should reflect past identity and Vale-Imprint damnation roles.
 - Quests should often force choices between truth, survival, faith, and exploitation.
 
+## Field attendants and old service machines
+
+Pre-Bloom service machines can survive without becoming speaking characters or
+repositories of unrestricted history. Their interfaces should be narrow,
+damaged, procedural, and bound to the work they were built to perform. A field
+attendant may recognize an inherited credential, unfold a repair arm, emit
+tones, or follow a service order. It should not casually explain the Descent,
+Europa, the Host, or the Vale Imprint.
+
+The Utility Drone Mark I found at South Measure is housed in a pre-Bloom local
+service cradle. The Holy Remnant later fitted the surviving credential layer
+with Censure authority. The old machine therefore recognizes the player as an
+agent of Censure without making the Censure a pre-Bloom institution. The two
+grand model names in its catalogue point to absent remote cradles, not hidden
+war machines at the site.
+
+Keep the attendant mute. Personality comes through silhouette, posture,
+animation, service noises, naming, and the player's chosen modifications. Its
+advanced effects remain mechanical: electrical discharge, armor, medicine,
+optics, noise projection, concealment hardware, and deployable field tools.
+Avoid a holographic personality, comic sidekick dialogue, or unexplained
+supernatural powers.
+
+## Weapon technology
+
+Most road weapons are powder firearms, hand tools, or blades kept alive by local armorers. Their names should come from makers, wards, orders, trades, places, or remembered use. A weapon is material culture. Its description should say who made it, who carries it, what can be repaired, or what scarcity shaped it.
+
+The setting's advanced portable weapons are magnetic accelerator arms. Coils, induction cages, and rails throw solid ferrous armatures. They descend from pre-collapse industrial launchers and scarce military patterns, with the Penitent Engines preserving the strongest workshop tradition. They are not lasers, plasma guns, or supernatural rays.
+
+Accelerator arms must still feel physical:
+
+- They have magazines of machined armatures.
+- They use charge bricks, capacitors, contacts, ceramic beds, and copper windings.
+- They make noise, recoil, heat, scoring, and maintenance problems.
+- Their components are difficult for settlement workshops to reproduce.
+- Overcharging trades ammunition and condition for force.
+
+Public item descriptions may call a pattern pre-collapse, recovered, industrial, Remnant, or Penitent. They must not casually reveal the Host's alien origin, Europa, Father Vale, or the Vale Imprint.
+
 ## Host infection stages
 
 Use stages as field labels, not exact biology.
@@ -128,7 +167,7 @@ The core chain is:
 
 1. First contact was filtered through Father Marius Vale.
 2. The Host inherited Vale's fear of Hell as biological grammar.
-3. Sorell saved humanity by turning that fear into the Stilling lock.
+3. Seneca saved humanity by turning that fear into the Stilling lock.
 4. The Choir mistakes Host-shaped doctrine for divine revelation.
 5. The Devil manifestation is not a generic demon boss. It is the Host making Remnant fear into flesh.
 6. The endgame is not "kill the source." It is deciding whether Vale's torture remains the price of human survival.
@@ -141,7 +180,7 @@ Avoid these drift risks:
 - A Compact that is only good science or only mad science.
 - A final boss that is only a large monster.
 - A supernatural answer that cancels the biological and psychological horror.
-- A faction ending that ignores Vale and Sorell's chamber.
+- A faction ending that ignores Vale and Seneca's chamber.
 
 Every major quest should make at least one ordinary human need matter: food, medicine, citizenship, road access, safety, shelter, grief, fear, or law. The horror works because it grows through those needs.
 
@@ -157,7 +196,7 @@ Good names:
 - Madonna of Ash
 - Scholastic Heretic
 - Seraphim Wreck
-- Veyr's Gate
+- Spindle Gate
 - Meridian Vault
 - Sanctum Aurelian
 - The Woundfall Zone

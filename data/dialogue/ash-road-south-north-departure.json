@@ -1,0 +1,125 @@
+{
+  "id": "ash-road-south-north-departure",
+  "title": "The North Chain",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flag": "south-measure-north-lane-open"
+      },
+      "else": "sealed",
+      "lines": [
+        "The chain hangs above the road. Susanna’s certified abstract is dry enough to fold.",
+        "Beyond the last grave plots, Old Pilgrim Way narrows between dead fields and the first Hallowfen markers."
+      ],
+      "choices": [
+        {
+          "label": "Cross the north chain",
+          "effects": {
+            "setFlag": "departed-south-measure",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "complete",
+              "log": "You leave South Measure by the opened north road."
+            },
+            "showBriefing": {
+              "title": "OLD PILGRIM WAY",
+              "pages": [
+                [
+                  "South Measure recedes behind its raised chain. Water strikes the settling tanks in an even rhythm, or in the measured pauses of rationing.",
+                  "The signed abstract in your pack names who controls that rhythm. It does not make the decision harmless."
+                ]
+              ],
+              "conditionalPages": [
+                {
+                  "conditions": { "flag": "south-measure-compact" },
+                  "page": [
+                    "Compact clerks open a new pump register before you reach the last grave. Patients watch their water improve beneath numbers they did not write."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "south-measure-morrow" },
+                  "page": [
+                    "A Morrow service cage stands beside the court. Fresh filters arrive with a debt column left blank for now."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "south-measure-resident" },
+                  "page": [
+                    "Noa’s slate remains above the resident key table. Tobit is already arguing with the first maintenance interval."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "south-measure-sealed" },
+                  "page": [
+                    "The undercroft stays shut. Every cup is measured in public while the old intake keeps its answer below."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "tarn-shared-road" },
+                  "page": [
+                    "Brother Cassian’s tread assembly takes the east shoulder. His damaged vox counts nineteen pulses, then waits through six measures of silence."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "tarn-independent-scout" },
+                  "page": [
+                    "Cassian’s tread marks are already ahead of you. At each culvert he has cut one small warning into the road stone."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "tarn-reliquary-report" },
+                  "page": [
+                    "Cassian turns west with the intake record sealed against his breastplate. The Black Reliquary will hear the impossible reply in his report."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "tarn-camp-watch" },
+                  "page": [
+                    "Cassian remains beside the water court. His weapon mount faces the pipe, not the households waiting at the taps."
+                  ]
+                },
+                {
+                  "conditions": { "flag": "choir-influence-south-measure" },
+                  "page": [
+                    "Behind you, someone begins Salome’s second lesson in a voice too low to carry to the road. Three adults know where the west route opens."
+                  ]
+                }
+              ],
+              "nextPrompt": "ENTER: CONTINUE NORTH",
+              "lastPrompt": "ENTER: END FIELD ENTRY",
+              "skipPrompt": "ESC: CLOSE"
+            },
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_way.json",
+              "player": {
+                "x": 60,
+                "y": 67,
+                "facing": "n"
+              }
+            }
+          },
+          "close": true,
+          "tone": "commit"
+        },
+        {
+          "label": "Look back at South Measure",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "sealed": {
+      "lines": [
+        "The north chain is still drawn across Old Pilgrim Way.",
+        "Susanna will not raise it until the pump, the household roll, Noa, and Cassian have answers the settlement can hear."
+      ],
+      "choices": [
+        {
+          "label": "Return to South Measure",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

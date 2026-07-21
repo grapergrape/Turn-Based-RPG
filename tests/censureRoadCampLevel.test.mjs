@@ -2,9 +2,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 import { meetsDialogueConditions } from '../src/core/DialogueConditions.js';
+import { DialogueEffects } from '../src/core/DialogueEffects.js';
+import { Inventory } from '../src/core/Inventory.js';
 import { getSprite } from '../src/render/spriteCatalog.js';
 import { Grid } from '../src/world/Grid.js';
 import { isTargetInReach, resolveInteractionTargetAtCell } from '../src/world/InteractionTargeting.js';
+import { lockMethodStatus } from '../src/world/LockSystem.js';
 import { searchMethodStatus } from '../src/world/SearchSystem.js';
 
 async function readJson(path) {
@@ -112,10 +115,50 @@ function objectById(level, id) {
   return object;
 }
 
-function transitionById(level, id) {
-  const transition = (level.levelTransitions ?? []).find((entry) => entry.id === id);
-  assert.ok(transition, `${id} exists`);
-  return transition;
+function searchMethodById(object, methodId) {
+  const method = object.interact?.search?.methods?.find((entry) => entry.id === methodId);
+  assert.ok(method, `${object.id} has Search method ${methodId}`);
+  return method;
+}
+
+function lockMethodById(object, methodId) {
+  const method = object.interact?.lock?.methods?.find((entry) => entry.id === methodId);
+  assert.ok(method, `${object.id} has lock method ${methodId}`);
+  return method;
+}
+
+function asArray(value) {
+  if (value === undefined || value === null) return [];
+  return Array.isArray(value) ? value : [value];
+}
+
+function assertOneShotDialogueHandoff(choice, sourceFlags, acknowledgedFlag) {
+  assert.ok(choice, `${acknowledgedFlag} has a dialogue choice`);
+  const requiredFlags = new Set([
+    ...asArray(choice.conditions?.flag),
+    ...asArray(choice.conditions?.flags)
+  ]);
+  for (const flag of sourceFlags) {
+    assert.equal(requiredFlags.has(flag), true, `${acknowledgedFlag} requires ${flag}`);
+  }
+  assert.equal(asArray(choice.conditions?.flagsAbsent).includes(acknowledgedFlag), true);
+  assert.equal(asArray(choice.effects?.setFlag).includes(acknowledgedFlag), true);
+  assert.equal(meetsDialogueConditions(choice.conditions, { flags: new Set(sourceFlags) }), true);
+  assert.equal(meetsDialogueConditions(choice.conditions, {
+    flags: new Set([...sourceFlags, acknowledgedFlag])
+  }), false);
+}
+
+function assertSearchBoundary(method, ratingId, dc, kind = 'field') {
+  const context = {
+    inventory: { has: () => true },
+    fieldRating: (id) => (id === ratingId ? dc - 1 : 0),
+    primaryRating: (id) => (id === ratingId ? dc - 1 : 0)
+  };
+  assert.equal(searchMethodStatus(method, context).success, false, `${method.id} fails at ${dc - 1}`);
+  if (kind === 'primary') context.primaryRating = (id) => (id === ratingId ? dc : 0);
+  else context.fieldRating = (id) => (id === ratingId ? dc : 0);
+  assert.equal(searchMethodStatus(method, context).success, true, `${method.id} succeeds at ${dc}`);
 }
 
 function pointInAreas(point, areas = []) {
@@ -128,17 +171,13 @@ function pointInAreas(point, areas = []) {
   });
 }
 
-function isCardinalAdjacent(a, b) {
-  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y) === 1;
-}
-
 function tileAt(level, point) {
   return level.tiles[point.y]?.[point.x] ?? null;
 }
 
-function interactionTarget(level, grid, object, player) {
+function interactionTarget(level, grid, object, player, cell = object) {
   return resolveInteractionTargetAtCell({
-    cell: { x: object.x, y: object.y },
+    cell: { x: cell.x, y: cell.y },
     grid,
     player: { position: player },
     actors: [],
@@ -146,6 +185,23 @@ function interactionTarget(level, grid, object, player) {
     interactables: level.objects.filter((entry) => entry.interact),
     mode: 'explore'
   });
+}
+
+function assertDeliberateTravelDialogue(dialogue, id, path, player) {
+  assert.equal(dialogue.id, id, `${id} dialogue file has the matching ID`);
+  const choices = dialogue.nodes?.start?.choices ?? [];
+  assert.equal(choices.length, 2, `${id} offers travel or staying put`);
+
+  const travelChoices = choices.filter((choice) => choice.effects?.loadLevel);
+  assert.equal(travelChoices.length, 1, `${id} has exactly one travel choice`);
+  assert.equal(travelChoices[0].close, true, `${id} closes after deliberate travel`);
+  assert.equal(travelChoices[0].effects.loadLevel.path, path, `${id} loads the intended level`);
+  assert.deepEqual(travelChoices[0].effects.loadLevel.player, player, `${id} uses the intended arrival point`);
+
+  const stayChoices = choices.filter((choice) => !choice.effects?.loadLevel);
+  assert.equal(stayChoices.length, 1, `${id} has exactly one non-travel choice`);
+  assert.match(stayChoices[0].label, /^Stay\b/, `${id} names the non-travel choice clearly`);
+  assert.equal(stayChoices[0].close, true, `${id} closes after staying put`);
 }
 
 const level = await readJson('../data/levels/censure_road_camp.json');
@@ -160,6 +216,12 @@ const hallowfenGate = await readJson('../data/dialogue/censure-road-camp-hallowf
 const odranDialogue = await readJson('../data/dialogue/censure-road-camp-odran.json');
 const odranWatch = await readJson('../data/dialogue/censure-road-odran-watch.json');
 const pellDialogue = await readJson('../data/dialogue/censure-road-camp-pell.json');
+const caldusDialogue = await readJson('../data/dialogue/censure-road-camp-caldus.json');
+const runaDialogue = await readJson('../data/dialogue/censure-road-camp-runa.json');
+const seraDialogue = await readJson('../data/dialogue/censure-road-camp-sera.json');
+const hanneDialogue = await readJson('../data/dialogue/censure-road-camp-hanne.json');
+const joricDialogue = await readJson('../data/dialogue/censure-road-camp-joric.json');
+const malcoDialogue = await readJson('../data/dialogue/censure-road-camp-malco.json');
 const brunaDialogue = await readJson('../data/dialogue/censure-road-camp-widow-bruna.json');
 const maevActor = await readJson('../data/actors/censure-sutler-maev.json');
 const maevDialogue = await readJson('../data/dialogue/censure-road-camp-maev.json');
@@ -167,9 +229,15 @@ const vossDialogue = await readJson('../data/dialogue/censure-road-camp-voss.jso
 const confessionQuest = await readJson('../data/quests/censure-road-confession.json');
 const absolutionChit = await readJson('../data/items/censure-absolution-chit.json');
 const campRibguard = await readJson('../data/items/camp-issue-ribguard.json');
+const choirHymnalFragment = await readJson('../data/items/choir-hymnal-fragment.json');
+const choirTallyStrip = await readJson('../data/items/choir-tally-strip.json');
 const tentSpecs = [
   {
     objectId: 'censure-road-odran-private-tent-flap',
+    entryDialogueId: 'censure-road-odran-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-odran-tent-entry.json',
+    exitDialogueId: 'censure-road-odran-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-odran-tent-exit.json',
     interiorPath: './data/levels/censure_road_odran_tent_interior.json',
     interiorFile: '../data/levels/censure_road_odran_tent_interior.json',
     returnPlayer: { x: 16, y: 19 },
@@ -181,6 +249,10 @@ const tentSpecs = [
   },
   {
     objectId: 'censure-road-writ-chapel-flap',
+    entryDialogueId: 'censure-road-writ-chapel-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-writ-chapel-tent-entry.json',
+    exitDialogueId: 'censure-road-writ-chapel-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-writ-chapel-tent-exit.json',
     interiorPath: './data/levels/censure_road_writ_chapel_tent.json',
     interiorFile: '../data/levels/censure_road_writ_chapel_tent.json',
     returnPlayer: { x: 23, y: 17 },
@@ -192,6 +264,10 @@ const tentSpecs = [
   },
   {
     objectId: 'censure-road-preceptor-tent-flap',
+    entryDialogueId: 'censure-road-preceptor-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-preceptor-tent-entry.json',
+    exitDialogueId: 'censure-road-preceptor-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-preceptor-tent-exit.json',
     interiorPath: './data/levels/censure_road_preceptor_tent.json',
     interiorFile: '../data/levels/censure_road_preceptor_tent.json',
     returnPlayer: { x: 47, y: 13 },
@@ -203,6 +279,10 @@ const tentSpecs = [
   },
   {
     objectId: 'censure-road-quartermaster-tent-flap',
+    entryDialogueId: 'censure-road-quartermaster-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-quartermaster-tent-entry.json',
+    exitDialogueId: 'censure-road-quartermaster-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-quartermaster-tent-exit.json',
     interiorPath: './data/levels/censure_road_quartermaster_tent.json',
     interiorFile: '../data/levels/censure_road_quartermaster_tent.json',
     returnPlayer: { x: 28, y: 30 },
@@ -214,6 +294,10 @@ const tentSpecs = [
   },
   {
     objectId: 'censure-road-supply-tent-flap',
+    entryDialogueId: 'censure-road-supply-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-supply-tent-entry.json',
+    exitDialogueId: 'censure-road-supply-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-supply-tent-exit.json',
     interiorPath: './data/levels/censure_road_supply_tent.json',
     interiorFile: '../data/levels/censure_road_supply_tent.json',
     returnPlayer: { x: 39, y: 36 },
@@ -228,6 +312,10 @@ const tentSpecs = [
   },
   {
     objectId: 'censure-road-sutler-tent-flap',
+    entryDialogueId: 'censure-road-sutler-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-sutler-tent-entry.json',
+    exitDialogueId: 'censure-road-sutler-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-sutler-tent-exit.json',
     interiorPath: './data/levels/censure_road_sutler_tent.json',
     interiorFile: '../data/levels/censure_road_sutler_tent.json',
     returnPlayer: { x: 50, y: 37 },
@@ -239,6 +327,10 @@ const tentSpecs = [
   },
   {
     objectId: 'censure-road-medic-tent-flap',
+    entryDialogueId: 'censure-road-medic-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-medic-tent-entry.json',
+    exitDialogueId: 'censure-road-medic-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-medic-tent-exit.json',
     interiorPath: './data/levels/censure_road_medic_tent.json',
     interiorFile: '../data/levels/censure_road_medic_tent.json',
     returnPlayer: { x: 60, y: 46 },
@@ -250,6 +342,10 @@ const tentSpecs = [
   },
   {
     objectId: 'censure-road-quarters-tent-flap',
+    entryDialogueId: 'censure-road-quarters-tent-entry',
+    entryDialogueFile: '../data/dialogue/censure-road-quarters-tent-entry.json',
+    exitDialogueId: 'censure-road-quarters-tent-exit',
+    exitDialogueFile: '../data/dialogue/censure-road-quarters-tent-exit.json',
     interiorPath: './data/levels/censure_road_quarters_tent.json',
     interiorFile: '../data/levels/censure_road_quarters_tent.json',
     returnPlayer: { x: 16, y: 41 },
@@ -439,6 +535,260 @@ const tentSpecs = [
 }
 
 {
+  const exteriorSearchGates = [
+    ['censure-road-writ-board', 'find-erased-road-name', 'search', 40, 'field'],
+    ['censure-road-writ-board', 'test-forged-board-correction', 'guile', 50, 'field'],
+    ['censure-road-bell-mast', 'read-bell-rope-splice', 'engineering', 40, 'field'],
+    ['censure-road-bell-mast', 'restore-bell-peal-rule', 'doctrine', 45, 'field'],
+    ['censure-road-shooting-range-target-center', 'read-useful-shot-pattern', 'firearms', 45, 'field'],
+    ['censure-road-shooting-range-target-center', 'spot-hidden-clerk-mark', 'eye', 7, 'primary'],
+    ['censure-road-quartermaster-table', 'find-ledger-weight-mismatch', 'search', 45, 'field'],
+    ['censure-road-medic-field-kit', 'identify-reused-dressing', 'medicine', 45, 'field'],
+    ['censure-road-medic-field-kit', 'identify-isolated-host-stain', 'hostSigns', 60, 'field'],
+    ['censure-road-evidence-shed-door', 'classify-low-risk-sack', 'containment', 50, 'field'],
+    ['censure-road-evidence-shed-door', 'find-active-evidence-packet', 'hostSigns', 60, 'field'],
+    ['censure-road-evidence-shed-door', 'steady-sounding-sack', 'nerve', 7, 'primary'],
+    ['censure-road-quarters-kit-19-41', 'open-quarters-false-bottom', 'search', 45, 'field'],
+    ['censure-road-latrine-contraband-barrel', 'find-dry-contraband-wrap', 'search', 40, 'field']
+  ];
+  for (const [objectId, methodId, ratingId, dc, kind] of exteriorSearchGates) {
+    const object = objectById(level, objectId);
+    const method = searchMethodById(object, methodId);
+    assert.equal(method[kind], ratingId, `${methodId} uses ${ratingId}`);
+    assert.equal(method.dc, dc, `${methodId} keeps its planned threshold`);
+    assertSearchBoundary(method, ratingId, dc, kind);
+  }
+
+  const rangeEye = searchMethodById(
+    objectById(level, 'censure-road-shooting-range-target-center'),
+    'spot-hidden-clerk-mark'
+  );
+  assert.deepEqual(rangeEye.success.inventory.add, [{ item: 'relic-rounds', count: 1 }]);
+  assert.equal(rangeEye.success.setFlag, 'censure-road-range-clerk-mark-found');
+
+  const drillSatchel = objectById(level, 'censure-road-drill-yard-satchel');
+  assert.deepEqual(drillSatchel.interact.loot, [
+    { item: 'relic-rounds', count: 2 },
+    { item: 'field-dressing', count: 1 },
+    { item: 'ash-road-knife', count: 1 }
+  ]);
+  const drillClaim = lockMethodById(drillSatchel, 'claim-earned-drill-issue');
+  assert.deepEqual(drillClaim.conditions.flags, [
+    'censure-road-drill-close-complete',
+    'censure-road-drill-range-complete'
+  ]);
+  assert.equal(meetsDialogueConditions(drillClaim.conditions, {
+    flags: new Set(['censure-road-drill-close-complete'])
+  }), false, 'one completed drill does not open the issue satchel');
+  assert.equal(meetsDialogueConditions(drillClaim.conditions, {
+    flags: new Set(['censure-road-drill-close-complete', 'censure-road-drill-range-complete'])
+  }), true, 'both completed drills open the issue satchel');
+
+  const issueCrate = objectById(level, 'censure-road-quartermaster-sealed-storage-crate-31-30');
+  assert.deepEqual(issueCrate.interact.loot, [
+    { item: 'tinned-beans', count: 1 },
+    { item: 'field-dressing', count: 1 },
+    { item: 'relic-rounds', count: 1 },
+    { item: 'ducat', count: 3 },
+    { item: 'parish-ward-pistol', count: 1 }
+  ]);
+  const issueClaim = lockMethodById(issueCrate, 'claim-authorized-field-issue');
+  assert.equal(meetsDialogueConditions(issueClaim.conditions, {
+    flags: new Set(['censure-road-field-issue-authorized'])
+  }), true);
+  assert.equal(meetsDialogueConditions(issueClaim.conditions, {
+    flags: new Set(['censure-road-field-issue-authorized', 'censure-road-field-issue-claimed'])
+  }), false, 'the lawful issue can be claimed only once across both crate locations');
+
+  const bandBarrel = objectById(level, 'censure-road-supply-rusted-barrel-44-35');
+  const bandMethod = lockMethodById(bandBarrel, 'lift-collapsed-band');
+  assert.equal(bandMethod.primary, 'body');
+  assert.equal(bandMethod.dc, 7);
+  assert.equal(lockMethodStatus(bandMethod, { primaryRating: () => 6 }).success, false);
+  assert.equal(lockMethodStatus(bandMethod, { primaryRating: () => 7 }).success, true);
+  assert.deepEqual(bandBarrel.interact.loot, [
+    { item: 'penitent-gear-scrap', count: 1 },
+    { item: 'tinned-beans', count: 1 }
+  ]);
+
+  const quartersCache = searchMethodById(
+    objectById(level, 'censure-road-quarters-kit-19-41'),
+    'open-quarters-false-bottom'
+  );
+  assert.deepEqual(quartersCache.success.inventory.add, [
+    { item: 'ducat', count: 3 },
+    { item: 'road-warden-chit', count: 1 },
+    { item: 'tarnished-saint-token', count: 1 }
+  ]);
+  const latrineCache = searchMethodById(
+    objectById(level, 'censure-road-latrine-contraband-barrel'),
+    'find-dry-contraband-wrap'
+  );
+  assert.deepEqual(latrineCache.success.inventory.add, [
+    { item: 'ducat', count: 2 },
+    { item: 'penitent-gear-scrap', count: 1 }
+  ]);
+
+  const journalFlags = new Set((level.journalNotes ?? []).map((note) => note.flag));
+  for (const flag of [
+    'censure-road-writ-board-erasure-found',
+    'censure-road-writ-board-forgery-found',
+    'censure-road-bell-splice-found',
+    'censure-road-bell-peal-found',
+    'censure-road-range-clerk-mark-found',
+    'censure-road-ledger-weight-mismatch-found',
+    'censure-road-medic-reused-dressing-found',
+    'censure-road-medic-host-stain-found',
+    'censure-road-evidence-low-risk-classified',
+    'censure-road-evidence-active-packet-found',
+    'censure-road-evidence-sack-counted',
+    'censure-road-quarters-false-bottom-found',
+    'censure-road-report-sera-bell',
+    'censure-road-report-hanne-medical',
+    'censure-road-report-joric-route',
+    'censure-road-report-malco-containment',
+    'censure-road-report-pell-writ',
+    'censure-road-report-runa-stock',
+    'censure-road-preceptor-route-order-found',
+    'censure-road-preceptor-route-correction-read',
+    'censure-road-supply-relief-bundle-found',
+    'censure-road-supply-false-stock-mark-found',
+    'censure-road-medic-safe-packet-found',
+    'censure-road-medic-packet-marked-for-malco',
+    'censure-road-quarters-coat-cache-found',
+    'censure-road-sutler-dropped-tally-found',
+    'censure-road-sutler-false-price-mark-found',
+    'censure-road-writ-chapel-peal-clause-found'
+  ]) {
+    assert.equal(journalFlags.has(flag), true, `${flag} has a camp journal finding`);
+  }
+}
+
+{
+  const meleeRoute = caldusDialogue.nodes.start.choices.find((choice) => choice.next === 'baton-line');
+  const unarmedRoute = caldusDialogue.nodes.start.choices.find((choice) => choice.next === 'empty-hand-line');
+  assert.deepEqual(meleeRoute.conditions.fieldRatings, { melee: 40 });
+  assert.deepEqual(unarmedRoute.conditions.fieldRatings, { unarmed: 40 });
+  assert.equal(meleeRoute.effects.setFlag, 'censure-road-drill-close-complete');
+  assert.equal(unarmedRoute.effects.setFlag, 'censure-road-drill-close-complete');
+  assert.equal(meetsDialogueConditions(meleeRoute.conditions, {
+    flags: new Set(),
+    fieldRating: (id) => (id === 'melee' ? 39 : 0)
+  }), false);
+  assert.equal(meetsDialogueConditions(meleeRoute.conditions, {
+    flags: new Set(),
+    fieldRating: (id) => (id === 'melee' ? 40 : 0)
+  }), true);
+
+  const commandIssue = runaDialogue.nodes.start.choices.find((choice) => choice.next === 'issue-command');
+  const forgedIssue = runaDialogue.nodes.start.choices.find((choice) => choice.next === 'issue-forged');
+  assert.deepEqual(commandIssue.conditions.fieldRatings, { command: 50 });
+  assert.deepEqual(forgedIssue.conditions.fieldRatings, { guile: 60 });
+  assert.deepEqual(commandIssue.effects.setFlag, [
+    'censure-road-field-issue-authorized',
+    'censure-road-field-issue-commanded'
+  ]);
+  assert.deepEqual(forgedIssue.effects.setFlag, [
+    'censure-road-field-issue-authorized',
+    'censure-road-field-issue-forged'
+  ]);
+  const runaReport = runaDialogue.nodes.writ.choices.find((choice) => choice.next === 'weight-mismatch');
+  assert.equal(runaReport.effects.setFlag, 'censure-road-report-runa-stock');
+
+  const seraReport = seraDialogue.nodes.start.choices.find((choice) => choice.next === 'joined-peals');
+  assert.deepEqual(seraReport.conditions.flags, [
+    'censure-road-bell-peal-found',
+    'long-ash-old-bell-peal-rule-read'
+  ]);
+  assert.deepEqual(seraReport.conditions.fieldRatings, { doctrine: 45 });
+  assert.equal(seraReport.effects.setFlag, 'censure-road-report-sera-bell');
+
+  const hanneReport = hanneDialogue.nodes.start.choices.find((choice) => choice.next === 'road-casualties');
+  assert.equal(hanneReport.conditions.flag, 'long-ash-kill-site-wounds-read');
+  assert.deepEqual(hanneReport.conditions.fieldRatings, { medicine: 45 });
+  assert.equal(hanneReport.effects.setFlag, 'censure-road-report-hanne-medical');
+  assert.deepEqual(hanneReport.effects.inventory.add, [{ item: 'field-dressing', count: 1 }]);
+  const hanneCarterReport = hanneDialogue.nodes.start.choices.find((choice) => choice.next === 'carter-crush');
+  assert.equal(hanneCarterReport.conditions.flag, 'long-ash-carter-wheel-crush-read');
+  assert.deepEqual(hanneCarterReport.conditions.fieldRatings, { medicine: 45 });
+  assert.deepEqual(hanneCarterReport.conditions.flagsAbsent, ['censure-road-report-hanne-medical']);
+  assert.equal(hanneCarterReport.effects.setFlag, 'censure-road-report-hanne-medical');
+  assert.deepEqual(hanneCarterReport.effects.inventory.add, [{ item: 'field-dressing', count: 1 }]);
+
+  const joricReport = joricDialogue.nodes.start.choices.find((choice) => choice.next === 'cart-sequence');
+  assert.equal(joricReport.conditions.flag, 'long-ash-cart-sabotage-proved');
+  assert.deepEqual(joricReport.conditions.fieldRatings, { engineering: 45 });
+  assert.equal(joricReport.effects.setFlag, 'censure-road-report-joric-route');
+  assert.deepEqual(joricReport.effects.inventory.add, [{ item: 'ducat', count: 2 }]);
+
+  const malcoReport = malcoDialogue.nodes.start.choices.find((choice) => choice.next === 'road-class');
+  assert.equal(malcoReport.conditions.flag, 'long-ash-kill-site-no-opening-found');
+  assert.deepEqual(malcoReport.conditions.fieldRatings, { containment: 50 });
+  assert.equal(malcoReport.effects.setFlag, 'censure-road-report-malco-containment');
+
+  const pellReport = pellDialogue.nodes.start.choices.find((choice) => choice.next === 'cut-name');
+  assert.equal(pellReport.conditions.flag, 'censure-road-writ-board-erasure-found');
+  assert.deepEqual(pellReport.conditions.fieldRatings, { guile: 45 });
+  assert.equal(pellReport.effects.setFlag, 'censure-road-report-pell-writ');
+
+  assertOneShotDialogueHandoff(
+    vossDialogue.nodes.supplies.choices.find((choice) => choice.next === 'preceptor-order'),
+    ['censure-road-preceptor-route-order-found'],
+    'censure-road-voss-preceptor-order-reported'
+  );
+  assertOneShotDialogueHandoff(
+    vossDialogue.nodes.supplies.choices.find((choice) => choice.next === 'preceptor-correction'),
+    ['censure-road-preceptor-route-correction-read'],
+    'censure-road-voss-preceptor-correction-reported'
+  );
+  assertOneShotDialogueHandoff(
+    vossDialogue.nodes.supplies.choices.find((choice) => choice.next === 'odran-chest'),
+    ['odran-late-visit-suspected', 'censure-road-odran-chest-linen-found'],
+    'censure-road-voss-odran-chest-reported'
+  );
+  assertOneShotDialogueHandoff(
+    runaDialogue.nodes.writ.choices.find((choice) => choice.next === 'relief-bundle'),
+    ['censure-road-supply-relief-bundle-found'],
+    'censure-road-runa-relief-bundle-reported'
+  );
+  assertOneShotDialogueHandoff(
+    runaDialogue.nodes.writ.choices.find((choice) => choice.next === 'stock-mark'),
+    ['censure-road-supply-false-stock-mark-found'],
+    'censure-road-runa-stock-mark-reported'
+  );
+  assertOneShotDialogueHandoff(
+    hanneDialogue.nodes.stores.choices.find((choice) => choice.next === 'safe-packet'),
+    ['censure-road-medic-safe-packet-found'],
+    'censure-road-hanne-safe-packet-reported'
+  );
+  assertOneShotDialogueHandoff(
+    malcoDialogue.nodes.start.choices.find((choice) => choice.next === 'medic-packet'),
+    ['censure-road-medic-packet-marked-for-malco'],
+    'censure-road-malco-medic-packet-reported'
+  );
+  assertOneShotDialogueHandoff(
+    caldusDialogue.nodes.start.choices.find((choice) => choice.next === 'coat-cache'),
+    ['censure-road-quarters-coat-cache-found'],
+    'censure-road-caldus-coat-cache-reported'
+  );
+  assertOneShotDialogueHandoff(
+    maevDialogue.nodes['back-room'].choices.find((choice) => choice.next === 'dropped-tally'),
+    ['censure-road-sutler-dropped-tally-found'],
+    'censure-road-maev-dropped-tally-reported'
+  );
+  assertOneShotDialogueHandoff(
+    maevDialogue.nodes['back-room'].choices.find((choice) => choice.next === 'price-mark'),
+    ['censure-road-sutler-false-price-mark-found'],
+    'censure-road-maev-price-mark-reported'
+  );
+  assertOneShotDialogueHandoff(
+    seraDialogue.nodes.start.choices.find((choice) => choice.next === 'chapel-clause'),
+    ['censure-road-writ-chapel-peal-clause-found'],
+    'censure-road-sera-chapel-clause-reported'
+  );
+}
+
+{
   for (const object of level.objects.filter((entry) => entry.interact)) {
     const approach = reachableInteractionApproach(level, grid, object, level.spawns.player);
     assert.ok(approach, `${object.id ?? object.kind} has a reachable interaction approach`);
@@ -447,7 +797,10 @@ const tentSpecs = [
 
 {
   const privateTent = objectById(level, 'censure-road-odran-private-tent-flap');
-  assert.equal(privateTent.interact, undefined, "Odran's tent is open and entered by walking through it");
+  assert.deepEqual(privateTent.interact, {
+    type: 'secret-entrance',
+    dialogue: 'censure-road-odran-tent-entry'
+  }, "Augustine's tent asks for confirmation before entry");
   assert.equal(privateTent.mapMarker?.kind, 'exit');
 
   const odranInterior = await readJson('../data/levels/censure_road_odran_tent_interior.json');
@@ -465,7 +818,10 @@ const tentSpecs = [
     inventory: { has: () => true },
     fieldRating: () => 45
   }).success, true);
-  assert.equal(evidenceMethod.success.setFlag, 'odran-late-visit-suspected');
+  assert.deepEqual(evidenceMethod.success.setFlag, [
+    'odran-late-visit-suspected',
+    'censure-road-odran-chest-linen-found'
+  ]);
 }
 
 {
@@ -475,19 +831,40 @@ const tentSpecs = [
   for (const spec of tentSpecs) {
     const flap = objectById(level, spec.objectId);
     assert.equal(flap.kind, 'canvas-tent-flap', `${spec.objectId} uses the tent flap art`);
-    assert.equal(flap.interact, undefined, `${spec.objectId} is not a click-to-enter door`);
+    assert.deepEqual(flap.interact, {
+      type: 'secret-entrance',
+      dialogue: spec.entryDialogueId
+    }, `${spec.objectId} opens a deliberate entry dialogue`);
     assert.equal(flap.blocking, undefined, `${spec.objectId} does not add prop collision`);
-
-    const transition = transitionById(level, `${spec.objectId}-transition`);
-    assert.deepEqual({ x: transition.x, y: transition.y }, spec.approach, `${spec.objectId} transition sits on the tent mouth`);
-    assert.deepEqual(transition.clickAreas, spec.clickAreas, `${spec.objectId} transition owns its tent click footprint`);
-    assert.equal(pointInAreas(flap, transition.clickAreas), true, `${spec.objectId} click footprint covers the visible flap`);
+    assert.deepEqual(flap.clickAreas, spec.clickAreas, `${spec.objectId} owns its tent click footprint`);
+    assert.deepEqual(flap.interactionMarker, spec.approach, `${spec.objectId} marks its reachable tent mouth`);
+    assert.equal(pointInAreas(flap, flap.clickAreas), true, `${spec.objectId} click footprint covers the visible flap`);
+    assert.equal(level.dialogue.includes(spec.entryDialogueId), true, `${spec.objectId} registers its entry dialogue`);
     assert.equal(grid.isWalkable(flap.x, flap.y), false, `${spec.objectId} visible flap tile remains tent body`);
-    assert.equal(grid.isWalkable(transition.x, transition.y), true, `${spec.objectId} transition tile is walkable`);
-    assert.equal(occupiedCampCells.has(`${transition.x},${transition.y}`), false, `${spec.objectId} transition is not occupied by an NPC`);
-    assert.equal(pathExists(grid, level.spawns.player, spec.approach), true, `${spec.objectId} transition is reachable from camp spawn`);
-    assert.equal(transition.loadLevel.path, spec.interiorPath, `${spec.objectId} transition loads its interior`);
-    assert.deepEqual(transition.loadLevel.player, spec.interiorPlayer, `${spec.objectId} loads into the matching interior entry tile`);
+    assert.equal(grid.isWalkable(spec.approach.x, spec.approach.y), true, `${spec.objectId} interaction approach is walkable`);
+    assert.equal(occupiedCampCells.has(`${spec.approach.x},${spec.approach.y}`), false, `${spec.objectId} interaction approach is not occupied by an NPC`);
+    assert.equal(pathExists(grid, level.spawns.player, spec.approach), true, `${spec.objectId} interaction approach is reachable from camp spawn`);
+    assert.deepEqual(
+      (level.levelTransitions ?? []).filter((transition) => transition.loadLevel?.path === spec.interiorPath),
+      [],
+      `${spec.objectId} cannot bypass confirmation by walking onto the tent mouth`
+    );
+
+    const flapTarget = interactionTarget(level, grid, flap, level.spawns.player, flap);
+    assert.equal(flapTarget?.type, 'object', `${spec.objectId} visible flap resolves as an object`);
+    assert.equal(flapTarget?.object?.id, spec.objectId, `${spec.objectId} visible flap targets the matching entrance`);
+    for (const area of spec.clickAreas) {
+      const clickCell = {
+        x: Math.floor((area.x0 + area.x1) / 2),
+        y: Math.floor((area.y0 + area.y1) / 2)
+      };
+      const footprintTarget = interactionTarget(level, grid, flap, level.spawns.player, clickCell);
+      assert.equal(footprintTarget?.type, 'object', `${spec.objectId} tent footprint resolves as an object`);
+      assert.equal(footprintTarget?.object?.id, spec.objectId, `${spec.objectId} tent footprint targets the matching entrance`);
+    }
+
+    const entryDialogue = await readJson(spec.entryDialogueFile);
+    assertDeliberateTravelDialogue(entryDialogue, spec.entryDialogueId, spec.interiorPath, spec.interiorPlayer);
 
     const interior = await readJson(spec.interiorFile);
     const interiorGrid = new Grid(interior);
@@ -505,20 +882,149 @@ const tentSpecs = [
     const exitFlap = interior.objects.find((object) => object.kind === 'canvas-tent-flap');
     assert.ok(exitFlap, `${interior.id} keeps visible tent flap art`);
     assert.deepEqual({ x: exitFlap.x, y: exitFlap.y }, spec.interiorFlap, `${interior.id} wall flap sits on the authored wall cell`);
-    assert.equal(exitFlap.interact, undefined, `${interior.id} exit is not a click-to-use door`);
+    assert.deepEqual(exitFlap.interact, {
+      type: 'secret-exit',
+      dialogue: spec.exitDialogueId
+    }, `${interior.id} opens a deliberate exit dialogue`);
     assert.equal(exitFlap.blocking, undefined, `${interior.id} exit flap does not block movement`);
-    const exitTransition = (interior.levelTransitions ?? []).find((transition) =>
-      transition.loadLevel?.path === './data/levels/censure_road_camp.json'
-    );
-    assert.ok(exitTransition, `${interior.id} has a walk-out transition`);
-    assert.deepEqual({ x: exitTransition.x, y: exitTransition.y }, spec.interiorExit, `${interior.id} exit transition sits just inside the flap`);
-    assert.equal(isCardinalAdjacent(exitTransition, exitFlap), true, `${interior.id} exit transition is adjacent to the wall flap`);
-    assert.equal(interiorGrid.isWalkable(exitTransition.x, exitTransition.y), true, `${interior.id} exit transition is walkable`);
+    assert.deepEqual(exitFlap.clickAreas, [{
+      x0: spec.interiorFlap.x,
+      y0: spec.interiorFlap.y,
+      x1: spec.interiorFlap.x,
+      y1: spec.interiorFlap.y
+    }], `${interior.id} makes the visible flap clickable as an exit`);
+    assert.deepEqual(exitFlap.interactionMarker, spec.interiorExit, `${interior.id} marks its reachable exit approach`);
+    assert.equal(pointInAreas(exitFlap, exitFlap.clickAreas), true, `${interior.id} visible flap is clickable as an exit`);
+    assert.equal(interior.dialogue.includes(spec.exitDialogueId), true, `${interior.id} registers its exit dialogue`);
+    assert.equal(interiorGrid.isWalkable(spec.interiorExit.x, spec.interiorExit.y), true, `${interior.id} former walk-out tile remains walkable`);
     assert.equal(interiorGrid.isWalkable(exitFlap.x, exitFlap.y), false, `${interior.id} exit flap is mounted on a wall tile, not floating on the floor`);
-    assert.equal(pathExists(interiorGrid, interior.spawns.player, exitTransition), true, `${interior.id} exit transition is reachable from spawn`);
-    assert.deepEqual(exitTransition.loadLevel.player, spec.returnPlayer);
+    assert.equal(pathExists(interiorGrid, interior.spawns.player, spec.interiorExit), true, `${interior.id} exit approach is reachable from spawn`);
+    assert.deepEqual(
+      (interior.levelTransitions ?? []).filter((transition) =>
+        transition.loadLevel?.path === './data/levels/censure_road_camp.json'
+      ),
+      [],
+      `${interior.id} cannot bypass confirmation by walking onto the exit approach`
+    );
+
+    const exitTarget = interactionTarget(interior, interiorGrid, exitFlap, interior.spawns.player, exitFlap);
+    assert.equal(exitTarget?.type, 'object', `${interior.id} visible flap resolves as an object`);
+    assert.equal(exitTarget?.object?.id, exitFlap.id, `${interior.id} visible flap targets the matching exit`);
+
+    const exitDialogue = await readJson(spec.exitDialogueFile);
+    assertDeliberateTravelDialogue(
+      exitDialogue,
+      spec.exitDialogueId,
+      './data/levels/censure_road_camp.json',
+      spec.returnPlayer
+    );
     assert.equal(grid.isWalkable(spec.returnPlayer.x, spec.returnPlayer.y), true, `${interior.id} return point is walkable`);
   }
+}
+
+{
+  const interiorSkillSpecs = [
+    {
+      file: '../data/levels/censure_road_preceptor_tent.json',
+      objectId: 'preceptor-tent-file-crate',
+      methods: [
+        ['find-corrected-route-order', 'search', 55],
+        ['explain-route-correction', 'doctrine', 55]
+      ]
+    },
+    {
+      file: '../data/levels/censure_road_supply_tent.json',
+      objectId: 'supply-tent-food-crate',
+      methods: [['find-misplaced-relief-bundle', 'search', 45]]
+    },
+    {
+      file: '../data/levels/censure_road_supply_tent.json',
+      objectId: 'supply-tent-ammo-crate',
+      methods: [['identify-false-stock-mark', 'guile', 55]]
+    },
+    {
+      file: '../data/levels/censure_road_medic_tent.json',
+      objectId: 'medic-tent-supply-crate',
+      methods: [
+        ['recover-safe-dressing', 'medicine', 45],
+        ['mark-packet-for-malco', 'hostSigns', 60]
+      ]
+    },
+    {
+      file: '../data/levels/censure_road_quarters_tent.json',
+      objectId: 'quarters-tent-coat-barrel',
+      methods: [['follow-false-bottom-clue', 'search', 45]]
+    },
+    {
+      file: '../data/levels/censure_road_sutler_tent.json',
+      objectId: 'sutler-tent-satchel',
+      methods: [['find-dropped-sutler-tally', 'search', 40]]
+    },
+    {
+      file: '../data/levels/censure_road_sutler_tent.json',
+      objectId: 'sutler-tent-bargain-crate',
+      methods: [['catch-altered-price-mark', 'guile', 55]]
+    },
+    {
+      file: '../data/levels/censure_road_writ_chapel_tent.json',
+      objectId: 'writ-chapel-lectern',
+      methods: [['reconstruct-missing-peal-clause', 'doctrine', 45]]
+    }
+  ];
+
+  for (const spec of interiorSkillSpecs) {
+    const interior = await readJson(spec.file);
+    const object = objectById(interior, spec.objectId);
+    assert.ok(object.interact?.search, `${interior.id} ${spec.objectId} is no longer inert`);
+    for (const [methodId, field, dc] of spec.methods) {
+      const method = searchMethodById(object, methodId);
+      assert.equal(method.field, field);
+      assert.equal(method.dc, dc);
+      assertSearchBoundary(method, field, dc);
+    }
+    assert.ok((interior.journalNotes ?? []).length > 0, `${interior.id} records its successful findings`);
+  }
+
+  const preceptor = await readJson('../data/levels/censure_road_preceptor_tent.json');
+  const doctrineMethod = searchMethodById(
+    objectById(preceptor, 'preceptor-tent-file-crate'),
+    'explain-route-correction'
+  );
+  assert.equal(meetsDialogueConditions(doctrineMethod.conditions, { flags: new Set() }), false);
+  assert.equal(meetsDialogueConditions(doctrineMethod.conditions, {
+    flags: new Set(['censure-road-preceptor-route-order-found'])
+  }), true, 'the doctrinal reading follows the physical file discovery');
+
+  const quartermaster = await readJson('../data/levels/censure_road_quartermaster_tent.json');
+  const interiorIssue = objectById(quartermaster, 'quartermaster-tent-sealed-crate');
+  assert.deepEqual(interiorIssue.interact.loot, [
+    { item: 'tinned-beans', count: 1 },
+    { item: 'field-dressing', count: 1 },
+    { item: 'relic-rounds', count: 1 },
+    { item: 'ducat', count: 3 },
+    { item: 'parish-ward-pistol', count: 1 }
+  ]);
+  const interiorClaim = lockMethodById(interiorIssue, 'claim-authorized-field-issue');
+  assert.deepEqual(interiorClaim.conditions, {
+    flag: 'censure-road-field-issue-authorized',
+    flagsAbsent: ['censure-road-field-issue-claimed']
+  });
+
+  const supply = await readJson('../data/levels/censure_road_supply_tent.json');
+  const relief = searchMethodById(objectById(supply, 'supply-tent-food-crate'), 'find-misplaced-relief-bundle');
+  assert.deepEqual(relief.success.inventory.add, [
+    { item: 'tinned-beans', count: 1 },
+    { item: 'field-dressing', count: 1 }
+  ]);
+
+  const medic = await readJson('../data/levels/censure_road_medic_tent.json');
+  const safePacket = searchMethodById(objectById(medic, 'medic-tent-supply-crate'), 'recover-safe-dressing');
+  assert.deepEqual(safePacket.success.inventory.add, [{ item: 'field-dressing', count: 1 }]);
+
+  const quarters = await readJson('../data/levels/censure_road_quarters_tent.json');
+  const coatCache = searchMethodById(objectById(quarters, 'quarters-tent-coat-barrel'), 'follow-false-bottom-clue');
+  assert.equal(coatCache.conditions.flag, 'censure-road-quarters-false-bottom-found');
+  assert.deepEqual(coatCache.success.inventory.add, [{ item: 'ducat', count: 1 }]);
 }
 
 {
@@ -544,11 +1050,16 @@ const tentSpecs = [
   assert.equal(target.type, 'object', 'Hallowfen gate resolves as an object target');
   assert.equal(target.object.id, eastGate.id);
   assert.equal(isTargetInReach({ position: { x: 66, y: 16 } }, target), true, 'Hallowfen gate is inspectable from the road');
-  assert.equal(
-    hallowfenGate.nodes.start.choices.some((choice) => choice.effects?.loadLevel),
-    false,
-    'Hallowfen checkpoint exit is present but not unlocked in this demo map'
+  const southMeasureChoice = hallowfenGate.nodes.start.choices.find((choice) =>
+    choice.effects?.loadLevel?.path === './data/levels/ash_road_south.json'
   );
+  assert.ok(southMeasureChoice, 'Hallowfen checkpoint exit can load Ash Road South');
+  assert.equal(southMeasureChoice.conditions?.flag, 'censure-road-voss-route-cleared');
+  assert.equal(meetsDialogueConditions(southMeasureChoice.conditions, { flags: new Set() }), false);
+  assert.equal(meetsDialogueConditions(southMeasureChoice.conditions, {
+    flags: new Set(['censure-road-voss-route-cleared'])
+  }), true);
+  assert.deepEqual(southMeasureChoice.effects.loadLevel.player, { x: 65, y: 77, facing: 'ne' });
 }
 
 {
@@ -558,23 +1069,90 @@ const tentSpecs = [
     'relic-rounds',
     'censure-entry-roll',
     'camp-issue-ribguard',
-    'ash-road-boots'
+    'ash-road-boots',
+    'ash-road-carbine',
+    'cinder-watch-submachine-gun',
+    'pilgrim-break-shotgun',
+    'iron-vow-revolver',
+    'censer-sabre',
+    'pilgrim-mace',
+    'penitent-coil-sidearm',
+    'vesper-armature-pistol',
+    'compact-cartridge-ammo',
+    'heavy-sidearm-cartridge-ammo',
+    'intermediate-cartridge-ammo',
+    'shot-shell-ammo',
+    'compact-armature-ammo'
   ]);
   assert.equal(campRibguard.equipment.slot, 'armor');
   assert.equal(campRibguard.groundModel, 'ribguard');
   const tradeChoice = maevDialogue.nodes.start.choices.find((choice) => choice.effects?.trade);
-  assert.ok(tradeChoice, 'Maev dialogue has a trade choice');
+  assert.ok(tradeChoice, 'Judith dialogue has a trade choice');
   assert.equal(tradeChoice.effects.trade, 'censure-sutler-maev');
 }
 
 {
-  const reportChoice = vossDialogue.nodes.start.choices.find((choice) => choice.next === 'report-briefing');
-  assert.ok(reportChoice, 'Voss can assign the Hallowfen route report');
+  const evidenceState = (counts = {}, flags = []) => ({
+    flags: new Set(flags),
+    itemCount: (itemId) => counts[itemId] ?? 0
+  });
+  assert.equal(meetsDialogueConditions(vossDialogue.nodes.start.conditions, evidenceState({
+    'choir-tally-strip': 1
+  })), true, 'Aquila notices the Ash Chapel tally strip');
+  assert.equal(meetsDialogueConditions(vossDialogue.nodes.start.conditions, evidenceState({
+    'choir-tally-strip': 1
+  }, ['ash-chapel-evidence-delivered'])), false, 'Aquila cannot award the evidence handoff twice');
+  assert.equal(meetsDialogueConditions(vossDialogue.nodes['ash-chapel-evidence-hymnal-check'].conditions, evidenceState({
+    'choir-hymnal-fragment': 1
+  })), true, 'Aquila also notices hymnal evidence without the tally strip');
+
+  const allEvidenceChoice = vossDialogue.nodes.start.choices.find((choice) => choice.next === 'ash-chapel-evidence-received');
+  assert.ok(allEvidenceChoice, 'Aquila accepts all carried Ash Chapel evidence');
+  assert.deepEqual(allEvidenceChoice.effects.inventory.remove, [
+    { item: 'choir-tally-strip', count: 1 },
+    { item: 'choir-hymnal-fragment', count: 3 }
+  ]);
+  assert.equal(allEvidenceChoice.effects.setFlag, 'ash-chapel-evidence-delivered');
+  assert.equal(allEvidenceChoice.effects.xp, 25);
+
+  const evidenceGame = {
+    flags: new Set(),
+    inventory: new Inventory({
+      [choirHymnalFragment.id]: choirHymnalFragment,
+      [choirTallyStrip.id]: choirTallyStrip
+    })
+  };
+  evidenceGame.inventory.add('choir-hymnal-fragment', 3);
+  evidenceGame.inventory.add('choir-tally-strip', 1);
+  let evidenceXp = 0;
+  const evidenceEffects = new DialogueEffects(evidenceGame, {
+    awardPlayerExperience: (amount) => { evidenceXp += amount; },
+    syncFlagConditionalObjects() {},
+    syncInventoryOrder() {},
+    clampInventorySelection() {}
+  });
+  evidenceEffects.apply(allEvidenceChoice.effects);
+  assert.equal(evidenceGame.inventory.count('choir-hymnal-fragment'), 0, 'Aquila takes every carried hymnal fragment');
+  assert.equal(evidenceGame.inventory.count('choir-tally-strip'), 0, 'Aquila takes the tally strip');
+  assert.equal(evidenceGame.flags.has('ash-chapel-evidence-delivered'), true);
+  assert.equal(evidenceXp, 25, 'Aquila grants one field-credit XP award');
+
+  const hymnalChoice = vossDialogue.nodes['ash-chapel-evidence-hymnal-check'].choices.find((choice) =>
+    choice.next === 'ash-chapel-evidence-received'
+  );
+  assert.deepEqual(hymnalChoice.effects.inventory.remove, [
+    { item: 'choir-hymnal-fragment', count: 3 }
+  ]);
+
+  const clearanceChoice = vossDialogue.nodes.main.choices.find((choice) => choice.next === 'route-clearance');
+  assert.ok(clearanceChoice, 'Aquila opens the Hallowfen route-clearance paths');
+  const reportChoice = vossDialogue.nodes['route-clearance'].choices.find((choice) => choice.next === 'report-briefing');
+  assert.ok(reportChoice, 'route clearance retains the patient Form C-17 path');
 
   const reportNodes = Object.keys(vossDialogue.nodes)
     .filter((nodeId) => /^report-q\d\d$/.test(nodeId))
     .sort();
-  assert.equal(reportNodes.length, 30, 'Voss report has thirty questions');
+  assert.equal(reportNodes.length, 30, 'Aquila report has thirty questions');
 
   for (const nodeId of reportNodes) {
     const choices = vossDialogue.nodes[nodeId].choices;
@@ -586,10 +1164,13 @@ const tentSpecs = [
   }
 
   assert.equal(vossDialogue.nodes['report-q01'].choices[0].next, 'report-q02');
-  assert.equal(vossDialogue.nodes['report-q30'].choices[0].effects.setFlag, 'censure-road-voss-report-perfect');
+  assert.deepEqual(vossDialogue.nodes['report-q30'].choices[0].effects.setFlag, [
+    'censure-road-voss-route-cleared',
+    'censure-road-voss-report-perfect'
+  ]);
 
   const rewardChoice = maevDialogue.nodes.start.choices.find((choice) => choice.next === 'voss-report-reward');
-  assert.ok(rewardChoice, 'Maev can pay out Voss report gear');
+  assert.ok(rewardChoice, 'Judith can pay out Aquila report gear');
   assert.equal(meetsDialogueConditions(rewardChoice.conditions, {
     flags: new Set(['censure-road-voss-report-perfect'])
   }), true);
@@ -605,7 +1186,7 @@ const tentSpecs = [
 
 {
   const rumorChoice = pellDialogue.nodes.start.choices.find((choice) => choice.next === 'last-bell');
-  assert.ok(rumorChoice, 'Pell can seed the optional Odran rumor');
+  assert.ok(rumorChoice, 'Philip can seed the optional Augustine rumor');
   assert.equal(rumorChoice.effects.setFlag, 'odran-late-visit-suspected');
   assert.equal(meetsDialogueConditions(rumorChoice.conditions, { flags: new Set() }), true);
   assert.equal(meetsDialogueConditions(rumorChoice.conditions, {
@@ -628,7 +1209,7 @@ const tentSpecs = [
   }), false);
 
   const brunaOdranChoice = brunaDialogue.nodes.start.choices.find((choice) => choice.next === 'odran');
-  assert.ok(brunaOdranChoice, 'Bruna has a post-observation Odran branch');
+  assert.ok(brunaOdranChoice, 'Naomi has a post-observation Augustine branch');
   assert.equal(meetsDialogueConditions(brunaOdranChoice.conditions, {
     flags: new Set(['odran-late-visit-seen'])
   }), true);
@@ -653,7 +1234,7 @@ const tentSpecs = [
   assert.equal(odranDialogue.nodes['road-family-truth'].conditions.flag, 'long-ash-field-family-truth');
   assert.equal(odranDialogue.nodes['road-wolves-evidence'].conditions.flag, 'long-ash-wolves-avenged-family');
   const confrontationChoice = odranDialogue.nodes.start.choices.find((choice) => choice.next === 'late-visit-confront-widow');
-  assert.ok(confrontationChoice, 'Odran can be confronted after the late visit is observed');
+  assert.ok(confrontationChoice, 'Augustine can be confronted after the late visit is observed');
   assert.equal(meetsDialogueConditions(confrontationChoice.conditions, {
     flags: new Set(['odran-late-visit-seen'])
   }), true);
@@ -662,19 +1243,19 @@ const tentSpecs = [
   }), false);
 
   const settleChoice = odranDialogue.nodes['record-summary'].choices.find((choice) => choice.next === 'price');
-  assert.ok(settleChoice, 'Odran confession reaches the payment screen');
+  assert.ok(settleChoice, 'Augustine confession reaches the payment screen');
   assert.deepEqual(settleChoice.effects.questUpdate, {
     quest: 'censure-road-confession',
     stage: 'record-read'
   });
 
   const payChoice = odranDialogue.nodes.price.choices.find((choice) => choice.label === 'Pay 5 ducats');
-  assert.ok(payChoice, 'Odran has a normal five ducat payment option');
+  assert.ok(payChoice, 'Augustine has a normal five ducat payment option');
   assert.equal(meetsDialogueConditions(payChoice.conditions, { itemCount: (id) => (id === 'ducat' ? 5 : 0) }), true);
   assert.equal(meetsDialogueConditions(payChoice.conditions, { itemCount: (id) => (id === 'ducat' ? 4 : 0) }), false);
   assert.equal(payChoice.effects.inventory.requireAll, true);
   assert.deepEqual(payChoice.effects.inventory.remove, [
-    { item: 'ducat', count: 5, failLog: 'Father Odran waits for the fifth ducat that is not there.' }
+    { item: 'ducat', count: 5, failLog: 'Father Augustine waits for the fifth ducat that is not there.' }
   ]);
   assert.deepEqual(payChoice.effects.inventory.add, [
     { item: 'censure-absolution-chit', count: 1 }
@@ -686,18 +1267,18 @@ const tentSpecs = [
   });
 
   const noCoinPrayer = odranDialogue.nodes['price-low'].choices.find((choice) => choice.label === 'Pray five times');
-  assert.ok(noCoinPrayer, 'Odran has a no-money prayer route');
+  assert.ok(noCoinPrayer, 'Augustine has a no-money prayer route');
   assert.equal(meetsDialogueConditions(noCoinPrayer.conditions, { itemCount: (id) => (id === 'ducat' ? 0 : 0) }), true);
   assert.equal(meetsDialogueConditions(noCoinPrayer.conditions, { itemCount: (id) => (id === 'ducat' ? 1 : 0) }), false);
 
   const lieChoice = odranDialogue.nodes.price.choices.find((choice) => choice.label === 'Lie that your purse is empty');
-  assert.ok(lieChoice, 'Odran has a lying route');
+  assert.ok(lieChoice, 'Augustine has a lying route');
   assert.equal(lieChoice.next, 'lie-caught-rich');
   assert.equal(meetsDialogueConditions(lieChoice.conditions, { itemCount: (id) => (id === 'ducat' ? 1 : 0) }), true);
   assert.equal(meetsDialogueConditions(lieChoice.conditions, { itemCount: (id) => (id === 'ducat' ? 0 : 0) }), false);
 
   const lieTax = odranDialogue.nodes['lie-caught-rich'].choices.find((choice) => choice.label === 'Pay 6 ducats');
-  assert.ok(lieTax, 'Odran charges a six ducat lie tax when the player can pay it');
+  assert.ok(lieTax, 'Augustine charges a six ducat lie tax when the player can pay it');
   assert.deepEqual(lieTax.effects.questUpdate, {
     quest: 'censure-road-confession',
     stage: 'absolved-after-lying'
@@ -709,11 +1290,11 @@ const tentSpecs = [
   assert.equal(odranDialogue.nodes['late-visit-refund-1'].choices[0].effects.inventory.add[0].count, 1);
   assert.equal(odranDialogue.nodes['late-visit-refund-none'].choices[0].next, 'late-visit-blackmail');
   const blackmail = odranDialogue.nodes['late-visit-blackmail'].choices.find((choice) => choice.label === 'Take 8 ducats');
-  assert.ok(blackmail, 'Odran blackmail route pays silence money');
+  assert.ok(blackmail, 'Augustine blackmail route pays silence money');
   assert.deepEqual(blackmail.effects.setFlag, ['odran-late-visit-resolved', 'odran-silence-money-taken']);
   assert.deepEqual(blackmail.effects.inventory.add, [{ item: 'ducat', count: 8 }]);
-  const askBruna = odranDialogue.nodes['late-visit-confront'].choices.find((choice) => choice.label === 'Ask Bruna first');
-  assert.ok(askBruna, 'Odran confrontation can defer to Bruna');
+  const askBruna = odranDialogue.nodes['late-visit-confront'].choices.find((choice) => choice.label === 'Ask Naomi first');
+  assert.ok(askBruna, 'Augustine confrontation can defer to Naomi');
   assert.equal(askBruna.effects.setFlag, 'odran-ask-widow-first');
 }
 

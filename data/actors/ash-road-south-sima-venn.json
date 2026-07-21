@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-sima-venn",
+  "name": "Simeon Fontana",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Measure school pupil",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "child"
+  ],
+  "appearance": {
+    "body": "child",
+    "outfit": "settlement-child-blue",
+    "gear": [
+      "child-token"
+    ],
+    "accent": "bare-light"
+  }
+}

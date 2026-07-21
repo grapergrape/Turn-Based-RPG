@@ -5,31 +5,31 @@
   "stages": [
     {
       "id": "available",
-      "task": "Speak with Corin in the catacombs.",
+      "task": "Speak with Micah in the catacombs.",
       "description": "A child in the hidden catacombs keeps watching the dark lower hall."
     },
     {
       "id": "accepted",
-      "task": "Search the deeper catacombs for Corin's blue ball.",
+      "task": "Search the deeper catacombs for Micah's blue ball.",
       "xp": 10,
-      "description": "Corin lost his blue ball when Eda kicked it down the hall. The children are not allowed past the survivor camp."
+      "description": "Micah lost his blue ball when Ruth kicked it down the hall. The children are not allowed past the survivor camp."
     },
     {
       "id": "ball-found",
-      "task": "Return the blue ball to Corin.",
+      "task": "Return the blue ball to Micah.",
       "xp": 25,
-      "description": "You found the blue ball in the lower catacombs. Corin is waiting near the stair."
+      "description": "You found the blue ball in the lower catacombs. Micah is waiting near the stair."
     },
     {
       "id": "complete",
-      "task": "Returned to Corin.",
+      "task": "Returned to Micah.",
       "xp": 50,
-      "description": "You returned Corin's blue ball. Corin gave you a Censure Entry Roll, and Hanne pressed a clean field dressing into your hand."
+      "description": "You returned Micah's blue ball. Micah gave you a Censure Entry Roll, and Joanna pressed a clean field dressing into your hand."
     }
   ],
   "objectives": [
     {
-      "text": "Ask Corin what he lost.",
+      "text": "Ask Micah what he lost.",
       "stage": "accepted"
     },
     {
@@ -38,7 +38,7 @@
       "stage": "ball-found"
     },
     {
-      "text": "Return the blue ball to Corin.",
+      "text": "Return the blue ball to Micah.",
       "reveal": "ball-found",
       "stage": "complete"
     }

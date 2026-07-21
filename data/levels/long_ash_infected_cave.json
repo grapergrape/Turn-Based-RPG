@@ -126,6 +126,15 @@
     }
   ],
   "victoryLog": "The wolves lie still. Water keeps moving through the cave.",
+  "groundItems": [
+    {
+      "id": "infected-cave-penitent-gear",
+      "item": "penitent-gear-scrap",
+      "count": 1,
+      "x": 21,
+      "y": 7
+    }
+  ],
   "objects": [
     {
       "kind": "rubble-pile",

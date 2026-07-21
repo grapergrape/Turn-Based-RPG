@@ -1,4 +1,6 @@
 import { PALETTE } from '../palette.js';
+import { getSoftwareCanvasContext2D } from '../canvasContext.js';
+import { NATIVE_PIXEL, NATIVE_SCALE, snapToNativePixel, toNativePixels } from '../renderConfig.js';
 
 
 
@@ -69,6 +71,42 @@ export const POSES = {
     { bob: 2, reach: 7, lean: 2 },
     { bob: 1, reach: 3, lean: 1 },
     { bob: 0, reach: 0, lean: 0 }
+  ],
+  workPump: [
+    { bob: 0, work: 'pump', workPhase: 0, lean: 1 },
+    { bob: 0, work: 'pump', workPhase: 1, lean: 1 },
+    { bob: 1, work: 'pump', workPhase: 2, lean: 2 },
+    { bob: 1, work: 'pump', workPhase: 3, lean: 2 },
+    { bob: 1, work: 'pump', workPhase: 4, lean: 2 },
+    { bob: 0, work: 'pump', workPhase: 5, lean: 1 },
+    { bob: 0, work: 'pump', workPhase: 6, lean: 0 },
+    { bob: 0, work: 'pump', workPhase: 7, lean: 0 }
+  ],
+  workMark: [
+    { bob: 0, work: 'mark', workPhase: 0, lean: 2 },
+    { bob: 0, work: 'mark', workPhase: 1, lean: 3 },
+    { bob: 1, work: 'mark', workPhase: 2, lean: 3 },
+    { bob: 1, work: 'mark', workPhase: 3, lean: 3 },
+    { bob: 0, work: 'mark', workPhase: 4, lean: 2 },
+    { bob: 0, work: 'mark', workPhase: 5, lean: 1 }
+  ],
+  workLift: [
+    { bob: 0, work: 'lift', workPhase: 0, sneak: 8, lean: 2, liftHeight: 0 },
+    { bob: 0, work: 'lift', workPhase: 1, sneak: 10, lean: 3, liftHeight: 0 },
+    { bob: 1, work: 'lift', workPhase: 2, sneak: 8, lean: 2, liftHeight: 2 },
+    { bob: 1, work: 'lift', workPhase: 3, sneak: 4, lean: 1, liftHeight: 5 },
+    { bob: 0, work: 'lift', workPhase: 4, sneak: 1, lean: 0, liftHeight: 7 },
+    { bob: 0, work: 'lift', workPhase: 5, sneak: 1, lean: 0, liftHeight: 7 },
+    { bob: 1, work: 'lift', workPhase: 6, sneak: 4, lean: 1, liftHeight: 4 },
+    { bob: 0, work: 'lift', workPhase: 7, sneak: 7, lean: 2, liftHeight: 1 }
+  ],
+  workKneel: [
+    { bob: 0, work: 'kneel', workPhase: 0, kneel: 1, sneak: 10, lean: 2 },
+    { bob: 0, work: 'kneel', workPhase: 1, kneel: 1, sneak: 12, lean: 3 },
+    { bob: 1, work: 'kneel', workPhase: 2, kneel: 1, sneak: 13, lean: 4 },
+    { bob: 1, work: 'kneel', workPhase: 3, kneel: 1, sneak: 13, lean: 4 },
+    { bob: 0, work: 'kneel', workPhase: 4, kneel: 1, sneak: 12, lean: 3 },
+    { bob: 0, work: 'kneel', workPhase: 5, kneel: 1, sneak: 10, lean: 2 }
   ]
 };
 
@@ -78,10 +116,12 @@ export const SPRITE_POSE_FRAME_COUNTS = Object.freeze(
 
 export function createCanvas(w, h) {
   const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext('2d');
-  ctx.imageSmoothingEnabled = false;
+  canvas.width = toNativePixels(w);
+  canvas.height = toNativePixels(h);
+  const ctx = getSoftwareCanvasContext2D(canvas);
+  if (typeof ctx.setTransform === 'function') {
+    ctx.setTransform(NATIVE_SCALE, 0, 0, NATIVE_SCALE, 0, 0);
+  }
   return { canvas, ctx };
 }
 
@@ -89,6 +129,61 @@ export function px(ctx, x, y, color, w = 1, h = 1) {
   if (!color) return;
   ctx.fillStyle = color;
   ctx.fillRect(Math.round(x), Math.round(y), Math.max(1, Math.round(w)), Math.max(1, Math.round(h)));
+}
+
+// One physical backing-store pixel expressed on the logical design grid. Use
+// this only for deliberate high-resolution accents; legacy silhouette pixels
+// continue through px() so their proven proportions stay stable.
+export function detailPx(ctx, x, y, color, w = NATIVE_PIXEL, h = NATIVE_PIXEL) {
+  if (!color) return;
+  ctx.fillStyle = color;
+  ctx.fillRect(
+    snapToNativePixel(x),
+    snapToNativePixel(y),
+    Math.max(NATIVE_PIXEL, snapToNativePixel(w)),
+    Math.max(NATIVE_PIXEL, snapToNativePixel(h))
+  );
+}
+
+// A one-backing-pixel hard line on the logical grid. Sampling at half-cell
+// intervals keeps diagonals continuous after the actor canvas' 2x transform
+// without introducing browser antialiasing.
+export function detailLinePx(ctx, x0, y0, x1, y1, color, size = NATIVE_PIXEL) {
+  if (!color) return;
+  const span = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+  const steps = Math.max(1, Math.ceil(span / NATIVE_PIXEL));
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    detailPx(
+      ctx,
+      x0 + (x1 - x0) * t,
+      y0 + (y1 - y0) * t,
+      color,
+      size,
+      size
+    );
+  }
+}
+
+export function makeLazyFrameList(length, factory) {
+  const frames = new Array(length);
+  for (let index = 0; index < length; index += 1) {
+    Object.defineProperty(frames, index, {
+      configurable: true,
+      enumerable: true,
+      get() {
+        const frame = factory(index);
+        Object.defineProperty(frames, index, {
+          configurable: false,
+          enumerable: true,
+          value: frame,
+          writable: false
+        });
+        return frame;
+      }
+    });
+  }
+  return frames;
 }
 
 export function linePx(ctx, x0, y0, x1, y1, color, size = 1) {
@@ -137,6 +232,8 @@ export function drawJointedLimb(ctx, points, colors, size = 2, far = false) {
     linePx(ctx, a.x, a.y, b.x, b.y, c.dk, size + 1);
     linePx(ctx, a.x, a.y, b.x, b.y, c.mid, size);
     linePx(ctx, a.x, a.y, b.x, b.y, c.hi, 1);
+    detailLinePx(ctx, a.x - 0.5, a.y - 0.5, b.x - 0.5, b.y - 0.5, c.hi);
+    if (!far) detailPx(ctx, b.x + 0.5, b.y - 0.5, c.lo);
   }
 }
 
@@ -149,6 +246,8 @@ export function drawBoot(ctx, x, y, side, style, far = false) {
     px(ctx, x - 1 + toe, y + 2, mid, 5, 1);
     px(ctx, x - 1, y + 1, skin.hi, 2, 1);
     px(ctx, x + 3 + (toe > 0 ? 1 : -2), y + 2, skin.dk, 1, 1);
+    detailLinePx(ctx, x - 1.5, y + 1.5, x + toe + 2.5, y + 1.5, skin.hi);
+    detailPx(ctx, x + toe + 3.5, y + 2.5, skin.dk);
     return;
   }
   const main = far ? style.bootLo : style.boot;
@@ -156,6 +255,63 @@ export function drawBoot(ctx, x, y, side, style, far = false) {
   px(ctx, x - 1 + toe, y + 2, style.bootLo, 8, 2);
   px(ctx, x - 1, y, main, 7, 2);
   px(ctx, x, y, style.bootHi, 4, 1);
+  detailLinePx(ctx, x - 0.5, y + 0.5, x + toe + 3.5, y + 0.5, style.bootHi);
+  detailLinePx(ctx, x + toe + 0.5, y + 2.5, x + toe + 4.5, y + 2.5, style.bootLo);
+}
+
+function drawHeldWeapon(ctx, hand, direction, style, sideView) {
+  const dir = direction >= 0 ? 1 : -1;
+  const profile = style.weaponProfile ?? 'knife';
+  const sidearms = new Set(['sidearm', 'accelerator-sidearm']);
+  const longGuns = new Set([
+    'smg', 'carbine', 'rifle', 'shotgun', 'support-gun', 'precision-rifle',
+    'accelerator-rifle', 'rail-rifle'
+  ]);
+  if (sidearms.has(profile)) {
+    const muzzleX = hand.x + dir * 11;
+    const y = hand.y - (sideView ? 1 : 2);
+    linePx(ctx, hand.x + dir, y, muzzleX, y - 1, PALETTE.outline, 3);
+    linePx(ctx, hand.x + dir * 2, y - 1, muzzleX, y - 1, style.weapon, 1);
+    linePx(ctx, hand.x + dir * 3, y, hand.x + dir * 2, y + 5, PALETTE.rustDark, 2);
+    if (profile === 'accelerator-sidearm') {
+      for (let offset = 4; offset <= 8; offset += 2) px(ctx, hand.x + dir * offset, y - 2, PALETTE.hostGold, 1, 2);
+    }
+    detailLinePx(ctx, hand.x + dir * 2.5, y - 1.5, muzzleX - dir * 0.5, y - 1.5, PALETTE.hostBone);
+    return;
+  }
+  if (longGuns.has(profile)) {
+    const rearX = hand.x - dir * 7;
+    const frontX = hand.x + dir * 16;
+    const y = hand.y - 2;
+    linePx(ctx, rearX, y + 2, frontX, y - 2, PALETTE.outline, profile === 'support-gun' ? 4 : 3);
+    linePx(ctx, rearX + dir, y + 1, frontX - dir, y - 2, style.weapon, 1);
+    linePx(ctx, hand.x + dir * 4, y - 1, frontX + dir * 3, y - 3, PALETTE.stoneLight, 1);
+    linePx(ctx, rearX, y + 2, rearX + dir * 5, y + 5, PALETTE.woodDark, 3);
+    linePx(ctx, hand.x + dir, y, hand.x + dir * 2, y + 5, PALETTE.rustDark, 2);
+    if (profile === 'precision-rifle') px(ctx, hand.x + dir * 4, y - 5, PALETTE.stoneLight, 7, 2);
+    if (profile === 'accelerator-rifle' || profile === 'rail-rifle') {
+      for (let offset = 3; offset <= 10; offset += 3) px(ctx, hand.x + dir * offset, y - 2, PALETTE.hostGold, 1, 2);
+    }
+    detailLinePx(ctx, rearX + dir * 1.5, y + 0.5, frontX - dir * 1.5, y - 2.5, PALETTE.hostBone);
+    return;
+  }
+
+  const long = profile === 'pike';
+  const reach = long ? 21 : profile === 'sword' ? 14 : 10;
+  const tipX = hand.x + dir * reach;
+  const tipY = hand.y - (long ? 10 : 8);
+  linePx(ctx, hand.x - dir * (long ? 9 : 2), hand.y + (long ? 5 : 3), tipX, tipY, PALETTE.outline, long ? 3 : 2);
+  linePx(ctx, hand.x - dir * (long ? 8 : 1), hand.y + (long ? 4 : 2), tipX - dir, tipY + 1, profile === 'knife' || profile === 'sword' ? style.weapon : PALETTE.woodLight, 1);
+  if (profile === 'axe') {
+    px(ctx, tipX - (dir > 0 ? 2 : 5), tipY - 3, PALETTE.stoneLight, 7, 5);
+  } else if (profile === 'blunt') {
+    px(ctx, tipX - 3, tipY - 3, PALETTE.stoneMid, 7, 6);
+  } else if (profile === 'tool-weapon') {
+    linePx(ctx, tipX - dir * 4, tipY - 2, tipX + dir * 3, tipY + 2, PALETTE.stoneLight, 2);
+  } else if (long) {
+    linePx(ctx, tipX - dir * 2, tipY + 1, tipX + dir * 4, tipY - 3, PALETTE.stoneLight, 2);
+  }
+  detailLinePx(ctx, hand.x + dir * 0.5, hand.y + 1.5, tipX - dir * 0.5, tipY + 0.5, PALETTE.hostBone);
 }
 
 export function viewScale(meta) {
@@ -490,6 +646,11 @@ function drawFacialHair(ctx, x, y, meta, hit, style) {
 }
 
 export function drawSmallHead(ctx, x, y, meta, pose, style) {
+  if (typeof style.drawHead === 'function') {
+    style.drawHead({ ctx, px, linePx, detailPx, detailLinePx, meta, pose, style, x, y });
+    return;
+  }
+
   const skin = ramp(style, 'skin');
   const side = directionSide(meta);
   const hit = pose.hit ? side : 0;
@@ -528,6 +689,9 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
     px(ctx, cx - 6 + yaw, y - 5, PALETTE.hostBone, 2, 5);
     px(ctx, cx + 5 + yaw, y - 3, PALETTE.hostBone, 1, 3);
     px(ctx, cx + 6 + yaw, y - 4, PALETTE.hostBlack, 1, 1);
+    detailLinePx(ctx, cx - 3.5 + yaw, y - 0.5, cx + 1.5 + yaw, y + 5.5, PALETTE.stoneDust);
+    detailPx(ctx, cx + 3.5 + yaw, y + 3.5, pulse ? PALETTE.hostGlow : PALETTE.hostGold);
+    detailLinePx(ctx, cx - 2.5 + yaw, y + 8.5, cx + 3.5 + yaw, y + 8.5, PALETTE.hostBone);
     return;
   }
 
@@ -538,6 +702,8 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
     px(ctx, cx - 3, y + 3, PALETTE.void, 6, 2);
     px(ctx, cx - 2, y + 4, PALETTE.rustDark, 4, 1);
     px(ctx, cx + side * 3, y + 3, skin.lo, 1, 3);
+    detailLinePx(ctx, cx - 2.5, y + 2.5, cx + 2.5, y + 2.5, hoodHi);
+    detailPx(ctx, cx + side * 2.5, y + 4.5, PALETTE.rustLight);
     return;
   }
 
@@ -561,6 +727,13 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
     }
     drawHumanFaceDetails(ctx, x, y, meta, hit, style);
     drawFacialHair(ctx, x, y, meta, hit, style);
+    if (!meta.back) {
+      detailPx(ctx, x + side * 2.5 + hit, y + 3.5, skin.dk);
+      detailPx(ctx, x + side * 3.5 + hit, y + 4.5, skin.hi);
+      detailLinePx(ctx, x + side * 1.5 + hit, y + 6.5, x + side * 3.5 + hit, y + 6.5, skin.lo);
+    } else {
+      detailLinePx(ctx, x - 2.5 + hit, y + 0.5, x + 1.5 + hit, y + 0.5, crownHi);
+    }
     return;
   }
 
@@ -568,6 +741,8 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
   drawHumanHair(ctx, x, y, meta, hit, { ...style, hairStyle, bareHead: bare }, crown, crownHi);
   if (meta.back) {
     if (!bare) drawHoodHairWindow(ctx, x, y, meta, hit, style);
+    detailLinePx(ctx, x - 2.5 + hit, y + 0.5, x + 2.5 + hit, y + 0.5, crownHi);
+    detailPx(ctx, x + 2.5 + hit, y + 4.5, crown);
     return;
   }
   if (bare) {
@@ -590,6 +765,10 @@ export function drawSmallHead(ctx, x, y, meta, pose, style) {
   px(ctx, x + hit, y + 6, skin.lo, 2, 1);
   drawHumanFaceDetails(ctx, x, y, meta, hit, style);
   drawFacialHair(ctx, x, y, meta, hit, style);
+  detailPx(ctx, x - 1.5 + hit, y + 3.5, skin.dk);
+  detailPx(ctx, x + 1.5 + hit, y + 3.5, skin.dk);
+  detailPx(ctx, x - 2.5 + hit, y + 4.5, skin.hi);
+  detailLinePx(ctx, x - 1.5 + hit, y + 6.5, x + 1.5 + hit, y + 6.5, skin.lo);
 }
 
 export function drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style) {
@@ -628,6 +807,16 @@ export function drawTorso(ctx, cx, shoulderY, hipY, meta, pose, style) {
   if (!style.anatomyVisible) {
     dither(ctx, bodyCx - Math.floor(shoulderW / 2) + 2, shoulderY + 3, Math.max(4, shoulderW - 4), bodyH - 4, coat.lo, pose.cloth ?? 0);
   }
+  const leftShoulder = bodyCx - Math.floor(shoulderW / 2);
+  const rightShoulder = bodyCx + Math.floor(shoulderW / 2);
+  const leftWaist = bodyCx - Math.floor(waistW / 2);
+  const rightWaist = bodyCx + Math.floor(waistW / 2);
+  detailLinePx(ctx, leftShoulder + 1.5, shoulderY + 1.5, leftWaist + 1.5, hipY - 2.5, coat.hi);
+  detailLinePx(ctx, rightShoulder - 0.5, shoulderY + 2.5, rightWaist - 0.5, hipY - 1.5, coat.dk);
+  if (style.belt) {
+    detailPx(ctx, bodyCx - 0.5, hipY - 0.5, style.coatHi ?? coat.hi);
+    detailPx(ctx, bodyCx + 0.5, hipY - 0.5, style.coatLo ?? coat.lo);
+  }
   return { bodyCx, shoulderW, waistW, hipW, lean };
 }
 
@@ -651,7 +840,9 @@ function drawVest(ctx, torso, shoulderY, hipY, meta, style) {
     const plateX = vx + (side >= 0 ? 1 : vestW - 3);
     px(ctx, plateX, vestTop + 2, v.plate, 2, 3);
     px(ctx, plateX, vestTop + 5, v.lo, 2, 1);
+    detailLinePx(ctx, plateX + 0.5, vestTop + 2.5, plateX + 1.5, vestTop + 2.5, v.hi);
   }
+  detailLinePx(ctx, vx + 0.5, vestTop + 0.5, vx + vestW - 1.5, vestTop + 0.5, v.hi);
 }
 
 function drawKitOverlay(ctx, torso, shoulderY, hipY, meta, style) {
@@ -663,9 +854,11 @@ function drawKitOverlay(ctx, torso, shoulderY, hipY, meta, style) {
     const strapBotX = torso.bodyCx - side * (Math.floor((torso.waistW ?? 8) / 2) - 1);
     linePx(ctx, strapTopX, shoulderY + 1, strapBotX, hipY - 2, PALETTE.rustDark, 1);
     px(ctx, torso.bodyCx, shoulderY + Math.floor((hipY - shoulderY) / 2), PALETTE.stoneLight, 1, 1);
+    detailLinePx(ctx, strapTopX - 0.5, shoulderY + 1.5, strapBotX - 0.5, hipY - 2.5, PALETTE.rustLight);
   }
   if (style.pendant && !meta.back) {
     px(ctx, torso.bodyCx + side, shoulderY + 3, style.pendant, 1, 2);
+    detailPx(ctx, torso.bodyCx + side + 0.5, shoulderY + 3.5, PALETTE.hostBone);
   }
 }
 
@@ -816,6 +1009,153 @@ export function drawAdultAnatomy(ctx, torso, hipY, meta, pose, style) {
   }
 }
 
+function drawActorNativeAccents(ctx, meta, pose, style, layout) {
+  const { footY, hipY, shoulderY, headY, torso } = layout;
+  const c = torso.bodyCx;
+  const side = directionSide(meta);
+  const shoulderHalf = Math.max(3, Math.floor(torso.shoulderW / 2));
+  const waistHalf = Math.max(2, Math.floor(torso.waistW / 2));
+
+  // Fine construction marks stay inside the established silhouette. They are
+  // deliberately sparse so the actor still reads cleanly at gameplay scale.
+  detailLinePx(
+    ctx,
+    c - shoulderHalf + 0.5,
+    shoulderY + 3.5,
+    c - waistHalf + 0.5,
+    hipY - 2.5,
+    style.coatHi ?? style.coat
+  );
+  detailLinePx(
+    ctx,
+    c + shoulderHalf - 0.5,
+    shoulderY + 4.5,
+    c + waistHalf - 0.5,
+    hipY - 1.5,
+    style.coatDk ?? style.coatLo
+  );
+  detailPx(ctx, c - side * 1.5, hipY - 0.5, style.belt ?? style.coatLo);
+  detailLinePx(ctx, c - 4.5, footY - 2.5, c - 0.5, footY - 2.5, style.bootHi ?? style.pantsHi);
+  detailLinePx(ctx, c + 0.5, footY - 2.5, c + 4.5, footY - 2.5, style.bootLo ?? style.pantsLo);
+
+  if (style.hostHead) {
+    detailLinePx(ctx, c - 3.5, headY + 0.5, c + 1.5, headY + 6.5, PALETTE.stoneDust);
+    detailPx(ctx, c + side * 3.5, headY + 4.5, pose.bob ? PALETTE.hostGlow : PALETTE.hostGold);
+  } else if (style.hostCorpse) {
+    const seamSide = meta.view === 'front' ? 1 : side;
+    detailLinePx(
+      ctx,
+      c + seamSide * 1.5,
+      shoulderY + 4.5,
+      c + seamSide * 3.5,
+      hipY - 2.5,
+      PALETTE.hostGold
+    );
+    detailPx(ctx, c + seamSide * 2.5, shoulderY + 7.5, PALETTE.hostBlack);
+  } else if (style.maskedHead) {
+    detailLinePx(ctx, c - 2.5, headY + 2.5, c + 2.5, headY + 2.5, style.hoodHi ?? style.hairHi);
+    detailPx(ctx, c + side * 2.5, headY + 4.5, PALETTE.rustLight);
+  } else if (meta.back) {
+    detailLinePx(ctx, c - 2.5, headY + 0.5, c + 2.5, headY + 0.5, style.hairHi ?? style.hoodHi);
+  } else if (meta.view === 'side') {
+    detailPx(ctx, c + side * 2.5, headY + 3.5, style.skinDk ?? style.skinLo);
+    detailPx(ctx, c + side * 3.5, headY + 4.5, style.skinHi ?? style.skin);
+  } else {
+    detailPx(ctx, c - 1.5, headY + 3.5, style.skinDk ?? style.skinLo);
+    detailPx(ctx, c + 1.5, headY + 3.5, style.skinDk ?? style.skinLo);
+    detailPx(ctx, c - 2.5, headY + 4.5, style.skinHi ?? style.skin);
+  }
+
+  if (pose.hit) {
+    detailLinePx(ctx, c - 7.5, shoulderY + 7.5, c + 7.5, shoulderY + 7.5, PALETTE.flash);
+  }
+}
+
+function drawWorkArms(ctx, {
+  meta,
+  pose,
+  style,
+  torso,
+  shoulderY,
+  hipY,
+  farShoulder,
+  nearShoulder,
+  coat,
+  skin
+}) {
+  if (!pose.work || typeof style.drawArms === 'function') return false;
+  const side = directionSide(meta);
+  const forward = side || 1;
+  const phase = pose.workPhase ?? 0;
+  const far = (elbow, hand) => drawJointedLimb(ctx, [farShoulder, elbow, hand], coat, style.armSize, true);
+  const near = (elbow, hand) => drawJointedLimb(ctx, [nearShoulder, elbow, hand], coat, style.armSize, false);
+  const hand = (point, isFar = false) => {
+    px(ctx, point.x - 1, point.y - 1, isFar ? skin.lo : skin.mid, 3, 3);
+    detailPx(ctx, point.x - 0.5, point.y - 0.5, isFar ? skin.mid : skin.hi);
+  };
+
+  if (pose.work === 'pump') {
+    const stroke = [0, 2, 5, 7, 6, 3, 1, 0][phase % 8];
+    const gripX = torso.bodyCx + forward * (11 + Math.round(Math.abs(meta.bodyTurn) * 2));
+    const gripY = shoulderY + 7 + stroke;
+    const farGrip = { x: gripX - forward * 2, y: gripY - 2 };
+    const nearGrip = { x: gripX + forward * 2, y: gripY + 1 };
+    far({ x: farShoulder.x + forward * 3, y: shoulderY + 8 }, farGrip);
+    near({ x: nearShoulder.x + forward * 4, y: shoulderY + 9 }, nearGrip);
+    hand(farGrip, true);
+    hand(nearGrip);
+    linePx(ctx, gripX - forward * 4, gripY + 2, gripX + forward * 5, gripY - 3, PALETTE.woodDark, 2);
+    detailLinePx(ctx, gripX - forward * 3.5, gripY + 1.5, gripX + forward * 4.5, gripY - 3.5, PALETTE.woodLight);
+    return true;
+  }
+
+  if (pose.work === 'mark') {
+    const scratch = [0, 1, -1, 1, -1, 0][phase % 6];
+    const brace = { x: torso.bodyCx + forward * 7, y: hipY - 5 };
+    const writing = { x: torso.bodyCx + forward * (11 + scratch), y: hipY - 7 + (phase & 1) };
+    far({ x: farShoulder.x + forward * 2, y: shoulderY + 10 }, brace);
+    near({ x: nearShoulder.x + forward * 4, y: shoulderY + 9 }, writing);
+    hand(brace, true);
+    hand(writing);
+    linePx(ctx, writing.x, writing.y, writing.x + forward * 5, writing.y + 4, PALETTE.rustDark, 1);
+    detailPx(ctx, writing.x + forward * 4.5, writing.y + 3.5, PALETTE.rustLight);
+    return true;
+  }
+
+  if (pose.work === 'lift') {
+    const lift = pose.liftHeight ?? 0;
+    const loadX = torso.bodyCx + forward * 9;
+    const loadY = hipY + 2 - lift;
+    const farGrip = { x: loadX - forward * 3, y: loadY - 1 };
+    const nearGrip = { x: loadX + forward * 3, y: loadY + 1 };
+    far({ x: farShoulder.x + forward * 3, y: shoulderY + 11 }, farGrip);
+    near({ x: nearShoulder.x + forward * 4, y: shoulderY + 11 }, nearGrip);
+    px(ctx, loadX - 5, loadY - 4, PALETTE.outline, 11, 7);
+    px(ctx, loadX - 4, loadY - 4, PALETTE.woodMid, 9, 5);
+    px(ctx, loadX - 4, loadY - 4, PALETTE.woodLight, 7, 1);
+    px(ctx, loadX + 4, loadY - 3, PALETTE.woodDark, 1, 4);
+    detailLinePx(ctx, loadX - 2.5, loadY - 3.5, loadX + 2.5, loadY + 0.5, PALETTE.rustLight);
+    hand(farGrip, true);
+    hand(nearGrip);
+    return true;
+  }
+
+  if (pose.work === 'kneel') {
+    const scrape = [0, 1, 3, 2, 1, 0][phase % 6];
+    const brace = { x: torso.bodyCx - forward * 3, y: hipY + 3 };
+    const working = { x: torso.bodyCx + forward * (9 + scrape), y: hipY + 8 - (phase & 1) };
+    far({ x: farShoulder.x - forward, y: shoulderY + 11 }, brace);
+    near({ x: nearShoulder.x + forward * 4, y: shoulderY + 13 }, working);
+    hand(brace, true);
+    hand(working);
+    linePx(ctx, working.x - forward, working.y, working.x + forward * 5, working.y + 2, PALETTE.ironDark, 2);
+    detailLinePx(ctx, working.x - forward * 0.5, working.y - 0.5, working.x + forward * 4.5, working.y + 1.5, PALETTE.ironLight);
+    return true;
+  }
+
+  return false;
+}
+
 export function drawActorBase(ctx, w, h, facing, pose, style) {
   const meta = FACING_META[facing] ?? FACING_META.se;
   const side = directionSide(meta);
@@ -866,6 +1206,16 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
     nearLeg.foot.x = cx + side * (4 + Math.round(Math.abs(legB) * 0.7));
   }
 
+  if (pose.kneel) {
+    const kneelSide = side || 1;
+    farLeg.knee.x = cx - kneelSide * 2;
+    farLeg.knee.y = footY - 7;
+    farLeg.foot.x = cx - kneelSide * 7;
+    nearLeg.knee.x = cx + kneelSide * 8;
+    nearLeg.knee.y = footY - 2;
+    nearLeg.foot.x = cx + kneelSide * 11;
+  }
+
   drawJointedLimb(ctx, [farLeg.hip, farLeg.knee, farLeg.foot], pants, style.legSize, true);
   drawBoot(ctx, farLeg.foot.x, farLeg.foot.y, side, style, true);
   drawJointedLimb(ctx, [nearLeg.hip, nearLeg.knee, nearLeg.foot], pants, style.legSize, false);
@@ -883,7 +1233,37 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
   const nearHandY = hipY - 2 + armB;
 
   const action = attack || reach;
-  if (meta.view !== 'side') {
+  if (drawWorkArms(ctx, {
+    meta,
+    pose,
+    style,
+    torso,
+    shoulderY,
+    hipY,
+    farShoulder,
+    nearShoulder,
+    coat,
+    skin
+  })) {
+    // The work-family pose owns both arms and any held tool or load.
+  } else if (typeof style.drawArms === 'function') {
+    style.drawArms({
+      ctx,
+      px,
+      linePx,
+      detailPx,
+      detailLinePx,
+      meta,
+      facing,
+      pose,
+      style,
+      footY,
+      hipY,
+      shoulderY,
+      headY,
+      torso
+    });
+  } else if (meta.view !== 'side') {
     drawJointedLimb(ctx, [
       farShoulder,
       { x: farShoulder.x - 2 + Math.round(armA * 0.45), y: shoulderY + 12 },
@@ -896,7 +1276,7 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
       const hand = { x: nearShoulder.x + dir * (8 + action), y: shoulderY + 11 + Math.floor(action / 5) };
       drawJointedLimb(ctx, [nearShoulder, elbow, hand], coat, style.armSize, false);
       px(ctx, hand.x, hand.y, skin.mid, 3, 2);
-      if (attack > 0) linePx(ctx, hand.x + dir * 2, hand.y - 5, hand.x + dir * 5, hand.y + 8, style.weapon, 1);
+      if (attack > 0) drawHeldWeapon(ctx, hand, dir, style, false);
     } else {
       drawJointedLimb(ctx, [
         nearShoulder,
@@ -921,17 +1301,35 @@ export function drawActorBase(ctx, w, h, facing, pose, style) {
       hand
     ], coat, style.armSize, false);
     px(ctx, hand.x, hand.y, skin.mid, 2, 2);
-    if (attack > 0) linePx(ctx, hand.x + side * 2, hand.y - 5, hand.x + side * 5, hand.y + 8, style.weapon, 1);
+    if (attack > 0) drawHeldWeapon(ctx, hand, side, style, true);
   }
 
   px(ctx, torso.bodyCx - 1, headY + style.headHeight - 1, skin.dk, 3, 2);
   drawSmallHead(ctx, torso.bodyCx, headY, meta, pose, style);
 
   if (style.decorate) {
-    style.decorate({ ctx, px, linePx, dither, meta, facing, pose, style, cx, footY, hipY, shoulderY, headY, torso });
+    style.decorate({
+      ctx,
+      px,
+      linePx,
+      detailPx,
+      detailLinePx,
+      dither,
+      meta,
+      facing,
+      pose,
+      style,
+      cx,
+      footY,
+      hipY,
+      shoulderY,
+      headY,
+      torso
+    });
   }
 
   if (pose.hit) px(ctx, torso.bodyCx - 8, shoulderY + 8, PALETTE.flash, 16, 2);
+  drawActorNativeAccents(ctx, meta, pose, style, { footY, hipY, shoulderY, headY, torso });
 }
 
 function drawCorpseHair(ctx, hx, bodyTop, style, cult) {
@@ -1000,7 +1398,7 @@ function drawCorpseFaceDetails(ctx, hx, bodyTop, style) {
 
 export function drawDeath(ctx, w, h, style, frame) {
   if (typeof style.drawDeath === 'function') {
-    style.drawDeath({ ctx, w, h, style, frame, px, linePx, dither });
+    style.drawDeath({ ctx, w, h, style, frame, px, linePx, detailPx, detailLinePx, dither });
     return;
   }
   const cx = Math.floor(w / 2);
@@ -1072,6 +1470,22 @@ export function drawDeath(ctx, w, h, style, frame) {
       linePx(ctx, cx - 7, bodyTop + 11, cx - 1, bodyTop + 13, style.weapon, 1); // dropped knife
     }
   }
+
+  // Corpse-native detail follows the settled fabric and face rather than
+  // outlining the body a second time. Every death key therefore retains the
+  // same high-resolution contract as live animation frames.
+  detailLinePx(ctx, cx - half + 1.5, bodyTop + 0.5, cx + half - 2.5, bodyTop + 0.5, coat.hi);
+  detailLinePx(ctx, cx - half + 3.5, bodyTop + 6.5, cx + half - 4.5, bodyTop + 6.5, coat.dk);
+  if (host) {
+    detailLinePx(ctx, cx - 8.5, bodyTop + 3.5, cx + 7.5, bodyTop + 3.5, PALETTE.hostGold);
+    detailPx(ctx, cx + 0.5, bodyTop + 4.5, PALETTE.hostBone);
+  } else {
+    detailPx(ctx, cx + 14.5, bodyTop + 2.5, skin.hi);
+    detailLinePx(ctx, cx + 13.5, bodyTop + 5.5, cx + 16.5, bodyTop + 5.5, skin.dk);
+  }
+  if (settle > 0) {
+    detailLinePx(ctx, cx - 8.5, groundY + 0.5, cx + 9.5, groundY + 0.5, host ? PALETTE.hostGold : PALETTE.rustDark);
+  }
 }
 
 export function compose(w, h, drawBody) {
@@ -1085,13 +1499,13 @@ export function bakeActor(w, h, style) {
   for (const state of Object.keys(POSES)) {
     frames[state] = {};
     for (const facing of FACINGS) {
-      frames[state][facing] = POSES[state].map((pose) =>
-        compose(w, h, (ctx) => drawActorBase(ctx, w, h, facing, pose, style))
+      frames[state][facing] = makeLazyFrameList(POSES[state].length, (frame) =>
+        compose(w, h, (ctx) => drawActorBase(ctx, w, h, facing, POSES[state][frame], style))
       );
     }
   }
 
-  const death = Array.from({ length: 10 }, (_, frame) =>
+  const death = makeLazyFrameList(10, (frame) =>
     compose(w, h, (ctx) => drawDeath(ctx, w, h, style, frame))
   );
 

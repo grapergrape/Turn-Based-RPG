@@ -1,0 +1,61 @@
+{
+  "id": "ash-road-south-aven-ro",
+  "title": "Eve Porta",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Eve’s return shelf holds sealed letters beside worn tokens. Several empty spaces remain free of dust.",
+        "\"Name first. Hope can wait until I know which box to open.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what comes back from placements",
+          "next": "returns",
+          "effects": {
+            "setFlag": "heard-return-shelf-separation"
+          }
+        },
+        {
+          "label": "Ask why the shelf stands at the old gates",
+          "next": "gate"
+        },
+        {
+          "label": "Leave the return shelf undisturbed",
+          "close": true
+        }
+      ]
+    },
+    "returns": {
+      "lines": [
+        "\"Admitted people send letters when they can write, and employers sometimes send pay tokens. A uniform notice comes when neither happens.\"",
+        "\"Families leave a space because an empty shelf feels too much like judgment.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask why the shelf stands at the old gates",
+          "next": "gate"
+        },
+        {
+          "label": "Check another name",
+          "next": "start"
+        },
+        {
+          "label": "Leave the return shelf undisturbed",
+          "close": true
+        }
+      ]
+    },
+    "gate": {
+      "lines": [
+        "\"Admitted people last stood with their households at these gates.\"",
+        "\"A letter should return to the point where the road divided them.\""
+      ],
+      "choices": [
+        {
+          "label": "Leave the return shelf undisturbed",
+          "close": true
+        }
+      ]
+    }
+  }
+}

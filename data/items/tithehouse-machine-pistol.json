@@ -1,0 +1,65 @@
+{
+  "id": "tithehouse-machine-pistol",
+  "name": "Tithehouse Machine Pistol",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "machine pistol",
+  "rarity": "rare",
+  "weight": 0.85,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Recovered pattern",
+    "origin": "Tithehouse Guard",
+    "factions": [
+      "tithehouse-guard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "machine pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 6,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "short-burst",
+        "name": "Short Burst",
+        "mode": "ranged",
+        "apCost": 5,
+        "damage": 8,
+        "range": 5,
+        "accuracyBonus": -10,
+        "ammoCost": 3,
+        "conditionWear": 2
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-cartridge",
+      "capacity": 18,
+      "defaultLoaded": 18,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 94
+  },
+  "description": "A boxy defense pistol once kept beneath counting desks. The magazine forms the grip and makes every reload a firm upward strike."
+}

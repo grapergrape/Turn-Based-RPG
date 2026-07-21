@@ -1,0 +1,51 @@
+{
+  "id": "old-pilgrim-quarters-cistern",
+  "title": "Dry Cistern",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Lime rings descend in measured steps. The lowest ring was scratched by hand after the gauge stopped moving."
+      ],
+      "choices": [
+        {
+          "label": "Compare the rings with the closure days",
+          "conditions": {
+            "flagsAtLeast": {
+              "count": 1,
+              "of": [
+                "old-pilgrim-empty-tank-known",
+                "old-pilgrim-water-pump-known"
+              ]
+            },
+            "flagsAbsent": [
+              "old-pilgrim-water-cistern-known"
+            ]
+          },
+          "effects": {
+            "setFlag": "old-pilgrim-water-cistern-known",
+            "xp": 5,
+            "log": "The emergency tank was dry on day two. The main cistern fed the quarters until day five, then stopped without a leak here."
+          },
+          "next": "read"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    },
+    "read": {
+      "lines": [
+        "The last usable water came from the chapter line. The failure lies beyond the profession galleries."
+      ],
+      "choices": [
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

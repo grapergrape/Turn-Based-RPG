@@ -1,0 +1,36 @@
+{
+  "id": "south-measure-repair-trench-drain",
+  "title": "Morrow Repair Trench",
+  "nodes": {
+    "start": {
+      "lines": [
+        "A service ladder rises into the medicine-cart side of the freight yard."
+      ],
+      "choices": [
+        {
+          "label": "Climb into the freight yard",
+          "effects": {
+            "log": "You climb from the drain into the Morrow repair trench.",
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 31,
+                "y": 55,
+                "facing": "sw"
+              }
+            }
+          },
+          "close": true
+        },
+        {
+          "label": "Remain below",
+          "effects": {
+            "log": "You step away from the yard ladder."
+          },
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

@@ -11,6 +11,9 @@ export function createActor(data, position) {
     id: data.id,
     name: data.name,
     type: data.type,
+    team: data.team ?? null,
+    control: data.control ?? null,
+    ownerId: data.ownerId ?? null,
     faction: data.faction ?? null,
     role: data.role ?? null,
     background: data.background ?? null,
@@ -34,6 +37,6 @@ function defaultProgressionFor(data) {
     if (tags.has('ranged')) return { level: 1, build: 'gunhand' };
     return { level: 1, build: 'breaker' };
   }
-  if (data.type === 'player' || data.type === 'npc') return { level: 1, build: 'field-agent' };
+  if (data.type === 'player' || data.type === 'npc' || data.type === 'companion') return { level: 1, build: 'field-agent' };
   return null;
 }

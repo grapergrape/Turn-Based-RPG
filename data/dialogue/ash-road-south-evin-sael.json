@@ -1,0 +1,53 @@
+{
+  "id": "ash-road-south-evin-sael",
+  "title": "Timothy Cato",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Timothy has folded his machine-works form around a single spare shirt.",
+        "\"The test starts at third bell. My mother packed before I said yes.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about the packed shirt",
+          "next": "motive",
+          "effects": {
+            "setFlag": "heard-compact-applicant-motives"
+          }
+        },
+        {
+          "label": "Let Timothy prepare for the test",
+          "close": true
+        }
+      ]
+    },
+    "motive": {
+      "lines": [
+        "\"A lathe that turns true, with pay under a city stamp. I want work where a broken finger gets more than a rag.\"",
+        "\"I want those things. I also want my mother to stop pretending she packed by mistake.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the test costs if he fails",
+          "next": "failure"
+        },
+        {
+          "label": "Let Timothy prepare for the test",
+          "close": true
+        }
+      ]
+    },
+    "failure": {
+      "lines": [
+        "\"The bed returns to the list and I return to the freight yard with a test score everyone can price.\"",
+        "\"Aurelia calls that no penalty. Darius owns a pencil.\""
+      ],
+      "choices": [
+        {
+          "label": "Let Timothy prepare for the test",
+          "close": true
+        }
+      ]
+    }
+  }
+}

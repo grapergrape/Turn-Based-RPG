@@ -1,0 +1,32 @@
+{
+  "id": "old-pilgrim-south-road",
+  "title": "Road to South Measure",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The old stones run south toward the raised chain at South Measure."
+      ],
+      "choices": [
+        {
+          "label": "Return to South Measure",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/ash_road_south.json",
+              "player": {
+                "x": 65,
+                "y": 2,
+                "facing": "s"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

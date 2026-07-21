@@ -19,9 +19,10 @@ function lootSummary(loot, inventory) {
 }
 
 export class InteractionSystem {
-  constructor(interactables) {
+  constructor(interactables, callbacks = {}) {
     // Objects with an `interact` descriptor, e.g. containers and the altar.
     this.interactables = interactables ?? [];
+    this.callbacks = callbacks;
   }
 
   // The nearest unconsumed interactable on or beside the actor, if any.
@@ -43,6 +44,7 @@ export class InteractionSystem {
   // Apply an interaction. Returns data effects for Game to present and apply.
   interact(object, inventory) {
     const descriptor = object.interact ?? {};
+    const resolvedLog = this.#resolvedLog(descriptor);
     const logs = [];
     let triggersCombat = false;
     const pushLog = (value) => {
@@ -87,12 +89,12 @@ export class InteractionSystem {
       }
       object.consumed = true;
       object.opened = true;
-      pushLog(descriptor.log);
+      pushLog(resolvedLog);
       const summary = lootSummary(descriptor.loot, inventory);
       if (summary) logs.push(`Recovered: ${summary}.`);
     } else if (descriptor.type === 'corpse') {
       const loot = descriptor.loot ?? [];
-      pushLog(descriptor.log);
+      pushLog(resolvedLog);
       if (loot.length && !object.looted) {
         const carry = inventory.canAddLoot(loot);
         if (!carry.ok) {
@@ -118,14 +120,14 @@ export class InteractionSystem {
         pushLog(descriptor.emptyLog ?? 'Nothing useful remains.');
       }
     } else if (descriptor.type === 'altar') {
-      pushLog(descriptor.log);
+      pushLog(resolvedLog);
       object.touched = true;
       triggersCombat = Boolean(descriptor.triggersCombat);
     } else {
       if (descriptor.type === 'secret-entrance' || descriptor.type === 'secret-exit') {
         object.revealed = true;
       }
-      pushLog(descriptor.log);
+      pushLog(resolvedLog);
     }
 
     return {
@@ -135,5 +137,14 @@ export class InteractionSystem {
       dialogueId: descriptor.dialogue ?? null,
       questUpdate: descriptor.questUpdate ?? null
     };
+  }
+
+  #resolvedLog(descriptor) {
+    for (const variant of descriptor.logVariants ?? []) {
+      if (!variant || typeof variant !== 'object') continue;
+      if (variant.conditions && this.callbacks.meetsConditions?.(variant.conditions) !== true) continue;
+      return variant.log ?? descriptor.log;
+    }
+    return descriptor.log;
   }
 }

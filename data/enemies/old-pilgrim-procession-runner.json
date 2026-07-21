@@ -1,0 +1,35 @@
+{
+  "id": "old-pilgrim-procession-runner",
+  "name": "Procession Runner",
+  "type": "enemy",
+  "faction": "the-host",
+  "spriteId": "stage-iv-runner-road",
+  "description": "A pilgrim coat hangs from a human frame driven onto all fours. Heel bones punch the soil while one horn forces the head aside.",
+  "stats": {
+    "hp": 4,
+    "maxHp": 4,
+    "actionPoints": 8,
+    "moveCost": 1
+  },
+  "attacks": [
+    {
+      "id": "furrow-rake",
+      "name": "Furrow Rake",
+      "apCost": 4,
+      "damage": 2,
+      "range": 1
+    }
+  ],
+  "aggro": [
+    "Its prayer cord draws tight between fused fingers.",
+    "Heel bones strike the furrow in an uneven run."
+  ],
+  "tags": [
+    "host",
+    "vale-imprint",
+    "stage-iv",
+    "pilgrim",
+    "runner",
+    "human"
+  ]
+}

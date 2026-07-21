@@ -1,0 +1,54 @@
+{
+  "id": "reliquary-needle-pistol",
+  "name": "Reliquary Needle Pistol",
+  "type": "weapon",
+  "catalogGroup": "accelerator",
+  "subtype": "rail sidearm",
+  "rarity": "uncommon",
+  "weight": 1.5,
+  "groundModel": "accelerator-sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Pre-Fall reserve",
+    "origin": "Black Reliquary",
+    "factions": [
+      "black-reliquary"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "accelerator",
+    "roles": [
+      "ranged",
+      "accelerator",
+      "sidearm",
+      "rail sidearm"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Armature Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 7,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 2,
+        "ammoCost": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "compact-armature",
+      "capacity": 6,
+      "defaultLoaded": 6,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 83
+  },
+  "description": "A narrow rail pistol recovered with survey instruments, not weapons. Reliquary armorers fitted a guard, sights, and a less honest purpose."
+}

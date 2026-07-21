@@ -319,6 +319,19 @@ export function drawHumanModelDetails(args) {
     drawSurvivorVariantDetails(args);
   }
   drawHumanModelExtras(args);
+
+  const { ctx, detailPx, detailLinePx, meta, pose, shoulderY, hipY, headY, torso } = args;
+  const c = torso.bodyCx;
+  const side = directionSide(meta);
+  const bob = pose.bob ?? 0;
+  detailLinePx(ctx, c - 5.5, shoulderY + 2.5, c + 4.5, shoulderY + 2.5, style.coatHi ?? PALETTE.stoneDust);
+  detailLinePx(ctx, c - 4.5, hipY - 2.5, c + 4.5, hipY - 2.5, style.coatLo ?? PALETTE.stoneDark);
+  if (!meta.back) detailPx(ctx, c + side * 1.5, headY + 7.5 + bob, style.skinHi ?? PALETTE.skinLight);
+  const kits = Array.isArray(style.modelKits) ? style.modelKits : [];
+  if (kits.length > 0) {
+    detailLinePx(ctx, c + side * 6.5, shoulderY + 5.5, c + side * 8.5, hipY - 4.5, PALETTE.rustLight);
+    detailPx(ctx, c + side * 8.5, hipY - 7.5, PALETTE.stoneLight);
+  }
 }
 
 function drawSurvivorVariantDetails(args) {

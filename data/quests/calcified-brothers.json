@@ -1,12 +1,12 @@
 {
   "id": "calcified-brothers",
-  "title": "The Holt Brothers",
+  "title": "The Carbo Brothers",
   "initialStage": "find-crossroad-brother",
   "objectives": [
     { "text": "Speak with the calcified sign at the crossroads.", "stage": "find-crossroad-brother" },
-    { "text": "Find Edrin Holt in the wheat fields.", "stage": "find-field-brother" },
-    { "text": "Check the Holt house for Edrin.", "stage": "check-farm-family" },
-    { "text": "Return to Edrin with what you found.", "stage": "family-known" }
+    { "text": "Find Eleazar Carbo in the wheat fields.", "stage": "find-field-brother" },
+    { "text": "Check the Carbo house for Eleazar.", "stage": "check-farm-family" },
+    { "text": "Return to Eleazar with what you found.", "stage": "family-known" }
   ],
   "stages": [
     {
@@ -16,26 +16,26 @@
     },
     {
       "id": "find-field-brother",
-      "task": "Find Edrin Holt",
-      "description": "Garron Holt asked you to check on his brother Edrin, who was taken to the farm fields."
+      "task": "Find Eleazar Carbo",
+      "description": "Gideon Carbo asked you to check on his brother Eleazar, who was taken to the farm fields."
     },
     {
       "id": "check-farm-family",
-      "task": "Check the Holt house",
+      "task": "Check the Carbo house",
       "xp": 20,
-      "description": "Edrin Holt still cares for the descendants who kept him in the wheat. Find out what happened to the house."
+      "description": "Eleazar Carbo still cares for the descendants who kept him in the wheat. Find out what happened to the house."
     },
     {
       "id": "family-known",
-      "task": "Return to Edrin",
+      "task": "Return to Eleazar",
       "xp": 25,
-      "description": "The current Holt family has been raised on crosses in the yard. Edrin is waiting for your answer."
+      "description": "The current Carbo family has been raised on crosses in the yard. Eleazar is waiting for your answer."
     },
     {
       "id": "complete",
-      "task": "Edrin has his answer",
+      "task": "Eleazar has his answer",
       "xp": 35,
-      "description": "You answered Edrin Holt. Truth or mercy, the wheat has gone quiet again."
+      "description": "You answered Eleazar Carbo. Truth or mercy, the wheat has gone quiet again."
     }
   ]
 }

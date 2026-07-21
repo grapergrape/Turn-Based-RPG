@@ -1,0 +1,46 @@
+{
+  "id": "pilgrim-mace",
+  "name": "Pilgrim Mace",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "blunt",
+  "rarity": "rare",
+  "weight": 2.1,
+  "groundModel": "blunt",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Road Pilgrims",
+    "factions": [
+      "road-pilgrims"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "blunt",
+    "roles": [
+      "melee",
+      "blunt",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 6,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 90
+  },
+  "description": "A short iron mace disguised as a walking staff beneath a leather cap. Pilgrims remove the cap when talk has failed."
+}

@@ -1,0 +1,12 @@
+{
+  "id": "intermediate-cartridge-ammo",
+  "name": "Intermediate Rifle Cartridges",
+  "type": "ammo",
+  "rarity": "common",
+  "weight": 0.032,
+  "groundModel": "rounds",
+  "ammo": {
+    "family": "intermediate-cartridge"
+  },
+  "description": "Tapered rifle cartridges used by patrol carbines. Their cases bear a dozen competing parish stamps."
+}

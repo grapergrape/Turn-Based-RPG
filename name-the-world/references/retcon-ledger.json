@@ -1,0 +1,1771 @@
+{
+  "schemaVersion": 1,
+  "protectedAnchor": "canon:first-icon",
+  "entries": [
+    {
+      "id": "ash-road-south-anja-kest",
+      "kind": "actor",
+      "oldDisplay": "Anja Kest",
+      "display": "Anna Silo",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-ari-veck",
+      "kind": "actor",
+      "oldDisplay": "Ari Veck",
+      "display": "Asa Aquila",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-arlo-tern",
+      "kind": "actor",
+      "oldDisplay": "Arlo Tern",
+      "display": "Amos Bassus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-aro-kelm",
+      "kind": "actor",
+      "oldDisplay": "Aro Kelm",
+      "display": "Abel Vitalis",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-aven-ro",
+      "kind": "actor",
+      "oldDisplay": "Aven Ro",
+      "display": "Eve Porta",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-bela-orra",
+      "kind": "actor",
+      "oldDisplay": "Bela Orra",
+      "display": "Martha Pistor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-benne-korr",
+      "kind": "actor",
+      "oldDisplay": "Benne Korr",
+      "display": "Benjamin Nauta",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-bera-tol",
+      "kind": "actor",
+      "oldDisplay": "Bera Tol",
+      "display": "Rebecca Marinus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-bess-orra",
+      "kind": "actor",
+      "oldDisplay": "Bess Orra",
+      "display": "Beth Pistor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-bram-doss",
+      "kind": "actor",
+      "oldDisplay": "Bram Doss",
+      "display": "Baruch of Bethel",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-brann-eder",
+      "kind": "actor",
+      "oldDisplay": "Brann Eder",
+      "display": "Reuben Longus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-brin-ossa",
+      "kind": "actor",
+      "oldDisplay": "Brin Ossa",
+      "display": "Dinah Viator",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-cale-ruun",
+      "kind": "actor",
+      "oldDisplay": "Cale Ruun",
+      "display": "Joel Justus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-cassa-rehn",
+      "kind": "actor",
+      "oldDisplay": "Cassa Rehn",
+      "display": "Cassia Laetus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-cett-arven",
+      "kind": "actor",
+      "oldDisplay": "Cett Arven",
+      "display": "Seth Priscus",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-cora-vell",
+      "kind": "actor",
+      "oldDisplay": "Cora Vell",
+      "display": "Rhoda Felix",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-dani-wren",
+      "kind": "actor",
+      "oldDisplay": "Dani Wren",
+      "display": "Daniel Ripa",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-daro-mett",
+      "kind": "actor",
+      "oldDisplay": "Daro Mett",
+      "display": "Darius Secundus",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-dena-sile",
+      "kind": "actor",
+      "oldDisplay": "Dena Sile",
+      "display": "Deborah Porta",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-dessa-olt",
+      "kind": "actor",
+      "oldDisplay": "Dessa Olt",
+      "display": "Damaris Celsus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-elda-morn",
+      "kind": "actor",
+      "oldDisplay": "Elda Morn",
+      "display": "Claudia Lector",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-ena-seln",
+      "kind": "actor",
+      "oldDisplay": "Ena Seln",
+      "display": "Hannah Quirinus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-eren-holt",
+      "kind": "actor",
+      "oldDisplay": "Eren Holt",
+      "display": "Aaron Carbo",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-erro-hain",
+      "kind": "actor",
+      "oldDisplay": "Erro Hain",
+      "display": "Ezra Niger",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-esi-quen",
+      "kind": "actor",
+      "oldDisplay": "Esi Quen",
+      "display": "Esther of Bethany",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-evin-sael",
+      "kind": "actor",
+      "oldDisplay": "Evin Sael",
+      "display": "Timothy Cato",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-fara-dole",
+      "kind": "actor",
+      "oldDisplay": "Fara Dole",
+      "display": "Leah Scriba",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-fela-brin",
+      "kind": "actor",
+      "oldDisplay": "Fela Brin",
+      "display": "Felicitas Rufinus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-fenn-rusk",
+      "kind": "actor",
+      "oldDisplay": "Fenn Rusk",
+      "display": "Phinehas Tector",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-gann-tare",
+      "kind": "actor",
+      "oldDisplay": "Gann Tare",
+      "display": "Gad Pastor",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-gatt-vire",
+      "kind": "actor",
+      "oldDisplay": "Gatt Vire",
+      "display": "Gaius Cotta",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-gess-lorn",
+      "kind": "actor",
+      "oldDisplay": "Gess Lorn",
+      "display": "Jesse Molitor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-hadr-malk",
+      "kind": "actor",
+      "oldDisplay": "Hadr Malk",
+      "display": "Hadar Niger",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-hale-cord",
+      "kind": "actor",
+      "oldDisplay": "Hale Cord",
+      "display": "Judah Sartor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-hara-doss",
+      "kind": "actor",
+      "oldDisplay": "Hara Doss",
+      "display": "Hannah of Bethel",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-hessa-vir",
+      "kind": "actor",
+      "oldDisplay": "Hessa Vir",
+      "display": "Keziah Valens",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-holl-varek",
+      "kind": "actor",
+      "oldDisplay": "Holl Varek",
+      "display": "Horace Crispus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-ilo-varo",
+      "kind": "actor",
+      "oldDisplay": "Ilo Varo",
+      "display": "Isaac Faber",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-ira-cord",
+      "kind": "actor",
+      "oldDisplay": "Ira Cord",
+      "display": "Judith Sartor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-iven-roa",
+      "kind": "actor",
+      "oldDisplay": "Iven Roa",
+      "display": "Joanna Medicus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-jalen-olt",
+      "kind": "actor",
+      "oldDisplay": "Jalen Olt",
+      "display": "Jair Celsus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-jani-kes",
+      "kind": "actor",
+      "oldDisplay": "Jani Kes",
+      "display": "Jael Caupo",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-jarik-ardent",
+      "kind": "actor",
+      "oldDisplay": "Jarik Ardent",
+      "display": "Jeremiah Afer",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-jaro-fen",
+      "kind": "actor",
+      "oldDisplay": "Jaro Fen",
+      "display": "Joab Lupus",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-jeren-dren",
+      "kind": "actor",
+      "oldDisplay": "Jeren Dren",
+      "display": "Junia Sabinus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-jori-cade",
+      "kind": "actor",
+      "oldDisplay": "Jori Cade",
+      "display": "Jonah Mercator",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-joss-marr",
+      "kind": "actor",
+      "oldDisplay": "Joss Marr",
+      "display": "Joseph Fullo",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-kell-arven",
+      "kind": "actor",
+      "oldDisplay": "Kell Arven",
+      "display": "Kephas Priscus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-kerr-sorn",
+      "kind": "actor",
+      "oldDisplay": "Kerr Sorn",
+      "display": "Cyrus Longinus",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-kesta-brin",
+      "kind": "actor",
+      "oldDisplay": "Kesta Brin",
+      "display": "Tabitha Rufinus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-kiri-dast",
+      "kind": "actor",
+      "oldDisplay": "Kiri Dast",
+      "display": "Miriam Paulus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-lena-ossa",
+      "kind": "actor",
+      "oldDisplay": "Lena Ossa",
+      "display": "Leah Viator",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-leto-marr",
+      "kind": "actor",
+      "oldDisplay": "Leto Marr",
+      "display": "Levi Fullo",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-luta-kelm",
+      "kind": "actor",
+      "oldDisplay": "Luta Kelm",
+      "display": "Lucia Vitalis",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-lysa-tor",
+      "kind": "actor",
+      "oldDisplay": "Lysa Tor",
+      "display": "Susanna Pastor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-maud-serren",
+      "kind": "actor",
+      "oldDisplay": "Maud Serren",
+      "display": "Monica Grammaticus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-mell-ossa",
+      "kind": "actor",
+      "oldDisplay": "Mell Ossa",
+      "display": "Micah Viator",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-menn-vaun",
+      "kind": "actor",
+      "oldDisplay": "Menn Vaun",
+      "display": "Manasseh Naso",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-mera-hask",
+      "kind": "actor",
+      "oldDisplay": "Mera Hask",
+      "display": "Ruth Secunda",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-meren-heth",
+      "kind": "actor",
+      "oldDisplay": "Meren Heth",
+      "display": "Matthias Cursor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-merra-seln",
+      "kind": "actor",
+      "oldDisplay": "Merra Seln",
+      "display": "Martha Quirinus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-mila-esh",
+      "kind": "actor",
+      "oldDisplay": "Mila Esh",
+      "display": "Milcah Bassus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-mina-ferl",
+      "kind": "actor",
+      "oldDisplay": "Mina Ferl",
+      "display": "Naomi Rufus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-mira-soll",
+      "kind": "actor",
+      "oldDisplay": "Mira Soll",
+      "display": "Miriam Hortus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-mott-rell",
+      "kind": "actor",
+      "oldDisplay": "Mott Rell",
+      "display": "Matthew Nauta",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-nali-lorn",
+      "kind": "actor",
+      "oldDisplay": "Nali Lorn",
+      "display": "Nathan Molitor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-nara-quen",
+      "kind": "actor",
+      "oldDisplay": "Nara Quen",
+      "display": "Naomi of Bethany",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-nel-varo",
+      "kind": "actor",
+      "oldDisplay": "Nel Varo",
+      "display": "Noa Faber",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-nema-cord",
+      "kind": "actor",
+      "oldDisplay": "Nema Cord",
+      "display": "Naamah Sartor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-neri-vaun",
+      "kind": "actor",
+      "oldDisplay": "Neri Vaun",
+      "display": "Salome Naso",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-nim-cord",
+      "kind": "actor",
+      "oldDisplay": "Nim Cord",
+      "display": "Noam Sartor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-noll-dast",
+      "kind": "actor",
+      "oldDisplay": "Noll Dast",
+      "display": "Noah Paulus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-olla-kern",
+      "kind": "actor",
+      "oldDisplay": "Olla Kern",
+      "display": "Orpah Victor",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-orr-vask",
+      "kind": "actor",
+      "oldDisplay": "Orr Vask",
+      "display": "Obadiah Custos",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-orsa-veck",
+      "kind": "actor",
+      "oldDisplay": "Orsa Veck",
+      "display": "Rachel Aquila",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-oss-kade",
+      "kind": "actor",
+      "oldDisplay": "Oss Kade",
+      "display": "Othniel Mercator",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-pate-lorn",
+      "kind": "actor",
+      "oldDisplay": "Pate Lorn",
+      "display": "Peter Molitor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-pava-dren",
+      "kind": "actor",
+      "oldDisplay": "Pava Dren",
+      "display": "Paula Sabinus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-pavan-ire",
+      "kind": "actor",
+      "oldDisplay": "Pavan Ire",
+      "display": "Paulinus Cato",
+      "stratum": "lumen-compact",
+      "household": "lumen-compact",
+      "sourceBasis": "Greek Christian and Latin scholarly or civic register"
+    },
+    {
+      "id": "ash-road-south-peli-rehn",
+      "kind": "actor",
+      "oldDisplay": "Peli Rehn",
+      "display": "Phoebe Laetus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-pell-adra",
+      "kind": "actor",
+      "oldDisplay": "Pell Adra",
+      "display": "Philip Porta",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-pella-norr",
+      "kind": "actor",
+      "oldDisplay": "Pella Norr",
+      "display": "Priscilla Niger",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-pera-koss",
+      "kind": "actor",
+      "oldDisplay": "Pera Koss",
+      "display": "Perpetua Felix",
+      "stratum": "road-household",
+      "household": "ash-road-traders",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-perr-varo",
+      "kind": "actor",
+      "oldDisplay": "Perr Varo",
+      "display": "Tobit Faber",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-rava-tern",
+      "kind": "actor",
+      "oldDisplay": "Rava Tern",
+      "display": "Rachel Bassus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-ressa-venn",
+      "kind": "actor",
+      "oldDisplay": "Ressa Venn",
+      "display": "Susanna Fontana",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-rian-sile",
+      "kind": "actor",
+      "oldDisplay": "Rian Sile",
+      "display": "Rufus Porta",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-rin-quor",
+      "kind": "actor",
+      "oldDisplay": "Rin Quor",
+      "display": "Irene Celsus",
+      "stratum": "lumen-compact",
+      "household": "lumen-compact",
+      "sourceBasis": "Greek Christian and Latin scholarly or civic register"
+    },
+    {
+      "id": "ash-road-south-rova-holt",
+      "kind": "actor",
+      "oldDisplay": "Rova Holt",
+      "display": "Ruth Carbo",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-sann-vire",
+      "kind": "actor",
+      "oldDisplay": "Sann Vire",
+      "display": "Samson Cotta",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-sela-marr",
+      "kind": "actor",
+      "oldDisplay": "Sela Marr",
+      "display": "Selah Fullo",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-seli-ruun",
+      "kind": "actor",
+      "oldDisplay": "Seli Ruun",
+      "display": "Salome Justus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-seren-vask",
+      "kind": "actor",
+      "oldDisplay": "Seren Vask",
+      "display": "Serena Custos",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-sima-venn",
+      "kind": "actor",
+      "oldDisplay": "Sima Venn",
+      "display": "Simeon Fontana",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-sol-kade",
+      "kind": "actor",
+      "oldDisplay": "Sol Kade",
+      "display": "Saul Mercator",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-sora-varek",
+      "kind": "actor",
+      "oldDisplay": "Sora Varek",
+      "display": "Sophia Crispus",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-tal-uren",
+      "kind": "actor",
+      "oldDisplay": "Tal Uren",
+      "display": "Talmai Calceus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-tessa-bair",
+      "kind": "actor",
+      "oldDisplay": "Tessa Bair",
+      "display": "Thecla Galenus",
+      "stratum": "lumen-compact",
+      "household": "lumen-compact",
+      "sourceBasis": "Greek Christian and Latin scholarly or civic register"
+    },
+    {
+      "id": "ash-road-south-tir-ossa",
+      "kind": "actor",
+      "oldDisplay": "Tir Ossa",
+      "display": "Tirzah Viator",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-toll-quen",
+      "kind": "actor",
+      "oldDisplay": "Toll Quen",
+      "display": "Tobias of Bethany",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-toma-doss",
+      "kind": "actor",
+      "oldDisplay": "Toma Doss",
+      "display": "Thomas of Bethel",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-tor-vask",
+      "kind": "actor",
+      "oldDisplay": "Tor Vask",
+      "display": "Titus Custos",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-ulm-dorr",
+      "kind": "actor",
+      "oldDisplay": "Ulm Dorr",
+      "display": "Uriah Bassus",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-vara-sorn",
+      "kind": "actor",
+      "oldDisplay": "Vara Sorn",
+      "display": "Valeria Longinus",
+      "stratum": "road-household",
+      "household": "morrow-chain",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-vek-orra",
+      "kind": "actor",
+      "oldDisplay": "Vek Orra",
+      "display": "Victor Pistor",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-vela-sile",
+      "kind": "actor",
+      "oldDisplay": "Vela Sile",
+      "display": "Veronica Porta",
+      "stratum": "road-household",
+      "household": "south-measure",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "ash-road-south-yara-quell",
+      "kind": "actor",
+      "oldDisplay": "Yara Quell",
+      "display": "Aurelia Priscian",
+      "stratum": "lumen-compact",
+      "household": "lumen-compact",
+      "sourceBasis": "Greek Christian and Latin scholarly or civic register"
+    },
+    {
+      "id": "brother-tarn",
+      "kind": "actor",
+      "oldDisplay": "Brother Tarn",
+      "display": "Brother Cassian",
+      "stratum": "penitent-engines",
+      "household": "penitent-engines",
+      "sourceBasis": "Monastic name separated from service designation"
+    },
+    {
+      "id": "canon:bloomborn-advocate",
+      "kind": "canon",
+      "oldDisplay": "Nera Sable",
+      "display": "Miriam Porta",
+      "stratum": "free-cities",
+      "household": "Spindle Gate undercity",
+      "sourceBasis": "Biblical name with gate-household byname"
+    },
+    {
+      "id": "canon:bloomborn-tracker",
+      "kind": "canon",
+      "oldDisplay": "Lio",
+      "display": "Mica",
+      "stratum": "road-household",
+      "household": "Bloomborn refugee",
+      "sourceBasis": "Household shortening of biblical Micah"
+    },
+    {
+      "id": "canon:choir-brother",
+      "kind": "canon",
+      "oldDisplay": "Brother Senn",
+      "display": "Brother Malachi",
+      "stratum": "choir",
+      "household": "Open Wound hierarchy",
+      "sourceBasis": "Biblical birth name with separate Choir title"
+    },
+    {
+      "id": "canon:choir-cantor",
+      "kind": "canon",
+      "oldDisplay": "Cantor Ysolde Navre",
+      "display": "Cantor Thecla Naso",
+      "stratum": "choir",
+      "household": "Open Wound hierarchy",
+      "sourceBasis": "Credible Christian birth name with separate Choir title"
+    },
+    {
+      "id": "canon:choir-defector",
+      "kind": "canon",
+      "oldDisplay": "Anselm Quay",
+      "display": "Matthias Nauta",
+      "stratum": "choir",
+      "household": "Former Choir",
+      "sourceBasis": "New Testament name with occupational Latin byname"
+    },
+    {
+      "id": "canon:cinder-prior",
+      "kind": "canon",
+      "oldDisplay": "Prior Amos Feld",
+      "display": "Prior Benedict",
+      "stratum": "free-cities",
+      "household": "Cinder Parish",
+      "sourceBasis": "Monastic name retained outside Remnant authority"
+    },
+    {
+      "id": "canon:compact-director",
+      "kind": "canon",
+      "oldDisplay": "Director Salene Arq",
+      "display": "Director Theodora Celsa",
+      "stratum": "lumen-compact",
+      "household": "Rationalists",
+      "sourceBasis": "Greek Christian name with Latin civic cognomen"
+    },
+    {
+      "id": "canon:compact-integration-researcher",
+      "kind": "canon",
+      "oldDisplay": "Dr. Nadir Pell",
+      "display": "Dr. Lucian Varro",
+      "stratum": "lumen-compact",
+      "household": "Ascension Biologists",
+      "sourceBasis": "Late Latin scholarly name and Roman cognomen"
+    },
+    {
+      "id": "canon:compact-provost",
+      "kind": "canon",
+      "oldDisplay": "Provost Iona Vahr",
+      "display": "Provost Cassia Priscian",
+      "stratum": "lumen-compact",
+      "household": "Archive Loyalists",
+      "sourceBasis": "Greek and Late Latin scholarly forms"
+    },
+    {
+      "id": "canon:compact-xenobiologist",
+      "kind": "canon",
+      "oldDisplay": "Dr. Kael Ren",
+      "display": "Dr. Theophilus Celsus",
+      "stratum": "lumen-compact",
+      "household": "Rationalists",
+      "sourceBasis": "New Testament Greek name with Roman cognomen"
+    },
+    {
+      "id": "canon:companion-morrow-guide",
+      "kind": "canon",
+      "oldDisplay": "Mara Vey",
+      "display": "Junia Carbo",
+      "stratum": "free-cities",
+      "household": "Morrow Chain",
+      "sourceBasis": "New Testament Junia with the Roman cognomen Carbo"
+    },
+    {
+      "id": "canon:first-icon",
+      "kind": "canon",
+      "oldDisplay": "Father Marius Vale",
+      "display": "Father Marius Vale",
+      "stratum": "holy-remnant",
+      "household": "Solar Ecclesiate",
+      "sourceBasis": "Protected founding canon",
+      "exemption": "The sole personal-name exemption. Vale Imprint derives from this person."
+    },
+    {
+      "id": "canon:glassmarket-speaker",
+      "kind": "canon",
+      "oldDisplay": "Glassmarket Speaker Renna Sol",
+      "display": "Glassmarket Speaker Junia Felix",
+      "stratum": "free-cities",
+      "household": "Glassmarket",
+      "sourceBasis": "New Testament name and Roman cognomen"
+    },
+    {
+      "id": "canon:low-harrow-councilor",
+      "kind": "canon",
+      "oldDisplay": "Councilor Tavi Orrel",
+      "display": "Councilor Ruth Aemilia",
+      "stratum": "free-cities",
+      "household": "Low Harrow",
+      "sourceBasis": "Biblical given name with Roman civic house name"
+    },
+    {
+      "id": "canon:marshal-confessor",
+      "kind": "canon",
+      "oldDisplay": "Marshal-Confessor Odran Kess",
+      "display": "Marshal-Confessor Victorinus",
+      "stratum": "holy-remnant",
+      "household": "Iron Penitents",
+      "sourceBasis": "Late Latin military and saint name"
+    },
+    {
+      "id": "canon:mercy-exorcist",
+      "kind": "canon",
+      "oldDisplay": "Sister Ilyra Voss",
+      "display": "Sister Perpetua",
+      "stratum": "holy-remnant",
+      "household": "Mercy Orders",
+      "sourceBasis": "Late Antique martyr and monastic name"
+    },
+    {
+      "id": "canon:mercy-mother",
+      "kind": "canon",
+      "oldDisplay": "Mother Caldra Ys",
+      "display": "Mother Agnes",
+      "stratum": "holy-remnant",
+      "household": "Mercy Orders",
+      "sourceBasis": "Early Christian monastic name"
+    },
+    {
+      "id": "canon:morrow-matriarch",
+      "kind": "canon",
+      "oldDisplay": "Jessa Morrow",
+      "display": "Judith Cotta",
+      "stratum": "road-household",
+      "household": "Morrow Chain",
+      "sourceBasis": "Biblical given name and Roman road-household cognomen"
+    },
+    {
+      "id": "canon:pale-orchard-keeper",
+      "kind": "canon",
+      "oldDisplay": "Old Cessa",
+      "display": "Old Keziah",
+      "stratum": "road-household",
+      "household": "Pale Orchard",
+      "sourceBasis": "Biblical household name"
+    },
+    {
+      "id": "canon:penitent-abbess",
+      "kind": "canon",
+      "oldDisplay": "Abbess-Mechanic Rhun Tal",
+      "display": "Abbess-Mechanic Helena",
+      "stratum": "penitent-engines",
+      "household": "Black Reliquary",
+      "sourceBasis": "Late Antique monastic name with service title"
+    },
+    {
+      "id": "canon:penitent-prior",
+      "kind": "canon",
+      "oldDisplay": "Prior-Iron Malrec",
+      "display": "Prior-Iron Severus",
+      "stratum": "penitent-engines",
+      "household": "Black Reliquary",
+      "sourceBasis": "Roman monastic name with service title"
+    },
+    {
+      "id": "canon:pontifex",
+      "kind": "canon",
+      "oldDisplay": "Pontifex Severian III",
+      "display": "Pontifex Celestine IV",
+      "stratum": "holy-remnant",
+      "household": "Pontifical office",
+      "sourceBasis": "Attested Latin regnal name and ordinal"
+    },
+    {
+      "id": "canon:quiet-cardinal",
+      "kind": "canon",
+      "oldDisplay": "Cardinal Maera Caldus",
+      "display": "Cardinal Domitilla Corvus",
+      "stratum": "holy-remnant",
+      "household": "Quiet Cardinals",
+      "sourceBasis": "Late Antique Roman names"
+    },
+    {
+      "id": "canon:red-tithe-bishop",
+      "kind": "canon",
+      "oldDisplay": "Bishop Rusk Dain",
+      "display": "Bishop Rufinus",
+      "stratum": "road-household",
+      "household": "Red Tithe",
+      "sourceBasis": "Late Latin birth name with self-awarded title"
+    },
+    {
+      "id": "canon:saintbreaker",
+      "kind": "canon",
+      "oldDisplay": "Cal Virek",
+      "display": "Gideon Naso",
+      "stratum": "road-household",
+      "household": "Saintbreakers",
+      "sourceBasis": "Biblical given name and Roman cognomen"
+    },
+    {
+      "id": "canon:spindle-warden",
+      "kind": "canon",
+      "oldDisplay": "Warden Edda Mar",
+      "display": "Warden Deborah Porta",
+      "stratum": "free-cities",
+      "household": "Spindle Gate",
+      "sourceBasis": "Biblical given name with gate occupational byname"
+    },
+    {
+      "id": "canon:stilling-architect",
+      "kind": "canon",
+      "oldDisplay": "Dr. Elian Sorell",
+      "display": "Dr. Diodorus Seneca",
+      "stratum": "lumen-compact",
+      "household": "Solar Ecclesiate science mission",
+      "sourceBasis": "Greek scholarly name and Roman cognomen"
+    },
+    {
+      "id": "catacombs-child-corin",
+      "kind": "actor",
+      "oldDisplay": "Corin",
+      "display": "Micah",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-child-eda",
+      "kind": "actor",
+      "oldDisplay": "Eda",
+      "display": "Ruth",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-dalia",
+      "kind": "actor",
+      "oldDisplay": "Dalia Mor",
+      "display": "Damaris Molitor",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-hanne",
+      "kind": "actor",
+      "oldDisplay": "Hanne Rovik",
+      "display": "Joanna Corvus",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-istra",
+      "kind": "actor",
+      "oldDisplay": "Istra Havel",
+      "display": "Judith Porta",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-mirel",
+      "kind": "actor",
+      "oldDisplay": "Mirel Ardent",
+      "display": "Priscilla Afer",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-nessa",
+      "kind": "actor",
+      "oldDisplay": "Nessa Quay",
+      "display": "Naomi Nauta",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-oren",
+      "kind": "actor",
+      "oldDisplay": "Oren Rill",
+      "display": "Tobias Ripa",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-runa",
+      "kind": "actor",
+      "oldDisplay": "Runa Pell",
+      "display": "Ruth Pistor",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-selka",
+      "kind": "actor",
+      "oldDisplay": "Selka Ardent",
+      "display": "Susanna Afer",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "catacombs-survivor-tomas",
+      "kind": "actor",
+      "oldDisplay": "Tomas Vek",
+      "display": "Tobias Porta",
+      "stratum": "road-household",
+      "household": "ash-chapel-settlement",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "censure-ash-porter-joric",
+      "kind": "actor",
+      "oldDisplay": "Ash Porter Joric",
+      "display": "Ash Porter Baruch",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-bell-clerk-sera",
+      "kind": "actor",
+      "oldDisplay": "Bell Clerk Sera",
+      "display": "Bell Clerk Sabina",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-brother-caldus",
+      "kind": "actor",
+      "oldDisplay": "Brother Caldus",
+      "display": "Brother Cyprian",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-evidence-keeper-malco",
+      "kind": "actor",
+      "oldDisplay": "Evidence Keeper Malco",
+      "display": "Evidence Keeper Melchior",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-father-odran",
+      "kind": "actor",
+      "oldDisplay": "Father Odran",
+      "display": "Father Augustine",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-novice-ivarn",
+      "kind": "actor",
+      "oldDisplay": "Novice Ivarn",
+      "display": "Novice Isidore",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-preceptor-voss",
+      "kind": "actor",
+      "oldDisplay": "Preceptor Voss",
+      "display": "Preceptor Aquila",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-quartermaster-runa",
+      "kind": "actor",
+      "oldDisplay": "Quartermaster Runa",
+      "display": "Quartermaster Ruth",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-sister-hanne",
+      "kind": "actor",
+      "oldDisplay": "Sister Hanne",
+      "display": "Sister Joanna",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-sutler-maev",
+      "kind": "actor",
+      "oldDisplay": "Sutler Maev",
+      "display": "Sutler Judith",
+      "stratum": "road-household",
+      "household": "ash-road-traders",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "censure-tether-guard-elian",
+      "kind": "actor",
+      "oldDisplay": "Tether Guard Elian",
+      "display": "Tether Guard Justus",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-widow-bruna",
+      "kind": "actor",
+      "oldDisplay": "Widow Bruna",
+      "display": "Widow Naomi",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "censure-writ-runner-pell",
+      "kind": "actor",
+      "oldDisplay": "Writ Runner Pell",
+      "display": "Writ Runner Philip",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "dead:grave-arno-pell",
+      "kind": "dead",
+      "oldDisplay": "Arno Pell",
+      "display": "Aaron Celsus",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:grave-brother-senn-kade",
+      "kind": "dead",
+      "oldDisplay": "Brother Senn Kade",
+      "display": "Brother Malachi Mercator",
+      "stratum": "holy-remnant",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with occupational household byname"
+    },
+    {
+      "id": "dead:grave-eren-voss",
+      "kind": "dead",
+      "oldDisplay": "Eren Voss",
+      "display": "Aaron Crispus",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:grave-ilyen-marr",
+      "kind": "dead",
+      "oldDisplay": "Ilyen Marr",
+      "display": "Jeremiah Fullo",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with occupational household byname"
+    },
+    {
+      "id": "dead:grave-iven-rusk",
+      "kind": "dead",
+      "oldDisplay": "Iven Rusk",
+      "display": "Isaac Rufus",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:grave-lysa-orm",
+      "kind": "dead",
+      "oldDisplay": "Lysa Orm",
+      "display": "Susanna Niger",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "New Testament name with Roman cognomen"
+    },
+    {
+      "id": "dead:grave-nara-vell",
+      "kind": "dead",
+      "oldDisplay": "Nara Vell",
+      "display": "Naomi Felix",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:grave-otta-fen",
+      "kind": "dead",
+      "oldDisplay": "Otta Fen",
+      "display": "Obadiah Lupus",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:grave-sister-maud-arel",
+      "kind": "dead",
+      "oldDisplay": "Sister Maud Arel",
+      "display": "Sister Monica",
+      "stratum": "holy-remnant",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Late Antique monastic name"
+    },
+    {
+      "id": "dead:grave-toma-kest",
+      "kind": "dead",
+      "oldDisplay": "Toma Kest",
+      "display": "Thomas Silo",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with place byname"
+    },
+    {
+      "id": "dead:grave-vel-sarec",
+      "kind": "dead",
+      "oldDisplay": "Vel Sarec",
+      "display": "Levi Sabinus",
+      "stratum": "road-household",
+      "household": "Long Ash graveyard",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:old-pilgrim-amel-venn",
+      "kind": "dead",
+      "oldDisplay": "Sister Amel Venn",
+      "display": "Sister Aurelia Fontana",
+      "stratum": "holy-remnant",
+      "household": "Sealed Chapter roll",
+      "sourceBasis": "Late Latin name with recorded household byname"
+    },
+    {
+      "id": "dead:old-pilgrim-corda-pell",
+      "kind": "dead",
+      "oldDisplay": "Sister Corda Pell",
+      "display": "Sister Claudia",
+      "stratum": "holy-remnant",
+      "household": "Sealed Chapter roll",
+      "sourceBasis": "Roman monastic name"
+    },
+    {
+      "id": "dead:old-pilgrim-ilyan-ro",
+      "kind": "dead",
+      "oldDisplay": "Father Ilyan Ro",
+      "display": "Father Isidore",
+      "stratum": "holy-remnant",
+      "household": "Sealed Chapter roll",
+      "sourceBasis": "Late Antique monastic name"
+    },
+    {
+      "id": "dead:old-pilgrim-lessa",
+      "kind": "dead",
+      "oldDisplay": "Lessa",
+      "display": "Leah",
+      "stratum": "road-household",
+      "household": "Old Pilgrim east field",
+      "sourceBasis": "Biblical household name"
+    },
+    {
+      "id": "dead:old-pilgrim-mann-oris",
+      "kind": "dead",
+      "oldDisplay": "novice Mann Oris",
+      "display": "novice Manasseh Rufus",
+      "stratum": "holy-remnant",
+      "household": "Sealed Chapter roll",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:old-pilgrim-olya-kest",
+      "kind": "dead",
+      "oldDisplay": "pilgrim Olya Kest",
+      "display": "pilgrim Orpah Silo",
+      "stratum": "road-household",
+      "household": "Sealed Chapter roll",
+      "sourceBasis": "Biblical name with place byname"
+    },
+    {
+      "id": "dead:old-pilgrim-senn-darr",
+      "kind": "dead",
+      "oldDisplay": "pilgrim Senn Darr",
+      "display": "pilgrim Simeon Longus",
+      "stratum": "road-household",
+      "household": "Sealed Chapter roll",
+      "sourceBasis": "Biblical name with Roman cognomen"
+    },
+    {
+      "id": "dead:old-pilgrim-tera-vell",
+      "kind": "dead",
+      "oldDisplay": "novice Tera Vell",
+      "display": "novice Tabitha Felix",
+      "stratum": "holy-remnant",
+      "household": "Sealed Chapter roll",
+      "sourceBasis": "Biblical name with recorded household byname"
+    },
+    {
+      "id": "dead:old-pilgrim-venn",
+      "kind": "dead",
+      "oldDisplay": "Venn",
+      "display": "Abner",
+      "stratum": "road-household",
+      "household": "Old Pilgrim east field",
+      "sourceBasis": "Biblical household name"
+    },
+    {
+      "id": "enemy:host-sava-rell",
+      "kind": "enemy",
+      "oldDisplay": "Sava Rell",
+      "display": "Sapphira Rufa",
+      "stratum": "road-household",
+      "household": "Hallowfen quarantine record",
+      "sourceBasis": "New Testament name with Roman cognomen"
+    },
+    {
+      "id": "long-ash-carter-edda-farr",
+      "kind": "actor",
+      "oldDisplay": "Edda Farr",
+      "display": "Deborah Carbo",
+      "stratum": "road-household",
+      "household": "ash-road-traders",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "mara-vey",
+      "kind": "actor",
+      "oldDisplay": "Mara Vey",
+      "display": "Censure Agent",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "mention:ash-road-south-sapphira-brin",
+      "kind": "mention",
+      "oldDisplay": "Sapphira Brin",
+      "display": "Sarai Rufinus",
+      "stratum": "road-household",
+      "household": "Rufinus household",
+      "sourceBasis": "Biblical given name with Roman household cognomen"
+    },
+    {
+      "id": "mention:censure-arlen-voe",
+      "kind": "mention",
+      "oldDisplay": "Arlen Voe",
+      "display": "Paulinus Corda",
+      "stratum": "holy-remnant",
+      "household": "Former Censure agent",
+      "sourceBasis": "Late Latin name with road byname"
+    },
+    {
+      "id": "mention:censure-halvek",
+      "kind": "mention",
+      "oldDisplay": "Halvek",
+      "display": "Decian",
+      "stratum": "holy-remnant",
+      "household": "Road command",
+      "sourceBasis": "Late Latin administrative name"
+    },
+    {
+      "id": "mention:intake-clerk-ona-veyl",
+      "kind": "mention",
+      "oldDisplay": "Ona Veyl",
+      "display": "Junia Lector",
+      "stratum": "road-household",
+      "household": "South Measure intake office",
+      "sourceBasis": "New Testament name with occupational byname"
+    },
+    {
+      "id": "mention:long-ash-brother-cal",
+      "kind": "mention",
+      "oldDisplay": "Brother Cal",
+      "display": "Brother Joel",
+      "stratum": "holy-remnant",
+      "household": "Hallowfen mortuary office",
+      "sourceBasis": "Biblical monastic name"
+    },
+    {
+      "id": "mention:long-ash-edrin-holt",
+      "kind": "mention",
+      "oldDisplay": "Edrin Holt",
+      "display": "Eleazar Carbo",
+      "stratum": "road-household",
+      "household": "Carbo farm",
+      "sourceBasis": "Biblical name with Roman household cognomen"
+    },
+    {
+      "id": "mention:long-ash-garron-holt",
+      "kind": "mention",
+      "oldDisplay": "Garron Holt",
+      "display": "Gideon Carbo",
+      "stratum": "road-household",
+      "household": "Carbo farm",
+      "sourceBasis": "Biblical name with Roman household cognomen"
+    },
+    {
+      "id": "mention:long-ash-hessa-marr",
+      "kind": "mention",
+      "oldDisplay": "Hessa Marr",
+      "display": "Keziah Fullo",
+      "stratum": "road-household",
+      "household": "Hallowfen vigil record",
+      "sourceBasis": "Biblical name with occupational household byname"
+    },
+    {
+      "id": "mention:penitent-brother-ors",
+      "kind": "mention",
+      "oldDisplay": "Brother Ors",
+      "display": "Brother Job",
+      "stratum": "penitent-engines",
+      "household": "Lost Penitent Engine",
+      "sourceBasis": "Biblical monastic name"
+    },
+    {
+      "id": "old-pilgrim-father-noll",
+      "kind": "actor",
+      "oldDisplay": "Father Noll",
+      "display": "Father Noah",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "old-pilgrim-oren-bale",
+      "kind": "actor",
+      "oldDisplay": "Oren Bale",
+      "display": "Tobias Faber",
+      "stratum": "road-household",
+      "household": "road-travelers",
+      "sourceBasis": "Biblical given name with Latin household, work, or place byname"
+    },
+    {
+      "id": "old-pilgrim-sister-calen",
+      "kind": "actor",
+      "oldDisplay": "Sister Calen",
+      "display": "Sister Thecla",
+      "stratum": "holy-remnant",
+      "household": "holy-remnant",
+      "sourceBasis": "Biblical or Late Antique baptismal and monastic register"
+    },
+    {
+      "id": "place:veyrs-gate",
+      "kind": "place",
+      "oldDisplay": "Veyr's Gate",
+      "display": "Spindle Gate",
+      "stratum": "free-cities",
+      "household": "Free City hub",
+      "sourceBasis": "Industrial place name derived from the space-elevator anchor"
+    },
+    {
+      "id": "player",
+      "kind": "actor",
+      "oldDisplay": "Unnamed Militia Scout",
+      "display": "Free Cities Scout",
+      "stratum": "free-cities",
+      "household": "free-cities",
+      "sourceBasis": "Mixed biblical and Latin civic register"
+    }
+  ]
+}

@@ -5,6 +5,6 @@
   "rarity": "common",
   "weight": 0.2,
   "groundModel": "dressing",
-  "description": "A sealed sterile dressing. Restores 4 HP. Consumed on use.",
+  "description": "Sterile cloth sealed in waxed paper. Applying it restores 4 HP; the used dressing is discarded.",
   "use": { "effect": "heal", "amount": 4 }
 }

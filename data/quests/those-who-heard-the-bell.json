@@ -5,15 +5,21 @@
   "objectives": [
     {
       "text": "Search the graveyard chapels.",
-      "stage": "investigate-chapels"
-    },
-    {
-      "text": "Find Sava Rell and decide what remains.",
       "stage": "judge-vigil"
     },
     {
+      "text": "Find Sapphira Rufa.",
+      "stage": "judge-at-chair"
+    },
+    {
+      "text": "Pass judgment at the restraint chair.",
+      "stage": "complete",
+      "reveal": "judge-at-chair"
+    },
+    {
       "text": "The twelve have been judged.",
-      "stage": "complete"
+      "stage": "complete",
+      "reveal": "complete"
     }
   ],
   "stages": [
@@ -25,9 +31,15 @@
     },
     {
       "id": "judge-vigil",
-      "task": "Find Sava Rell and decide what remains",
+      "task": "Find Sapphira Rufa and decide what remains",
       "xp": 50,
-      "description": "Hessa Marr kept twelve names. The road office buried Sava beneath the mortuary after he turned toward Hallowfen's bells."
+      "description": "Keziah Fullo kept twelve names. The road office buried Sapphira beneath the mortuary after he turned toward Hallowfen's bells."
+    },
+    {
+      "id": "judge-at-chair",
+      "task": "Pass judgment at the restraint chair",
+      "xp": 0,
+      "description": "Sapphira is dead. Return to the examiner's chair and decide what the road will remember."
     },
     {
       "id": "complete",

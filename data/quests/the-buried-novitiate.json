@@ -1,0 +1,91 @@
+{
+  "id": "the-buried-novitiate",
+  "title": "The Buried Novitiate",
+  "initialStage": "find-closure-plan",
+  "unlockedBy": {
+    "flag": "old-pilgrim-buried-novitiate-found"
+  },
+  "objectives": [
+    {
+      "text": "Prove that a closure route lies beneath the church apse.",
+      "stage": "find-closure-plan"
+    },
+    {
+      "text": "Release the concealed apse mechanism.",
+      "stage": "find-apse-release"
+    },
+    {
+      "text": "Open the inner pressure door.",
+      "stage": "enter-buried-novitiate"
+    },
+    {
+      "text": "Find the last water tally.",
+      "stage": "read-water-tally"
+    },
+    {
+      "text": "Complete the four profession trials.",
+      "stage": "complete-trials"
+    },
+    {
+      "text": "Open the Oath Armory.",
+      "stage": "claim-oath-armory"
+    },
+    {
+      "text": "Use the return lift to leave the buried chapter.",
+      "stage": "return-to-light"
+    },
+    {
+      "text": "The buried novitiate has been opened.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "find-closure-plan",
+      "task": "Find the closure plan",
+      "description": "The Hill Church apse does not match its public foundation."
+    },
+    {
+      "id": "find-apse-release",
+      "task": "Release the apse mechanism",
+      "xp": 15,
+      "description": "A pressure-rated descent sits beneath the raised apse. Its release remains hidden in the stonework."
+    },
+    {
+      "id": "enter-buried-novitiate",
+      "task": "Open the inner pressure door",
+      "xp": 15,
+      "description": "The outer seal closed cleanly during the Bloom. The inner key should still be somewhere on the closure stair."
+    },
+    {
+      "id": "read-water-tally",
+      "task": "Find the water tally",
+      "xp": 20,
+      "description": "Priests, nuns, novices, and pilgrims died beyond the pressure door. Their last work should explain why."
+    },
+    {
+      "id": "complete-trials",
+      "task": "Complete the four trials",
+      "xp": 20,
+      "description": "The final profession door still reads the old mechanical trial states."
+    },
+    {
+      "id": "claim-oath-armory",
+      "task": "Open the Oath Armory",
+      "xp": 30,
+      "description": "The Sealed Chapter is open. Its Oath Armory remained closed throughout the deaths outside it."
+    },
+    {
+      "id": "return-to-light",
+      "task": "Take the return lift",
+      "xp": 30,
+      "description": "The Processional Pike is out of its rack. The return lift can now be released from the chapter side."
+    },
+    {
+      "id": "complete",
+      "task": "The buried novitiate is open",
+      "xp": 40,
+      "description": "The Processional Pike has returned to the road after the buried trials were put to rest."
+    }
+  ]
+}

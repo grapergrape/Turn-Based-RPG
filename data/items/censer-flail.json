@@ -1,0 +1,56 @@
+{
+  "id": "censer-flail",
+  "name": "Censer Flail",
+  "type": "weapon",
+  "catalogGroup": "melee",
+  "subtype": "blunt",
+  "rarity": "uncommon",
+  "weight": 2.1,
+  "groundModel": "blunt",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Ceremonial conversion",
+    "origin": "Processional Guard",
+    "factions": [
+      "processional-guard"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "blunt",
+    "roles": [
+      "melee",
+      "blunt",
+      "close"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "melee-strike",
+        "name": "Strike",
+        "mode": "melee",
+        "apCost": 4,
+        "damage": 5,
+        "range": 1,
+        "accuracyBonus": 0,
+        "conditionWear": 1
+      },
+      {
+        "id": "committed-blow",
+        "name": "Committed Blow",
+        "mode": "melee",
+        "apCost": 5,
+        "damage": 7,
+        "range": 1,
+        "accuracyBonus": -5,
+        "conditionWear": 2
+      }
+    ]
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "A chain censer reinforced until it became a weapon. Its pierced iron head still releases old ash when it strikes."
+}

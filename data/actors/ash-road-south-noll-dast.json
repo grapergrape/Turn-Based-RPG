@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-noll-dast",
+  "name": "Noah Paulus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Platform tally keeper",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "old-measure-gates",
+    "ambient-only",
+    "camp-patrol"
+  ],
+  "appearance": {
+    "body": "teen",
+    "outfit": "settlement-runner",
+    "gear": [
+      "thin-pack"
+    ],
+    "accent": "bare-brown"
+  }
+}

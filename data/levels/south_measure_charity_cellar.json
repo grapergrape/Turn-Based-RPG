@@ -1,0 +1,1026 @@
+{
+  "id": "south-measure-charity-cellar",
+  "name": "South Measure Charity Cellar",
+  "intro": "Milk tins and boiled cloth fill the first shelves. A locked cabinet stands apart from the medicine people trust.",
+  "width": 22,
+  "height": 16,
+  "tileSize": 64,
+  "mood": {
+    "floorShade": "#0a0807",
+    "floorShadeAlpha": 0.3,
+    "ambient": "#172635",
+    "ambientAlpha": 0.19,
+    "vignette": 0.33
+  },
+  "quests": [
+    "names-for-the-gate",
+    "household-of-one",
+    "debt-that-drinks",
+    "charity-cot",
+    "names-under-lime",
+    "lesson-under-the-wrap"
+  ],
+  "dialogue": [
+    "south-measure-charity-trapdoor-cellar",
+    "south-measure-cellar-iven-roa",
+    "south-measure-cellar-seli-ruun",
+    "south-measure-cellar-neri-vaun",
+    "south-measure-cellar-meren-heth",
+    "south-measure-cellar-suspect-cabinet",
+    "south-measure-cellar-burned-labels",
+    "south-measure-cellar-recruit-sheet"
+  ],
+  "tiles": [
+    "######################",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#####................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "#....................#",
+    "######################"
+  ],
+  "legend": {
+    "#": {
+      "kind": "south-measure-intake-wall",
+      "walkable": false
+    },
+    ".": {
+      "kind": "floor",
+      "floor": "south-measure-slab",
+      "walkable": true
+    }
+  },
+  "spawns": {
+    "player": {
+      "actor": "mara-vey",
+      "x": 18,
+      "y": 13,
+      "facing": "nw"
+    },
+    "npcs": [
+      {
+        "actor": "ash-road-south-iven-roa",
+        "spawnId": "cellar-iven-roa-0",
+        "characterSlot": "cellar-iven-roa",
+        "x": 6,
+        "y": 11,
+        "facing": "se",
+        "ambient": [
+          "Clean stock stays apart from every donated vial.",
+          "A medicine label is evidence before it is kindling.",
+          "The lessons began after the night patients stopped sleeping."
+        ],
+        "dialogue": "south-measure-cellar-iven-roa",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-seli-ruun",
+        "spawnId": "cellar-seli-ruun-1",
+        "characterSlot": "cellar-seli-ruun",
+        "x": 11,
+        "y": 10,
+        "facing": "se",
+        "ambient": [
+          "Count the cabinet again. One row is too neat.",
+          "Matthias brings medicine without asking who can pay.",
+          "Salome teaches letters. Some cards answer after the words end."
+        ],
+        "dialogue": "south-measure-cellar-seli-ruun",
+        "talkRadius": 1
+      },
+      {
+        "actor": "ash-road-south-neri-vaun",
+        "spawnId": "cellar-neri-vaun-2",
+        "characterSlot": "cellar-neri-vaun",
+        "x": 19,
+        "y": 10,
+        "facing": "se",
+        "ambient": [
+          "Letters begin after the cots settle.",
+          "I teach reading. The cards arrive whether I touch them or not.",
+          "Rhoda likes the letter M because it has two roofs."
+        ],
+        "dialogue": "south-measure-cellar-neri-vaun",
+        "talkRadius": 1,
+        "conditions": {
+          "flagsAbsent": [
+            "neri-agent-exposed",
+            "neri-agent-barred",
+            "neri-agent-council",
+            "neri-agent-compact",
+            "neri-agent-morrow",
+            "neri-agent-killed"
+          ]
+        }
+      },
+      {
+        "actor": "ash-road-south-pate-lorn",
+        "spawnId": "cellar-pate-lorn-3",
+        "characterSlot": "cellar-pate-lorn",
+        "x": 18,
+        "y": 3,
+        "facing": "se",
+        "ambient": [
+          "The cot below is cooler than the canvas one.",
+          "Salome says an open wound can learn a better name.",
+          "I have not agreed. I only listened."
+        ]
+      },
+      {
+        "actor": "ash-road-south-meren-heth",
+        "spawnId": "cellar-meren-heth-4",
+        "characterSlot": "cellar-meren-heth",
+        "x": 4,
+        "y": 3,
+        "facing": "se",
+        "ambient": [
+          "Three fever vials, two dressings, no receipt.",
+          "The west road asks fewer questions after dusk.",
+          "Salome is a sympathizer. That is all I was told."
+        ],
+        "dialogue": "south-measure-cellar-meren-heth",
+        "talkRadius": 1
+      }
+    ],
+    "enemies": [
+      {
+        "id": "south-measure-false-catechist",
+        "spawnId": "cellar-neri-vaun-revealed",
+        "characterSlot": "cellar-neri-vaun",
+        "x": 19,
+        "y": 10,
+        "facing": "nw",
+        "encounter": "south-measure-false-catechist",
+        "dialogue": "south-measure-cellar-neri-vaun",
+        "dialogueRepeat": true,
+        "talkRadius": 1,
+        "conditions": {
+          "flag": "neri-agent-exposed",
+          "flagsAbsent": [
+            "neri-agent-resolved"
+          ]
+        },
+        "ambient": [
+          "The second voice repeats what the first one forgives.",
+          "Her chest wrap moves after she stops breathing.",
+          "Small teeth close behind the lesson words."
+        ],
+        "aggro": [
+          "Do not make the children watch this lesson.",
+          "You wanted the honest voice. Hear it."
+        ]
+      }
+    ]
+  },
+  "objects": [
+    {
+      "kind": "south-measure-door",
+      "x": 21,
+      "y": 13,
+      "id": "charity-cellar-stair",
+      "name": "Charity Cot Stair",
+      "blocking": true,
+      "variant": "civil",
+      "wallPlane": "se",
+      "interactionMarker": {
+        "x": 20,
+        "y": 13
+      },
+      "mapMarker": {
+        "label": "Charity Cot Stair",
+        "kind": "exit"
+      },
+      "interact": {
+        "type": "secret-exit",
+        "dialogue": "south-measure-charity-trapdoor-cellar"
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 10,
+      "y": 3,
+      "id": "charity-cellar-clean-supply-shelves",
+      "blocking": true,
+      "variant": "clean-shelf",
+      "orient": "se",
+      "name": "Clean Supply Shelves",
+      "interact": {
+        "type": "note",
+        "log": "Gauze, fever salts, and milk tins fill the open shelves. The seals and dose marks match ordinary charity work."
+      },
+      "interactionMarker": {
+        "x": 11,
+        "y": 3
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 3,
+      "y": 7,
+      "id": "charity-cellar-suspect-cabinet",
+      "blocking": true,
+      "variant": "suspect-shelf",
+      "orient": "sw",
+      "name": "Locked Suppressant Cabinet",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "south-measure-cellar-suspect-cabinet"
+      },
+      "mapMarker": {
+        "label": "Suppressant Cabinet",
+        "kind": "locked"
+      },
+      "interactionMarker": {
+        "x": 4,
+        "y": 7
+      }
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 0,
+      "y": 9,
+      "id": "charity-cellar-prayer-cards",
+      "blocking": true,
+      "variant": "prayer-cards",
+      "wallPlane": "se",
+      "name": "Open Wound Prayer Cards",
+      "interact": {
+        "type": "note",
+        "log": "The cards teach that a closed gate refuses the body and a wound admits it. Dose notes cover part of the printed lesson."
+      },
+      "mapMarker": {
+        "label": "Prayer Cards",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 1,
+        "y": 9
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 9,
+      "y": 11,
+      "id": "charity-cellar-burned-crate-labels",
+      "blocking": true,
+      "variant": "burned-label",
+      "orient": "se",
+      "name": "Burned Crate Labels",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "south-measure-cellar-burned-labels"
+      },
+      "mapMarker": {
+        "label": "Courier Labels",
+        "kind": "search"
+      },
+      "interactionMarker": {
+        "x": 10,
+        "y": 11
+      }
+    },
+    {
+      "kind": "south-measure-worktable",
+      "x": 12,
+      "y": 11,
+      "id": "charity-cellar-work-table",
+      "blocking": true,
+      "variant": "evidence-bench",
+      "orient": "se",
+      "name": "Medicine Work Table",
+      "interact": {
+        "type": "dialogue",
+        "dialogue": "south-measure-cellar-recruit-sheet"
+      },
+      "interactionMarker": {
+        "x": 13,
+        "y": 11
+      }
+    },
+    {
+      "kind": "charity-cot",
+      "x": 18,
+      "y": 6,
+      "id": "charity-cellar-screened-patient-cot",
+      "blocking": true,
+      "orient": "se",
+      "name": "Screened Patient Cot",
+      "interact": {
+        "type": "note",
+        "log": "A used cup and fresh compress sit within reach of the cot. Someone upstairs still depends on this reserve."
+      },
+      "interactionMarker": {
+        "x": 19,
+        "y": 6
+      }
+    },
+    {
+      "kind": "collapsed-culvert",
+      "x": 0,
+      "y": 3,
+      "id": "charity-cellar-collapsed-grate",
+      "blocking": true,
+      "orient": "se",
+      "name": "Collapsed Rear Grate",
+      "interact": {
+        "type": "note",
+        "log": "The crawl narrows into fallen brick behind the grate. No person can pass through."
+      },
+      "mapMarker": {
+        "label": "Collapsed Grate",
+        "kind": "note"
+      },
+      "interactionMarker": {
+        "x": 1,
+        "y": 3
+      }
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 5,
+      "y": 8,
+      "id": "cellar-spoiled-relief-crate",
+      "name": "Spoiled Relief Crate",
+      "blocking": true,
+      "orient": "se",
+      "interact": {
+        "type": "container",
+        "log": "Mildew took the top layer. A chalk cross marks the dry packets for field salvage.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          }
+        ]
+      },
+      "interactionMarker": {
+        "x": 4,
+        "y": 8
+      }
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 6,
+      "y": 3,
+      "blocking": true,
+      "variant": "clean-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 8,
+      "y": 3,
+      "blocking": true,
+      "variant": "clean-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 12,
+      "y": 3,
+      "blocking": true,
+      "variant": "clean-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 14,
+      "y": 3,
+      "blocking": true,
+      "variant": "clean-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 6,
+      "y": 6,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 8,
+      "y": 6,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 12,
+      "y": 6,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 14,
+      "y": 6,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 7,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 9,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 13,
+      "y": 7,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 15,
+      "y": 7,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 16,
+      "y": 11,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 19,
+      "y": 11,
+      "blocking": true,
+      "variant": "medicine-shelf",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 16,
+      "y": 13,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 2,
+      "y": 12,
+      "blocking": true,
+      "orient": "se",
+      "variant": "medicine-shelf"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 4,
+      "y": 12,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 2,
+      "y": 14,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 4,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "medicine-shelf"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 7,
+      "y": 14,
+      "blocking": true,
+      "orient": "se",
+      "variant": "medicine-shelf"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 10,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 13,
+      "y": 14,
+      "blocking": true,
+      "orient": "se",
+      "variant": "medicine-shelf"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 15,
+      "y": 10,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "medicine-shelf"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 15,
+      "y": 12,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 15,
+      "y": 14,
+      "blocking": true,
+      "orient": "sw",
+      "variant": "medicine-shelf"
+    },
+    {
+      "kind": "south-measure-storage",
+      "x": 3,
+      "y": 9,
+      "blocking": true,
+      "variant": "suspect-shelf",
+      "orient": "se"
+    },
+    {
+      "kind": "south-measure-wall-board",
+      "x": 0,
+      "y": 7,
+      "blocking": true,
+      "variant": "prayer-cards",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 5,
+      "y": 6,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 6,
+      "y": 8,
+      "blocking": true,
+      "variant": "service",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 5,
+      "y": 10,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 4,
+      "y": 7
+    },
+    {
+      "kind": "scorch-mark",
+      "x": 4,
+      "y": 9
+    },
+    {
+      "kind": "tool-rack",
+      "x": 7,
+      "y": 11,
+      "blocking": true
+    },
+    {
+      "kind": "sealed-storage-crate",
+      "x": 8,
+      "y": 13,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "rusted-crate",
+      "x": 11,
+      "y": 13,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "low-stool",
+      "x": 6,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "low-stool",
+      "x": 14,
+      "y": 13,
+      "blocking": true
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 8,
+      "y": 10
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 10,
+      "y": 12
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 13,
+      "y": 10
+    },
+    {
+      "kind": "paper-scraps",
+      "x": 14,
+      "y": 12
+    },
+    {
+      "kind": "scorch-mark",
+      "x": 8,
+      "y": 12
+    },
+    {
+      "kind": "scorch-mark",
+      "x": 13,
+      "y": 12
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 3,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 17,
+      "y": 3,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 19,
+      "y": 3,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 20,
+      "y": 3,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "se"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 4,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 5,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 6,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 7,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "cloth-partition",
+      "x": 16,
+      "y": 8,
+      "blocking": true,
+      "variant": "clinic",
+      "orient": "sw"
+    },
+    {
+      "kind": "south-measure-medicine-cart",
+      "x": 20,
+      "y": 8,
+      "blocking": true,
+      "orient": "se"
+    },
+    {
+      "kind": "wash-wall",
+      "x": 20,
+      "y": 5,
+      "blocking": true,
+      "orient": "sw"
+    },
+    {
+      "kind": "candle-cluster",
+      "x": 19,
+      "y": 4,
+      "blocking": false
+    },
+    {
+      "kind": "stone-stairwell",
+      "x": 19,
+      "y": 13,
+      "blocking": false,
+      "variant": "cellar-flight",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 20,
+      "y": 12,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "utility-railing",
+      "x": 20,
+      "y": 14,
+      "blocking": false,
+      "variant": "service",
+      "orient": "se"
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 2,
+      "y": 2,
+      "blocking": true
+    },
+    {
+      "kind": "rubble-pile",
+      "x": 2,
+      "y": 4,
+      "blocking": true
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 1,
+      "y": 3
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 3,
+      "y": 3
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 4,
+      "y": 2
+    },
+    {
+      "kind": "rubble-decal",
+      "x": 4,
+      "y": 4
+    },
+    {
+      "kind": "service-pipe-run",
+      "x": 0,
+      "y": 4,
+      "blocking": false,
+      "variant": "broken",
+      "wallPlane": "se"
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 8
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 8
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 10
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 11
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 17,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 18,
+      "y": 13
+    },
+    {
+      "kind": "road-dust",
+      "x": 5,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 6,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 7,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 8,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 13,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 14,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 15,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 19,
+      "y": 9
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 4
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 5
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 6
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 7
+    },
+    {
+      "kind": "road-dust",
+      "x": 10,
+      "y": 8
+    },
+    {
+      "kind": "road-dust",
+      "x": 9,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 11,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 12,
+      "y": 12
+    },
+    {
+      "kind": "road-dust",
+      "x": 16,
+      "y": 12
+    }
+  ],
+  "groundItems": [
+    {
+      "id": "cellar-loose-field-dressing",
+      "item": "field-dressing",
+      "count": 1,
+      "x": 4,
+      "y": 6
+    }
+  ],
+  "combatIntro": [
+    "Salome’s chest wrap parts around a narrow mouth. Her second voice finishes the confession before the first voice can stop it."
+  ],
+  "victoryLog": "The second voice goes quiet inside Salome’s opened chest.",
+  "onVictory": {
+    "setFlag": [
+      "neri-agent-killed",
+      "neri-agent-resolved"
+    ],
+    "questUpdate": {
+      "quest": "lesson-under-the-wrap",
+      "stage": "complete",
+      "log": "Salome dies after the False Catechist is exposed. Her lesson route ends in the cellar."
+    }
+  }
+}

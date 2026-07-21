@@ -1,0 +1,25 @@
+{
+  "id": "ash-road-south-arlo-tern",
+  "name": "Amos Bassus",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Rope Rows elder",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "water-court",
+    "ambient-only"
+  ],
+  "appearance": {
+    "body": "old-stooped",
+    "outfit": "settlement-shawl",
+    "gear": [
+      "cane"
+    ],
+    "accent": "bare-grey"
+  }
+}

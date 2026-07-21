@@ -1,0 +1,32 @@
+{
+  "id": "old-pilgrim-hill-church-exit",
+  "title": "Hill Church Doors",
+  "nodes": {
+    "start": {
+      "lines": [
+        "Wind pushes dead leaves through the broken public doors. Old Pilgrim Way lies below the hill."
+      ],
+      "choices": [
+        {
+          "label": "Return to Old Pilgrim Way",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_way.json",
+              "player": {
+                "x": 88,
+                "y": 17,
+                "facing": "s"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

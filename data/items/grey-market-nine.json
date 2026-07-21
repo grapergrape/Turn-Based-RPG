@@ -1,0 +1,65 @@
+{
+  "id": "grey-market-nine",
+  "name": "Grey Market Nine",
+  "type": "weapon",
+  "catalogGroup": "ballistic-pistol",
+  "subtype": "autoloading pistol",
+  "rarity": "common",
+  "weight": 1.15,
+  "groundModel": "sidearm",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Unaffiliated markets",
+    "factions": [
+      "unaffiliated-markets"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-pistol",
+    "roles": [
+      "ranged",
+      "firearm",
+      "sidearm",
+      "autoloading pistol"
+    ],
+    "handedness": "one",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 4,
+        "range": 5,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "quick-shot",
+        "name": "Quick Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 3,
+        "range": 5,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "sidearm-cartridge",
+      "capacity": 10,
+      "defaultLoaded": 10,
+      "reloadAp": 3
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 86
+  },
+  "description": "No two Grey Market Nines share a maker, only dimensions. Parts trade freely across the road stalls and fit after enough filing."
+}

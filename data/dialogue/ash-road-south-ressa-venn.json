@@ -1,0 +1,279 @@
+{
+  "id": "ash-road-south-ressa-venn",
+  "title": "Steward Susanna Fontana",
+  "nodes": {
+    "start": {
+      "conditions": {
+        "flagsAbsent": [
+          "south-measure-assembly-complete"
+        ]
+      },
+      "else": "after-assembly",
+      "lines": [
+        "Susanna Fontana draws a line through one household entry before checking the tap. She restores the name in smaller figures.",
+        "\"If you need passage, wait. If you came about the water, stand where I can hear you.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what the water court needs",
+          "next": "water-roll",
+          "effects": {
+            "setFlag": "met-ressa-venn",
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "inspect-throttled-flow",
+              "log": "Susanna asks you to inspect the throttled condenser with Noa Faber."
+            }
+          }
+        },
+        {
+          "label": "Report that every offer is known",
+          "conditions": {
+            "flags": [
+              "met-ressa-venn",
+              "inspected-south-measure-flow",
+              "heard-yara-quell-terms",
+              "heard-daro-mett-terms",
+              "heard-tarn-hallowfen-signal",
+              "resident-isolation-requested"
+            ]
+          },
+          "next": "all-terms",
+          "effects": {
+            "setFlag": [
+              "south-measure-civil-access",
+              "south-measure-helper-routes-open"
+            ],
+            "questUpdate": {
+              "quest": "names-for-the-gate",
+              "stage": "trace-buried-pulse",
+              "log": "You have heard South Measure’s available terms. Trace the buried pulse through the closed work areas."
+            }
+          }
+        },
+        {
+          "label": "Ask her other questions",
+          "next": "questions"
+        },
+        {
+          "label": "Leave Susanna to the roll",
+          "close": true
+        }
+      ]
+    },
+    "questions": {
+      "lines": [
+        "Susanna holds the pencil above the next blank line."
+      ],
+      "choices": [
+        {
+          "label": "Ask what a Censure writ changes",
+          "next": "passage"
+        },
+        {
+          "label": "Ask about the Compact and the Chain",
+          "next": "factions"
+        },
+        {
+          "label": "Tell her the arrival fires are missing from the water claim",
+          "conditions": {
+            "flag": "heard-arrival-water-claim"
+          },
+          "next": "arrival-claim"
+        },
+        {
+          "label": "Ask about a resident isolation plan",
+          "next": "resident-route"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        }
+      ]
+    },
+    "water-roll": {
+      "lines": [
+        "\"The condenser can carry full pressure. Noa cut it back after the pipe began answering each water cycle.\"",
+        "\"Aurelia can monitor the full flow. Darius can cover a ration with cistern wagons. Cassian hears something beneath the pipes that I would rather not ignore.\""
+      ],
+      "choices": [
+        {
+          "label": "Offer to trace a resident isolation route",
+          "next": "resident-route",
+          "effects": {
+            "setFlag": "resident-isolation-requested"
+          }
+        },
+        {
+          "label": "Ask why the north lane stays closed",
+          "next": "passage"
+        },
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave the water court",
+          "close": true
+        }
+      ]
+    },
+    "passage": {
+      "lines": [
+        "\"Your writ gets your boots through. It does not fill the last row’s cups.\"",
+        "\"I can clear one body from the lane. I will not clear the queue so the road can pretend we were never here.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Put the writ away",
+          "close": true
+        }
+      ]
+    },
+    "factions": {
+      "lines": [
+        "\"Aurelia opens individual doors while Darius keeps freight moving. Each asks South Measure to become easier to divide.\"",
+        "\"Hear them, then bring me the exact cost. I have no use for a generous adjective.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Go hear the terms",
+          "close": true
+        }
+      ]
+    },
+    "arrival-claim": {
+      "lines": [
+        "Susanna turns the board and finds an unused margin.",
+        "\"Fire Seven arrived after yesterday’s count, which makes this an error instead of a verdict. Tell Aaron the next carrier leaves with eleven cups.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Let her amend the board",
+          "close": true
+        }
+      ]
+    },
+    "resident-route": {
+      "lines": [
+        "\"Noa thinks the old relief return can carry a smaller local loop if the north feed is cut. The valve order should be in the annex or below the admission booth.\"",
+        "\"Do not promise me clean water before you trace the buried answer. Put the route on the table and let the town see who works it.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Go trace the buried feed",
+          "close": true
+        }
+      ]
+    },
+    "all-terms": {
+      "lines": [
+        "Susanna writes MONITORING, CISTERNS, and LOCAL LOOP on the back of the water roll. FEED CLOSED goes beneath them.",
+        "\"Good. No one gets to become our only answer by speaking first.\"",
+        "\"Those are the terms we can weigh here. Take my civil key below the admission booth. The other doors answer to the people using them.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask what she would choose",
+          "next": "temporary"
+        },
+        {
+          "label": "Leave the offers on the board",
+          "close": true
+        }
+      ]
+    },
+    "temporary": {
+      "lines": [
+        "\"I would choose the plan that leaves us able to say no next winter.\"",
+        "\"That may not be the plan that fills every cup tonight. Steward is the name for carrying both facts without dropping one.\""
+      ],
+      "choices": [
+        {
+          "label": "Back",
+          "next": "start"
+        },
+        {
+          "label": "Leave Susanna to the next household",
+          "close": true
+        }
+      ]
+    },
+    "after-assembly": {
+      "lines": [
+        "Susanna checks the first post-assembly water cycle against the signed abstract.",
+        "\"The chain is up. I am still here because decisions need witnesses after the speeches end.\""
+      ],
+      "choices": [
+        {
+          "label": "Ask about Compact pump access",
+          "conditions": { "flag": "south-measure-compact" },
+          "next": "after-compact"
+        },
+        {
+          "label": "Ask about the Morrow contract",
+          "conditions": { "flag": "south-measure-morrow" },
+          "next": "after-morrow"
+        },
+        {
+          "label": "Ask about resident control",
+          "conditions": { "flag": "south-measure-resident" },
+          "next": "after-resident"
+        },
+        {
+          "label": "Ask about the sealed pump",
+          "conditions": { "flag": "south-measure-sealed" },
+          "next": "after-sealed"
+        },
+        {
+          "label": "Walk to the north chain",
+          "close": true
+        }
+      ]
+    },
+    "after-compact": {
+      "lines": [
+        "\"Aurelia holds a pump key. The water schedule remains the one the assembly chose.\"",
+        "\"Aurelia has signed the consent limits we won. The next assessor may test whether ink can be tired out.\""
+      ],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    },
+    "after-morrow": {
+      "lines": [
+        "\"Darius’s clerk copied the pump key into the note before noon. He wanted the entry made twice.\"",
+        "\"The assembly chose its water plan separately. We will count any debt that tries to cross between the two.\""
+      ],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    },
+    "after-resident": {
+      "lines": [
+        "\"The keys are ours. So is the midnight valve watch when the west bearing complains.\"",
+        "\"Freedom that leaves the maintenance to someone else is only a prettier contract.\""
+      ],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    },
+    "after-sealed": {
+      "lines": [
+        "\"No outside hand reaches the pump. No household gets to pretend the smaller cup is an accident.\"",
+        "\"The ration board will make enemies honestly. That is the narrow virtue available.\""
+      ],
+      "choices": [{ "label": "Return to the water court", "next": "after-assembly" }]
+    }
+  }
+}

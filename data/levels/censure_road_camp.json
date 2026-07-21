@@ -13,6 +13,14 @@
   "dialogue": [
     "censure-road-camp-long-ash-road-exit",
     "censure-road-camp-hallowfen-gate",
+    "censure-road-odran-tent-entry",
+    "censure-road-writ-chapel-tent-entry",
+    "censure-road-preceptor-tent-entry",
+    "censure-road-quartermaster-tent-entry",
+    "censure-road-supply-tent-entry",
+    "censure-road-sutler-tent-entry",
+    "censure-road-medic-tent-entry",
+    "censure-road-quarters-tent-entry",
     "censure-road-odran-watch",
     "censure-road-camp-odran",
     "censure-road-camp-voss",
@@ -27,6 +35,120 @@
     "censure-road-camp-malco",
     "censure-road-camp-elian",
     "censure-road-camp-widow-bruna"
+  ],
+  "journalNotes": [
+    {
+      "flag": "censure-road-writ-board-erasure-found",
+      "text": "One road name was cut from three camp orders after Philip delivered them. The same knife followed the name each time."
+    },
+    {
+      "flag": "censure-road-writ-board-forgery-found",
+      "text": "The writ-board correction copies an officer hand but misses its closing hook. The correction was forged in camp."
+    },
+    {
+      "flag": "censure-road-bell-splice-found",
+      "text": "The bell-rope splice bears only the alarm pull. The ordinary road call was left weak on purpose."
+    },
+    {
+      "flag": "censure-road-bell-peal-found",
+      "text": "The camp order omits the return peal, though its old notch remains on the bell mast."
+    },
+    {
+      "flag": "censure-road-range-clerk-mark-found",
+      "text": "A clerk hid a score correction behind the center target after Cyprian signed the range sheet."
+    },
+    {
+      "flag": "censure-road-ledger-weight-mismatch-found",
+      "text": "A returning cart stayed heavy in Ruth's ledger after it came back empty. Its missing load passed through camp under the old weight."
+    },
+    {
+      "flag": "censure-road-medic-reused-dressing-found",
+      "text": "One dressing packet in Joanna's kit was opened, boiled, and folded shut for reuse."
+    },
+    {
+      "flag": "censure-road-medic-host-stain-found",
+      "text": "The dark sample in Joanna's kit contracts when the bell rope moves. It is still responding under glass."
+    },
+    {
+      "flag": "censure-road-evidence-low-risk-classified",
+      "text": "The quiet evidence sack has two dry seals and no pull at its seam. It can wait outside the burn trench."
+    },
+    {
+      "flag": "censure-road-evidence-active-packet-found",
+      "text": "A packet tagged as spent draws its stain toward the knot when pressure changes. The label is wrong."
+    },
+    {
+      "flag": "censure-road-evidence-sack-counted",
+      "text": "The sounding sack knocks five times. A sixth answer comes from the shelf beneath it."
+    },
+    {
+      "flag": "censure-road-quarters-false-bottom-found",
+      "text": "A previous cult-breaker hid a road cache under the kit floor and pressed an instruction into the leather: TAKE IT. THE ROAD WILL COLLECT."
+    },
+    {
+      "flag": "censure-road-report-joric-route",
+      "text": "Baruch accepts that the stripped road cart was stopped before its wheel failed. His porter tally now carries the corrected sequence."
+    },
+    {
+      "flag": "censure-road-report-hanne-medical",
+      "text": "Joanna adds a verified road injury timeline to the medic sheet without changing it to fit the camp account."
+    },
+    {
+      "flag": "censure-road-report-malco-containment",
+      "text": "Melchior corrects the road evidence class. No fresh opening began at the kill site."
+    },
+    {
+      "flag": "censure-road-report-sera-bell",
+      "text": "Sabina joins the missing peal at the old road bell to the omitted return call at camp."
+    },
+    {
+      "flag": "censure-road-report-pell-writ",
+      "text": "Philip identifies the clerk route behind the cut road name and marks the alteration for Aquila."
+    },
+    {
+      "flag": "censure-road-report-runa-stock",
+      "text": "Ruth strikes the false return weight from her ledger and initials the correction for Aquila."
+    },
+    {
+      "flag": "censure-road-preceptor-route-order-found",
+      "text": "A route correction was tied into Aquila's original order, then filed as if it had been added later."
+    },
+    {
+      "flag": "censure-road-preceptor-route-correction-read",
+      "text": "The correction turns a return peal into alarm duty without naming the witness required by doctrine."
+    },
+    {
+      "flag": "censure-road-supply-relief-bundle-found",
+      "text": "A road-relief bundle was filed behind camp rations. Its light cord exposed the mistake."
+    },
+    {
+      "flag": "censure-road-supply-false-stock-mark-found",
+      "text": "The newest powder total copies Ruth's figures but carries the spacing of a trader's price hand."
+    },
+    {
+      "flag": "censure-road-medic-safe-packet-found",
+      "text": "One dressing in the medic crate stayed dry through the center and never lost its seal."
+    },
+    {
+      "flag": "censure-road-medic-packet-marked-for-malco",
+      "text": "A turned medic packet has gathered a dark line along its cord. It belongs on Melchior's sealed shelf."
+    },
+    {
+      "flag": "censure-road-quarters-coat-cache-found",
+      "text": "The old kit's owner was Paulinus Corda. He hid one ducat in a marked coat cuff and expected to return for it."
+    },
+    {
+      "flag": "censure-road-sutler-dropped-tally-found",
+      "text": "A hidden porter tally records one powder crate sold twice. The second buyer's road name was cut from the strip."
+    },
+    {
+      "flag": "censure-road-sutler-false-price-mark-found",
+      "text": "Judith turned a camp price into a road price with one added chalk stroke, though the crate never moved."
+    },
+    {
+      "flag": "censure-road-writ-chapel-peal-clause-found",
+      "text": "The scraped road clause requires a return peal after any party passes the mast. Current camp practice omits it."
+    }
   ],
   "tiles": [
     "vvvutvuvuuvuuvtulllullvltvuuuuuuuvuvutuuuuulvvvuvvuuvtuluuuuvtlluuvvlu",
@@ -168,10 +290,10 @@
         "facing": "se",
         "dialogue": "censure-road-camp-odran",
         "ambient": [
-          "Confession after bell check. God can wait ten breaths. The road cannot."
+          "Confession waits until after the bell check; God can spare ten breaths, but the road cannot."
         ],
         "mapMarker": {
-          "label": "Father Odran",
+          "label": "Father Augustine",
           "kind": "dialogue",
           "reveal": "always"
         }
@@ -186,7 +308,7 @@
           "If that slate falls in the mud, nobody is eating until I can read it."
         ],
         "mapMarker": {
-          "label": "Preceptor Voss",
+          "label": "Preceptor Aquila",
           "kind": "dialogue",
           "reveal": "always"
         }
@@ -201,7 +323,7 @@
           "No seal, no ration. A sad face is not a seal."
         ],
         "mapMarker": {
-          "label": "Quartermaster Runa",
+          "label": "Quartermaster Ruth",
           "kind": "dialogue",
           "reveal": "always"
         }
@@ -216,7 +338,7 @@
           "Road prices are fair prices, if you ask the road."
         ],
         "mapMarker": {
-          "label": "Sutler Maev",
+          "label": "Sutler Judith",
           "kind": "dialogue",
           "reveal": "always"
         }
@@ -231,7 +353,7 @@
           "Again. A cultist will not wait while you remember where your elbow lives."
         ],
         "mapMarker": {
-          "label": "Brother Caldus",
+          "label": "Brother Cyprian",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -246,7 +368,7 @@
           "One wrong peal sends a squad to the latrines. Ask me how I learned."
         ],
         "mapMarker": {
-          "label": "Bell Clerk Sera",
+          "label": "Bell Clerk Sabina",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -261,7 +383,7 @@
           "If the board says missing, it means late. If it says late, it means dead."
         ],
         "mapMarker": {
-          "label": "Writ Runner Pell",
+          "label": "Writ Runner Philip",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -276,7 +398,7 @@
           "I am not afraid. I am conserving bravery for paid work."
         ],
         "mapMarker": {
-          "label": "Novice Ivarn",
+          "label": "Novice Isidore",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -291,7 +413,7 @@
           "If you bleed on the tent flap, wipe it before you faint."
         ],
         "mapMarker": {
-          "label": "Sister Hanne",
+          "label": "Sister Joanna",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -303,10 +425,10 @@
         "facing": "se",
         "dialogue": "censure-road-camp-joric",
         "ambient": [
-          "A crate gets a destination. A porter gets a shrug. I envy crates."
+          "A crate receives a destination while a porter receives a shrug. I admit I envy the crate."
         ],
         "mapMarker": {
-          "label": "Ash Porter Joric",
+          "label": "Ash Porter Baruch",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -321,7 +443,7 @@
           "Do not touch the bags. One of them already hummed at me."
         ],
         "mapMarker": {
-          "label": "Evidence Keeper Malco",
+          "label": "Evidence Keeper Melchior",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -336,7 +458,7 @@
           "Tether line is empty. The goats filed a complaint and escaped."
         ],
         "mapMarker": {
-          "label": "Tether Guard Elian",
+          "label": "Tether Guard Justus",
           "kind": "dialogue",
           "reveal": "explored"
         }
@@ -351,13 +473,43 @@
           "I wash camp linen. I do not wash camp stories."
         ],
         "mapMarker": {
-          "label": "Widow Bruna",
+          "label": "Widow Naomi",
           "kind": "dialogue",
           "reveal": "explored"
         }
       }
     ]
   },
+  "groundItems": [
+    {
+      "id": "censure-road-preceptor-lost-ducats",
+      "item": "ducat",
+      "count": 2,
+      "x": 43,
+      "y": 13
+    },
+    {
+      "id": "censure-road-drill-yard-rounds",
+      "item": "relic-rounds",
+      "count": 2,
+      "x": 50,
+      "y": 28
+    },
+    {
+      "id": "censure-road-south-gate-chit",
+      "item": "road-warden-chit",
+      "count": 1,
+      "x": 36,
+      "y": 43
+    },
+    {
+      "id": "censure-road-west-worksite-gear",
+      "item": "penitent-gear-scrap",
+      "count": 1,
+      "x": 10,
+      "y": 25
+    }
+  ],
   "objects": [
     {
       "kind": "farm-fence",
@@ -945,6 +1097,48 @@
       "id": "farm-fence-120"
     },
     {
+      "kind": "dead-grass-tuft",
+      "x": 11,
+      "y": 8,
+      "id": "censure-road-dead-grass-11-8",
+      "seed": 4262023029
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 19,
+      "y": 8,
+      "id": "censure-road-dead-grass-19-8",
+      "seed": 8822872
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 31,
+      "y": 8,
+      "id": "censure-road-dead-grass-31-8",
+      "seed": 3440859108
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 39,
+      "y": 8,
+      "id": "censure-road-dead-grass-39-8",
+      "seed": 3899619530
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 51,
+      "y": 8,
+      "id": "censure-road-dead-grass-51-8",
+      "seed": 1961542284
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 59,
+      "y": 8,
+      "id": "censure-road-dead-grass-59-8",
+      "seed": 1069941750
+    },
+    {
       "kind": "farm-fence",
       "x": 66,
       "y": 8,
@@ -1024,6 +1218,22 @@
       "name": "Preceptor Tent",
       "wallPlane": "sw",
       "seed": 3307855201,
+      "clickAreas": [
+        {
+          "x0": 43,
+          "y0": 8,
+          "x1": 49,
+          "y1": 12
+        }
+      ],
+      "interactionMarker": {
+        "x": 47,
+        "y": 13
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-preceptor-tent-entry"
+      },
       "mapMarker": {
         "label": "Preceptor Tent",
         "kind": "exit",
@@ -1051,7 +1261,7 @@
       "x": 68,
       "y": 12,
       "seed": 460080411,
-      "id": "road-dust-319"
+      "id": "road-dust-320"
     },
     {
       "kind": "farm-fence",
@@ -1108,28 +1318,35 @@
       "x": 59,
       "y": 14,
       "seed": 2678846811,
-      "id": "road-dust-320"
+      "id": "road-dust-321"
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 63,
+      "y": 14,
+      "id": "censure-road-dead-grass-63-14",
+      "seed": 1699502193
     },
     {
       "kind": "road-dust",
       "x": 64,
       "y": 14,
       "seed": 1193527608,
-      "id": "road-dust-321"
+      "id": "road-dust-322"
     },
     {
       "kind": "road-dust",
       "x": 65,
       "y": 14,
       "seed": 3680636805,
-      "id": "road-dust-322"
+      "id": "road-dust-323"
     },
     {
       "kind": "road-dust",
       "x": 67,
       "y": 14,
       "seed": 1340782308,
-      "id": "road-dust-323"
+      "id": "road-dust-324"
     },
     {
       "kind": "farm-fence",
@@ -1145,7 +1362,7 @@
       "x": 61,
       "y": 15,
       "seed": 1460955801,
-      "id": "road-dust-324"
+      "id": "road-dust-325"
     },
     {
       "kind": "quarantine-barricade",
@@ -1172,6 +1389,22 @@
       "name": "Writ Chapel",
       "wallPlane": "sw",
       "seed": 583223447,
+      "clickAreas": [
+        {
+          "x0": 20,
+          "y0": 12,
+          "x1": 26,
+          "y1": 16
+        }
+      ],
+      "interactionMarker": {
+        "x": 23,
+        "y": 17
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-writ-chapel-tent-entry"
+      },
       "mapMarker": {
         "label": "Writ Chapel",
         "kind": "exit",
@@ -1188,7 +1421,39 @@
       "seed": 2128807370,
       "interact": {
         "type": "note",
-        "log": "The camp bell hangs from a patched road mast. Each peal marks one route, one alarm, or one body count."
+        "log": "The camp bell hangs from a patched road mast. Each peal marks one route, one alarm, or one body count.",
+        "search": {
+          "id": "censure-road-bell-mast-search",
+          "title": "Bell Mast",
+          "lines": [
+            "New rope crosses old iron. Soot has been rubbed into the splice and the peal marks."
+          ],
+          "useLabel": "Inspect the bell mast",
+          "methods": [
+            {
+              "id": "read-bell-rope-splice",
+              "label": "Read the rope splice",
+              "field": "engineering",
+              "dc": 40,
+              "successLog": "The splice carries weight only on the alarm pull. Someone repaired it for one peal and left the road call weak.",
+              "failLog": "Rope dust and soot hide which strand bears the load.",
+              "success": {
+                "setFlag": "censure-road-bell-splice-found"
+              }
+            },
+            {
+              "id": "restore-bell-peal-rule",
+              "label": "Reconstruct the rubbed peal",
+              "field": "doctrine",
+              "dc": 45,
+              "successLog": "The missing mark belongs to the return peal. Camp orders omit it, though the mast still carries the old notch.",
+              "failLog": "The rubbed marks do not resolve into a rule you trust.",
+              "success": {
+                "setFlag": "censure-road-bell-peal-found"
+              }
+            }
+          ]
+        }
       },
       "mapMarker": {
         "label": "Bell Mast",
@@ -1201,35 +1466,35 @@
       "x": 59,
       "y": 16,
       "seed": 2488865401,
-      "id": "road-dust-325"
+      "id": "road-dust-326"
     },
     {
       "kind": "road-dust",
       "x": 60,
       "y": 16,
       "seed": 3428780832,
-      "id": "road-dust-326"
+      "id": "road-dust-327"
     },
     {
       "kind": "road-dust",
       "x": 62,
       "y": 16,
       "seed": 2846036004,
-      "id": "road-dust-327"
+      "id": "road-dust-328"
     },
     {
       "kind": "road-dust",
       "x": 63,
       "y": 16,
       "seed": 2448582329,
-      "id": "road-dust-328"
+      "id": "road-dust-329"
     },
     {
       "kind": "road-dust",
       "x": 64,
       "y": 16,
       "seed": 2400118434,
-      "id": "road-dust-329"
+      "id": "road-dust-330"
     },
     {
       "kind": "quarantine-barricade",
@@ -1242,7 +1507,7 @@
       "interact": {
         "type": "note",
         "dialogue": "censure-road-camp-hallowfen-gate",
-        "log": "The east road is chained until Preceptor Voss signs the marching slate."
+        "log": "The east road is chained until Preceptor Aquila signs the marching slate."
       },
       "mapMarker": {
         "label": "Hallowfen Checkpoints",
@@ -1258,6 +1523,13 @@
       "orient": "sw",
       "seed": 2026938306,
       "id": "farm-fence-135"
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 11,
+      "y": 17,
+      "id": "censure-road-dead-grass-11-17",
+      "seed": 2745568065
     },
     {
       "kind": "chapel-banner",
@@ -1286,21 +1558,21 @@
       "x": 59,
       "y": 17,
       "seed": 3973563422,
-      "id": "road-dust-330"
+      "id": "road-dust-331"
     },
     {
       "kind": "road-dust",
       "x": 60,
       "y": 17,
       "seed": 2471806609,
-      "id": "road-dust-331"
+      "id": "road-dust-332"
     },
     {
       "kind": "road-dust",
       "x": 63,
       "y": 17,
       "seed": 4121368005,
-      "id": "road-dust-332"
+      "id": "road-dust-333"
     },
     {
       "kind": "quarantine-barricade",
@@ -1315,7 +1587,7 @@
       "x": 68,
       "y": 17,
       "seed": 4264665414,
-      "id": "road-dust-333"
+      "id": "road-dust-334"
     },
     {
       "kind": "farm-fence",
@@ -1331,11 +1603,27 @@
       "x": 16,
       "y": 18,
       "id": "censure-road-odran-private-tent-flap",
-      "name": "Father Odran's Tent",
+      "name": "Father Augustine's Tent",
       "wallPlane": "sw",
       "seed": 2068119181,
+      "clickAreas": [
+        {
+          "x0": 14,
+          "y0": 14,
+          "x1": 17,
+          "y1": 18
+        }
+      ],
+      "interactionMarker": {
+        "x": 16,
+        "y": 19
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-odran-tent-entry"
+      },
       "mapMarker": {
-        "label": "Father Odran's Tent",
+        "label": "Father Augustine's Tent",
         "kind": "exit",
         "reveal": "explored"
       }
@@ -1399,49 +1687,49 @@
       "x": 56,
       "y": 18,
       "seed": 3180761708,
-      "id": "road-dust-334"
+      "id": "road-dust-335"
     },
     {
       "kind": "road-dust",
       "x": 57,
       "y": 18,
       "seed": 656032421,
-      "id": "road-dust-335"
+      "id": "road-dust-336"
     },
     {
       "kind": "road-dust",
       "x": 59,
       "y": 18,
       "seed": 463584534,
-      "id": "road-dust-336"
+      "id": "road-dust-337"
     },
     {
       "kind": "road-dust",
       "x": 66,
       "y": 18,
       "seed": 2167208109,
-      "id": "road-dust-337"
+      "id": "road-dust-338"
     },
     {
       "kind": "road-dust",
       "x": 67,
       "y": 18,
       "seed": 2931280114,
-      "id": "road-dust-338"
+      "id": "road-dust-339"
     },
     {
       "kind": "road-dust",
       "x": 68,
       "y": 18,
       "seed": 449094921,
-      "id": "road-dust-339"
+      "id": "road-dust-340"
     },
     {
       "kind": "road-dust",
       "x": 69,
       "y": 18,
       "seed": 2523517505,
-      "id": "road-dust-340"
+      "id": "road-dust-341"
     },
     {
       "kind": "farm-fence",
@@ -1457,28 +1745,28 @@
       "x": 56,
       "y": 19,
       "seed": 3055074933,
-      "id": "road-dust-341"
+      "id": "road-dust-342"
     },
     {
       "kind": "road-dust",
       "x": 57,
       "y": 19,
       "seed": 3254671003,
-      "id": "road-dust-342"
+      "id": "road-dust-343"
     },
     {
       "kind": "road-dust",
       "x": 64,
       "y": 19,
       "seed": 3037660612,
-      "id": "road-dust-343"
+      "id": "road-dust-344"
     },
     {
       "kind": "road-dust",
       "x": 65,
       "y": 19,
       "seed": 513875606,
-      "id": "road-dust-344"
+      "id": "road-dust-345"
     },
     {
       "kind": "farm-fence",
@@ -1512,7 +1800,7 @@
       "x": 69,
       "y": 20,
       "seed": 2872826307,
-      "id": "road-dust-345"
+      "id": "road-dust-346"
     },
     {
       "kind": "farm-fence",
@@ -1528,28 +1816,28 @@
       "x": 51,
       "y": 21,
       "seed": 2957514720,
-      "id": "road-dust-346"
+      "id": "road-dust-347"
     },
     {
       "kind": "road-dust",
       "x": 52,
       "y": 21,
       "seed": 2965118513,
-      "id": "road-dust-347"
+      "id": "road-dust-348"
     },
     {
       "kind": "road-dust",
       "x": 53,
       "y": 21,
       "seed": 3208380022,
-      "id": "road-dust-348"
+      "id": "road-dust-349"
     },
     {
       "kind": "road-dust",
       "x": 54,
       "y": 21,
       "seed": 1131895334,
-      "id": "road-dust-349"
+      "id": "road-dust-350"
     },
     {
       "kind": "farm-fence",
@@ -1590,7 +1878,7 @@
       "x": 51,
       "y": 22,
       "seed": 1389437806,
-      "id": "road-dust-350"
+      "id": "road-dust-351"
     },
     {
       "kind": "quarantine-barricade",
@@ -1605,14 +1893,14 @@
       "x": 53,
       "y": 22,
       "seed": 3446665832,
-      "id": "road-dust-351"
+      "id": "road-dust-352"
     },
     {
       "kind": "road-dust",
       "x": 55,
       "y": 22,
       "seed": 1502556129,
-      "id": "road-dust-352"
+      "id": "road-dust-353"
     },
     {
       "kind": "quarantine-barricade",
@@ -1669,14 +1957,14 @@
       "x": 52,
       "y": 23,
       "seed": 1205739611,
-      "id": "road-dust-353"
+      "id": "road-dust-354"
     },
     {
       "kind": "road-dust",
       "x": 54,
       "y": 23,
       "seed": 2030309028,
-      "id": "road-dust-354"
+      "id": "road-dust-355"
     },
     {
       "kind": "farm-fence",
@@ -1693,6 +1981,13 @@
       "id": "censure-road-drill-yard-rope-60-23",
       "orient": "se",
       "seed": 3389361147
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 63,
+      "y": 23,
+      "id": "censure-road-dead-grass-63-23",
+      "seed": 3167324931
     },
     {
       "kind": "farm-fence",
@@ -1821,7 +2116,39 @@
       "seed": 1159257426,
       "interact": {
         "type": "note",
-        "log": "The board sorts orders by road bell. Hallowfen has three missed marks and one ink smear where a name was cut out."
+        "log": "The board sorts orders by road bell. Hallowfen has three missed marks and one ink smear where a name was cut out.",
+        "search": {
+          "id": "censure-road-writ-board-search",
+          "title": "Writ Board",
+          "lines": [
+            "Fresh paper covers a knife-cut strip. The replacement ink dried before the wax seal beside it."
+          ],
+          "useLabel": "Read the posted writs",
+          "methods": [
+            {
+              "id": "find-erased-road-name",
+              "label": "Follow the cut fibers",
+              "field": "search",
+              "dc": 40,
+              "successLog": "The knife followed one road name through three orders. Philip carried each sheet before the same hand cut it away.",
+              "failLog": "Rain has lifted too much paper fiber to recover the missing name.",
+              "success": {
+                "setFlag": "censure-road-writ-board-erasure-found"
+              }
+            },
+            {
+              "id": "test-forged-board-correction",
+              "label": "Test the correction hand",
+              "field": "guile",
+              "dc": 50,
+              "successLog": "The correction copies an officer hand but misses the habit of closing every road name with a hook. This was forged at the board.",
+              "failLog": "The copied hand is close enough to survive your first reading.",
+              "success": {
+                "setFlag": "censure-road-writ-board-forgery-found"
+              }
+            }
+          ]
+        }
       },
       "mapMarker": {
         "label": "Writ Board",
@@ -1875,7 +2202,7 @@
       "x": 44,
       "y": 25,
       "seed": 3780385102,
-      "id": "road-dust-355"
+      "id": "road-dust-356"
     },
     {
       "kind": "chalk-drawing",
@@ -1903,7 +2230,7 @@
       "x": 51,
       "y": 25,
       "seed": 217453420,
-      "id": "road-dust-356"
+      "id": "road-dust-357"
     },
     {
       "kind": "trampled-mud",
@@ -1930,7 +2257,47 @@
       "seed": 1286060048,
       "interact": {
         "type": "note",
-        "log": "A horned devil is painted in tar and red chalk. Every shot has gone high."
+        "log": "A horned devil is painted in tar and red chalk. Every shot has gone high.",
+        "search": {
+          "id": "censure-road-range-target-search",
+          "title": "Center Devil Target",
+          "lines": [
+            "Old holes crowd the horns. Cyprian has drawn a fresh firing line through the ribs."
+          ],
+          "useLabel": "Inspect the target",
+          "methods": [
+            {
+              "id": "read-useful-shot-pattern",
+              "label": "Read the useful shot pattern",
+              "field": "firearms",
+              "dc": 45,
+              "successLog": "The useful hits climb from hip to sternum as recoil settles. You can repeat the pattern without wasting a round.",
+              "failLog": "The holes overlap too badly to separate discipline from luck.",
+              "success": {
+                "setFlag": "censure-road-drill-range-complete"
+              }
+            },
+            {
+              "id": "spot-hidden-clerk-mark",
+              "label": "Find the clerk's correction mark",
+              "primary": "eye",
+              "dc": 7,
+              "successLog": "A thumb-wide chalk hook sits behind the target brace. The clerk corrected the score after Cyprian signed it.",
+              "failLog": "Tar, chalk, and old splinters refuse to give up another mark.",
+              "success": {
+                "setFlag": "censure-road-range-clerk-mark-found",
+                "inventory": {
+                  "add": [
+                    {
+                      "item": "relic-rounds",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
       },
       "mapMarker": {
         "label": "Shooting Range",
@@ -1962,6 +2329,13 @@
       "orient": "sw",
       "seed": 3449016521,
       "id": "farm-fence-151"
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 11,
+      "y": 26,
+      "id": "censure-road-dead-grass-11-26",
+      "seed": 2897575931
     },
     {
       "kind": "chalk-drawing",
@@ -2100,7 +2474,7 @@
       "x": 48,
       "y": 27,
       "seed": 2949563922,
-      "id": "road-dust-357"
+      "id": "road-dust-358"
     },
     {
       "kind": "chalk-drawing",
@@ -2185,6 +2559,32 @@
       "id": "farm-fence-155"
     },
     {
+      "kind": "field-backpack",
+      "x": 20,
+      "y": 28,
+      "id": "censure-road-discarded-drill-pack",
+      "name": "Discarded Drill Pack",
+      "seed": 2097340601,
+      "interact": {
+        "type": "container",
+        "log": "A drill pack lies outside the marked lanes. Dust has worked into the straps, but the inner wrap is dry.",
+        "loot": [
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          }
+        ]
+      }
+    },
+    {
       "kind": "paper-scraps",
       "x": 30,
       "y": 28,
@@ -2204,7 +2604,7 @@
       "x": 46,
       "y": 28,
       "seed": 2449156435,
-      "id": "road-dust-358"
+      "id": "road-dust-359"
     },
     {
       "kind": "field-satchel",
@@ -2212,7 +2612,54 @@
       "y": 28,
       "id": "censure-road-drill-yard-satchel",
       "blocking": true,
-      "seed": 2110710949
+      "name": "Cyprian's Issue Satchel",
+      "seed": 2110710949,
+      "interact": {
+        "type": "container",
+        "log": "Cyprian has tied the issue knot through two chalked loops. One loop is for the close yard, the other for the range.",
+        "lock": {
+          "id": "censure-road-drill-issue-knot",
+          "title": "Cyprian's Issue Satchel",
+          "lines": [
+            "The knot stays closed until both drill loops are marked complete."
+          ],
+          "methods": [
+            {
+              "id": "claim-earned-drill-issue",
+              "label": "Untie the earned issue knot",
+              "conditions": {
+                "flags": [
+                  "censure-road-drill-close-complete",
+                  "censure-road-drill-range-complete"
+                ]
+              },
+              "successLog": "Both chalk loops match. The issue knot opens without argument.",
+              "success": {
+                "setFlag": "censure-road-drill-issue-opened"
+              }
+            }
+          ]
+        },
+        "loot": [
+          {
+            "item": "relic-rounds",
+            "count": 2
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "ash-road-knife",
+            "count": 1
+          }
+        ]
+      },
+      "mapMarker": {
+        "label": "Earned Drill Issue",
+        "kind": "locked",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "quarantine-barricade",
@@ -2271,6 +2718,13 @@
       "id": "farm-fence-157"
     },
     {
+      "kind": "dead-grass-tuft",
+      "x": 15,
+      "y": 29,
+      "id": "censure-road-dead-grass-15-29",
+      "seed": 2631829194
+    },
+    {
       "kind": "canvas-tent-flap",
       "x": 28,
       "y": 29,
@@ -2278,6 +2732,22 @@
       "name": "Quartermaster Tent",
       "wallPlane": "sw",
       "seed": 616172355,
+      "clickAreas": [
+        {
+          "x0": 24,
+          "y0": 25,
+          "x1": 32,
+          "y1": 29
+        }
+      ],
+      "interactionMarker": {
+        "x": 28,
+        "y": 30
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-quartermaster-tent-entry"
+      },
       "mapMarker": {
         "label": "Quartermaster Tent",
         "kind": "exit",
@@ -2289,14 +2759,14 @@
       "x": 42,
       "y": 29,
       "seed": 1130539819,
-      "id": "road-dust-359"
+      "id": "road-dust-360"
     },
     {
       "kind": "road-dust",
       "x": 44,
       "y": 29,
       "seed": 644540023,
-      "id": "road-dust-360"
+      "id": "road-dust-361"
     },
     {
       "kind": "farm-fence",
@@ -2370,7 +2840,62 @@
       "y": 30,
       "id": "censure-road-quartermaster-sealed-storage-crate-31-30",
       "blocking": true,
-      "seed": 261231524
+      "seed": 261231524,
+      "name": "Field Issue Crate",
+      "interact": {
+        "type": "container",
+        "log": "Ruth's seal closes a field bundle sized for one road agent.",
+        "lock": {
+          "id": "censure-road-field-issue-seal",
+          "title": "Field Issue Crate",
+          "lines": [
+            "The seal records one issue. Ruth keeps the matching mark in her ledger."
+          ],
+          "methods": [
+            {
+              "id": "claim-authorized-field-issue",
+              "label": "Present the issue mark",
+              "conditions": {
+                "flag": "censure-road-field-issue-authorized",
+                "flagsAbsent": [
+                  "censure-road-field-issue-claimed"
+                ]
+              },
+              "successLog": "The issue mark matches the wax. The crate is yours to open.",
+              "success": {
+                "setFlag": "censure-road-field-issue-claimed"
+              }
+            }
+          ]
+        },
+        "loot": [
+          {
+            "item": "tinned-beans",
+            "count": 1
+          },
+          {
+            "item": "field-dressing",
+            "count": 1
+          },
+          {
+            "item": "relic-rounds",
+            "count": 1
+          },
+          {
+            "item": "ducat",
+            "count": 3
+          },
+          {
+            "item": "parish-ward-pistol",
+            "count": 1
+          }
+        ]
+      },
+      "mapMarker": {
+        "label": "Field Issue",
+        "kind": "locked",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "sealed-storage-crate",
@@ -2385,21 +2910,21 @@
       "x": 43,
       "y": 30,
       "seed": 2632159404,
-      "id": "road-dust-361"
+      "id": "road-dust-362"
     },
     {
       "kind": "road-dust",
       "x": 44,
       "y": 30,
       "seed": 2213265919,
-      "id": "road-dust-362"
+      "id": "road-dust-363"
     },
     {
       "kind": "road-dust",
       "x": 49,
       "y": 30,
       "seed": 1124376005,
-      "id": "road-dust-363"
+      "id": "road-dust-364"
     },
     {
       "kind": "farm-fence",
@@ -2437,7 +2962,28 @@
       "seed": 616172355,
       "interact": {
         "type": "note",
-        "log": "Runa has split the ledger into issue, debt, and excuses. Excuses has the longest column."
+        "log": "Ruth has split the ledger into issue, debt, and excuses. Excuses has the longest column.",
+        "search": {
+          "id": "censure-road-quartermaster-ledger-search",
+          "title": "Quartermaster Ledger",
+          "lines": [
+            "Each issue line has an ink weight beside the seal. One returning cart grows lighter on paper and heavier at the porter line."
+          ],
+          "useLabel": "Read the issue ledger",
+          "methods": [
+            {
+              "id": "find-ledger-weight-mismatch",
+              "label": "Check the issue weights",
+              "field": "search",
+              "dc": 45,
+              "successLog": "Three weights were copied forward after the cart came back empty. The missing load passed through camp under its old total.",
+              "failLog": "Ruth writes weight, tare, and debt in the same narrow hand. The columns will not separate.",
+              "success": {
+                "setFlag": "censure-road-ledger-weight-mismatch-found"
+              }
+            }
+          ]
+        }
       },
       "mapMarker": {
         "label": "Quartermaster",
@@ -2450,7 +2996,7 @@
       "x": 39,
       "y": 31,
       "seed": 2238369803,
-      "id": "road-dust-364"
+      "id": "road-dust-365"
     },
     {
       "kind": "farm-fence",
@@ -2491,7 +3037,14 @@
       "x": 46,
       "y": 32,
       "seed": 1664795603,
-      "id": "road-dust-365"
+      "id": "road-dust-366"
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 63,
+      "y": 32,
+      "id": "censure-road-dead-grass-63-32",
+      "seed": 567569079
     },
     {
       "kind": "farm-fence",
@@ -2577,7 +3130,7 @@
       "x": 39,
       "y": 34,
       "seed": 7946831,
-      "id": "road-dust-366"
+      "id": "road-dust-367"
     },
     {
       "kind": "field-cart",
@@ -2586,7 +3139,7 @@
       "id": "censure-road-sutler-cart",
       "blocking": true,
       "orient": "nw",
-      "name": "Maev's Cart",
+      "name": "Judith's Cart",
       "seed": 1110029728,
       "mapMarker": {
         "label": "Sutler Trader",
@@ -2620,6 +3173,13 @@
       "id": "farm-fence-169"
     },
     {
+      "kind": "dead-grass-tuft",
+      "x": 11,
+      "y": 35,
+      "id": "censure-road-dead-grass-11-35",
+      "seed": 1291547105
+    },
+    {
       "kind": "camp-bedroll",
       "x": 14,
       "y": 35,
@@ -2641,6 +3201,28 @@
       "name": "Supply Tent",
       "wallPlane": "sw",
       "seed": 3635419920,
+      "clickAreas": [
+        {
+          "x0": 35,
+          "y0": 31,
+          "x1": 38,
+          "y1": 35
+        },
+        {
+          "x0": 40,
+          "y0": 31,
+          "x1": 43,
+          "y1": 35
+        }
+      ],
+      "interactionMarker": {
+        "x": 39,
+        "y": 36
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-supply-tent-entry"
+      },
       "mapMarker": {
         "label": "Supply Tent",
         "kind": "exit",
@@ -2653,7 +3235,47 @@
       "y": 35,
       "id": "censure-road-supply-rusted-barrel-44-35",
       "blocking": true,
-      "seed": 4290483973
+      "seed": 4290483973,
+      "name": "Collapsed-Band Barrel",
+      "interact": {
+        "type": "container",
+        "log": "An iron band has folded under the barrel lip. The lid will not clear it.",
+        "lock": {
+          "id": "censure-road-collapsed-band-lock",
+          "title": "Collapsed-Band Barrel",
+          "lines": [
+            "The bent band must come away in one piece or it will bite deeper into the staves."
+          ],
+          "methods": [
+            {
+              "id": "lift-collapsed-band",
+              "label": "Lift the band intact",
+              "primary": "body",
+              "dc": 7,
+              "successLog": "The band lifts with the barrel weight hanging from it. The lid comes free.",
+              "failLog": "The band rises a finger width, then folds back into the wood.",
+              "success": {
+                "setFlag": "censure-road-collapsed-band-lifted"
+              }
+            }
+          ]
+        },
+        "loot": [
+          {
+            "item": "penitent-gear-scrap",
+            "count": 1
+          },
+          {
+            "item": "tinned-beans",
+            "count": 1
+          }
+        ]
+      },
+      "mapMarker": {
+        "label": "Collapsed-Band Barrel",
+        "kind": "locked",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "settlement-table",
@@ -2686,7 +3308,7 @@
       "x": 36,
       "y": 36,
       "seed": 1005606404,
-      "id": "road-dust-367"
+      "id": "road-dust-368"
     },
     {
       "kind": "rusted-crate",
@@ -2701,7 +3323,7 @@
       "x": 39,
       "y": 36,
       "seed": 3531105021,
-      "id": "road-dust-368"
+      "id": "road-dust-369"
     },
     {
       "kind": "field-satchel",
@@ -2716,16 +3338,32 @@
       "x": 42,
       "y": 36,
       "seed": 1215939704,
-      "id": "road-dust-369"
+      "id": "road-dust-370"
     },
     {
       "kind": "canvas-tent-flap",
       "x": 50,
       "y": 36,
       "id": "censure-road-sutler-tent-flap",
-      "name": "Maev's Trade Tent",
+      "name": "Judith's Trade Tent",
       "wallPlane": "sw",
       "seed": 637399579,
+      "clickAreas": [
+        {
+          "x0": 48,
+          "y0": 32,
+          "x1": 53,
+          "y1": 36
+        }
+      ],
+      "interactionMarker": {
+        "x": 50,
+        "y": 37
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-sutler-tent-entry"
+      },
       "mapMarker": {
         "label": "Sutler Tent",
         "kind": "exit",
@@ -2738,6 +3376,28 @@
       "y": 36,
       "id": "censure-road-road-dust-55-36",
       "seed": 2014604945
+    },
+    {
+      "kind": "small-pouch",
+      "x": 58,
+      "y": 36,
+      "id": "censure-road-sutler-dropped-pouch",
+      "name": "Dropped Road Pouch",
+      "seed": 843137622,
+      "interact": {
+        "type": "container",
+        "log": "A road pouch has fallen between two wagon ruts. One side is pressed flat by a wheel.",
+        "loot": [
+          {
+            "item": "ducat",
+            "count": 5
+          },
+          {
+            "item": "tarnished-saint-token",
+            "count": 1
+          }
+        ]
+      }
     },
     {
       "kind": "farm-fence",
@@ -2762,21 +3422,21 @@
       "x": 34,
       "y": 37,
       "seed": 396044003,
-      "id": "road-dust-370"
+      "id": "road-dust-371"
     },
     {
       "kind": "road-dust",
       "x": 35,
       "y": 37,
       "seed": 1481875929,
-      "id": "road-dust-371"
+      "id": "road-dust-372"
     },
     {
       "kind": "road-dust",
       "x": 39,
       "y": 37,
       "seed": 1117566735,
-      "id": "road-dust-372"
+      "id": "road-dust-373"
     },
     {
       "kind": "low-stool",
@@ -2824,14 +3484,14 @@
       "x": 35,
       "y": 38,
       "seed": 3073495503,
-      "id": "road-dust-373"
+      "id": "road-dust-374"
     },
     {
       "kind": "road-dust",
       "x": 38,
       "y": 38,
       "seed": 2549717200,
-      "id": "road-dust-374"
+      "id": "road-dust-375"
     },
     {
       "kind": "paper-scraps",
@@ -2839,6 +3499,13 @@
       "y": 38,
       "id": "censure-road-sutler-price-tags",
       "seed": 3596359674
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 63,
+      "y": 38,
+      "id": "censure-road-dead-grass-63-38",
+      "seed": 3462655798
     },
     {
       "kind": "farm-fence",
@@ -2863,7 +3530,7 @@
       "x": 37,
       "y": 39,
       "seed": 4004900426,
-      "id": "road-dust-375"
+      "id": "road-dust-376"
     },
     {
       "kind": "farm-fence",
@@ -2891,6 +3558,52 @@
       "name": "Cult-Breaker Quarters",
       "wallPlane": "sw",
       "seed": 4097938570,
+      "clickAreas": [
+        {
+          "x0": 11,
+          "y0": 31,
+          "x1": 13,
+          "y1": 34
+        },
+        {
+          "x0": 15,
+          "y0": 31,
+          "x1": 17,
+          "y1": 34
+        },
+        {
+          "x0": 19,
+          "y0": 31,
+          "x1": 21,
+          "y1": 34
+        },
+        {
+          "x0": 11,
+          "y0": 37,
+          "x1": 13,
+          "y1": 40
+        },
+        {
+          "x0": 15,
+          "y0": 37,
+          "x1": 17,
+          "y1": 40
+        },
+        {
+          "x0": 19,
+          "y0": 37,
+          "x1": 21,
+          "y1": 40
+        }
+      ],
+      "interactionMarker": {
+        "x": 16,
+        "y": 41
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-quarters-tent-entry"
+      },
       "mapMarker": {
         "label": "Cult-Breaker Quarters",
         "kind": "exit",
@@ -2902,21 +3615,21 @@
       "x": 33,
       "y": 40,
       "seed": 2175921408,
-      "id": "road-dust-376"
+      "id": "road-dust-377"
     },
     {
       "kind": "road-dust",
       "x": 35,
       "y": 40,
       "seed": 2114035500,
-      "id": "road-dust-377"
+      "id": "road-dust-378"
     },
     {
       "kind": "road-dust",
       "x": 37,
       "y": 40,
       "seed": 2255383206,
-      "id": "road-dust-378"
+      "id": "road-dust-379"
     },
     {
       "kind": "farm-door",
@@ -2930,7 +3643,50 @@
       "seed": 3899105337,
       "interact": {
         "type": "note",
-        "log": "The evidence shed is sealed with three tags: cult relics, road bodies, and objects that talked back."
+        "log": "The evidence shed is sealed with three tags: cult relics, road bodies, and objects that talked back.",
+        "search": {
+          "id": "censure-road-evidence-shed-search",
+          "title": "Evidence Shed",
+          "lines": [
+            "Waxed sacks press against the door from inside. Melchior has marked their cords, seams, and last known sounds."
+          ],
+          "useLabel": "Read the evidence tags",
+          "methods": [
+            {
+              "id": "classify-low-risk-sack",
+              "label": "Classify the quiet sack",
+              "field": "containment",
+              "dc": 50,
+              "successLog": "The quiet sack has two dry seals and no inward pull at the seam. It can wait outside the burn trench.",
+              "failLog": "Every sack carries enough warning ink to make a safe choice look foolish.",
+              "success": {
+                "setFlag": "censure-road-evidence-low-risk-classified"
+              }
+            },
+            {
+              "id": "find-active-evidence-packet",
+              "label": "Read the isolated stain",
+              "field": "hostSigns",
+              "dc": 60,
+              "successLog": "One packet has drawn its stain toward the knot. The tag calls it spent, but the thing inside is still answering pressure.",
+              "failLog": "The old stains hold too many shapes to name one as active.",
+              "success": {
+                "setFlag": "censure-road-evidence-active-packet-found"
+              }
+            },
+            {
+              "id": "steady-sounding-sack",
+              "label": "Hold the sounding sack steady",
+              "primary": "nerve",
+              "dc": 7,
+              "successLog": "Five knocks answer your grip. The sixth sound comes from the shelf beneath it, not the sack.",
+              "failLog": "The first knock travels into your wrist. You let go before the count settles.",
+              "success": {
+                "setFlag": "censure-road-evidence-sack-counted"
+              }
+            }
+          ]
+        }
       },
       "mapMarker": {
         "label": "Evidence Shed",
@@ -2970,7 +3726,54 @@
       "y": 41,
       "id": "censure-road-quarters-kit-19-41",
       "blocking": true,
-      "seed": 1433517861
+      "seed": 1433517861,
+      "name": "Previous Breaker's Kit",
+      "interact": {
+        "type": "note",
+        "log": "The kit bears a scraped name plate. Its owner left the straps buckled and the bottom board loose.",
+        "search": {
+          "id": "censure-road-quarters-kit-search",
+          "title": "Previous Breaker's Kit",
+          "lines": [
+            "Dust stops at one edge of the bottom board. A warning has been pressed into the leather with a spoon handle."
+          ],
+          "useLabel": "Inspect the old kit",
+          "methods": [
+            {
+              "id": "open-quarters-false-bottom",
+              "label": "Follow the false seam",
+              "field": "search",
+              "dc": 45,
+              "successLog": "The board lifts. A road chit wraps three ducats and a worn saint token. Pressed into the leather: TAKE IT. THE ROAD WILL COLLECT.",
+              "failLog": "The seam vanishes under the buckle line. Forcing it would tear the warning away.",
+              "success": {
+                "setFlag": "censure-road-quarters-false-bottom-found",
+                "inventory": {
+                  "add": [
+                    {
+                      "item": "ducat",
+                      "count": 3
+                    },
+                    {
+                      "item": "road-warden-chit",
+                      "count": 1
+                    },
+                    {
+                      "item": "tarnished-saint-token",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Previous Breaker's Kit",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "field-satchel",
@@ -2985,7 +3788,7 @@
       "x": 35,
       "y": 41,
       "seed": 3490904009,
-      "id": "road-dust-379"
+      "id": "road-dust-380"
     },
     {
       "kind": "rubble-decal",
@@ -3013,6 +3816,13 @@
       "id": "farm-fence-183"
     },
     {
+      "kind": "dead-grass-tuft",
+      "x": 13,
+      "y": 42,
+      "id": "censure-road-dead-grass-13-42",
+      "seed": 582950624
+    },
+    {
       "kind": "campfire",
       "x": 19,
       "y": 42,
@@ -3024,28 +3834,28 @@
       "x": 33,
       "y": 42,
       "seed": 3553959508,
-      "id": "road-dust-380"
+      "id": "road-dust-381"
     },
     {
       "kind": "road-dust",
       "x": 34,
       "y": 42,
       "seed": 3623387806,
-      "id": "road-dust-381"
+      "id": "road-dust-382"
     },
     {
       "kind": "road-dust",
       "x": 35,
       "y": 42,
       "seed": 1876211120,
-      "id": "road-dust-382"
+      "id": "road-dust-383"
     },
     {
       "kind": "road-dust",
       "x": 39,
       "y": 42,
       "seed": 783701701,
-      "id": "road-dust-383"
+      "id": "road-dust-384"
     },
     {
       "kind": "paper-scraps",
@@ -3077,21 +3887,21 @@
       "x": 32,
       "y": 43,
       "seed": 277698134,
-      "id": "road-dust-384"
+      "id": "road-dust-385"
     },
     {
       "kind": "road-dust",
       "x": 34,
       "y": 43,
       "seed": 3475917316,
-      "id": "road-dust-385"
+      "id": "road-dust-386"
     },
     {
       "kind": "road-dust",
       "x": 35,
       "y": 43,
       "seed": 2549468825,
-      "id": "road-dust-386"
+      "id": "road-dust-387"
     },
     {
       "kind": "rusted-barrel",
@@ -3135,7 +3945,57 @@
       "y": 43,
       "id": "censure-road-medic-field-kit",
       "blocking": true,
-      "seed": 1574251239
+      "name": "Joanna's Field Kit",
+      "seed": 1574251239,
+      "interact": {
+        "type": "note",
+        "log": "Joanna has separated clean packets from boiled ones with two lengths of blue thread.",
+        "search": {
+          "id": "censure-road-medic-field-kit-search",
+          "title": "Joanna's Field Kit",
+          "lines": [
+            "One dressing packet has been folded around a fresh square of cloth. A dark sample sits under glass beside it."
+          ],
+          "useLabel": "Inspect the field kit",
+          "methods": [
+            {
+              "id": "identify-reused-dressing",
+              "label": "Check the dressing folds",
+              "field": "medicine",
+              "dc": 45,
+              "successLog": "The packet was opened, boiled, and folded shut again. You replace it with the safe dressing Joanna left beside the rejects.",
+              "failLog": "Steam has softened every fold. You cannot prove which packet was reused.",
+              "success": {
+                "setFlag": "censure-road-medic-reused-dressing-found",
+                "inventory": {
+                  "add": [
+                    {
+                      "item": "field-dressing",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "id": "identify-isolated-host-stain",
+              "label": "Read the isolated stain",
+              "field": "hostSigns",
+              "dc": 60,
+              "successLog": "The stain contracts from the glass edge whenever the bell rope moves. Joanna isolated a live response, not old blood.",
+              "failLog": "The dark sample stays flat under glass. Its edge tells you nothing certain.",
+              "success": {
+                "setFlag": "censure-road-medic-host-stain-found"
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Joanna's Field Kit",
+        "kind": "search",
+        "reveal": "explored"
+      }
     },
     {
       "kind": "farm-fence",
@@ -3176,6 +4036,71 @@
       }
     },
     {
+      "kind": "dead-grass-tuft",
+      "x": 19,
+      "y": 44,
+      "id": "censure-road-dead-grass-19-44",
+      "seed": 793345324
+    },
+    {
+      "kind": "rusted-barrel",
+      "x": 25,
+      "y": 44,
+      "id": "censure-road-latrine-contraband-barrel",
+      "blocking": true,
+      "name": "Latrine Ash Barrel",
+      "seed": 1443252014,
+      "interact": {
+        "type": "note",
+        "log": "The ash barrel smells of lye, wet canvas, and the camp latrine trench.",
+        "search": {
+          "id": "censure-road-latrine-barrel-search",
+          "title": "Latrine Ash Barrel",
+          "lines": [
+            "One stave stays dry below the ash line. Someone sealed its inner edge with candle fat."
+          ],
+          "useLabel": "Inspect the ash barrel",
+          "methods": [
+            {
+              "id": "find-dry-contraband-wrap",
+              "label": "Follow the dry stave",
+              "field": "search",
+              "dc": 40,
+              "successLog": "The stave opens on a waxed wrap. Two ducats and a clean gear tooth sit inside, abandoned or forgotten.",
+              "failLog": "Lye bites your fingers before the dry line yields a seam.",
+              "success": {
+                "setFlag": "censure-road-latrine-contraband-found",
+                "inventory": {
+                  "add": [
+                    {
+                      "item": "ducat",
+                      "count": 2
+                    },
+                    {
+                      "item": "penitent-gear-scrap",
+                      "count": 1
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "mapMarker": {
+        "label": "Ash Barrel",
+        "kind": "search",
+        "reveal": "explored"
+      }
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 27,
+      "y": 44,
+      "id": "censure-road-dead-grass-27-44",
+      "seed": 3942208206
+    },
+    {
       "kind": "quarantine-barricade",
       "x": 30,
       "y": 44,
@@ -3188,21 +4113,21 @@
       "x": 33,
       "y": 44,
       "seed": 733817421,
-      "id": "road-dust-387"
+      "id": "road-dust-388"
     },
     {
       "kind": "road-dust",
       "x": 35,
       "y": 44,
       "seed": 1373246318,
-      "id": "road-dust-388"
+      "id": "road-dust-389"
     },
     {
       "kind": "road-dust",
       "x": 36,
       "y": 44,
       "seed": 2097113012,
-      "id": "road-dust-389"
+      "id": "road-dust-390"
     },
     {
       "kind": "quarantine-barricade",
@@ -3213,12 +4138,33 @@
       "seed": 2931016569
     },
     {
+      "kind": "dead-grass-tuft",
+      "x": 43,
+      "y": 44,
+      "id": "censure-road-dead-grass-43-44",
+      "seed": 481054436
+    },
+    {
       "kind": "water-pump",
       "x": 46,
       "y": 44,
       "id": "censure-road-water-pump",
       "blocking": true,
       "seed": 1079774685
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 51,
+      "y": 44,
+      "id": "censure-road-dead-grass-51-44",
+      "seed": 1121766998
+    },
+    {
+      "kind": "dead-grass-tuft",
+      "x": 59,
+      "y": 44,
+      "id": "censure-road-dead-grass-59-44",
+      "seed": 1652219926
     },
     {
       "kind": "camp-bedroll",
@@ -3257,14 +4203,14 @@
       "x": 34,
       "y": 45,
       "seed": 1969647603,
-      "id": "road-dust-390"
+      "id": "road-dust-391"
     },
     {
       "kind": "road-dust",
       "x": 37,
       "y": 45,
       "seed": 1386139503,
-      "id": "road-dust-391"
+      "id": "road-dust-392"
     },
     {
       "kind": "wash-tub",
@@ -3297,21 +4243,21 @@
       "x": 32,
       "y": 46,
       "seed": 2264588220,
-      "id": "road-dust-392"
+      "id": "road-dust-393"
     },
     {
       "kind": "road-dust",
       "x": 34,
       "y": 46,
       "seed": 3271448913,
-      "id": "road-dust-393"
+      "id": "road-dust-394"
     },
     {
       "kind": "road-dust",
       "x": 37,
       "y": 46,
       "seed": 2081285111,
-      "id": "road-dust-394"
+      "id": "road-dust-395"
     },
     {
       "kind": "canvas-tent-flap",
@@ -3321,6 +4267,22 @@
       "name": "Medic Tent",
       "wallPlane": "sw",
       "seed": 2187321120,
+      "clickAreas": [
+        {
+          "x0": 61,
+          "y0": 42,
+          "x1": 65,
+          "y1": 46
+        }
+      ],
+      "interactionMarker": {
+        "x": 60,
+        "y": 46
+      },
+      "interact": {
+        "type": "secret-entrance",
+        "dialogue": "censure-road-medic-tent-entry"
+      },
       "mapMarker": {
         "label": "Medic Tent",
         "kind": "exit",
@@ -3557,7 +4519,7 @@
       "x": 33,
       "y": 47,
       "seed": 482379033,
-      "id": "road-dust-395"
+      "id": "road-dust-396"
     },
     {
       "kind": "farm-fence",
@@ -3825,7 +4787,7 @@
       "x": 31,
       "y": 48,
       "seed": 1627045109,
-      "id": "road-dust-396"
+      "id": "road-dust-397"
     },
     {
       "kind": "road-sign-post",
@@ -3850,219 +4812,21 @@
       "x": 37,
       "y": 48,
       "seed": 1400377406,
-      "id": "road-dust-397"
+      "id": "road-dust-398"
     },
     {
       "kind": "road-dust",
       "x": 33,
       "y": 49,
       "seed": 3706959133,
-      "id": "road-dust-398"
+      "id": "road-dust-399"
     },
     {
       "kind": "road-dust",
       "x": 35,
       "y": 49,
       "seed": 3731469919,
-      "id": "road-dust-399"
-    }
-  ],
-  "levelTransitions": [
-    {
-      "id": "censure-road-odran-private-tent-flap-transition",
-      "x": 16,
-      "y": 19,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_odran_tent_interior.json",
-        "player": {
-          "x": 8,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 14,
-          "y0": 14,
-          "x1": 17,
-          "y1": 18
-        }
-      ]
-    },
-    {
-      "id": "censure-road-writ-chapel-flap-transition",
-      "x": 23,
-      "y": 17,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_writ_chapel_tent.json",
-        "player": {
-          "x": 6,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 20,
-          "y0": 12,
-          "x1": 26,
-          "y1": 16
-        }
-      ]
-    },
-    {
-      "id": "censure-road-preceptor-tent-flap-transition",
-      "x": 47,
-      "y": 13,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_preceptor_tent.json",
-        "player": {
-          "x": 6,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 43,
-          "y0": 8,
-          "x1": 49,
-          "y1": 12
-        }
-      ]
-    },
-    {
-      "id": "censure-road-quartermaster-tent-flap-transition",
-      "x": 28,
-      "y": 30,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_quartermaster_tent.json",
-        "player": {
-          "x": 6,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 24,
-          "y0": 25,
-          "x1": 32,
-          "y1": 29
-        }
-      ]
-    },
-    {
-      "id": "censure-road-supply-tent-flap-transition",
-      "x": 39,
-      "y": 36,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_supply_tent.json",
-        "player": {
-          "x": 9,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 35,
-          "y0": 31,
-          "x1": 38,
-          "y1": 35
-        },
-        {
-          "x0": 40,
-          "y0": 31,
-          "x1": 43,
-          "y1": 35
-        }
-      ]
-    },
-    {
-      "id": "censure-road-sutler-tent-flap-transition",
-      "x": 50,
-      "y": 37,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_sutler_tent.json",
-        "player": {
-          "x": 5,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 48,
-          "y0": 32,
-          "x1": 53,
-          "y1": 36
-        }
-      ]
-    },
-    {
-      "id": "censure-road-medic-tent-flap-transition",
-      "x": 60,
-      "y": 46,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_medic_tent.json",
-        "player": {
-          "x": 2,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 61,
-          "y0": 42,
-          "x1": 65,
-          "y1": 46
-        }
-      ]
-    },
-    {
-      "id": "censure-road-quarters-tent-flap-transition",
-      "x": 16,
-      "y": 41,
-      "loadLevel": {
-        "path": "./data/levels/censure_road_quarters_tent.json",
-        "player": {
-          "x": 6,
-          "y": 7
-        }
-      },
-      "clickAreas": [
-        {
-          "x0": 11,
-          "y0": 31,
-          "x1": 13,
-          "y1": 34
-        },
-        {
-          "x0": 15,
-          "y0": 31,
-          "x1": 17,
-          "y1": 34
-        },
-        {
-          "x0": 19,
-          "y0": 31,
-          "x1": 21,
-          "y1": 34
-        },
-        {
-          "x0": 11,
-          "y0": 37,
-          "x1": 13,
-          "y1": 40
-        },
-        {
-          "x0": 15,
-          "y0": 37,
-          "x1": 17,
-          "y1": 40
-        },
-        {
-          "x0": 19,
-          "y0": 37,
-          "x1": 21,
-          "y1": 40
-        }
-      ]
+      "id": "road-dust-400"
     }
   ]
 }

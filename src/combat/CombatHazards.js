@@ -20,6 +20,7 @@ export function createCombatHazard({
     type,
     ownerId: owner?.id ?? null,
     ownerType: owner?.type ?? null,
+    ownerTeam: owner?.team ?? (owner?.type === 'enemy' ? 'enemy' : owner?.type === 'player' || owner?.type === 'companion' ? 'player' : null),
     x: cell.x,
     y: cell.y,
     damage: Math.max(0, Math.round(Number(damage) || 0)),
@@ -55,8 +56,13 @@ export function hazardsAtCell(hazards = [], cell) {
 export function hazardAffectsActor(hazard, actor) {
   if (!hazard || hazard.spent || !actor || actor.isDead) return false;
   if (hazard.ownerId && actor.id === hazard.ownerId) return false;
+  const actorTeam = actor.team ?? (actor.type === 'enemy' ? 'enemy' : actor.type === 'player' || actor.type === 'companion' ? 'player' : null);
+  if (hazard.ownerTeam && actorTeam === hazard.ownerTeam) return false;
+  if (hazard.ownerTeam === 'player') return actorTeam === 'enemy';
+  if (hazard.ownerTeam === 'enemy') return actorTeam === 'player';
   if (hazard.ownerType === 'player') return actor.type === 'enemy';
-  if (hazard.ownerType === 'enemy') return actor.type === 'player';
+  if (hazard.ownerType === 'companion') return actor.type === 'enemy';
+  if (hazard.ownerType === 'enemy') return actor.type === 'player' || actor.type === 'companion';
   return true;
 }
 

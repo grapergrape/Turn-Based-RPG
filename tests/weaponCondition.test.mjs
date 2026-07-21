@@ -102,13 +102,13 @@ const itemDefs = {
   inventory.add('censure-sidearm', 1, { condition: 40 });
   inventory.equip('censure-sidearm');
   const fallback = [{ id: 'melee', name: 'Knife', apCost: 3, damage: 3, range: 1 }];
-  const sidearm = inventory.weaponAttacks(fallback).find((attack) => attack.id === 'sidearm');
+  const sidearm = inventory.weaponAttacks(fallback).find((attack) => attack.roles?.includes('sidearm'));
   assert.equal(sidearm.damage, 4);
   assert.equal(sidearm.conditionTier, 'worn');
 
   const attacker = new Entity({
     id: 'mara-vey',
-    name: 'Mara Vey',
+    name: 'Test Agent',
     type: 'player',
     stats: { hp: 10, maxHp: 10, actionPoints: 6 },
     attacks: fallback,
@@ -133,7 +133,7 @@ const itemDefs = {
   const inventory = new Inventory(itemDefs);
   inventory.add('censure-sidearm', 1, { condition: 0 });
   inventory.equip('censure-sidearm');
-  const sidearm = inventory.weaponAttacks([]).find((attack) => attack.id === 'sidearm');
+  const sidearm = inventory.weaponAttacks([]).find((attack) => attack.roles?.includes('sidearm'));
   assert.equal(sidearm.broken, true);
   assert.equal(sidearm.damage, 0);
 }

@@ -1,0 +1,32 @@
+{
+  "id": "old-pilgrim-trials-to-quarters",
+  "title": "Candidate Stair",
+  "nodes": {
+    "start": {
+      "lines": [
+        "The candidate stair descends to the novitiate quarters."
+      ],
+      "choices": [
+        {
+          "label": "Return to the Novitiate Quarters",
+          "effects": {
+            "loadLevel": {
+              "path": "./data/levels/old_pilgrim_novitiate_quarters.json",
+              "player": {
+                "x": 24,
+                "y": 2,
+                "facing": "s"
+              }
+            }
+          },
+          "tone": "commit"
+        },
+        {
+          "label": "Leave",
+          "close": true,
+          "tone": "quiet"
+        }
+      ]
+    }
+  }
+}

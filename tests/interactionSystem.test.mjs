@@ -67,3 +67,30 @@ function inventory(maxCarryWeight = 1) {
   assert.equal(object.looted, undefined);
   assert.ok(result.logs.includes('Too much to carry. Pack 0/0.1 kg.'));
 }
+
+{
+  const object = {
+    kind: 'notice-board',
+    interact: {
+      type: 'note',
+      log: 'The old issue marks remain.',
+      logVariants: [
+        { conditions: { flag: 'water-rationed' }, log: 'Every second issue mark carries a bell time.' },
+        { conditions: { flag: 'water-full' }, log: 'Both issue rows carry a full cup mark.' }
+      ]
+    }
+  };
+  const flags = new Set(['water-full']);
+  const system = new InteractionSystem([object], {
+    meetsConditions: (conditions) => flags.has(conditions.flag)
+  });
+
+  assert.deepEqual(system.interact(object, inventory()).logs, ['Both issue rows carry a full cup mark.']);
+  flags.clear();
+  assert.deepEqual(system.interact(object, inventory()).logs, ['The old issue marks remain.']);
+  assert.deepEqual(
+    new InteractionSystem([object]).interact(object, inventory()).logs,
+    ['The old issue marks remain.'],
+    'conditioned text never leaks through when no condition evaluator is available'
+  );
+}

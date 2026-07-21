@@ -1,0 +1,26 @@
+{
+  "id": "ash-road-south-nara-quen",
+  "name": "Naomi of Bethany",
+  "type": "npc",
+  "faction": "south-measure",
+  "role": "Hidden Rows seamstress",
+  "stats": {
+    "hp": 6,
+    "maxHp": 6,
+    "actionPoints": 0
+  },
+  "tags": [
+    "ash-road-south",
+    "south-measure-interior",
+    "hidden-rows",
+    "stable-alteration"
+  ],
+  "appearance": {
+    "body": "old-bent",
+    "outfit": "settlement-mender",
+    "gear": [
+      "tool-roll"
+    ],
+    "accent": "bare-grey"
+  }
+}

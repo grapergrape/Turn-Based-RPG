@@ -1,0 +1,48 @@
+{
+  "id": "road-through-the-fields",
+  "title": "Road Through the Fields",
+  "initialStage": "speak-to-road-clergy",
+  "objectives": [
+    {
+      "text": "Ask Sister Thecla why the north road is closed.",
+      "stage": "speak-to-road-clergy"
+    },
+    {
+      "text": "Search the dead fields for Tobias’s missing team.",
+      "stage": "investigate-fields"
+    },
+    {
+      "text": "Report the field attack to Sister Thecla.",
+      "stage": "report-field-attack"
+    },
+    {
+      "text": "Continue north toward the Quarantine Farms.",
+      "stage": "complete"
+    }
+  ],
+  "stages": [
+    {
+      "id": "speak-to-road-clergy",
+      "task": "Speak with Sister Thecla",
+      "description": "A road nun has stopped northbound traffic beside a cartwright with a torn shoulder."
+    },
+    {
+      "id": "investigate-fields",
+      "task": "Search the dead fields",
+      "xp": 0,
+      "description": "Tobias Faber left two people and a cart in the east field. Nothing came back."
+    },
+    {
+      "id": "report-field-attack",
+      "task": "Report to Sister Thecla",
+      "xp": 35,
+      "description": "Five recent Stage IV forms rose from the furrows. Sister Thecla needs the count before she opens the road."
+    },
+    {
+      "id": "complete",
+      "task": "The north road is open",
+      "xp": 30,
+      "description": "Sister Thecla has the field count. Travelers can move toward the Quarantine Farms again."
+    }
+  ]
+}

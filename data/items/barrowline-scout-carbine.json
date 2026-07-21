@@ -1,0 +1,64 @@
+{
+  "id": "barrowline-scout-carbine",
+  "name": "Barrowline Scout Carbine",
+  "type": "weapon",
+  "catalogGroup": "ballistic-long-gun",
+  "subtype": "carbine",
+  "rarity": "common",
+  "weight": 2.95,
+  "groundModel": "carbine",
+  "equipment": {
+    "slot": "weapon"
+  },
+  "provenance": {
+    "era": "Settlement manufacture",
+    "origin": "Barrowline Scouts",
+    "factions": [
+      "barrowline-scouts"
+    ]
+  },
+  "weapon": {
+    "weaponClass": "ballistic-long-gun",
+    "roles": [
+      "ranged",
+      "firearm",
+      "carbine"
+    ],
+    "handedness": "two",
+    "attacks": [
+      {
+        "id": "single-shot",
+        "name": "Single Shot",
+        "mode": "ranged",
+        "apCost": 4,
+        "damage": 6,
+        "range": 6,
+        "accuracyBonus": 0,
+        "conditionWear": 1,
+        "ammoCost": 1
+      },
+      {
+        "id": "snap-shot",
+        "name": "Snap Shot",
+        "mode": "ranged",
+        "apCost": 3,
+        "damage": 5,
+        "range": 5,
+        "accuracyBonus": -10,
+        "ammoCost": 1,
+        "conditionWear": 1
+      }
+    ],
+    "magazine": {
+      "ammoFamily": "intermediate-cartridge",
+      "capacity": 18,
+      "defaultLoaded": 18,
+      "reloadAp": 2
+    }
+  },
+  "condition": {
+    "max": 100,
+    "default": 74
+  },
+  "description": "Long-legged scouts carry this narrow carbine under their coats. A hooded front sight keeps glare from the salt flats out of the eye."
+}
