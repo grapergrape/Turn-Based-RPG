@@ -319,7 +319,7 @@ export function drawMeasureBoundaryFence(ctx, cx, cy, seed, opts = {}) {
     for (const lift of [-6, -1, 4]) {
       linePx(ctx, gauge[0] - 3, gauge[1] + lift, gauge[0] + 1, gauge[1] + lift, PALETTE.stoneDust, 1);
     }
-    px(ctx, gauge[0] - 3, gauge[1] + 7, PALETTE.clothBlueMid, 5, 2);
+    px(ctx, gauge[0] - 3, gauge[1] + 7, PALETTE.ironMid, 5, 2);
   }
 
   // Three sagging cable runs make a boundary rather than a row of identical
@@ -530,8 +530,8 @@ export function drawSouthMeasureCharityCanopy(ctx, cx, cy, seed, opts = {}) {
     nativeLinePx(ctx, basin[0] - 0.5, basin[1] + 2.5, basin[0] + dx - 0.5, basin[1] + dy - 1.5, PALETTE.rustMid);
   }
   drawIsoDiamond(ctx, basin[0], basin[1], 32, 12, PALETTE.outline);
-  drawIsoDiamond(ctx, basin[0] - 1, basin[1] - 1, 25, 8, PALETTE.clothBlueDark);
-  nativeLinePx(ctx, basin[0] - 9.5, basin[1] - 3.5, basin[0] - 2.5, basin[1] - 5.5, PALETTE.clothBlue);
+  drawIsoDiamond(ctx, basin[0] - 1, basin[1] - 1, 25, 8, PALETTE.ironDark);
+  nativeLinePx(ctx, basin[0] - 9.5, basin[1] - 3.5, basin[0] - 2.5, basin[1] - 5.5, PALETTE.ironLight);
 
   // Near posts remain slender, so the cot and bowl do not merge into a chair.
   drawPost(postSpecs[2], true);
@@ -604,7 +604,7 @@ export function drawSouthMeasureCharityCanopy(ctx, cx, cy, seed, opts = {}) {
   const drainA = frame.point(0.47, 0.13, 1);
   const drainB = frame.point(0.83, 0.25, 0);
   linePx(ctx, drainA[0], drainA[1], drainB[0], drainB[1], PALETTE.outline, 7);
-  linePx(ctx, drainA[0] - 1, drainA[1] - 2, drainB[0] - 1, drainB[1] - 2, PALETTE.clothBlueDark, 3);
+  linePx(ctx, drainA[0] - 1, drainA[1] - 2, drainB[0] - 1, drainB[1] - 2, PALETTE.ironDark, 3);
 }
 
 export function drawSouthMeasureArrivalHearth(ctx, cx, cy, seed, flicker = 0) {
@@ -767,7 +767,7 @@ export function drawSouthMeasureHandPump(ctx, cx, cy, seed) {
   linePx(ctx, spoutElbow[0] - 1, spoutElbow[1] - 1, spoutMouth[0] - 1, spoutMouth[1] - 1, PALETTE.ironLight, 2);
   drawIsoDiamond(ctx, spoutMouth[0], spoutMouth[1], 10, 5, PALETTE.outline);
   drawIsoDiamond(ctx, spoutMouth[0], spoutMouth[1], 6, 3, PALETTE.void);
-  px(ctx, spoutMouth[0] - 1, spoutMouth[1] + 4, PALETTE.clothBlue, 3, 4 + (seed & 1));
+  px(ctx, spoutMouth[0] - 1, spoutMouth[1] + 4, PALETTE.ironLight, 3, 4 + (seed & 1));
 
   // The buried relief union stays small and low. It supports the pump instead
   // of becoming a second, chair-sized valve glyph.
@@ -803,8 +803,8 @@ export function drawSouthMeasureHandPump(ctx, cx, cy, seed) {
   ]);
   linePx(ctx, cx - 34, cy - 6, cx - 32, cy, PALETTE.stoneDust, 2);
   drawIsoDiamond(ctx, cx - 28, cy - 10, 18, 7, PALETTE.outline);
-  drawIsoDiamond(ctx, cx - 28, cy - 10, 13, 4, PALETTE.clothBlueDark);
-  nativeLinePx(ctx, cx - 32.5, cy - 11.5, cx - 26.5, cy - 10.5, PALETTE.clothBlue);
+  drawIsoDiamond(ctx, cx - 28, cy - 10, 13, 4, PALETTE.ironDark);
+  nativeLinePx(ctx, cx - 32.5, cy - 11.5, cx - 26.5, cy - 10.5, PALETTE.ironLight);
   nativeLinePx(ctx, cx - 5.5, cy - 50.5, cx - 5.5, cy - 16.5, PALETTE.ironLight);
 }
 
@@ -875,21 +875,21 @@ export function drawSouthMeasureWaterVessels(ctx, cx, cy, seed, opts = {}) {
       frame.point(-0.48, -0.18, 14), frame.point(0.48, -0.18, 14),
       frame.point(0.48, 0.18, 14), frame.point(-0.48, 0.18, 14)
     ]);
-    poly(ctx, PALETTE.clothBlueDark, [
+    poly(ctx, PALETTE.ironDark, [
       frame.point(-0.4, -0.11, 15), frame.point(0.4, -0.11, 15),
       frame.point(0.4, 0.11, 15), frame.point(-0.4, 0.11, 15)
     ]);
     const glintA = frame.point(-0.32, -0.07, 15.5);
     const glintB = frame.point(0.12, -0.07, 15.5);
-    nativeLinePx(ctx, glintA[0], glintA[1], glintB[0], glintB[1], PALETTE.clothBlue);
+    nativeLinePx(ctx, glintA[0], glintA[1], glintB[0], glintB[1], PALETTE.ironLight);
 
     const riserFoot = frame.point(-0.48, -0.2, 10);
     const riserTop = frame.point(-0.48, -0.2, 38);
     const spout = frame.point(-0.31, -0.2, 31);
     linePx(ctx, riserFoot[0], riserFoot[1], riserTop[0], riserTop[1], PALETTE.outline, 8);
-    linePx(ctx, riserFoot[0] - 1, riserFoot[1] - 1, riserTop[0] - 1, riserTop[1] + 1, PALETTE.clothBlueDark, 4);
+    linePx(ctx, riserFoot[0] - 1, riserFoot[1] - 1, riserTop[0] - 1, riserTop[1] + 1, PALETTE.ironMid, 4);
     linePx(ctx, riserTop[0], riserTop[1], spout[0], spout[1], PALETTE.outline, 7);
-    linePx(ctx, riserTop[0] - 1, riserTop[1] - 1, spout[0] - 1, spout[1] - 1, PALETTE.clothBlue, 3);
+    linePx(ctx, riserTop[0] - 1, riserTop[1] - 1, spout[0] - 1, spout[1] - 1, PALETTE.ironLight, 3);
     px(ctx, spout[0] - 2, spout[1], PALETTE.outline, 5, 10);
     px(ctx, spout[0], spout[1] + 1, PALETTE.rustLight, 2, 7);
     linePx(ctx, riserTop[0] - 5, riserTop[1] + 5, riserTop[0] + 5, riserTop[1] + 5, PALETTE.outline, 3);
@@ -928,7 +928,7 @@ export function drawSouthMeasureWaterVessels(ctx, cx, cy, seed, opts = {}) {
     const hoseA = frame.point(-0.14, 0.27, 18);
     const hoseB = frame.point(0.36, 0.3, 6);
     linePx(ctx, hoseA[0], hoseA[1], hoseB[0], hoseB[1], PALETTE.outline, 4);
-    nativeLinePx(ctx, hoseA[0] + 0.5, hoseA[1] - 1.5, hoseB[0] - 0.5, hoseB[1] - 1.5, PALETTE.clothBlueDark);
+    nativeLinePx(ctx, hoseA[0] + 0.5, hoseA[1] - 1.5, hoseB[0] - 0.5, hoseB[1] - 1.5, PALETTE.ironLight);
     nativeLinePx(ctx, skid.cap.left[0] + 1.5, skid.cap.left[1] - 0.5, skid.cap.top[0] - 1.5, skid.cap.top[1] + 0.5, PALETTE.woodLight);
     return;
   }
@@ -953,7 +953,7 @@ export function drawSouthMeasureWaterVessels(ctx, cx, cy, seed, opts = {}) {
     const basin = frame.point(0.31, 0.22, 7);
     drawIsoDiamond(ctx, basin[0], basin[1], 24, 9, PALETTE.outline);
     drawIsoDiamond(ctx, basin[0] - 1, basin[1] - 1, 18, 6, PALETTE.stoneDust);
-    drawIsoDiamond(ctx, basin[0] - 1, basin[1] - 2, 11, 3, PALETTE.clothBlueDark);
+    drawIsoDiamond(ctx, basin[0] - 1, basin[1] - 2, 11, 3, PALETTE.ironDark);
     const seal = frame.point(-0.02, 0.24, 12);
     px(ctx, seal[0] - 4, seal[1] - 3, PALETTE.outline, 9, 7);
     px(ctx, seal[0] - 2, seal[1] - 2, PALETTE.clothRed, 5, 4);
@@ -981,7 +981,7 @@ export function drawSouthMeasureWaterVessels(ctx, cx, cy, seed, opts = {}) {
   linePx(ctx, crock[0] - 16, crock[1] - 18, crock[0] - 12, crock[1] - 7, PALETTE.outline, 3);
   linePx(ctx, crock[0] - 7, crock[1] - 22, crock[0] - 14, crock[1] - 18, PALETTE.rustLight, 1);
   drawIsoDiamond(ctx, crock[0], crock[1] - 28, 13, 5, PALETTE.outline);
-  drawIsoDiamond(ctx, crock[0] - 1, crock[1] - 29, 8, 3, PALETTE.clothBlueDark);
+  drawIsoDiamond(ctx, crock[0] - 1, crock[1] - 29, 8, 3, PALETTE.ironDark);
 
   const bucket = frame.point(0.08, 0.08, 0);
   poly(ctx, PALETTE.outline, [
@@ -993,7 +993,7 @@ export function drawSouthMeasureWaterVessels(ctx, cx, cy, seed, opts = {}) {
     [bucket[0] + 6, bucket[1] - 2], [bucket[0] - 6, bucket[1] - 2]
   ]);
   drawIsoDiamond(ctx, bucket[0], bucket[1] - 19, 23, 8, PALETTE.outline);
-  drawIsoDiamond(ctx, bucket[0] - 1, bucket[1] - 20, 17, 5, PALETTE.clothBlueDark);
+  drawIsoDiamond(ctx, bucket[0] - 1, bucket[1] - 20, 17, 5, PALETTE.ironDark);
   linePx(ctx, bucket[0] - 9, bucket[1] - 16, bucket[0], bucket[1] - 30, PALETTE.outline, 2);
   linePx(ctx, bucket[0], bucket[1] - 30, bucket[0] + 9, bucket[1] - 16, PALETTE.outline, 2);
   nativeLinePx(ctx, bucket[0] - 7.5, bucket[1] - 15.5, bucket[0] - 0.5, bucket[1] - 27.5, PALETTE.ironLight);
@@ -1027,19 +1027,32 @@ export function drawSouthMeasureNoticeBoard(ctx, cx, cy, seed, opts = {}) {
   const variant = opts.variant ?? 'public';
   const left = frame.point(-0.34, 0, 0);
   const right = frame.point(0.34, 0, 0);
+
+  // Shafts stop inside their stone sockets. Drawing the sockets afterward
+  // hides the post ends and makes the load path explicit at native scale.
   for (const [index, p] of [left, right].entries()) {
-    drawIsoPrism(ctx, p[0], p[1] + 1, 11, 6, 6, {
-      top: PALETTE.limeLight,
+    px(ctx, p[0] - 3, p[1] - 58, PALETTE.outline, 7, 56);
+    px(ctx, p[0] - 1, p[1] - 57, index ? PALETTE.ironDark : PALETTE.ironMid, 3, 54);
+    nativeLinePx(ctx, p[0] - 0.5, p[1] - 55.5, p[0] - 0.5, p[1] - 5.5, index ? PALETTE.ironMid : PALETTE.ironLight);
+  }
+  for (const [index, p] of [left, right].entries()) {
+    drawIsoPrism(ctx, p[0], p[1] + 1, 14, 8, 7, {
+      top: index ? PALETTE.limeMid : PALETTE.limeLight,
       left: PALETTE.limeMid,
       right: PALETTE.limeDark,
       outline: PALETTE.outline
     });
-    px(ctx, p[0] - 3, p[1] - 58, PALETTE.outline, 7, 61);
-    px(ctx, p[0] - 1, p[1] - 57, index ? PALETTE.ironDark : PALETTE.ironMid, 3, 57);
-    nativeLinePx(ctx, p[0] - 0.5, p[1] - 55.5, p[0] - 0.5, p[1] - 5.5, index ? PALETTE.ironMid : PALETTE.ironLight);
+    px(ctx, p[0] - 4, p[1] - 7, PALETTE.outline, 9, 4);
+    px(ctx, p[0] - 2, p[1] - 6, PALETTE.ironDark, 5, 2);
+    nativePx(ctx, p[0] - 0.5, p[1] - 5.5, PALETTE.ironLight);
   }
   const center = frame.point(0, 0, 46);
   if (variant === 'census') {
+    // Rear braces sit behind the register case instead of crossing its face.
+    linePx(ctx, left[0], left[1] - 34, center[0] - 22, center[1] + 17, PALETTE.outline, 4);
+    linePx(ctx, right[0], right[1] - 34, center[0] + 21, center[1] + 16, PALETTE.outline, 4);
+    nativeLinePx(ctx, left[0] + 0.5, left[1] - 35.5, center[0] - 20.5, center[1] + 14.5, PALETTE.ironLight);
+
     const outer = [
       [center[0] - 28, center[1] - 18], [center[0] - 20, center[1] - 27],
       [center[0] + 18, center[1] - 27], [center[0] + 27, center[1] - 19],
@@ -1106,8 +1119,6 @@ export function drawSouthMeasureNoticeBoard(ctx, cx, cy, seed, opts = {}) {
       [stripX - 3, center[1] + 14]
     ]);
     for (const y of [0, 5, 10]) nativeLinePx(ctx, stripX - 1.5, center[1] + y, stripX + 2.5, center[1] + y, PALETTE.stoneDark);
-    linePx(ctx, left[0], left[1] - 34, center[0] - 22, center[1] + 17, PALETTE.outline, 4);
-    linePx(ctx, right[0], right[1] - 34, center[0] + 21, center[1] + 16, PALETTE.outline, 4);
     return;
   }
 
@@ -1284,86 +1295,84 @@ export function drawSouthMeasureReturnStall(ctx, cx, cy, seed, opts = {}) {
     const nearLb = sideA[1] > sideB[1] ? 0.3 : -0.3;
     const farLb = -nearLb;
 
-    // An open trestle register with a hanging balance. Daylight under the
-    // counter and the suspended pans make its job readable at gameplay scale.
-    const top = orientedBox(ctx, frame, 1.08, 0.46, 4, {
+    // Two open A-frame trestles carry one continuous plank counter. Supports
+    // are drawn first so every joint disappears under the load it carries.
+    for (const [endIndex, la] of [-0.45, 0.45].entries()) {
+      const joint = frame.point(la, 0, 25);
+      const farFoot = frame.point(la, farLb * 0.8, 0);
+      const nearFoot = frame.point(la, nearLb * 0.8, 0);
+      for (const [footIndex, foot] of [farFoot, nearFoot].entries()) {
+        linePx(ctx, foot[0], foot[1], joint[0], joint[1], PALETTE.outline, 6);
+        linePx(ctx, foot[0] + (footIndex ? -1 : 1), foot[1] - 2, joint[0], joint[1] + 2, endIndex ? PALETTE.woodDark : PALETTE.woodMid, 2);
+      }
+      const footBraceA = frame.point(la, farLb * 0.62, 10);
+      const footBraceB = frame.point(la, nearLb * 0.62, 10);
+      linePx(ctx, footBraceA[0], footBraceA[1], footBraceB[0], footBraceB[1], PALETTE.outline, 4);
+      nativeLinePx(ctx, footBraceA[0] + 0.5, footBraceA[1] - 1.5, footBraceB[0] - 0.5, footBraceB[1] - 1.5, PALETTE.woodLight);
+    }
+    const longBraceA = frame.point(-0.43, nearLb * 0.55, 13);
+    const longBraceB = frame.point(0.43, nearLb * 0.55, 13);
+    linePx(ctx, longBraceA[0], longBraceA[1], longBraceB[0], longBraceB[1], PALETTE.outline, 5);
+    linePx(ctx, longBraceA[0] + 1, longBraceA[1] - 1, longBraceB[0] - 1, longBraceB[1] - 1, PALETTE.woodMid, 2);
+
+    const top = orientedBox(ctx, frame, 1.2, 0.5, 5, {
       top: PALETTE.woodLight,
       lit: PALETTE.woodMid,
       shade: PALETTE.woodDark,
       outline: PALETTE.outline
-    }, 24);
-    for (const [la, lb, splay] of [
-      [-0.43, -0.16, -5], [0.43, -0.16, 5],
-      [-0.43, 0.16, -7], [0.43, 0.16, 7]
-    ]) {
-      const topLeg = frame.point(la, lb, 24);
-      const foot = frame.point(la, lb, 0);
-      linePx(ctx, topLeg[0], topLeg[1], foot[0] + splay, foot[1], PALETTE.outline, 6);
-      linePx(ctx, topLeg[0] - 1, topLeg[1] + 1, foot[0] + splay - 1, foot[1] - 2, la < 0 ? PALETTE.woodMid : PALETTE.woodDark, 2);
+    }, 25);
+    for (const lb of [-0.12, 0.04, 0.18]) {
+      const seamA = frame.point(-0.55, lb, 31);
+      const seamB = frame.point(0.55, lb, 31);
+      nativeLinePx(ctx, seamA[0], seamA[1], seamB[0], seamB[1], lb < 0 ? PALETTE.woodDark : PALETTE.stoneDark);
     }
-    const braceA = frame.point(-0.42, nearLb * 0.55, 13);
-    const braceB = frame.point(0.42, nearLb * 0.55, 13);
-    linePx(ctx, braceA[0], braceA[1], braceB[0], braceB[1], PALETTE.outline, 5);
-    linePx(ctx, braceA[0] + 1, braceA[1] - 1, braceB[0] - 1, braceB[1] - 1, PALETTE.woodLight, 1);
 
-    const mastFoot = frame.point(0, farLb * 0.62, 25);
-    const mastTop = frame.point(0, farLb * 0.62, 63);
-    linePx(ctx, mastFoot[0], mastFoot[1], mastTop[0], mastTop[1], PALETTE.outline, 7);
+    // The balance is mounted to the rear edge. Small suspended pans leave the
+    // ledger and worker side of the counter unobstructed.
+    const mastFoot = frame.point(0.22, farLb * 0.72, 30);
+    const mastTop = frame.point(0.22, farLb * 0.72, 61);
+    linePx(ctx, mastFoot[0], mastFoot[1], mastTop[0], mastTop[1], PALETTE.outline, 6);
     linePx(ctx, mastFoot[0] - 1, mastFoot[1] - 1, mastTop[0] - 1, mastTop[1] + 2, PALETTE.rustMid, 3);
-    const beamA = frame.point(-0.48, farLb * 0.62, 57);
-    const beamB = frame.point(0.48, farLb * 0.62, 57);
-    linePx(ctx, beamA[0], beamA[1], beamB[0], beamB[1], PALETTE.outline, 7);
+    nativeLinePx(ctx, mastFoot[0] - 1.5, mastFoot[1] - 2.5, mastTop[0] - 1.5, mastTop[1] + 2.5, PALETTE.rustLight);
+    const beamA = frame.point(-0.18, farLb * 0.72, 56);
+    const beamB = frame.point(0.58, farLb * 0.72, 56);
+    linePx(ctx, beamA[0], beamA[1], beamB[0], beamB[1], PALETTE.outline, 6);
     linePx(ctx, beamA[0] + 1, beamA[1] - 2, beamB[0] - 1, beamB[1] - 2, PALETTE.rustLight, 2);
-    poly(ctx, PALETTE.outline, [
-      [mastTop[0], mastTop[1] - 2], [mastTop[0] + 7, mastTop[1] + 9],
-      [mastTop[0] - 7, mastTop[1] + 9]
-    ]);
-    poly(ctx, PALETTE.stoneDust, [
-      [mastTop[0], mastTop[1] + 1], [mastTop[0] + 4, mastTop[1] + 7],
-      [mastTop[0] - 4, mastTop[1] + 7]
-    ]);
+    drawIsoDiamond(ctx, mastTop[0], mastTop[1] + 5, 13, 6, PALETTE.outline);
+    drawIsoDiamond(ctx, mastTop[0] - 1, mastTop[1] + 4, 7, 3, PALETTE.hostBone);
 
     for (const [index, beam] of [beamA, beamB].entries()) {
-      const panCenter = frame.point(index === 0 ? -0.48 : 0.48, nearLb * 0.15, 34 + (index === (seed & 1) ? 2 : 0));
-      linePx(ctx, beam[0], beam[1] + 2, panCenter[0] - 8, panCenter[1] - 4, PALETTE.outline, 2);
-      linePx(ctx, beam[0], beam[1] + 2, panCenter[0] + 8, panCenter[1] - 4, PALETTE.outline, 2);
-      nativeLinePx(ctx, beam[0] + 0.5, beam[1] + 3.5, panCenter[0] - 7.5, panCenter[1] - 4.5, PALETTE.rustLight);
-      drawIsoDiamond(ctx, panCenter[0], panCenter[1], 25, 9, PALETTE.outline);
-      drawIsoDiamond(ctx, panCenter[0] - 1, panCenter[1] - 1, 19, 5, index === 0 ? PALETTE.stoneDust : PALETTE.rustMid);
+      const la = index === 0 ? -0.18 : 0.58;
+      const panCenter = frame.point(la, nearLb * 0.08, 37 + (index === (seed & 1) ? 2 : 0));
+      linePx(ctx, beam[0], beam[1] + 2, panCenter[0] - 5, panCenter[1] - 3, PALETTE.outline, 2);
+      linePx(ctx, beam[0], beam[1] + 2, panCenter[0] + 5, panCenter[1] - 3, PALETTE.outline, 2);
+      nativeLinePx(ctx, beam[0] + 0.5, beam[1] + 3.5, panCenter[0] - 4.5, panCenter[1] - 3.5, PALETTE.rustLight);
+      drawIsoDiamond(ctx, panCenter[0], panCenter[1], 16, 6, PALETTE.outline);
+      drawIsoDiamond(ctx, panCenter[0] - 1, panCenter[1] - 1, 11, 3, index ? PALETTE.rustMid : PALETTE.stoneDust);
     }
 
-    const book = frame.point(-0.12, nearLb * 0.1, 31);
+    // An open page block, gutter, rules, and brass weight give the counter the
+    // same native-scale material detail as Ash Chapel's lecterns.
+    const book = frame.point(-0.32, nearLb * 0.18, 32);
     poly(ctx, PALETTE.outline, [
-      [book[0] - 17, book[1]], [book[0] - 2, book[1] - 5],
-      [book[0], book[1] + 1], [book[0] + 16, book[1] - 4],
-      [book[0] + 15, book[1] + 6], [book[0], book[1] + 10],
-      [book[0] - 16, book[1] + 6]
+      [book[0] - 14, book[1]], [book[0] - 2, book[1] - 4],
+      [book[0], book[1] + 1], [book[0] + 13, book[1] - 3],
+      [book[0] + 13, book[1] + 5], [book[0], book[1] + 8],
+      [book[0] - 13, book[1] + 5]
     ]);
     poly(ctx, PALETTE.clothTan, [
-      [book[0] - 14, book[1] + 1], [book[0] - 2, book[1] - 3],
-      [book[0], book[1] + 3], [book[0] + 13, book[1] - 2],
-      [book[0] + 12, book[1] + 4], [book[0], book[1] + 8],
-      [book[0] - 13, book[1] + 4]
+      [book[0] - 11, book[1] + 1], [book[0] - 2, book[1] - 2],
+      [book[0], book[1] + 3], [book[0] + 10, book[1]],
+      [book[0] + 10, book[1] + 3], [book[0], book[1] + 6],
+      [book[0] - 10, book[1] + 3]
     ]);
-    for (const side of [-1, 1]) {
-      nativeLinePx(ctx, book[0] + side * 3.5, book[1] + 1.5, book[0] + side * 10.5, book[1] + 2.5, PALETTE.stoneDark);
-    }
+    nativeLinePx(ctx, book[0] - 0.5, book[1] + 1.5, book[0] - 0.5, book[1] + 5.5, PALETTE.stoneDark);
+    nativeLinePx(ctx, book[0] - 9.5, book[1] + 1.5, book[0] - 3.5, book[1] + 0.5, PALETTE.stoneDark);
+    nativeLinePx(ctx, book[0] + 2.5, book[1] + 1.5, book[0] + 8.5, book[1] + 0.5, PALETTE.stoneDark);
+    const weight = frame.point(0.02, nearLb * 0.2, 33);
+    drawIsoDiamond(ctx, weight[0], weight[1], 9, 4, PALETTE.outline);
+    drawIsoDiamond(ctx, weight[0] - 1, weight[1] - 1, 5, 2, PALETTE.hostGold);
 
-    const sack = frame.point(-0.3, nearLb * 0.68, 0);
-    poly(ctx, PALETTE.outline, [
-      [sack[0] - 3, sack[1] - 25], [sack[0] + 4, sack[1] - 25],
-      [sack[0] + 9, sack[1] - 19], [sack[0] + 10, sack[1] - 5],
-      [sack[0] + 6, sack[1]], [sack[0] - 7, sack[1]],
-      [sack[0] - 11, sack[1] - 5], [sack[0] - 9, sack[1] - 19]
-    ]);
-    poly(ctx, PALETTE.clothDark, [
-      [sack[0] - 2, sack[1] - 22], [sack[0] + 3, sack[1] - 22],
-      [sack[0] + 7, sack[1] - 17], [sack[0] + 7, sack[1] - 6],
-      [sack[0] + 4, sack[1] - 2], [sack[0] - 5, sack[1] - 2],
-      [sack[0] - 8, sack[1] - 6], [sack[0] - 7, sack[1] - 17]
-    ]);
-    px(ctx, sack[0] - 5, sack[1] - 27, PALETTE.outline, 11, 5);
-    px(ctx, sack[0] - 3, sack[1] - 27, PALETTE.rustLight, 7, 2);
     nativeLinePx(ctx, top.cap.left[0] + 1.5, top.cap.left[1] - 0.5, top.cap.top[0] - 1.5, top.cap.top[1] + 0.5, PALETTE.woodLight);
     return;
   }
@@ -1600,12 +1609,12 @@ export function drawSouthMeasureWaterLesson(ctx, cx, cy, seed, opts = {}) {
   const boardHeight = (lb) => Math.round(25 - lb * 13);
   const stations = [-0.45, 0, 0.45].map((la) => frame.point(la, 0, boardHeight(0)));
 
-  // A single blue pipe links all three mounted stages.
+  // A single cold-iron pipe links all three mounted stages.
   const pipeA = frame.point(-0.34, 0.05, boardHeight(0.05) + 2);
   const pipeB = frame.point(0.34, 0.05, boardHeight(0.05) + 2);
   linePx(ctx, pipeA[0], pipeA[1], pipeB[0], pipeB[1], PALETTE.outline, 7);
-  linePx(ctx, pipeA[0] + 1, pipeA[1] - 1, pipeB[0] - 1, pipeB[1] - 1, PALETTE.clothBlueDark, 3);
-  nativeLinePx(ctx, pipeA[0] + 1.5, pipeA[1] - 2.5, pipeB[0] - 1.5, pipeB[1] - 2.5, PALETTE.clothBlue);
+  linePx(ctx, pipeA[0] + 1, pipeA[1] - 1, pipeB[0] - 1, pipeB[1] - 1, PALETTE.ironMid, 3);
+  nativeLinePx(ctx, pipeA[0] + 1.5, pipeA[1] - 2.5, pipeB[0] - 1.5, pipeB[1] - 2.5, PALETTE.ironLight);
 
   // Dirty intake grate.
   drawIsoDiamond(ctx, stations[0][0], stations[0][1], 24, 10, PALETTE.outline);
@@ -1617,7 +1626,7 @@ export function drawSouthMeasureWaterLesson(ctx, cx, cy, seed, opts = {}) {
   // Settling bowl, visibly deeper than the other stages.
   drawIsoDiamond(ctx, stations[1][0], stations[1][1], 31, 13, PALETTE.outline);
   drawIsoDiamond(ctx, stations[1][0] - 1, stations[1][1] - 1, 26, 10, PALETTE.stoneDust);
-  drawIsoDiamond(ctx, stations[1][0] - 1, stations[1][1] - 2, 18, 6, PALETTE.clothBlueDark);
+  drawIsoDiamond(ctx, stations[1][0] - 1, stations[1][1] - 2, 18, 6, PALETTE.ironDark);
   px(ctx, stations[1][0] - 2, stations[1][1], PALETTE.outline, 5, 8);
   px(ctx, stations[1][0] - 1, stations[1][1] + 1, PALETTE.rustMid, 2, 6);
 
@@ -1628,10 +1637,11 @@ export function drawSouthMeasureWaterLesson(ctx, cx, cy, seed, opts = {}) {
     [stations[2][0] - 7, stations[2][1] - 2], [stations[2][0] - 5, stations[2][1] - 14],
     [stations[2][0] + 5, stations[2][1] - 14], [stations[2][0] + 8, stations[2][1] - 2]
   ]);
-  poly(ctx, PALETTE.clothBlue, [
+  poly(ctx, PALETTE.ironMid, [
     [stations[2][0] - 4, stations[2][1] - 3], [stations[2][0] - 3, stations[2][1] - 11],
     [stations[2][0] + 3, stations[2][1] - 11], [stations[2][0] + 5, stations[2][1] - 3]
   ]);
+  nativeLinePx(ctx, stations[2][0] - 2.5, stations[2][1] - 9.5, stations[2][0] - 2.5, stations[2][1] - 4.5, PALETTE.ironLight);
   px(ctx, stations[2][0] - 6, stations[2][1] - 17, PALETTE.outline, 13, 5);
   px(ctx, stations[2][0] - 4, stations[2][1] - 17, PALETTE.hostBone, 9, 2);
 

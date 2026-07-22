@@ -260,7 +260,7 @@ const variants = {
   'service-pipe-run': ['straight', 'valve'],
   'utility-railing': ['service', 'civic'],
   'south-measure-wall-board': ['schedule-bank', 'crawl-marks'],
-  'intake-screening-frame': ['intact', 'broken-baskets'],
+  'intake-screening-frame': ['records', 'weighing'],
   'south-measure-worktable': ['family-meal', 'meeting'],
   'south-measure-storage': ['work-shelf', 'burial-copies'],
   'mesh-cage-panel': ['parts', 'bonded'],
@@ -286,7 +286,7 @@ const completeVariantMatrix = {
   'service-pipe-run': ['straight', 'elbow', 'valve'],
   'utility-railing': ['service', 'intake', 'civic', 'broken'],
   'south-measure-wall-board': ['diagram', 'schedules', 'route', 'blood-card', 'memorial', 'slate', 'prayer-card', 'prayer-cards', 'private-list', 'handprints', 'schedule-bank', 'crawl-marks'],
-  'intake-screening-frame': ['intact', 'broken-baskets'],
+  'intake-screening-frame': ['intact', 'records', 'threshold', 'inspection', 'weighing', 'broken-baskets'],
   'south-measure-worktable': ['records', 'clinic', 'cup-repair', 'burned-label', 'council', 'route', 'meeting', 'school', 'family-meal', 'evidence-bench'],
   'south-measure-storage': ['archive-shelf', 'lime-records-chest', 'medicine-shelf', 'locked-cabinet', 'current-records', 'work-shelf', 'school-tools', 'burial-copies', 'suspect-shelf', 'clean-shelf'],
   'mesh-cage-panel': ['parts', 'ledger', 'bonded'],
@@ -338,7 +338,26 @@ const brokenScreen = renderKind('intake-screening-frame', { orient: 'sw', varian
 assertPaletteOnly(brokenScreen, 'intake-screening-frame:broken-baskets');
 assert.notEqual(signature(brokenScreen), signature(intactScreen), 'broken filter baskets must not reuse the intact screening gate silhouette');
 assert.ok(countStyle(brokenScreen, PALETTE.rustLight) >= 10, 'broken filter baskets must expose torn highlighted mesh and bent frame edges');
-assert.ok(countStyle(brokenScreen, PALETTE.clothBlueDark) >= 1, 'broken filter baskets must remain visibly caught in the wet channel');
+assert.ok(countStyle(brokenScreen, PALETTE.ironDark) >= 1, 'broken filter baskets must remain visibly caught in the recessed wet channel');
+
+const screeningRecords = renderKind('intake-screening-frame', { orient: 'sw', variant: 'records' });
+const screeningThreshold = renderKind('intake-screening-frame', { orient: 'sw', variant: 'threshold' });
+const screeningInspection = renderKind('intake-screening-frame', { orient: 'sw', variant: 'inspection' });
+const screeningWeighing = renderKind('intake-screening-frame', { orient: 'sw', variant: 'weighing' });
+for (const [label, ops] of [
+  ['records', screeningRecords],
+  ['threshold', screeningThreshold],
+  ['inspection', screeningInspection],
+  ['weighing', screeningWeighing]
+]) {
+  assertPaletteOnly(ops, `intake-screening-frame:${label}`);
+  assert.ok(countStyle(ops, PALETTE.ironDark) >= 2, `${label} screen must retain a recessed channel and bar mechanism`);
+  assert.ok(renderBounds(ops).height >= 58, `${label} screen must keep a complete worker-scale mechanism`);
+}
+assert.ok(
+  renderBounds(screeningWeighing).height < renderBounds(screeningInspection).height + 8,
+  'the weighing dial must remain mounted to the screening frame instead of floating as a second landmark'
+);
 
 const fixedHoist = renderKind('fixed-hoist');
 assertPaletteOnly(fixedHoist, 'fixed-hoist');
@@ -453,7 +472,7 @@ assert.notEqual(signature(entryLaundry), signature(ordinaryLaundry), 'entry-scre
 assert.ok(renderBounds(entryLaundry).width >= renderBounds(ordinaryLaundry).width + 20, 'entry-screen laundry must form a much broader masking screen');
 assert.ok(countStyle(entryLaundry, PALETTE.clothTan) >= 1, 'entry-screen laundry must carry one broad household sheet');
 assert.ok(countStyle(entryLaundry, PALETTE.clothBlueDark) >= 1, 'entry-screen laundry must show a separate blue work shirt');
-assert.ok(countStyle(entryLaundry, PALETTE.clothRed) >= 3, 'entry-screen laundry must show a patched sheet and two separated trouser legs');
+assert.ok(countStyle(entryLaundry, PALETTE.clothRed) >= 2, 'entry-screen laundry must show a patched sheet and one connected trouser body around a negative-space crotch');
 assertCatalogContact('laundry-line');
 
 for (const kind of ['service-hatch', 'service-pipe-run', 'utility-railing', 'south-measure-worktable', 'south-measure-storage', 'mesh-cage-panel', 'relief-machine', 'intake-pump-assembly', 'freight-scale', 'clinic-bed', 'cloth-partition']) {

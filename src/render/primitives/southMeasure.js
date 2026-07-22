@@ -1537,9 +1537,9 @@ export function drawSouthMeasureCondenser(ctx, cx, cy, seed) {
   px(ctx, pipeX - 11, bodyTop + 79, PALETTE.outline, 23, 7);
   px(ctx, pipeX - 8, bodyTop + 78, PALETTE.clayLight, 17, 3);
   drawIsoDiamond(ctx, cx + 50, cy - 1, 48, 17, PALETTE.outline);
-  drawIsoDiamond(ctx, cx + 49, cy - 2, 39, 12, PALETTE.clothBlueDark);
+  drawIsoDiamond(ctx, cx + 49, cy - 2, 39, 12, PALETTE.ironDark);
   linePx(ctx, pipeX, cy - 2, cx + 59, cy - 5, PALETTE.outline, 7);
-  nativeLinePx(ctx, pipeX - 1.5, cy - 4.5, cx + 59.5, cy - 7.5, PALETTE.clothBlue);
+  nativeLinePx(ctx, pipeX - 1.5, cy - 4.5, cx + 59.5, cy - 7.5, PALETTE.ironLight);
 
   // Narrow ladder on the opposite side further breaks the symmetry.
   linePx(ctx, cx - 62, cy - 4, cx - 55, bodyTop + 17, PALETTE.outline, 5);
@@ -1565,11 +1565,22 @@ export function drawSouthMeasureCondenser(ctx, cx, cy, seed) {
 
 export function drawSouthMeasureSettlingVat(ctx, cx, cy, seed) {
   const rng = rngFrom(hash2D(seed + 541, seed * 5 + 23));
-
-  // A deep open cylinder replaces the former square table. Stepped raster
-  // ovals form the lip and water surface; the visible wall reaches the ground.
   const rimY = cy - 34;
   const bottomY = cy + 6;
+
+  // The feed riser belongs behind the vessel. Its elbow reaches over the lip,
+  // then disappears into the basin instead of ending as a blue stripe.
+  px(ctx, cx - 48, rimY - 31, PALETTE.outline, 10, 37);
+  px(ctx, cx - 45, rimY - 29, PALETTE.ironMid, 5, 33);
+  nativeLinePx(ctx, cx - 43.5, rimY - 28.5, cx - 43.5, rimY - 2.5, PALETTE.ironLight);
+  linePx(ctx, cx - 43, rimY - 27, cx - 25, rimY - 19, PALETTE.outline, 9);
+  linePx(ctx, cx - 42, rimY - 29, cx - 25, rimY - 21, PALETTE.ironMid, 4);
+  nativeLinePx(ctx, cx - 39.5, rimY - 29.5, cx - 26.5, rimY - 23.5, PALETTE.ironLight);
+  linePx(ctx, cx - 25, rimY - 20, cx - 25, rimY - 8, PALETTE.outline, 7);
+  linePx(ctx, cx - 27, rimY - 19, cx - 27, rimY - 9, PALETTE.ironDark, 3);
+
+  // A deep riveted cylinder carries the load to the ground. Broad horizontal
+  // hoops make its construction legible without turning the wall into noise.
   for (let row = 0; row <= bottomY - rimY; row += 1) {
     const bottomCurve = row > 33 ? (row - 33) * 2 : 0;
     const half = 52 - Math.min(10, bottomCurve);
@@ -1579,8 +1590,15 @@ export function drawSouthMeasureSettlingVat(ctx, cx, cy, seed) {
     px(ctx, cx, y, PALETTE.ironDark, half, 1);
     if (row % 7 === 2) px(ctx, cx - half + 4, y, PALETTE.ironLight, 13, 1);
   }
+  for (const bandY of [rimY + 15, rimY + 32]) {
+    px(ctx, cx - 53, bandY, PALETTE.outline, 107, 5);
+    px(ctx, cx - 50, bandY + 1, PALETTE.clayDark, 100, 2);
+    px(ctx, cx - 47, bandY, PALETTE.clayLight, 20, 1);
+    for (const rivetX of [-38, -10, 17, 42]) nativePx(ctx, cx + rivetX - 0.5, bandY + 0.5, PALETTE.ironLight);
+  }
 
-  // Broad rusted oval rim.
+  // The rusted rim encloses a recessed, sediment-dark water surface. Liquid is
+  // kept to a cold iron/stone ramp so it cannot read as a bright blue UI tile.
   for (let dy = -13; dy <= 13; dy += 1) {
     const curve = Math.sqrt(Math.max(0, 1 - (dy * dy) / 169));
     const half = Math.max(7, Math.floor(55 * curve));
@@ -1589,60 +1607,101 @@ export function drawSouthMeasureSettlingVat(ctx, cx, cy, seed) {
     px(ctx, cx - half, y, dy < 0 ? PALETTE.clayLight : PALETTE.clayMid, half, 1);
     px(ctx, cx, y, dy < 1 ? PALETTE.clayMid : PALETTE.clayDark, half, 1);
   }
-  // Inner water oval leaves an unbroken heavy rim around its edge.
   for (let dy = -8; dy <= 8; dy += 1) {
     const curve = Math.sqrt(Math.max(0, 1 - (dy * dy) / 64));
     const half = Math.max(5, Math.floor(43 * curve));
     const y = rimY - 1 + dy;
     px(ctx, cx - half, y, PALETTE.outline, half * 2 + 1, 1);
-    px(ctx, cx - half + 2, y, dy < 0 ? PALETTE.clothBlue : PALETTE.clothBlueDark, half * 2 - 3, 1);
+    const water = dy < -3 ? PALETTE.ironMid : dy < 3 ? PALETTE.stoneDark : PALETTE.ironDark;
+    px(ctx, cx - half + 2, y, water, half * 2 - 3, 1);
+  }
+  nativeLinePx(ctx, cx - 31.5, rimY - 6.5, cx - 12.5, rimY - 9.5, PALETTE.ironLight);
+  nativeLinePx(ctx, cx + 10.5, rimY - 5.5, cx + 24.5, rimY - 3.5, PALETTE.stoneLight);
+  for (let mark = 0; mark < 5; mark += 1) {
+    const x = cx - 27 + Math.floor(rng() * 57);
+    const y = rimY - 4 + Math.floor(rng() * 7);
+    nativePx(ctx, x - 0.5, y - 0.5, mark & 1 ? PALETTE.clayDark : PALETTE.stoneMid);
   }
 
-  // A single low rake arm spans the open water and turns on a round hub.
-  linePx(ctx, cx - 31, rimY + 2, cx + 30, rimY - 9, PALETTE.outline, 5);
-  nativeLinePx(ctx, cx - 28.5, rimY, cx + 27.5, rimY - 10, PALETTE.clayLight);
-  for (const t of [0.18, 0.42, 0.68, 0.86]) {
-    const x = Math.round(cx - 31 + t * 61);
-    const y = Math.round(rimY + 2 - t * 11);
-    linePx(ctx, x, y, x + 1, y + 5, PALETTE.outline, 2);
+  // Two submerged rake arms turn from a central shaft. Teeth point into the
+  // water while the service bridge remains a separate load-bearing structure.
+  const rakeHub = [cx + 5, rimY - 3];
+  for (const [armIndex, end] of [[0, [cx - 35, rimY - 1]], [1, [cx + 36, rimY - 7]]]) {
+    linePx(ctx, rakeHub[0], rakeHub[1], end[0], end[1], PALETTE.outline, 4);
+    nativeLinePx(ctx, rakeHub[0], rakeHub[1] - 1.5, end[0], end[1] - 1.5, armIndex ? PALETTE.clayMid : PALETTE.rustLight);
+    for (const t of [0.28, 0.5, 0.72, 0.9]) {
+      const tooth = mixPoint(rakeHub, end, t);
+      linePx(ctx, tooth[0], tooth[1], tooth[0] + (armIndex ? 1 : -1), tooth[1] + 5, PALETTE.outline, 2);
+      nativePx(ctx, tooth[0] - 0.5, tooth[1] + 2.5, PALETTE.clayDark);
+    }
   }
-  poly(ctx, PALETTE.outline, [
-    [cx - 8, rimY - 6], [cx - 4, rimY - 10], [cx + 5, rimY - 10],
-    [cx + 8, rimY - 6], [cx + 8, rimY], [cx + 4, rimY + 3],
-    [cx - 5, rimY + 3], [cx - 8, rimY]
-  ]);
-  poly(ctx, PALETTE.stoneDust, [
-    [cx - 4, rimY - 5], [cx - 2, rimY - 7], [cx + 3, rimY - 7],
-    [cx + 5, rimY - 4], [cx + 4, rimY], [cx - 3, rimY], [cx - 5, rimY - 3]
-  ]);
 
-  // One short inlet bends over the rear-left lip, avoiding the old headboard.
-  px(ctx, cx - 46, rimY - 25, PALETTE.outline, 8, 25);
-  px(ctx, cx - 43, rimY - 23, PALETTE.ironMid, 3, 22);
-  nativeLinePx(ctx, cx - 41.5, rimY - 21.5, cx - 41.5, rimY - 2.5, PALETTE.ironLight);
-  linePx(ctx, cx - 42, rimY - 22, cx - 28, rimY - 16, PALETTE.outline, 8);
-  linePx(ctx, cx - 41, rimY - 24, cx - 28, rimY - 18, PALETTE.ironLight, 2);
-  linePx(ctx, cx - 28, rimY - 17, cx - 28, rimY - 8, PALETTE.outline, 6);
-  nativeLinePx(ctx, cx - 29.5, rimY - 15.5, cx - 29.5, rimY - 8.5, PALETTE.clothBlue);
+  // A grated bridge spans the tank. Its far-edge guard rail, gearbox, and the
+  // landing reached by the ladder explain how a worker services the rake.
+  const deck = [
+    [cx - 36, rimY + 4], [cx + 30, rimY - 9],
+    [cx + 38, rimY - 3], [cx - 28, rimY + 11]
+  ];
+  poly(ctx, PALETTE.outline, deck);
+  poly(ctx, PALETTE.ironMid, [
+    [cx - 32, rimY + 4], [cx + 29, rimY - 7],
+    [cx + 34, rimY - 3], [cx - 27, rimY + 8]
+  ]);
+  for (const t of [0.13, 0.3, 0.47, 0.64, 0.81]) {
+    const a = mixPoint(deck[0], deck[1], t);
+    const b = mixPoint(deck[3], deck[2], t);
+    linePx(ctx, a[0], a[1], b[0], b[1], PALETTE.outline, 2);
+    nativePx(ctx, a[0] + 0.5, a[1] + 0.5, PALETTE.ironLight);
+  }
+  const railFeet = [deck[0], mixPoint(deck[0], deck[1], 0.52), deck[1]];
+  const railTops = railFeet.map(([x, y]) => [x, y - 16]);
+  for (let index = 0; index < railFeet.length; index += 1) {
+    linePx(ctx, railFeet[index][0], railFeet[index][1], railTops[index][0], railTops[index][1], PALETTE.outline, 4);
+    nativeLinePx(ctx, railFeet[index][0] - 0.5, railFeet[index][1] - 1.5, railTops[index][0] - 0.5, railTops[index][1] + 0.5, PALETTE.ironLight);
+  }
+  linePx(ctx, railTops[0][0], railTops[0][1], railTops[1][0], railTops[1][1], PALETTE.outline, 4);
+  linePx(ctx, railTops[1][0], railTops[1][1], railTops[2][0], railTops[2][1], PALETTE.outline, 4);
+  nativeLinePx(ctx, railTops[0][0] + 1.5, railTops[0][1] - 1.5, railTops[1][0], railTops[1][1] - 1.5, PALETTE.ironLight);
+  nativeLinePx(ctx, railTops[1][0], railTops[1][1] - 1.5, railTops[2][0] - 1.5, railTops[2][1] - 1.5, PALETTE.ironLight);
 
-  // Overflow exits low on the shaded wall.
+  drawIsoPrism(ctx, rakeHub[0], rakeHub[1] - 3, 22, 10, 8, {
+    top: PALETTE.ironLight,
+    left: PALETTE.ironMid,
+    right: PALETTE.ironDark,
+    outline: PALETTE.outline
+  });
+  drawIsoDiamond(ctx, rakeHub[0], rakeHub[1] - 10, 11, 5, PALETTE.outline);
+  drawIsoDiamond(ctx, rakeHub[0] - 1, rakeHub[1] - 11, 6, 3, PALETTE.clayLight);
+  nativePx(ctx, rakeHub[0] - 0.5, rakeHub[1] - 11.5, PALETTE.hostBone);
+
+  // The overflow leaves through a collared elbow low on the shaded wall.
   px(ctx, cx + 45, rimY + 16, PALETTE.outline, 9, 20);
   px(ctx, cx + 48, rimY + 18, PALETTE.ironDark, 4, 16);
   linePx(ctx, cx + 50, rimY + 32, cx + 61, rimY + 38, PALETTE.outline, 7);
-  nativeLinePx(ctx, cx + 50.5, rimY + 29.5, cx + 59.5, rimY + 34.5, PALETTE.stoneDust);
+  linePx(ctx, cx + 50, rimY + 30, cx + 60, rimY + 35, PALETTE.ironMid, 3);
+  px(ctx, cx + 56, rimY + 32, PALETTE.outline, 7, 10);
+  nativeLinePx(ctx, cx + 57.5, rimY + 32.5, cx + 59.5, rimY + 38.5, PALETTE.ironLight);
 
-  // A short ladder clings to the front wall rather than standing as furniture.
-  linePx(ctx, cx - 23, rimY + 13, cx - 20, bottomY + 10, PALETTE.outline, 4);
-  linePx(ctx, cx - 10, rimY + 16, cx - 7, bottomY + 13, PALETTE.outline, 4);
-  for (let rung = 0; rung < 3; rung += 1) {
-    const y = rimY + 22 + rung * 10;
-    linePx(ctx, cx - 22 + rung, y, cx - 9 + rung, y + 3, PALETTE.outline, 3);
-    nativeLinePx(ctx, cx - 20.5 + rung, y - 0.5, cx - 9.5 + rung, y + 1.5, PALETTE.rustLight);
+  // The ladder has ground feet, five evenly spaced rungs, and handholds that
+  // continue above the deck. It terminates at the service landing, not the rim.
+  const ladderLeftBottom = [cx - 42, bottomY + 12];
+  const ladderRightBottom = [cx - 27, bottomY + 14];
+  const ladderLeftTop = [cx - 36, rimY + 5];
+  const ladderRightTop = [cx - 24, rimY + 8];
+  linePx(ctx, ladderLeftBottom[0], ladderLeftBottom[1], ladderLeftTop[0], ladderLeftTop[1] - 13, PALETTE.outline, 5);
+  linePx(ctx, ladderRightBottom[0], ladderRightBottom[1], ladderRightTop[0], ladderRightTop[1] - 13, PALETTE.outline, 5);
+  nativeLinePx(ctx, ladderLeftBottom[0] - 0.5, ladderLeftBottom[1] - 1.5, ladderLeftTop[0] - 0.5, ladderLeftTop[1] - 11.5, PALETTE.rustLight);
+  nativeLinePx(ctx, ladderRightBottom[0] - 0.5, ladderRightBottom[1] - 1.5, ladderRightTop[0] - 0.5, ladderRightTop[1] - 11.5, PALETTE.ironLight);
+  for (let rung = 1; rung <= 5; rung += 1) {
+    const t = rung / 6;
+    const left = mixPoint(ladderLeftBottom, ladderLeftTop, t);
+    const right = mixPoint(ladderRightBottom, ladderRightTop, t);
+    linePx(ctx, left[0], left[1], right[0], right[1], PALETTE.outline, 3);
+    nativeLinePx(ctx, left[0] + 1.5, left[1] - 1.5, right[0] - 1.5, right[1] - 1.5, PALETTE.rustLight);
   }
   for (let i = 0; i < 8; i += 1) {
     px(ctx, cx - 42 + Math.floor(rng() * 84), rimY + 21 + Math.floor(rng() * 15), i % 3 ? PALETTE.clayDark : PALETTE.clayLight, 2, 1);
   }
-  nativeLinePx(ctx, cx - 31.5, rimY - 5.5, cx - 11.5, rimY - 9.5, PALETTE.clothBlue);
 }
 
 export function drawSouthMeasureSettlingTank(ctx, cx, cy, seed) {
@@ -1681,8 +1740,8 @@ export function drawSouthMeasureSettlingTank(ctx, cx, cy, seed) {
     const curve = Math.sqrt(Math.max(0, 1 - (dy * dy) / 25));
     const half = Math.max(4, Math.floor(25 * curve));
     const y = rimY + dy;
-    px(ctx, cx - half, y, PALETTE.clothBlueDark, half * 2, 1);
-    if (dy < -1) px(ctx, cx - half + 3, y, PALETTE.clothBlue, Math.max(3, half - 6), 1);
+    px(ctx, cx - half, y, PALETTE.ironDark, half * 2, 1);
+    if (dy < -1) px(ctx, cx - half + 3, y, PALETTE.ironMid, Math.max(3, half - 6), 1);
   }
 
   // A low overflow elbow and punched level gauge make this a working vessel,
@@ -1698,7 +1757,7 @@ export function drawSouthMeasureSettlingTank(ctx, cx, cy, seed) {
   for (let i = 0; i < 5; i += 1) {
     px(ctx, cx - 22 + Math.floor(rng() * 44), rimY + 17 + Math.floor(rng() * 14), i & 1 ? PALETTE.clayDark : PALETTE.ironLight, 2, 1);
   }
-  nativeLinePx(ctx, cx - 17.5, rimY - 3.5, cx - 4.5, rimY - 6.5, PALETTE.clothBlue);
+  nativeLinePx(ctx, cx - 17.5, rimY - 3.5, cx - 4.5, rimY - 6.5, PALETTE.ironLight);
 }
 
 export function drawSouthMeasureTapStand(ctx, cx, cy, seed, opts = {}) {
@@ -1708,127 +1767,110 @@ export function drawSouthMeasureTapStand(ctx, cx, cy, seed, opts = {}) {
   const nearLb = sideA[1] > sideB[1] ? 0.35 : -0.35;
   const farLb = -nearLb;
 
-  // A stone wash trough anchors the pipework to the ground and makes the use
-  // of the stand legible before any faucet detail is read.
-  const basin = orientedBox(ctx, frame, 0.95, 0.56, 12, {
-    top: PALETTE.stoneDust,
+  // One masonry trough is the primary mass. The recessed water stays dark and
+  // desaturated; its cut rim and drain make it liquid infrastructure rather
+  // than a blue panel laid on a box.
+  const basin = orientedBox(ctx, frame, 1.1, 0.66, 14, {
+    top: PALETTE.stoneLight,
     lit: PALETTE.stoneMid,
     shade: PALETTE.stoneDark,
     outline: PALETTE.outline
   });
   poly(ctx, PALETTE.outline, [
-    frame.point(-0.37, -0.18, 13), frame.point(0.37, -0.18, 13),
-    frame.point(0.37, 0.18, 13), frame.point(-0.37, 0.18, 13)
+    frame.point(-0.44, -0.23, 15), frame.point(0.44, -0.23, 15),
+    frame.point(0.44, 0.23, 15), frame.point(-0.44, 0.23, 15)
   ]);
-  poly(ctx, PALETTE.clothBlueDark, [
-    frame.point(-0.3, -0.12, 14), frame.point(0.3, -0.12, 14),
-    frame.point(0.3, 0.12, 14), frame.point(-0.3, 0.12, 14)
+  poly(ctx, PALETTE.ironDark, [
+    frame.point(-0.36, -0.15, 16), frame.point(0.36, -0.15, 16),
+    frame.point(0.36, 0.15, 16), frame.point(-0.36, 0.15, 16)
   ]);
-  const waterGlintA = frame.point(-0.23, -0.08, 14.5);
-  const waterGlintB = frame.point(0.12, -0.08, 14.5);
-  nativeLinePx(ctx, waterGlintA[0], waterGlintA[1], waterGlintB[0], waterGlintB[1], PALETTE.clothBlue);
+  const waterGlintA = frame.point(-0.28, farLb * 0.22, 16.5);
+  const waterGlintB = frame.point(0.06, farLb * 0.22, 16.5);
+  nativeLinePx(ctx, waterGlintA[0], waterGlintA[1], waterGlintB[0], waterGlintB[1], PALETTE.ironLight);
 
-  const mastFoot = frame.point(-0.4, farLb * 0.72, 10);
-  const mastElbow = frame.point(-0.4, farLb * 0.72, 38);
-  const mastTop = frame.point(-0.29, farLb * 0.72, 47);
-  linePx(ctx, mastFoot[0], mastFoot[1], mastElbow[0], mastElbow[1], PALETTE.outline, 6);
-  linePx(ctx, mastFoot[0] - 1, mastFoot[1] - 1, mastElbow[0] - 1, mastElbow[1] + 1, PALETTE.ironMid, 3);
-  nativeLinePx(ctx, mastFoot[0] - 1.5, mastFoot[1] - 2.5, mastElbow[0] - 1.5, mastElbow[1] + 0.5, PALETTE.ironLight);
-  linePx(ctx, mastElbow[0], mastElbow[1], mastTop[0], mastTop[1], PALETTE.outline, 5);
-  linePx(ctx, mastElbow[0] - 1, mastElbow[1] - 1, mastTop[0] - 1, mastTop[1] - 1, PALETTE.ironMid, 2);
+  const drain = frame.point(0.02, nearLb * 1.7, 8);
+  px(ctx, drain[0] - 7, drain[1] - 5, PALETTE.outline, 15, 9);
+  px(ctx, drain[0] - 5, drain[1] - 4, PALETTE.ironDark, 11, 5);
+  for (const offset of [-3, 0, 3]) nativePx(ctx, drain[0] + offset - 0.5, drain[1] - 2.5, PALETTE.ironLight);
 
-  const manifoldA = frame.point(-0.28, farLb * 0.72, 42);
-  const manifoldB = frame.point(0.47, farLb * 0.72, 42);
-  linePx(ctx, manifoldA[0], manifoldA[1], manifoldB[0], manifoldB[1], PALETTE.outline, 6);
-  linePx(ctx, manifoldA[0] + 1, manifoldA[1] - 1, manifoldB[0] - 1, manifoldB[1] - 1, PALETTE.ironMid, 3);
-  nativeLinePx(ctx, manifoldA[0] + 2.5, manifoldA[1] - 2.5, manifoldB[0] - 2.5, manifoldB[1] - 2.5, PALETTE.ironLight);
-
-  for (const [index, t] of [0.12, 0.5, 0.86].entries()) {
-    const x = Math.round(manifoldA[0] + (manifoldB[0] - manifoldA[0]) * t);
-    const y = Math.round(manifoldA[1] + (manifoldB[1] - manifoldA[1]) * t);
-    const drop = 12 + (index === 1 ? 3 : 0);
-    linePx(ctx, x, y + 2, x, y + drop, PALETTE.outline, 4);
-    linePx(ctx, x - 1, y + 2, x - 1, y + drop - 1, PALETTE.rustLight, 1);
-    linePx(ctx, x, y + drop, x + (nearLb > 0 ? -7 : 7), y + drop + 3, PALETTE.outline, 3);
-    linePx(ctx, x, y + drop - 1, x + (nearLb > 0 ? -6 : 6), y + drop + 1, PALETTE.stoneDust, 1);
-    linePx(ctx, x - 5, y + 5, x + 5, y + 5, PALETTE.outline, 3);
-    nativePx(ctx, x - 0.5, y + 4.5, index === (seed % 3) ? PALETTE.hostGold : PALETTE.rustLight);
+  // A single supply riser feeds a three-tap manifold. Every branch visibly
+  // descends, elbows toward the trough, and ends above the water.
+  const mastFoot = frame.point(-0.5, farLb * 0.76, 12);
+  const mastTop = frame.point(-0.5, farLb * 0.76, 52);
+  linePx(ctx, mastFoot[0], mastFoot[1], mastTop[0], mastTop[1], PALETTE.outline, 8);
+  linePx(ctx, mastFoot[0] - 1, mastFoot[1] - 1, mastTop[0] - 1, mastTop[1] + 1, PALETTE.ironMid, 4);
+  nativeLinePx(ctx, mastFoot[0] - 2.5, mastFoot[1] - 2.5, mastTop[0] - 2.5, mastTop[1] + 2.5, PALETTE.ironLight);
+  for (const height of [24, 43]) {
+    const collar = frame.point(-0.5, farLb * 0.76, height);
+    linePx(ctx, collar[0] - 5, collar[1], collar[0] + 5, collar[1], PALETTE.outline, 4);
+    nativeLinePx(ctx, collar[0] - 3.5, collar[1] - 1.5, collar[0] + 3.5, collar[1] - 1.5, PALETTE.clayLight);
   }
 
-  const gauge = frame.point(-0.39, nearLb * 0.04, 35);
-  px(ctx, gauge[0] - 5, gauge[1] - 7, PALETTE.outline, 11, 14);
-  px(ctx, gauge[0] - 3, gauge[1] - 5, PALETTE.stoneDust, 7, 10);
-  px(ctx, gauge[0] - 2, gauge[1] - 3, PALETTE.stoneDark, 5, 6);
-  linePx(ctx, gauge[0], gauge[1] + 1, gauge[0] + 2, gauge[1] - 3, PALETTE.rustLight, 1);
-  nativePx(ctx, gauge[0] - 1.5, gauge[1] - 3.5, PALETTE.hostBone);
+  const manifoldA = frame.point(-0.5, farLb * 0.76, 50);
+  const manifoldB = frame.point(0.5, farLb * 0.76, 50);
+  linePx(ctx, manifoldA[0], manifoldA[1], manifoldB[0], manifoldB[1], PALETTE.outline, 8);
+  linePx(ctx, manifoldA[0] + 1, manifoldA[1] - 1, manifoldB[0] - 1, manifoldB[1] - 1, PALETTE.ironMid, 4);
+  nativeLinePx(ctx, manifoldA[0] + 2.5, manifoldA[1] - 2.5, manifoldB[0] - 2.5, manifoldB[1] - 2.5, PALETTE.ironLight);
 
-  const bucket = frame.point(0.28, nearLb * 0.58, 0);
-  poly(ctx, PALETTE.outline, [
-    [bucket[0] - 8, bucket[1] - 15], [bucket[0] + 8, bucket[1] - 15],
-    [bucket[0] + 6, bucket[1]], [bucket[0] - 6, bucket[1]]
-  ]);
-  poly(ctx, PALETTE.rustDark, [
-    [bucket[0] - 6, bucket[1] - 13], [bucket[0] + 6, bucket[1] - 13],
-    [bucket[0] + 4, bucket[1] - 2], [bucket[0] - 4, bucket[1] - 2]
-  ]);
-  drawIsoDiamond(ctx, bucket[0], bucket[1] - 15, 18, 6, PALETTE.outline);
-  drawIsoDiamond(ctx, bucket[0] - 1, bucket[1] - 16, 13, 3, PALETTE.clothBlueDark);
+  for (const [index, la] of [-0.29, 0, 0.29].entries()) {
+    const branch = frame.point(la, farLb * 0.76, 49);
+    const elbow = frame.point(la, farLb * 0.76, 31 + (index === 1 ? -2 : 0));
+    const mouth = frame.point(la, nearLb * 0.1, 28 + (index === 1 ? -2 : 0));
+    linePx(ctx, branch[0], branch[1], elbow[0], elbow[1], PALETTE.outline, 5);
+    linePx(ctx, branch[0] - 1, branch[1] + 1, elbow[0] - 1, elbow[1] - 1, PALETTE.rustMid, 2);
+    linePx(ctx, elbow[0], elbow[1], mouth[0], mouth[1], PALETTE.outline, 5);
+    nativeLinePx(ctx, elbow[0] + 0.5, elbow[1] - 1.5, mouth[0] - 0.5, mouth[1] - 1.5, PALETTE.ironLight);
+    linePx(ctx, mouth[0], mouth[1], mouth[0], mouth[1] + 5, PALETTE.outline, 4);
+
+    const valve = frame.point(la, farLb * 0.72, 41);
+    drawIsoDiamond(ctx, valve[0], valve[1], 15, 7, PALETTE.outline);
+    drawIsoDiamond(ctx, valve[0] - 1, valve[1] - 1, 9, 4, index === (seed % 3) ? PALETTE.clayLight : PALETTE.rustMid);
+    linePx(ctx, valve[0] - 4, valve[1] - 4, valve[0] + 4, valve[1] + 4, PALETTE.outline, 2);
+    linePx(ctx, valve[0] - 4, valve[1] + 4, valve[0] + 4, valve[1] - 4, PALETTE.outline, 2);
+    nativePx(ctx, valve[0] - 0.5, valve[1] - 0.5, PALETTE.hostBone);
+  }
+
+  const gauge = frame.point(-0.5, nearLb * 0.05, 34);
+  drawIsoDiamond(ctx, gauge[0], gauge[1], 17, 8, PALETTE.outline);
+  drawIsoDiamond(ctx, gauge[0] - 1, gauge[1] - 1, 11, 5, PALETTE.hostBone);
+  linePx(ctx, gauge[0], gauge[1], gauge[0] + 3, gauge[1] - 4, PALETTE.clayDark, 2);
+  nativePx(ctx, gauge[0] - 0.5, gauge[1] - 0.5, PALETTE.outline);
+
+  // Cup-count scratches and a hanging dip cup mark the physical use side.
+  const scratchA = frame.point(-0.31, nearLb * 1.62, 10);
+  const scratchB = frame.point(0.24, nearLb * 1.62, 10);
+  for (let index = 0; index < 4; index += 1) {
+    const t = 0.14 + index * 0.19;
+    const mark = mixPoint(scratchA, scratchB, t);
+    nativeLinePx(ctx, mark[0], mark[1] - 2.5, mark[0] + 1, mark[1] + 1.5, PALETTE.stoneDust);
+  }
+  const cup = frame.point(0.49, nearLb * 0.95, 19);
+  linePx(ctx, cup[0], cup[1] - 8, cup[0], cup[1] - 2, PALETTE.outline, 2);
+  px(ctx, cup[0] - 5, cup[1] - 2, PALETTE.outline, 11, 9);
+  px(ctx, cup[0] - 3, cup[1] - 1, PALETTE.clayDark, 7, 6);
+  px(ctx, cup[0] + 5, cup[1], PALETTE.outline, 5, 4);
+  nativeLinePx(ctx, cup[0] - 2.5, cup[1] - 1.5, cup[0] + 2.5, cup[1] - 1.5, PALETTE.clayLight);
   nativeLinePx(ctx, basin.cap.left[0] + 1.5, basin.cap.left[1] - 0.5, basin.cap.top[0] - 1.5, basin.cap.top[1] + 0.5, PALETTE.stoneLight);
 }
 
-function drawScreeningThresholdChannel(ctx, frame) {
-  orientedBox(ctx, frame, 0.86, 0.56, 5, {
-    top: PALETTE.stoneMid,
-    lit: PALETTE.stoneDust,
-    shade: PALETTE.stoneDark,
-    outline: PALETTE.outline
-  }, 1);
-  poly(ctx, PALETTE.clothBlueDark, [
-    frame.point(-0.3, -0.36, 7),
-    frame.point(0.3, -0.36, 7),
-    frame.point(0.3, 0.36, 7),
-    frame.point(-0.3, 0.36, 7)
-  ]);
-  poly(ctx, PALETTE.clothBlue, [
-    frame.point(-0.21, -0.29, 7.5),
-    frame.point(0.21, -0.29, 7.5),
-    frame.point(0.21, 0.29, 7.5),
-    frame.point(-0.21, 0.29, 7.5)
-  ]);
-  for (const lb of [-0.25, -0.08, 0.09, 0.26]) {
-    const countA = frame.point(-0.29, lb, 8);
-    const countB = frame.point(0.29, lb, 8);
-    linePx(ctx, countA[0], countA[1], countB[0], countB[1], PALETTE.hostBone, 2);
-    nativeLinePx(ctx, countA[0] + 0.5, countA[1] - 0.5, countB[0] - 0.5, countB[1] - 0.5, PALETTE.stoneDust);
-  }
-  const counter = frame.point(-0.45, -0.3, 9);
-  px(ctx, counter[0] - 5, counter[1] - 6, PALETTE.outline, 11, 9);
-  px(ctx, counter[0] - 3, counter[1] - 5, PALETTE.clothBlueDark, 7, 5);
-  for (const offset of [-2, 1, 4]) {
-    nativePx(ctx, counter[0] + offset, counter[1] - 3, PALETTE.hostBone);
-  }
-}
-
 function drawScreeningRecordsRack(ctx, frame) {
-  const mount = frame.point(-0.42, 0, 42);
-  const board = frame.point(-0.67, -0.02, 38);
-  linePx(ctx, mount[0], mount[1], board[0], board[1] - 7, PALETTE.outline, 5);
-  linePx(ctx, mount[0], mount[1] - 1, board[0], board[1] - 8, PALETTE.rustLight, 2);
-  px(ctx, board[0] - 17, board[1] - 15, PALETTE.outline, 35, 29);
-  px(ctx, board[0] - 15, board[1] - 13, PALETTE.clothTan, 31, 25);
-  px(ctx, board[0] - 15, board[1] - 13, PALETTE.clothBlueDark, 31, 5);
-  px(ctx, board[0] - 13, board[1] - 11, PALETTE.clothBlue, 13, 2);
-  for (const y of [-5, 1, 7]) {
-    px(ctx, board[0] - 12, board[1] + y, PALETTE.stoneDark, 24, 2);
-    nativeLinePx(ctx, board[0] - 10.5, board[1] + y - 0.5, board[0] + 8.5, board[1] + y - 0.5, PALETTE.stoneDust);
+  // Records live in a small weather hood bolted to the side upright. The
+  // docket must remain secondary to the screen mechanism, never a paper wall
+  // floating behind what should be water infrastructure.
+  const mount = frame.point(-0.52, 0, 39);
+  const box = frame.point(-0.66, 0, 33);
+  linePx(ctx, mount[0], mount[1], box[0] + 7, box[1] - 8, PALETTE.outline, 4);
+  nativeLinePx(ctx, mount[0] - 0.5, mount[1] - 1.5, box[0] + 6.5, box[1] - 9.5, PALETTE.rustLight);
+  px(ctx, box[0] - 10, box[1] - 12, PALETTE.outline, 21, 26);
+  px(ctx, box[0] - 8, box[1] - 10, PALETTE.ironDark, 17, 22);
+  px(ctx, box[0] - 7, box[1] - 9, PALETTE.clothTan, 14, 17);
+  px(ctx, box[0] - 9, box[1] - 14, PALETTE.outline, 19, 6);
+  px(ctx, box[0] - 7, box[1] - 14, PALETTE.clayDark, 15, 3);
+  for (const y of [-5, 0, 5]) {
+    nativeLinePx(ctx, box[0] - 5.5, box[1] + y - 0.5, box[0] + 4.5 - Math.abs(y / 5), box[1] + y - 0.5, PALETTE.stoneDark);
   }
-  for (const y of [-7, -1, 5, 11]) {
-    px(ctx, board[0] + 14, board[1] + y, PALETTE.outline, 8, 4);
-    px(ctx, board[0] + 15, board[1] + y, y === -7 ? PALETTE.clothBlue : PALETTE.rustMid, 5, 2);
-  }
-  for (const x of [-10, -4, 2]) {
-    nativePx(ctx, board[0] + x, board[1] + 10, PALETTE.rustDark, 1, 2);
-  }
+  px(ctx, box[0] + 5, box[1] + 7, PALETTE.outline, 6, 6);
+  nativePx(ctx, box[0] + 6.5, box[1] + 8.5, PALETTE.hostGold);
 }
 
 function drawScreeningInspectionRig(ctx, frame) {
@@ -1843,63 +1885,71 @@ function drawScreeningInspectionRig(ctx, frame) {
   }
   const mastTop = [base[0], base[1] - 51];
   linePx(ctx, mastTop[0], mastTop[1], armEnd[0], armEnd[1], PALETTE.outline, 7);
-  linePx(ctx, mastTop[0] - 1, mastTop[1] - 1, armEnd[0], armEnd[1] - 1, PALETTE.clothBlue, 3);
+  linePx(ctx, mastTop[0] - 1, mastTop[1] - 1, armEnd[0], armEnd[1] - 1, PALETTE.ironLight, 3);
   px(ctx, armEnd[0] - 5, armEnd[1] - 5, PALETTE.outline, 11, 10);
-  px(ctx, armEnd[0] - 3, armEnd[1] - 3, PALETTE.clothBlueDark, 7, 6);
+  px(ctx, armEnd[0] - 3, armEnd[1] - 3, PALETTE.ironDark, 7, 6);
   const sample = frame.point(0.02, 0, 14);
   linePx(ctx, armEnd[0], armEnd[1] + 4, sample[0], sample[1] - 5, PALETTE.outline, 3);
   nativeLinePx(ctx, armEnd[0] - 0.5, armEnd[1] + 4.5, sample[0] - 0.5, sample[1] - 5.5, PALETTE.hostBone);
   drawIsoPrism(ctx, sample[0], sample[1], 19, 9, 6, {
-    top: PALETTE.clothBlue,
+    top: PALETTE.ironMid,
     left: PALETTE.stoneDust,
-    right: PALETTE.clothBlueDark,
+    right: PALETTE.ironDark,
     outline: PALETTE.outline
   });
   nativePx(ctx, sample[0] - 2.5, sample[1] - 6.5, PALETTE.hostBone, 5, 1);
 }
 
 function drawScreeningWeighingFixture(ctx, frame) {
-  const dial = frame.point(0, 0, 72);
+  // The scale is an attachment to the screen, not a second landmark hovering
+  // over it. A compact dial hangs from the right upright while two tension
+  // rods resolve into a shallow solids pan at worker height.
+  const mount = frame.point(0.47, 0, 45);
+  const dial = frame.point(0.61, 0, 43);
+  linePx(ctx, mount[0], mount[1], dial[0] - 6, dial[1], PALETTE.outline, 5);
+  nativeLinePx(ctx, mount[0] + 0.5, mount[1] - 1.5, dial[0] - 6.5, dial[1] - 1.5, PALETTE.rustLight);
   poly(ctx, PALETTE.outline, [
-    [dial[0] - 9, dial[1] - 14], [dial[0] + 9, dial[1] - 14],
-    [dial[0] + 14, dial[1] - 9], [dial[0] + 14, dial[1] + 9],
-    [dial[0] + 9, dial[1] + 14], [dial[0] - 9, dial[1] + 14],
-    [dial[0] - 14, dial[1] + 9], [dial[0] - 14, dial[1] - 9]
+    [dial[0] - 5, dial[1] - 8], [dial[0] + 5, dial[1] - 8],
+    [dial[0] + 8, dial[1] - 5], [dial[0] + 8, dial[1] + 5],
+    [dial[0] + 5, dial[1] + 8], [dial[0] - 5, dial[1] + 8],
+    [dial[0] - 8, dial[1] + 5], [dial[0] - 8, dial[1] - 5]
   ]);
-  poly(ctx, PALETTE.clothTan, [
-    [dial[0] - 7, dial[1] - 11], [dial[0] + 7, dial[1] - 11],
-    [dial[0] + 11, dial[1] - 7], [dial[0] + 11, dial[1] + 7],
-    [dial[0] + 7, dial[1] + 11], [dial[0] - 7, dial[1] + 11],
-    [dial[0] - 11, dial[1] + 7], [dial[0] - 11, dial[1] - 7]
+  poly(ctx, PALETTE.hostBone, [
+    [dial[0] - 4, dial[1] - 6], [dial[0] + 4, dial[1] - 6],
+    [dial[0] + 6, dial[1] - 4], [dial[0] + 6, dial[1] + 4],
+    [dial[0] + 4, dial[1] + 6], [dial[0] - 4, dial[1] + 6],
+    [dial[0] - 6, dial[1] + 4], [dial[0] - 6, dial[1] - 4]
   ]);
-  for (const [dx, dy] of [[-7, -5], [-3, -8], [3, -8], [7, -5]]) {
-    px(ctx, dial[0] + dx - 1, dial[1] + dy - 1, PALETTE.stoneDark, 3, 3);
+  for (const [dx, dy] of [[-4, -3], [0, -5], [4, -3]]) {
+    nativePx(ctx, dial[0] + dx - 0.5, dial[1] + dy - 0.5, PALETTE.stoneDark);
   }
-  linePx(ctx, dial[0], dial[1] + 2, dial[0] + 7, dial[1] - 5, PALETTE.rustDark, 3);
-  nativePx(ctx, dial[0] - 1, dial[1] + 1, PALETTE.outline, 3, 3);
-  const pan = frame.point(0, 0, 15);
-  const cordLeft = frame.point(-0.18, 0, 43);
-  const cordRight = frame.point(0.18, 0, 43);
-  linePx(ctx, cordLeft[0], cordLeft[1], pan[0] - 10, pan[1] - 6, PALETTE.outline, 2);
-  linePx(ctx, cordRight[0], cordRight[1], pan[0] + 10, pan[1] - 6, PALETTE.outline, 2);
-  nativeLinePx(ctx, cordLeft[0] + 0.5, cordLeft[1], pan[0] - 9.5, pan[1] - 6, PALETTE.rustLight);
-  drawIsoPrism(ctx, pan[0], pan[1], 31, 12, 5, {
+  linePx(ctx, dial[0], dial[1] + 1, dial[0] + 4, dial[1] - 3, PALETTE.rustDark, 2);
+  nativePx(ctx, dial[0] - 0.5, dial[1] + 0.5, PALETTE.outline);
+
+  const pan = frame.point(0, 0.26, 14);
+  const cordLeft = frame.point(-0.2, 0.17, 38);
+  const cordRight = frame.point(0.2, 0.17, 38);
+  linePx(ctx, cordLeft[0], cordLeft[1], pan[0] - 9, pan[1] - 5, PALETTE.outline, 2);
+  linePx(ctx, cordRight[0], cordRight[1], pan[0] + 9, pan[1] - 5, PALETTE.outline, 2);
+  nativeLinePx(ctx, cordLeft[0] + 0.5, cordLeft[1], pan[0] - 8.5, pan[1] - 5, PALETTE.rustLight);
+  drawIsoPrism(ctx, pan[0], pan[1], 27, 11, 4, {
     top: PALETTE.stoneDust,
     left: PALETTE.rustMid,
     right: PALETTE.rustDark,
     outline: PALETTE.outline
   });
-  px(ctx, pan[0] + 10, pan[1] - 8, PALETTE.outline, 7, 10);
-  px(ctx, pan[0] + 12, pan[1] - 7, PALETTE.clothRed, 3, 7);
+  // A handful of trapped screenings explains what the pan weighs.
+  for (const [dx, dy] of [[-6, -7], [0, -6], [6, -7]]) {
+    px(ctx, pan[0] + dx - 2, pan[1] + dy - 1, PALETTE.outline, 5, 3);
+    nativePx(ctx, pan[0] + dx - 0.5, pan[1] + dy - 1.5, dx ? PALETTE.clayDark : PALETTE.stoneDark);
+  }
 }
 
 export function drawSouthMeasureScreeningFrame(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   const lean = (seed & 1) ? 1 : -1;
   const variant = opts.variant ?? 'intact';
-  const functional = ['records', 'threshold', 'inspection', 'weighing'].includes(variant);
   const broken = opts.damaged || variant === 'broken-baskets';
-  const stationFootprint = functional && !broken;
 
   if (broken) {
     // A torn basket line: bent uprights, a fallen crossbar, and two crushed
@@ -1935,66 +1985,111 @@ export function drawSouthMeasureScreeningFrame(ctx, cx, cy, seed, opts = {}) {
       linePx(ctx, tornMesh[0] + dx, tornMesh[1] - 9, tornMesh[0] + dx + lean * 5, tornMesh[1] + dy, PALETTE.outline, 3);
       nativeLinePx(ctx, tornMesh[0] + dx + 0.5, tornMesh[1] - 8.5, tornMesh[0] + dx + lean * 4.5, tornMesh[1] + dy - 0.5, PALETTE.rustLight);
     }
-    linePx(ctx, left[0] - 19, left[1] + 2, right[0] + 19, right[1] + 2, PALETTE.clothBlueDark, 3);
+    linePx(ctx, left[0] - 19, left[1] + 2, right[0] + 19, right[1] + 2, PALETTE.ironDark, 3);
     drawRubbleCluster(ctx, right[0] + 12, right[1] + 5, seed + 541, 2);
     nativeLinePx(ctx, leftTop[0] + 1.5, leftTop[1] + 1.5, right[0] + 0.5, right[1] - 18.5, PALETTE.stoneDust);
     return;
   }
 
-  if (variant === 'threshold') {
-    drawScreeningThresholdChannel(ctx, frame);
-  }
+  const sideA = frame.point(0, 0.34, 0);
+  const sideB = frame.point(0, -0.34, 0);
+  const nearLb = sideA[1] > sideB[1] ? 0.34 : -0.34;
+  const farLb = -nearLb;
 
-  // One removable trash rack between two anchored uprights. The previous
-  // four long side rails made each station resemble gym equipment or an
-  // airport checkpoint, especially when seventeen were repeated together.
-  const left = frame.point(-0.42, 0, 0);
-  const right = frame.point(0.42, 0, 0);
+  // A recessed masonry channel is the primary mass. It gives the screen a
+  // water path, two abutments, and a downstream side instead of a loose fence
+  // planted on a clean slab.
+  orientedBox(ctx, frame, 1.02, 0.7, 8, {
+    top: PALETTE.stoneLight,
+    lit: PALETTE.limeMid,
+    shade: PALETTE.stoneDark,
+    outline: PALETTE.outline
+  });
+  poly(ctx, PALETTE.outline, [
+    frame.point(-0.39, -0.24, 9), frame.point(0.39, -0.24, 9),
+    frame.point(0.39, 0.24, 9), frame.point(-0.39, 0.24, 9)
+  ]);
+  poly(ctx, PALETTE.ironDark, [
+    frame.point(-0.32, -0.17, 10), frame.point(0.32, -0.17, 10),
+    frame.point(0.32, 0.17, 10), frame.point(-0.32, 0.17, 10)
+  ]);
+  const wetA = frame.point(-0.26, farLb * 0.32, 10.5);
+  const wetB = frame.point(0.06, farLb * 0.32, 10.5);
+  nativeLinePx(ctx, wetA[0], wetA[1], wetB[0], wetB[1], PALETTE.ironLight);
+
+  // The bar screen leans downstream. Solids strike the sloped rack, then fall
+  // into the small open tray at its foot when workers turn the side crank.
+  const left = frame.point(-0.47, farLb * 0.42, 7);
+  const right = frame.point(0.47, farLb * 0.42, 7);
+  const tops = [];
   for (const [index, p] of [left, right].entries()) {
-    drawIsoPrism(ctx, p[0], p[1] + 1, 12, 7, 7, {
-      top: PALETTE.limeLight,
+    const top = frame.point(index ? 0.47 : -0.47, farLb * 0.42, 54 + lean * index);
+    linePx(ctx, p[0], p[1], top[0], top[1], PALETTE.outline, 7);
+    linePx(ctx, p[0] - 1, p[1] - 2, top[0] - 1, top[1] + 2, index ? PALETTE.ironDark : PALETTE.ironMid, 3);
+    nativeLinePx(ctx, p[0] - 1.5, p[1] - 4.5, top[0] - 1.5, top[1] + 3.5, PALETTE.ironLight);
+    tops.push(top);
+  }
+  for (const [index, p] of [left, right].entries()) {
+    drawIsoPrism(ctx, p[0], p[1] + 2, 15, 9, 8, {
+      top: index ? PALETTE.limeMid : PALETTE.limeLight,
       left: PALETTE.limeMid,
       right: PALETTE.limeDark,
       outline: PALETTE.outline
     });
-    const top = [p[0] + lean * index, p[1] - 48];
-    linePx(ctx, p[0], p[1] - 4, top[0], top[1], PALETTE.outline, 6);
-    linePx(ctx, p[0] - 1, p[1] - 5, top[0] - 1, top[1] + 2, index ? PALETTE.ironDark : PALETTE.ironMid, 3);
-    nativeLinePx(ctx, p[0] - 1.5, p[1] - 7.5, top[0] - 1.5, top[1] + 3.5, PALETTE.ironLight);
+    px(ctx, p[0] - 4, p[1] - 8, PALETTE.outline, 9, 4);
+    px(ctx, p[0] - 2, p[1] - 7, PALETTE.ironDark, 5, 2);
   }
-  const topLeft = frame.point(-0.42, 0, 48);
-  const topRight = frame.point(0.42, 0, 48);
-  linePx(ctx, topLeft[0], topLeft[1], topRight[0], topRight[1], PALETTE.outline, 6);
-  linePx(ctx, topLeft[0] + 1, topLeft[1] - 1, topRight[0] - 1, topRight[1] - 1, PALETTE.ironMid, 3);
-  nativeLinePx(ctx, topLeft[0] + 2.5, topLeft[1] - 2.5, topRight[0] - 2.5, topRight[1] - 2.5, PALETTE.ironLight);
+  linePx(ctx, tops[0][0], tops[0][1], tops[1][0], tops[1][1], PALETTE.outline, 7);
+  linePx(ctx, tops[0][0] + 1, tops[0][1] - 2, tops[1][0] - 1, tops[1][1] - 2, PALETTE.ironMid, 3);
+  nativeLinePx(ctx, tops[0][0] + 2.5, tops[0][1] - 3.5, tops[1][0] - 2.5, tops[1][1] - 3.5, PALETTE.ironLight);
 
-  const rackTopLeft = frame.point(-0.34, 0, 38);
-  const rackTopRight = frame.point(0.34, 0, 38);
-  const rackBottomRight = frame.point(0.34, 0, 11);
-  const rackBottomLeft = frame.point(-0.34, 0, 11);
+  const rackTopLeft = frame.point(-0.37, farLb * 0.4, 47);
+  const rackTopRight = frame.point(0.37, farLb * 0.4, 47);
+  const rackBottomRight = frame.point(0.37, nearLb * 0.2, 13);
+  const rackBottomLeft = frame.point(-0.37, nearLb * 0.2, 13);
   const rack = faceTools(ctx, rackTopLeft, rackTopRight, rackBottomRight, rackBottomLeft);
   rack.line(0, 0, 1, 0, PALETTE.outline, 5);
   rack.line(0, 1, 1, 1, PALETTE.outline, 5);
   rack.line(0, 0, 0, 1, PALETTE.outline, 4);
   rack.line(1, 0, 1, 1, PALETTE.outline, 4);
-  for (const u of [0.12, 0.3, 0.48, 0.66, 0.84]) {
-    rack.line(u, 0.08, Math.min(0.96, u + 0.12), 0.93, PALETTE.rustDark, 2);
-    rack.nativeLine(u + 0.015, 0.08, Math.min(0.97, u + 0.135), 0.9, u < 0.5 ? PALETTE.rustLight : PALETTE.stoneDark);
+  for (const u of [0.08, 0.23, 0.38, 0.53, 0.68, 0.83]) {
+    rack.line(u, 0.06, u, 0.94, PALETTE.outline, 3);
+    rack.nativeLine(u + 0.018, 0.08, u + 0.018, 0.9, u < 0.45 ? PALETTE.rustLight : PALETTE.ironMid);
   }
-  rack.line(0.04, 0.55, 0.96, 0.55, PALETTE.ironMid, 2);
+  for (const v of [0.26, 0.72]) rack.line(0.03, v, 0.97, v, PALETTE.ironMid, 2);
 
-  const catchFrame = isoFrame(cx, cy + 1, opts.orient ?? 'se');
-  orientedBox(ctx, catchFrame, 0.76, 0.38, 4, {
-    top: PALETTE.stoneMid,
-    lit: PALETTE.limeMid,
-    shade: PALETTE.limeDark,
+  const trayFrame = isoFrame(...frame.point(0, nearLb * 0.72, 8), opts.orient ?? 'se');
+  const tray = orientedBox(ctx, trayFrame, 0.72, 0.3, 5, {
+    top: PALETTE.ironMid,
+    lit: PALETTE.clayMid,
+    shade: PALETTE.ironDark,
     outline: PALETTE.outline
   });
-  const wetA = frame.point(-0.23, -0.1, 6);
-  const wetB = frame.point(0.23, 0.1, 6);
-  nativeLinePx(ctx, wetA[0], wetA[1], wetB[0], wetB[1], PALETTE.clothBlueDark);
+  poly(ctx, PALETTE.outline, [
+    trayFrame.point(-0.27, -0.08, 6), trayFrame.point(0.27, -0.08, 6),
+    trayFrame.point(0.27, 0.08, 6), trayFrame.point(-0.27, 0.08, 6)
+  ]);
+  for (const [dx, dy] of [[-8, -1], [0, 1], [8, -2]]) {
+    px(ctx, tray.cap.bottom[0] + dx - 2, tray.cap.bottom[1] + dy - 8, PALETTE.outline, 5, 4);
+    px(ctx, tray.cap.bottom[0] + dx - 1, tray.cap.bottom[1] + dy - 9, dx ? PALETTE.clayDark : PALETTE.stoneDust, 3, 2);
+  }
 
-  const slate = frame.point(0.27, 0, 44);
+  const crank = frame.point(0.5, nearLb * 0.08, 43);
+  drawIsoDiamond(ctx, crank[0], crank[1], 17, 8, PALETTE.outline);
+  drawIsoDiamond(ctx, crank[0] - 1, crank[1] - 1, 11, 5, PALETTE.rustMid);
+  drawIsoDiamond(ctx, crank[0] - 1, crank[1] - 1, 5, 2, PALETTE.void);
+  linePx(ctx, crank[0] + 4, crank[1] - 3, crank[0] + 11, crank[1] - 9, PALETTE.outline, 3);
+  nativeLinePx(ctx, crank[0] + 4.5, crank[1] - 4.5, crank[0] + 10.5, crank[1] - 9.5, PALETTE.rustLight);
+
+  if (variant === 'threshold') {
+    for (const la of [-0.24, -0.08, 0.08, 0.24]) {
+      const plate = frame.point(la, nearLb * 0.62, 13);
+      linePx(ctx, plate[0], plate[1], plate[0] + 2, plate[1] + 6, PALETTE.outline, 3);
+      nativePx(ctx, plate[0] + 0.5, plate[1] + 1.5, PALETTE.hostBone);
+    }
+  }
+
+  const slate = frame.point(0.43, farLb * 0.4, 51);
   px(ctx, slate[0] - 5, slate[1] - 4, PALETTE.outline, 11, 9);
   px(ctx, slate[0] - 3, slate[1] - 3, PALETTE.stoneMid, 7, 6);
   nativeLinePx(ctx, slate[0] - 1.5, slate[1] - 1.5, slate[0] + 2.5, slate[1] - 1.5, PALETTE.clothTan);
@@ -2452,14 +2547,48 @@ export function drawSouthMeasureGrainCage(ctx, cx, cy, seed, opts = {}) {
   nativeLinePx(ctx, pallet.cap.left[0] + 1.5, pallet.cap.left[1] - 0.5, pallet.cap.top[0] - 1.5, pallet.cap.top[1] + 0.5, PALETTE.woodLight);
 }
 
+function drawHangingTrousers(ctx, x, y, body, highlight, scale = 1) {
+  const width = Math.round(8 * scale);
+  const hip = Math.round(8 * scale);
+  const crotch = Math.round(13 * scale);
+  const hem = Math.round(28 * scale);
+  const inner = Math.max(1, Math.round(2 * scale));
+  const outer = Math.max(inner + 2, Math.round(6 * scale));
+  const anchorX = Math.round(x);
+  const anchorY = Math.round(y);
+
+  // One connected waistband and seat divide into two tapered legs around a
+  // deep negative-space crotch. This is garment anatomy, not three rectangles.
+  poly(ctx, PALETTE.outline, [
+    [anchorX - width, anchorY], [anchorX + width, anchorY],
+    [anchorX + width - 1, anchorY + hip], [anchorX + outer, anchorY + hem],
+    [anchorX + inner, anchorY + hem], [anchorX + 1, anchorY + crotch],
+    [anchorX - 1, anchorY + crotch], [anchorX - inner, anchorY + hem],
+    [anchorX - outer, anchorY + hem], [anchorX - width + 1, anchorY + hip]
+  ]);
+  poly(ctx, body, [
+    [anchorX - width + 2, anchorY + 2], [anchorX + width - 2, anchorY + 2],
+    [anchorX + width - 3, anchorY + hip], [anchorX + outer - 2, anchorY + hem - 2],
+    [anchorX + inner + 1, anchorY + hem - 2], [anchorX + 1, anchorY + crotch - 3],
+    [anchorX - 1, anchorY + crotch - 3], [anchorX - inner - 1, anchorY + hem - 2],
+    [anchorX - outer + 2, anchorY + hem - 2], [anchorX - width + 3, anchorY + hip]
+  ]);
+  px(ctx, anchorX - width + 2, anchorY + 3, highlight, width * 2 - 3, 2);
+  nativeLinePx(ctx, anchorX - 0.5, anchorY + 4.5, anchorX - 0.5, anchorY + crotch - 2.5, PALETTE.clothDark);
+  nativeLinePx(ctx, anchorX - width + 3.5, anchorY + 7.5, anchorX - width + 6.5, anchorY + 10.5, highlight);
+  nativeLinePx(ctx, anchorX + width - 6.5, anchorY + 10.5, anchorX + width - 3.5, anchorY + 7.5, PALETTE.clothDark);
+  nativeLinePx(ctx, anchorX - outer + 2.5, anchorY + hem - 3.5, anchorX - inner - 0.5, anchorY + hem - 3.5, highlight);
+  nativeLinePx(ctx, anchorX + inner + 0.5, anchorY + hem - 3.5, anchorX + outer - 2.5, anchorY + hem - 3.5, PALETTE.clothDark);
+}
+
 export function drawSouthMeasureLaundryLine(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
   if (opts.variant === 'entry-screen') {
     // Hidden Rows uses one oversized household drying rack as a soft secret
     // door. Broad, recognisable garments hide the wall fixture while the prop
     // itself remains nonblocking in level data.
-    const a = frame.point(-0.7, 0, 0);
-    const b = frame.point(0.7, 0, 0);
+    const a = frame.point(-0.95, 0, 0);
+    const b = frame.point(0.95, 0, 0);
     const topA = [a[0], a[1] - 50];
     const topB = [b[0], b[1] - 49];
     const hangPoint = (t, drop = 0) => {
@@ -2522,19 +2651,12 @@ export function drawSouthMeasureLaundryLine(ctx, cx, cy, seed, opts = {}) {
     nativeLinePx(ctx, shirtLeft[0] + 1.5, shirtLeft[1] + 2.5, shirtRight[0] - 1.5, shirtRight[1] + 2.5, PALETTE.clothBlue);
     nativeLinePx(ctx, shirtMid[0] - 0.5, shirtMid[1] + 5.5, shirtMid[0] - 0.5, shirtMid[1] + 20.5, PALETTE.stoneDust);
 
-    // Separated trouser legs are deliberately readable through the remaining
-    // gaps, so the screen cannot be mistaken for flags or warning placards.
+    // Full trousers occupy the last bay. A connected waistband, seat, crotch,
+    // tapered legs, pockets, and cuffs hold up beside the actor atlas.
     const waistA = hangPoint(0.74, 4);
     const waistB = hangPoint(0.97, 4);
-    linePx(ctx, waistA[0], waistA[1], waistB[0], waistB[1], PALETTE.outline, 7);
-    linePx(ctx, waistA[0] + 1, waistA[1] - 1, waistB[0] - 1, waistB[1] - 1, PALETTE.rustLight, 2);
-    for (const [t0, t1, drop] of [[0.75, 0.845, 31], [0.87, 0.965, 28]]) {
-      poly(ctx, PALETTE.outline, [hangPoint(t0, 6), hangPoint(t1, 6), hangPoint(t1, drop), hangPoint(t0, drop + 2)]);
-      poly(ctx, PALETTE.clothRed, [hangPoint(t0 + 0.015, 8), hangPoint(t1 - 0.015, 8), hangPoint(t1 - 0.015, drop - 2), hangPoint(t0 + 0.015, drop)]);
-      const creaseA = hangPoint((t0 + t1) / 2, 9);
-      const creaseB = hangPoint((t0 + t1) / 2, drop - 3);
-      nativeLinePx(ctx, creaseA[0], creaseA[1], creaseB[0], creaseB[1], PALETTE.rustDark);
-    }
+    const trousers = mixPoint(waistA, waistB, 0.5);
+    drawHangingTrousers(ctx, trousers[0], trousers[1], PALETTE.clothRed, PALETTE.rustLight, 1.18);
 
     for (const t of [0.04, 0.48, 0.51, 0.71, 0.75, 0.96]) {
       const peg = hangPoint(t, 0);
@@ -2544,61 +2666,72 @@ export function drawSouthMeasureLaundryLine(ctx, cx, cy, seed, opts = {}) {
     return;
   }
 
-  const a = frame.point(-0.42, 0, 0);
-  const b = frame.point(0.42, 0, 0);
-  for (const p of [a, b]) {
-    px(ctx, p[0] - 2, p[1] - 45, PALETTE.outline, 5, 48);
-    px(ctx, p[0], p[1] - 44, PALETTE.woodMid, 2, 45);
+  const a = frame.point(-0.5, 0, 0);
+  const b = frame.point(0.5, 0, 0);
+  for (const [index, p] of [a, b].entries()) {
+    px(ctx, p[0] - 3, p[1] - 51, PALETTE.outline, 7, 49);
+    px(ctx, p[0] - 1, p[1] - 50, index ? PALETTE.woodDark : PALETTE.woodMid, 3, 47);
+    nativeLinePx(ctx, p[0] - 0.5, p[1] - 48.5, p[0] - 0.5, p[1] - 6.5, index ? PALETTE.rustMid : PALETTE.woodLight);
   }
-  linePx(ctx, a[0], a[1] - 40, b[0], b[1] - 39, PALETTE.clothTan, 1);
-  // Three recognisable garments replace the old row of signal-like squares.
-  const shirt = frame.point(-0.23, 0, 39);
+  // Stone sockets cover the post ends instead of letting timber float over a
+  // foundation diamond.
+  for (const [index, p] of [a, b].entries()) {
+    drawIsoPrism(ctx, p[0], p[1] + 1, 12, 7, 6, {
+      top: index ? PALETTE.stoneMid : PALETTE.stoneDust,
+      left: PALETTE.stoneMid,
+      right: PALETTE.stoneDark,
+      outline: PALETTE.outline
+    });
+  }
+  const lineA = [a[0], a[1] - 46];
+  const lineB = [b[0], b[1] - 45];
+  const lineMid = [Math.round((lineA[0] + lineB[0]) / 2), Math.round((lineA[1] + lineB[1]) / 2) + 3];
+  linePx(ctx, lineA[0], lineA[1], lineMid[0], lineMid[1], PALETTE.outline, 2);
+  linePx(ctx, lineMid[0], lineMid[1], lineB[0], lineB[1], PALETTE.outline, 2);
+  nativeLinePx(ctx, lineA[0] + 1.5, lineA[1] - 1.5, lineMid[0], lineMid[1] - 1.5, PALETTE.hostBone);
+  nativeLinePx(ctx, lineMid[0], lineMid[1] - 1.5, lineB[0] - 1.5, lineB[1] - 1.5, PALETTE.hostBone);
+
+  // Three garments use human-relative anatomy rather than badge geometry.
+  const shirt = frame.point(-0.28, 0, 43);
   poly(ctx, PALETTE.outline, [
-    [shirt[0] - 5, shirt[1]], [shirt[0] + 5, shirt[1]],
-    [shirt[0] + 10, shirt[1] + 5], [shirt[0] + 7, shirt[1] + 10],
-    [shirt[0] + 4, shirt[1] + 8], [shirt[0] + 4, shirt[1] + 17],
-    [shirt[0] - 4, shirt[1] + 17], [shirt[0] - 4, shirt[1] + 8],
-    [shirt[0] - 7, shirt[1] + 10], [shirt[0] - 10, shirt[1] + 5]
+    [shirt[0] - 6, shirt[1]], [shirt[0] + 6, shirt[1]],
+    [shirt[0] + 12, shirt[1] + 6], [shirt[0] + 8, shirt[1] + 12],
+    [shirt[0] + 5, shirt[1] + 10], [shirt[0] + 5, shirt[1] + 23],
+    [shirt[0] - 5, shirt[1] + 23], [shirt[0] - 5, shirt[1] + 10],
+    [shirt[0] - 8, shirt[1] + 12], [shirt[0] - 12, shirt[1] + 6]
   ]);
   poly(ctx, PALETTE.clothBlueDark, [
     [shirt[0] - 4, shirt[1] + 2], [shirt[0] + 4, shirt[1] + 2],
-    [shirt[0] + 8, shirt[1] + 5], [shirt[0] + 6, shirt[1] + 7],
-    [shirt[0] + 3, shirt[1] + 6], [shirt[0] + 3, shirt[1] + 15],
-    [shirt[0] - 3, shirt[1] + 15], [shirt[0] - 3, shirt[1] + 6],
-    [shirt[0] - 6, shirt[1] + 7], [shirt[0] - 8, shirt[1] + 5]
+    [shirt[0] + 9, shirt[1] + 6], [shirt[0] + 7, shirt[1] + 9],
+    [shirt[0] + 3, shirt[1] + 7], [shirt[0] + 3, shirt[1] + 21],
+    [shirt[0] - 3, shirt[1] + 21], [shirt[0] - 3, shirt[1] + 7],
+    [shirt[0] - 7, shirt[1] + 9], [shirt[0] - 9, shirt[1] + 6]
   ]);
-  nativeLinePx(ctx, shirt[0] - 3.5, shirt[1] + 2.5, shirt[0] + 3.5, shirt[1] + 2.5, PALETTE.clothBlue);
+  px(ctx, shirt[0] - 2, shirt[1] + 1, PALETTE.outline, 5, 3);
+  nativeLinePx(ctx, shirt[0] - 3.5, shirt[1] + 4.5, shirt[0] + 3.5, shirt[1] + 4.5, PALETTE.clothBlue);
+  nativeLinePx(ctx, shirt[0] - 0.5, shirt[1] + 7.5, shirt[0] - 0.5, shirt[1] + 19.5, PALETTE.stoneDust);
 
-  const towel = frame.point(0.01, 0, 39);
+  const towel = frame.point(0.02, 0, 42);
   poly(ctx, PALETTE.outline, [
     [towel[0] - 6, towel[1]], [towel[0] + 7, towel[1]],
-    [towel[0] + 6, towel[1] + 19], [towel[0] + 2, towel[1] + 17],
-    [towel[0] - 2, towel[1] + 20], [towel[0] - 6, towel[1] + 18]
+    [towel[0] + 6, towel[1] + 24], [towel[0] + 2, towel[1] + 21],
+    [towel[0] - 2, towel[1] + 25], [towel[0] - 6, towel[1] + 22]
   ]);
   poly(ctx, seed & 1 ? PALETTE.clothTan : PALETTE.stoneDust, [
     [towel[0] - 4, towel[1] + 2], [towel[0] + 5, towel[1] + 2],
-    [towel[0] + 4, towel[1] + 16], [towel[0] + 1, towel[1] + 14],
-    [towel[0] - 2, towel[1] + 17], [towel[0] - 4, towel[1] + 16]
+    [towel[0] + 4, towel[1] + 21], [towel[0] + 1, towel[1] + 18],
+    [towel[0] - 2, towel[1] + 22], [towel[0] - 4, towel[1] + 20]
   ]);
-  nativeLinePx(ctx, towel[0] - 2.5, towel[1] + 3.5, towel[0] - 2.5, towel[1] + 14.5, PALETTE.hostBone);
+  nativeLinePx(ctx, towel[0] - 2.5, towel[1] + 3.5, towel[0] - 2.5, towel[1] + 19.5, PALETTE.hostBone);
+  nativeLinePx(ctx, towel[0] + 1.5, towel[1] + 4.5, towel[0] + 1.5, towel[1] + 17.5, PALETTE.stoneDark);
 
-  const trousers = frame.point(0.25, 0, 39);
-  px(ctx, trousers[0] - 7, trousers[1], PALETTE.outline, 15, 6);
-  px(ctx, trousers[0] - 5, trousers[1] + 2, PALETTE.clothRed, 11, 3);
-  for (const side of [-1, 1]) {
-    const x = trousers[0] + side * 3;
-    poly(ctx, PALETTE.outline, [
-      [x - 3, trousers[1] + 4], [x + 3, trousers[1] + 4],
-      [x + 2, trousers[1] + 20], [x - 3, trousers[1] + 20]
-    ]);
-    poly(ctx, PALETTE.clothRed, [
-      [x - 1, trousers[1] + 6], [x + 1, trousers[1] + 6],
-      [x + 1, trousers[1] + 18], [x - 1, trousers[1] + 18]
-    ]);
-  }
+  const trousers = frame.point(0.31, 0, 42);
+  drawHangingTrousers(ctx, trousers[0], trousers[1], seed & 1 ? PALETTE.clothRed : PALETTE.clothDark, PALETTE.rustLight, 1.18);
   for (const p of [shirt, towel, trousers]) nativePx(ctx, p[0] - 0.5, p[1] - 0.5, PALETTE.hostBone);
-  nativeLinePx(ctx, a[0] + 0.5, a[1] - 39.5, b[0] - 0.5, b[1] - 38.5, PALETTE.hostBone);
-  for (const p of [a, b]) nativeLinePx(ctx, p[0] + 0.5, p[1] - 43.5, p[0] + 0.5, p[1] - 3.5, PALETTE.woodLight);
+  for (const peg of [shirt, towel, trousers]) {
+    px(ctx, peg[0] - 1, peg[1] - 2, PALETTE.outline, 3, 4);
+    nativePx(ctx, peg[0] - 0.5, peg[1] - 1.5, PALETTE.hostBone);
+  }
 }
 
 export function drawSouthMeasureSharedOven(ctx, cx, cy, seed) {
@@ -2687,7 +2820,7 @@ export function drawSouthMeasureWashWall(ctx, cx, cy, seed, opts = {}) {
   }, 3);
   const basin = frame.point(0, 0, 17);
   drawIsoDiamond(ctx, basin[0], basin[1], 50, 15, PALETTE.outline);
-  drawIsoDiamond(ctx, basin[0] - 1, basin[1] - 1, 43, 11, PALETTE.clothBlueDark);
+  drawIsoDiamond(ctx, basin[0] - 1, basin[1] - 1, 43, 11, PALETTE.ironDark);
   linePx(ctx, basinBox.cap.left[0], basinBox.cap.left[1], basinBox.cap.bottom[0], basinBox.cap.bottom[1], PALETTE.hostBone, 1);
 
   const drain = frame.point(0.42, 0.2, 5);
@@ -2703,8 +2836,8 @@ export function drawSouthMeasureWashWall(ctx, cx, cy, seed, opts = {}) {
     const tileB = frame.point(0.42, 0.01, z);
     nativeLinePx(ctx, tileA[0], tileA[1], tileB[0], tileB[1], z < 30 ? PALETTE.stoneMid : PALETTE.hostBone);
   }
-  nativeLinePx(ctx, basin[0] - 18.5, basin[1] - 0.5, basin[0] - 4.5, basin[1] - 4.5, PALETTE.clothBlue);
-  nativeLinePx(ctx, basin[0] + 4.5, basin[1] - 4.5, basin[0] + 18.5, basin[1] - 0.5, PALETTE.clothBlueDark);
+  nativeLinePx(ctx, basin[0] - 18.5, basin[1] - 0.5, basin[0] - 4.5, basin[1] - 4.5, PALETTE.ironLight);
+  nativeLinePx(ctx, basin[0] + 4.5, basin[1] - 4.5, basin[0] + 18.5, basin[1] - 0.5, PALETTE.stoneLight);
   nativePx(ctx, drain[0] - 0.5, drain[1] - 2.5, PALETTE.hostBone);
 }
 
@@ -2912,39 +3045,84 @@ export function drawSouthMeasureGraveFamilyRail(ctx, cx, cy, seed, opts = {}) {
 
 export function drawSouthMeasureCharityCot(ctx, cx, cy, seed, opts = {}) {
   const frame = isoFrame(cx, cy, opts.orient ?? 'se');
-  const mattress = orientedBox(ctx, frame, 1.08, 0.42, 7, {
+
+  // Resolve the visually far end for every orientation. The head frame is
+  // painted first, then captured behind the bed mass instead of crossing it.
+  const endA = frame.point(-0.54, 0, 8);
+  const endB = frame.point(0.54, 0, 8);
+  const farLa = endA[1] < endB[1] ? -0.54 : 0.54;
+  const nearLa = -farLa;
+  const headLeft = frame.point(farLa, -0.21, 7);
+  const headRight = frame.point(farLa, 0.21, 7);
+  for (const point of [headLeft, headRight]) {
+    linePx(ctx, point[0], point[1], point[0], point[1] - 31, PALETTE.outline, 5);
+    linePx(ctx, point[0] - 1, point[1] - 1, point[0] - 1, point[1] - 29, PALETTE.rustMid, 2);
+    nativeLinePx(ctx, point[0] - 1.5, point[1] - 2.5, point[0] - 1.5, point[1] - 28.5, PALETTE.rustLight);
+  }
+  for (const lift of [16, 27]) {
+    linePx(ctx, headLeft[0], headLeft[1] - lift, headRight[0], headRight[1] - lift, PALETTE.outline, 5);
+    nativeLinePx(ctx, headLeft[0] + 1.5, headLeft[1] - lift - 1.5, headRight[0] - 1.5, headRight[1] - lift - 1.5, lift > 20 ? PALETTE.rustLight : PALETTE.ironLight);
+  }
+  for (const t of [0.28, 0.5, 0.72]) {
+    const bottom = mixPoint(headLeft, headRight, t);
+    const top = [bottom[0], bottom[1] - 26];
+    linePx(ctx, bottom[0], bottom[1] - 12, top[0], top[1], PALETTE.outline, 3);
+    nativeLinePx(ctx, bottom[0] - 0.5, bottom[1] - 13.5, top[0] - 0.5, top[1] + 1.5, PALETTE.rustMid);
+  }
+
+  // Four legs and a low iron frame support the mattress. All joints terminate
+  // under the frame rail rather than being painted over the sleeping surface.
+  for (const la of [-0.5, 0.5]) {
+    for (const lb of [-0.18, 0.18]) {
+      const foot = frame.point(la, lb, 0);
+      const joint = frame.point(la, lb, 9);
+      linePx(ctx, foot[0], foot[1], joint[0], joint[1], PALETTE.outline, 4);
+      nativeLinePx(ctx, foot[0] - 0.5, foot[1] - 1.5, joint[0] - 0.5, joint[1] + 0.5, PALETTE.rustLight);
+    }
+  }
+  orientedBox(ctx, frame, 1.12, 0.46, 5, {
+    top: PALETTE.ironMid,
+    lit: PALETTE.rustMid,
+    shade: PALETTE.ironDark,
+    outline: PALETTE.outline
+  }, 8);
+  const mattress = orientedBox(ctx, frame, 1.04, 0.4, 7, {
     top: PALETTE.clothTan,
     lit: PALETTE.stoneDust,
     shade: PALETTE.clothDark,
     outline: PALETTE.outline
-  }, 8);
-  for (const la of [-0.5, 0.5]) {
-    for (const lb of [-0.16, 0.16]) {
-      const p = frame.point(la, lb, 6);
-      linePx(ctx, p[0], p[1], p[0], p[1] + 8, PALETTE.outline, 3);
-      nativeLinePx(ctx, p[0] - 0.5, p[1] + 0.5, p[0] - 0.5, p[1] + 6.5, PALETTE.rustLight);
-    }
-  }
-  const pillow = frame.point(-0.38, 0, 17);
-  drawIsoDiamond(ctx, pillow[0], pillow[1], 24, 9, PALETTE.outline);
-  drawIsoDiamond(ctx, pillow[0] - 1, pillow[1] - 1, 19, 6, PALETTE.hostBone);
-  const blanketA = frame.point(0.1, -0.18, 16);
-  const blanketB = frame.point(0.49, -0.18, 16);
-  const blanketC = frame.point(0.49, 0.18, 16);
-  const blanketD = frame.point(0.1, 0.18, 16);
+  }, 12);
+
+  const pillow = frame.point(farLa * 0.68, 0, 21);
+  drawIsoDiamond(ctx, pillow[0], pillow[1], 25, 9, PALETTE.outline);
+  drawIsoDiamond(ctx, pillow[0] - 1, pillow[1] - 1, 20, 6, PALETTE.hostBone);
+  nativeLinePx(ctx, pillow[0] - 7.5, pillow[1] - 2.5, pillow[0] + 5.5, pillow[1] + 0.5, PALETTE.stoneDust);
+
+  const blanketStart = nearLa * 0.08;
+  const blanketEnd = nearLa * 0.5;
+  const blanketA = frame.point(blanketStart, -0.19, 21);
+  const blanketB = frame.point(blanketEnd, -0.19, 21);
+  const blanketC = frame.point(blanketEnd, 0.19, 21);
+  const blanketD = frame.point(blanketStart, 0.19, 21);
   poly(ctx, PALETTE.outline, [blanketA, blanketB, blanketC, blanketD]);
   poly(ctx, seed & 1 ? PALETTE.clothRed : PALETTE.clothDark, [
-    frame.point(0.13, -0.15, 17), frame.point(0.46, -0.15, 17),
-    frame.point(0.46, 0.15, 17), frame.point(0.13, 0.15, 17)
+    frame.point(blanketStart + nearLa * 0.03, -0.16, 22), frame.point(blanketEnd - nearLa * 0.03, -0.16, 22),
+    frame.point(blanketEnd - nearLa * 0.03, 0.16, 22), frame.point(blanketStart + nearLa * 0.03, 0.16, 22)
   ]);
-  const headLeft = frame.point(-0.52, -0.19, 8);
-  const headRight = frame.point(-0.52, 0.19, 8);
-  for (const point of [headLeft, headRight]) {
-    linePx(ctx, point[0], point[1], point[0], point[1] - 25, PALETTE.outline, 4);
-    nativeLinePx(ctx, point[0] - 0.5, point[1] - 1.5, point[0] - 0.5, point[1] - 22.5, PALETTE.rustLight);
+  const foldA = frame.point((blanketStart + blanketEnd) / 2, -0.14, 23);
+  const foldB = frame.point((blanketStart + blanketEnd) / 2, 0.14, 23);
+  nativeLinePx(ctx, foldA[0], foldA[1], foldB[0], foldB[1], PALETTE.rustLight);
+
+  // Only the near foot end is allowed in front of the mattress, and it stays
+  // low enough to read as a retaining rail rather than a post through the bed.
+  const footLeft = frame.point(nearLa, -0.2, 8);
+  const footRight = frame.point(nearLa, 0.2, 8);
+  for (const point of [footLeft, footRight]) {
+    linePx(ctx, point[0], point[1], point[0], point[1] - 13, PALETTE.outline, 4);
+    nativeLinePx(ctx, point[0] - 0.5, point[1] - 1.5, point[0] - 0.5, point[1] - 11.5, PALETTE.rustLight);
   }
-  linePx(ctx, headLeft[0], headLeft[1] - 22, headRight[0], headRight[1] - 22, PALETTE.outline, 4);
-  linePx(ctx, headLeft[0], headLeft[1] - 12, headRight[0], headRight[1] - 12, PALETTE.rustMid, 2);
+  linePx(ctx, footLeft[0], footLeft[1] - 11, footRight[0], footRight[1] - 11, PALETTE.outline, 4);
+  nativeLinePx(ctx, footLeft[0] + 1.5, footLeft[1] - 12.5, footRight[0] - 1.5, footRight[1] - 12.5, PALETTE.ironLight);
   nativeLinePx(ctx, mattress.cap.left[0] + 1.5, mattress.cap.left[1] - 0.5, mattress.cap.top[0] - 1.5, mattress.cap.top[1] + 0.5, PALETTE.hostBone);
 }
 
@@ -2976,6 +3154,96 @@ export function drawSouthMeasureCollapsedCulvert(ctx, cx, cy, seed) {
   nativeLinePx(ctx, cx - 21.5, cy - 30.5, cx - 10.5, cy - 33.5, PALETTE.stoneLight);
   nativeLinePx(ctx, cx + 14.5, cy - 25.5, cx + 22.5, cy - 19.5, PALETTE.stoneDark);
   nativeLinePx(ctx, cx - 10.5, cy - 2.5, cx + 3.5, cy + 1.5, PALETTE.stoneDust);
+}
+
+function chainPointAt(points, distance) {
+  let remaining = Math.max(0, distance);
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const start = points[index];
+    const end = points[index + 1];
+    const dx = end[0] - start[0];
+    const dy = end[1] - start[1];
+    const length = Math.max(1, Math.hypot(dx, dy));
+    if (remaining <= length || index === points.length - 2) {
+      const t = Math.min(1, remaining / length);
+      return {
+        point: [start[0] + dx * t, start[1] + dy * t],
+        tangent: [dx / length, dy / length]
+      };
+    }
+    remaining -= length;
+  }
+  return { point: points.at(-1), tangent: [1, 0] };
+}
+
+function chainPathLength(points) {
+  let length = 0;
+  for (let index = 0; index < points.length - 1; index += 1) {
+    length += Math.hypot(
+      points[index + 1][0] - points[index][0],
+      points[index + 1][1] - points[index][1]
+    );
+  }
+  return length;
+}
+
+function drawHeavyChainLink(ctx, sample, index, seed, scale = 1) {
+  const faceOn = (index & 1) === 0;
+  const tangent = sample.tangent;
+  const normal = [-tangent[1], tangent[0]];
+  const longAxis = faceOn ? tangent : normal;
+  const shortAxis = faceOn ? normal : tangent;
+  const halfLength = (faceOn ? 5.5 : 3.7) * scale;
+  const halfWidth = (faceOn ? 3.5 : 1.8) * scale;
+  const point = (along, across) => [
+    sample.point[0] + longAxis[0] * along + shortAxis[0] * across,
+    sample.point[1] + longAxis[1] * along + shortAxis[1] * across
+  ];
+  const corners = [
+    point(-halfLength, -halfWidth),
+    point(halfLength, -halfWidth),
+    point(halfLength, halfWidth),
+    point(-halfLength, halfWidth)
+  ];
+  const metal = ((seed + index * 7) % 11 === 0) ? PALETTE.rustMid : PALETTE.ironMid;
+
+  for (let edge = 0; edge < corners.length; edge += 1) {
+    const start = corners[edge];
+    const end = corners[(edge + 1) % corners.length];
+    linePx(ctx, start[0], start[1], end[0], end[1], PALETTE.outline, faceOn ? 3 : 4);
+  }
+  for (let edge = 0; edge < corners.length; edge += 1) {
+    const start = corners[edge];
+    const end = corners[(edge + 1) % corners.length];
+    linePx(ctx, start[0], start[1], end[0], end[1], metal, 2);
+  }
+
+  // A single upper-left facet gives each open link an iron ramp without
+  // filling its hole. Edge-on links stay darker and cross through those holes.
+  const litStart = corners[0][1] <= corners[2][1] ? corners[0] : corners[2];
+  const litEnd = corners[1][1] <= corners[3][1] ? corners[1] : corners[3];
+  nativeLinePx(ctx, litStart[0], litStart[1], litEnd[0], litEnd[1], PALETTE.ironLight);
+  if ((seed + index) % 9 === 0) {
+    nativePx(ctx, sample.point[0] - 0.5, sample.point[1] + 0.5, PALETTE.rustLight);
+  }
+}
+
+function drawHeavyGateChain(ctx, points, seed) {
+  const length = chainPathLength(points);
+  const count = Math.max(17, Math.round(length / 8.5));
+  const samples = [];
+  for (let index = 0; index < count; index += 1) {
+    samples.push(chainPointAt(points, (length * index) / Math.max(1, count - 1)));
+  }
+
+  // Open links establish the holes first. Narrow links then cross over them,
+  // which makes the alternating interlock readable instead of becoming rope.
+  for (let index = 0; index < samples.length; index += 2) {
+    drawHeavyChainLink(ctx, samples[index], index, seed, index === 0 || index === samples.length - 1 ? 1.15 : 1);
+  }
+  for (let index = 1; index < samples.length; index += 2) {
+    drawHeavyChainLink(ctx, samples[index], index, seed);
+  }
 }
 
 export function drawSouthMeasureChainGate(ctx, cx, cy, seed, opts = {}) {
@@ -3041,7 +3309,7 @@ export function drawSouthMeasureChainGate(ctx, cx, cy, seed, opts = {}) {
     for (const lift of [-7, -2, 3, 8]) {
       px(ctx, p[0] - 4, plateY + lift, PALETTE.stoneDark, lift === 8 ? 7 : 4 + ((lift + index) & 2), 1);
     }
-    px(ctx, p[0] - 4, plateY + (north ? 5 : 1), PALETTE.clothBlueMid, 8, 2);
+    px(ctx, p[0] - 4, plateY + (north ? 5 : 1), PALETTE.ironMid, 8, 2);
   }
 
   // The western pylon carries the surviving lift wheel and stone
@@ -3074,23 +3342,30 @@ export function drawSouthMeasureChainGate(ctx, cx, cy, seed, opts = {}) {
   });
 
   const chain = [
-    [a[0], a[1] - 49],
-    frame.point(-1.35, 0, 33),
-    frame.point(0, 0, 24),
-    frame.point(1.35, 0, 31),
-    [b[0], b[1] - 45]
+    frame.point(-2.65, 0, north ? 47 : 54),
+    frame.point(-1.75, 0, 37),
+    frame.point(-0.88, 0, 26),
+    frame.point(0, 0, 22),
+    frame.point(0.9, 0, 25),
+    frame.point(1.78, 0, 35),
+    frame.point(2.65, 0, north ? 53 : 48)
   ];
-  for (let index = 0; index < chain.length - 1; index += 1) {
-    linePx(ctx, chain[index][0], chain[index][1], chain[index + 1][0], chain[index + 1][1], PALETTE.outline, 5);
-    linePx(ctx, chain[index][0], chain[index][1] - 1, chain[index + 1][0], chain[index + 1][1] - 1, PALETTE.rustLight, 2);
+  for (const [index, anchor] of [chain[0], chain.at(-1)].entries()) {
+    px(ctx, anchor[0] - 7, anchor[1] - 8, PALETTE.outline, 15, 17);
+    px(ctx, anchor[0] - 5, anchor[1] - 6, index ? PALETTE.ironDark : PALETTE.ironMid, 11, 13);
+    drawIsoDiamond(ctx, anchor[0], anchor[1], 8, 6, PALETTE.outline);
+    drawIsoDiamond(ctx, anchor[0], anchor[1] - 1, 4, 3, PALETTE.ironLight);
   }
-  for (const t of [-2.2, -1.65, -1.1, -0.55, 0, 0.55, 1.1, 1.65, 2.2]) {
-    const h = 24 + Math.round(Math.abs(t) * 8.3) + (t > 0 ? -2 : 1);
-    const p = frame.point(t, 0, h);
-    px(ctx, p[0] - 2, p[1] - 2, PALETTE.outline, 5, 5);
-    px(ctx, p[0] - 1, p[1] - 1, PALETTE.rustMid, 3, 3);
-  }
-  const board = frame.point(0, 0, 55);
+  drawHeavyGateChain(ctx, chain, seed);
+
+  // The road plate hangs from the lowest links. It no longer floats above the
+  // span like a separate floor sign.
+  const board = frame.point(0, 0, 7);
+  const tieLeft = frame.point(-0.2, 0, 21);
+  const tieRight = frame.point(0.2, 0, 21);
+  linePx(ctx, tieLeft[0], tieLeft[1], board[0] - 10, board[1] - 8, PALETTE.outline, 3);
+  linePx(ctx, tieRight[0], tieRight[1], board[0] + 10, board[1] - 7, PALETTE.outline, 3);
+  nativeLinePx(ctx, tieLeft[0] - 0.5, tieLeft[1], board[0] - 10.5, board[1] - 8, PALETTE.ironLight);
   poly(ctx, PALETTE.outline, [
     [board[0] - 18, board[1] - 9], [board[0] + 15, board[1] - 7],
     [board[0] + 18, board[1] + 8], [board[0] - 15, board[1] + 10]
@@ -3103,9 +3378,6 @@ export function drawSouthMeasureChainGate(ctx, cx, cy, seed, opts = {}) {
   px(ctx, board[0] - 7, board[1] + 2, PALETTE.ironLight, 14, 1);
   nativePx(ctx, board[0] - 13.5, board[1] - 4.5, PALETTE.hostGold);
   nativePx(ctx, board[0] + 11.5, board[1] + 3.5, PALETTE.hostGold);
-  // Fine chain highlights follow the long sag rather than forming detached
-  // sparkles, and the notice board retains one material scratch per variant.
-  nativeLinePx(ctx, chain[1][0], chain[1][1] - 1.5, chain[2][0], chain[2][1] - 1.5, PALETTE.rustLight);
-  nativeLinePx(ctx, chain[2][0], chain[2][1] - 1.5, chain[3][0], chain[3][1] - 1.5, PALETTE.rustLight);
+  // The notice board retains one material scratch per variant.
   nativeLinePx(ctx, board[0] - 9.5, board[1] - 3.5, board[0] + 6.5, board[1] - 2.5, north ? PALETTE.stoneDust : PALETTE.clayLight);
 }

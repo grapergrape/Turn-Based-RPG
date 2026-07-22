@@ -931,7 +931,7 @@ function placeArrivalAndCharityEdges() {
   }
 
   // The receiving pump, public taps and wash wall begin inside the shelter
-  // court. Their blue fittings remain visible beside the hearths and pallets
+  // court. Their iron fittings remain visible beside the hearths and pallets
   // before the service line continues east toward the South Chain.
   addObject('wash-wall', 33, 75, {
     id: 'ash-road-south-receiving-wash-wall', blocking: true, orient: 'sw'
@@ -939,7 +939,7 @@ function placeArrivalAndCharityEdges() {
   addObject('south-measure-hand-pump', 35, 73, {
     id: 'ash-road-south-receiving-pump', blocking: true
   });
-  addObject('public-tap-stand', 39, 71, {
+  addObject('public-tap-stand', 43, 72, {
     id: 'ash-road-south-arrival-water-point', blocking: true, orient: 'se'
   });
   for (const [x, y, orient, variant, salt] of [

@@ -78,9 +78,9 @@ const NATIVE_FLOOR_DETAIL = Object.freeze({
   'south-measure-grave-strip': { mode: 'grit', light: PALETTE.limeMid, dark: PALETTE.clayDark, count: 3 },
   'cave-stone': { mode: 'grit', light: PALETTE.stoneDust, dark: PALETTE.outline, count: 4 },
   'cave-river': { mode: 'current', light: PALETTE.stoneDust, dark: PALETTE.clothBlueDark, count: 3 },
-  'relief-channel-x': { mode: 'current-x', light: PALETTE.clothBlue, dark: PALETTE.rustDark, count: 2 },
-  'relief-channel-y': { mode: 'current-y', light: PALETTE.clothBlue, dark: PALETTE.rustDark, count: 2 },
-  'relief-channel-junction': { mode: 'current', light: PALETTE.clothBlue, dark: PALETTE.rustDark, count: 3 }
+  'relief-channel-x': { mode: 'current-x', light: PALETTE.ironLight, dark: PALETTE.stoneDark, count: 1 },
+  'relief-channel-y': { mode: 'current-y', light: PALETTE.ironLight, dark: PALETTE.stoneDark, count: 1 },
+  'relief-channel-junction': { mode: 'current', light: PALETTE.ironLight, dark: PALETTE.stoneDark, count: 1 }
 });
 
 function nativeFloorPoint(cx, cy, rng) {
@@ -1534,10 +1534,10 @@ export function reliefChannelGeometry(cx, cy, axis = 'x') {
   return {
     axis: normalizedAxis,
     frame,
-    trough: quad(0.34),
-    water: quad(0.23),
-    banks: [run(-0.34), run(0.34)],
-    flowLines: [run(-0.1), run(0.08)]
+    trough: quad(0.38),
+    water: quad(0.17),
+    banks: [run(-0.38), run(0.38)],
+    flowLines: [run(-0.06), run(0.07)]
   };
 }
 
@@ -1552,18 +1552,27 @@ function drawReliefChannelFloorCell(ctx, cx, cy, gx, gy, axis, drawBase = true) 
     drawIsoDiamond(ctx, cx, cy, TILE_WIDTH, TILE_HEIGHT, zone % 5 === 0 ? PALETTE.limeDark : PALETTE.limeMid);
   }
   poly(ctx, PALETTE.outline, geometry.trough);
-  poly(ctx, PALETTE.ironMid, [
-    frame.point(-0.5, -0.3),
-    frame.point(0.5, -0.3),
-    frame.point(0.5, 0.3),
-    frame.point(-0.5, 0.3)
+  // The wide dark bed and opposed lip values establish an actual recess.
+  // Water occupies only the center of the drain, so it cannot read as two
+  // bright rails laid over the surface.
+  poly(ctx, PALETTE.stoneDark, [
+    frame.point(-0.5, -0.31),
+    frame.point(0.5, -0.31),
+    frame.point(0.5, 0.31),
+    frame.point(-0.5, 0.31)
   ]);
-  poly(ctx, PALETTE.clothBlueDark, geometry.water);
+  poly(ctx, PALETTE.ironDark, [
+    frame.point(-0.5, -0.26),
+    frame.point(0.5, -0.26),
+    frame.point(0.5, 0.26),
+    frame.point(-0.5, 0.26)
+  ]);
+  poly(ctx, PALETTE.ironMid, geometry.water);
   poly(ctx, PALETTE.clayDark, [
     frame.point(-0.5, 0.12),
     frame.point(0.5, 0.12),
-    frame.point(0.5, 0.23),
-    frame.point(-0.5, 0.23)
+    frame.point(0.5, 0.17),
+    frame.point(-0.5, 0.17)
   ]);
 
   const [bankA, bankB] = geometry.banks;
@@ -1571,26 +1580,34 @@ function drawReliefChannelFloorCell(ctx, cx, cy, gx, gy, axis, drawBase = true) 
   const bankBY = (bankB.start[1] + bankB.end[1]) / 2;
   const lightBank = bankAY <= bankBY ? bankA : bankB;
   const darkBank = lightBank === bankA ? bankB : bankA;
-  linePx(ctx, lightBank.start[0], lightBank.start[1], lightBank.end[0], lightBank.end[1], PALETTE.limeLight, 2);
-  linePx(ctx, darkBank.start[0], darkBank.start[1], darkBank.end[0], darkBank.end[1], PALETTE.outline, 2);
+  linePx(ctx, lightBank.start[0], lightBank.start[1], lightBank.end[0], lightBank.end[1], PALETTE.limeLight, 3);
+  linePx(ctx, darkBank.start[0], darkBank.start[1], darkBank.end[0], darkBank.end[1], PALETTE.outline, 3);
+  const lightInner = lightBank === bankA ? geometry.flowLines[0] : geometry.flowLines[1];
+  const darkInner = lightInner === geometry.flowLines[0] ? geometry.flowLines[1] : geometry.flowLines[0];
+  linePx(ctx, lightInner.start[0], lightInner.start[1], lightInner.end[0], lightInner.end[1], PALETTE.stoneMid, 1);
+  linePx(ctx, darkInner.start[0], darkInner.start[1], darkInner.end[0], darkInner.end[1], PALETTE.ironDark, 1);
 
-  for (let i = 0; i < geometry.flowLines.length; i += 1) {
-    const flow = geometry.flowLines[i];
-    linePx(ctx, flow.start[0], flow.start[1], flow.end[0], flow.end[1], i === 0 ? PALETTE.clothBlue : PALETTE.ironLight, 1);
-  }
+  // One short reflection per cell indicates moving water without creating a
+  // second continuous line that could be mistaken for a rail.
+  const reflectionRun = geometry.flowLines[0];
+  const reflectionStart = 0.14 + rng() * 0.2;
+  const reflectionEnd = Math.min(0.82, reflectionStart + 0.2 + rng() * 0.16);
+  const reflectionA = mixPoint(reflectionRun.start, reflectionRun.end, reflectionStart);
+  const reflectionB = mixPoint(reflectionRun.start, reflectionRun.end, reflectionEnd);
+  nativeLinePx(ctx, reflectionA[0], reflectionA[1], reflectionB[0], reflectionB[1], PALETTE.ironLight);
 
   // Silt gathers inside the engineered trough. It stays on the local channel
   // plane, while the two full-length flow lines keep exact neighbor endpoints.
   if (seed % 4 === 0) {
     const centerA = -0.28 + rng() * 0.56;
     poly(ctx, PALETTE.clayDark, [
-      frame.point(centerA - 0.14, 0.1),
-      frame.point(centerA + 0.14, 0.1),
-      frame.point(centerA + 0.11, 0.2),
-      frame.point(centerA - 0.12, 0.2)
+      frame.point(centerA - 0.14, 0.08),
+      frame.point(centerA + 0.14, 0.08),
+      frame.point(centerA + 0.11, 0.16),
+      frame.point(centerA - 0.12, 0.16)
     ]);
-    const glint = frame.point(centerA - 0.03, -0.16);
-    px(ctx, glint[0], glint[1], PALETTE.limeLight, 2, 1);
+    const grit = frame.point(centerA - 0.03, 0.11);
+    nativePx(ctx, grit[0] - 0.5, grit[1] - 0.5, PALETTE.stoneDust);
   }
 
   if (seed % 7 === 0) {
@@ -1612,14 +1629,20 @@ function drawReliefChannelJunctionFloorCell(ctx, cx, cy, gx, gy) {
   const rim = diamond(cx, cy, 34, 17);
   const water = diamond(cx, cy, 24, 12);
   poly(ctx, PALETTE.outline, [rim.top, rim.right, rim.bottom, rim.left]);
-  poly(ctx, PALETTE.ironMid, [
+  poly(ctx, PALETTE.stoneDark, [
     [rim.top[0], rim.top[1] + 2],
     [rim.right[0] - 4, rim.right[1]],
     [rim.bottom[0], rim.bottom[1] - 2],
     [rim.left[0] + 4, rim.left[1]]
   ]);
-  poly(ctx, PALETTE.clothBlueDark, [water.top, water.right, water.bottom, water.left]);
-  linePx(ctx, water.left[0] + 3, water.left[1] - 1, water.right[0] - 3, water.right[1] - 1, PALETTE.clothBlue, 1);
+  poly(ctx, PALETTE.ironDark, [water.top, water.right, water.bottom, water.left]);
+  const wet = diamond(cx, cy, 14, 7);
+  poly(ctx, PALETTE.ironMid, [wet.top, wet.right, wet.bottom, wet.left]);
+  nativeLinePx(ctx, wet.left[0] + 3.5, wet.left[1] - 0.5, wet.top[0] - 1.5, wet.top[1] + 1.5, PALETTE.ironLight);
+  // A fitted cross brace makes the meeting read as a sump rather than two
+  // textures painted over each other.
+  linePx(ctx, rim.left[0] + 6, rim.left[1], rim.right[0] - 6, rim.right[1], PALETTE.outline, 2);
+  linePx(ctx, rim.top[0], rim.top[1] + 4, rim.bottom[0], rim.bottom[1] - 4, PALETTE.ironLight, 1);
 }
 
 function drawGraveyardEarthCell(ctx, cx, cy, gx, gy) {

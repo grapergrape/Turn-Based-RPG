@@ -2162,3 +2162,70 @@ is 168.6 ms against a 200 ms gate. The largest observed shadow cache is
 8.24 MiB against its 24 MiB cap, and the largest observed prop cache is
 19.14 MiB against its 64 MiB cap. The authoritative raw report is
 `.ai/visual-audit/2026-07-21-shadow-overhaul/performance-final/report.json`.
+
+## Ash Road South structural rejection and rebuild (2026-07-22)
+
+This review supersedes the 2026-07-21 Ash Road South scores for the families
+listed below. It also invalidates the blanket whole-game closure as evidence
+for those families. The prior review accepted recognisable labels and intended
+functions that were not present in the native-scale raster. Player captures
+showed a cable presented as the South Chain, an unsupported vat ladder, merged
+arrival furniture, posts painted over their sockets, a paper wall presented as
+screening machinery, block trousers, and a cot headboard painted through its
+mattress.
+
+The replacement review began with unlabeled native 1x sheets, then used the
+same sheets at displayed 2x, white silhouette sheets, and live 1280 by 960
+scenes. Stable names were revealed only after the isolated read. Scores remain
+an internal implementation review and do not claim an outside reviewer.
+
+| Family | Rejected actual read | New score | Current-source basis |
+|---|---:|---:|---|
+| South Chain landmark | 2.5 | 8 | Alternating open hard-pixel links, visible interlock axes, clevis plates, weight, inspection plate, and a sagging load path now read as heavy chain in isolation and across the road. |
+| Settling vats | 3 | 8 | An open cylindrical vessel, subdued water, submerged rake teeth, gearbox, feed and overflow plumbing, guarded service bridge, and a ground-to-deck ladder form one coherent process machine. |
+| Receiving register | 3.5 | 7.5 | Two splayed trestles carry a continuous plank counter, rear balance, suspended pans, open ruled ledger, gutter, and weight. It no longer shares the tap silhouette or material accent. |
+| Arrival water stand | 3 | 7.5 | A masonry catch trough, recessed wet bed, supply riser, three descending branches, three faucets, valves, gauge, cup marks, and hanging cup establish a clear public use side. |
+| Arrival census board | 4.5 | 7 | Both shafts terminate inside collared masonry sockets. Rear braces sit behind the case, while the hood, hanging tallies, paper strip, and register face remain distinct. |
+| Intake screening variants | 3 | 7.5 | Every working station now owns a recessed channel, sloped bar rack, debris tray, socketed uprights, crank, and a secondary records, threshold, inspection, or weighing attachment. The weighing dial is fixed to an upright rather than floating above it. |
+| Laundry lines | 3 | 7 | Shirt, uneven towel, pegs, and full trousers use human-relative anatomy. The trousers have a connected waistband and seat, negative-space crotch, tapered legs, pockets, creases, and cuffs. The Hidden Rows screen remains broader than an ordinary line. |
+| Charity cots | 3 | 7.5 | Four legs terminate below an iron frame. The far headboard is composited behind the mattress, pillow, and blanket; only a low near foot rail may overlap the sleeping surface. |
+| Relief channels | 3 | 7 | Saturated parallel blue strips are replaced by a recessed masonry trough, narrow iron-ramp wet bed, asymmetric lips, silt pockets, broken reflections, occasional braces, and a fitted junction sump. |
+
+The arrival water point keeps the stable ID
+`ash-road-south-arrival-water-point` but moves from `(39, 71)` to `(43, 72)`
+in the authoritative generator. This separates it from the receiving register
+at `(37, 71)`. Regeneration also moves its work slot and refreshes nearby patrol
+steps. All stable activity targets, six tableaux, 575 placements, cardinal
+reachability, and progression routes remain valid.
+
+Fresh evidence is stored in
+`.ai/visual-audit/2026-07-22-south-structural-corrections/`. It contains eight
+unlabeled color sheets at native 1x and displayed 2x, eight silhouette sheets,
+the complete 126-entry placed-prop sheet, eleven district crops, seven standard
+runtime views, and eight complaint-focused runtime views. Representative
+SHA-256 hashes are:
+
+| Evidence | SHA-256 |
+|---|---|
+| `unlabeled-1x-chain.png` | `e816ec06881c2273fe6b8f6e6c419f63b433bab9ee5358fd4cd11d9cfae923d8` |
+| `unlabeled-1x-vats.png` | `06cb7682f41895f629c9ad2f9123bf1bc60ff3023a97eb462c4299cebf8a7318` |
+| `unlabeled-1x-register.png` | `9bcedb54fed2e37a6862510ae32702b2973120e3715e94c1ce2bd5e5d633d78d` |
+| `unlabeled-1x-tap.png` | `e94c00d36ee2801ff86baa8d45e9dc43abca2861c2d4682243724753c67d0cf3` |
+| `unlabeled-1x-board.png` | `8ecbc49d79b15fa5f93c01c262355483b1ab9c50d885cd1727e0b19d054ccdde` |
+| `unlabeled-1x-screening.png` | `a7ddd3b1ede4411d44c3e53b32bcb9d08f3a9d6a188cbc82f61fb116ef268a3c` |
+| `unlabeled-1x-laundry.png` | `7753c94e634812f08f8eeab17150373c89fe78d8a85af48f3f96489ae1e4ac35` |
+| `unlabeled-1x-cots.png` | `759436490c23e60dcde499b2353b2cc08d295182d85a412d99f0c3a41426e235` |
+| `final-focus-chain.png` | `bcb0c988fc03d35c65d37c917a3f9a1582cd553895f68ec62db6013443d0bf03` |
+| `final-focus-vat.png` | `acec5b22d50f6b7f81f890964d5a268c5386f2ad55ad032b4516bfe5ad965fa4` |
+
+Regression coverage now rejects bright blue relief-channel rails, merged
+arrival register and tap placement, collapsed screening-variant silhouettes,
+orientation-independent cots, generic South Chain art, non-palette raster
+marks, broken channel seams, and the old block-trouser contract.
+
+The fresh native performance profile records Ash Road South at 33.3 ms cold
+and 4.50 ms warm. Across all six representative maps, the worst cold frame is
+151.5 ms, the worst warm average is 5.14 ms, the largest shadow cache is 8.24
+MiB, and the largest prop cache is 19.14 MiB. All four limits remain inside the
+200 ms, 6 ms, 24 MiB, and 64 MiB gates. The raw report is
+`.ai/visual-audit/2026-07-22-south-structural-corrections/performance/report.json`.

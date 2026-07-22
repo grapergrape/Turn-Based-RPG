@@ -563,8 +563,8 @@
               "y": 70
             },
             {
-              "x": 38,
-              "y": 72
+              "x": 39,
+              "y": 71
             },
             {
               "x": 18,
@@ -595,8 +595,8 @@
               "y": 77
             },
             {
-              "x": 38,
-              "y": 72
+              "x": 39,
+              "y": 71
             },
             {
               "x": 18,
@@ -639,8 +639,8 @@
               "y": 70
             },
             {
-              "x": 38,
-              "y": 72
+              "x": 39,
+              "y": 71
             }
           ],
           "mode": "loop",
@@ -2077,8 +2077,8 @@
         {
           "actor": "ash-road-south-eren-holt",
           "slot": {
-            "x": 38,
-            "y": 72
+            "x": 44,
+            "y": 71
           },
           "delay": 1.2,
           "activity": {
@@ -7493,20 +7493,6 @@
       "variant": "returns"
     },
     {
-      "id": "ash-road-south-arrival-water-point",
-      "kind": "public-tap-stand",
-      "x": 39,
-      "y": 71,
-      "seed": 3854852733,
-      "blocking": true,
-      "orient": "se",
-      "name": "Arrival Water Stand",
-      "interact": {
-        "type": "note",
-        "log": "The spout cloth has been boiled pale. Eleven cup scratches cross the stand, followed by a deeper mark for the cooking pot."
-      }
-    },
-    {
       "id": "ash-road-south-tumbleweed-49-71",
       "kind": "south-measure-tumbleweed",
       "x": 49,
@@ -7604,6 +7590,20 @@
       "x": 31,
       "y": 72,
       "seed": 1060942943
+    },
+    {
+      "id": "ash-road-south-arrival-water-point",
+      "kind": "public-tap-stand",
+      "x": 43,
+      "y": 72,
+      "seed": 4199612440,
+      "blocking": true,
+      "orient": "se",
+      "name": "Arrival Water Stand",
+      "interact": {
+        "type": "note",
+        "log": "The spout cloth has been boiled pale. Eleven cup scratches cross the stand, followed by a deeper mark for the cooking pot."
+      }
     },
     {
       "id": "ash-road-south-tumbleweed-77-72",

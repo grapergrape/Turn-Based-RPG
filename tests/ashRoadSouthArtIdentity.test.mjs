@@ -74,14 +74,18 @@ function catalogSignature(kind, prop = {}, anim = {}) {
   return JSON.stringify(ctx.calls);
 }
 
-function floorSignature(style) {
+function floorCalls(style) {
   const ctx = recordingContext();
   for (let y = 0; y < 3; y += 1) {
     for (let x = 0; x < 3; x += 1) {
       drawStyledFloorCell(ctx, 96 + (x - y) * 32, 72 + (x + y) * 16, x + 11, y + 17, style);
     }
   }
-  return JSON.stringify(ctx.calls);
+  return ctx.calls;
+}
+
+function floorSignature(style) {
+  return JSON.stringify(floorCalls(style));
 }
 
 const replacementPairs = [
@@ -119,6 +123,37 @@ for (const [localFloor, borrowedFloor] of [
   );
 }
 
+for (const style of ['relief-channel-x', 'relief-channel-y', 'relief-channel-junction']) {
+  const usedStyles = new Set(floorCalls(style).flatMap((call) =>
+    call.filter((value) => typeof value === 'string' && Object.values(PALETTE).includes(value))
+  ));
+  assert.equal(usedStyles.has(PALETTE.clothBlue), false, `${style} must not use a bright blue rail-like water stripe`);
+  assert.equal(usedStyles.has(PALETTE.clothBlueDark), false, `${style} must keep its wet bed on the iron and stone ramp`);
+  assert.ok(usedStyles.has(PALETTE.ironDark), `${style} must contain a recessed dark wet bed`);
+  assert.ok(usedStyles.has(PALETTE.ironLight), `${style} must retain restrained hard-pixel water reflections`);
+}
+
+const correctedVariantGroups = [
+  ['intake-screening-frame', ['records', 'threshold', 'inspection', 'weighing']],
+  ['south-measure-return-stall', ['returns', 'rations']],
+  ['south-measure-notice-board', ['census', 'clinic']],
+  ['laundry-line', [undefined, 'entry-screen']]
+];
+for (const [kind, variants] of correctedVariantGroups) {
+  const signatures = variants.map((variant) => catalogSignature(kind, { variant }));
+  assert.equal(new Set(signatures).size, signatures.length, `${kind} corrected variants must retain distinct silhouettes`);
+}
+assert.notEqual(
+  catalogSignature('charity-cot', { orient: 'se' }),
+  catalogSignature('charity-cot', { orient: 'sw' }),
+  'charity cot head and foot structure must follow its authored orientation'
+);
+assert.notEqual(
+  catalogSignature('south-chain-gate'),
+  catalogSignature('south-measure-queue-rail'),
+  'the South Chain must keep a dedicated heavy-link silhouette'
+);
+
 const tumbleweedEntry = SPRITE_CATALOG['south-measure-tumbleweed'];
 assert.equal(tumbleweedEntry?.category, 'plant', 'the tumbleweed must be registered as a plant');
 assert.equal(tumbleweedEntry?.animated, true, 'the tumbleweed must bypass the static prop cache');
@@ -134,6 +169,22 @@ assert.notEqual(
 );
 
 const ashRoadSouth = JSON.parse(readFileSync(new URL('../data/levels/ash_road_south.json', import.meta.url), 'utf8'));
+const arrivalRegister = ashRoadSouth.objects.find((object) => object.id === 'ash-road-south-receiving-register');
+const arrivalWaterPoint = ashRoadSouth.objects.find((object) => object.id === 'ash-road-south-arrival-water-point');
+assert.deepEqual(
+  [arrivalRegister?.x, arrivalRegister?.y],
+  [37, 71],
+  'the receiving register keeps its stable authored work position'
+);
+assert.deepEqual(
+  [arrivalWaterPoint?.x, arrivalWaterPoint?.y],
+  [43, 72],
+  'the public tap must remain separated from the receiving register'
+);
+assert.ok(
+  Math.max(Math.abs(arrivalWaterPoint.x - arrivalRegister.x), Math.abs(arrivalWaterPoint.y - arrivalRegister.y)) >= 5,
+  'arrival register and public tap silhouettes must not merge into one unreadable prop cluster'
+);
 const tumbleweeds = ashRoadSouth.objects.filter((object) => object.kind === 'south-measure-tumbleweed');
 assert.ok(tumbleweeds.length >= 8, 'Ash Road South must place tumbleweeds across several open outskirts');
 assert.ok(tumbleweeds.every((object) => object.blocking === false), 'tumbleweeds must never block navigation');
